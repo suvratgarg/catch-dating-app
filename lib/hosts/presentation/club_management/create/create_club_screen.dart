@@ -6,10 +6,15 @@ import 'package:catch_dating_app/clubs/domain/club_draft.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
@@ -19,6 +24,8 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_details_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
@@ -240,6 +247,15 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     _submit();
   }
 
+  void _submitEdit() {
+    final basicsValid = _basicsFormKey.currentState?.validate() ?? true;
+    final defaultsValid = _defaultsFormKey.currentState?.validate() ?? true;
+    final eventSuccessValid =
+        _eventSuccessFormKey.currentState?.validate() ?? true;
+    if (!basicsValid || !defaultsValid || !eventSuccessValid) return;
+    _submit();
+  }
+
   void _goToStep(int step) {
     setState(() => _currentStep = step);
     _pageController.animateToPage(
@@ -354,6 +370,14 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       }
     });
 
+    if (_isEditing && !mediaOnly) {
+      return _buildEditClubScaffold(
+        tokens: t,
+        isSubmitting: submitMutation.isPending,
+        mutationError: mutationError,
+      );
+    }
+
     return Scaffold(
       backgroundColor: t.bg,
       body: SafeArea(
@@ -440,6 +464,235 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                   : 'Create club',
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditClubScaffold({
+    required CatchTokens tokens,
+    required bool isSubmitting,
+    required String? mutationError,
+  }) {
+    return Scaffold(
+      backgroundColor: tokens.bg,
+      appBar: const CatchTopBar(title: 'Edit club', border: true),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(
+                CatchSpacing.s5,
+                CatchSpacing.micro18,
+                CatchSpacing.s5,
+                CatchSpacing.s7,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CreateClubProfileImagePicker(
+                    imageBytes: _profileImage?.bytes,
+                    existingImageUrl: widget.initialClub?.profileImageUrl,
+                    onTap: isSubmitting ? null : _pickProfileImage,
+                  ),
+                  gapH16,
+                  CreateClubPhotosPicker(
+                    photos: _clubPhotoPreviews,
+                    existingImageUrl: _clubPhotos.isEmpty
+                        ? widget.initialClub?.imageUrl
+                        : null,
+                    onAddPhotos: isSubmitting ? null : _pickClubPhotos,
+                    onRemovePhoto: isSubmitting ? null : _removeClubPhoto,
+                    onReorderPhoto: isSubmitting ? null : _reorderClubPhoto,
+                  ),
+                  Form(
+                    key: _basicsFormKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _EditClubSection(
+                          label: 'Identity',
+                          child: Column(
+                            children: [
+                              CatchTextField(
+                                label: 'Club name',
+                                controller: _nameController,
+                                prefixIcon: Icon(CatchIcons.groupOutlined),
+                                textCapitalization: TextCapitalization.words,
+                                textInputAction: TextInputAction.next,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Please enter a club name';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              gapH16,
+                              CatchDropdownField<CityOption>(
+                                values: defaultCityOptions,
+                                label: 'City',
+                                prefixIcon: Icon(
+                                  CatchIcons.locationCityOutlined,
+                                ),
+                                value: cityOptionByName(_selectedCity),
+                                onChanged: (city) => setState(() {
+                                  _selectedCity = city?.name;
+                                }),
+                                validator: (_) => _selectedCity == null
+                                    ? 'Please select a city'
+                                    : null,
+                              ),
+                              gapH16,
+                              CatchTextField(
+                                label: 'Area / neighbourhood',
+                                controller: _areaController,
+                                prefixIcon: Icon(CatchIcons.locationOnOutlined),
+                                hintText: 'e.g. Bandra, Koramangala',
+                                textCapitalization: TextCapitalization.words,
+                                textInputAction: TextInputAction.next,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Please enter an area';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              gapH16,
+                              CatchTextField(
+                                label: 'Description',
+                                controller: _descriptionController,
+                                prefixIcon: Icon(CatchIcons.editNoteOutlined),
+                                maxLines: 4,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                textInputAction: TextInputAction.newline,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Please add a description';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        _EditClubSection(
+                          label: 'Contact',
+                          child: CreateClubContactFields(
+                            instagramController: _instagramController,
+                            phoneController: _phoneController,
+                            emailController: _emailController,
+                            showLabel: false,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _EditClubSection(
+                    label: 'Event defaults',
+                    subtitle: 'Prefill every new event this club creates.',
+                    child: Column(
+                      children: [
+                        ClubHostDefaultsStep(
+                          formKey: _defaultsFormKey,
+                          defaults: _hostDefaults,
+                          currencyCode: currencyCodeForCityName(_selectedCity),
+                          onChanged: (defaults) =>
+                              setState(() => _hostDefaults = defaults),
+                          scrollable: false,
+                          padding: EdgeInsets.zero,
+                        ),
+                        gapH16,
+                        ClubEventSuccessDefaultsStep(
+                          formKey: _eventSuccessFormKey,
+                          defaults: _hostDefaults,
+                          onChanged: (defaults) =>
+                              setState(() => _hostDefaults = defaults),
+                          scrollable: false,
+                          padding: EdgeInsets.zero,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (mutationError != null) ErrorBanner(message: mutationError),
+          _EditClubFooter(isLoading: isSubmitting, onSave: _submitEdit),
+        ],
+      ),
+    );
+  }
+}
+
+class _EditClubSection extends StatelessWidget {
+  const _EditClubSection({
+    required this.label,
+    required this.child,
+    this.subtitle,
+  });
+
+  final String label;
+  final String? subtitle;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: CatchSpacing.s2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Divider(color: t.line, height: 1, thickness: 1),
+          gapH18,
+          Text(label, style: CatchTextStyles.kicker(context, color: t.ink2)),
+          if (subtitle != null) ...[
+            gapH4,
+            Text(
+              subtitle!,
+              style: CatchTextStyles.supporting(context, color: t.ink3),
+            ),
+          ],
+          gapH10,
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _EditClubFooter extends StatelessWidget {
+  const _EditClubFooter({required this.isLoading, required this.onSave});
+
+  final bool isLoading;
+  final VoidCallback onSave;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return SafeArea(
+      top: false,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: t.bg,
+          border: Border(top: BorderSide(color: t.line)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            CatchSpacing.s5,
+            CatchSpacing.s3,
+            CatchSpacing.s5,
+            CatchSpacing.micro18,
+          ),
+          child: CatchButton(
+            label: 'Save changes',
+            icon: Icon(CatchIcons.saveOutlined),
+            isLoading: isLoading,
+            fullWidth: true,
+            onPressed: isLoading ? null : onSave,
+          ),
         ),
       ),
     );

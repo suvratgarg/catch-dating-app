@@ -5,6 +5,9 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
+import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
@@ -67,7 +70,17 @@ void main() {
         );
         await _openCreateEventFlow(tester);
 
+        expect(find.byType(SelectChip), findsWidgets);
         await _fillBasicsStep(tester);
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is SelectChip &&
+                widget.label == 'Moderate' &&
+                widget.active,
+          ),
+          findsOneWidget,
+        );
 
         await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
@@ -99,6 +112,14 @@ void main() {
         await _pumpTestAnimation(tester);
 
         expect(find.text('Event policy'), findsOneWidget);
+        expect(find.byType(CatchToggle), findsOneWidget);
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is SelectChip && widget.label == 'OPEN' && widget.active,
+          ),
+          findsOneWidget,
+        );
         await _enterCreateEventText(tester, CreateEventFormKeys.capacity, '18');
         await _enterCreateEventText(tester, CreateEventFormKeys.price, '249.5');
         await _enterCreateEventText(tester, CreateEventFormKeys.minAge, '40');
@@ -237,9 +258,17 @@ void main() {
         findsOneWidget,
       );
       expect(find.textContaining('3 teams'), findsNothing);
+      expect(find.text('Advanced', skipOffstage: false), findsOneWidget);
+      expect(
+        find.text(
+          'Optional extras you opt into intentionally.',
+          skipOffstage: false,
+        ),
+        findsOneWidget,
+      );
       expect(
         find.text('Match clue questions', skipOffstage: false),
-        findsOneWidget,
+        findsNothing,
       );
       expect(
         find.text('"Help me say hi" requests', skipOffstage: false),
@@ -278,7 +307,7 @@ void main() {
       );
       await _openCreateEventFlow(tester);
 
-      await _tapActivityKind(tester, 'OPEN ACTIVITY');
+      await _tapActivityKind(tester, 'Open activity');
       await _pumpTestAnimation(tester);
       await _enterCreateEventText(
         tester,
@@ -349,6 +378,7 @@ void main() {
       (tester) async {
         final event = buildEvent(
           id: 'event-private',
+          capacityLimit: 12,
           eventPolicy: EventPolicyBundle.inviteOnlyEvent(
             capacityLimit: 12,
             basePriceInPaise: 0,
@@ -367,6 +397,8 @@ void main() {
         );
 
         expect(find.text('Your event is live.'), findsOneWidget);
+        expect(find.text('EVENT CREATED'), findsOneWidget);
+        expect(find.byIcon(CatchIcons.verifiedRounded), findsOneWidget);
         expect(
           find.textContaining('is now listed on Stride Social'),
           findsOneWidget,
@@ -382,6 +414,30 @@ void main() {
           find.textContaining('Followers can discover it from their home feed'),
           findsNothing,
         );
+        expect(find.text('When'), findsOneWidget);
+        expect(find.text('Where'), findsOneWidget);
+        expect(find.text('Carter Road'), findsOneWidget);
+        expect(find.text('Event'), findsOneWidget);
+        expect(find.text('5km · Easy'), findsOneWidget);
+        expect(find.text('Capacity'), findsOneWidget);
+        expect(find.text('12 attendees'), findsOneWidget);
+        expect(find.text('Invite code'), findsOneWidget);
+        expect(find.text('CATCH-DELHI'), findsOneWidget);
+        expect(find.text('Private link'), findsOneWidget);
+        expect(
+          find.text(
+            'https://catchdates.com/clubs/club-1/events/event-private?invite=CATCH-DELHI',
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.text(
+            'Bookings, waitlist, and attendance are tracked from Manage event.',
+          ),
+          findsOneWidget,
+        );
+        expect(find.text('Manage event'), findsOneWidget);
+        expect(find.text('Back to club'), findsOneWidget);
       },
     );
 
@@ -889,8 +945,8 @@ void main() {
       await tester.tap(cancelButton.hitTestable());
       await _pumpHostActionFrame(tester);
 
-      expect(find.text('Cancel published event?'), findsOneWidget);
-      await tester.tap(_dialogAction('Cancel published event'));
+      expect(find.text('Cancel this event?'), findsOneWidget);
+      await tester.tap(_dialogAction('Cancel event'));
       await _pumpHostActionFrame(tester);
 
       expect(fakeEventRepository.hostCancelledEventId, 'event-cancel');
@@ -994,7 +1050,7 @@ void main() {
       await _pumpCreateEventFlow(tester);
       await _openCreateEventFlow(tester);
 
-      expect(find.text('Your drafts'), findsOneWidget);
+      expect(find.text('Resume a draft?'), findsOneWidget);
       expect(find.textContaining('Delete Point'), findsOneWidget);
       expect(find.textContaining('Keep Point'), findsOneWidget);
 
@@ -1002,7 +1058,7 @@ void main() {
         find.byKey(CreateEventFormKeys.deleteDraft('delete-draft')),
       );
       await _pumpTestAnimation(tester);
-      await tester.tap(find.widgetWithText(TextButton, 'Delete'));
+      await tester.tap(_dialogAction('Delete'));
       await _pumpTestAnimation(tester);
 
       final remainingDrafts = await draftRepository.loadDrafts(
@@ -1016,7 +1072,7 @@ void main() {
       await tester.tap(find.textContaining('Keep Point'));
       await _pumpTestAnimation(tester);
 
-      expect(find.text('Your drafts'), findsNothing);
+      expect(find.text('Resume a draft?'), findsNothing);
       expect(find.text('9'), findsOneWidget);
     });
   });
@@ -1165,17 +1221,6 @@ Future<void> _submitValidEvent(WidgetTester tester) async {
 
   await _enterCreateEventText(tester, CreateEventFormKeys.capacity, '18');
   await _enterCreateEventText(tester, CreateEventFormKeys.price, '249.5');
-  final cohortCapsToggle = find.byKey(
-    CreateEventFormKeys.cohortCapsToggle,
-    skipOffstage: false,
-  );
-  await tester.ensureVisible(cohortCapsToggle);
-  await tester.pump();
-  final cohortCapsTile = tester.widget<SwitchListTile>(cohortCapsToggle);
-  cohortCapsTile.onChanged?.call(true);
-  await _pumpTestAnimation(tester);
-  await _enterCreateEventText(tester, CreateEventFormKeys.maxMen, '9');
-  await _enterCreateEventText(tester, CreateEventFormKeys.maxWomen, '9');
   await _enterCreateEventText(tester, CreateEventFormKeys.minAge, '21');
   await _enterCreateEventText(tester, CreateEventFormKeys.maxAge, '35');
   await _pumpTestAnimation(tester);
@@ -1203,7 +1248,7 @@ Future<void> _pickMapPoint(WidgetTester tester) async {
 
 Future<void> _fillBasicsStep(WidgetTester tester) async {
   await _enterCreateEventText(tester, CreateEventFormKeys.distance, '7.5');
-  await tester.tap(find.text('MODERATE'));
+  await _tapCreateEventChip(tester, 'Moderate');
   await _enterCreateEventText(
     tester,
     CreateEventFormKeys.description,
@@ -1227,7 +1272,17 @@ Future<void> _enterCreateEventText(
 }
 
 Future<void> _tapActivityKind(WidgetTester tester, String label) async {
-  final finder = find.text(label, skipOffstage: false);
+  await _tapCreateEventChip(tester, label);
+}
+
+Future<void> _tapCreateEventChip(WidgetTester tester, String label) async {
+  final finder = find.byWidgetPredicate(
+    (widget) =>
+        (widget is SelectChip && widget.label == label) ||
+        (widget is CatchChip && widget.label == label),
+    description: 'selectable chip labeled $label',
+    skipOffstage: false,
+  );
   await tester.ensureVisible(finder);
   await tester.tap(finder);
   await _pumpTestAnimation(tester);
@@ -1311,7 +1366,7 @@ Finder _hostManageScrollable() => find
 
 Finder _dialogAction(String label) {
   return find.descendant(
-    of: find.byType(AlertDialog),
-    matching: find.text(label),
+    of: find.byType(Dialog),
+    matching: find.widgetWithText(CatchButton, label),
   );
 }

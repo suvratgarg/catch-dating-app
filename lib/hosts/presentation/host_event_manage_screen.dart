@@ -14,10 +14,11 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
@@ -161,78 +162,93 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
 
     return Scaffold(
       backgroundColor: t.bg,
-      body: SafeArea(
-        child: ListView(
-          key: const Key('host_event_manage_scroll_view'),
-          padding: CatchInsets.pageBodyTight,
+      appBar: CatchTopBar(
+        showBackButton: true,
+        onBack: onBackToSuccess,
+        border: true,
+        height: CatchLayout.topBarHeight + CatchSpacing.s4,
+        titleWidget: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                IconBtn(
-                  onTap: onBackToSuccess,
-                  child: Icon(
-                    CatchIcons.arrowBackIosNewRounded,
-                    size: 18,
-                    color: t.ink,
-                  ),
-                ),
-                gapW12,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'HOST MANAGE',
-                        style: CatchTextStyles.kicker(context, color: t.ink3),
-                      ),
-                      Text(event.title, style: CatchTextStyles.titleL(context)),
-                    ],
-                  ),
-                ),
-              ],
+            Text(
+              'HOST MANAGE',
+              style: CatchTextStyles.kicker(context, color: t.ink3),
             ),
-            gapH18,
-            _HostManageSectionPicker(
+            gapH2,
+            Text(
+              event.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.titleL(context, color: t.ink),
+            ),
+          ],
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(CatchSpacing.s12),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.s5,
+              CatchSpacing.s0,
+              CatchSpacing.s5,
+              CatchSpacing.s2,
+            ),
+            child: _HostManageSectionPicker(
               selectedSection: _selectedSection,
               onChanged: (section) {
                 setState(() => _selectedSection = section);
                 widget.onSectionChanged?.call(section);
               },
             ),
-            gapH20,
-            if (event.isFull) ...[
-              CatchSurface(
-                padding: CatchInsets.content,
-                backgroundColor: t.ink,
-                borderWidth: 0,
-                child: Row(
-                  children: [
-                    Icon(
-                      CatchIcons.lockRounded,
-                      color: t.surface,
-                      size: CatchIcon.md,
-                    ),
-                    gapW10,
-                    Text(
-                      'FULL',
-                      style: CatchTextStyles.sectionTitle(
+          ),
+        ),
+      ),
+      body: ListView(
+        key: const Key('host_event_manage_scroll_view'),
+        padding: CatchInsets.pageBodyUnderHeader,
+        children: [
+          if (event.isFull) ...[
+            CatchSurface(
+              padding: const EdgeInsets.symmetric(
+                horizontal: CatchSpacing.s4,
+                vertical: CatchSpacing.s3,
+              ),
+              backgroundColor: t.ink,
+              radius: CatchRadius.md,
+              borderWidth: 0,
+              child: Row(
+                children: [
+                  Icon(
+                    CatchIcons.lockRounded,
+                    color: t.surface,
+                    size: CatchIcon.md,
+                  ),
+                  gapW10,
+                  Expanded(
+                    child: Text(
+                      'FULL - CAPACITY REACHED',
+                      style: CatchTextStyles.monoLabel(
                         context,
                         color: t.surface,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  Text(
+                    'WAITLIST OPEN',
+                    style: CatchTextStyles.badge(context, color: t.ink3),
+                  ),
+                ],
               ),
-              gapH12,
-            ],
-            ..._selectedSectionChildren(
-              club: club,
-              event: event,
-              hasKnownActivity: hasKnownActivity,
-              onDeleted: onBackToSuccess,
             ),
+            gapH12,
           ],
-        ),
+          ..._selectedSectionChildren(
+            club: club,
+            event: event,
+            hasKnownActivity: hasKnownActivity,
+            onDeleted: onBackToSuccess,
+          ),
+        ],
       ),
     );
   }
@@ -309,19 +325,13 @@ class _HostManageSectionPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSegmentedControl<HostEventManageSection>(
+    return CatchOptionGroup<HostEventManageSection>(
+      options: [
+        for (final section in HostEventManageSection.values)
+          CatchOption(value: section, label: section.label),
+      ],
       selected: selectedSection,
       onChanged: onChanged,
-      expanded: true,
-      style: CatchSegmentedControlStyle.surface,
-      segments: [
-        for (final section in HostEventManageSection.values)
-          CatchSegment(
-            value: section,
-            label: section.label,
-            icon: section.icon,
-          ),
-      ],
     );
   }
 }
@@ -332,14 +342,6 @@ extension on HostEventManageSection {
       HostEventManageSection.setup => 'Setup',
       HostEventManageSection.live => 'Live',
       HostEventManageSection.report => 'Report',
-    };
-  }
-
-  IconData get icon {
-    return switch (this) {
-      HostEventManageSection.setup => CatchIcons.tuneRounded,
-      HostEventManageSection.live => CatchIcons.playCircleOutlineRounded,
-      HostEventManageSection.report => CatchIcons.insightsOutlined,
     };
   }
 }
@@ -770,7 +772,10 @@ Future<_InviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
           final label = labelController.text.trim();
           final source = sourceController.text.trim();
           return AlertDialog(
-            title: const Text('New invite link'),
+            title: Text(
+              'New invite link',
+              style: CatchTextStyles.sectionTitle(context),
+            ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -970,14 +975,13 @@ class _HostEventActionsCard extends ConsumerWidget {
   Future<void> _confirmCancelEvent(BuildContext context, WidgetRef ref) async {
     final confirmed = await showCatchAdaptiveDialog<bool>(
       context: context,
-      title: 'Cancel published event?',
-      message: hasKnownActivity
-          ? 'Booked and waitlisted attendees will be notified. Attendance, payment, and review history will stay attached to this event.'
-          : 'This removes the event from upcoming schedules while keeping a history record. If it was created by mistake and has no activity, you can delete it instead.',
+      title: 'Cancel this event?',
+      message:
+          'Cancelling removes it from schedules but keeps attendee, payment, and history records. Attendees are notified and refunded per your cancellation policy.',
       actions: const [
         CatchDialogAction(label: 'Keep event', value: false, isDefault: true),
         CatchDialogAction(
-          label: 'Cancel published event',
+          label: 'Cancel event',
           value: true,
           isDestructive: true,
         ),

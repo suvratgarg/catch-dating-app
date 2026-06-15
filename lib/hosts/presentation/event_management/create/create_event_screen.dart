@@ -724,8 +724,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       title: 'Unsaved changes',
       message: 'You have unsaved changes. Would you like to save a draft?',
       actions: const [
-        CatchDialogAction(label: 'Discard', value: false, isDestructive: true),
-        CatchDialogAction(label: 'Save Draft', value: true, isDefault: true),
+        CatchDialogAction(label: 'Discard', value: false),
+        CatchDialogAction(label: 'Save draft', value: true, isDefault: true),
       ],
     ).then((save) async {
       if (!mounted) return;

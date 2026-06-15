@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_card.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_tile.dart';
 import 'package:flutter/material.dart';
@@ -35,12 +35,14 @@ class ProfileInfoSection extends StatelessWidget {
     this.title,
     this.subtitle,
     this.grouped = false,
+    this.first = false,
   });
 
   final List<ProfileInfoEntry> entries;
   final String? title;
   final String? subtitle;
   final bool grouped;
+  final bool first;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +81,7 @@ class ProfileInfoSection extends StatelessWidget {
         tiles.add(
           Divider(
             height: 1,
-            indent: 36,
+            indent: CatchSpacing.s8,
             color: CatchTokens.of(
               context,
             ).line.withValues(alpha: CatchOpacity.profileInfoDivider),
@@ -90,10 +92,11 @@ class ProfileInfoSection extends StatelessWidget {
 
     final tileList = Column(children: tiles);
     if (grouped && title != null) {
-      return CatchSectionCard(
-        title: title,
-        subtitle: subtitle,
-        headerBodyGap: CatchSpacing.s1,
+      return CatchDesignSection(
+        kicker: title!,
+        count: subtitle,
+        first: first,
+        bodyGap: CatchSpacing.micro10,
         child: tileList,
       );
     }

@@ -18,7 +18,7 @@ class ChatNewMatchesRail extends StatelessWidget {
   Widget build(BuildContext context) {
     final isHostApp = AppConfig.appRole.isHost;
     return CatchHorizontalRail(
-      title: isHostApp ? 'New host inquiries' : 'New matches',
+      title: isHostApp ? 'New attendee queries' : 'New matches',
       itemCount: matches.length,
       itemBuilder: (context, index) {
         final preview = matches[index];

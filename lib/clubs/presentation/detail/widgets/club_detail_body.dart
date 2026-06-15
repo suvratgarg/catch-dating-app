@@ -14,7 +14,9 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -61,8 +63,12 @@ class ClubDetailBody extends StatelessWidget {
         ? Routes.hostAppEventDetailScreen.name
         : Routes.eventDetailScreen.name;
     final showMembershipControls = isAuthenticated && !isHost && !isHostApp;
-    const contentGap = SizedBox(height: CatchLayout.detailScreenContentGap);
     const sectionGap = SizedBox(height: CatchLayout.detailScreenSectionGap);
+    final tags = visibleClubTags(club, limit: 6);
+    final hasContact =
+        club.instagramHandle != null ||
+        club.phoneNumber != null ||
+        club.email != null;
 
     return ColoredBox(
       color: t.surface,
@@ -79,35 +85,65 @@ class ClubDetailBody extends StatelessWidget {
             sliver: SliverList.list(
               children: [
                 StatsStrip(club: club, upcomingCount: upcoming.length),
-                contentGap,
-                _ClubHostSection(
-                  club: club,
-                  canViewProfile: false,
-                  canMessageHost: isAuthenticated && !isHostApp,
-                  currentUid: uid,
+                CatchSectionStack(
+                  padding: const EdgeInsets.only(top: CatchSpacing.screenPt),
+                  gap: 0,
+                  children: [
+                    CatchDesignSection(
+                      kicker: 'Your hosts',
+                      count: club.displayHostProfiles.length,
+                      first: true,
+                      child: _ClubHostSection(
+                        club: club,
+                        canViewProfile: false,
+                        canMessageHost: isAuthenticated && !isHostApp,
+                        currentUid: uid,
+                      ),
+                    ),
+                    CatchDesignSection(
+                      kicker: 'About',
+                      child: Text(
+                        club.description,
+                        style: CatchTextStyles.bodyLead(context, color: t.ink),
+                      ),
+                    ),
+                    if (tags.isNotEmpty)
+                      CatchDesignSection(
+                        kicker: 'What we do',
+                        child: ClubTagWrap(tags: tags, uppercase: false),
+                      ),
+                    if (club.clubPhotos.isNotEmpty)
+                      CatchDesignSection(
+                        kicker: 'From the club',
+                        child: _ClubPhotoStrip(club: club),
+                      ),
+                    if (hasContact)
+                      CatchDesignSection(
+                        kicker: 'Get in touch',
+                        child: _ClubContactSection(
+                          club: club,
+                          showTitle: false,
+                        ),
+                      ),
+                    if (showMembershipControls)
+                      CatchDesignSection(
+                        kicker: 'Membership',
+                        child: MembershipButton(
+                          clubId: club.id,
+                          isMember: isMember,
+                          isMutating: isMutating,
+                          pushNotificationsEnabled:
+                              clubPushNotificationsEnabled,
+                          isPushMutating: isClubPushMutating,
+                        ),
+                      ),
+                    if (!isAuthenticated)
+                      CatchDesignSection(
+                        kicker: 'Join Catch',
+                        child: _GuestPrompt(club: club),
+                      ),
+                  ],
                 ),
-                contentGap,
-                Text(
-                  club.description,
-                  style: CatchTextStyles.bodyLead(context, color: t.ink2),
-                ),
-                if (club.instagramHandle != null ||
-                    club.phoneNumber != null ||
-                    club.email != null) ...[
-                  contentGap,
-                  _ClubContactSection(club: club),
-                ],
-                if (showMembershipControls) ...[
-                  contentGap,
-                  MembershipButton(
-                    clubId: club.id,
-                    isMember: isMember,
-                    isMutating: isMutating,
-                    pushNotificationsEnabled: clubPushNotificationsEnabled,
-                    isPushMutating: isClubPushMutating,
-                  ),
-                ],
-                if (!isAuthenticated) ...[contentGap, _GuestPrompt(club: club)],
                 sectionGap,
               ],
             ),
@@ -276,12 +312,15 @@ class _ClubHostRow extends StatelessWidget {
         ),
         if (onMessage != null) ...[
           gapW8,
-          IconButton.filledTonal(
-            tooltip: 'Message host',
-            onPressed: onMessage,
-            icon: Icon(
-              CatchIcons.chatBubbleOutlineRounded,
-              size: CatchIcon.control,
+          Tooltip(
+            message: 'Message host',
+            child: IconBtn(
+              onTap: onMessage,
+              child: Icon(
+                CatchIcons.chatBubbleOutlineRounded,
+                size: CatchIcon.control,
+                color: t.primary,
+              ),
             ),
           ),
         ],
@@ -299,9 +338,10 @@ class _ClubHostRow extends StatelessWidget {
 }
 
 class _ClubContactSection extends ConsumerWidget {
-  const _ClubContactSection({required this.club});
+  const _ClubContactSection({required this.club, this.showTitle = true});
 
   final Club club;
+  final bool showTitle;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -314,8 +354,10 @@ class _ClubContactSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionHeader(title: 'Contact', heavy: true),
-          gapH12,
+          if (showTitle) ...[
+            const SectionHeader(title: 'Contact', heavy: true),
+            gapH12,
+          ],
           if (club.instagramHandle != null)
             _ContactRow(
               icon: CatchIcons.alternateEmailRounded,
@@ -395,6 +437,64 @@ class _ContactRow extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ClubPhotoStrip extends StatelessWidget {
+  const _ClubPhotoStrip({required this.club});
+
+  final Club club;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final photos = club.clubPhotos.take(3).toList();
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            for (var index = 0; index < photos.length; index++) ...[
+              Expanded(
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(CatchRadius.infoTile),
+                    child: ColoredBox(
+                      color: t.primarySoft,
+                      child: Image.network(
+                        photos[index].thumbnailOrUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => Icon(
+                          CatchIcons.groupsOutlined,
+                          color: t.ink2,
+                          size: CatchIcon.lg,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              if (index != photos.length - 1) gapW8,
+            ],
+          ],
+        ),
+        gapH8,
+        Row(
+          children: [
+            Text(
+              'FROM THE CLUB',
+              style: CatchTextStyles.monoLabelS(context, color: t.ink),
+            ),
+            const Spacer(),
+            Text(
+              '${club.clubPhotos.length} PHOTOS',
+              style: CatchTextStyles.monoLabelS(context, color: t.ink3),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

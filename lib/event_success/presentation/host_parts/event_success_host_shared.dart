@@ -11,18 +11,13 @@ class _EventSuccessTabPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
-      children: [
+    return CatchOptionGroup<EventSuccessHostTab>(
+      options: [
         for (final tab in EventSuccessHostTab.values)
-          CatchChip(
-            label: tab.label,
-            active: selectedTab == tab,
-            icon: Icon(tab.icon),
-            onTap: () => onChanged(tab),
-          ),
+          CatchOption(value: tab, label: tab.label),
       ],
+      selected: selectedTab,
+      onChanged: onChanged,
     );
   }
 }
@@ -33,14 +28,6 @@ extension on EventSuccessHostTab {
       EventSuccessHostTab.setup => 'Setup',
       EventSuccessHostTab.live => 'Live',
       EventSuccessHostTab.report => 'Report',
-    };
-  }
-
-  IconData get icon {
-    return switch (this) {
-      EventSuccessHostTab.setup => CatchIcons.tuneRounded,
-      EventSuccessHostTab.live => CatchIcons.playCircleOutlineRounded,
-      EventSuccessHostTab.report => CatchIcons.insightsOutlined,
     };
   }
 }

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -74,7 +75,7 @@ void main() {
     await tester.tap(find.byKey(SettingsKeys.weeklyDigestSwitch));
     await pumpFeatureUi(tester);
 
-    final weeklyDigestSwitch = tester.widget<Switch>(
+    final weeklyDigestSwitch = tester.widget<CatchToggle>(
       find.byKey(SettingsKeys.weeklyDigestSwitch),
     );
     expect(weeklyDigestSwitch.value, isFalse);
@@ -138,6 +139,8 @@ void main() {
     expect(find.byKey(SettingsKeys.eventSuccessManualQaRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.signOutRow), findsOneWidget);
 
+    await tester.ensureVisible(find.byKey(SettingsKeys.signOutRow));
+    await tester.pump();
     await tester.tap(find.byKey(SettingsKeys.signOutRow));
     await pumpFeatureUi(tester);
 

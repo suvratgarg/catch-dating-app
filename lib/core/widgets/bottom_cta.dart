@@ -46,6 +46,7 @@ class BottomCTA extends StatelessWidget {
     this.isLoading = false,
     this.backgroundColor,
     this.dividerColor,
+    this.buttonAccentColor,
   });
 
   final String label;
@@ -59,6 +60,7 @@ class BottomCTA extends StatelessWidget {
   final bool isLoading;
   final Color? backgroundColor;
   final Color? dividerColor;
+  final Color? buttonAccentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +91,7 @@ class BottomCTA extends StatelessWidget {
                     size: CatchButtonSize.lg,
                     isLoading: isLoading,
                     fullWidth: true,
+                    accentColor: buttonAccentColor,
                   ),
                 ),
               ],

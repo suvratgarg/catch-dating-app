@@ -1,4 +1,4 @@
-import {type CSSProperties, FormEvent, MouseEvent, useEffect, useMemo, useState} from "react";
+import {type CSSProperties, FormEvent, MouseEvent, useEffect, useMemo, useRef, useState} from "react";
 import {
   createMarketingEventId,
   getMarketingConsent,
@@ -20,6 +20,26 @@ import {
   User,
   watchClaimAuthState,
 } from "./firebase";
+import {
+  ActivityMark as CanonicalActivityMark,
+  CaptureCard as CanonicalCaptureCard,
+  EventActionCard,
+  type EventActionCardModel,
+  OwnerResponsePrompt,
+  ProfileStrength as CanonicalProfileStrength,
+  ProcessStatusPanel,
+  ProductModuleGrid,
+  PublicEventCard,
+  type PublicEventCardModel,
+  type PublicReviewCardModel,
+  PublicSearchBar,
+  type PublicSearchSuggestion,
+  ReviewSignalLane,
+  SectionHeader,
+  SiteFooter as CanonicalSiteFooter,
+  SiteHeader as CanonicalSiteHeader,
+  StatusBadge as CanonicalStatusBadge,
+} from "./components/site";
 import hostListingsJson from "./generated/hostListings.json";
 
 type PageKey = "home" | "host" | "organizers" | "listing" | "claim";
@@ -29,11 +49,43 @@ type StorePlatform = "ios" | "android";
 type OrganizerStatusFilter = "all" | "verified" | "claimed" | "unclaimed";
 type OrganizerSort = "relevance" | "reviews" | "rating" | "upcoming" | "confidence";
 type ClaimFlowStep = "listing" | "role" | "verify" | "submitted";
+type ClaimUrlState = "alreadyClaimed" | "pendingClaim" | "notFound" | null;
 type HostApplicationStep = "profile" | "event" | "policy" | "success" | "review";
+interface OrganizerDirectoryFilters {
+  query: string;
+  statusFilter: OrganizerStatusFilter;
+  formatFilter: string;
+  cityFilter: string;
+  upcomingOnly: boolean;
+  minRating: number;
+  sort: OrganizerSort;
+}
+interface OrganizerEventHighlight {
+  id: string;
+  title: string;
+  kind: string;
+  detail: string;
+  href: string;
+  activityToken: string;
+}
 type ClaimStatus = {
   message: string;
   tone: StatusTone;
 };
+
+const organizerStatusFilters: OrganizerStatusFilter[] = [
+  "all",
+  "verified",
+  "claimed",
+  "unclaimed",
+];
+const organizerSortOptions: OrganizerSort[] = [
+  "relevance",
+  "reviews",
+  "rating",
+  "upcoming",
+  "confidence",
+];
 
 interface StoreCta {
   platform: StorePlatform;
@@ -54,7 +106,15 @@ interface HostCreateStep {
   title: string;
   sub: string;
   captureId?: string;
-  fields: Array<{label: string; value: string}>;
+  outcome: string;
+  fields: Array<{
+    label: string;
+    value: string;
+    note?: string;
+    options?: string[];
+    activeOption?: string;
+    wide?: boolean;
+  }>;
 }
 
 interface ClaimVerificationMethod {
@@ -312,6 +372,17 @@ const hostSuccessModuleOptions = [
   "Post-event report",
 ];
 
+const canonicalHeaderNav = [
+  {href: "/#events", label: "Find events"},
+  {href: "/organizers/", label: "Organizers"},
+  {href: "/host/", label: "For hosts"},
+];
+
+const canonicalHeaderActions = [
+  {href: "/claim/", label: "Claim a listing", variant: "secondary" as const},
+  {href: "/host/#founding-hosts", label: "Host on Catch", variant: "primary" as const},
+];
+
 const initialHostApplicationDraft: HostApplicationDraft = {
   fullName: "",
   email: "",
@@ -480,7 +551,7 @@ const hostModules = [
   {
     label: "Movement",
     title: "Assignments",
-    body: "Balanced pairs, tables, pods, teams, and rotations with host-visible reasons and overrides.",
+    body: "Balanced pairs, tables, pods, teams, and rotations with aggregate-safe reasons and host overrides.",
   },
   {
     label: "Control",
@@ -518,6 +589,45 @@ const hostSurfaceCards = [
     label: "After",
     title: "Turn attendance into a private matching window.",
     body: "Guests can catch privately after they show up. Hosts see aggregate demand, matches, chats, and repeat attendance, never private target identities.",
+  },
+];
+
+const hostFillRoomModules = [
+  {
+    id: "paid-checkout",
+    label: "Paid checkout",
+    title: "Turn demand into a confirmed roster.",
+    body: "Checkout, payment state, refunds, and check-in all feed the same attendance record, so hosts are not reconciling tickets in another tool.",
+    facts: [
+      "Track checkout started, payment pending, paid, failed, and refunded states.",
+      "Keep paid guests, approved requests, and invite-link demand in one roster.",
+      "Use attendance proof before reviews, catches, matches, or reports count.",
+    ],
+    activityToken: "var(--catch-activity-dinner-accent)",
+  },
+  {
+    id: "waitlist-offers",
+    label: "Waitlist offers",
+    title: "Move the waitlist without overselling the room.",
+    body: "Timed offers let hosts release open spots, expire stale demand, and keep the public waitlist honest as people accept or decline.",
+    facts: [
+      "Offer active, accepted, declined, and expired states stay visible.",
+      "Hosts can fill cancellations without manual DMs or duplicate payment links.",
+      "Waitlist movement appears in the post-event report beside bookings.",
+    ],
+    activityToken: "var(--catch-activity-social-run-accent)",
+  },
+  {
+    id: "balanced-cohorts",
+    label: "Balanced cohorts",
+    title: "See who the room is missing before publish.",
+    body: "Cohort previews expose aggregate balance, format fit, and guest-mix gaps without revealing private catch targets or sensitive identities.",
+    facts: [
+      "Preview gender balance, group size, pace, skill, and repeat-attendee gaps.",
+      "Use cohorts for tables, teams, pods, courts, or rotations.",
+      "Keep host reporting aggregate-safe before, during, and after the event.",
+    ],
+    activityToken: "var(--catch-activity-racket-accent)",
   },
 ];
 
@@ -595,6 +705,11 @@ const activityMeta: Record<string, ActivityMeta> = {
     short: "OP",
   },
 };
+const publicEventSummaries = buildPublicEventSummaries(hostListings);
+const publicSearchSuggestions = buildPublicSearchSuggestions(
+  hostListings,
+  publicEventSummaries
+);
 
 const claimUnlocks = [
   "Respond to public reviews",
@@ -610,29 +725,38 @@ const hostCreateSteps: HostCreateStep[] = [
     id: "basics",
     title: "Event basics",
     sub: "Name, activity format, and interaction model",
+    captureId: "host-create-basics",
+    outcome: "Turns a rough idea into a reusable event shell.",
     fields: [
-      {label: "Event name", value: "Long table dinner"},
+      {label: "Event name", value: "Sunday Table Club", wide: true},
       {label: "Activity format", value: "Dinner"},
-      {label: "Interaction model", value: "Seated, conversation-first"},
+      {label: "Guest promise", value: "Conversation-first"},
+      {label: "Interaction model", value: "Seated table rotation", wide: true},
     ],
   },
   {
     id: "location",
     title: "Meeting location",
     sub: "Venue, meeting point, and arrival notes",
+    captureId: "host-create-location",
+    outcome: "Keeps the public listing simple while preserving exact arrival context.",
     fields: [
-      {label: "Venue", value: "Private table, address after booking"},
-      {label: "Meeting point", value: "Host greets guests at the door"},
-      {label: "Arrival note", value: "Seat together at 8:30 sharp"},
+      {label: "Location name", value: "Pali Village Cafe"},
+      {label: "Address release", value: "After booking"},
+      {label: "Meeting point", value: "Host greets guests at the door", wide: true},
+      {label: "Arrival note", value: "Seat together at 8:30 sharp", wide: true},
     ],
   },
   {
     id: "schedule",
-    title: "When",
+    title: "When is the event?",
     sub: "Date, time, and check-in window",
+    captureId: "host-create-schedule",
+    outcome: "Makes timing visible before bookings, reminders, and check-in begin.",
     fields: [
       {label: "Event date", value: "Sat 21 Jun"},
       {label: "Start time", value: "8:30 PM"},
+      {label: "Duration", value: "2 hours"},
       {label: "Check-in opens", value: "30 min before"},
     ],
   },
@@ -640,22 +764,35 @@ const hostCreateSteps: HostCreateStep[] = [
     id: "policy",
     title: "Event policy",
     sub: "Capacity, price, admission, waitlist, and cancellation",
-    captureId: "host-event-setup",
+    captureId: "host-create-policy",
+    outcome: "Protects the room composition before demand starts building.",
     fields: [
       {label: "Max attendees", value: "20"},
-      {label: "Admission", value: "Balanced request-to-join"},
-      {label: "Waitlist", value: "Timed offers after cancellations"},
+      {label: "Base price", value: "₹1,200"},
+      {
+        label: "Admission format",
+        value: "Balanced",
+        options: ["Open", "Invite", "Request", "Balanced"],
+        activeOption: "Balanced",
+        note: "Straight men and women are kept within one spot of each other.",
+        wide: true,
+      },
+      {label: "Demand pricing", value: "Step ₹200 · Max ₹1,800", wide: true},
+      {label: "Age range", value: "24 – 34"},
+      {label: "Cancellation", value: "Flexible · 24h"},
     ],
   },
   {
     id: "guide",
     title: "Live event guide",
     sub: "Event Success defaults for the night",
-    captureId: "host-live-console",
+    captureId: "host-create-guide",
+    outcome: "Prepares the live run-of-show before guests arrive.",
     fields: [
       {label: "Playbook", value: "Dinner facilitation"},
       {label: "Welcome script", value: "On"},
-      {label: "Timed partner rotations", value: "Every 25 min"},
+      {label: "Timed partner rotations", value: "Every 25 min", wide: true},
+      {label: "Wrap prompt", value: "Host help before guests leave", wide: true},
     ],
   },
 ];
@@ -722,33 +859,145 @@ const eventSuccessModules = [
 ];
 
 const hostComparisonRows = [
-  ["Publish and ticket an event", "yes", "yes", "yes", "partial", "partial", "no"],
-  ["Admission rules and request-to-join", "yes", "no", "no", "no", "partial", "partial"],
-  ["Waitlists with timed offers", "yes", "partial", "partial", "no", "no", "partial"],
-  ["Balanced ratios and cohorts", "yes", "no", "no", "no", "no", "partial"],
-  ["Door check-in and live console", "yes", "partial", "yes", "no", "no", "partial"],
-  ["Proof of real attendance", "yes", "no", "partial", "no", "no", "no"],
-  ["Private post-event matching", "yes", "no", "no", "no", "no", "no"],
-  ["Verified attendee reviews", "yes", "no", "no", "no", "no", "no"],
-  ["Public reputation listing", "yes", "partial", "partial", "partial", "no", "no"],
-  ["Post-event host report", "yes", "partial", "partial", "no", "no", "partial"],
+  ["Publish and ticket an event", "yes", "yes", "yes", "yes", "yes", "partial", "partial"],
+  ["App or marketplace discovery", "yes", "partial", "yes", "yes", "yes", "partial", "no"],
+  ["Admission rules and request-to-join", "yes", "partial", "partial", "partial", "partial", "partial", "partial"],
+  ["Waitlists with timed offers", "yes", "partial", "partial", "partial", "partial", "no", "partial"],
+  ["Balanced ratios and cohorts", "yes", "no", "no", "no", "no", "no", "partial"],
+  ["Door check-in and live host console", "yes", "partial", "yes", "partial", "partial", "no", "partial"],
+  ["Proof of real attendance", "yes", "partial", "partial", "partial", "partial", "no", "partial"],
+  ["Private post-event matching", "yes", "no", "no", "no", "no", "no", "no"],
+  ["Verified attendee reviews tied to organizer", "yes", "no", "no", "no", "no", "no", "no"],
+  ["Public organizer reputation listing", "yes", "partial", "partial", "partial", "partial", "partial", "no"],
+  ["Post-event host report", "yes", "partial", "yes", "partial", "partial", "no", "partial"],
 ];
 
 const hostComparisonColumns = [
   "Catch",
   "Luma",
   "Eventbrite",
-  "Instagram",
-  "WhatsApp + forms",
-  "Spreadsheets",
+  "District",
+  "BookMyShow",
+  "Instagram + WhatsApp",
+  "Forms + sheets",
+];
+
+const hostPreviewFormats = [
+  "Social runs",
+  "Dinners",
+  "Singles mixers",
+  "Game nights",
+  "Pub quizzes",
+  "Racket sports",
+  "Walks",
+  "Venue events",
+  "Custom formats",
+];
+
+const hostPreviewLoop = [
+  {
+    step: "Interest",
+    title: "People discover the event",
+    body: "Directory placement, organizer listings, invite links, and public event pages start demand in one place.",
+  },
+  {
+    step: "Admission",
+    title: "The host controls who gets in",
+    body: "Open booking, invite-only, request-to-join, balanced cohorts, waitlists, and timed offers feed one roster.",
+  },
+  {
+    step: "Attendance",
+    title: "Check-in proves who showed up",
+    body: "Ticketing, payment state, refund status, cancellation, and check-in stay attached to the attendee record.",
+  },
+  {
+    step: "Live",
+    title: "The room gets a run-of-show",
+    body: "Prompts, rotations, assignments, overrides, and safety controls help the host guide the actual event.",
+  },
+  {
+    step: "After",
+    title: "Follow-up opens with context",
+    body: "Guests privately catch people they met. Mutual catches become chats; hosts see aggregate reporting.",
+  },
+];
+
+const hostPreviewRosterStates = [
+  "Requested",
+  "Approved",
+  "Paid",
+  "Waitlisted",
+  "Offer sent",
+  "Checked in",
+  "Refunded",
+];
+
+const hostPreviewPaymentStates = [
+  "Checkout started",
+  "Payment pending",
+  "Paid",
+  "Cancelled",
+  "Refunded",
+  "Checked in",
+];
+
+const hostPreviewTrustItems = [
+  {
+    title: "Attendance-gated reputation",
+    body: "Reviews and post-event signals can be tied to real attendance instead of anonymous public noise.",
+  },
+  {
+    title: "Private catch targets stay private",
+    body: "Hosts see aggregate outcomes. They do not see who privately caught whom.",
+  },
+  {
+    title: "Moderation and disputes are part of the workflow",
+    body: "Reports, review disputes, cancellation handling, and refund paths sit beside the event record.",
+  },
+];
+
+const hostPreviewFaqs = [
+  {
+    question: "What does founding host access include?",
+    answer:
+      "Manual approval, 0% Catch platform fee for 24 months from your first published event, a public Founding Host badge, and increased visibility in Catch discovery.",
+  },
+  {
+    question: "Are there any fees?",
+    answer:
+      "Catch charges founding hosts 0% platform fee during the 24-month founding period. Standard payment processor fees still apply, e.g. Stripe, Razorpay, etc.",
+  },
+  {
+    question: "When does the 24-month lock start?",
+    answer: "It starts when your first Catch event is published.",
+  },
+  {
+    question: "What kinds of events can I host?",
+    answer:
+      "Runs, dinners, mixers, game nights, quizzes, racket sports, walks, venue events, and custom hosted social formats.",
+  },
+  {
+    question: "Can I control who gets in?",
+    answer:
+      "Yes. Catch supports open booking, invite-only events, request-to-join, waitlists, timed offers, capacity rules, and balanced cohorts.",
+  },
+  {
+    question: "Does Catch handle payments and refunds?",
+    answer:
+      "Yes. Payments, refunds, cancellations, and attendance are connected to the event roster.",
+  },
 ];
 
 function App() {
   const listing = getHostListingForPath(window.location.pathname);
   const fallbackPage = getPageKey();
   const page: PageKey = listing ? "listing" : fallbackPage;
+  const isHostPreview = window.location.pathname.startsWith("/host/preview");
   const captures = useMarketingCaptures();
   const meta = listing ? pageMetaForListing(listing) : pageMeta[fallbackPage];
+  const shellClassName = isHostPreview
+    ? `${pageClassFor(page)} host-preview-page`
+    : pageClassFor(page);
 
   useMarketingAnalytics(page);
   useDocumentMeta(meta);
@@ -756,9 +1005,11 @@ function App() {
   useHashScroll(page);
 
   return (
-    <div className={`page-shell ${pageClassFor(page)}`}>
+    <div className={`page-shell ${shellClassName}`}>
       {listing ? (
         <HostListingPage listing={listing} />
+      ) : isHostPreview ? (
+        <HostPreviewPage captures={captures} />
       ) : page === "host" ? (
         <HostPage captures={captures} />
       ) : page === "organizers" ? (
@@ -779,6 +1030,7 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
       <SiteHeader
         brandHref="#top"
         nav={[
+          {href: "#events", label: "Events"},
           {href: "#formats", label: "Formats"},
           {href: "#members", label: "Members"},
           {href: "#hosts", label: "Hosts"},
@@ -844,6 +1096,8 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
             </aside>
           </div>
         </section>
+
+        <HomeDiscoverySection />
 
         <section className="format-band" id="formats" aria-labelledby="formats-title">
           <div className="section-heading" data-reveal>
@@ -966,6 +1220,41 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
   );
 }
 
+function HomeDiscoverySection() {
+  const events = publicEventSummaries.slice(0, 3);
+  return (
+    <section className="home-discovery" id="events" aria-labelledby="home-events-title">
+      <SectionHeader
+        eyebrow="Find events"
+        id="home-events-title"
+        title="Start with what is happening, then choose who to meet."
+        body="The public website now treats events and organizer pages as one discovery loop: search the city, browse a real host page, then continue into the app when the event opens."
+        wide
+      />
+      <PublicSearchBar
+        cityName={events[0]?.city ?? "Your city"}
+        suggestions={publicSearchSuggestions}
+      />
+      <div className="public-event-grid">
+        {events.length ? (
+          events.map((event) => <PublicEventCard event={event} key={event.id} />)
+        ) : (
+          <div className="public-event-empty" data-reveal>
+            <strong>No public Catch events are projected yet.</strong>
+            <p>
+              Browse organizer pages while event projections are added to the
+              public website feed.
+            </p>
+            <a className="button button--ghost" href="/organizers/">
+              Open organizer directory
+            </a>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function FeaturedOrganizersSection() {
   const featured = hostListings
     .slice()
@@ -1032,18 +1321,7 @@ function ActivityMark({
   listing: HostListing;
   size?: "sm" | "md" | "lg";
 }) {
-  const activity = activityForListing(listing);
-  return (
-    <span
-      className={`activity-mark activity-mark--${size} ${
-        isUnclaimedListing(listing) ? "is-unclaimed" : ""
-      }`}
-      style={{"--activity": activity.token} as CSSProperties}
-      aria-hidden="true"
-    >
-      {listing.logo.text || activity.short}
-    </span>
-  );
+  return <CanonicalActivityMark listing={listing} activity={activityForListing(listing)} size={size} />;
 }
 
 function StatusBadge({
@@ -1053,40 +1331,29 @@ function StatusBadge({
   listing: HostListing;
   compact?: boolean;
 }) {
-  const verified = isVerifiedListing(listing);
-  const label = verified
-    ? compact ? "Verified" : "Verified on Catch"
-    : isUnclaimedListing(listing)
-      ? "Unclaimed"
-      : "Claimed";
   return (
-    <span className={`status-badge ${
-      verified ? "is-verified" : isUnclaimedListing(listing) ? "is-unclaimed" : "is-claimed"
-    }`}>
-      {label}
-    </span>
+    <CanonicalStatusBadge
+      status={listing.status}
+      isVerified={isVerifiedListing(listing)}
+      compact={compact}
+    />
   );
 }
 
 function ProfileStrength({value}: {value: number}) {
-  return (
-    <div className="profile-strength" aria-label={`Profile strength ${value}%`}>
-      <span>{value}%</span>
-      <i><b style={{width: `${value}%`}} /></i>
-    </div>
-  );
+  return <CanonicalProfileStrength value={value} />;
 }
 
 function AppDownloadCtas({
   placement,
   className,
+  initialStatus = "App Store and Play Store links are coming soon.",
 }: {
   placement: string;
   className?: string;
+  initialStatus?: string;
 }) {
-  const [status, setStatus] = useState(
-    "App Store and Play Store links are coming soon."
-  );
+  const [status, setStatus] = useState(initialStatus);
   const statusId = `${placement}-store-status`;
   const rootClassName = ["app-download-ctas", className].filter(Boolean).join(" ");
 
@@ -1145,7 +1412,7 @@ function StoreButton({
   const content = (
     <>
       <span className="store-button__mark" aria-hidden="true">
-        {store.shortLabel}
+        {store.platform === "ios" ? <AppleStoreMark /> : <GooglePlayStoreMark />}
       </span>
       <span>
         <span className="store-button__kicker">{store.kicker}</span>
@@ -1187,6 +1454,348 @@ function StoreButton({
   );
 }
 
+function AppleStoreMark() {
+  return (
+    <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+      <path
+        d="M16.48 12.74c.02-2.14 1.72-3.16 1.8-3.2-1.02-1.5-2.58-1.7-3.12-1.72-1.32-.14-2.6.78-3.27.78-.69 0-1.72-.76-2.83-.74-1.44.02-2.78.85-3.52 2.15-1.52 2.63-.39 6.5 1.07 8.63.73 1.04 1.58 2.2 2.7 2.16 1.09-.04 1.5-.69 2.82-.69 1.31 0 1.69.69 2.84.67 1.18-.02 1.92-1.05 2.62-2.1.84-1.2 1.17-2.39 1.18-2.45-.03-.01-2.26-.87-2.29-3.49Zm-2.18-6.32c.59-.74.99-1.74.88-2.76-.85.04-1.9.59-2.51 1.3-.55.64-1.04 1.68-.91 2.66.96.08 1.93-.48 2.54-1.2Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+function GooglePlayStoreMark() {
+  return (
+    <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+      <path
+        d="M4.5 3.7c-.26.28-.42.72-.42 1.28v14.04c0 .56.16 1 .42 1.28l7.7-8.3-7.7-8.3Z"
+        fill="currentColor"
+        opacity="0.86"
+      />
+      <path
+        d="m14.84 9.15-2.64 2.84 2.64 2.85 3.26-1.85c1.09-.62 1.09-1.36 0-1.98l-3.26-1.86Z"
+        fill="currentColor"
+      />
+      <path
+        d="m14.84 9.15-3.07-1.74-5.1-2.9 5.53 7.48 2.64-2.84Z"
+        fill="currentColor"
+        opacity="0.68"
+      />
+      <path
+        d="m6.67 19.49 5.1-2.9 3.07-1.75-2.64-2.85-5.53 7.5Z"
+        fill="currentColor"
+        opacity="0.68"
+      />
+    </svg>
+  );
+}
+
+function HostPreviewPage({captures}: {captures: Record<string, CaptureRecord>}) {
+  return (
+    <>
+      <SiteHeader
+        brandHref="/"
+        nav={[
+          {href: "#offer", label: "Offer"},
+          {href: "#formats", label: "Formats"},
+          {href: "#operating-loop", label: "Workflow"},
+          {href: "#create-flow", label: "Create flow"},
+          {href: "#founding-hosts", label: "Apply"},
+        ]}
+        ctaHref="#founding-hosts"
+        ctaLabel="Apply for founding host access"
+      />
+
+      <main id="top" className="host-preview">
+        <section className="host-preview-hero" aria-labelledby="host-preview-title">
+          <div className="host-preview-hero__media" aria-hidden="true">
+            <img
+              src="/assets/marketing/catch-hero-event.png"
+              alt=""
+            />
+          </div>
+          <div className="host-preview-hero__inner">
+            <div className="host-preview-hero__copy">
+              <h1 id="host-preview-title" data-reveal>
+                Host social events people actually want to join.
+              </h1>
+              <p data-reveal>
+                Catch gives hosts one place to publish events, manage admission,
+                take payment, run the room, and turn attendance into private
+                follow-up.
+              </p>
+              <div className="hero__actions" data-reveal>
+                <a
+                  className="button"
+                  href="#founding-hosts"
+                  onClick={() => trackCtaClick("host_preview_apply", "#founding-hosts")}
+                >
+                  Apply for founding host access
+                </a>
+                <a
+                  className="button button--ghost"
+                  href="#operating-loop"
+                  onClick={() => trackCtaClick("host_preview_workflow", "#operating-loop")}
+                >
+                  See how Catch works
+                </a>
+              </div>
+              <AppDownloadCtas
+                placement="host_preview_hero"
+                className="app-download-ctas--compact host-preview-hero__stores"
+                initialStatus="Download Catch on iOS or Android at launch."
+              />
+            </div>
+
+            <div className="host-preview-hero__product" data-reveal>
+              <div className="host-preview-console">
+                <div>
+                  <span>Host console</span>
+                  <strong>Sunday Table Club</strong>
+                </div>
+                <dl>
+                  <div>
+                    <dt>Admission</dt>
+                    <dd>Balanced request-to-join</dd>
+                  </div>
+                  <div>
+                    <dt>Roster</dt>
+                    <dd>Paid · waitlist · checked in</dd>
+                  </div>
+                  <div>
+                    <dt>After</dt>
+                    <dd>Reviews · catches · report</dd>
+                  </div>
+                </dl>
+              </div>
+              <PhoneCaptureFrame
+                id="host-live-console"
+                fallbackStep="Live console"
+                captures={captures}
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="host-preview-offer" id="offer" aria-labelledby="host-preview-offer-title">
+          <div className="host-preview-offer__card" data-reveal>
+            <div>
+              <h2 id="host-preview-offer-title">
+                Founding hosts pay 0% Catch platform fee for 24 months.
+              </h2>
+              <p>
+                Apply for manual approval. Your 24-month lock starts when your
+                first Catch event goes live. Standard payment processor fees
+                still apply, e.g. Stripe, Razorpay, etc.
+              </p>
+            </div>
+            <div className="host-preview-badge" aria-label="Founding Host badge preview">
+              <span>Founding</span>
+              <strong>Host</strong>
+            </div>
+          </div>
+          <div className="host-preview-offer__steps" data-reveal>
+            {["Apply", "Get approved", "Publish first event", "Lock begins"].map((item, index) => (
+              <div key={item}>
+                <span>0{index + 1}</span>
+                <strong>{item}</strong>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="host-preview-section" id="formats" aria-labelledby="host-preview-formats-title">
+          <div className="host-preview-section__head" data-reveal>
+            <h2 id="host-preview-formats-title">Built for hosted rooms, not one event type.</h2>
+            <p>
+              Catch is for the organizer who cares about the guest mix, the door,
+              the flow of the night, and what happens after people meet.
+            </p>
+          </div>
+          <div className="host-preview-format-rail" data-reveal>
+            {hostPreviewFormats.map((format) => (
+              <span key={format}>{format}</span>
+            ))}
+          </div>
+        </section>
+
+        <HostComparisonSection />
+
+        <section
+          className="host-preview-section host-preview-loop"
+          id="operating-loop"
+          aria-labelledby="host-preview-loop-title"
+        >
+          <div className="host-preview-section__head" data-reveal>
+            <h2 id="host-preview-loop-title">One event record, from interest to follow-up.</h2>
+            <p>
+              Ticketing, waitlist movement, check-in, live facilitation, reviews,
+              catches, matches, and reports stay connected to the same event.
+            </p>
+          </div>
+          <div className="host-preview-loop__grid">
+            {hostPreviewLoop.map((item, index) => (
+              <article data-reveal key={item.step}>
+                <span>0{index + 1}</span>
+                <div>
+                  <strong>{item.step}</strong>
+                  <h3>{item.title}</h3>
+                  <p>{item.body}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <div id="create-flow">
+          <CreateEventWalkthrough captures={captures} />
+        </div>
+
+        <section className="host-preview-section host-preview-product-split" id="admission" aria-labelledby="host-preview-admission-title">
+          <div className="host-preview-product-split__copy" data-reveal>
+            <h2 id="host-preview-admission-title">Shape demand before the room fills.</h2>
+            <p>
+              Use open booking, invite-only access, request-to-join, balanced
+              cohorts, capacity rules, and timed waitlist offers without moving
+              between forms, DMs, and spreadsheets.
+            </p>
+            <div className="host-preview-chip-row" aria-label="Roster states">
+              {hostPreviewRosterStates.map((state) => (
+                <span key={state}>{state}</span>
+              ))}
+            </div>
+          </div>
+          <div className="host-preview-roster" data-reveal>
+            {[
+              ["Maya", "Approved", "Paid"],
+              ["Rohan", "Requested", "Balanced wait"],
+              ["Ira", "Checked in", "Review eligible"],
+              ["Kabir", "Offer sent", "Expires 18:00"],
+              ["Naina", "Refunded", "Cancelled"],
+            ].map(([name, status, note]) => (
+              <div key={name}>
+                <strong>{name}</strong>
+                <span>{status}</span>
+                <small>{note}</small>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="host-preview-section host-preview-payments" aria-labelledby="host-preview-payments-title">
+          <div className="host-preview-section__head" data-reveal>
+            <h2 id="host-preview-payments-title">Ticketing, refunds, and check-in stay connected.</h2>
+            <p>
+              Catch keeps checkout, payment state, cancellation, refund status,
+              and attendance on the same roster, so hosts are not reconciling
+              guests across separate tools.
+            </p>
+          </div>
+          <div className="host-preview-payment-flow" data-reveal>
+            {hostPreviewPaymentStates.map((state) => (
+              <span key={state}>{state}</span>
+            ))}
+          </div>
+        </section>
+
+        <section className="host-preview-section host-preview-live" id="live" aria-labelledby="host-preview-live-title">
+          <div className="host-preview-section__head" data-reveal>
+            <h2 id="host-preview-live-title">Run the event from the host screen.</h2>
+            <p>
+              Check guests in, follow prompts, manage rotations, make overrides,
+              and keep safety controls close while the event is happening.
+            </p>
+          </div>
+          <div className="host-preview-live__grid">
+            <CaptureCard id="host-live-console" fallbackStep="Live" captures={captures} />
+            <div className="host-preview-live__modules" data-reveal>
+              {["Check-in", "Welcome script", "Prompt", "Rotation", "Override", "Safety"].map((module) => (
+                <span key={module}>{module}</span>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="host-preview-section host-preview-after" aria-labelledby="host-preview-after-title">
+          <div className="host-preview-section__head" data-reveal>
+            <h2 id="host-preview-after-title">Follow-up starts after attendance.</h2>
+            <p>
+              Guests can privately catch people they actually met. Mutual catches
+              become chats with shared event context. Hosts see aggregate signals,
+              not private interest.
+            </p>
+          </div>
+          <div className="capture-grid capture-grid--host">
+            <CaptureCard id="post-run-catch-window" fallbackStep="Catch window" captures={captures} />
+            <CaptureCard id="match-chat-context" fallbackStep="Match chat" captures={captures} />
+            <CaptureCard id="host-post-event-report" fallbackStep="Report" captures={captures} />
+          </div>
+        </section>
+
+        <section className="host-preview-section host-preview-trust" aria-labelledby="host-preview-trust-title">
+          <div className="host-preview-section__head" data-reveal>
+            <h2 id="host-preview-trust-title">Guardrails are part of the product.</h2>
+            <p>
+              The page should answer operational concerns before a host reaches
+              the application form.
+            </p>
+          </div>
+          <div className="host-preview-trust__grid">
+            {hostPreviewTrustItems.map((item) => (
+              <article data-reveal key={item.title}>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="host-preview-section host-preview-faq" aria-labelledby="host-preview-faq-title">
+          <div className="host-preview-section__head" data-reveal>
+            <h2 id="host-preview-faq-title">Questions hosts ask before switching tools.</h2>
+          </div>
+          <div className="host-preview-faq__list">
+            {hostPreviewFaqs.map((item) => (
+              <details key={item.question} data-reveal>
+                <summary>{item.question}</summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        <section
+          className="waitlist-section host-preview-apply"
+          id="founding-hosts"
+          aria-labelledby="host-preview-apply-title"
+        >
+          <div className="waitlist__intro" data-reveal>
+            <h2 id="host-preview-apply-title">Apply once. Publish when approved.</h2>
+            <p>
+              Approved founding hosts get the public badge, increased discovery
+              visibility, and the 24-month platform-fee lock when their first
+              Catch event goes live.
+            </p>
+          </div>
+          <HostApplicationFlow />
+        </section>
+      </main>
+
+      <SiteFooter
+        brandHref="/"
+        body="Host-led social events with admission, payments, live facilitation, matching, and insight."
+        links={[
+          {href: "/host/", label: "Current host page"},
+          {href: "#offer", label: "Founding offer"},
+          {href: "#create-flow", label: "Create flow"},
+          {href: "#founding-hosts", label: "Apply"},
+        ]}
+      />
+    </>
+  );
+}
+
 function HostPage({captures}: {captures: Record<string, CaptureRecord>}) {
   return (
     <>
@@ -1194,6 +1803,7 @@ function HostPage({captures}: {captures: Record<string, CaptureRecord>}) {
         brandHref="/"
         nav={[
           {href: "#workflow", label: "Workflow"},
+          {href: "#fill-room", label: "Fill room"},
           {href: "#live", label: "Live mode"},
           {href: "#screens", label: "Screens"},
           {href: "/organizers/", label: "Organizers"},
@@ -1322,14 +1932,25 @@ function HostPage({captures}: {captures: Record<string, CaptureRecord>}) {
           </div>
         </section>
 
+        <section className="host-fill-room" id="fill-room" aria-labelledby="fill-room-title">
+          <SectionHeader
+            eyebrow="Fill the room"
+            id="fill-room-title"
+            title="Checkout, waitlist, and cohort controls belong in the same roster."
+            body="The mockup split these into concrete host promises. In production they should stay connected to the event record instead of becoming separate ticketing, spreadsheet, or DM workflows."
+            wide
+          />
+          <ProductModuleGrid modules={hostFillRoomModules} />
+        </section>
+
         <section className="proof-section proof-section--host" id="live">
           <div className="proof-section__copy" data-reveal>
             <span className="ui-label">Event Success</span>
             <h2>Live facilitation is built into the event flow.</h2>
             <p>
-              Every supported format can use the modules that fit its shape:
-              arrival moments, prompts, balanced assignments, rotations,
-              host overrides, reveals, private catches, feedback, and reports.
+              The live catalog is explicit: booking balance preview, attendance
+              and roster, welcome scripts, prompts, assignments, rotations,
+              private catches, feedback, and aggregate host reports.
             </p>
           </div>
 
@@ -1420,15 +2041,6 @@ function HostPage({captures}: {captures: Record<string, CaptureRecord>}) {
 }
 
 function OrganizerSearchPage() {
-  const initialQuery = new URLSearchParams(window.location.search).get("q") ?? "";
-  const [query, setQuery] = useState(initialQuery);
-  const [statusFilter, setStatusFilter] = useState<OrganizerStatusFilter>("all");
-  const [formatFilter, setFormatFilter] = useState("all");
-  const [cityFilter, setCityFilter] = useState("all");
-  const [upcomingOnly, setUpcomingOnly] = useState(false);
-  const [minRating, setMinRating] = useState(0);
-  const [sort, setSort] = useState<OrganizerSort>("relevance");
-  const normalizedQuery = query.trim().toLowerCase();
   const cityOptions = useMemo(
     () => [...new Set(hostListings.map((listing) => listing.city))].sort(),
     []
@@ -1437,19 +2049,56 @@ function OrganizerSearchPage() {
     () => [...new Set(hostListings.flatMap((listing) => listing.formats))].sort(),
     []
   );
+  const initialFilters = useMemo(
+    () => readOrganizerFiltersFromUrl(cityOptions, formatOptions),
+    [cityOptions, formatOptions]
+  );
+  const [query, setQuery] = useState(initialFilters.query);
+  const [statusFilter, setStatusFilter] =
+    useState<OrganizerStatusFilter>(initialFilters.statusFilter);
+  const [formatFilter, setFormatFilter] = useState(initialFilters.formatFilter);
+  const [cityFilter, setCityFilter] = useState(initialFilters.cityFilter);
+  const [upcomingOnly, setUpcomingOnly] = useState(initialFilters.upcomingOnly);
+  const [minRating, setMinRating] = useState(initialFilters.minRating);
+  const [sort, setSort] = useState<OrganizerSort>(initialFilters.sort);
+  const normalizedQuery = query.trim().toLowerCase();
+  const queryTerms = useMemo(
+    () => normalizedQuery.split(/\s+/).filter(Boolean),
+    [normalizedQuery]
+  );
+  const currentFilters: OrganizerDirectoryFilters = {
+    query,
+    statusFilter,
+    formatFilter,
+    cityFilter,
+    upcomingOnly,
+    minRating,
+    sort,
+  };
+
+  useEffect(() => {
+    const syncFromUrl = () => {
+      const next = readOrganizerFiltersFromUrl(cityOptions, formatOptions);
+      setQuery(next.query);
+      setStatusFilter(next.statusFilter);
+      setFormatFilter(next.formatFilter);
+      setCityFilter(next.cityFilter);
+      setUpcomingOnly(next.upcomingOnly);
+      setMinRating(next.minRating);
+      setSort(next.sort);
+    };
+    window.addEventListener("popstate", syncFromUrl);
+    return () => window.removeEventListener("popstate", syncFromUrl);
+  }, [cityOptions, formatOptions]);
+
+  useEffect(() => {
+    replaceOrganizerDirectoryUrl(currentFilters);
+  }, [cityFilter, formatFilter, minRating, query, sort, statusFilter, upcomingOnly]);
+
   const results = useMemo(() => {
-    const terms = normalizedQuery.split(/\s+/).filter(Boolean);
     const filtered = hostListings.filter((listing) => {
-      const haystack = [
-        listing.searchText,
-        listing.name,
-        listing.city,
-        listing.region,
-        listing.category,
-        listing.status,
-        ...(listing.formats ?? []),
-      ].filter(Boolean).join(" ").toLowerCase();
-      if (terms.length && !terms.every((term) => haystack.includes(term))) return false;
+      const haystack = organizerDirectorySearchText(listing);
+      if (queryTerms.length && !queryTerms.every((term) => haystack.includes(term))) return false;
       if (statusFilter === "verified" && !isVerifiedListing(listing)) return false;
       if (statusFilter === "claimed" && listing.status !== "claimed") return false;
       if (statusFilter === "unclaimed" && !isUnclaimedListing(listing)) return false;
@@ -1460,23 +2109,24 @@ function OrganizerSearchPage() {
       return true;
     });
     return filtered.slice().sort((a, b) => compareListings(a, b, sort));
-  }, [cityFilter, formatFilter, minRating, normalizedQuery, sort, statusFilter, upcomingOnly]);
+  }, [cityFilter, formatFilter, minRating, queryTerms, sort, statusFilter, upcomingOnly]);
   const verifiedCount = hostListings.filter(isVerifiedListing).length;
   const unclaimedCount = hostListings.filter(isUnclaimedListing).length;
+  const eventBackedCount = hostListings.filter(hasAnyEventSignal).length;
+  const claimableListings = hostListings.filter(isUnclaimedListing).slice(0, 3);
 
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const params = new URLSearchParams(window.location.search);
-    if (normalizedQuery) {
-      params.set("q", normalizedQuery);
-    } else {
-      params.delete("q");
-    }
-    const next = params.toString() ? `/organizers/?${params}` : "/organizers/";
-    window.history.replaceState(null, "", next);
+    replaceOrganizerDirectoryUrl(currentFilters);
     trackMarketingEvent("organizer_search_submitted", {
       query: normalizedQuery,
       result_count: results.length,
+      city_filter: cityFilter,
+      format_filter: formatFilter,
+      status_filter: statusFilter,
+      upcoming_only: upcomingOnly,
+      min_rating: minRating,
+      sort,
     });
   }
 
@@ -1488,7 +2138,7 @@ function OrganizerSearchPage() {
     setUpcomingOnly(false);
     setMinRating(0);
     setSort("relevance");
-    window.history.replaceState(null, "", "/organizers/");
+    replaceOrganizerDirectoryUrl(defaultOrganizerDirectoryFilters());
     trackMarketingEvent("organizer_search_filters_cleared", {});
   }
 
@@ -1518,11 +2168,13 @@ function OrganizerSearchPage() {
             <span><strong>{hostListings.length}</strong> profiles tracked</span>
             <span><strong>{verifiedCount}</strong> verified on Catch</span>
             <span><strong>{unclaimedCount}</strong> claimable seed pages</span>
+            <span><strong>{eventBackedCount}</strong> event-backed pages</span>
           </div>
           <form className="organizer-search-form" onSubmit={handleSearch} data-reveal>
             <label>
               Search organizers
               <input
+                name="q"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Try Sunday Table, Indore, run club, dinner"
@@ -1534,6 +2186,7 @@ function OrganizerSearchPage() {
             <label>
               Status
               <select
+                name="status"
                 value={statusFilter}
                 onChange={(event) => setStatusFilter(event.target.value as OrganizerStatusFilter)}
               >
@@ -1545,21 +2198,21 @@ function OrganizerSearchPage() {
             </label>
             <label>
               City
-              <select value={cityFilter} onChange={(event) => setCityFilter(event.target.value)}>
+              <select name="city" value={cityFilter} onChange={(event) => setCityFilter(event.target.value)}>
                 <option value="all">Any city</option>
                 {cityOptions.map((city) => <option key={city}>{city}</option>)}
               </select>
             </label>
             <label>
               Format
-              <select value={formatFilter} onChange={(event) => setFormatFilter(event.target.value)}>
+              <select name="format" value={formatFilter} onChange={(event) => setFormatFilter(event.target.value)}>
                 <option value="all">Any format</option>
                 {formatOptions.map((format) => <option key={format}>{format}</option>)}
               </select>
             </label>
             <label>
               Rating
-              <select value={minRating} onChange={(event) => setMinRating(Number(event.target.value))}>
+              <select name="rating" value={minRating} onChange={(event) => setMinRating(Number(event.target.value))}>
                 <option value={0}>Any rating</option>
                 <option value={4}>4.0+</option>
                 <option value={4.5}>4.5+</option>
@@ -1568,13 +2221,14 @@ function OrganizerSearchPage() {
             <button
               className={`filter-chip-button ${upcomingOnly ? "is-on" : ""}`}
               type="button"
+              aria-pressed={upcomingOnly}
               onClick={() => setUpcomingOnly((current) => !current)}
             >
               Has upcoming events
             </button>
             <label>
               Sort
-              <select value={sort} onChange={(event) => setSort(event.target.value as OrganizerSort)}>
+              <select name="sort" value={sort} onChange={(event) => setSort(event.target.value as OrganizerSort)}>
                 <option value="relevance">Relevance</option>
                 <option value="reviews">Most reviewed</option>
                 <option value="rating">Rating</option>
@@ -1594,10 +2248,20 @@ function OrganizerSearchPage() {
           </div>
         </section>
 
+        <DirectoryClaimPressureStrip
+          claimableListings={claimableListings}
+          eventBackedCount={eventBackedCount}
+          unclaimedCount={unclaimedCount}
+        />
+
         <section className="organizer-results" aria-label="Organizer results">
           {results.length ? (
             results.map((listing) => (
-              <OrganizerResultCard listing={listing} key={listing.id} />
+              <OrganizerResultCard
+                listing={listing}
+                key={listing.id}
+                queryTerms={queryTerms}
+              />
             ))
           ) : (
             <div className="empty-results" data-reveal>
@@ -1625,10 +2289,56 @@ function OrganizerSearchPage() {
   );
 }
 
+function DirectoryClaimPressureStrip({
+  claimableListings,
+  eventBackedCount,
+  unclaimedCount,
+}: {
+  claimableListings: HostListing[];
+  eventBackedCount: number;
+  unclaimedCount: number;
+}) {
+  return (
+    <section className="directory-claim-pressure" aria-labelledby="directory-claim-title">
+      <div className="directory-claim-pressure__copy" data-reveal>
+        <span className="ui-label">Claim pressure</span>
+        <h2 id="directory-claim-title">Public pages work harder when the owner steps in.</h2>
+        <p>
+          Seed pages expose source evidence and proof gaps. Claimed pages can add
+          official details, publish Catch events, separate verified attendee
+          reviews, and respond as the host.
+        </p>
+        <div className="directory-claim-pressure__stats">
+          <span><strong>{unclaimedCount}</strong> claimable pages</span>
+          <span><strong>{eventBackedCount}</strong> event-backed pages</span>
+        </div>
+      </div>
+      <div className="directory-claim-pressure__list" data-reveal>
+        {claimableListings.map((listing) => (
+          <a href={claimHrefForListing(listing)} key={listing.id}>
+            <ActivityMark listing={listing} size="sm" />
+            <span>
+              <strong>{listing.name}</strong>
+              <small>{listing.city} · {listing.missingEvidence.length} proof gaps</small>
+            </span>
+            <StatusBadge listing={listing} compact />
+          </a>
+        ))}
+        <a className="directory-claim-pressure__cta" href="/claim/">
+          Open claim flow
+        </a>
+      </div>
+    </section>
+  );
+}
+
 function ClaimPage() {
+  const claimLookup = getClaimListingLookupFromUrl();
   const preselectedListing = getClaimListingFromUrl();
+  const claimUrlState = claimStateForUrl(claimLookup, preselectedListing);
+  const urlRequestId = getClaimRequestIdFromUrl();
   const [step, setStep] = useState<ClaimFlowStep>(
-    preselectedListing ? "role" : "listing"
+    claimUrlState ? "listing" : preselectedListing ? "role" : "listing"
   );
   const [listing, setListing] = useState<HostListing | null>(preselectedListing);
   const [query, setQuery] = useState(preselectedListing?.name ?? "");
@@ -1677,6 +2387,7 @@ function ClaimPage() {
   const selectedMethod =
     claimVerificationMethods.find((method) => method.id === verificationMethod) ??
     claimVerificationMethods[0];
+  const activeRequestId = requestId ?? urlRequestId;
   const canContinueRole =
     Boolean(listing) &&
     requesterName.trim().length >= 2 &&
@@ -1819,7 +2530,15 @@ function ClaimPage() {
           </div>
         </section>
 
-        <form className="claim-flow__workspace" onSubmit={handleClaimSubmit}>
+        {claimUrlState ? (
+          <ClaimUrlStatePanel
+            state={claimUrlState}
+            listing={listing}
+            lookup={claimLookup}
+            requestId={activeRequestId}
+          />
+        ) : (
+          <form className="claim-flow__workspace" onSubmit={handleClaimSubmit}>
           <nav className="operational-step-rail" aria-label="Claim progress">
             {claimFlowSteps.map((item, index) => (
               <button
@@ -2077,18 +2796,19 @@ function ClaimPage() {
 
             {step === "submitted" && listing ? (
               <div className="claim-flow__stage">
-                <div className="submitted-panel">
-                  <span className="submitted-panel__mark">✓</span>
-                  <div>
-                    <span className="ui-label">Claim in review</span>
-                    <h2>{listing.name} is waiting for owner approval.</h2>
-                    <p>
-                      {requestId ?
-                        `Request ${requestId} is pending. Catch will verify ownership before attaching host tools.` :
-                        "Catch will verify ownership before attaching host tools."}
-                    </p>
-                  </div>
-                </div>
+                <ProcessStatusPanel
+                  mark="✓"
+                  eyebrow="Claim in review"
+                  title={`${listing.name} is waiting for owner approval.`}
+                  body={requestId ?
+                    `Request ${requestId} is pending. Catch will verify ownership before attaching host tools.` :
+                    "Catch will verify ownership before attaching host tools, review responses, event publishing, or analytics."}
+                  items={claimWhileYouWaitItems(listing)}
+                  actions={[
+                    {href: listing.path, label: "View public listing", variant: "secondary"},
+                    {href: "/host/", label: "Explore host tools", variant: "primary"},
+                  ]}
+                />
                 <div className="owner-unlock-board">
                   {[
                     ["Profile", "Fix source details, description, photos, and event categories."],
@@ -2102,14 +2822,6 @@ function ClaimPage() {
                     </article>
                   ))}
                 </div>
-                <div className="flow-actions">
-                  <a className="button button--ghost" href={listing.path}>
-                    View public listing
-                  </a>
-                  <a className="button" href="/host/">
-                    Explore host tools
-                  </a>
-                </div>
               </div>
             ) : null}
 
@@ -2117,7 +2829,8 @@ function ClaimPage() {
               {status.message}
             </p>
           </section>
-        </form>
+          </form>
+        )}
       </main>
 
       <SiteFooter
@@ -2133,14 +2846,131 @@ function ClaimPage() {
   );
 }
 
-function OrganizerResultCard({listing}: {listing: HostListing}) {
+function ClaimUrlStatePanel({
+  state,
+  listing,
+  lookup,
+  requestId,
+}: {
+  state: ClaimUrlState;
+  listing: HostListing | null;
+  lookup: string | null;
+  requestId: string | null;
+}) {
+  if (state === "alreadyClaimed" && listing) {
+    return (
+      <ProcessStatusPanel
+        mark="C"
+        eyebrow="Already claimed"
+        title={`${listing.name} already has owner context.`}
+        body="Catch does not open a second owner request from this public claim flow. Use the public profile, events, or organizer search instead."
+        items={[
+          {
+            title: "Owner tools stay gated",
+            body: "Edits, event publishing, review responses, and reports stay attached to the verified owner account.",
+          },
+          {
+            title: "Public profile remains visible",
+            body: "Members can still inspect source details, Catch events, reviews, and event outcomes from the profile.",
+          },
+          {
+            title: "Need a different organizer?",
+            body: "Search unclaimed seed pages or start fresh so Catch can review a new host packet.",
+          },
+        ]}
+        actions={[
+          {href: listing.path, label: "View public listing", variant: "primary"},
+          {href: "/claim/", label: "Search claimable pages", variant: "secondary"},
+          {href: "/host/#founding-hosts", label: "Start fresh", variant: "secondary"},
+        ]}
+      />
+    );
+  }
+
+  if (state === "pendingClaim") {
+    return (
+      <ProcessStatusPanel
+        mark="..."
+        eyebrow="Claim in review"
+        title={listing ? `${listing.name} is already in owner review.` : "This claim is in owner review."}
+        body={requestId ?
+          `Request ${requestId} is pending. Catch will verify ownership before attaching host tools.` :
+          "Catch will verify ownership before attaching host tools, review responses, event publishing, or analytics."}
+        items={claimWhileYouWaitItems(listing)}
+        actions={[
+          ...(listing ? [{href: listing.path, label: "View public listing", variant: "secondary" as const}] : []),
+          {href: "/host/", label: "Explore host tools", variant: "primary"},
+          {href: "/claim/", label: "Search another page", variant: "secondary"},
+        ]}
+      />
+    );
+  }
+
+  return (
+    <ProcessStatusPanel
+      mark="?"
+      eyebrow="Listing not found"
+      title={lookup ? `No claimable page matched "${lookup}".` : "No claimable page matched this link."}
+      body="The claim URL does not match a generated organizer page. The owner can still apply as a fresh host or search the source-backed directory."
+      items={[
+        {
+          title: "Check the directory",
+          body: "Search by organizer name, city, format, or source event before starting a new packet.",
+        },
+        {
+          title: "Start from first-party details",
+          body: "If the page does not exist yet, the host application can create a cleaner first-party profile.",
+        },
+        {
+          title: "Avoid duplicate claims",
+          body: "Catch should only review ownership against a stable generated page or a fresh host packet.",
+        },
+      ]}
+      actions={[
+        {href: "/claim/", label: "Search claimable pages", variant: "primary"},
+        {href: "/organizers/", label: "Open directory", variant: "secondary"},
+        {href: "/host/#founding-hosts", label: "Start fresh", variant: "secondary"},
+      ]}
+    />
+  );
+}
+
+function claimWhileYouWaitItems(listing: HostListing | null) {
+  return [
+    {
+      title: "Keep proof links stable",
+      body: "Leave the website, Instagram, event page, or Linktree proof available while Catch reviews ownership.",
+    },
+    {
+      title: "Draft the first Catch event",
+      body: listing ?
+        `Prepare the next ${listing.category.toLowerCase()} with capacity, price, admission rules, and waitlist plan.` :
+        "Prepare the next event with capacity, price, admission rules, and waitlist plan.",
+    },
+    {
+      title: "Watch for follow-up",
+      body: "Catch may ask for a public-page edit, email confirmation, or additional owner-safe source before approval.",
+    },
+    {
+      title: "Do not promise automation yet",
+      body: "Instagram DM verification still needs backend support, so manual review remains the source of truth.",
+    },
+  ];
+}
+
+function OrganizerResultCard({
+  listing,
+  queryTerms,
+}: {
+  listing: HostListing;
+  queryTerms: string[];
+}) {
   const isAppCreated = listing.listingVariant === "appCreatedClub";
   const rating = listing.metrics?.rating;
   const reviewCount = listing.metrics?.reviewCount;
   const activity = activityForListing(listing);
-  const nextEvent = listing.metrics?.nextEventLabel ?? listing.catchEvents?.find(
-    (event) => event.timeline === "upcoming"
-  )?.title;
+  const eventHighlights = eventHighlightsForListing(listing, queryTerms);
+  const nextEvent = nextFutureCatchEvent(listing);
   return (
     <article
       className="organizer-result-card"
@@ -2160,8 +2990,18 @@ function OrganizerResultCard({listing}: {listing: HostListing}) {
             <span>{listing.category}</span>
             {rating ? <span>{rating.toFixed(1)} rating</span> : null}
             {reviewCount ? <span>{reviewCount} reviews</span> : null}
-            {nextEvent ? <span>{nextEvent}</span> : <span>{isAppCreated ? "No upcoming label" : "Cadence unverified"}</span>}
+            {nextEvent ? <span>{nextEvent.title}</span> : <span>{isAppCreated ? "No future event" : "Cadence unverified"}</span>}
           </div>
+          {eventHighlights.length ? (
+            <div className="organizer-event-highlights" aria-label={`${listing.name} event evidence`}>
+              {eventHighlights.map((event) => (
+                <span key={event.id} style={{"--activity": event.activityToken} as CSSProperties}>
+                  <strong>{event.title}</strong>
+                  <small>{event.kind} · {event.detail}</small>
+                </span>
+              ))}
+            </div>
+          ) : null}
           <div className="listing-format-row">
             {listing.formats.slice(0, 4).map((format) => (
               <span key={format}>{format}</span>
@@ -2181,6 +3021,7 @@ function HostListingPage({listing}: {listing: HostListing}) {
   const isAppCreated = listing.listingVariant === "appCreatedClub";
   const activity = activityForListing(listing);
   const claimHref = isAppCreated ? listing.claim.href : claimHrefForListing(listing);
+  const [shareStatus, setShareStatus] = useState("");
   const nav = [
     {href: "#profile", label: "Profile"},
     ...(listing.catchEvents?.length ? [{href: "#events", label: "Events"}] : []),
@@ -2190,6 +3031,49 @@ function HostListingPage({listing}: {listing: HostListing}) {
     {href: "/organizers/", label: "Search"},
     {href: "/host/", label: "For hosts"},
   ];
+
+  async function handleShareListing() {
+    const shareUrl = absoluteListingUrl(listing);
+    const shareData = {
+      title: `${listing.name} on Catch`,
+      text: listing.headline,
+      url: shareUrl,
+    };
+
+    try {
+      if ("share" in navigator && typeof navigator.share === "function") {
+        await navigator.share(shareData);
+        setShareStatus("Share sheet opened.");
+        trackMarketingEvent("listing_share_completed", {
+          club_id: listing.id,
+          method: "native",
+        });
+        return;
+      }
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+        setShareStatus("Listing link copied.");
+        trackMarketingEvent("listing_share_completed", {
+          club_id: listing.id,
+          method: "clipboard",
+        });
+        return;
+      }
+      setShareStatus(shareUrl);
+      trackMarketingEvent("listing_share_completed", {
+        club_id: listing.id,
+        method: "manual",
+      });
+    } catch (error) {
+      const aborted = error instanceof DOMException && error.name === "AbortError";
+      setShareStatus(aborted ? "Share cancelled." : "Could not share. Copy the URL from the address bar.");
+      trackMarketingEvent("listing_share_error", {
+        club_id: listing.id,
+        aborted,
+      });
+    }
+  }
+
   return (
     <>
       <SiteHeader
@@ -2236,7 +3120,17 @@ function HostListingPage({listing}: {listing: HostListing}) {
                 >
                   {isAppCreated ? "Search organizers" : "See Catch for hosts"}
                 </a>
+                <button
+                  className="button button--ghost"
+                  type="button"
+                  onClick={() => void handleShareListing()}
+                >
+                  Share listing
+                </button>
               </div>
+              <p className="listing-share-status" role="status" aria-live="polite">
+                {shareStatus}
+              </p>
             </div>
 
             <aside
@@ -2490,6 +3384,7 @@ function RecommendedOrganizersSection({current}: {current: HostListing}) {
 
 function ListingCatchEventsSection({listing}: {listing: HostListing}) {
   const events = listing.catchEvents ?? [];
+  const eventCards = events.map((event) => eventActionCardForListing(listing, event));
   return (
     <section
       className="listing-section listing-section--events"
@@ -2505,38 +3400,23 @@ function ListingCatchEventsSection({listing}: {listing: HostListing}) {
         </p>
       </div>
       <div className="listing-catch-event-grid">
-        {events.map((event) => (
-          <article className="listing-catch-event-card" data-reveal key={event.id}>
-            <div>
-              <span className="ui-label">{event.timeline}</span>
-              <h3>{event.title}</h3>
-              <p>{event.summary}</p>
-            </div>
-            <dl className="listing-event-meta">
-              <div>
-                <dt>Date</dt>
-                <dd>{event.date}</dd>
-              </div>
-              <div>
-                <dt>Location</dt>
-                <dd>{event.location}</dd>
-              </div>
-              <div>
-                <dt>Price</dt>
-                <dd>{event.priceLabel}</dd>
-              </div>
-              <div>
-                <dt>Capacity</dt>
-                <dd>{event.capacityLimit}</dd>
-              </div>
-            </dl>
-            <div className="listing-event-counts" aria-label={`${event.title} event counts`}>
-              <span><strong>{event.bookedCount}</strong> booked</span>
-              <span><strong>{event.checkedInCount}</strong> checked in</span>
-              <span><strong>{event.waitlistedCount}</strong> waitlisted</span>
-            </div>
-          </article>
+        {eventCards.map((event) => (
+          <EventActionCard event={event} key={event.id} />
         ))}
+      </div>
+      <div className="listing-event-download" data-reveal>
+        <div>
+          <span className="ui-label">Member app</span>
+          <h3>Book, check in, and review from Catch.</h3>
+          <p>
+            Public pages expose the event record. The app handles booking,
+            waitlist movement, attendance, catches, and verified reviews.
+          </p>
+        </div>
+        <AppDownloadCtas
+          placement={`listing-events-${listing.slug}`}
+          className="app-download-ctas--compact"
+        />
       </div>
     </section>
   );
@@ -2556,7 +3436,11 @@ function ListingEventSuccessSection({
     {label: "Safety reports", value: summary.safetyIncidentCount},
   ];
   return (
-    <section className="listing-section listing-section--success" aria-labelledby="event-success-title">
+    <section
+      className="listing-section listing-section--success"
+      id="event-success"
+      aria-labelledby="event-success-title"
+    >
       <div className="section-heading" data-reveal>
         <span className="ui-label">Event Success</span>
         <h2 id="event-success-title">The claimed profile can show what Catch actually operated.</h2>
@@ -2682,6 +3566,19 @@ function ListingReviewsSection({listing}: {listing: HostListing}) {
     visibleVerifiedCount
   );
   const reviewFormId = `review-${listing.id}`;
+  const isAppCreated = listing.listingVariant === "appCreatedClub";
+  const verifiedReviews = reviews
+    .filter(isVerifiedReview)
+    .map(reviewCardForReview);
+  const publicReviews = reviews
+    .filter((review) => !isVerifiedReview(review))
+    .map(reviewCardForReview);
+  const ownerResponseCount = reviews.filter((review) => review.ownerResponse).length;
+  const ownerPromptStats = [
+    {label: "published responses", value: ownerResponseCount},
+    {label: "verified signals", value: verifiedCount},
+    {label: "public reviews", value: publicReviews.length},
+  ];
 
   async function submitReview(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -2797,41 +3694,21 @@ function ListingReviewsSection({listing}: {listing: HostListing}) {
       <div className="listing-review-workspace">
         <div>
           {reviews.length ? (
-            <div className="listing-review-stack">
-              {reviews.map((review) => (
-                <article
-                  className="listing-review-card"
-                  key={review.id ?? `${review.reviewerName}-${review.createdAt}`}
-                >
-                  <div className="listing-review-card__header">
-                    <div>
-                      <strong>{review.reviewerName}</strong>
-                      <span>{reviewDateLabel(review.createdAt)}</span>
-                    </div>
-                    <span aria-label={`${review.rating} out of 5 stars`}>
-                      {"★".repeat(
-                        Math.max(0, Math.min(5, Math.round(review.rating)))
-                      )}
-                    </span>
-                  </div>
-                  <span className={`listing-review-badge ${
-                    review.verificationStatus === "verified" ?
-                      "is-verified" :
-                      "is-unverified"
-                  }`}>
-                    {review.verificationStatus === "verified" ?
-                      "Verified Catch attendee" :
-                      "Unverified public review"}
-                  </span>
-                  {review.comment ? <p>{review.comment}</p> : null}
-                  {review.ownerResponse ? (
-                    <div className="listing-owner-response">
-                      <span>Host response · {review.ownerResponse.hostName}</span>
-                      <p>{review.ownerResponse.message}</p>
-                    </div>
-                  ) : null}
-                </article>
-              ))}
+            <div className="listing-review-lanes">
+              <ReviewSignalLane
+                title="Verified Catch attendee reviews"
+                body="These reviews come from logged-in guests after attended Catch events and stay separate from public page feedback."
+                reviews={verifiedReviews}
+                emptyTitle="No verified attendee reviews are visible yet."
+                emptyBody="Verified attendee reviews appear after Catch has operated the event and confirmed attendance."
+              />
+              <ReviewSignalLane
+                title="Unverified public reviews"
+                body="These reviews are submitted from the public web page. They are useful, but they are not treated as attended-event proof."
+                reviews={publicReviews}
+                emptyTitle="No public web reviews yet."
+                emptyBody="Public reviews can be added here; Catch keeps them clearly labeled until they can be tied to a verified event."
+              />
             </div>
           ) : (
             <div className="listing-review-empty" data-reveal>
@@ -2845,6 +3722,15 @@ function ListingReviewsSection({listing}: {listing: HostListing}) {
               </div>
             </div>
           )}
+          <OwnerResponsePrompt
+            title={isAppCreated ? "Owner replies stay attached to the source." : "Claiming unlocks owner replies."}
+            body={isAppCreated ?
+              "Catch separates attendee proof, public web feedback, and host replies so responses do not blur the review source." :
+              "Public reviews can arrive before the organizer owns the page. Catch keeps them unverified until a claim is approved."}
+            stats={ownerPromptStats}
+            ctaHref={isAppCreated ? undefined : claimHrefForListing(listing)}
+            ctaLabel={isAppCreated ? undefined : "Claim to respond"}
+          />
         </div>
 
         <form
@@ -3159,54 +4045,22 @@ function ClaimListingPanel({listing}: {listing: HostListing}) {
 }
 
 function SiteHeader({
-  brandHref,
-  nav,
-  ctaHref,
-  ctaLabel,
+  brandHref: _brandHref,
+  nav: _nav,
+  ctaHref: _ctaHref,
+  ctaLabel: _ctaLabel,
 }: {
   brandHref: string;
   nav: Array<{href: string; label: string}>;
   ctaHref: string;
   ctaLabel: string;
 }) {
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const syncHeader = () => setIsScrolled(window.scrollY > 18);
-    syncHeader();
-    window.addEventListener("scroll", syncHeader, {passive: true});
-    return () => window.removeEventListener("scroll", syncHeader);
-  }, []);
-
   return (
-    <header className={`site-header ${isScrolled ? "is-scrolled" : ""}`}>
-      <a className="brand" href={brandHref} aria-label="Catch home">
-        <span className="brand__mark" aria-hidden="true">
-          C
-        </span>
-        <span className="brand__word">Catch</span>
-      </a>
-
-      <nav className="site-nav" aria-label="Primary">
-        {nav.map((item) => (
-          <a
-            href={item.href}
-            key={`${item.href}-${item.label}`}
-            onClick={() => trackCtaClick(`nav_${slugForEvent(item.label)}`, item.href)}
-          >
-            {item.label}
-          </a>
-        ))}
-      </nav>
-
-      <a
-        className="button button--small"
-        href={ctaHref}
-        onClick={() => trackCtaClick(`header_${slugForEvent(ctaLabel)}`, ctaHref)}
-      >
-        {ctaLabel}
-      </a>
-    </header>
+    <CanonicalSiteHeader
+      brandHref="/"
+      nav={canonicalHeaderNav}
+      actions={canonicalHeaderActions}
+    />
   );
 }
 
@@ -3280,12 +4134,12 @@ function CreateEventWalkthrough({captures}: {captures: Record<string, CaptureRec
   return (
     <section className="host-create-flow" aria-labelledby="host-create-flow-title">
       <div className="section-heading" data-reveal>
-        <span className="ui-label">From the host app</span>
-        <h2 id="host-create-flow-title">An event goes live in five steps.</h2>
+        <span className="ui-label">From the host app · Create flow</span>
+        <h2 id="host-create-flow-title">An event goes live in five steps</h2>
         <p>
-          The prototype called this out well: details and schedule are the easy
-          part. The differentiators are admission policy and the live Event
-          Success guide.
+          This is the actual flow, not a brochure: details, location, schedule,
+          then the two steps no ticketing tool has — a full admission policy and
+          a live run-of-show guide.
         </p>
       </div>
       <div className="host-create-flow__grid">
@@ -3294,25 +4148,47 @@ function CreateEventWalkthrough({captures}: {captures: Record<string, CaptureRec
             <button
               className={index === activeStep ? "is-active" : ""}
               type="button"
+              aria-expanded={index === activeStep}
               onClick={() => setActiveStep(index)}
               key={item.id}
             >
               <span>0{index + 1}</span>
               <strong>{item.title}</strong>
-              <small>{item.sub}</small>
+              {index === activeStep ? <small>{item.sub}</small> : null}
             </button>
           ))}
         </div>
         <div className="host-create-flow__mock" data-reveal>
           <div className="mock-window__bar">
-            <span>Create event · step {activeStep + 1}/5</span>
-            <i>{step.title}</i>
+            <span>Create event · step {activeStep + 1}/5 · {step.title}</span>
+            <div className="host-create-flow__progress" aria-hidden="true">
+              {hostCreateSteps.map((item, index) => (
+                <span
+                  className={index <= activeStep ? "is-complete" : ""}
+                  key={item.id}
+                />
+              ))}
+            </div>
           </div>
           <div className="host-create-flow__fields">
             {step.fields.map((field) => (
-              <div key={field.label}>
+              <div className={field.wide ? "is-wide" : ""} key={field.label}>
                 <span className="ui-label">{field.label}</span>
-                <strong>{field.value}</strong>
+                {field.options ? (
+                  <div className="host-create-flow__chips" aria-label={`${field.label}: ${field.value}`}>
+                    {field.options.map((option) => (
+                      <b
+                        className={option === field.activeOption ? "is-active" : ""}
+                        key={option}
+                      >
+                        {option}
+                      </b>
+                    ))}
+                  </div>
+                ) : (
+                  <strong>{field.value}</strong>
+                )}
+                {field.note ? <p>{field.note}</p> : null}
               </div>
             ))}
           </div>
@@ -3321,11 +4197,14 @@ function CreateEventWalkthrough({captures}: {captures: Record<string, CaptureRec
             <strong>{activeStep === hostCreateSteps.length - 1 ? "Publish event" : "Next"}</strong>
           </div>
         </div>
-        <CaptureCard
-          id={captureId}
-          fallbackStep={step.title}
-          captures={captures}
-        />
+        <div className="host-create-flow__capture" data-reveal>
+          <PhoneCaptureFrame
+            key={captureId}
+            id={captureId}
+            fallbackStep={step.title}
+            captures={captures}
+          />
+        </div>
       </div>
     </section>
   );
@@ -3347,7 +4226,8 @@ function EventSuccessShowcase({captures}: {captures: Record<string, CaptureRecor
         <h2 id="event-success-showcase-title">Optional modules, one live guide.</h2>
         <p>
           Social runs can stay lightweight. Mixers and dinners can carry full
-          facilitation. Every module makes a promise to guests and to the host.
+          facilitation. Every module below maps to the live product catalog and
+          keeps private catch targets out of host reporting.
         </p>
       </div>
       <div className="event-success-stage-rail" data-reveal>
@@ -3388,6 +4268,18 @@ function EventSuccessShowcase({captures}: {captures: Record<string, CaptureRecor
 
 function HostComparisonSection() {
   const [open, setOpen] = useState(false);
+  const comparisonTableRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const frameId = window.requestAnimationFrame(() => {
+      comparisonTableRef.current?.scrollIntoView({behavior: "smooth", block: "start"});
+    });
+    return () => window.cancelAnimationFrame(frameId);
+  }, [open]);
+
   return (
     <section className="host-comparison" aria-labelledby="host-comparison-title">
       <div className="section-heading" data-reveal>
@@ -3396,11 +4288,12 @@ function HostComparisonSection() {
       </div>
       <div className="host-comparison__split">
         <article data-reveal>
-          <span className="ui-label">Luma · Eventbrite · Instagram · WhatsApp · Forms</span>
-          <h3>They help you announce and ticket.</h3>
+          <span className="ui-label">Luma · Eventbrite · District · BookMyShow · Instagram · WhatsApp · Forms</span>
+          <h3>They help you publish, sell, or get discovered.</h3>
           <p>
-            A page, a link, maybe a payment. Then hosts are back in DMs,
-            screenshots, spreadsheets, and manual door work.
+            Useful reach, event pages, and payments. Then social hosts still
+            assemble admissions, ratios, door proof, follow-up, and reputation
+            signals across scattered tools.
           </p>
         </article>
         <article data-reveal>
@@ -3415,35 +4308,53 @@ function HostComparisonSection() {
       <button
         className="see-all-button"
         type="button"
+        aria-expanded={open}
+        aria-controls="host-comparison-table"
         onClick={() => setOpen((current) => !current)}
       >
         {open ? "Hide full comparison" : "See full comparison"}
       </button>
       {open ? (
-        <div className="comparison-table-wrap" data-reveal>
-          <table className="comparison-table">
-            <thead>
-              <tr>
-                <th>Capability</th>
-                {hostComparisonColumns.map((column) => (
-                  <th key={column}>{column}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {hostComparisonRows.map((row) => (
-                <tr key={row[0]}>
-                  <td>{row[0]}</td>
-                  {row.slice(1).map((value, index) => (
-                    <td key={`${row[0]}-${index}`} data-value={value}>
-                      {value === "yes" ? "Yes" : value === "partial" ? "Partial" : "No"}
-                    </td>
+        <>
+          <div
+            className="comparison-table-heading"
+            id="host-comparison-table"
+            ref={comparisonTableRef}
+            data-reveal
+            tabIndex={-1}
+          >
+            <span className="ui-label">Full table</span>
+            <p>
+              District and BookMyShow are strong Indian discovery and ticketing
+              surfaces. Catch is positioned around the host operating loop after the
+              listing goes live.
+            </p>
+          </div>
+          <div className="comparison-table-wrap" data-reveal>
+            <table className="comparison-table" aria-label="Host platform comparison">
+              <thead>
+                <tr>
+                  <th>Capability</th>
+                  {hostComparisonColumns.map((column) => (
+                    <th key={column}>{column}</th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {hostComparisonRows.map((row) => (
+                  <tr key={row[0]}>
+                    <td>{row[0]}</td>
+                    {row.slice(1).map((value, index) => (
+                      <td key={`${row[0]}-${index}`} data-value={value}>
+                        {value === "yes" ? "Yes" : value === "partial" ? "Partial" : "No"}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       ) : null}
     </section>
   );
@@ -3458,20 +4369,34 @@ function CaptureCard({
   fallbackStep: string;
   captures: Record<string, CaptureRecord>;
 }) {
+  return <CanonicalCaptureCard id={id} fallbackStep={fallbackStep} captures={captures} />;
+}
+
+function PhoneCaptureFrame({
+  id,
+  fallbackStep,
+  captures,
+}: {
+  id: string;
+  fallbackStep: string;
+  captures: Record<string, CaptureRecord>;
+}) {
   const capture = captures[id];
   const imagePath = capture?.webPath ?? `/assets/app-screenshots/placeholders/${id}.svg`;
 
   return (
-    <figure className="capture-card" data-reveal data-capture-slot={id}>
-      <img
-        src={imagePath}
-        alt={capture?.alt ?? fallbackAltForCapture(id)}
-        loading="lazy"
-      />
-      <figcaption>
-        <span>{capture?.walkthroughStep ?? fallbackStep}</span>
-        <strong>{capture?.caption ?? fallbackCaptionForCapture(id)}</strong>
-      </figcaption>
+    <figure className="phone-capture" data-capture-slot={id}>
+      <div className="phone-capture__device">
+        <span className="phone-capture__notch" aria-hidden="true" />
+        <div className="phone-capture__screen">
+          <img
+            src={imagePath}
+            alt={capture?.alt ?? `${fallbackStep} app screenshot`}
+            loading="lazy"
+          />
+        </div>
+      </div>
+      <figcaption>{capture?.caption ?? `${fallbackStep} in the Catch app`}</figcaption>
     </figure>
   );
 }
@@ -4300,24 +5225,7 @@ function SiteFooter({
   body: string;
   links: Array<{href: string; label: string}>;
 }) {
-  return (
-    <footer className="site-footer">
-      <a className="brand" href={brandHref} aria-label="Catch home">
-        <span className="brand__mark" aria-hidden="true">
-          C
-        </span>
-        <span className="brand__word">Catch</span>
-      </a>
-      <p>{body}</p>
-      <nav aria-label="Footer">
-        {links.map((link) => (
-          <a href={link.href} key={`${link.href}-${link.label}`}>
-            {link.label}
-          </a>
-        ))}
-      </nav>
-    </footer>
-  );
+  return <CanonicalSiteFooter brandHref={brandHref} body={body} links={links} />;
 }
 
 function useDocumentMeta(meta: PageMeta) {
@@ -4375,11 +5283,28 @@ function useRevealAnimations(page: PageKey) {
 function useHashScroll(page: PageKey) {
   useEffect(() => {
     if (!window.location.hash) return undefined;
-    const hash = decodeURIComponent(window.location.hash.slice(1));
-    const frame = window.requestAnimationFrame(() => {
+    const frameIds: number[] = [];
+    const timeoutIds: number[] = [];
+    const scrollToHash = () => {
+      if (!window.location.hash) return;
+      const hash = decodeURIComponent(window.location.hash.slice(1));
       document.getElementById(hash)?.scrollIntoView({block: "start"});
-    });
-    return () => window.cancelAnimationFrame(frame);
+    };
+    const scheduleScroll = () => {
+      frameIds.push(window.requestAnimationFrame(scrollToHash));
+      timeoutIds.push(
+        window.setTimeout(scrollToHash, 150),
+        window.setTimeout(scrollToHash, 500),
+        window.setTimeout(scrollToHash, 900)
+      );
+    };
+    scheduleScroll();
+    window.addEventListener("hashchange", scheduleScroll);
+    return () => {
+      frameIds.forEach((frame) => window.cancelAnimationFrame(frame));
+      timeoutIds.forEach((timeout) => window.clearTimeout(timeout));
+      window.removeEventListener("hashchange", scheduleScroll);
+    };
   }, [page]);
 }
 
@@ -4410,6 +5335,275 @@ function useMarketingCaptures() {
   return captures;
 }
 
+function buildPublicEventSummaries(listings: HostListing[]): PublicEventCardModel[] {
+  const now = Date.now();
+  return listings
+    .flatMap((listing) =>
+      (listing.catchEvents ?? []).map((event) => {
+        const activity = activityForKind(event.activityKind);
+        const sortTime = Date.parse(event.startTime);
+        return {
+          sortTime: Number.isFinite(sortTime) ? sortTime : 0,
+          model: {
+            id: `${listing.id}-${event.id}`,
+            title: event.title,
+            href: eventDeepLinkForListing(listing, event),
+            hostName: listing.name,
+            activityLabel: activity.label,
+            activityToken: activity.token,
+            city: listing.city,
+            date: event.date,
+            location: event.location,
+            priceLabel: event.priceLabel,
+            bookedCount: event.bookedCount,
+            capacityLimit: event.capacityLimit,
+            waitlistedCount: event.waitlistedCount,
+            summary: event.summary || listing.description,
+          },
+        };
+      })
+    )
+    .sort((a, b) => {
+      const aFuture = a.sortTime >= now;
+      const bFuture = b.sortTime >= now;
+      if (aFuture !== bFuture) return aFuture ? -1 : 1;
+      return aFuture ? a.sortTime - b.sortTime : b.sortTime - a.sortTime;
+    })
+    .map((item) => item.model);
+}
+
+function buildPublicSearchSuggestions(
+  listings: HostListing[],
+  events: PublicEventCardModel[]
+): PublicSearchSuggestion[] {
+  const formatSuggestions = new Map<string, PublicSearchSuggestion>();
+  for (const listing of listings) {
+    for (const format of listing.formats) {
+      const key = format.toLowerCase();
+      if (formatSuggestions.has(key)) continue;
+      const activity = activityForListing(listing);
+      formatSuggestions.set(key, {
+        id: `format-${key.replace(/[^a-z0-9]+/g, "-")}`,
+        href: `/organizers/?q=${encodeURIComponent(format)}`,
+        label: format,
+        meta: `Browse ${format.toLowerCase()} organizers`,
+        type: "format",
+        activityToken: activity.token,
+      });
+    }
+  }
+
+  return [
+    ...events.map((event) => ({
+      id: `event-${event.id}`,
+      href: event.href,
+      label: event.title,
+      meta: `${event.hostName} · ${event.city} · ${event.date}`,
+      type: "event" as const,
+      activityToken: event.activityToken,
+    })),
+    ...listings.map((listing) => {
+      const activity = activityForListing(listing);
+      return {
+        id: `organizer-${listing.id}`,
+        href: listing.path,
+        label: listing.name,
+        meta: `${listing.category} · ${listing.city} · ${listing.status}`,
+        type: "organizer" as const,
+        activityToken: activity.token,
+      };
+    }),
+    ...formatSuggestions.values(),
+  ];
+}
+
+function defaultOrganizerDirectoryFilters(): OrganizerDirectoryFilters {
+  return {
+    query: "",
+    statusFilter: "all",
+    formatFilter: "all",
+    cityFilter: "all",
+    upcomingOnly: false,
+    minRating: 0,
+    sort: "relevance",
+  };
+}
+
+function readOrganizerFiltersFromUrl(
+  cityOptions: string[],
+  formatOptions: string[]
+): OrganizerDirectoryFilters {
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get("status");
+  const sort = params.get("sort");
+  const city = params.get("city");
+  const format = params.get("format");
+  const rating = Number(params.get("rating") ?? 0);
+  return {
+    query: params.get("q") ?? "",
+    statusFilter: isOrganizerStatusFilter(status) ? status : "all",
+    formatFilter: filterOptionValue(format, formatOptions),
+    cityFilter: filterOptionValue(city, cityOptions),
+    upcomingOnly: ["1", "true", "yes"].includes((params.get("upcoming") ?? "").toLowerCase()),
+    minRating: [4, 4.5].includes(rating) ? rating : 0,
+    sort: isOrganizerSort(sort) ? sort : "relevance",
+  };
+}
+
+function replaceOrganizerDirectoryUrl(filters: OrganizerDirectoryFilters) {
+  const params = new URLSearchParams();
+  const normalizedQuery = filters.query.trim();
+  if (normalizedQuery) params.set("q", normalizedQuery);
+  if (filters.cityFilter !== "all") params.set("city", filters.cityFilter);
+  if (filters.formatFilter !== "all") params.set("format", filters.formatFilter);
+  if (filters.statusFilter !== "all") params.set("status", filters.statusFilter);
+  if (filters.upcomingOnly) params.set("upcoming", "true");
+  if (filters.minRating > 0) params.set("rating", String(filters.minRating));
+  if (filters.sort !== "relevance") params.set("sort", filters.sort);
+
+  const nextPath = params.toString() ? `/organizers/?${params}` : "/organizers/";
+  const currentPath = `${window.location.pathname}${window.location.search}`;
+  if (currentPath !== nextPath) {
+    window.history.replaceState(null, "", nextPath);
+  }
+}
+
+function filterOptionValue(value: string | null, options: string[]) {
+  return value && options.includes(value) ? value : "all";
+}
+
+function isOrganizerStatusFilter(value: string | null): value is OrganizerStatusFilter {
+  return organizerStatusFilters.includes(value as OrganizerStatusFilter);
+}
+
+function isOrganizerSort(value: string | null): value is OrganizerSort {
+  return organizerSortOptions.includes(value as OrganizerSort);
+}
+
+function organizerDirectorySearchText(listing: HostListing) {
+  return [
+    listing.searchText,
+    listing.name,
+    listing.city,
+    listing.region,
+    listing.country,
+    listing.category,
+    listing.status,
+    listing.headline,
+    listing.description,
+    listing.sourceSummary,
+    listing.host?.name,
+    listing.host?.role,
+    ...(listing.formats ?? []),
+    ...listing.facts.map((fact) => `${fact.label} ${fact.value}`),
+    ...listing.sources.map((source) => `${source.label} ${source.detail} ${source.type}`),
+    ...(listing.eventEvidence ?? []).flatMap((event) => [
+      event.title,
+      event.date,
+      event.location,
+      event.summary,
+      event.sourceLabel,
+      ...(event.facts ?? []),
+    ]),
+    ...(listing.catchEvents ?? []).flatMap((event) => [
+      event.title,
+      event.role,
+      event.activityKind,
+      event.timeline,
+      event.date,
+      event.location,
+      event.summary,
+      event.priceLabel,
+    ]),
+  ].filter(Boolean).join(" ").toLowerCase();
+}
+
+function eventHighlightsForListing(
+  listing: HostListing,
+  queryTerms: string[]
+): OrganizerEventHighlight[] {
+  const highlights: Array<OrganizerEventHighlight & {searchText: string}> = [
+    ...(listing.catchEvents ?? []).map((event) => {
+      const activity = activityForKind(event.activityKind);
+      const isFuture = isFutureCatchEvent(event);
+      const detail = [
+        event.date,
+        event.location,
+        event.priceLabel,
+        event.capacityLimit ? `${event.bookedCount}/${event.capacityLimit} booked` : null,
+      ].filter(Boolean).join(" · ");
+      return {
+        id: `catch-${event.id}`,
+        title: event.title,
+        kind: isFuture ? "Future Catch event" : event.timeline === "past" ? "Past Catch event" : "Catch event",
+        detail,
+        href: eventDeepLinkForListing(listing, event),
+        activityToken: activity.token,
+        searchText: [
+          event.title,
+          event.role,
+          event.activityKind,
+          event.timeline,
+          event.date,
+          event.location,
+          event.summary,
+          event.priceLabel,
+        ].filter(Boolean).join(" ").toLowerCase(),
+      };
+    }),
+    ...(listing.eventEvidence ?? []).map((event, index) => {
+      const activity = activityForListing(listing);
+      const detail = [event.date, event.location, event.sourceLabel].filter(Boolean).join(" · ");
+      return {
+        id: `source-${listing.id}-${index}`,
+        title: event.title,
+        kind: "Source event",
+        detail,
+        href: listing.path,
+        activityToken: activity.token,
+        searchText: [
+          event.title,
+          event.date,
+          event.location,
+          event.summary,
+          event.sourceLabel,
+          ...(event.facts ?? []),
+        ].filter(Boolean).join(" ").toLowerCase(),
+      };
+    }),
+  ];
+
+  const matched = queryTerms.length
+    ? highlights.filter((event) => queryTerms.every((term) => event.searchText.includes(term)))
+    : [];
+  return (matched.length ? matched : highlights)
+    .slice(0, 2)
+    .map(({searchText: _searchText, ...event}) => event);
+}
+
+function nextFutureCatchEvent(listing: HostListing): {title: string} | null {
+  const metricTime = listing.metrics?.nextEventAt ?
+    Date.parse(listing.metrics.nextEventAt) :
+    Number.NaN;
+  if (Number.isFinite(metricTime) && metricTime >= Date.now()) {
+    return {title: listing.metrics?.nextEventLabel ?? "Upcoming Catch event"};
+  }
+
+  const futureEvent = (listing.catchEvents ?? [])
+    .filter(isFutureCatchEvent)
+    .sort((a, b) => Date.parse(a.startTime) - Date.parse(b.startTime))[0];
+  return futureEvent ? {title: futureEvent.title} : null;
+}
+
+function isFutureCatchEvent(event: HostListingCatchEvent) {
+  const startTime = Date.parse(event.startTime);
+  return Number.isFinite(startTime) && startTime >= Date.now();
+}
+
+function hasAnyEventSignal(listing: HostListing) {
+  return Boolean(listing.catchEvents?.length || listing.eventEvidence?.length);
+}
+
 function isVerifiedListing(listing: HostListing) {
   return listing.listingVariant === "appCreatedClub" ||
     listing.sourceConfidence === "first_party";
@@ -4420,8 +5614,7 @@ function isUnclaimedListing(listing: HostListing) {
 }
 
 function hasUpcomingCatchEvent(listing: HostListing) {
-  return Boolean(listing.metrics?.nextEventAt) ||
-    Boolean(listing.catchEvents?.some((event) => event.timeline === "upcoming"));
+  return Boolean(nextFutureCatchEvent(listing));
 }
 
 function listingProfileStrength(listing: HostListing) {
@@ -4451,6 +5644,19 @@ function activityForListing(listing: HostListing): ActivityMeta {
   if (text.includes("run")) return activityMeta.socialRun;
   if (text.includes("quiz") || text.includes("trivia")) return activityMeta.pubQuiz;
   if (text.includes("padel") || text.includes("pickle") || text.includes("tennis") || text.includes("racket")) {
+    return activityMeta.racket;
+  }
+  return activityMeta.open;
+}
+
+function activityForKind(kind: string): ActivityMeta {
+  const normalized = kind.replace(/[^a-z0-9]+/gi, "").toLowerCase();
+  if (normalized === "socialrun") return activityMeta.socialRun;
+  if (normalized === "singlesmixer") return activityMeta.singlesMixer;
+  if (normalized === "pubquiz") return activityMeta.pubQuiz;
+  if (normalized === "running") return activityMeta.running;
+  if (normalized === "dinner") return activityMeta.dinner;
+  if (normalized === "racket" || normalized === "tennis" || normalized === "padel") {
     return activityMeta.racket;
   }
   return activityMeta.open;
@@ -4575,11 +5781,7 @@ function getHostListingForPath(pathname: string) {
 }
 
 function getClaimListingFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const idOrSlug = params.get("listing") ?? params.get("clubId");
-  const pathParts = window.location.pathname.split("/").filter(Boolean);
-  const pathSlug = pathParts[0] === "claim" ? pathParts[1] : null;
-  const lookup = idOrSlug ?? pathSlug;
+  const lookup = getClaimListingLookupFromUrl();
   if (!lookup) return null;
   return hostListings.find((listing) =>
     listing.id === lookup ||
@@ -4588,8 +5790,101 @@ function getClaimListingFromUrl() {
   ) ?? null;
 }
 
+function getClaimListingLookupFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const idOrSlug = params.get("listing") ?? params.get("clubId");
+  const pathParts = window.location.pathname.split("/").filter(Boolean);
+  const pathSlug = pathParts[0] === "claim" ? pathParts[1] : null;
+  return idOrSlug ?? pathSlug;
+}
+
+function getClaimRequestIdFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("requestId") ?? params.get("claimRequestId");
+}
+
+function claimStateForUrl(
+  lookup: string | null,
+  listing: HostListing | null
+): ClaimUrlState {
+  const params = new URLSearchParams(window.location.search);
+  const status = (params.get("claimStatus") ?? params.get("status") ?? "").toLowerCase();
+  if (listing && (status === "pending" || Boolean(getClaimRequestIdFromUrl()))) {
+    return "pendingClaim";
+  }
+  if (lookup && !listing) return "notFound";
+  if (listing && !isUnclaimedListing(listing)) return "alreadyClaimed";
+  return null;
+}
+
 function claimHrefForListing(listing: HostListing) {
   return `/claim/?listing=${encodeURIComponent(listing.id)}`;
+}
+
+function absoluteListingUrl(listing: HostListing) {
+  return `${window.location.origin}${listing.path}`;
+}
+
+function eventAnchorId(event: HostListingCatchEvent) {
+  return `event-${event.id}`;
+}
+
+function eventDeepLinkForListing(
+  listing: HostListing,
+  event: HostListingCatchEvent
+) {
+  return `${listing.path}#${eventAnchorId(event)}`;
+}
+
+function eventActionCardForListing(
+  listing: HostListing,
+  event: HostListingCatchEvent
+): EventActionCardModel {
+  const isFuture = isFutureCatchEvent(event);
+  const activity = activityForKind(event.activityKind);
+  const actions: EventActionCardModel["actions"] = [
+    {
+      href: eventDeepLinkForListing(listing, event),
+      label: isFuture ? "Open event link" : "Open event record",
+      trackingLabel: isFuture ? "listing_event_open_upcoming" : "listing_event_open_past",
+    },
+  ];
+
+  if (event.scorecard) {
+    actions.push({
+      href: "#event-success",
+      label: "See outcomes",
+      variant: "secondary",
+      trackingLabel: "listing_event_success",
+    });
+  } else {
+    actions.push({
+      href: "#reviews",
+      label: isFuture ? "Read reviews" : "Review event feedback",
+      variant: "secondary",
+      trackingLabel: "listing_event_reviews",
+    });
+  }
+
+  return {
+    id: eventAnchorId(event),
+    eyebrow: isFuture ? "Upcoming Catch event" : "Past Catch event",
+    title: event.title,
+    body: event.summary,
+    activityToken: activity.token,
+    meta: [
+      {label: "Date", value: event.date},
+      {label: "Location", value: event.location},
+      {label: "Price", value: event.priceLabel},
+      {label: "Capacity", value: `${event.capacityLimit} spots`},
+    ],
+    counts: [
+      {label: "booked", value: event.bookedCount},
+      {label: "checked in", value: event.checkedInCount},
+      {label: "waitlisted", value: event.waitlistedCount},
+    ],
+    actions,
+  };
 }
 
 function nullableString(value: FormDataEntryValue | null): string | null {
@@ -4656,6 +5951,30 @@ function reviewDateLabel(value: string): string {
     day: "numeric",
     year: "numeric",
   }).format(new Date(parsed));
+}
+
+function isVerifiedReview(review: HostListingReview) {
+  return review.verificationStatus === "verified" ||
+    (!review.verificationStatus && review.source !== "publicListing");
+}
+
+function reviewCardForReview(review: HostListingReview): PublicReviewCardModel {
+  const verified = isVerifiedReview(review);
+  return {
+    id: reviewKey(review),
+    reviewerName: review.reviewerName,
+    createdAtLabel: reviewDateLabel(review.createdAt),
+    rating: review.rating,
+    comment: review.comment,
+    verified,
+    verificationLabel: verified ? "Verified Catch attendee" : "Unverified public review",
+    sourceLabel: review.source === "catchEvent" ? "Catch event" : "Public web",
+    ownerResponse: review.ownerResponse ? {
+      hostName: review.ownerResponse.hostName,
+      message: review.ownerResponse.message,
+      updatedAtLabel: reviewDateLabel(review.ownerResponse.updatedAt),
+    } : null,
+  };
 }
 
 function readableError(error: unknown): string {
@@ -4731,48 +6050,6 @@ function trackCtaClick(label: string, href: string) {
     cta_label: label,
     page_path: `${window.location.pathname}${window.location.search}`,
   });
-}
-
-function slugForEvent(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
-}
-
-function fallbackAltForCapture(id: string) {
-  switch (id) {
-    case "member-event-discovery":
-      return "Catch event discovery screen showing hosted singles events";
-    case "post-run-catch-window":
-      return "Catch post-event roster screen for the 24 hour catch window";
-    case "match-chat-context":
-      return "Catch match chat screen with shared event context";
-    case "host-event-setup":
-      return "Catch host event setup screen";
-    case "host-live-console":
-      return "Catch host live console with roster and check-in controls";
-    case "host-post-event-report":
-      return "Catch host post-event report screen";
-    default:
-      return "Catch app screen";
-  }
-}
-
-function fallbackCaptionForCapture(id: string) {
-  switch (id) {
-    case "member-event-discovery":
-      return "Members browse real hosted events before any dating surface opens.";
-    case "post-run-catch-window":
-      return "The roster opens after attendance creates shared context.";
-    case "match-chat-context":
-      return "Matches start with the event they already shared.";
-    case "host-event-setup":
-      return "Set admission rules, invite links, waitlist, payments, and Event Success before publishing.";
-    case "host-live-console":
-      return "Check in guests, manage waitlist movement, and run Event Success modules from one screen.";
-    case "host-post-event-report":
-      return "Review invite conversion, waitlist movement, attendance, catches, matches, and chats after the event closes.";
-    default:
-      return "Catch app screen for members and hosts.";
-  }
 }
 
 export default App;

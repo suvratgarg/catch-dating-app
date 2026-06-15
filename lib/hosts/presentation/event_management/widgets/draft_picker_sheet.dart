@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:flutter/material.dart';
@@ -105,13 +106,14 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
   @override
   Widget build(BuildContext context) {
     return CatchBottomSheetScaffold(
-      title: 'Your drafts',
-      subtitle: 'Pick up where you left off or start a new event.',
+      title: 'Resume a draft?',
+      subtitle: 'Pick up where you left off, or start fresh.',
       action: CatchButton(
-        label: 'Start fresh',
+        label: 'Start a fresh event',
         onPressed: _onStartFresh,
         variant: CatchButtonVariant.secondary,
         fullWidth: true,
+        icon: Icon(CatchIcons.addRounded),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -125,26 +127,32 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
               surface: false,
             )
           else
-            Flexible(
-              child: ListView.separated(
-                shrinkWrap: true,
-                padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.s5,
-                  CatchSpacing.s1,
-                  CatchSpacing.s5,
-                  CatchSpacing.s3,
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 320),
+              child: SingleChildScrollView(
+                child: CatchSurface(
+                  borderColor: CatchTokens.of(context).line2,
+                  padding: EdgeInsets.zero,
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    children: [
+                      for (var index = 0; index < _drafts.length; index++) ...[
+                        if (index > 0)
+                          Divider(
+                            color: CatchTokens.of(context).line,
+                            height: 1,
+                            thickness: 1,
+                          ),
+                        _DraftCard(
+                          draft: _drafts[index],
+                          isDeleting: _deletingDraftId == _drafts[index].id,
+                          onTap: () => _onSelect(_drafts[index]),
+                          onDelete: () => _onDelete(_drafts[index]),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-                itemCount: _drafts.length,
-                separatorBuilder: (_, _) => gapH8,
-                itemBuilder: (context, index) {
-                  final draft = _drafts[index];
-                  return _DraftCard(
-                    draft: draft,
-                    isDeleting: _deletingDraftId == draft.id,
-                    onTap: () => _onSelect(draft),
-                    onDelete: () => _onDelete(draft),
-                  );
-                },
               ),
             ),
         ],
@@ -168,12 +176,18 @@ class _DraftCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
     return CatchSurface(
       onTap: isDeleting ? null : onTap,
-      padding: CatchInsets.tileContentCompact,
-      borderColor: CatchTokens.of(context).line,
+      tone: CatchSurfaceTone.transparent,
+      borderWidth: 0,
+      radius: CatchRadius.none,
+      padding: const EdgeInsets.all(CatchSpacing.s3),
       child: Row(
         children: [
+          Icon(CatchIcons.descriptionOutlined, size: 22, color: t.ink3),
+          gapW12,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,31 +200,34 @@ class _DraftCard extends StatelessWidget {
                 ),
                 gapH4,
                 Text(
-                  _formatRelative(draft.savedAt),
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.of(context).ink2,
-                  ),
+                  'SAVED ${_formatRelative(draft.savedAt).toUpperCase()}',
+                  style: CatchTextStyles.monoLabelS(context, color: t.ink3),
                 ),
               ],
             ),
           ),
-          IconButton(
-            key: CreateEventFormKeys.deleteDraft(draft.id),
-            onPressed: isDeleting ? null : onDelete,
-            icon: isDeleting
-                ? const SizedBox.square(
-                    dimension: CatchIcon.md,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Icon(
-                    CatchIcons.deleteOutlineRounded,
-                    size: 20,
-                    color: CatchTokens.of(context).ink2,
-                  ),
-            visualDensity: VisualDensity.compact,
-            tooltip: 'Delete draft',
+          gapW8,
+          Tooltip(
+            message: 'Delete draft',
+            child: IconBtn(
+              key: CreateEventFormKeys.deleteDraft(draft.id),
+              onTap: isDeleting ? null : onDelete,
+              size: 36,
+              background: Colors.transparent,
+              child: isDeleting
+                  ? const SizedBox.square(
+                      dimension: CatchIcon.md,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(
+                      CatchIcons.deleteOutlineRounded,
+                      size: 20,
+                      color: t.ink2,
+                    ),
+            ),
           ),
+          gapW8,
+          Icon(CatchIcons.chevronRightRounded, size: 16, color: t.ink3),
         ],
       ),
     );

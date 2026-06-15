@@ -12,6 +12,11 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+abstract final class RichShareCardSheetKeys {
+  static const cardPreview = ValueKey('rich_share_card_sheet.card_preview');
+  static const shareButton = ValueKey('rich_share_card_sheet.share_button');
+}
+
 class RichShareCardSheet extends StatefulWidget {
   const RichShareCardSheet({
     super.key,
@@ -96,6 +101,7 @@ class _RichShareCardSheetState extends State<RichShareCardSheet> {
             RepaintBoundary(
               key: _captureKey,
               child: ConstrainedBox(
+                key: RichShareCardSheetKeys.cardPreview,
                 constraints: BoxConstraints(maxWidth: widget.maxWidth),
                 child: widget.card,
               ),
@@ -109,6 +115,7 @@ class _RichShareCardSheetState extends State<RichShareCardSheet> {
             gapH16,
             Builder(
               builder: (buttonContext) => CatchButton(
+                key: RichShareCardSheetKeys.shareButton,
                 label: widget.buttonLabel,
                 fullWidth: true,
                 isLoading: _sharing,

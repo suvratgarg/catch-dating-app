@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -85,6 +86,8 @@ Match _buildMatch({
   String? lastMessagePreview,
   String? lastMessageSenderId,
   Map<String, int> unreadCounts = const {},
+  MatchConversationType conversationType = MatchConversationType.match,
+  String? clubId,
 }) {
   return Match(
     id: id,
@@ -96,10 +99,14 @@ Match _buildMatch({
     lastMessagePreview: lastMessagePreview,
     lastMessageSenderId: lastMessageSenderId,
     unreadCounts: unreadCounts,
+    conversationType: conversationType,
+    clubId: clubId,
   );
 }
 
 void main() {
+  tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
   testWidgets('chat sliver header search expands while pinned and editable', (
     tester,
   ) async {
@@ -171,7 +178,7 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(container.read(chatSearchQueryProvider), 'taylor');
 
-    await tester.tap(find.byIcon(CatchIcons.closeRounded));
+    await tester.tap(find.byIcon(CatchIcons.clearCircle));
     await tester.pump();
 
     expect(tester.takeException(), isNull);
@@ -326,13 +333,77 @@ void main() {
 
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('Morgan'), findsOneWidget);
-    expect(find.text('New matches'), findsOneWidget);
+    expect(find.text('CONVERSATIONS'), findsOneWidget);
+    expect(find.text('New matches'), findsNothing);
     expect(find.text('Latest message'), findsOneWidget);
     expect(find.text('Older message'), findsNothing);
     expect(find.text('1'), findsOneWidget);
     expect(find.text('2 chats'), findsNothing);
     expect(find.text('3 active'), findsNothing);
     expect(find.text('Messages'), findsNothing);
+  });
+
+  testWidgets('host inbox uses attendee-query framing', (tester) async {
+    AppConfig.configureEntrypointRole(AppRole.host);
+    final unreadInquiry = _buildMatch(
+      id: 'host-inquiry',
+      user1Id: 'guest-1',
+      user2Id: 'host-1',
+      lastMessageAt: DateTime(2026, 4, 23, 12),
+      lastMessagePreview: 'Is there parking near the start?',
+      lastMessageSenderId: 'guest-1',
+      unreadCounts: const {'host-1': 1},
+      conversationType: MatchConversationType.clubHostInquiry,
+    );
+    final readInquiry = _buildMatch(
+      id: 'host-read-inquiry',
+      user1Id: 'guest-2',
+      user2Id: 'host-1',
+      lastMessageAt: DateTime(2026, 4, 23, 11),
+      lastMessagePreview: 'Do I need ID at check-in?',
+      lastMessageSenderId: 'guest-2',
+      conversationType: MatchConversationType.clubHostInquiry,
+    );
+    final inquiries = [unreadInquiry, readInquiry];
+    final matchRepository = _FakeMatchRepository(matches: inquiries);
+    final conversationRepository = _FakeConversationRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          matchRepositoryProvider.overrideWithValue(matchRepository),
+          conversationRepositoryProvider.overrideWithValue(
+            conversationRepository,
+          ),
+          watchMatchesForUserProvider(
+            'host-1',
+          ).overrideWith((ref) => Stream.value(inquiries)),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const ChatsListScreen(),
+        ),
+      ),
+    );
+
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Inbox'), findsOneWidget);
+    expect(find.text('Attendee queries'), findsOneWidget);
+    expect(find.text('All'), findsOneWidget);
+    expect(find.text('Unread · 1'), findsOneWidget);
+    expect(find.text('ATTENDEE QUERIES'), findsOneWidget);
+    expect(find.text('Is there parking near the start?'), findsOneWidget);
+    expect(find.text('Do I need ID at check-in?'), findsOneWidget);
+    expect(find.text('Messages from your matches'), findsNothing);
+    expect(find.text('CONVERSATIONS'), findsNothing);
+
+    await tester.tap(find.text('Unread · 1'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Is there parking near the start?'), findsOneWidget);
+    expect(find.text('Do I need ID at check-in?'), findsNothing);
   });
 
   testWidgets('does not mark own latest message as unread', (tester) async {

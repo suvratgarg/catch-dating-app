@@ -18,31 +18,13 @@
         "output": "packages/web-config/generated/catch-tokens.css",
         "fontFaces": [
           {
-            "family": "Newsreader",
-            "style": "normal",
-            "weight": "300 800",
-            "source": "assets/fonts/Newsreader-Roman-VF.ttf",
-            "target": "packages/web-config/generated/assets/fonts/Newsreader-Roman-VF.ttf",
-            "url": "./assets/fonts/Newsreader-Roman-VF.ttf",
-            "format": "truetype"
-          },
-          {
-            "family": "Newsreader",
-            "style": "italic",
-            "weight": "300 800",
-            "source": "assets/fonts/Newsreader-Italic-VF.ttf",
-            "target": "packages/web-config/generated/assets/fonts/Newsreader-Italic-VF.ttf",
-            "url": "./assets/fonts/Newsreader-Italic-VF.ttf",
-            "format": "truetype"
-          },
-          {
-            "family": "Inter",
+            "family": "Archivo",
             "style": "normal",
             "weight": "100 900",
-            "source": "assets/fonts/Inter-Roman-VF.ttf",
-            "target": "packages/web-config/generated/assets/fonts/Inter-Roman-VF.ttf",
-            "url": "./assets/fonts/Inter-Roman-VF.ttf",
-            "format": "truetype"
+            "source": "assets/fonts/Archivo-Roman-VF.woff2",
+            "target": "packages/web-config/generated/assets/fonts/Archivo-Roman-VF.woff2",
+            "url": "./assets/fonts/Archivo-Roman-VF.woff2",
+            "format": "woff2"
           },
           {
             "family": "IBM Plex Mono",
@@ -776,11 +758,23 @@
   "font": {
     "family": {
       "$type": "fontFamily",
+      "voice": {
+        "$value": "Archivo"
+      },
+      "head": {
+        "$value": "{font.family.voice}"
+      },
+      "function": {
+        "$value": "system-ui"
+      },
+      "data": {
+        "$value": "{font.family.mono}"
+      },
       "serif": {
-        "$value": "Newsreader"
+        "$value": "{font.family.voice}"
       },
       "sans": {
-        "$value": "Inter"
+        "$value": "{font.family.function}"
       },
       "mono": {
         "$value": "IBM Plex Mono"

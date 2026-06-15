@@ -18,6 +18,11 @@ class ChatsEmptyState extends StatelessWidget {
     : title = 'No chats match your search',
       message = 'Try another name or clear the search field.';
 
+  const ChatsEmptyState.noUnreadQueries({super.key})
+    : title = 'No unread queries',
+      message =
+          'New attendee questions will move here until you open their thread.';
+
   final String title;
   final String message;
 
@@ -35,10 +40,10 @@ class ChatsEmptyState extends StatelessWidget {
                 ? CatchIcons.chatBubbleOutlineRounded
                 : CatchIcons.favoriteRounded,
             title: isHostApp && title == 'No catches yet'
-                ? 'No host inquiries yet'
+                ? 'No attendee queries yet'
                 : title,
             message: isHostApp && title == 'No catches yet'
-                ? 'Message-host conversations from guests and attendees will appear here.'
+                ? 'Guest and attendee questions will appear here once people reach out about an event.'
                 : message,
             titleStyle: CatchTextStyles.headlineS(context),
           ),

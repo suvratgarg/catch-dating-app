@@ -10,7 +10,6 @@ import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/list_tile_material.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/presentation/google_maps_coordinate_adapter.dart';
@@ -420,31 +419,9 @@ class _PlaceSearchPanel extends StatelessWidget {
                 separatorBuilder: (_, _) => Divider(height: 1, color: t.line),
                 itemBuilder: (context, index) {
                   final suggestion = suggestions[index];
-                  return ListTileMaterial(
-                    child: ListTile(
-                      dense: true,
-                      leading: Icon(CatchIcons.placeOutlined),
-                      title: Text(
-                        suggestion.mainText.isNotEmpty
-                            ? suggestion.mainText
-                            : suggestion.description,
-                        style: CatchTextStyles.labelM(context),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: suggestion.secondaryText.isEmpty
-                          ? null
-                          : Text(
-                              suggestion.secondaryText,
-                              style: CatchTextStyles.supporting(
-                                context,
-                                color: t.ink2,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                      onTap: () => onSuggestionSelected(suggestion),
-                    ),
+                  return _PlaceSuggestionRow(
+                    suggestion: suggestion,
+                    onTap: () => onSuggestionSelected(suggestion),
                   );
                 },
               ),
@@ -452,6 +429,72 @@ class _PlaceSearchPanel extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _PlaceSuggestionRow extends StatelessWidget {
+  const _PlaceSuggestionRow({required this.suggestion, required this.onTap});
+
+  final PlaceAutocompleteSuggestion suggestion;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final title = suggestion.mainText.isNotEmpty
+        ? suggestion.mainText
+        : suggestion.description;
+    final subtitle = suggestion.secondaryText;
+
+    return CatchSurface(
+      tone: CatchSurfaceTone.transparent,
+      radius: 0,
+      borderWidth: 0,
+      onTap: onTap,
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s4,
+        vertical: CatchSpacing.s3,
+      ),
+      child: Row(
+        crossAxisAlignment: subtitle.isEmpty
+            ? CrossAxisAlignment.center
+            : CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: CatchSpacing.micro2),
+            child: Icon(
+              CatchIcons.placeOutlined,
+              color: t.ink2,
+              size: CatchIcon.md,
+            ),
+          ),
+          gapW12,
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: CatchTextStyles.labelM(context),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (subtitle.isNotEmpty) ...[
+                  gapH4,
+                  Text(
+                    subtitle,
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,13 +1,14 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/list_tile_material.dart';
-import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
+import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
@@ -21,43 +22,55 @@ class ClubHostDefaultsStep extends StatelessWidget {
     required this.defaults,
     required this.currencyCode,
     required this.onChanged,
+    this.scrollable = true,
+    this.padding,
   });
 
   final GlobalKey<FormState> formKey;
   final ClubHostDefaults defaults;
   final String currencyCode;
   final ValueChanged<ClubHostDefaults> onChanged;
+  final bool scrollable;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
+    final children = [
+      _PolicyDefaultsCard(
+        defaults: defaults.eventPolicy,
+        currencyCode: currencyCode,
+        onChanged: (eventPolicy) =>
+            onChanged(defaults.copyWith(eventPolicy: eventPolicy)),
+      ),
+      gapH20,
+      _DefaultActivityCard(
+        selectedActivityKind: defaults.primaryActivityKind,
+        onChanged: (activityKind) => onChanged(
+          defaults.copyWith(
+            primaryActivityKind: activityKind,
+            supportedActivityKinds:
+                defaults.effectiveSupportedActivityKinds.contains(activityKind)
+                ? defaults.supportedActivityKinds
+                : [...defaults.supportedActivityKinds, activityKind],
+          ),
+        ),
+      ),
+    ];
+
     return Form(
       key: formKey,
-      child: ListView(
-        padding: CatchInsets.formStepBody,
-        children: [
-          _PolicyDefaultsCard(
-            defaults: defaults.eventPolicy,
-            currencyCode: currencyCode,
-            onChanged: (eventPolicy) =>
-                onChanged(defaults.copyWith(eventPolicy: eventPolicy)),
-          ),
-          gapH20,
-          _DefaultActivityCard(
-            selectedActivityKind: defaults.primaryActivityKind,
-            onChanged: (activityKind) => onChanged(
-              defaults.copyWith(
-                primaryActivityKind: activityKind,
-                supportedActivityKinds:
-                    defaults.effectiveSupportedActivityKinds.contains(
-                      activityKind,
-                    )
-                    ? defaults.supportedActivityKinds
-                    : [...defaults.supportedActivityKinds, activityKind],
+      child: scrollable
+          ? ListView(
+              padding: padding ?? CatchInsets.formStepBody,
+              children: children,
+            )
+          : Padding(
+              padding: padding ?? EdgeInsets.zero,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: children,
               ),
             ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -95,17 +108,15 @@ class _DefaultActivityCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final activityKind in ActivityKind.eventCreationDefaults)
-                Semantics(
-                  button: true,
-                  selected: selectedActivityKind == activityKind,
-                  label: 'Use ${activityKind.label} by default',
-                  child: GestureDetector(
-                    onTap: () => onChanged(activityKind),
-                    child: VibeTag(
-                      label: activityKind.label,
-                      active: selectedActivityKind == activityKind,
-                    ),
-                  ),
+                SelectChip(
+                  label: activityKind.label,
+                  active: selectedActivityKind == activityKind,
+                  accentColor: ActivityPalette.resolve(
+                    context,
+                    activityKind,
+                  ).accent,
+                  semanticsLabel: 'Use ${activityKind.label} by default',
+                  onTap: () => onChanged(activityKind),
                 ),
             ],
           ),
@@ -253,24 +264,18 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
             children: [
               for (final preset in EventAdmissionDefaultPreset.values)
                 if (preset != EventAdmissionDefaultPreset.fixedCohortCaps)
-                  Semantics(
-                    button: true,
-                    selected: selectedAdmissionPreset == preset,
+                  SelectChip(
                     label: preset.label,
-                    child: GestureDetector(
-                      onTap: () => _emit(
-                        defaults.copyWith(
-                          admissionPreset: preset,
-                          dynamicPricingEnabled:
-                              preset ==
-                                  EventAdmissionDefaultPreset.balancedSingles
-                              ? defaults.dynamicPricingEnabled
-                              : false,
-                        ),
-                      ),
-                      child: VibeTag(
-                        label: preset.label,
-                        active: selectedAdmissionPreset == preset,
+                    active: selectedAdmissionPreset == preset,
+                    semanticsLabel: preset.label,
+                    onTap: () => _emit(
+                      defaults.copyWith(
+                        admissionPreset: preset,
+                        dynamicPricingEnabled:
+                            preset ==
+                                EventAdmissionDefaultPreset.balancedSingles
+                            ? defaults.dynamicPricingEnabled
+                            : false,
                       ),
                     ),
                   ),
@@ -286,26 +291,40 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
           if (selectedAdmissionPreset ==
               EventAdmissionDefaultPreset.openCapacity) ...[
             gapH12,
-            ListTileMaterial(
-              child: SwitchListTile.adaptive(
-                contentPadding: EdgeInsets.zero,
-                value: cohortCapsEnabled,
-                onChanged: (value) => _emit(
-                  defaults.copyWith(
-                    admissionPreset: value
-                        ? EventAdmissionDefaultPreset.fixedCohortCaps
-                        : EventAdmissionDefaultPreset.openCapacity,
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Cohort caps',
+                        style: CatchTextStyles.labelL(context),
+                      ),
+                      gapH4,
+                      Text(
+                        'Optionally prefill straight men and straight women caps for open events.',
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink2,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                title: Text(
-                  'Cohort caps',
-                  style: CatchTextStyles.labelL(context),
+                gapW12,
+                CatchToggle(
+                  value: cohortCapsEnabled,
+                  onChanged: (value) => _emit(
+                    defaults.copyWith(
+                      admissionPreset: value
+                          ? EventAdmissionDefaultPreset.fixedCohortCaps
+                          : EventAdmissionDefaultPreset.openCapacity,
+                    ),
+                  ),
+                  semanticLabel: 'Cohort caps',
                 ),
-                subtitle: Text(
-                  'Optionally prefill straight men and straight women caps for open events.',
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-              ),
+              ],
             ),
           ],
           if (cohortCapsEnabled) ...[
@@ -341,30 +360,44 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
           if (selectedAdmissionPreset ==
               EventAdmissionDefaultPreset.balancedSingles) ...[
             gapH12,
-            ListTileMaterial(
-              child: SwitchListTile.adaptive(
-                contentPadding: EdgeInsets.zero,
-                value: defaults.dynamicPricingEnabled,
-                onChanged: (value) => _emit(
-                  defaults.copyWith(
-                    dynamicPricingEnabled: value,
-                    dynamicPricingStepInPaise: value
-                        ? defaults.dynamicPricingStepInPaise ?? 25000
-                        : null,
-                    dynamicPricingMaxInPaise: value
-                        ? defaults.dynamicPricingMaxInPaise ?? 150000
-                        : null,
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Demand pricing',
+                        style: CatchTextStyles.labelL(context),
+                      ),
+                      gapH4,
+                      Text(
+                        'Prefill dynamic pricing controls for balanced singles events.',
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink2,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                title: Text(
-                  'Demand pricing',
-                  style: CatchTextStyles.labelL(context),
+                gapW12,
+                CatchToggle(
+                  value: defaults.dynamicPricingEnabled,
+                  onChanged: (value) => _emit(
+                    defaults.copyWith(
+                      dynamicPricingEnabled: value,
+                      dynamicPricingStepInPaise: value
+                          ? defaults.dynamicPricingStepInPaise ?? 25000
+                          : null,
+                      dynamicPricingMaxInPaise: value
+                          ? defaults.dynamicPricingMaxInPaise ?? 150000
+                          : null,
+                    ),
+                  ),
+                  semanticLabel: 'Demand pricing',
                 ),
-                subtitle: Text(
-                  'Prefill dynamic pricing controls for balanced singles events.',
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-              ),
+              ],
             ),
             if (defaults.dynamicPricingEnabled) ...[
               gapH12,
@@ -441,19 +474,12 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final policyId in EventCancellationPolicyId.values)
-                Semantics(
-                  button: true,
-                  selected: defaults.cancellationPolicyId == policyId,
-                  label: _policyFor(policyId).title,
-                  child: GestureDetector(
-                    onTap: () => _emit(
-                      defaults.copyWith(cancellationPolicyId: policyId),
-                    ),
-                    child: VibeTag(
-                      label: _policyFor(policyId).title.toUpperCase(),
-                      active: defaults.cancellationPolicyId == policyId,
-                    ),
-                  ),
+                SelectChip(
+                  label: _policyFor(policyId).title.toUpperCase(),
+                  active: defaults.cancellationPolicyId == policyId,
+                  semanticsLabel: _policyFor(policyId).title,
+                  onTap: () =>
+                      _emit(defaults.copyWith(cancellationPolicyId: policyId)),
                 ),
             ],
           ),

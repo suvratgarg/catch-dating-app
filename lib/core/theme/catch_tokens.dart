@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 /// design_language.md).
 ///
 /// Access via `CatchTokens.of(context)` inside any widget.
-/// [AppTheme] wires `sunsetLight` / `sunsetDark` into [ThemeData.extensions].
+/// [AppTheme] wires `light` / `dark` into [ThemeData.extensions].
 @immutable
 class CatchTokens extends ThemeExtension<CatchTokens> {
   const CatchTokens({
@@ -35,7 +35,7 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
 
   // ── Semantic colour roles ─────────────────────────────────────────────────────
 
-  /// App background (warm cream in Sunset).
+  /// App background (cool gallery off-white in light mode).
   final Color bg;
 
   /// Card / modal surface.
@@ -71,7 +71,7 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
   /// Tinted background for soft primary containers (chips, badges).
   final Color primarySoft;
 
-  /// Deep teal accent.
+  /// Compatibility alias for the default action colour.
   final Color accent;
 
   /// Text/icon colour on top of [accent] fills.
@@ -95,7 +95,8 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
   /// Gold / highlight colour (streak, achievement).
   final Color gold;
 
-  /// Hero gradient used on onboarding, dashboard hero, match modal.
+  /// Deprecated compatibility gradient for older surfaces. New event/club hero
+  /// artwork should derive from the activity registry.
   final Gradient heroGrad;
 
   // ── Convenience accessor ──────────────────────────────────────────────────────
@@ -136,10 +137,10 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
   Color get darkMutedInk =>
       editorialLight.withValues(alpha: CatchOpacity.onDarkMuted);
 
-  // ── Sunset palette — light (launch default) ───────────────────────────────────
+  // ── Paper/ink palette — light (launch default) ───────────────────────────────
 
   // B&W base — light (browse/forms register)
-  static const sunsetLight = CatchTokens(
+  static const light = CatchTokens(
     bg: GeneratedCatchColorTokens.lightBg,
     surface: GeneratedCatchColorTokens.lightSurface,
     raised: GeneratedCatchColorTokens.lightRaised,
@@ -165,10 +166,10 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     heroGrad: GeneratedCatchGradientTokens.lightHeroGrad,
   );
 
-  // ── Sunset palette — dark ─────────────────────────────────────────────────────
+  // ── Paper/ink palette — dark ("wow" surfaces) ───────────────────────────────
 
   // B&W base — dark (wow surfaces)
-  static const sunsetDark = CatchTokens(
+  static const dark = CatchTokens(
     bg: GeneratedCatchColorTokens.darkBg,
     surface: GeneratedCatchColorTokens.darkSurface,
     raised: GeneratedCatchColorTokens.darkRaised,
@@ -192,6 +193,11 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     gold: GeneratedCatchColorTokens.darkGold,
     heroGrad: GeneratedCatchGradientTokens.darkHeroGrad,
   );
+
+  /// Backward-compatible aliases while older code still names the retired
+  /// Sunset palette.
+  static const sunsetLight = light;
+  static const sunsetDark = dark;
 
   // ── ThemeExtension boilerplate ────────────────────────────────────────────────
 
@@ -299,6 +305,11 @@ abstract final class CatchSpacing {
   static const double micro10 = GeneratedCatchSpacingTokens.micro10;
   static const double micro14 = GeneratedCatchSpacingTokens.micro14;
   static const double micro18 = GeneratedCatchSpacingTokens.micro18;
+
+  /// App-wide page gutter and body padding from the design handoff.
+  static const double screenPx = CatchSpacing.s5;
+  static const double screenPt = CatchSpacing.s6;
+  static const double screenPb = CatchSpacing.s5;
 }
 
 /// Semantic vertical and horizontal gaps for common layout relationships.
@@ -331,56 +342,56 @@ abstract final class CatchGaps {
 abstract final class CatchInsets {
   /// Default scroll/body padding for app pages with top chrome.
   static const EdgeInsets pageBody = EdgeInsets.fromLTRB(
-    CatchSpacing.s5,
-    CatchSpacing.s4,
-    CatchSpacing.s5,
-    CatchSpacing.s6,
+    CatchSpacing.screenPx,
+    CatchSpacing.screenPt,
+    CatchSpacing.screenPx,
+    CatchSpacing.screenPb,
   );
 
   /// Page body padding for flows that need extra scroll-end breathing room.
   static const EdgeInsets pageBodyRelaxed = EdgeInsets.fromLTRB(
-    CatchSpacing.s5,
-    CatchSpacing.s4,
-    CatchSpacing.s5,
+    CatchSpacing.screenPx,
+    CatchSpacing.screenPt,
+    CatchSpacing.screenPx,
     CatchSpacing.s8,
   );
 
   /// Page body padding when top chrome already supplies some separation.
   static const EdgeInsets pageBodyTight = EdgeInsets.fromLTRB(
-    CatchSpacing.s5,
+    CatchSpacing.screenPx,
     CatchSpacing.s3,
-    CatchSpacing.s5,
-    CatchSpacing.s6,
+    CatchSpacing.screenPx,
+    CatchSpacing.screenPb,
   );
 
   /// Tighter-top page body padding with extra scroll-end breathing room.
   static const EdgeInsets pageBodyRelaxedTight = EdgeInsets.fromLTRB(
-    CatchSpacing.s5,
+    CatchSpacing.screenPx,
     CatchSpacing.s3,
-    CatchSpacing.s5,
+    CatchSpacing.screenPx,
     CatchSpacing.s8,
   );
 
   /// Page body padding for content that sits directly under a dense header.
   static const EdgeInsets pageBodyUnderHeader = EdgeInsets.fromLTRB(
-    CatchSpacing.s5,
+    CatchSpacing.screenPx,
     CatchSpacing.s1,
-    CatchSpacing.s5,
-    CatchSpacing.s6,
+    CatchSpacing.screenPx,
+    CatchSpacing.screenPb,
   );
 
   /// Compact body padding for dense chrome where the content already owns
   /// vertical separation.
   static const EdgeInsets pageBodyCompact = EdgeInsets.fromLTRB(
-    CatchSpacing.s5,
+    CatchSpacing.screenPx,
     CatchSpacing.s2,
-    CatchSpacing.s5,
+    CatchSpacing.screenPx,
     CatchSpacing.s4,
   );
 
   /// Horizontal page/list gutters when vertical padding is owned elsewhere.
   static const EdgeInsets pageHorizontal = EdgeInsets.symmetric(
-    horizontal: CatchSpacing.s5,
+    horizontal: CatchSpacing.screenPx,
   );
 
   /// Wider horizontal gutters for sparse auth/onboarding layouts.
@@ -428,6 +439,14 @@ abstract final class CatchInsets {
 
   /// Default content padding inside cards and bordered panels.
   static const EdgeInsets content = EdgeInsets.all(CatchSpacing.s4);
+
+  /// Confirm-dialog card padding from the implementation handoff.
+  static const EdgeInsets confirmDialogCard = EdgeInsets.fromLTRB(
+    22.0,
+    CatchSpacing.s6,
+    22.0,
+    CatchSpacing.micro18,
+  );
 
   /// Dense content padding for compact summary tiles and small controls.
   static const EdgeInsets contentDense = EdgeInsets.all(CatchSpacing.s3);
@@ -647,6 +666,15 @@ abstract final class CatchElevation {
   /// Physical lift for circular floating controls over media.
   static const double physicalControl = 3.0;
 
+  /// Handoff floating icon-button shadow for controls over photos and maps.
+  static const List<BoxShadow> iconButtonFloat = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(26, 20, 16, 0.18),
+      blurRadius: 8,
+      offset: Offset(0, 2),
+    ),
+  ];
+
   /// Physical lift for the primary pass control over media.
   static const double physicalPassControl = 5.0;
 
@@ -740,6 +768,12 @@ abstract final class CatchOpacity {
   /// Disabled control opacity for non-semantic fade states.
   static const double disabledControl = 0.40;
 
+  /// Translucent fill for floating icon-button chrome over photos and maps.
+  static const double iconButtonFloatFill = 0.90;
+
+  /// High-opacity blur fill for the handoff bottom tab dock.
+  static const double tabDockFill = 0.93;
+
   /// Very light tint for accent-color backgrounds (date pills, soft status
   /// pills).
   static const double subtleFill = 0.12;
@@ -786,8 +820,22 @@ abstract final class CatchOpacity {
   /// Dark-pill fill overlay — editorial status pill on the dark tone.
   static const double darkPillFill = 0.68;
 
+  /// Confirm-dialog backdrop alpha from the implementation handoff.
+  static const double confirmDialogScrim = 0.46;
+
   /// Muted copy/icon foreground on fixed dark overlay surfaces.
   static const double onDarkMuted = 0.70;
+
+  static const double activityAvatarPrint = 0.08;
+  static const double activityAvatarInnerRule = 0.16;
+  static const double activityAvatarDim = 0.20;
+  static const double activityMapPinShadow = 0.30;
+  static const double distanceRing = 0.28;
+  static const double distanceRingLabelFill = 0.94;
+  static const double activityArtPrint = 0.07;
+  static const double activityArtInnerRule = 0.14;
+  static const double activityArtGlyph = 0.16;
+  static const double activityArtDim = 0.18;
 
   /// Prominent but softened text/icon foreground on primary dark surfaces.
   static const double primaryInkProminent = 0.82;
@@ -831,6 +879,7 @@ abstract final class CatchOpacity {
   static const double chatUnreadBorder = 0.36;
   static const double paymentReferralBorder = 0.24;
   static const double paymentHelpBorder = 0.40;
+  static const double paymentCheckoutScrim = 0.55;
   static const double locationPickerTopChromeFill = 0.94;
   static const double locationPickerPanelFill = 0.96;
   static const double eventDetailCtaDarkDivider = 0.12;
@@ -1237,6 +1286,12 @@ abstract final class CatchLayout {
   /// Wrap full-bleed page bodies in [ConstrainedBox] with this maxWidth, centered.
   static const double maxContentWidth = 600;
 
+  /// Confirm-dialog max card width from the implementation handoff.
+  static const double confirmDialogMaxWidth = 320.0;
+
+  /// Full-screen confirm-dialog inset from the implementation handoff.
+  static const double confirmDialogInset = CatchSpacing.s7;
+
   /// Shared horizontal gutter for detail screens with sliver-native content.
   static const double detailScreenHorizontalPadding = CatchSpacing.s5;
 
@@ -1347,6 +1402,49 @@ abstract final class CatchLayout {
       CatchSpacing.micro6 + CatchStroke.hairline;
   static const double badgeMdDotExtent =
       CatchSpacing.micro6 + CatchStroke.hairline;
+  static const double badgeActionHeight = 33.0;
+  static const double badgeActionIconSize = 15.0;
+  static const double activityAvatarDefaultSize = 40.0;
+  static const double activityAvatarInitialsScale = 0.32;
+  static const double activityAvatarRingSpread = 2.0;
+  static const double activityAvatarTextureStrokeWidth = 2.0;
+  static const double activityAvatarTextureStride = 13.0;
+  static const double activityMapPinRestingSize = 26.0;
+  static const double activityMapPinSelectedSize = 38.0;
+  static const double activityMapPinShadowBlur = 3.0;
+  static const double activityMapPinShadowDy = 2.0;
+  static const double distanceRingDefaultSize = 170.0;
+  static const double distanceRingStrokeWidth = 1.2;
+  static const double distanceRingLabelOverhang = 10.0;
+  static const double distanceRingLabelHorizontal = 9.0;
+  static const double distanceRingLabelFontSize = 8.5;
+  static const double activityArtDefaultHeight = 180.0;
+  static const double activityArtDefaultRadius = 22.0;
+  static const double activityArtTextureStrokeWidth = 2.0;
+  static const double activityArtTextureStride = 16.0;
+  static const double activityArtGlyphRight = -18.0;
+  static const double activityArtGlyphBottom = -24.0;
+  static const double activityArtGlyphScale = 0.95;
+  static const double statStripVerticalPadding = 13.0;
+  static const double statStripLabelFontSize = 9.0;
+  static const double infoRowVerticalPadding = 13.0;
+  static const double infoGroupTopMargin = 8.0;
+  static const double infoGroupTopPadding = 18.0;
+  static const double infoGroupTitleGap = 10.0;
+  static const double searchFieldIconSize = 15.0;
+  static const double searchFieldIconGap = 10.0;
+  static const double searchFieldClearSize = 32.0;
+  static const double searchFieldClearIconSize = 16.0;
+  static const double toggleTrackWidth = 46.0;
+  static const double toggleTrackHeight = 28.0;
+  static const double toggleKnobExtent = 22.0;
+  static const double menuRowVerticalPadding = 13.0;
+  static const double menuRowGap = 10.0;
+  static const double menuRowIconSize = 17.0;
+  static const double menuRowCheckSize = 16.0;
+  static const double menuRowSublabelSize = 8.5;
+  static const double activityChipIconSize = 15.0;
+  static const double activityChipIconGap = 7.0;
   static const double buttonLgHeight = CatchSpacing.s12 + CatchSpacing.s2;
   static const double controlCompactMinHeight =
       CatchSpacing.s12 + CatchSpacing.s1;
@@ -1358,6 +1456,9 @@ abstract final class CatchLayout {
       CatchSpacing.s3 + CatchStroke.hairline;
   static const double clubProfileImagePickerExtent = 120.0;
   static const double clubCoverThumbnailExtent = 64.0;
+  static const double clubPolaroidRadius = CatchSpacing.micro6;
+  static const double clubPolaroidMediaRadius = CatchSpacing.micro3;
+  static const double clubPolaroidTitleSize = CatchSpacing.s6;
   static const double polaroidBodyReserve = 108.0;
   static const double polaroidBodyReserveWithFooter = 212.0;
   static const double eventTypeTileMaxWidth = 340.0;
@@ -1407,6 +1508,18 @@ abstract final class CatchLayout {
   static const double eventHeroBadgeExtent = 56.0;
   static const double eventHeroBadgeRadius = eventHeroBadgeExtent / 2;
   static const double eventHeroBadgeIconSize = 26.0;
+  static const double eventDetailTicketStubBandHeight = 72.0;
+  static const double eventDetailHintDotExtent = 7.0;
+  static const double eventDetailMapCardHeight = 126.0;
+  static const double eventDetailPhotoStripTileHeight = 108.0;
+  static const double eventDetailHairlineDividerHeight = 25.0;
+  static const double eventDetailItineraryTimeColumnWidth = 50.0;
+  static const double eventDetailItineraryRailColumnWidth = 20.0;
+  static const double eventDetailItineraryDotExtent = 9.0;
+  static const double eventDetailConflictMedallionExtent = 52.0;
+  static const double eventDetailConflictEventGlyphExtent = 38.0;
+  static const double paymentCheckoutBackdropHeight = 230.0;
+  static const double paymentCheckoutMedallionExtent = 52.0;
   static const double eventSuccessStageNavExtent = CatchSpacing.s12;
   static const double eventSuccessStageGlyphExtent = 88.0;
   static const double eventSuccessStageGlyphIconSize = CatchSpacing.s10;
@@ -1416,6 +1529,9 @@ abstract final class CatchLayout {
   static const double frameworkErrorMaxWidth = 460.0;
   static const double frameworkErrorIconExtent = CatchSpacing.s16;
   static const double frameworkErrorIconSize = 30.0;
+  static const double iconButtonSize = CatchSpacing.s11;
+  static const double iconButtonNavSize = CatchSpacing.s10;
+  static const double iconButtonGlyphScale = 0.44;
   static const double iosPickerHeight = 216.0;
   static const double iosPickerToolbarHeight = 52.0;
   static const double iosPickerTitleSidePadding = 96.0;
@@ -1424,19 +1540,48 @@ abstract final class CatchLayout {
   static const double noticeMaxWidth = 520.0;
   static const double noticeIconExtent = CatchSpacing.s9;
   static const double otpDigitHeight = CatchSpacing.s16;
+  static const double otpDigitGap = CatchSpacing.micro10;
+  static const double otpCaretWidth = 2.0;
+  static const double otpCaretHeight = CatchSpacing.s6;
   static const double pageDotSelectedWidth = 22.0;
   static const double pageDotExtent = CatchSpacing.micro6;
   static const double sheetGrabberWidth = CatchSpacing.s10;
   static const double sheetGrabberWideWidth = CatchSpacing.s12;
   static const double sheetGrabberHeight = CatchSpacing.s1;
   static const double sheetGrabberTallHeight = 5.0;
+  static const double sheetTopPadding = CatchSpacing.micro10;
+  static const double sheetHorizontalPadding = 22.0;
+  static const double sheetBottomPadding = 26.0;
+  static const double sheetTopRadius = 26.0;
+  static const double sheetBottomRadius = 30.0;
+  static const double sheetGrabberBottomMargin = CatchSpacing.s4;
+  static const double sheetHeaderBodyGap = CatchSpacing.micro18;
+  static const double sheetHeaderGap = CatchSpacing.s3;
+  static const double sheetGlyphTileSize = CatchSpacing.s11;
+  static const double sheetGlyphTileRadius = CatchSpacing.s3;
+  static const double sheetGlyphIconSize = 22.0;
   static const double skeletonCardHeight = 120.0;
   static const double skeletonCardCompactHeight = 96.0;
   static const double skeletonTextHeight = CatchIcon.sm;
   static const double skeletonCircleExtent = CatchSpacing.s12;
   static const double startupLogoExtent = 96.0;
   static const double startupIndicatorExtent = CatchSpacing.s7;
+  static const double stepHeaderProgressHeight = 2.0;
+  static const double statusBarTopPadding = CatchSpacing.micro14;
+  static const double statusBarHorizontalPadding = CatchSpacing.s7;
+  static const double statusBarBottomPadding = CatchSpacing.micro6;
+  static const double statusBarTimeFontSize = 14.0;
+  static const double statusBarIconSize = 14.0;
+  static const double statusBarIconGap = CatchSpacing.micro6;
+  static const double tabDockBlurSigma = 10.0;
+  static const double tabDockHorizontalPadding = CatchSpacing.s3;
+  static const double tabDockTopPadding = CatchSpacing.micro10;
+  static const double tabDockBottomPadding = CatchSpacing.micro18;
+  static const double tabDockItemGap = CatchSpacing.s1;
+  static const double tabDockIconSize = 22.0;
+  static const double tabDockLabelFontSize = 8.5;
   static const double topBarHeight = 56.0;
+  static const double topBarLargeHeight = 104.0;
   static const double topBarTabHeight = CatchSpacing.s12;
   static const double topBarCollapsedFadeExtent = 72.0;
   static const double topBarCompactSearchBottomHeight = 68.0;
@@ -1445,7 +1590,7 @@ abstract final class CatchLayout {
   static const double exploreSheetFullSize = 1.0;
   static const double exploreSheetRevealOvershootSize = 0.655;
   static const double exploreHeaderContentHeight = 60.0;
-  static const double exploreFilterRailHeight = 52.0;
+  static const double exploreFilterRailHeight = 66.0;
   static const double exploreErrorSliverHeight = 180.0;
   static const double exploreEventsSkeletonHeight = 160.0;
   static const double exploreTicketRailCardWidth = 336.0;

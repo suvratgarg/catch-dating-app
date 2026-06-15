@@ -5,12 +5,12 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
+import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -128,7 +128,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(
                       CatchSpacing.s5,
-                      0,
+                      CatchSpacing.s2,
                       CatchSpacing.s5,
                       CatchSpacing.s5,
                     ),
@@ -140,7 +140,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                           children: [
                             _FilterValue(
                               value:
-                                  '${ageRange.start.round()} - ${formatPreferredMatchAge(ageRange.end.round())}',
+                                  '${ageRange.start.round()} – ${formatPreferredMatchAge(ageRange.end.round())}',
                             ),
                             CatchRangeSlider(
                               key: SwipeKeys.ageRangeSlider,
@@ -164,7 +164,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                           runSpacing: CatchSpacing.s2,
                           children: [
                             for (final gender in Gender.values)
-                              CatchChip(
+                              SelectChip(
                                 key: SwipeKeys.genderFilterChip(gender.name),
                                 label: gender.label,
                                 active: interestedIn.contains(gender),

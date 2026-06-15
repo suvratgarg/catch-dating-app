@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_event_preview.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -106,12 +107,7 @@ class EventSuccessEventPreviewScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: AppBar(
-        title: Text(
-          'Event success preview',
-          style: CatchTextStyles.titleL(context),
-        ),
-      ),
+      appBar: const CatchTopBar(title: 'Event success preview', border: true),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [

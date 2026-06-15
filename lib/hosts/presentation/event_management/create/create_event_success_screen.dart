@@ -40,6 +40,7 @@ class CreateEventSuccessScreen extends StatelessWidget {
 
     return CatchCelebrationScreen(
       kind: CelebrationMomentKind.eventCreated,
+      icon: CatchIcons.verifiedRounded,
       eyebrow: 'Event created',
       title: 'Your event is live.',
       message: message,

@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
+import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_manual_qa_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
@@ -26,6 +28,10 @@ void main() {
 
     expect(find.text('Event success manual QA'), findsOneWidget);
     expect(find.text('Fixture scenario'), findsOneWidget);
+    expect(_selectChip('Racket pairs', active: true), findsOneWidget);
+    expect(find.byType(CatchToggle), findsWidgets);
+    expect(find.bySemanticsLabel('Micro-pods opt-out'), findsOneWidget);
+    expect(find.bySemanticsLabel('Rotations opt-out'), findsOneWidget);
     expect(find.text('Attendee moment'), findsNothing);
     expect(find.text('Attendee choices'), findsOneWidget);
     expect(find.text('Host Manage'), findsOneWidget);
@@ -100,7 +106,7 @@ void main() {
     expect(find.text('revealed'), findsWidgets);
     expect(find.text('Sign in required'), findsNothing);
 
-    await tester.tap(find.text('Rotations opt-out'));
+    await tester.tap(find.bySemanticsLabel('Rotations opt-out'));
     await tester.pump();
 
     expect(find.text('rotations opted out'), findsOneWidget);
@@ -291,7 +297,7 @@ Future<void> _tapHostSection(WidgetTester tester, String label) async {
   final section = find.descendant(
     of: find.descendant(
       of: hostManage,
-      matching: find.byType(CatchSegmentedControl<HostEventManageSection>),
+      matching: find.byType(CatchOptionGroup<HostEventManageSection>),
     ),
     matching: find.text(label),
   );
@@ -351,4 +357,13 @@ void _pressCatchButton(WidgetTester tester, Finder finder) {
   final button = tester.widget<CatchButton>(finder.first);
   expect(button.onPressed, isNotNull);
   button.onPressed!();
+}
+
+Finder _selectChip(String label, {bool? active}) {
+  return find.byWidgetPredicate(
+    (widget) =>
+        widget is SelectChip &&
+        widget.label == label &&
+        (active == null || widget.active == active),
+  );
 }

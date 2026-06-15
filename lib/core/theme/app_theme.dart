@@ -9,7 +9,7 @@ abstract final class AppTheme {
 
   static final light = _build(
     colorScheme: ColorScheme.fromSeed(seedColor: _seedColor),
-    tokens: CatchTokens.sunsetLight,
+    tokens: CatchTokens.light,
   );
 
   static final dark = _build(
@@ -17,7 +17,7 @@ abstract final class AppTheme {
       seedColor: _seedColor,
       brightness: Brightness.dark,
     ),
-    tokens: CatchTokens.sunsetDark,
+    tokens: CatchTokens.dark,
   );
 
   static ThemeData _build({
@@ -28,8 +28,8 @@ abstract final class AppTheme {
     final textTheme = _textTheme(base.textTheme, tokens);
 
     return base.copyWith(
-      // Inter as the app-wide text theme baseline, tuned to Catch's semantic
-      // scale so Material fallbacks do not flatten the app's text hierarchy.
+      // Platform system font as the app-wide function/body baseline, tuned to
+      // Catch's semantic scale so Material fallbacks do not flatten hierarchy.
       textTheme: textTheme,
 
       scaffoldBackgroundColor: tokens.bg,
@@ -200,8 +200,8 @@ abstract final class AppTheme {
   }
 
   static TextTheme _textTheme(TextTheme base, CatchTokens tokens) {
-    // Every slot below is overridden, so the Inter baseline fully replaces the
-    // default Material text theme (functional fallbacks for un-styled widgets).
+    // Every slot below is overridden, so the platform system baseline fully
+    // replaces the default Material text theme for un-styled widgets.
     TextStyle style(
       double size,
       FontWeight weight,

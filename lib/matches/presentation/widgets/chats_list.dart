@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
+import 'package:catch_dating_app/matches/presentation/host_inbox_filter.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/chats_empty_state.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/chats_list_body.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/match_celebration_dialog.dart';
@@ -13,7 +14,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatsList extends ConsumerWidget {
-  const ChatsList({super.key});
+  const ChatsList({super.key, this.hostFilter});
+
+  final HostInboxFilter? hostFilter;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -50,14 +53,49 @@ class ChatsList extends ConsumerWidget {
         context: AppErrorContext.chat,
         onRetry: () => ref.invalidate(chatsListViewModelProvider),
       ),
-      AsyncData(:final value) =>
-        value.isEmpty || uid == null
+      AsyncData(:final value) => () {
+        final visibleValue = _applyHostFilter(value);
+        return visibleValue.isEmpty || uid == null
             ? SliverFillRemaining(
-                child: query.isNotEmpty && value.totalThreadCount > 0
-                    ? const ChatsEmptyState.noSearchResults()
-                    : const ChatsEmptyState(),
+                child: _emptyStateFor(
+                  query: query,
+                  source: value,
+                  visible: visibleValue,
+                ),
               )
-            : ChatsListBody(viewModel: value),
+            : ChatsListBody(viewModel: visibleValue);
+      }(),
     };
+  }
+
+  ChatsListViewModel _applyHostFilter(ChatsListViewModel value) {
+    if (hostFilter != HostInboxFilter.unread) return value;
+
+    return value.copyWith(
+      newMatches: List.unmodifiable(
+        value.newMatches.where((preview) => preview.unreadCount > 0),
+      ),
+      conversations: List.unmodifiable(
+        value.conversations.where((preview) => preview.unreadCount > 0),
+      ),
+    );
+  }
+
+  Widget _emptyStateFor({
+    required String query,
+    required ChatsListViewModel source,
+    required ChatsListViewModel visible,
+  }) {
+    if (query.isNotEmpty &&
+        source.visibleThreadCount == 0 &&
+        source.totalThreadCount > 0) {
+      return const ChatsEmptyState.noSearchResults();
+    }
+    if (hostFilter == HostInboxFilter.unread &&
+        source.visibleThreadCount > 0 &&
+        visible.isEmpty) {
+      return const ChatsEmptyState.noUnreadQueries();
+    }
+    return const ChatsEmptyState();
   }
 }

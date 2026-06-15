@@ -2,17 +2,22 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ChatListTile extends StatelessWidget {
-  const ChatListTile({super.key, required this.preview, required this.onTap});
+  const ChatListTile({
+    super.key,
+    required this.preview,
+    required this.onTap,
+    this.divider = false,
+  });
 
   final ChatThreadPreview preview;
   final VoidCallback onTap;
+  final bool divider;
 
   String _formatTime(DateTime? dt) {
     if (dt == null) return '';
@@ -27,103 +32,138 @@ class ChatListTile extends StatelessWidget {
     final t = CatchTokens.of(context);
     final unreadCount = preview.unreadCount;
     final hasUnread = unreadCount > 0;
+    final isNew = !preview.hasConversation;
+    final emphasized = hasUnread || isNew;
 
-    return CatchSurface(
-      onTap: onTap,
-      backgroundColor: hasUnread ? t.primarySoft : null,
-      borderColor: hasUnread
-          ? t.primary.withValues(alpha: CatchOpacity.chatUnreadBorder)
-          : t.line,
-      radius: CatchRadius.md,
-      padding: EdgeInsets.zero,
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        children: [
-          if (hasUnread)
-            Positioned(
-              left: 0,
-              top: 0,
-              bottom: 0,
-              width: CatchLayout.chatUnreadStripWidth,
-              child: ColoredBox(
-                color: t.primary,
-                child: const SizedBox.expand(),
-              ),
-            ),
-          Padding(
-            padding: CatchInsets.contentDense,
-            child: Row(
-              children: [
-                PersonAvatar(
-                  size: 60,
-                  name: preview.displayName,
-                  imageUrl: preview.photoUrl,
-                  borderWidth: hasUnread ? 2 : 0,
-                  borderColor: hasUnread ? t.primary : null,
+    return Semantics(
+      button: true,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: Stack(
+            children: [
+              if (divider)
+                Positioned(
+                  top: 0,
+                  left: CatchSpacing.s11 + CatchSpacing.s3,
+                  right: 0,
+                  child: ColoredBox(
+                    color: t.line.withValues(
+                      alpha: CatchOpacity.profileInfoDivider,
+                    ),
+                    child: const SizedBox(height: CatchStroke.hairline),
+                  ),
                 ),
-                const SizedBox(width: CatchSpacing.s3),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+                child: Row(
+                  children: [
+                    PersonAvatar(
+                      size: 44,
+                      name: preview.displayName,
+                      imageUrl: preview.photoUrl,
+                      borderWidth: emphasized ? CatchStroke.underline : 0,
+                      borderColor: emphasized ? t.primary : null,
+                      shape: preview.match.isClubHostInquiry
+                          ? PersonAvatarShape.square
+                          : PersonAvatarShape.circle,
+                    ),
+                    const SizedBox(width: CatchSpacing.s3),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Text(
-                              preview.displayName,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: hasUnread
-                                  ? CatchTextStyles.titleL(context)
-                                  : CatchTextStyles.sectionTitle(context),
+                          Text(
+                            preview.displayName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: CatchTextStyles.infoRowTitle(
+                              context,
+                              color: emphasized ? t.ink : t.ink2,
                             ),
                           ),
-                          const SizedBox(width: CatchSpacing.s2),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              top: CatchSpacing.micro2,
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  _formatTime(preview.timestamp),
-                                  style: CatchTextStyles.statusLabel(
-                                    context,
-                                    color: hasUnread ? t.primary : t.ink2,
-                                  ),
-                                ),
-                                if (hasUnread) ...[
-                                  const SizedBox(width: CatchSpacing.s2),
-                                  _UnreadCountPill(count: unreadCount),
-                                ],
-                              ],
+                          const SizedBox(height: CatchSpacing.micro2),
+                          Text(
+                            preview.previewText,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: CatchTextStyles.chatPreview(
+                              context,
+                              color: isNew
+                                  ? t.primary
+                                  : hasUnread
+                                  ? t.ink
+                                  : t.ink2,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: CatchSpacing.s1),
-                      Text(
-                        preview.previewText,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: hasUnread
-                            ? CatchTextStyles.chatMessage(context, color: t.ink)
-                            : CatchTextStyles.supporting(
-                                context,
-                                color: t.ink2,
-                              ),
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: CatchSpacing.s3),
+                    _ChatListTrailing(
+                      time: _formatTime(preview.timestamp),
+                      unreadCount: unreadCount,
+                      isNew: isNew,
+                      emphasized: emphasized,
+                    ),
+                  ],
                 ),
-              ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ChatListTrailing extends StatelessWidget {
+  const _ChatListTrailing({
+    required this.time,
+    required this.unreadCount,
+    required this.isNew,
+    required this.emphasized,
+  });
+
+  final String time;
+  final int unreadCount;
+  final bool isNew;
+  final bool emphasized;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final hasUnread = unreadCount > 0;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          time,
+          style: CatchTextStyles.statusLabel(
+            context,
+            color: emphasized ? t.primary : t.ink3,
+          ),
+        ),
+        if (hasUnread) ...[
+          const SizedBox(height: CatchSpacing.micro6),
+          _UnreadCountPill(count: unreadCount),
+        ] else if (isNew) ...[
+          const SizedBox(height: CatchSpacing.micro6),
+          Semantics(
+            label: 'New match',
+            child: ClipOval(
+              child: ColoredBox(
+                color: t.primary,
+                child: const SizedBox.square(dimension: CatchSpacing.s2),
+              ),
             ),
           ),
         ],
-      ),
+      ],
     );
   }
 }

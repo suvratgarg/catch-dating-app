@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
@@ -94,6 +95,7 @@ class EventHypeAvatarStack extends ConsumerWidget {
     this.limit = 4,
     this.obscured = true,
     this.showOverflowCount = false,
+    this.activityKind = ActivityKind.openActivity,
   });
 
   final String eventId;
@@ -103,10 +105,23 @@ class EventHypeAvatarStack extends ConsumerWidget {
   final int limit;
   final bool obscured;
   final bool showOverflowCount;
+  final ActivityKind activityKind;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (totalCount <= 0) return const SizedBox.shrink();
+    if (obscured) {
+      return PersonAvatarStack(
+        items: const [],
+        totalCount: totalCount,
+        size: size,
+        limit: limit,
+        veiledCount: totalCount,
+        activityKind: activityKind,
+        showOverflowCount: showOverflowCount,
+      );
+    }
+
     final avatarsAsync = ref.watch(
       eventHypeAvatarsProvider(
         EventHypeAvatarQuery(
@@ -126,7 +141,6 @@ class EventHypeAvatarStack extends ConsumerWidget {
       totalCount: totalCount,
       size: size,
       limit: limit,
-      obscured: obscured,
       showOverflowCount: showOverflowCount,
     );
   }

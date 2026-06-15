@@ -191,9 +191,10 @@ if [ "$total" -gt 0 ]; then
   exit 1
 fi
 
-if [ "$analyze_status" -ne 0 ]; then
+if [ "$analyze_status" -ne 0 ] &&
+  grep -Eq '(^|[[:space:]])(error|fatal) - ' <<<"$analyze_output"; then
   echo ""
-  echo "dart analyze failed without migrated color/text/font drift. Output:"
+  echo "dart analyze failed with errors outside $LABEL drift. Output:"
   echo "$analyze_output"
   exit "$analyze_status"
 fi

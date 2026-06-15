@@ -5,8 +5,8 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/list_tile_material.dart';
-import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
+import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
@@ -190,18 +190,12 @@ class EventPolicyStep extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final preset in EventAdmissionPreset.values)
-                Semantics(
-                  button: true,
-                  selected: admissionPreset == preset,
-                  label: preset.title,
-                  child: GestureDetector(
-                    key: CreateEventFormKeys.admissionPreset(preset.name),
-                    onTap: () => onAdmissionPresetChanged(preset),
-                    child: VibeTag(
-                      label: preset.label,
-                      active: admissionPreset == preset,
-                    ),
-                  ),
+                SelectChip(
+                  key: CreateEventFormKeys.admissionPreset(preset.name),
+                  label: preset.label,
+                  active: admissionPreset == preset,
+                  semanticsLabel: preset.title,
+                  onTap: () => onAdmissionPresetChanged(preset),
                 ),
             ],
           ),
@@ -270,24 +264,35 @@ class EventPolicyStep extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ListTileMaterial(
-                    child: SwitchListTile.adaptive(
-                      key: CreateEventFormKeys.cohortCapsToggle,
-                      contentPadding: EdgeInsets.zero,
-                      value: cohortCapsEnabled,
-                      onChanged: onCohortCapsEnabledChanged,
-                      title: Text(
-                        'Cohort caps',
-                        style: CatchTextStyles.labelL(context),
-                      ),
-                      subtitle: Text(
-                        'Optionally cap straight men and straight women without making this a separate admission format.',
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink2,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Cohort caps',
+                              style: CatchTextStyles.labelL(context),
+                            ),
+                            gapH4,
+                            Text(
+                              'Optionally cap straight men and straight women without making this a separate admission format.',
+                              style: CatchTextStyles.supporting(
+                                context,
+                                color: t.ink2,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
+                      gapW12,
+                      CatchToggle(
+                        key: CreateEventFormKeys.cohortCapsToggle,
+                        value: cohortCapsEnabled,
+                        onChanged: onCohortCapsEnabledChanged,
+                        semanticLabel: 'Cohort caps',
+                      ),
+                    ],
                   ),
                   if (cohortCapsEnabled) ...[
                     gapH12,
@@ -371,24 +376,35 @@ class EventPolicyStep extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ListTileMaterial(
-                    child: SwitchListTile.adaptive(
-                      key: CreateEventFormKeys.dynamicPricingToggle,
-                      contentPadding: EdgeInsets.zero,
-                      value: dynamicPricingEnabled,
-                      onChanged: onDynamicPricingChanged,
-                      title: Text(
-                        'Demand pricing',
-                        style: CatchTextStyles.labelL(context),
-                      ),
-                      subtitle: Text(
-                        'Increase the straight-men price when that cohort has more booked and waitlisted demand than the balancing cohort.',
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink2,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Demand pricing',
+                              style: CatchTextStyles.labelL(context),
+                            ),
+                            gapH4,
+                            Text(
+                              'Increase the straight-men price when that cohort has more booked and waitlisted demand than the balancing cohort.',
+                              style: CatchTextStyles.supporting(
+                                context,
+                                color: t.ink2,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
+                      gapW12,
+                      CatchToggle(
+                        key: CreateEventFormKeys.dynamicPricingToggle,
+                        value: dynamicPricingEnabled,
+                        onChanged: onDynamicPricingChanged,
+                        semanticLabel: 'Demand pricing',
+                      ),
+                    ],
                   ),
                   if (dynamicPricingEnabled) ...[
                     gapH12,
@@ -488,17 +504,11 @@ class EventPolicyStep extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final policyId in EventCancellationPolicyId.values)
-                Semantics(
-                  button: true,
-                  selected: cancellationPolicyId == policyId,
-                  label: _policyFor(policyId).title,
-                  child: GestureDetector(
-                    onTap: () => onCancellationPolicyChanged(policyId),
-                    child: VibeTag(
-                      label: _policyFor(policyId).title.toUpperCase(),
-                      active: cancellationPolicyId == policyId,
-                    ),
-                  ),
+                SelectChip(
+                  label: _policyFor(policyId).title.toUpperCase(),
+                  active: cancellationPolicyId == policyId,
+                  semanticsLabel: _policyFor(policyId).title,
+                  onTap: () => onCancellationPolicyChanged(policyId),
                 ),
             ],
           ),

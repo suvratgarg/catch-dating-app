@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_clubs_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
@@ -363,7 +364,7 @@ void main() {
       expect(find.text("Let's find your first event"), findsOneWidget);
     });
 
-    testWidgets('notifications screen opens as a full screen and marks read', (
+    testWidgets('notifications screen opens with a manual read action', (
       tester,
     ) async {
       final notifications = [
@@ -396,29 +397,48 @@ void main() {
       await _pumpDashboardUi(tester);
       await _pumpDashboardUi(tester);
 
-      expect(find.text('Notifications'), findsOneWidget);
+      expect(find.text('Activity'), findsOneWidget);
       expect(find.text("It's a catch"), findsNWidgets(2));
-      expect(find.text('Mark all read'), findsNothing);
+      expect(find.text('Mark all read'), findsOneWidget);
+      expect(repository.markReadCalls, isEmpty);
+
+      await tester.tap(find.text('Mark all read'));
+      await _pumpDashboardUi(tester);
+
       expect(repository.markReadCalls, hasLength(1));
       expect(repository.markReadCalls.single.map((item) => item.id), [
         'unread',
       ]);
     });
 
-    testWidgets('notifications screen separates upcoming events from updates', (
+    testWidgets('notifications screen renders grouped notification rows', (
       tester,
     ) async {
-      final upcomingEvent = buildEvent(
-        id: 'event-upcoming',
-        meetingPoint: 'India Gate lawns east side',
-        startTime: DateTime.now().add(const Duration(days: 2)),
-        distanceKm: 7,
-        pace: PaceLevel.fast,
-      );
-      final notification = _activityNotification(
-        id: 'read',
+      final now = DateTime.now();
+      final today = _activityNotification(
+        id: 'today',
         uid: 'runner-1',
-        readAt: DateTime(2026, 5, 16),
+        title: 'Booked: Doubles ladder + drinks',
+        body: 'Sun 22 Jun · 9:00 AM · Versova Padel, Court 2.',
+        createdAt: now,
+      );
+      final yesterday = _activityNotification(
+        id: 'yesterday',
+        uid: 'runner-1',
+        type: ActivityNotificationType.waitlistPromotion,
+        title: 'A spot opened up',
+        body: "You're off the waitlist for Saturday's Sundowner 5K.",
+        createdAt: now.subtract(const Duration(days: 1, hours: 1)),
+        readAt: now,
+      );
+      final thisWeek = _activityNotification(
+        id: 'this-week',
+        uid: 'runner-1',
+        type: ActivityNotificationType.eventUpdated,
+        title: 'Start time moved to 6:45 AM',
+        body: 'Sundowner 5K now starts 15 min later. Same spot.',
+        createdAt: now.subtract(const Duration(days: 3)),
+        readAt: now,
       );
 
       await tester.pumpWidget(
@@ -426,11 +446,15 @@ void main() {
           overrides: [
             uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
             watchActivityNotificationsProvider('runner-1').overrideWithValue(
-              AsyncData<List<ActivityNotification>>([notification]),
+              AsyncData<List<ActivityNotification>>([
+                thisWeek,
+                today,
+                yesterday,
+              ]),
             ),
             watchSignedUpEventsProvider(
               'runner-1',
-            ).overrideWithValue(AsyncData<List<Event>>([upcomingEvent])),
+            ).overrideWithValue(const AsyncData<List<Event>>([])),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -441,14 +465,18 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
-      expect(find.text('Upcoming events'), findsOneWidget);
-      expect(find.text('Recent updates'), findsOneWidget);
-      expect(find.text(upcomingEvent.title), findsOneWidget);
-      expect(find.text('India Gate lawns east side'), findsOneWidget);
-      expect(find.text('7km · Fast'), findsOneWidget);
-      expect(find.text("It's a catch"), findsOneWidget);
-      expect(find.text('Catch'), findsOneWidget);
-      expect(find.text('Upcoming event'), findsNothing);
+      expect(find.text('Activity'), findsOneWidget);
+      expect(find.text('TODAY', findRichText: true), findsOneWidget);
+      expect(find.text('YESTERDAY', findRichText: true), findsOneWidget);
+      expect(find.text('THIS WEEK', findRichText: true), findsOneWidget);
+      expect(find.text(today.title), findsOneWidget);
+      expect(find.text(today.body), findsOneWidget);
+      expect(find.text(yesterday.title), findsOneWidget);
+      expect(find.text(thisWeek.title), findsOneWidget);
+      expect(find.byType(NotificationRow), findsNWidgets(3));
+      expect(find.text('Upcoming events'), findsNothing);
+      expect(find.text('Recent updates'), findsNothing);
+      expect(find.text('Catch'), findsNothing);
     });
   });
 
@@ -682,7 +710,7 @@ void main() {
       );
       await _pumpDashboardUi(tester);
 
-      expect(find.text('Recommended events'), findsOneWidget);
+      expect(find.text('Recommended for you'), findsOneWidget);
       expect(
         find.text(recommendedRun.title, skipOffstage: false),
         findsOneWidget,
@@ -1267,15 +1295,19 @@ class _FakeActivityNotificationRepository
 ActivityNotification _activityNotification({
   required String id,
   required String uid,
+  ActivityNotificationType type = ActivityNotificationType.match,
+  String title = "It's a catch",
+  String body = 'You and Runner Two matched. Say hi!',
+  DateTime? createdAt,
   DateTime? readAt,
 }) {
   return ActivityNotification(
     id: id,
     uid: uid,
-    type: ActivityNotificationType.match,
-    title: "It's a catch",
-    body: 'You and Runner Two matched. Say hi!',
-    createdAt: DateTime(2026, 5, 16, 10),
+    type: type,
+    title: title,
+    body: body,
+    createdAt: createdAt ?? DateTime(2026, 5, 16, 10),
     readAt: readAt,
     matchId: 'match-1',
   );

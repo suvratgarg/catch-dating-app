@@ -1,9 +1,12 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/rich_share_card_sheet.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
+import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
+import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
@@ -12,6 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
+import '../test_pump_helpers.dart';
 
 void main() {
   group('PaymentConfirmationScreen', () {
@@ -96,6 +100,39 @@ void main() {
       );
     });
 
+    testWidgets('renders pending external checkout as the booking sheet', (
+      tester,
+    ) async {
+      final event = buildEvent(priceInPaise: 60000);
+      final club = buildClub();
+      final pendingData = PaymentConfirmationData(
+        paymentId: 'pay_PENDING',
+        orderId: 'order_PENDING',
+        amountInPaise: 60000,
+        currency: 'INR',
+        eventId: event.id,
+        provider: 'stripe',
+        status: PaymentStatus.pending,
+        checkoutUrl: Uri.parse('https://checkout.stripe.test/session'),
+      );
+
+      await _pumpPaymentConfirmation(
+        tester,
+        data: pendingData,
+        event: event,
+        club: club,
+      );
+
+      expect(find.text('Checkout is waiting'), findsOneWidget);
+      expect(find.textContaining('Finish payment in Stripe'), findsOneWidget);
+      expect(find.text('Pending'), findsOneWidget);
+      expect(find.text('Open Stripe checkout'), findsOneWidget);
+      expect(find.text('View payment history'), findsOneWidget);
+      expect(find.text('Back to event'), findsOneWidget);
+      expect(find.text(event.title), findsWidgets);
+      expect(find.text('₹600'), findsOneWidget);
+    });
+
     testWidgets('invite and referral surfaces open rich event share cards', (
       tester,
     ) async {
@@ -111,20 +148,22 @@ void main() {
 
       await tester.ensureVisible(find.text('Invite friend'));
       await tester.tap(find.text('Invite friend'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
+      expect(find.byKey(RichShareCardSheetKeys.cardPreview), findsOneWidget);
       expect(find.byType(EventShareCard), findsOneWidget);
       expect(find.text('CATCH INVITE'), findsOneWidget);
 
       Navigator.of(tester.element(find.byType(EventShareCard))).pop();
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       await tester.ensureVisible(
         find.byKey(PaymentConfirmationKeys.referralShare),
       );
       await tester.tap(find.byKey(PaymentConfirmationKeys.referralShare));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
+      expect(find.byKey(RichShareCardSheetKeys.cardPreview), findsOneWidget);
       expect(find.byType(EventShareCard), findsOneWidget);
     });
 
@@ -190,6 +229,7 @@ Future<void> _pumpPaymentConfirmation(
   required PaymentConfirmationData data,
   required Event event,
   required Club club,
+  Payment? payment,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
@@ -200,6 +240,10 @@ Future<void> _pumpPaymentConfirmation(
         watchClubProvider(
           event.clubId,
         ).overrideWith((ref) => Stream.value(club)),
+        if (data.isPendingExternalCheckout)
+          watchPaymentProvider(
+            data.paymentId,
+          ).overrideWith((ref) => Stream<Payment?>.value(payment)),
       ],
       child: MaterialApp(
         theme: AppTheme.light,

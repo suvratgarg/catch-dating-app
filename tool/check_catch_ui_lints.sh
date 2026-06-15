@@ -115,7 +115,7 @@ class CatchUiLintProbe extends StatelessWidget {
         ),
         const Text(
           'raw',
-          style: TextStyle(fontFamily: 'Inter', fontSize: 18),
+          style: TextStyle(fontFamily: 'Archivo', fontSize: 18),
         ),
         Text('raw', style: GoogleFonts.inter(fontSize: 18)),
         Text('raw', style: style),

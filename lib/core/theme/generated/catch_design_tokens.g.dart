@@ -85,8 +85,12 @@ abstract final class GeneratedCatchRadiusTokens {
 }
 
 abstract final class GeneratedCatchFontFamilyTokens {
-  static const String serif = 'Newsreader';
-  static const String sans = 'Inter';
+  static const String voice = 'Archivo';
+  static const String head = 'Archivo';
+  static const String function = 'system-ui';
+  static const String data = 'IBM Plex Mono';
+  static const String serif = 'Archivo';
+  static const String sans = 'system-ui';
   static const String mono = 'IBM Plex Mono';
 }
 

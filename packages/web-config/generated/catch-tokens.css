@@ -5,24 +5,8 @@
  */
 
 @font-face {
-  font-family: "Newsreader";
-  src: url("./assets/fonts/Newsreader-Roman-VF.ttf") format("truetype");
-  font-weight: 300 800;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Newsreader";
-  src: url("./assets/fonts/Newsreader-Italic-VF.ttf") format("truetype");
-  font-weight: 300 800;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Inter";
-  src: url("./assets/fonts/Inter-Roman-VF.ttf") format("truetype");
+  font-family: "Archivo";
+  src: url("./assets/fonts/Archivo-Roman-VF.woff2") format("woff2");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -143,8 +127,12 @@
   --catch-radius-md: 14px;
   --catch-radius-lg: 20px;
   --catch-radius-pill: 999px;
-  --catch-font-serif: "Newsreader";
-  --catch-font-sans: "Inter";
+  --catch-font-voice: "Archivo";
+  --catch-font-head: "Archivo";
+  --catch-font-function: "system-ui";
+  --catch-font-data: "IBM Plex Mono";
+  --catch-font-serif: "Archivo";
+  --catch-font-sans: "system-ui";
   --catch-font-mono: "IBM Plex Mono";
   --catch-website-content-max: 1180px;
   --catch-website-header-height: 76px;

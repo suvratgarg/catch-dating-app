@@ -1,15 +1,46 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'events_test_helpers.dart';
 
 void main() {
+  testWidgets(
+    'EventHypeAvatarStack renders veiled activity placeholders when obscured',
+    (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const Scaffold(
+              body: EventHypeAvatarStack(
+                eventId: 'event-1',
+                totalCount: 4,
+                viewerInterestedInGenders: [],
+                size: 42,
+                limit: 3,
+                activityKind: ActivityKind.yoga,
+                showOverflowCount: true,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byIcon(CatchIcons.personOutlined), findsNWidgets(3));
+      expect(find.text('+1'), findsOneWidget);
+    },
+  );
+
   test(
     'eventHypeAvatars uses recent matching-gender profile thumbnails',
     () async {

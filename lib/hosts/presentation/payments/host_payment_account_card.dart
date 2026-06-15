@@ -10,10 +10,12 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
+import 'package:catch_dating_app/core/widgets/settings_row.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +36,100 @@ class _HostPaymentAccountCardState
   Object? _error;
   bool _onboardingPending = false;
   bool _refreshPending = false;
+
+  Future<void> _showPayoutsHandoff(
+    HostPaymentAccount? account,
+    _HostPaymentPresentation presentation,
+  ) async {
+    final t = CatchTokens.of(context);
+    final derivedCountry = countryIsoCodeForCityName(widget.club.location);
+    final derivedCurrency = currencyCodeForCityName(widget.club.location);
+    final country = account?.country ?? derivedCountry;
+    final currency = account?.defaultCurrency ?? derivedCurrency;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: t.bg,
+      barrierColor: t.overlay,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(CatchRadius.lg),
+        ),
+      ),
+      builder: (sheetContext) {
+        final sheetTokens = CatchTokens.of(sheetContext);
+        return CatchBottomSheetScaffold(
+          title: 'Set up payouts',
+          subtitle: 'Powered by Stripe',
+          action: CatchButton(
+            label: 'Continue to Stripe',
+            icon: Icon(CatchIcons.openInNewRounded),
+            fullWidth: true,
+            isLoading: _onboardingPending,
+            onPressed: _onboardingPending
+                ? null
+                : () {
+                    Navigator.of(sheetContext).pop();
+                    unawaited(_startOnboarding());
+                  },
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CatchBadge(
+                label: presentation.badge,
+                tone: presentation.tone,
+                uppercase: true,
+              ),
+              gapH14,
+              Text(
+                'Catch pays hosts through Stripe. Finish a short verification on Stripe, then come back here before paid non-INR events can take checkout.',
+                style: CatchTextStyles.supporting(
+                  sheetContext,
+                  color: sheetTokens.ink2,
+                ),
+              ),
+              gapH16,
+              CatchSurface(
+                tone: CatchSurfaceTone.raised,
+                borderColor: sheetTokens.line2,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CatchSpacing.s3,
+                ),
+                child: Column(
+                  children: [
+                    SettingsRow(
+                      label: 'Country',
+                      value: _countryLabel(country),
+                      icon: CatchIcons.locationOnOutlined,
+                      showChevron: false,
+                    ),
+                    SettingsRow(
+                      label: 'Default currency',
+                      value: currency.toUpperCase(),
+                      icon: CatchIcons.paymentsOutlined,
+                      divider: true,
+                      showChevron: false,
+                    ),
+                  ],
+                ),
+              ),
+              gapH12,
+              Text(
+                'We will refresh your payout status when you return.',
+                textAlign: TextAlign.center,
+                style: CatchTextStyles.supporting(
+                  sheetContext,
+                  color: sheetTokens.ink3,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   Future<void> _startOnboarding() async {
     setState(() {
@@ -137,7 +233,9 @@ class _HostPaymentAccountCardState
                   label: account == null ? 'Set up payouts' : 'Continue setup',
                   onPressed: _onboardingPending
                       ? null
-                      : () => unawaited(_startOnboarding()),
+                      : () => unawaited(
+                          _showPayoutsHandoff(account, presentation),
+                        ),
                   isLoading: _onboardingPending,
                   icon: Icon(CatchIcons.paymentsOutlined),
                 ),
@@ -161,10 +259,9 @@ class _HostPaymentAccountCardState
     );
   }
 
-  ({String badge, CatchBadgeTone tone, String title, String body})
-  _presentation(HostPaymentAccount? account) {
+  _HostPaymentPresentation _presentation(HostPaymentAccount? account) {
     if (account == null) {
-      return (
+      return const _HostPaymentPresentation(
         badge: 'Not set up',
         tone: CatchBadgeTone.warning,
         title: 'Set up international payouts',
@@ -173,7 +270,7 @@ class _HostPaymentAccountCardState
       );
     }
     if (account.canAcceptInternationalPayments) {
-      return (
+      return const _HostPaymentPresentation(
         badge: 'Ready',
         tone: CatchBadgeTone.success,
         title: 'International checkout is ready',
@@ -182,7 +279,7 @@ class _HostPaymentAccountCardState
       );
     }
     if (account.onboardingStatus == HostPaymentOnboardingStatus.restricted) {
-      return (
+      return _HostPaymentPresentation(
         badge: 'Action needed',
         tone: CatchBadgeTone.warning,
         title: 'Stripe needs more information',
@@ -191,7 +288,7 @@ class _HostPaymentAccountCardState
             'Finish the outstanding Stripe requirements to accept payments.',
       );
     }
-    return (
+    return const _HostPaymentPresentation(
       badge: 'Pending',
       tone: CatchBadgeTone.warning,
       title: 'Stripe onboarding is in progress',
@@ -199,4 +296,25 @@ class _HostPaymentAccountCardState
           'Refresh after completing Stripe onboarding to update checkout readiness.',
     );
   }
+}
+
+class _HostPaymentPresentation {
+  const _HostPaymentPresentation({
+    required this.badge,
+    required this.tone,
+    required this.title,
+    required this.body,
+  });
+
+  final String badge;
+  final CatchBadgeTone tone;
+  final String title;
+  final String body;
+}
+
+String _countryLabel(String countryCode) {
+  return switch (countryCode.toUpperCase()) {
+    'IN' => 'India',
+    _ => countryCode.toUpperCase(),
+  };
 }

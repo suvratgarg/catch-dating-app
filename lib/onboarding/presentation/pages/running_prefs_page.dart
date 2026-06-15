@@ -1,9 +1,11 @@
 import 'package:catch_dating_app/core/format_utils.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
@@ -73,8 +75,17 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
     }
 
     return OnboardingStepFrame(
+      footer: CatchButton(
+        label: widget.runPreferencesOnly
+            ? 'Continue booking'
+            : 'Save run preferences',
+        onPressed: _submit,
+        isLoading: mutation.isPending,
+        icon: Icon(CatchIcons.checkRounded),
+        fullWidth: true,
+        size: CatchButtonSize.lg,
+      ),
       children: [
-        gapH32,
         OnboardingStepHeader(
           title: widget.profileCompletionOnly
               ? 'Finish your Catches profile'
@@ -87,47 +98,81 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
               ? 'We only ask for these before run events so hosts can plan pace groups and distances.'
               : 'Help us find compatible running partners.',
         ),
-        gapH32,
+        gapH20,
 
         // ── Pace ──────────────────────────────────────────────────────────
         Text(
-          'COMFORTABLE PACE',
+          'TYPICAL PACE · PER KM',
           style: CatchTextStyles.monoLabel(context, color: t.ink2),
         ),
         gapH8,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(
-              child: Text(
-                '${formatPace(_paceRange.start)}/km',
-                style: CatchTextStyles.numericLarge(context, color: t.ink),
+        CatchSurface(
+          radius: CatchRadius.md,
+          borderColor: t.line,
+          backgroundColor: t.surface,
+          padding: const EdgeInsets.fromLTRB(
+            CatchSpacing.s4,
+            CatchSpacing.s4,
+            CatchSpacing.s4,
+            CatchSpacing.s3,
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Text(
+                      '${formatPace(_paceRange.start)}/km',
+                      style: CatchTextStyles.statDisplay(context, color: t.ink),
+                    ),
+                  ),
+                  Text(
+                    '-',
+                    style: CatchTextStyles.mono(context, color: t.ink3),
+                  ),
+                  Flexible(
+                    child: Text(
+                      '${formatPace(_paceRange.end)}/km',
+                      style: CatchTextStyles.statDisplay(context, color: t.ink),
+                      textAlign: TextAlign.end,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            Flexible(
-              child: Text(
-                '${formatPace(_paceRange.end)}/km',
-                style: CatchTextStyles.numericLarge(context, color: t.ink),
-                textAlign: TextAlign.end,
+              gapH12,
+              CatchRangeSlider(
+                values: _paceRange,
+                min: 240, // 4:00/km
+                max: 540, // 9:00/km
+                divisions: 20,
+                onChanged: (next) {
+                  OnboardingController.completeMutation.reset(ref);
+                  setState(() => _paceRange = next);
+                },
               ),
-            ),
-          ],
+              gapH4,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '4:00 FAST',
+                    style: CatchTextStyles.badge(context, color: t.ink3),
+                  ),
+                  Text(
+                    '9:00 EASY',
+                    style: CatchTextStyles.badge(context, color: t.ink3),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-        CatchRangeSlider(
-          values: _paceRange,
-          min: 240, // 4:00/km
-          max: 540, // 9:00/km
-          divisions: 20,
-          onChanged: (next) {
-            OnboardingController.completeMutation.reset(ref);
-            setState(() => _paceRange = next);
-          },
-        ),
-        gapH28,
+        gapH20,
 
         // ── Distances ─────────────────────────────────────────────────────
         ChipField<PreferredDistance>(
-          label: 'Preferred distances',
+          label: 'FAVOURITE DISTANCES',
           isOptional: true,
           values: PreferredDistance.values,
           selected: _distances,
@@ -141,13 +186,13 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
             });
           },
         ),
-        gapH28,
+        gapH20,
 
         // ── Event reasons ───────────────────────────────────────────────────
         ChipField<RunReason>(
           label: widget.runPreferencesOnly
               ? 'Why do you run?'
-              : 'Why do you event?',
+              : 'WHY DO YOU RUN?',
           isOptional: true,
           values: RunReason.values,
           selected: _reasons,
@@ -161,13 +206,13 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
             });
           },
         ),
-        gapH28,
+        gapH20,
 
         // ── Time of day ───────────────────────────────────────────────────
         ChipField<PreferredRunTime>(
           label: widget.runPreferencesOnly
-              ? 'Favorite run times'
-              : 'Favorite event times',
+              ? 'FAVOURITE RUN TIMES'
+              : 'FAVOURITE EVENT TIMES',
           isOptional: true,
           values: PreferredRunTime.values,
           selected: _runTimes,
@@ -186,17 +231,6 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
           gapH16,
           ErrorBanner(message: mutationErrorMessage(mutation)),
         ],
-        gapH40,
-        CatchButton(
-          label: widget.runPreferencesOnly
-              ? 'Continue booking'
-              : 'Save run preferences',
-          onPressed: _submit,
-          isLoading: mutation.isPending,
-          fullWidth: true,
-          size: CatchButtonSize.lg,
-        ),
-        gapH32,
       ],
     );
   }

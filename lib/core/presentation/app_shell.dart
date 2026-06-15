@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -206,22 +207,24 @@ class _AppShellNavigationBar extends StatelessWidget {
   }
 }
 
-@visibleForTesting
 class AppShellNavigationBar extends StatelessWidget {
   const AppShellNavigationBar({
     super.key,
     required this.currentIndex,
     required this.unreadCount,
     required this.onDestinationSelected,
+    this.items,
   });
 
   final int currentIndex;
   final int unreadCount;
   final ValueChanged<int> onDestinationSelected;
+  final List<AppShellNavigationItem>? items;
 
   @override
   Widget build(BuildContext context) {
     final selectedIndex = currentIndex;
+    final destinations = items ?? _consumerNavigationItems();
 
     if (prefersCupertinoControls()) {
       final t = CatchTokens.of(context);
@@ -237,91 +240,103 @@ class AppShellNavigationBar extends StatelessWidget {
           ),
           border: Border(top: BorderSide(color: t.line)),
           items: [
-            const BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.house),
-              activeIcon: Icon(CupertinoIcons.house_fill),
-              label: 'Home',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.person_2),
-              activeIcon: Icon(CupertinoIcons.person_2_fill),
-              label: 'Explore',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.heart),
-              activeIcon: Icon(CupertinoIcons.heart_fill),
-              label: 'Catches',
-            ),
-            BottomNavigationBarItem(
-              icon: AppShellNavigationBadge(
-                count: unreadCount,
-                child: const Icon(CupertinoIcons.chat_bubble_2),
+            for (final item in destinations)
+              BottomNavigationBarItem(
+                icon: _navigationIcon(
+                  item.cupertinoIcon,
+                  unreadCount: item.showsUnreadBadge ? unreadCount : 0,
+                ),
+                activeIcon: _navigationIcon(
+                  item.cupertinoSelectedIcon,
+                  unreadCount: item.showsUnreadBadge ? unreadCount : 0,
+                ),
+                label: item.label,
               ),
-              activeIcon: AppShellNavigationBadge(
-                count: unreadCount,
-                child: const Icon(CupertinoIcons.chat_bubble_2_fill),
-              ),
-              label: 'Chats',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.person),
-              activeIcon: Icon(CupertinoIcons.person_fill),
-              label: 'Profile',
-            ),
           ],
         ),
       );
     }
 
-    return NavigationBar(
+    return CatchTabDock<int>(
       key: AppShellKeys.navigationBar,
-      selectedIndex: selectedIndex,
-      onDestinationSelected: onDestinationSelected,
-      destinations: [
-        // 0 — Home
-        NavigationDestination(
-          icon: Icon(CatchIcons.homeOutlined),
-          selectedIcon: Icon(CatchIcons.homeRounded),
-          label: 'Home',
-        ),
-        // 1 — Explore
-        NavigationDestination(
-          icon: Icon(CatchIcons.groupsOutlined),
-          selectedIcon: Icon(CatchIcons.groupsRounded),
-          label: 'Explore',
-        ),
-        // 2 — Catches
-        NavigationDestination(
-          icon: Icon(CatchIcons.favoriteOutlineRounded),
-          selectedIcon: Icon(CatchIcons.favoriteRounded),
-          label: 'Catches',
-        ),
-        // 3 — Chats
-        NavigationDestination(
-          icon: unreadCount > 0
-              ? AppShellNavigationBadge(
-                  count: unreadCount,
-                  child: Icon(CatchIcons.chatBubbleOutlineRounded),
-                )
-              : Icon(CatchIcons.chatBubbleOutlineRounded),
-          selectedIcon: unreadCount > 0
-              ? AppShellNavigationBadge(
-                  count: unreadCount,
-                  child: Icon(CatchIcons.chatBubbleRounded),
-                )
-              : Icon(CatchIcons.chatBubbleRounded),
-          label: 'Chats',
-        ),
-        // 4 — Profile
-        NavigationDestination(
-          icon: Icon(CatchIcons.personOutlineRounded),
-          selectedIcon: Icon(CatchIcons.personRounded),
-          label: 'Profile',
-        ),
+      active: selectedIndex,
+      onChanged: onDestinationSelected,
+      items: [
+        for (final (index, item) in destinations.indexed)
+          CatchTabDockItem(
+            id: index,
+            icon: item.materialIcon,
+            activeIcon: item.materialSelectedIcon,
+            label: item.label,
+            badgeCount: item.showsUnreadBadge ? unreadCount : 0,
+          ),
       ],
     );
   }
+
+  Widget _navigationIcon(IconData icon, {required int unreadCount}) {
+    final child = Icon(icon);
+    if (unreadCount <= 0) return child;
+    return AppShellNavigationBadge(count: unreadCount, child: child);
+  }
 }
+
+class AppShellNavigationItem {
+  const AppShellNavigationItem({
+    required this.label,
+    required this.materialIcon,
+    required this.materialSelectedIcon,
+    required this.cupertinoIcon,
+    required this.cupertinoSelectedIcon,
+    this.showsUnreadBadge = false,
+  });
+
+  final String label;
+  final IconData materialIcon;
+  final IconData materialSelectedIcon;
+  final IconData cupertinoIcon;
+  final IconData cupertinoSelectedIcon;
+  final bool showsUnreadBadge;
+}
+
+List<AppShellNavigationItem> _consumerNavigationItems() => [
+  AppShellNavigationItem(
+    label: 'Home',
+    materialIcon: CatchIcons.tabHome,
+    materialSelectedIcon: CatchIcons.tabHomeFilled,
+    cupertinoIcon: CupertinoIcons.house,
+    cupertinoSelectedIcon: CupertinoIcons.house_fill,
+  ),
+  AppShellNavigationItem(
+    label: 'Explore',
+    materialIcon: CatchIcons.tabExplore,
+    materialSelectedIcon: CatchIcons.tabExploreFilled,
+    cupertinoIcon: CupertinoIcons.person_2,
+    cupertinoSelectedIcon: CupertinoIcons.person_2_fill,
+  ),
+  AppShellNavigationItem(
+    label: 'Catches',
+    materialIcon: CatchIcons.tabCatches,
+    materialSelectedIcon: CatchIcons.tabCatchesFilled,
+    cupertinoIcon: CupertinoIcons.heart,
+    cupertinoSelectedIcon: CupertinoIcons.heart_fill,
+  ),
+  AppShellNavigationItem(
+    label: 'Chats',
+    materialIcon: CatchIcons.tabChats,
+    materialSelectedIcon: CatchIcons.tabChatsFilled,
+    cupertinoIcon: CupertinoIcons.chat_bubble_2,
+    cupertinoSelectedIcon: CupertinoIcons.chat_bubble_2_fill,
+    showsUnreadBadge: true,
+  ),
+  AppShellNavigationItem(
+    label: 'You',
+    materialIcon: CatchIcons.tabYou,
+    materialSelectedIcon: CatchIcons.tabYouFilled,
+    cupertinoIcon: CupertinoIcons.person,
+    cupertinoSelectedIcon: CupertinoIcons.person_fill,
+  ),
+];
 
 @visibleForTesting
 class AppShellNavigationBadge extends StatelessWidget {

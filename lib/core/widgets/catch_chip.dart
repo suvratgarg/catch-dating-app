@@ -3,12 +3,14 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-/// Canonical Catch filter/tag chip primitive.
+/// Handoff `Chip`: a quiet fact/filter pill.
 class CatchChip extends StatelessWidget {
   const CatchChip({
     super.key,
     required this.label,
     this.active = false,
+    this.tintColor,
+    this.inkColor,
     this.icon,
     this.onTap,
     this.onRemove,
@@ -18,6 +20,8 @@ class CatchChip extends StatelessWidget {
 
   final String label;
   final bool active;
+  final Color? tintColor;
+  final Color? inkColor;
   final Widget? icon;
   final VoidCallback? onTap;
   final VoidCallback? onRemove;
@@ -29,9 +33,15 @@ class CatchChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final background = active ? t.ink : t.surface;
-    final foreground = active ? t.surface : t.ink;
-    final border = active ? Colors.transparent : t.line2;
+    final hasTint = tintColor != null;
+    final background = tintColor ?? (active ? Colors.transparent : t.surface);
+    final foreground = inkColor ?? t.ink;
+    final border = hasTint
+        ? Colors.transparent
+        : active
+        ? t.ink
+        : t.line2;
+    final borderWidth = active && !hasTint ? 1.5 : 1.0;
 
     return Semantics(
       button: _interactive,
@@ -46,7 +56,7 @@ class CatchChip extends StatelessWidget {
           decoration: BoxDecoration(
             color: background,
             borderRadius: BorderRadius.circular(CatchRadius.pill),
-            border: Border.all(color: border),
+            border: Border.all(color: border, width: borderWidth),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.pill),
@@ -83,7 +93,7 @@ class CatchChip extends StatelessWidget {
                           label,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.sectionTitle(
+                          style: CatchTextStyles.labelL(
                             context,
                             color: foreground,
                           ),
@@ -92,7 +102,7 @@ class CatchChip extends StatelessWidget {
                       if (onRemove != null) ...[
                         const SizedBox(width: CatchSpacing.s2),
                         _RemoveButton(
-                          color: active ? t.surface : t.ink2,
+                          color: foreground,
                           onRemove: enabled ? onRemove : null,
                         ),
                       ],

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
@@ -78,7 +79,8 @@ void main() {
         const Offset(0, -360),
       );
       await tester.pump();
-      expect(find.text('LOOKING FOR'), findsOneWidget);
+      expect(find.text('DETAILS'), findsOneWidget);
+      expect(find.text('LOOKING FOR'), findsNothing);
       expect(find.text('Something casual'), findsOneWidget);
       expect(
         tester.getSemantics(find.byType(ProfileSurface)).hint,
@@ -316,6 +318,8 @@ void main() {
       await tester.pump();
       expect(find.text('Social miles'), findsOneWidget);
       expect(find.text('5K regular'), findsOneWidget);
+      expect(_badge('Social miles'), findsOneWidget);
+      expect(_badge('5K regular'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
@@ -471,4 +475,10 @@ void main() {
     expect(reactedTarget?.id, 'profile-prompt-perfectRun');
     expect(reactedComment, 'This is a great hook.');
   });
+}
+
+Finder _badge(String label) {
+  return find.byWidgetPredicate(
+    (widget) => widget is CatchBadge && widget.label == label,
+  );
 }

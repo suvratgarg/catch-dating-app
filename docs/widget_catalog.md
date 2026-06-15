@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.167
-updated: 2026-06-11
+version: 2.5.277
+updated: 2026-06-15
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,956 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.277
+
+- `BottomCTA` now forwards an optional `buttonAccentColor` into its underlying
+  primary `CatchButton`, allowing event booking docks to use activity pigment
+  without per-screen button styling.
+- `EventDetailCta` now resolves the current event activity and applies that
+  accent to booking, request-to-join, and accept-spot actions while preserving
+  neutral treatment for waitlist, cancel, past, and ineligible states.
+
+### 2.5.276
+
+- `EventDetailPhotoStrip` now renders the handoff three-tile strip for
+  non-empty event photo sets: uploaded photos fill leading slots, remaining
+  slots render activity-soft placeholders, and all tiles use the 108px strip
+  height with the caption/data row below.
+
+### 2.5.275
+
+- `PersonAvatarStack` now matches the handoff `AvatarStack` contract more
+  closely: photo-less people render initials over the existing activity-derived
+  avatar gradient, stacks can render activity-tinted veiled placeholder circles,
+  and the overflow `+N` circle uses the quiet raised surface treatment.
+- `EventHypeAvatarStack` now uses veiled activity placeholders for obscured
+  event-detail attendee rows instead of fetching and blurring profile photos;
+  revealed stacks keep the public-profile thumbnail provider path.
+
+### 2.5.274
+
+- `CatchButton` now exposes the handoff primary activity accent shortcut through
+  `accentColor`, pairing pigment fills with white ink while preserving explicit
+  `backgroundColor` / `foregroundColor` overrides for legacy custom buttons.
+
+### 2.5.273
+
+- `CatchChip` selected state now follows the handoff rule: transparent fill
+  with the 1.5px ink selection outline. Resting chips keep the surface fill,
+  and activity-tinted chips still use their supplied activity soft/deep colors.
+
+### 2.5.272
+
+- `CatchTextField` now carries more of the handoff `TextField` contract:
+  `CatchTextFieldVariant.underline`, centered text alignment, tabular numeric
+  figures through `mono`, forced focus styling for static/mock compositions,
+  and a quiet trailing widget slot. Existing boxed editable fields keep their
+  default shell, sizing, validation, and clear-button behavior.
+
+### 2.5.271
+
+- `CatchScreenBody` now maps the handoff `ScreenBody` composition directly:
+  it owns the vertical scroll region, app-wide horizontal gutter, top/bottom
+  padding overrides, full-bleed gutter opt-out, and a non-scroll escape hatch
+  for screens whose parent already owns scrolling.
+
+### 2.5.270
+
+- Added `CatchStepHeader`, the Flutter port of the handoff `StepHeader`: large
+  `CatchTopBar` anatomy with inline back/close-compatible leading behavior,
+  optional kicker/subtitle, top-right `STEP n OF m` mono counter or custom
+  trailing status, gutter ownership, and a 2px ink progress hairline.
+  `CatchStepFlowHeader` remains as the existing zero-based compatibility
+  wrapper for onboarding/create flows.
+
+### 2.5.269
+
+- Added `CatchTabDock`, the Flutter port of the handoff `TabDock`: translucent
+  blur surface, top hairline, 10/12/18 padding, 22px active filled glyphs,
+  uppercase mono 8.5px labels, selected/idle ink roles, and badge support.
+  `AppShellNavigationBar` now uses it for non-iOS authenticated bottom
+  navigation while keeping the existing native `CupertinoTabBar` branch on iOS.
+
+### 2.5.268
+
+- `CatchTopBar` now carries the handoff `AppBar` API: compact and large
+  editorial headers, `kicker` / `subtitle` text roles, back / close / none
+  leading modes, surface/divider/gutter ownership, text/icon/trailing action
+  shortcuts, and declarative `CatchExpandingSearch` composition that hides the
+  title while search is open. Existing `actions`, custom `leading`,
+  `showBackButton`, and tab-bottom behavior remain supported.
+
+### 2.5.267
+
+- `IconBtn` now matches the handoff `IconButton` primitive: 44px default
+  circular target, bordered / float / plain variants, surface + line2 bordered
+  chrome, translucent floating photo/map chrome with soft shadow, active accent
+  tinting through `IconTheme`, disabled opacity, and a 40px `navSize` constant
+  for app-bar back/actions.
+
+### 2.5.266
+
+- Added `CatchCodeInput`, the Flutter port of the handoff `CodeInput`: 6-cell
+  default row, controlled `value`, optional active cell override, 64px cell
+  height, 10px gap, surface fill, interactive-tile radius, ink active rule, and
+  optional caret. `CatchOtpCodeField` now composes the same visual primitive
+  over one hidden platform `TextField` for SMS autofill, paste, digit filtering,
+  length limiting, and auth form tests.
+
+### 2.5.265
+
+- Added `CatchStatusBar`, the Flutter port of the handoff `StatusBar` for
+  phone-frame/mock surfaces: 14px bold mono time, Phosphor fill signal/wifi/
+  battery glyphs, light/dark tone support, and optional surface band fill.
+
+### 2.5.264
+
+- `CatchSectionStack` now matches the handoff `SectionStack` ownership model:
+  it owns only the 24/20/20 page gutter and no longer inserts an extra
+  inter-section gap by default. `CatchDesignSection` remains the single owner
+  of the 24px hairline delimiter rhythm and 12px kicker/body gap.
+- `CatchDetailSliverSectionList` now also defaults to no inserted gap so
+  sliver-native detail pages can use the same section-owned rhythm.
+
+### 2.5.263
+
+- `CatchBottomSheetScaffold` now matches the handoff `Sheet` scaffold: surface
+  panel with overlay shadow, `26px/30px` bottom-sheet radii, 10/22/26 padding,
+  optional grabber, plain title/subtitle header, branded glyph-tile header,
+  and badge/trailing right-side header slots.
+
+### 2.5.262
+
+- `CatchEmptyState` now defaults to the handoff `EmptyState` presentation:
+  cardless centered content, optional quiet 34px ink3 glyph, section-title
+  headline, body-small message, 24px horizontal padding, and optional action
+  slot. Explicit `surface`, `bubble`, and `inline` modes remain for embedded
+  legacy contexts that need them.
+
+### 2.5.261
+
+- Added `CatchExpandingSearch`, the Flutter port of the handoff
+  `ExpandingSearch`: collapsed magnifier affordance, controlled animated growth
+  into the shared raised-pill `CatchSearchField`, and clear-first-then-close
+  trailing behavior.
+- `CatchBrowseHeader` now composes `CatchExpandingSearch` directly and accepts
+  controlled search value/change callbacks, so Clubs and Chats bind provider
+  query state through the shared app-bar search primitive.
+
+### 2.5.260
+
+- Added `CatchMenu`, the Flutter port of the handoff `Menu`: overlay surface,
+  line2 border, radius-md corners, row hairlines, optional icon/sublabel,
+  selected check mark, and danger row tone.
+- `CatchActionMenu` now anchors the shared `CatchMenu` panel instead of native
+  `MenuItemButton` rows, and supports sublabels plus selected rows for club
+  pickers and overflow actions.
+
+### 2.5.259
+
+- Added `CatchSearchField`, the Flutter port of the handoff `SearchField`:
+  raised pill input, 15px magnifier, quiet x-circle clear target, controlled
+  value sync, and submit/focus callbacks for browse headers.
+- Chats and Clubs search wrappers now bind their query providers to
+  `CatchSearchField` instead of configuring the heavier form-oriented
+  `CatchTextField` for browse search.
+
+### 2.5.258
+
+- Added `CatchPanel`, the Flutter port of the handoff `Panel`: bounded
+  `surface` card, hairline border, `radius-md`, 20px default padding, and soft
+  card shadow for self-contained groups and flow stages.
+- `CatchSectionCard` now composes `CatchPanel` instead of restating the card
+  surface contract directly.
+
+### 2.5.257
+
+- Reintroduced `CatchKicker` as the handoff `Kicker` leaf primitive, replacing
+  the old legacy helper with the current contract: uppercase mono eyebrow,
+  optional color override, and `md` / `lg` sizes.
+- `InfoGroup` and `CatchDesignSection` now compose the shared kicker primitive
+  instead of rendering local uppercase kicker `Text` directly.
+
+### 2.5.256
+
+- Promoted the Material confirm-card implementation to public
+  `CatchConfirmDialog<T>` and added `showCatchConfirmDialog` for the handoff
+  two-action confirm API with default Cancel/Confirm labels and danger-filled
+  destructive commits.
+- Confirm dialogs now use centralized handoff tokens for the 46% ink scrim,
+  320px max card width, 28px overlay inset, and `24px 22px 18px` card padding
+  while preserving Cupertino alert chrome on iOS.
+
+### 2.5.255
+
+- Added shared `InfoRow` and `InfoGroup`, Flutter ports of the handoff
+  on-surface row/group grammar. They cover inline and stacked rows, add and
+  danger affordances, chevrons, toggles, and injected quiet dividers inside
+  kicker-delimited groups.
+
+### 2.5.254
+
+- Added shared `StatStrip`, the Flutter port of the handoff flat
+  hairline-bordered stat row. Club detail stats now use it instead of the more
+  general `CatchMetricStrip`, with uppercase mono labels and numeric figures.
+
+### 2.5.253
+
+- Added shared `ActivityArt`, the Flutter port of the handoff generated
+  activity-art surface with activity pigment, screen-print texture, faint glyph
+  motif, optional dim layer, radius/height controls, and overlay child slot.
+
+### 2.5.252
+
+- Added shared `DistanceRing`, the Flutter port of the handoff map radius ring:
+  default 170px ring, 1.2px ink stroke, and optional tappable mono label for
+  static map canvases and previews.
+
+### 2.5.251
+
+- Added shared `ActivityMapPin`, the Flutter port of the handoff `MapPin`.
+  Event-detail map cards now use the activity-pigment pin mark instead of a
+  local rounded activity-glyph badge, with optional selected flag support for
+  map surfaces.
+
+### 2.5.250
+
+- Added shared `ActivityAvatar`, the Flutter port of the handoff activity
+  avatar. It resolves activity pigment through `ActivityPalette`, supports
+  initials, explicit size, selected/live ring, dim veil, and the screen-print
+  texture used by activity-register people surfaces.
+
+### 2.5.249
+
+- Added shared `ActivityChip`, the Flutter port of the handoff activity tag.
+  It resolves `ActivityKind` through `ActivityPalette`, supports soft and
+  primary registers, optional label override/tap behavior, and replaces the
+  host-only activity-chip helper in `HostOperationsHomeScreen`.
+
+### 2.5.248
+
+- `CatchBadge` now matches the handoff `Badge` API more closely with
+  `CatchBadgeSize.action` for 33px button-aligned outcome pills, explicit
+  leading-icon coverage, a `gold` functional tone, and activity-accent tinting
+  via `accentColor`. Existing compact/live badge behavior is unchanged.
+
+### 2.5.247
+
+- `CatchFrameworkErrorView` debug details now use a tokenized `CatchSurface`
+  disclosure row with animated chevron/content instead of Material
+  `ExpansionTile`, leaving the framework-error fallback dependency-light while
+  aligning with the handoff disclosure pattern.
+
+### 2.5.246
+
+- `EventSuccessSetupBody` setup disclosure sections now use a handoff-style
+  tokenized `CatchSurface` row with animated chevron and `AnimatedSize` content
+  instead of Material `ExpansionTile`. Existing Guide notes / Advanced
+  expansion behavior, module toggles, and draft updates are unchanged.
+
+### 2.5.245
+
+- Retired the unused `ListTileMaterial` compatibility wrapper now that app
+  surfaces no longer need native `ListTile` rows inside custom sheet/surface
+  chrome. Use shared row/surface primitives such as `SettingsRow`,
+  `CatchSurface`, `PersonRow`, or feature-specific rows instead.
+
+### 2.5.244
+
+- `SuvbotActionBar` is now cataloged, and its reset-demo sheet uses
+  `CatchBottomSheetScaffold` plus tokenized `CatchSurface` action rows instead
+  of raw Material `ListTile` rows. Existing demo action routing, pending
+  disablement, and text-action behavior are unchanged.
+
+### 2.5.243
+
+- `LocationPickerScreen` autocomplete suggestions now render with a tokenized
+  local suggestion row inside the existing `CatchSurface` overlay instead of a
+  raw Material `ListTile`. Search, selection, and map-confirm behavior are
+  unchanged.
+
+### 2.5.242
+
+- `PublicProfileScreen` now uses branded `CatchErrorState` and
+  `CatchEmptyState` surfaces for profile load failures and unavailable profiles
+  instead of raw centered text, and the report reason sheet now uses shared
+  `SettingsRow` action rows. The shared `ProfileSurface` body and report/block
+  mutations are unchanged.
+
+### 2.5.241
+
+- `CatchChip` now matches the handoff `Chip` selection rule: active chips keep a
+  surface fill with a 1.5px inset ink rule instead of an inverted ink fill. The
+  primitive also exposes optional tint/ink colors for activity-tagged fact
+  pills while preserving tap and remove behavior.
+
+### 2.5.240
+
+- `ProfileSurface` / `CatchProfileView` now renders passive compatibility and
+  running-identity labels with `CatchBadge` instead of generic `CatchChip`.
+  Editable chip fields remain on `ChipField`, and reaction controls are
+  unchanged.
+
+### 2.5.239
+
+- `LaunchAccessApplicationScreen` now uses handoff `CatchToggle` row
+  composition for the `I might host` binary setting instead of an adaptive
+  Material switch tile. The Remote Config gate, signed-in guard, editable
+  application draft, and submit mutation behavior are unchanged.
+
+### 2.5.238
+
+- `EventSuccessFeedbackForm` now uses handoff `CatchToggle` row composition for
+  the private safety/comfort review flag instead of a Material checkbox tile.
+  Feedback ratings, private note copy, and repository submission semantics are
+  unchanged.
+
+### 2.5.237
+
+- `EventSuccessLabScreen` playbook module metadata now uses shared
+  `CatchBadge` labels instead of generic `CatchChip` tags. The dev/staging WIP
+  route, preview-only guardrails, and feature-block composition are unchanged.
+
+### 2.5.236
+
+- `EventSuccessDefaultsPanel` and `EventSuccessSetupBody` setup switches now
+  use handoff `CatchToggle` row composition instead of adaptive Material switch
+  tiles. Existing draft/default update callbacks and progressive disclosure are
+  unchanged.
+
+### 2.5.235
+
+- `EventSuccessManualQaScreen` fixture controls now use handoff `SelectChip`
+  choices for the scenario selector and `CatchToggle` rows for attendee opt-out
+  settings. The existing side-by-side host/attendee fixture wiring and
+  `CatchTopBar` chrome are unchanged.
+
+### 2.5.234
+
+- `EventSuccessHostPanel` now uses the handoff `CatchOptionGroup` primitive for
+  its standalone Setup / Live / Report lifecycle picker instead of generic
+  chips. Host Manage already supplies its fixed lifecycle section externally.
+
+### 2.5.233
+
+- `EventSuccessHostSetupFlow` is now cataloged and uses the handoff
+  `SelectChip` primitive for the playbook/format selector. The setup draft,
+  structure editor, module switches, and readiness issue behavior are
+  unchanged.
+
+### 2.5.232
+
+- `EventSuccessSetupBody` is now cataloged and uses the handoff `SelectChip`
+  primitive for rotation cadence, reveal countdown, and match-clue mode
+  choices. Stage cards, recommendation toggles, guide-note fields, and draft
+  update semantics are unchanged.
+
+### 2.5.231
+
+- `EventSuccessQuestionnaireConfigEditor` is now cataloged and uses the handoff
+  `SelectChip` primitive for reusable/custom questionnaire template choices.
+  Preview badges, custom-question editing, and bottom-sheet custom editing stay
+  unchanged.
+
+### 2.5.230
+
+- `EventSuccessStructureConfigEditor` now uses the handoff `SelectChip`
+  primitive for flow type, auto/fixed count, repeat policy, and assignment-goal
+  choices. Badge summaries and numeric steppers remain unchanged.
+
+### 2.5.229
+
+- Explore filter-sheet distance and joined-club choices now use the handoff
+  `SelectChip` primitive for choosy filters. The visible time-scope
+  `CatchOptionGroup`, trailing `CatchCountPill`, active-count badge, and filter
+  controller wiring are unchanged.
+
+### 2.5.228
+
+- Swipe Filters interested-in choices now use the handoff `SelectChip`
+  primitive for choosy filters instead of the generic `CatchChip`. Age range,
+  reset/apply actions, save payload mapping, and pop-on-success behavior are
+  unchanged.
+
+### 2.5.227
+
+- Host Edit Event policy toggles now use the handoff `CatchToggle` row
+  composition for cohort caps and demand pricing instead of adaptive
+  `SwitchListTile` rows. Existing lock rules, validators, and save payload
+  mapping are unchanged.
+
+### 2.5.226
+
+- Host Edit Event selectors now use the handoff `SelectChip` for pace,
+  admission format, and cancellation policy choices. Schedule/location fields,
+  policy-lock behavior, cohort-cap and demand-pricing toggles, and save payload
+  mapping are unchanged.
+
+### 2.5.225
+
+- Host Create Club host-default selectors now use the handoff `SelectChip` for
+  default activity, admission format, and cancellation policy. Default activity
+  choices carry their own activity pigment; cohort-cap and demand-pricing
+  switches remain on `CatchToggle`.
+
+### 2.5.224
+
+- Host Create Event policy selectors now use the handoff `SelectChip` for
+  admission format and cancellation policy choices. Capacity, invite-code,
+  cohort-cap, demand-pricing, age, and payout controls keep their existing
+  field/toggle composition.
+
+### 2.5.223
+
+- Host Create Event basics now uses the handoff `SelectChip` for activity type,
+  custom format structure, and pace choices. Activity chips carry their own
+  activity pigment, while format/pace choices inherit the selected activity
+  accent.
+
+### 2.5.222
+
+- Added `SelectChip`, the Flutter port of the handoff tactile selectable pill
+  for questionnaire answers, mission choices, and choosy filters. It uses an
+  accent selected fill, active glow/scale, pressed scale-down, selected
+  semantics, and shared `CatchSurface` pill chrome.
+
+### 2.5.221
+
+- Added `SectionLabel`, the Flutter port of the handoff activity-accent
+  eyebrow. It keeps the optional leading glyph and mono kicker label on the same
+  accent color, with bounded ellipsis behavior for panel and section headers.
+
+### 2.5.220
+
+- Added `SoftBand`, the Flutter port of the handoff quiet tinted inset row for
+  privacy notes, tips, and secondary details. It delegates primary-soft fill,
+  small radius, and no-elevation surface behavior to `CatchSurface` instead of
+  creating a parallel decoration primitive.
+
+### 2.5.219
+
+- Added `PrivacyBadge`, the Flutter port of the handoff privacy pill for
+  `PRIVATE TO YOU`, `CATCH PRIVATE`, and `HOST CAN SEE` visibility hints. It
+  uses shared surface, icon, spacing, and mono badge text primitives instead of
+  local outlined-pill styling.
+
+### 2.5.218
+
+- Added `BookingConflictSheet`, the Flutter counterpart to the Booking
+  handoff's `ConflictSheet`: warning sheet chrome, activity-colored existing /
+  incoming event rows, and replace / keep-both / keep-existing action slots.
+  The component is presentation-ready for a future booking-overlap flow without
+  inventing backend replacement behavior in this pass.
+
+### 2.5.217
+
+- Host Account profile rows now open `_HostProfileEditorSheet` with
+  `CatchBottomSheetScaffold` on the Account route instead of navigating to
+  `HostProfileScreen`, matching the handoff's no-nested-editor composition
+  while preserving the full-screen route for direct entry.
+
+### 2.5.216
+
+- Host Clubs now uses the handoff selected-club shell instead of rendering all
+  operated clubs in grouped sections. The top bar title is the selected club,
+  the shared top-bar menu switches clubs when needed, and a handoff
+  `OptionGroup` exposes Edit / Preview. Edit mode now shows Identity,
+  Contact, Event defaults, Public profile, Payouts, and Host team sections
+  using on-surface `SettingsRow` composition.
+
+### 2.5.215
+
+- Notifications day groups now use a compact handoff screen wrapper instead of
+  `CatchDesignSection`: first group starts flush under the Activity AppBar,
+  later groups get an 8px section offset, top hairline, and 18px inset before
+  the kicker and `NotificationRow` stack.
+
+### 2.5.214
+
+- Host Events now matches the handoff's single-club operations shell: owned
+  clubs sort before co-hosted clubs, the top bar title is the selected club,
+  the shared top-bar menu switches clubs only when multiple clubs are present,
+  and the body shows that club's meta row, Upcoming rows, and Add event row.
+
+### 2.5.213
+
+- Host Inbox now exposes the handoff `All` / `Unread · n` `OptionGroup` below
+  the pinned chats browse header. `ChatsListScreen` owns only the transient
+  host filter state, while `ChatsList` applies the unread filter to the
+  existing `ChatsListViewModel` and shows the host-specific no-unread empty
+  state when needed.
+
+### 2.5.212
+
+- `profileViewFromCardContent` now follows the Profile handoff body sequence:
+  compatibility, prompts, running rhythm, all inset photos, `Details`, then
+  `Lifestyle`. Relationship intent is preserved as the first `Details` fact
+  instead of creating a standalone `Looking for` section, keeping the public
+  profile surface on the template's `FactList` composition.
+
+### 2.5.211
+
+- `AppShellNavigationBar` is now a shared destination-driven bottom navigation
+  primitive. The consumer shell keeps its default Home / Explore / Catches /
+  Chats / Profile destinations, while `HostAppShell` supplies Events / Clubs /
+  Inbox / Account through the same Material/Cupertino chrome and fixed unread
+  badge treatment.
+
+### 2.5.210
+
+- `CatchPolaroid` now uses named DS polaroid defaults for the tighter club-card
+  material: 6px outer radius, 3px media radius, 24px upright Archivo title, and
+  a title-row arrow affordance. Footer-heavy Explore/directory club cards can
+  suppress the arrow to avoid duplicating their footer action row.
+
+### 2.5.209
+
+- `PhotoGrid` now matches the handoff core component contract more closely:
+  filled profile photos render through the shared display-time `GradedImage`,
+  pending upload slots use striped photo-placeholder material, empty slots draw
+  dashed hairline targets with the plus glyph, and the leading filled slot gets
+  a hideable mono `MAIN` badge.
+
+### 2.5.208
+
+- `OrderedPhotoPicker` is now cataloged and covered as the shared ordered media
+  picker for host club/event forms. Photo and add tiles render through
+  `CatchSurface`, keep stable add/remove keys, preserve semantic labels and
+  tooltips, and show the shared broken-image affordance for failed network
+  previews.
+
+### 2.5.207
+
+- `EventHypeAvatarStack` is now cataloged as the event-detail attendee-hype
+  composition. It keeps the handoff path on shared `PersonAvatarStack` chrome,
+  derives eligible signed-up/attended participants from the participation edge,
+  joins public profile names/thumbnails, and uses deterministic obscured
+  fallback avatars while async profile data loads.
+- Riverpod generated companions for `EventHypeAvatarStack` and `WhoIsGoing`
+  were reviewed as generated output paired to their source providers.
+
+### 2.5.206
+
+- Removed unused dashboard visual helpers `DashedAvatar` and `StaticMapDark`.
+  Empty-dashboard composition now stays on the active `DashboardEmptySliverBody`,
+  `EmptyHeroCard`, and `CatchDesignSection` path instead of retaining legacy
+  standalone placeholder art widgets.
+
+### 2.5.205
+
+- Previously unreviewed core display atoms are now covered in
+  `catch_primitives_test.dart`: `CatchCornerSash`, `CatchMetaDotRow`,
+  `DetailRow`, `StatColumn`, `GradedImage`, and `CatchStartupLoadingScreen`.
+- Core catalog rows now document the remaining compact atom roles, including
+  startup loading, corner sashes, inline dot metadata, non-destructive photo
+  grading, and dense metadata rows.
+
+### 2.5.204
+
+- `CatchTextStyles` now follows the handoff zero-tracking typography rule across
+  display, condensed head, kicker, mono-label, and badge roles; style docs and
+  active design-language docs now describe zero tracking instead of the previous
+  negative/tracked rule.
+- Design-system and profile golden baselines were regenerated for the intended
+  central typography visual change.
+- The cleanup scan now reports no app-facing design-system buckets for
+  positional widget finders, raw controls, raw text styles, token prop-drilling,
+  raw surfaces, low-level typography roles, or nonzero letter spacing. Remaining
+  timing matches are the known manual QA/golden/capture helpers.
+
+### 2.5.203
+
+- `EventPinsMap` no-network placeholder now resolves token-derived colors in
+  the widget and passes concrete `Color` values into its `CustomPainter`
+  instead of prop-drilling `CatchTokens` through the painter boundary.
+- The cleanup scan now reports no feature-widget `CatchTokens` prop-drilling
+  candidates.
+
+### 2.5.202
+
+- `RichShareCardSheet` now exposes stable preview and share-action keys while
+  keeping the shared sheet composition unchanged: grabber, captured card,
+  footnote, and full-width platform share `CatchButton`.
+- Club, event-detail, standalone event, and payment confirmation share-card
+  coverage now targets `RichShareCardSheetKeys` and the shared pump helper, so
+  the cleanup scan no longer reports share-card raw timing waits or positional
+  `CatchButton.last` finders.
+
+### 2.5.201
+
+- Empty match threads now use the Messaging handoff's event-grounded prompt
+  copy: when the latest shared event is loaded, `ChatMessageList` says what both
+  people did at that event before the `Say hi` prompt; null event contexts keep
+  the previous neutral fallback.
+- `chat_event_context_copy.dart` now owns chat thread stamps, share-card titles,
+  and empty-thread event-context copy so `ChatEventContextHeader`,
+  `ChatShareCard`, and `ChatMessageList` stay aligned.
+
+### 2.5.200
+
+- `showBlockUserDialog` is now documented and covered as a thin safety dialog
+  adapter over the shared handoff `showConfirmDangerDialog` /
+  `showCatchAdaptiveDialog` confirm-card stack.
+- Core adaptive-dialog tests now open the block-user helper directly and assert
+  the Material `Dialog` + `CatchButton` destructive action composition.
+
+### 2.5.199
+
+- Removed unused legacy core widgets `AppFormLayout`, `CatchKicker`, and
+  `StatusChip`. Active form/auth/onboarding surfaces now use the handoff
+  `OnboardingStepFrame`, `CatchStepFlowHeader`, and feature-owned layout
+  frames, while badge/status metadata routes through `CatchBadge`.
+- `PersonRow` documentation now points trailing status examples at the active
+  badge primitive instead of the deleted `StatusChip` wrapper.
+
+### 2.5.198
+
+- Event requirements chips now render directly through `CatchBadge` instead of
+  the one-line `VibeTag` wrapper, keeping event-detail requirement metadata on
+  the shared badge primitive used elsewhere in the handoff.
+- Removed the unused `VibeTag` component after the final production call site
+  migrated to `CatchBadge`.
+
+### 2.5.197
+
+- Auth entry has been audited against the Onboarding v2 handoff. `AuthScreen`
+  remains a state-only shell, while `PhonePage` and `OtpPage` own the visible
+  `OnboardingStepFrame` / `OnboardingStepHeader` composition, sticky
+  `CatchButton` footers, country/phone row, OTP code field, and resend/change
+  actions.
+- Auth widget coverage now asserts the shared onboarding frame/header
+  composition on the initial phone step in addition to the existing controller
+  transition and Firebase auth behavior.
+
+### 2.5.196
+
+- Explore feed now renders the handoff result-count cue above the content
+  stream (`1 PLAN` / `10 PLANS · JUN 11-17`) using the same filtered
+  `ExploreFeedViewModel` items as the list and map.
+- The count/date cue is skipped for club-only fallback content, preserving
+  honest event counts while keeping the existing mixed club recommendation
+  fallback intact.
+
+### 2.5.195
+
+- Host Create Club host-defaults now uses shared `CatchChip` primitives for
+  admission, cancellation, and default-activity choices instead of local
+  `VibeTag` wrappers.
+- Club default cohort caps and demand pricing now render with the handoff
+  `CatchToggle` control inside the existing policy card instead of adaptive
+  `SwitchListTile` chrome.
+- Create-club coverage now asserts the visible host-defaults chip/toggle
+  composition in the successful create flow and verifies the embedded edit-mode
+  defaults section still renders.
+
+### 2.5.194
+
+- Host Create Event now uses shared `CatchChip` primitives for activity,
+  custom-format structure, pace, admission, and cancellation selections instead
+  of local `VibeTag` wrappers.
+- Event policy cohort caps and demand pricing now render with the handoff
+  `CatchToggle` control inside the existing policy surfaces instead of adaptive
+  `SwitchListTile` chrome.
+- Create-event widget coverage now asserts the shared chip/toggle composition
+  across the primary wizard path and keeps the custom activity-format path
+  stable with chip-level taps.
+
+### 2.5.193
+
+- Host Create Event Success now explicitly uses the handoff's seal-check
+  celebration mark via `CatchIcons.verifiedRounded`, while retaining the shared
+  full-screen `CatchCelebrationScreen` composition for `StatusBar`,
+  `ScreenBody`, details, note, and actions.
+- Invite-only success coverage now asserts the handoff detail grid (`When`,
+  `Where`, `Event`, `Capacity`, `Invite code`, `Private link`), the
+  bookings/waitlist/attendance note, and Manage event / Back to club actions.
+
+### 2.5.192
+
+- `showCatchAdaptiveDialog` now renders a handoff-style Material confirm card:
+  token scrim, centered overlay `CatchSurface`, title/supporting copy, and
+  paired `CatchButton` actions with danger-filled destructive commits, while
+  preserving native Cupertino alerts on iOS.
+- Host cancel-event and create-event unsaved-changes dialogs now match the
+  host-dialogs handoff copy and action labels (`Cancel this event?`, `Cancel
+  event`, `Save draft`).
+- Dialog coverage now asserts the Material confirm card composition and the
+  host manage cancel/delete dialog flows through the new action buttons.
+
+### 2.5.191
+
+- Host Add Host is now covered as a handoff sheet flow: the test opens the
+  host-team bottom sheet, verifies `CatchBottomSheetScaffold`,
+  `CatchTextField`, and `CatchButton` composition plus the template copy, then
+  submits a phone number through the repository-backed mutation.
+- The existing `_AddHostSheet` implementation remains on the shared sheet,
+  text-field, error-banner, and button primitives, so no production code change
+  was needed for this template beyond coverage.
+
+### 2.5.190
+
+- Host Edit Event now uses shared `CatchChip` primitives for pace, admission,
+  and cancellation selections in the flattened edit form instead of local
+  `VibeTag` tap wrappers.
+- The edit-event save action now sits in a handoff-style persistent footer with
+  a top hairline, matching the Host Edit Event template's save chrome while
+  keeping the existing update and locked-state behavior.
+- Host Edit Event tests now assert the visible handoff structure and shared
+  chip primitive in addition to update-event persistence and schedule locking.
+
+### 2.5.189
+
+- Host Edit Club now follows the handoff's flattened edit composition instead
+  of reusing the create wizard: `CatchTopBar`, logo/photos, Identity, Contact,
+  Event defaults, inline mutation errors, and a persistent full-width `Save
+  changes` footer.
+- Club defaults steps can now render embedded non-scrollable content for edit
+  mode while preserving the existing scrollable create-flow behavior.
+- `CreateClubContactFields` can suppress its internal optional section label
+  when a parent handoff section already provides the `Contact` kicker.
+
+### 2.5.188
+
+- Host Draft Picker now matches the handoff sheet copy and composition:
+  `Resume a draft?`, `Start a fresh event`, a single bordered draft row group,
+  file icon, saved-time mono meta, delete `IconBtn`, and chevron affordance.
+- Draft row taps now go through `CatchSurface.onTap` so the sheet keeps shared
+  semantics and avoids feature-local raw tappables.
+
+### 2.5.187
+
+- Host payout setup now opens a handoff bottom sheet before Stripe: shared
+  `CatchBottomSheetScaffold`, status badge, Stripe explanation, country and
+  default-currency rows, return-here note, and a full-width `Continue to
+  Stripe` action.
+- `HostPaymentAccountCard` keeps the existing card entry point and refresh
+  behavior while moving external onboarding behind the handoff sheet described
+  by the host-payouts template.
+
+### 2.5.186
+
+- Host Inbox copy now follows the handoff's attendee-query framing: header
+  subtitle, search labels, empty state, new-query rail, and section kicker no
+  longer use consumer match/chat language in host mode.
+- Added host-mode chat-list coverage so the inbox keeps `Inbox`, `Attendee
+  queries`, and `ATTENDEE QUERIES` labels while hiding consumer match copy.
+
+### 2.5.185
+
+- Shared async error copy and event activity card supporting copy now use the
+  semantic `supporting` text role, clearing the remaining low-level typography
+  scanner candidates from shared core widgets.
+
+### 2.5.184
+
+- Host Account now follows the handoff composition: `CatchTopBar` with sign-out
+  action, an Edit / Preview `CatchOptionGroup`, and flat Profile / Bio / Clubs
+  info-row sections instead of the previous card stack.
+- `SettingsRow` now supports opt-in multi-line values so handoff-style taller
+  InfoRows such as the host bio can stay on the shared row primitive without
+  affecting existing one-line settings rows.
+
+### 2.5.183
+
+- Event Detail design primitives now route bounded map pins, map pills, hint
+  dots, and itinerary dots through `CatchSurface` instead of feature-local
+  decorated boxes or containers.
+- Event Detail mechanism and itinerary rows now use semantic text roles
+  (`infoRowTitle`, `supporting`, `monoLabelS`) so the screen's DS primitives no
+  longer show up in low-level typography or non-token letter-spacing scanner
+  buckets.
+
+### 2.5.182
+
+- Create/Edit Club contact fields now use the shared `CatchFormFieldLabel`
+  optional badge for the Contact form section instead of a local low-level
+  title style, aligning the club form stack with existing field semantics and
+  clearing the host form typography scanner hit.
+
+### 2.5.181
+
+- Host Event Manage now mounts the event title and Setup / Live / Report switch
+  in shared `CatchTopBar` chrome, with the mode switch rendered through
+  `CatchOptionGroup` instead of the older segmented surface control.
+- The full-event apron now uses the handoff copy (`FULL - CAPACITY REACHED` and
+  `WAITLIST OPEN`) inside a compact ink panel under the top bar.
+- The New invite link dialog title now uses `CatchTextStyles.sectionTitle`,
+  clearing the scanner's remaining raw app-facing `Text` candidate.
+
+### 2.5.180
+
+- Host Events now follows the handoff's flatter operations grammar: shared
+  `CatchTopBar`, club meta row with role badge and activity chip, Upcoming
+  kicker, `SettingsRow` event rows, and an Add event row instead of a card-heavy
+  club panel.
+- Host Clubs now uses the same host meta/activity row and on-surface Edit /
+  Preview action rows while keeping payouts and host-team management in their
+  existing functional sections.
+- Added host-local `_HostOperationsTopBar` and `_HostMetaRow` helpers so host
+  tabs pull role presentation from shared Catch tokens. Activity presentation
+  now routes through the shared `ActivityChip` primitive.
+
+### 2.5.179
+
+- Onboarding v2 composition is now reflected in Flutter: the welcome screen uses
+  the dark editorial handoff register, auth/profile steps share
+  `OnboardingStepFrame`, and primary actions sit in sticky footers rather than
+  inside long scroll bodies.
+- Phone and OTP entry now use the handoff layout stack: `OnboardingStepHeader`,
+  compact country/phone row, OTP resend/change actions, and a bottom `Verify`
+  button while preserving existing auto-submit and controller behavior.
+- Name/DOB, gender, Instagram, photos, prompts, and running preferences now use
+  handoff-aligned labels, spacing, footer actions, prompt cards, photo tip band,
+  and the raised pace-range panel backed by existing Catch primitives.
+
+### 2.5.178
+
+- Payment pending external checkout now ports the booking `CheckoutSheet`
+  handoff: dimmed activity event backdrop, bottom sheet with grabber,
+  receipt/warning medallion, event/price summary with Pending/Failed badge, and
+  checkout / payment history / back-to-event actions.
+- Added `CatchOpacity.paymentCheckoutScrim` for the Booking handoff's dimmed
+  event backdrop instead of reusing unrelated scrim or border opacities.
+- Added a pending Stripe checkout widget test so the Booking handoff state is
+  covered separately from the confirmed "You're in." celebration path. The
+  designed `ConflictSheet` had no repository flow for booking-overlap
+  replacement at that point; the presentation component was added in 2.5.218
+  and remains unmounted until a real overlap signal exists.
+
+### 2.5.177
+
+- Messaging thread composition now follows the handoff `ConversationTopBar` /
+  `ChatThreadHeader` / `ChatBubble` / `ChatComposer` stack: surface top bar with
+  hairline, activity-grounded context band, centered day separators, mono
+  message timestamps, and Catch-owned composer icon controls.
+- Added `CatchTextStyles.chatThreadContext` so the event-context band can use a
+  semantic thread title role instead of a feature-local low-level body style.
+- `ChatMessageList` now inserts day separators and splits same-sender bubble
+  runs across day boundaries while preserving variable-height bubble rendering.
+- `ChatInputBar` replaces raw Material icon buttons with a local composer action
+  that keeps quiet image, filled send, disabled opacity, loading color, and
+  tooltips consistent with the handoff.
+
+### 2.5.176
+
+- Added `CatchCountPill`, the handoff CountPill control for floating Explore
+  map/filter affordances: raised surface, optional icon/mono label, optional
+  count badge, and explicit semantics.
+- `CatchOptionGroup<T>` now protects tight mobile rails by flexing labels with
+  ellipsis while keeping the selected underline and trailing action pinned.
+- `ClubsFilterRail` now matches the Explore handoff composition: visible
+  OptionGroup time scopes for Tonight / Weekend / This week / Anytime, a
+  trailing filter CountPill, and secondary filters in a bottom sheet instead of
+  chip-heavy chrome.
+- Explore's sheet exclusion now uses the rendered handoff filter rail height so
+  the closed feed starts below the status/header/filter chrome on compact
+  devices.
+
+### 2.5.175
+
+- Added `CatchToggle`, the Flutter port of the handoff settings switch: primary
+  pill track when on, quiet line track when off, and a surface knob.
+- `SettingsRow` now matches the handoff `InfoRow` shape for settings: on-surface
+  rows, optional inset hairline divider, 20px icon lane, `infoRowTitle` labels,
+  mono right-hand values, chevrons only for navigational rows, and `danger`
+  mapped to the functional danger tone.
+- `SettingsScreen` now uses the handoff Settings/Filters composition: compact
+  `CatchTopBar`, page gutters, Account / Notifications / Privacy & safety /
+  About / Log out sections on the page surface, `CatchToggle` notification rows,
+  and the existing `CatchRangeSlider`/chip/apply dock filter sheet behavior.
+
+### 2.5.174
+
+- Added `PersonAvatarShape` support so shared avatars can render the handoff's
+  circular person treatment and rounded-square host treatment through one
+  primitive.
+- Added `CatchTextStyles.chatPreview` for `ChatListTile` secondary inbox copy,
+  keeping unread/new color changes on a semantic text role.
+- Chat inbox composition now follows the handoff list model: new matches and
+  conversations are folded into one `CONVERSATIONS` section, rows sit directly
+  on the page surface with inset hairline dividers, unread/new state is carried
+  by avatar rings, text color, timestamp color, and the trailing unread/new
+  indicator rather than by card fills.
+
+### 2.5.173
+
+- Added `CatchOptionGroup<T>`, the Flutter port of the handoff `OptionGroup`
+  underline selector. Profile now uses it for the pinned Edit/Preview row
+  instead of adaptive Material/Cupertino tab chrome.
+- Added `CatchTextStyles.infoRowTitle` for the handoff `InfoRow` primary row
+  value (`.t-title-s`) so edit rows can use a semantic typography role without
+  low-level style leakage.
+- Profile edit now follows the handoff section composition: Photos, Prompts,
+  About you, Running, and Lifestyle as on-surface `CatchDesignSection` /
+  `ProfileInfoTile` groups. The old Profile strength card and split Location /
+  Background / Intentions buckets are no longer part of this screen.
+- Profile preview now renders the shared `ProfileSurface` full-bleed under the
+  option group, with the profile renderer owning the body gutter. The shared
+  public/profile/catches renderer applies the social-run activity pigment to the
+  hero fallback and Running Rhythm block.
+
+### 2.5.172
+
+- The Notifications route now follows the handoff Activity composition:
+  `CatchTopBar(title: 'Activity')`, manual top-bar "Mark all read", page-body
+  gutters, and day-grouped notification rows.
+- `ActivitySection` is notification-only on this route. It groups backend-owned
+  notifications by Today, Yesterday, This week, and Earlier through the compact
+  notifications day-group wrapper, and no longer prepends signed-up event rows.
+- `NotificationRow` ports the handoff row contract directly: on-surface row,
+  type-colored glyph, inset hairline dividers, relative time, and unread state
+  through title/time color instead of card fills, icon chips, and badges.
+
+### 2.5.171
+
+- Dashboard full-state content now composes through `CatchSectionStack` in the
+  handoff order: Event Focus, weekly stride, QuickActions, the personal clubs
+  rail when available, and the recommendation rail.
+- Dashboard recommendations now use the handoff heading "Recommended for you"
+  while keeping the shared activity-art ticket cards and recommendation reasons.
+- Dashboard empty-state body now narrows to the cover-story hero plus a
+  `CatchDesignSection` "How Catch works" journey. The first-run hero copy
+  matches the handoff and no longer carries the old decorative glyph.
+
+### 2.5.170
+
+- Club detail's pre-schedule body now composes through `CatchDesignSection`:
+  Your hosts, About, What we do, From the club, Get in touch, Membership, and
+  Join Catch. The route keeps the existing hero, stats apron, schedule sliver,
+  read-only reviews, membership mutations, and host-message behavior.
+- Club detail now renders club tags and optional club photo strips inside the
+  handoff section rhythm while preserving the current public-profile behavior
+  for host-app viewers.
+
+### 2.5.169
+
+- Added `CatchDesignSection`, the Flutter counterpart to the handoff `Section`
+  primitive: it owns the kicker/count row, the 12 px kicker-to-body gap, and the
+  24 px hairline section rhythm. Lead sections can pull their one accent from
+  `ActivityPalette.resolve`.
+- Event detail now seats `EventDetailTicketStubBand` directly under the hero and
+  composes the body as handoff-style sections: The plan, Why you might click,
+  Itinerary, Photos when available, Where, How sign-ups work, Good to know,
+  Who's going, and Reviews. Existing booking, invite, companion, map, and review
+  ownership stays in the current controllers/routes.
+- Added Flutter event-detail design primitives for the stub band, hint list,
+  itinerary, map preview, sign-up mechanism list, and photo strip, all sourced
+  from the existing `Event` model plus the centralized activity resolver.
+
+### 2.5.168
+
+- Ported the Flutter foundation toward the implementation handoff: Archivo is
+  now the voice/head face, the platform system font is the function/body face,
+  and IBM Plex Mono remains the data face. `CatchFonts.serifFamily` and
+  `CatchFonts.sansFamily` remain as compatibility aliases while feature code
+  moves to the voice/function/data vocabulary.
+- Added `CatchScreenBody` and `CatchSectionStack` as design-system aliases over
+  the audited page-body and section-list primitives, so new screen migrations can
+  compose with the handoff names without forking layout behavior.
+- Added a centralized activity resolver in `ActivityPalette`: `CatchActivity`
+  carries kind, label, regular Phosphor glyph, and accent/deep/soft swatch. The
+  legacy event-activity glyph helper now reads from that registry.
 
 ### 2.5.167
 
@@ -34,9 +984,8 @@ a feature section here only when auditing that feature's widget surface.
 - Club detail is presentation-only again for host-app viewers. Host management
   controls such as Add event, Edit club, payouts, and host-team editing live in
   Host Operations surfaces instead of the public club profile.
-- Host settings can open the active professional profile editor through
-  `HostProfileScreen`, keeping professional host identity management separate
-  from dating profile editing.
+- Professional host identity management stays separate from dating profile
+  editing; Host Account owns the current profile-row edit entry point.
 
 ### 2.5.165
 
@@ -115,12 +1064,12 @@ a feature section here only when auditing that feature's widget surface.
   optical size from point size) instead of runtime `google_fonts`. Build text through
   `CatchFonts.serif/sans/mono` (or a named `CatchTextStyles.*`); never raw `TextStyle(`
   or `GoogleFonts` in production — enforced by the Catch UI analyzer lints.
-- `CatchTextStyles` consolidated **59 → ~30** named styles onto one principled scale.
+- `CatchTextStyles` consolidated **59 → ~33** named styles onto one principled scale.
   Removed names (`heroImpact`, `displayXL/L/M/S`, `screenHeadline`, `heroHeadline`,
   `cardTitle`, `formQuestion`, `titleM`, `kickerCaps`/`kickerCapsLg`, `ticketMeta`,
   `arrivalMissionTitle`, …) are gone — use the canonical set: serif
   `display`/`headline`/`headlineS`/`titleL`/`profileAnswer`/`proseL`/`proseM`, sans
-  `sectionTitle`/`titleS`/`body*`/`label*`/`supporting`/`button*`, mono
+  `sectionTitle`/`titleS`/`infoRowTitle`/`chatPreview`/`body*`/`label*`/`supporting`/`button*`, mono
   `kicker`/`kickerLg`/`monoLabel`/`monoLabelS`/`numeric*`/`mono`.
 - `GradedImage` / `CatchGrade` is now a tunable, brightness-aware **matte duotone**
   (desaturate + black-lift + warm shadow/highlight split-tone, optional grain).
@@ -1809,7 +2758,7 @@ The user specifically wants this work to proceed incrementally:
    `CatchTopBar`, `CatchBottomSheetScaffold`, `CatchEmptyState`,
    `CatchHorizontalRail`, `CatchVerticalSection`, `PersonRow`, `PersonAvatar`,
    event tile variants, `SettingsRow`, `CatchSkeleton`, `CatchBadge`,
-   `StatusChip`, `CatchFormFieldLabel`, `ChipField`, `EventAgendaList`,
+   `CatchFormFieldLabel`, `ChipField`, `EventAgendaList`,
    `EventAgendaSliverList`, `MutationErrorSnackbarListener`, and
    `showConfirmDangerDialog`.
 6. Add a new primitive only when at least one of these is true:
@@ -2000,15 +2949,15 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `AppShell` | `lib/core/presentation/app_shell.dart:34` | Main tab shell with adaptive bottom navigation (Home, Explore, Catches, Chats, Profile): Material `NavigationBar` on Android/non-iOS platforms and `CupertinoTabBar` on iOS. Watches provider-backed connectivity for the offline app notice, initializes FCM through `appShellFcmInitializationProvider`, exposes active-tab state through `AppShellActiveTab`, and keeps Crashlytics/Analytics user IDs synced with auth state. Shell-level streams stay limited to shell-wide UI such as auth, connectivity, FCM, and unread badges. |
+| `AppShell` | `lib/core/presentation/app_shell.dart:34` | Main tab shell with adaptive bottom navigation (Home, Explore, Catches, Chats, You): handoff `CatchTabDock` on Android/non-iOS platforms and native `CupertinoTabBar` on iOS. Watches provider-backed connectivity for the offline app notice, initializes FCM through `appShellFcmInitializationProvider`, exposes active-tab state through `AppShellActiveTab`, and keeps Crashlytics/Analytics user IDs synced with auth state. Shell-level streams stay limited to shell-wide UI such as auth, connectivity, FCM, and unread badges. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
 | `AppShellActiveTab` | `lib/core/presentation/app_shell_active_tab.dart:9` | Inherited lifecycle signal for indexed-stack tabs. Lets retained tab branches detect whether they are currently selected without coupling feature screens directly to `StatefulNavigationShell`. |
-| `_AppShellNavigationBar` | `lib/core/presentation/app_shell.dart:102` | Private adaptive bottom-navigation wrapper with stable key and unread chat badge handling. Uses Cupertino tab-bar chrome/icons on iOS and Material 3 navigation chrome elsewhere. |
-| `AppShellNavigationBadge` | `lib/core/presentation/app_shell.dart:218` | Shell chat unread badge. Reserves a fixed icon box and positions the pill inside it so Cupertino and Material bottom nav containers cannot clip the count. |
+| `AppShellNavigationBar` / `AppShellNavigationItem` | `lib/core/presentation/app_shell.dart:210` | Shared adaptive bottom-navigation primitive with stable key, destination-driven labels/icons, and unread badge handling. Consumer shell uses the default Home / Explore / Catches / Chats / Profile set; `HostAppShell` supplies Events / Clubs / Inbox / Account through the same Cupertino tab-bar chrome on iOS and Material 3 navigation chrome elsewhere. |
+| `AppShellNavigationBadge` | `lib/core/presentation/app_shell.dart:333` | Shell unread badge. Reserves a fixed icon box and positions the pill inside it so Cupertino and Material bottom nav containers cannot clip the count. |
 | `_RouterLoadingScreen` | `lib/routing/go_router.dart:438` | Minimal scaffold with `CatchLoadingIndicator` shown during route-level async data resolution. Host create/edit wrappers live in the host feature folders, not in the shared router. |
 
 ---
@@ -2019,39 +2968,54 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CatchTextField` | `lib/core/widgets/catch_text_field.dart:12` | Canonical text input. Wraps `FormField<String>` + `TextField` in `CatchControlShell` with label, helper/error copy, prefix/suffix icons, clear button, initial-value syncing, default keyboard done/dismiss behavior, tap-outside unfocus, and theming via `CatchTextFieldSize`, `CatchTextFieldShape`, and `CatchTextFieldTone` enums. `floating` is for map/hero overlay chrome, `compact` for dense search/filter rows, and `md` for regular forms. |
-| `CatchButton` | `lib/core/widgets/catch_button.dart:13` | Canonical button. Supports `primary`, `secondary`, `ghost`, `danger`, and `light` variants; `sm`, `md`, `lg` sizes; loading state with animated dots; hover/press feedback; optional leading icons; and `isInteractive: false` for button-looking labels inside an already tappable parent. Use `light` for solid-white pill CTAs so foreground/background colors stay paired across light and dark themes. |
+| `CatchTextField` | `lib/core/widgets/catch_text_field.dart:12` | Canonical text input. Wraps `FormField<String>` + `TextField` with label, helper/error copy, prefix/suffix icons, clear button, initial-value syncing, default keyboard done/dismiss behavior, tap-outside unfocus, and handoff composition knobs for boxed vs underline chrome, centered alignment, tabular numeric figures, forced focus styling, and quiet trailing content. `floating` is for map/hero overlay chrome, `compact` for dense search/filter rows, and `md` for regular forms. |
+| `CatchButton` | `lib/core/widgets/catch_button.dart:13` | Canonical button. Supports `primary`, `secondary`, `ghost`, `danger`, and `light` variants; activity-accent primary fills via `accentColor`; `sm`, `md`, `lg` sizes; loading state with animated dots; hover/press feedback; optional leading icons; and `isInteractive: false` for button-looking labels inside an already tappable parent. Use `light` for solid-white pill CTAs so foreground/background colors stay paired across light and dark themes. |
+| `CatchActionMenu<T>` | `lib/core/widgets/catch_action_menu.dart:24` | Anchored overflow trigger for action menus. Opens the shared handoff `CatchMenu` panel from an `IconBtn`, supports icons, sublabels, selected rows, disabled rows, destructive rows, and typed selected values. |
 | `CatchSelectMenu<T>` | `lib/core/widgets/catch_select_menu.dart:9` | Token-driven menu-anchor select primitive. Supports compact/md heights, rounded or pill triggers, optional prefix icons, disabled/error states, and a separately rounded popup panel so pill triggers do not clip opened menu rows. |
-| `CatchDropdownField<T>` | `lib/core/widgets/catch_dropdown_field.dart:8` | Token-driven single-select dropdown for `Labelled` enum-like values. Wraps `FormField<T>` + `DropdownButton<T>` with focus-ring styling and label decoration. |
+| `CatchDropdownField<T>` | `lib/core/widgets/catch_dropdown_field.dart:8` | Token-driven single-select dropdown field for `Labelled` enum-like values. Wraps `FormField<T>` + `CatchFormFieldLabel` + `CatchSelectMenu<T>`, keeps initial-value syncing centralized, and reports validation errors with the shared supporting text role. |
+| `CatchSearchField` | `lib/core/widgets/catch_search_field.dart:8` | Handoff `SearchField`: raised pill browse input with search glyph, controlled value sync, quiet clear target when non-empty, optional empty-state trailing action for composed search chrome, platform Done submit, focus callbacks, and semantic labeling. Use instead of `CatchTextField` for label-less browse/search affordances. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
 | `CatchSurface` | `lib/core/widgets/catch_surface.dart:9` | Canonical surface/card primitive. Supports `surface`, `raised`, `primarySoft`, and `transparent` tones; `none`, `raised`, and `overlay` elevations; optional border, gradient background, corner radius, and tap handling via `InkWell`. |
+| `CatchPanel` | `lib/core/widgets/catch_panel.dart:7` | Handoff `Panel`: bounded surface card for self-contained groups and flow stages. Wraps `CatchSurface` with surface fill, hairline border, `radius-md`, card shadow, and 20px default padding. |
+| `CatchMenu<T>` | `lib/core/widgets/catch_menu.dart:27` | Handoff `Menu`: anchored dropdown panel with overlay surface, line2 border, radius-md corners, row hairlines, optional leading icon, mono sublabel, selected check mark, danger tone, and typed selection callbacks. |
+| `CatchExpandingSearch` | `lib/core/widgets/catch_expanding_search.dart:8` | Handoff `ExpandingSearch`: app-bar search primitive that starts as a single magnifier target, expands to fill the available header width, composes `CatchSearchField`, clears non-empty queries first, and exposes a close target for empty expanded search. Used by `CatchBrowseHeader` for Clubs and Chats search chrome. |
+| `CatchKicker` | `lib/core/widgets/catch_kicker.dart:5` | Handoff `Kicker` leaf: uppercase mono eyebrow for section starts and editorial labels, with optional color override and `md` / `lg` sizes. Used by shared section and info-group composition. |
+| `SoftBand` | `lib/core/widgets/soft_band.dart:7` | Handoff quiet tinted inset row for privacy notes, tips, and secondary details inside panels or sections. Uses `CatchSurfaceTone.primarySoft`, small-radius chrome, compact inset padding, and no border/elevation by default. |
+| `SectionLabel` | `lib/core/widgets/section_label.dart:7` | Handoff activity-accent eyebrow for section starts inside panels. Carries one accent color through an optional leading glyph and mono kicker label, with bounded ellipsis behavior for long labels. |
 | `CatchDetailHeroBackdrop` | `lib/core/widgets/catch_detail_hero_backdrop.dart:4` | Shared photo-or-branded-fallback backdrop for detail-page heroes. Used by club and event detail headers so no-photo states share the same dark branded gradient and scrim treatment. |
 | `CatchMetricStrip` | `lib/core/widgets/catch_metric_strip.dart:17` | Shared detail-page metric rail for compact value-over-label stats. Owns the white surface, border, spacing, dividers, mono value styling, optional unit styling, and label truncation so club and event detail stats cannot drift. |
+| `StatStrip` | `lib/core/widgets/stat_strip.dart:13` | Handoff flat hairline-bordered row of 2-4 labeled data pairs. Renders numeric mono figures above uppercase mono labels and is used by club detail stats. |
 | `CatchTextButton` | `lib/core/widgets/catch_text_button.dart:6` | Canonical text-only action primitive for inline actions, dialog actions, retry links, and top-bar text actions. Uses Catch tokens and text styles while preserving Material `TextButton` semantics. Use `CatchButton` for pill CTAs. |
-| `CatchOtpCodeField` | `lib/core/widgets/catch_otp_code_field.dart:10` | Canonical OTP input primitive. Renders visible token-styled digit boxes over one hidden platform `TextField` so SMS autofill, paste, keyboard input, tests, digit-only filtering, and length limiting stay centralized. |
+| `CatchCodeInput` | `lib/core/widgets/catch_otp_code_field.dart:9` | Handoff `CodeInput`: static controlled verification-code row with 6-cell default, mono digits, 64px surface cells, 10px gaps, interactive-tile radius, ink active rule, and optional caret. |
+| `CatchOtpCodeField` | `lib/core/widgets/catch_otp_code_field.dart:50` | Canonical OTP input primitive. Composes `CatchCodeInput` visuals over one hidden platform `TextField` so SMS autofill, paste, keyboard input, tests, digit-only filtering, and length limiting stay centralized. |
 | `CatchNumberStepper` | `lib/core/widgets/catch_number_stepper.dart:6` | Canonical numeric +/- stepper. Renders the shared raised `CatchControlShell`, compact add/remove buttons, centered mono value, optional min/max/step clamping, and feature-specific value formatting. Used by event duration and profile height controls. |
 | `CatchRangeSlider` | `lib/core/widgets/catch_range_slider.dart:7` | Canonical range slider. Wraps `RangeSlider` in the shared tickless slider theme so age/pace sliders keep discrete values without rendering dashed tick marks. Supports optional min/max endpoint labels for fixed slider bounds. |
-| `CatchTopBar` | `lib/core/widgets/catch_top_bar.dart:11` | Canonical top-bar. Renders a surface-fill bar with an optional back button (auto-detected from `Navigator.canPop`), title, leading widget, and action slots. Also supports a `bottom` `PreferredSizeWidget` (e.g., `TabBar`). Implements `PreferredSizeWidget` for use as an `AppBar`. |
+| `CatchTopBar` | `lib/core/widgets/catch_top_bar.dart:16` | Handoff `AppBar`: compact or large screen header with shared title/subtitle/kicker text roles, back/close/none leading modes, surface/divider/gutter ownership, text/icon/trailing actions, optional tab bottom, and declarative `CatchExpandingSearch` composition. Implements `PreferredSizeWidget` for use as a Flutter `appBar`. |
 | `CatchTopBarTabBar` | `lib/core/widgets/catch_top_bar.dart:133` | Adaptive top-tab primitive for use inside `CatchTopBar.bottom` or sticky sliver headers. Uses Material `TabBar` with primary indicator on Android/non-iOS platforms and `CupertinoSlidingSegmentedControl` on iOS. Implements `PreferredSizeWidget` and accepts an optional explicit `TabController` for sliver-native tab rows that are not inside a `DefaultTabController`. |
-| `showCatchAdaptiveDialog<T>` | `lib/core/widgets/catch_adaptive_dialog.dart:18` | Shared platform-adaptive confirmation/dialog helper. Renders `CupertinoAlertDialog` on iOS and Material `AlertDialog` elsewhere, with typed action values plus default/destructive action metadata. |
+| `showCatchAdaptiveDialog<T>` | `lib/core/widgets/catch_adaptive_dialog.dart:24` | Shared platform-adaptive confirmation/dialog helper. Renders `CupertinoAlertDialog` on iOS and the handoff `CatchConfirmDialog` card on Material platforms, with typed action values plus default/destructive action metadata. |
+| `showCatchConfirmDialog` / `CatchConfirmDialog<T>` | `lib/core/widgets/catch_adaptive_dialog.dart:62` | Handoff confirm-dialog API and Material card primitive. Provides default Cancel/Confirm labels, optional danger-filled commit action, centered `CatchSurface` card, 46% ink scrim, 320px max width, and tokenized card padding. |
 | `showCatchDatePicker` / `showCatchTimePicker` | `lib/core/widgets/catch_adaptive_picker.dart:7` | Shared platform-adaptive date/time picker helpers. iOS renders bottom-wheel `CupertinoDatePicker` sheets with Cancel/Done toolbar; Android/non-iOS platforms keep Flutter's Material calendar and clock pickers. |
 | `CatchSliverHeader` | `lib/core/widgets/catch_top_bar.dart:290` | Shared sliver header primitive. Builds a scroll-away title and optional pinned bottom row; the title translates upward as it collapses so sticky search/filter/tab rows do not visually cover it. Use `twoLineTitleHeight` for short title/subtitle headers, `wrappedTitleHeight` only when long titles need the extra space, and the shared search-row spacing constants before adding feature-local search/list gap math. Used by Run Clubs, Chats, and Profile. |
-| `CatchBrowseHeader` | `lib/core/widgets/catch_browse_header.dart:9` | Self-contained browse-tab header for a scope picker, title/subtitle, right-aligned search action that morphs into the full search field, optional actions, and an optional parent-supplied background color in one composable module. Use for Clubs/Chats-style tabs that should not split scope/search chrome into separate rail headers. |
-| `CatchTopBarMenuAction<T>` | `lib/core/widgets/catch_top_bar.dart:156` | Overflow menu action for `CatchTopBar`. Renders a `PopupMenuButton<T>` wrapped in an `IconBtn`. |
+| `CatchBrowseHeader` | `lib/core/widgets/catch_browse_header.dart:9` | Self-contained browse-tab header for a scope picker, title/subtitle, optional actions, controlled provider-backed search value, and an optional parent-supplied background color in one composable module. Composes `CatchExpandingSearch` for the right-aligned app-bar search affordance. Use for Clubs/Chats-style tabs that should not split scope/search chrome into separate rail headers. |
+| `CatchTopBarMenuAction<T>` | `lib/core/widgets/catch_top_bar.dart:272` | Overflow menu action for `CatchTopBar`. Delegates to `CatchActionMenu`, so top-bar overflow actions open the shared handoff `CatchMenu` panel from an `IconBtn`. |
 | `CatchTopBarIconAction` | `lib/core/widgets/catch_top_bar.dart:189` | Icon-only action button for `CatchTopBar` actions. Renders a tooltip-wrapped `IconBtn`; accepts an optional explicit size for overlay rows that must align with floating controls without changing the default app-bar button size. |
 | `CatchTopBarTextAction` | `lib/core/widgets/catch_top_bar.dart:222` | Text action button for `CatchTopBar` (e.g., "Save", "Done"). Delegates to `CatchTextButton` so top-bar text actions share the same token-driven text-action primitive as dialogs and inline retry links. |
+| `CatchStepHeader` | `lib/core/widgets/catch_step_flow_header.dart:8` | Handoff `StepHeader`: wizard scaffold header composed from large `CatchTopBar`, optional kicker/subtitle, top-right mono step counter or custom trailing status, and a 2px progress hairline. |
+| `CatchStepFlowHeader` | `lib/core/widgets/catch_step_flow_header.dart:85` | Backward-compatible zero-based wrapper over `CatchStepHeader` for existing onboarding, create-club, and create-event flows. |
 | `CatchSegmentedControl<T>` | `lib/core/widgets/catch_segmented_control.dart:48` | Pill-style segmented control. Supports compact or full-width expanded layouts, icon-only, label-only, or icon+label segments, and filled or raised-surface selected styles. Used for lifecycle/workspace switching where tapping a segment changes the content below. |
+| `CatchOptionGroup<T>` | `lib/core/widgets/catch_option_group.dart:16` | Design-system `OptionGroup` port: an underline selection row for tabs, lenses, and inline scope controls. Supports label or mono typography variants, optional selected-rule accent, optional trailing content, semantic selected state, tokenized gap/underline spacing, and tight-width label flex/ellipsis so floating rails do not overflow. Use when the handoff calls for `OptionGroup`; use `CatchSegmentedControl` only for pill-style segmented controls. |
 | `CatchSkeleton` | `lib/core/widgets/catch_skeleton.dart:20` | Shimmer-based loading placeholder. Named constructors: `.card()`, `.text()`, `.textBlock()`, `.circle()`, `.custom()`. Uses the `shimmer` package with Catch-themed colors. |
 | `CatchSkeletonList` | `lib/core/widgets/catch_skeleton.dart:127` | Convenience widget rendering a vertical column of `count` skeleton cards with configurable spacing. |
-| `CatchSectionCard` | `lib/core/widgets/catch_section_card.dart:9` | Shared polished section-card primitive. Wraps a body in `CatchSurface` with a sentence-case title, optional subtitle, optional trailing context, tokenized padding, and the same restrained hierarchy used by profile-strength guidance. |
+| `CatchSectionCard` | `lib/core/widgets/catch_section_card.dart:10` | Shared polished section-card primitive. Wraps a body in `CatchPanel` with a sentence-case title, optional subtitle, optional trailing context, tokenized padding, and the same restrained hierarchy used by profile-strength guidance. |
 | `CatchHorizontalRail` | `lib/core/widgets/catch_horizontal_rail.dart:12` | Section with a `SectionHeader` title and a horizontally-scrolling `ListView.separated` of items. Supports optional trailing content and custom header/list padding for embedded layouts. |
 | `CatchVerticalSection` | `lib/core/widgets/catch_vertical_section.dart:25` | Section with a `SectionHeader` title and a vertical `ListView.separated` of items (non-scrollable, meant for embedding in a parent scroll view). |
 | `CatchLoadingIndicator` | `lib/core/widgets/catch_loading_indicator.dart:3` | Simple centered `CircularProgressIndicator` for use during async loading states. |
-| `CatchFrameworkErrorView` | `lib/core/widgets/catch_framework_error_view.dart:9` | Branded fallback view used by `ErrorWidget.builder` for Flutter framework/build errors. Shows user-safe recovery copy and keeps debug exception details behind a disclosure in debug builds. |
+| `CatchStartupLoadingScreen` | `lib/core/widgets/catch_startup_loading_screen.dart:6` | Branded startup/loading scaffold used before router or host-create route data is ready. Centers the Catch icon asset on the primary fill and uses a bounded `CatchLoadingIndicator` so launch/loading states share one composition. |
+| `CatchFrameworkErrorView` | `lib/core/widgets/catch_framework_error_view.dart:10` | Branded fallback view used by `ErrorWidget.builder` for Flutter framework/build errors. Shows user-safe recovery copy and keeps debug exception details behind a tokenized `CatchSurface` disclosure in debug builds rather than Material expansion chrome. |
 | `CatchErrorState` | `lib/core/widgets/catch_error_state.dart:11` | Canonical branded app-facing error content. Supports full-screen, inline, and compact modes, mapped title/message copy, optional retry, and optional secondary action. |
 | `CatchErrorScaffold` | `lib/core/widgets/catch_error_state.dart:118` | Full-screen/root-tab wrapper for load failures. Keeps framework crashes separate from app data-load failures. |
 | `CatchSliverErrorState` | `lib/core/widgets/catch_error_state.dart:171` | Sliver-native branded error state. Uses `SliverFillRemaining` by default and supports retry callbacks for provider invalidation. |
@@ -2062,47 +3026,62 @@ Generated 2026-05-06.
 | `CatchFormFieldLabel` | `lib/core/widgets/catch_form_field_label.dart:5` | Styled form field label with an optional badge (e.g., "Optional"). |
 | `CatchControlShell` | `lib/core/widgets/catch_control_shell.dart:50` | Shared single-line control shell for fields, select triggers, picker tiles, map pin tiles, and steppers. Owns the fill, border, focus ring, radius, and size metrics. Use `floating` for overlay chrome, `compact` for dense header/search controls, and `md` for regular form controls. |
 | `_OptionalBadge` | `lib/core/widgets/catch_form_field_label.dart:49` | Small "(optional)" badge rendered next to form labels. |
-| `CatchChip` | `lib/core/widgets/catch_chip.dart:6` | Tag/chip widget. Supports active/inactive states, an optional remove button, and Catch-themed coloring. Used in `ChipField` and independently for vibe tags. |
+| `CatchChip` | `lib/core/widgets/catch_chip.dart:6` | Handoff `Chip` fact/filter pill. Supports resting surface fill, selected transparent fill with a 1.5px ink rule, optional activity tint/ink colors, tap behavior, and an optional remove button. Used in `ChipField` and independently for static or interactive fact tags. |
 | `_RemoveButton` | `lib/core/widgets/catch_chip.dart:104` | Small X button rendered inside `CatchChip` when removable. |
-| `CatchBadge` | `lib/core/widgets/catch_badge.dart:10` | Small label badge used for spots-left indicators, distance/pace pills, etc. Supports `solid`, `neutral`, and `outline` tones. |
-| `IconBtn` | `lib/core/widgets/icon_btn.dart:22` | Circular 40x40 icon button used as the base for `CatchTopBar*Action` widgets. Renders `Material` + `InkWell` with a center-aligned child. |
-| `BottomCTA` | `lib/core/widgets/bottom_cta.dart:38` | Sticky bottom action footer. Renders a full-width `CatchButton` in a surface-colored bar separated from content by a hairline divider, with optional leading content, optional dark/custom footer colors, and bottom safe-area padding. |
-| `CatchBottomSheetScaffold` | `lib/core/widgets/catch_bottom_sheet.dart:7` | Shared bottom-sheet shell with grabber, optional title/subtitle, keyboard-safe padding, content, and an optional action slot. |
+| `SelectChip` | `lib/core/widgets/select_chip.dart:8` | Handoff tactile selectable pill for questionnaire answers, mission choices, and choosy filters. Supports accent selected fill, active glow/scale, pressed scale-down, selected semantics, and tokenized pill surface chrome. |
+| `ActivityArt` | `lib/core/widgets/activity_art.dart:10` | Handoff generated activity-art surface. Resolves activity pigment and glyph through `ActivityPalette`, renders the gradient, screen-print texture, faint motif glyph, optional dim layer, radius/height controls, and overlay child slot. |
+| `ActivityAvatar` | `lib/core/widgets/activity_avatar.dart:10` | Handoff activity-register avatar for people shown in activity-grounded surfaces. Resolves activity pigment through `ActivityPalette`, renders mono initials over an activity gradient with screen-print texture, and supports explicit size, selected/live ring, and dim veil states. |
+| `ActivityChip` | `lib/core/widgets/activity_chip.dart:8` | Handoff activity tag for typed `ActivityKind` values. Resolves label/glyph/pigment through `ActivityPalette`, supports soft and primary registers, optional label override, and optional tap semantics. Use for registry-backed activity labels instead of feature-local colored chip helpers. |
+| `ActivityMapPin` | `lib/core/widgets/activity_map_pin.dart:8` | Handoff map pin for activity-colored map marks. Resolves pigment through `ActivityPalette`, supports resting/selected sizing, optional selected flag text, and the subtle pin shadow used on map canvases. |
+| `DistanceRing` | `lib/core/widgets/distance_ring.dart:7` | Handoff map radius ring for static map canvases and previews. Renders a 170px default circular ink ring with 1.2px stroke and an optional tappable mono label pill anchored to the top edge. |
+| `CatchBadge` | `lib/core/widgets/catch_badge.dart:10` | Handoff `Badge` status pill used for spots-left indicators, distance/pace pills, event requirement chips, status labels, compact metadata, and action-column outcomes. Supports functional tones including `gold`, `size.action` 33px alignment, optional leading icons, optional uppercase labels, and activity-accent tinting. |
+| `PrivacyBadge` | `lib/core/widgets/privacy_badge.dart:10` | Quiet outlined handoff privacy pill for visibility hints. Supports `Private to you`, `Catch private`, and `Host can see` modes with lock/eye glyphs, transparent `CatchSurface` chrome, and the shared mono badge text role. |
+| `CatchCornerSash` | `lib/core/widgets/catch_corner_sash.dart:10` | Single status sash for event/club hero cards when one dominant state should read before supporting metadata. Uses token palettes, optional icon, and asymmetric pill corners instead of competing chip clusters. |
+| `CatchCountPill` | `lib/core/widgets/catch_count_pill.dart:12` | Handoff CountPill control for floating Explore affordances. Renders a raised pill with optional icon, optional mono label, optional active-count badge, shared surface/border tokens, and explicit semantic labels. Use for map/list toggles and compact filter entry points instead of feature-local floating pill decorations. |
+| `CatchTabDock<T>` | `lib/core/widgets/catch_tab_dock.dart:25` | Handoff `TabDock`: bottom navigation dock with translucent blur surface, top hairline, uppercase mono labels, selected filled glyph, idle ink3 glyphs, typed tab IDs, and optional per-tab badges. Used by non-iOS `AppShellNavigationBar`. |
+| `CatchMetaDotRow` | `lib/core/widgets/catch_meta_row.dart:13` | Inline dot-separated metadata row for event/club cards. Keeps icon/text entries and optional strong trailing meta in one line with ellipsis behavior, so cards can show time, place, distance, and status without bolting on multiple badges. |
+| `IconBtn` | `lib/core/widgets/icon_btn.dart:5` | Handoff `IconButton`: circular glyph target with 44px default, 40px top-bar `navSize`, bordered / float / plain variants, active accent tinting, disabled opacity, and legacy child/custom-background escape hatches for existing app surfaces. |
+| `BottomCTA` | `lib/core/widgets/bottom_cta.dart:38` | Sticky bottom action footer. Renders a full-width `CatchButton` in a surface-colored bar separated from content by a hairline divider, with optional leading content, optional activity button accent, optional dark/custom footer colors, and bottom safe-area padding. |
+| `CatchBottomSheetScaffold` | `lib/core/widgets/catch_bottom_sheet.dart:8` | Handoff `Sheet`: surface bottom-sheet panel with overlay shadow, grabber toggle, plain title/subtitle header, branded glyph-tile header, optional badge/trailing slot, keyboard-safe body padding, content, and optional action slot. |
+| `RichShareCardSheet` | `lib/core/widgets/rich_share_card_sheet.dart:20` | Shared visual-card share sheet. Renders a keyboard-safe bottom sheet with `BottomSheetGrabber`, a bounded `RepaintBoundary` card preview, footnote copy, and a full-width platform-share `CatchButton` that exports the captured card through `ExternalShareController`. `RichShareCardSheetKeys.cardPreview` and `.shareButton` are the stable hooks for tests and future automation. |
 | `CatchDraggableSheetShell` | `lib/core/widgets/catch_draggable_sheet_shell.dart:6` | Shared shell for persistent `DraggableScrollableSheet` surfaces. Owns the rounded top edge, border, optional raised shadow, and grabber slot while leaving snap state and scroll content to feature screens. Callers can tune handle opacity and top radius for sheet reveal animations without forking the shell. |
 | `CatchViewportCurveFrame` | `lib/core/widgets/catch_viewport_curve_frame.dart:11` | Device-aware top-frame clipper for immersive headers. It keeps caller-provided base padding, derives the active viewport's top corner radius from `MediaQuery` safe-area/size, and clips the inset child with Flutter's native `RSuperellipse`/save-layer antialiasing so media follows rounded phone glass with a continuous curve instead of becoming a jagged rectangular inset. |
 | `CatchCelebrationScreen` | `lib/core/celebration/catch_celebration_screen.dart:37` | Shared full-screen celebration surface for high-emotion completion moments. Feature screens provide moment kind, copy, details, optional supplemental children, and primary/secondary actions; the primitive dispatches celebration effects once after first frame. Solid-white primary actions use `CatchButtonVariant.light` instead of per-screen white/foreground overrides. |
 | `CelebrationEffectsController` | `lib/core/celebration/celebration_effects_controller.dart:10` | Central haptic/sound boundary for celebration moments. Currently dispatches haptics by `CelebrationMomentKind`; future sound work should be added here instead of directly in feature widgets. |
-| `CatchEmptyState` | `lib/core/widgets/catch_empty_state.dart:9` | Shared empty-state primitive with icon, title, message, optional action, surface/plain presentation modes, and stacked or compact inline layouts. Expands to bounded parent widths before centering content so plain empty states remain centered inside start-aligned feature sections. |
+| `CatchEmptyState` | `lib/core/widgets/catch_empty_state.dart:9` | Handoff `EmptyState`: centered cardless placeholder with optional quiet 34px ink3 glyph, section-title headline, body-small message, 24px horizontal padding, and optional action. It still supports explicit surface/bubble presentation and compact inline layout for embedded contexts, and expands to bounded parent widths before centering content. |
 | `CatchDaySectionHeader` | `lib/core/widgets/catch_day_section_header.dart:11` | Sticky day-section header for chronological feeds. Use `CatchDaySectionHeaderDelegate` when the parent owns a flat `CustomScrollView` and pinned day headers are needed; the delegate binds the child height to its sliver extent so pinned geometry stays valid under constrained sheets. |
+| `CatchStatusBar` | `lib/core/widgets/catch_status_bar.dart:8` | Handoff `StatusBar`: phone-frame iOS status row with bold mono time, Phosphor fill signal/wifi/battery glyphs, light/dark tone support, and optional surface fill for mock frames and design previews. |
 | `CatchEventTicketCard` | `lib/core/widgets/catch_event_activity_cards.dart:17` | Ticket-style production event card backed by `EventActivityVisualSpec`. Used by Dashboard recommendations, Explore selected non-spotlight map pins, and the Explore nearby map rail so each event type shares the same activity-coded backdrop, shared `EventClockMark`, shared `EventStatusPill`, centralized capacity copy, and optional full-card Hero transition into event detail. |
 | `CatchEventSpotlightCard` | `lib/core/widgets/catch_event_activity_cards.dart:133` | Large activity-art production event card for featured Explore items and selected map pins only when the selected pin is the feed's actual featured event. Reuses `EventActivityBackdrop`, supports optional visual or full-card Hero tags for card-to-detail transitions, and keeps non-open states in the kicker slot. |
 | `CatchEventThumbnail` | `lib/core/widgets/catch_event_thumbnail.dart:10` | Shared event image primitive. Renders uploaded photos by default, falls back to `EventActivityBackdrop`, supports `preferActivityArtwork` for surfaces that should stay color-coded by event type even when a photo exists, and exposes fallback icon/pattern tuning for large hero bands. |
-| `CatchSectionList` / `CatchDetailSliverSectionList` | `lib/core/widgets/catch_section_layout.dart:9` | Semantic vertical section composition primitives for audited detail screens. Use `CatchSectionList` when a box widget owns adjacent semantic sections, and `CatchDetailSliverSectionList` when a sliver-native detail body needs shared page gutters/top/bottom padding plus a single section-gap contract. |
+| `GradedImage` / `CatchGrade` | `lib/core/widgets/graded_image.dart:21` | Non-destructive display-time photo grade. Applies the shared brightness-aware matte duotone through color filters at render time, leaving uploaded images untouched while keeping mixed UGC and generated activity art inside one editorial visual family. |
+| `CatchPageBody` / `CatchScreenBody` / `CatchSectionStack` / `CatchSectionList` / `CatchDesignSection` / `CatchDetailSliverSectionList` | `lib/core/widgets/catch_section_layout.dart:9` | Semantic body and section composition primitives. `CatchScreenBody` maps the handoff scrolling body with `screenPx` gutter, `pt`/`pb` overrides, full-bleed gutter opt-out, and optional non-scroll mode; `CatchSectionStack` maps the handoff `SectionStack` gutter and defaults to no inserted section gap; `CatchDesignSection` maps the handoff `Section` contract with kicker/count text, optional lead activity accent, 12 px body gap, and the 24 px hairline separator rhythm; `CatchDetailSliverSectionList` provides sliver-native page gutters with the same section-owned rhythm by default. |
 | `EventActivityVisualSpec` / `EventActivityBackdrop` | `lib/events/presentation/event_activity_visuals.dart:17` | Mutable presentation schema for `ActivityKind` imagery. Centralizes activity label, icon, gradient palette, pattern, and browse-order choices so Explore cards, spotlight cards, thumbnails, browse tiles, and event detail headers do not fork color decisions. |
 | `EventTicketPerforatedDivider` / `EventTicketShapeClipper` | `lib/events/presentation/widgets/event_ticket_surface.dart:17` | Shared event-ticket transition primitives. Own the horizontal perforation, ticket notch constants, ticket clipper, and full-card Hero wrapper used by ticket cards, spotlight cards, date-rail cards, and ticket-mode event detail headers. |
 | `EventCapacityPresenter` | `lib/events/presentation/widgets/event_tiles/event_capacity_presenter.dart:4` | Shared event-capacity display helper. Owns signed-up/spots/progress values plus "going · left/full", activity summary, attendee-confirmed, and join-CTA availability copy so cards and CTAs do not fork booking language. |
 | `EventActivityStamp` / `EventClockMark` / `EventCapacityProgress` / `EventStatusPill` | `lib/events/presentation/widgets/event_tiles/event_visual_atoms.dart:8` | Shared visual atoms for activity-coded event rows and tickets. Use these for circular activity marks, analog time marks, capacity progress bars, and compact status pills before adding card-local painters or badges. |
 | `ChipField<T>` | `lib/core/widgets/chip_field.dart:14` | Multi/single-select chip selector wrapping `FormField<Set<T>>`. Uses `CatchChip` children inside a `Wrap`, lets callers attach semantic chip keys, keeps the parent-owned `selected` set, supports disabled state for pending mutation sheets, and shows a leading check icon on selected chips only in multi-select mode. |
-| `DetailRow` | `lib/core/widgets/detail_row.dart:5` | Simple row with a label and value, used in detail/read-only views. |
+| `DetailRow` | `lib/core/widgets/detail_row.dart:5` | Compact label/value row for detail and payment-history sheets. Uses supporting text roles, fixed label lane, and expanded value copy so dense read-only metadata aligns without a new local table layout. |
+| `InfoRow` | `lib/core/widgets/info_row.dart:9` | Handoff on-surface list row. Supports inline label/value rows, stacked caption/value rows, add and danger treatments, optional chevron or toggle trailing controls, and quiet inset dividers. |
+| `InfoGroup` | `lib/core/widgets/info_group.dart:7` | Handoff on-surface group of `InfoRow`s. Renders an optional mono kicker, full-strength group separator/air for non-first groups, and injects row dividers after the first row. |
 | `ErrorBanner` | `lib/core/widgets/error_banner.dart:12` | Styled inline error banner for mutation/async errors within page content. Optionally includes a "Try again" button. |
 | `showCatchErrorSnackBar` | `lib/core/widgets/catch_error_snackbar.dart:4` | Snackbar helper for transient action failures. Maps errors through `appErrorMessage` before display. |
 | `CatchNoticeHost` | `lib/core/widgets/catch_notice.dart:84` | App-wide overlay host for ambient notices. Renders persistent notices such as offline state below the safe area and queues ephemeral event notices through `appNoticeControllerProvider`. |
 | `CatchNotice` | `lib/core/widgets/catch_notice.dart:184` | Reusable floating notice primitive with tone, icon, optional message, optional action, and optional dismiss control. Use for ambient app status/events, not inline form errors. |
 | `SectionHeader` | `lib/core/widgets/section_header.dart:4` | Lightweight section header with sentence-case styling by default, optional heavy weight, and opt-in uppercase for intentional metadata/eyebrow labels. Prefer `CatchSectionCard` for carded content sections. |
-| `StatusChip` | `lib/core/widgets/status_chip.dart:14` | Colored chip displaying event status (open, booked, full, cancelled, attending, waitlisted, not-going, attended, missed). |
 | `StatColumn` | `lib/core/widgets/stat_column.dart:5` | Vertical stat display: value on top, label below. Used by profile and host surfaces that need local surface ownership; detail-page rails should use `CatchMetricStrip`. |
-| `AppFormLayout` | `lib/core/widgets/app_form_layout.dart:3` | Form layout wrapper with consistent padding and spacing for form screens. |
 | `BottomSheetGrabber` | `lib/core/widgets/bottom_sheet_grabber.dart:4` | Small drag handle/grabber bar shown at the top of bottom sheets and draggable sheet shells. Supports caller-owned width/height while keeping tokenized color and radius. |
 | `PersonRow` | `lib/core/widgets/person_row.dart:77` | Multipurpose person row. In chat-thread mode (when `lastMessage` is non-null), renders name, timestamp, context line, last message, and unread badge. In roster mode, renders name, meta line, context line, and an optional trailing widget. Used in chat inbox, rosters, waitlists, and catches previews. |
 | `_ChatLayout` | `lib/core/widgets/person_row.dart:136` | Internal chat-thread layout for `PersonRow` — name + timestamp row, run-context row, last-message + unread-badge row. |
 | `_RosterLayout` | `lib/core/widgets/person_row.dart:228` | Internal roster layout for `PersonRow` — name + meta line + context line (run icon). |
-| `PersonAvatar` | `lib/core/widgets/person_avatar.dart:33` | Circular avatar with deterministic gradient fallback derived from name hash. Supports image URL, colored border ring (for match state or stacking), online status dot, and obscured/blurred rendering for privacy-preserving hype avatars. Named constructor `PersonAvatar.count` shows a "+N" overflow bubble. |
-| `PersonAvatarStack` | `lib/core/widgets/person_avatar.dart:130` | Shared overlapping avatar stack with optional overflow count and obscured rendering. Use this instead of feature-local stacked circular-avatar widgets. |
+| `PersonAvatar` | `lib/core/widgets/person_avatar.dart:49` | Shared person/host avatar with deterministic gradient fallback derived from name hash. Supports image URL, colored border ring (for match state or stacking), online status dot, obscured/blurred rendering for privacy-preserving hype avatars, and `PersonAvatarShape.circle` / `.square` so inbox host inquiries can use the handoff's rounded-square treatment without forking the avatar widget. Named constructor `PersonAvatar.count` shows a "+N" overflow bubble. |
+| `PersonAvatarStack` | `lib/core/widgets/person_avatar.dart:218` | Shared handoff `AvatarStack`: overlapping avatars with photo or initials fallback, optional activity-tinted veiled placeholders for hidden rosters, quiet raised `+N` overflow count, configurable size/overlap/ring, and optional obscured photo rendering for legacy surfaces. Use this instead of feature-local stacked circular-avatar widgets. |
 | `_GradientPlaceholder` | `lib/core/widgets/person_avatar.dart:162` | Deterministic gradient placeholder for avatars without a photo. Picks from 12 palettes based on a hash of the name. |
 | `ResponsiveBuilder` | `lib/core/responsive/responsive_builder.dart:22` | Thin wrapper around `LayoutBuilder` that maps available width to `ScreenSize` (compact/medium/expanded) and calls the appropriate builder. Falls back gracefully when tablet/desktop builders are absent. |
 | `_ButtonLabel` | `lib/core/widgets/catch_button.dart:141` | Internal label+icon row for `CatchButton`. |
 | `_LoadingDots` | `lib/core/widgets/catch_button.dart:193` | Three animated dots shown during `CatchButton`'s loading state. |
-| `SettingsRow` | `lib/core/widgets/settings_row.dart:25` | Settings-style row with icon, label, optional value, optional trailing widget (e.g., `Switch`), and a danger mode (primary-colored text). Label/value rows allocate separate left and right lanes so the value column right-aligns consistently. |
+| `SettingsRow` | `lib/core/widgets/settings_row.dart:26` | Handoff `InfoRow`-style settings row: on-surface row with 20px icon lane, optional inset hairline divider, `infoRowTitle` label, optional mono right-hand value, optional trailing widget, chevron only when explicitly navigational, and functional-danger treatment for destructive rows. |
+| `CatchToggle` | `lib/core/widgets/catch_toggle.dart:8` | Handoff settings toggle primitive. Renders a 46x28 pill track, primary fill when on, line2 fill when off, a surface knob, semantics toggled state, disabled opacity, and emits the next boolean value on tap. Use in settings rows instead of raw `Switch` when matching the design-system Settings templates. |
 | `ProfileInfoTile` | `lib/user_profile/presentation/widgets/profile_info_tile.dart:9` | Profile row primitive with icon, label, value/valueEditor slot, animated row-height/value swap, consistent label/value spacing, a fixed-width animated chevron slot, and stable collapsed/expanded row geometry. |
 | `ProfileInlineDisclosure` | `lib/user_profile/presentation/widgets/profile_info_tile.dart:113` | Animated profile inline-editor shell that pairs a row header with a drawer body. Use for row-owned edit interactions instead of manually inserting/removing editor widgets. |
 | `ProfileInlineAnimatedBody` | `lib/user_profile/presentation/widgets/profile_info_tile.dart:137` | Animated open/close body used by profile disclosures, prompt-card editors, and legacy `ProfileInfoEntry.editor` bodies. Keeps body width stable while height/fade animates with Catch motion tokens. |
@@ -2117,22 +3096,19 @@ Generated 2026-05-06.
 |---|---|---|
 | `DashboardScreen` | `lib/dashboard/presentation/dashboard_screen.dart:21` | Home tab. Watches the user's profile, active club memberships, signed-up events, and Home unread notification count only while Home is active. Renders one `CustomScrollView` with a scroll-away greeting/empty header, top-right Notifications bell, red unread badge, and dashboard sliver body; it no longer owns a route-local tab controller or Dashboard/Activity tab row. |
 | `DashboardFull` | `lib/dashboard/presentation/widgets/dashboard_full.dart:21` | Standalone full-dashboard wrapper used by focused tests/non-tab embedding. Takes explicit `followedClubIds` from the membership-edge seam and renders the full dashboard header plus `DashboardFullSliverBody`. The header avatar is a Profile-tab button and must use thumbnail-scale profile imagery through `UserProfile.primaryPhotoThumbnailUrl`. |
-| `DashboardFullSliverBody` | `lib/dashboard/presentation/widgets/dashboard_full.dart:86` | Sliver body for the populated Home dashboard: consolidated attendee `EventFocusRail`, consolidated host tools carousel, `StrideCard`, `QuickActions`, the personal `DashboardClubsRail`, and recommended events. It joins club names for committed events through `clubNameLookupProvider`; notifications are intentionally routed to the dedicated Notifications screen. |
-| `HostToolsRail` | `lib/dashboard/presentation/widgets/dashboard_full.dart:170` | Dashboard adapter for shared `HostEventToolsCarousel`. Converts `DashboardHostEventTool` availability into host-tool items and owns route navigation for Manage, Attendance, and Report without adding header/count/bucket chrome around the card. |
+| `DashboardFullSliverBody` | `lib/dashboard/presentation/widgets/dashboard_full.dart:84` | Sliver body for the populated Home dashboard. Uses `CatchSectionStack` for the handoff rhythm and orders the body as `EventFocusRail`, `StrideCard`, `QuickActions`, the personal `DashboardClubsRail` when available, and the "Recommended for you" rail. It joins club names for committed events through `clubNameLookupProvider`; notifications are intentionally routed to the dedicated Notifications screen. |
 | `EventFocusRail` | `lib/dashboard/presentation/widgets/event_focus_rail.dart:33` | Consolidated Home rail for attendee committed-event actions. Builds full-width snapping `EventActionCard` pages for upcoming, check-in, catch-window, and review states; stacks actions such as View event, Check in, Directions, Add to calendar, Start catching, and Write review so labels do not clip on narrow screens. |
 | `DashboardClubsRail` | `lib/dashboard/presentation/widgets/dashboard_clubs_rail.dart:10` | Home-owned personal club rail. Resolves followed club IDs through `watchClubProvider`, reuses `ClubAvatarRail` without create/directory chrome, and stays hidden when no club data is available so Explore can keep club recommendations discovery-oriented instead of user-owned. |
-| `ActivityScreen` | `lib/dashboard/presentation/activity_screen.dart:18` | Route-level Notifications screen opened from the Home header bell. Uses `CatchTopBar(title: 'Notifications')`, keeps the bottom nav visible by living under the Home shell branch, renders `ActivitySection`, and automatically delegates unread notification docs to `ActivityController.markAllRead` when the screen opens. |
-| `ActivitySection` | `lib/dashboard/presentation/widgets/activity_section.dart:46` | Reusable notifications body. Separates signed-up upcoming events from backend-owned recent updates, renders event rows through `EventCompactRow`, groups notification history by recency, and uses typed `CatchBadge`/icon-chip treatments for match, club, booking, reminder, update, waitlist, and cancellation items. Uses a branded inline error state with retry and can either show a manual `Mark all read` action or hide it when a route owns automatic read state. |
-| `Recommendations` | `lib/dashboard/presentation/widgets/recommendations.dart:7` | Intrinsic-height horizontal rail of `RecommendCard` widgets for recommended events from the user's followed clubs. |
+| `ActivityScreen` | `lib/dashboard/presentation/activity_screen.dart:19` | Route-level Activity screen opened from the Home header bell. Uses `CatchTopBar(title: 'Activity')`, keeps the bottom nav visible by living under the Home shell branch, renders `ActivitySection`, and owns the manual top-bar `Mark all read` action through `ActivityController.markAllRead`. |
+| `ActivitySection` | `lib/dashboard/presentation/widgets/activity_section.dart:34` | Reusable notification body for the Activity route. Reads backend-owned notifications, keeps loading/empty/error states branded, and groups visible notifications by Today, Yesterday, This week, and Earlier through compact top-hairline day groups; signed-up event rows are intentionally not part of this handoff screen. |
+| `Recommendations` | `lib/dashboard/presentation/widgets/recommendations.dart:7` | Intrinsic-height "Recommended for you" horizontal rail of `RecommendCard` widgets for recommended events from the user's followed clubs. |
 | `RecommendCard` | `lib/dashboard/presentation/widgets/recommend_card.dart:8` | Dashboard recommended-event adapter around `CatchEventTicketCard`. It uses the shared activity-art ticket shape, keeps the recommender reason in the media label, and preserves price, title, club, date/time, meeting point, distance/pace, booked count, and remaining spots. |
 | `StrideCard` | `lib/dashboard/presentation/widgets/stride_card.dart:8` | Dashboard card showing stride (weekly run count) stats with bar columns and a "Keep it up" message. |
 | `StrideBarColumn` | `lib/dashboard/presentation/widgets/stride_card.dart:105` | Single bar column for the stride card — day label and filled bar. |
 | `QuickActions` | `lib/dashboard/presentation/widgets/quick_actions.dart:8` | Responsive dashboard quick-action grid for Calendar and Saved events. Spatial discovery lives under Clubs, so the dashboard no longer exposes Map view. Avoids hardcoded tile heights so labels can wrap without clipping on narrow screens. |
 | `DashboardEmpty` | `lib/dashboard/presentation/widgets/dashboard_empty.dart:10` | Standalone empty-dashboard wrapper used by focused tests/non-tab embedding. Renders the empty dashboard header plus `DashboardEmptySliverBody`. |
-| `DashboardEmptySliverBody` | `lib/dashboard/presentation/widgets/dashboard_empty.dart:60` | Sliver body for the empty Home dashboard. Keeps the existing "book your first run" education flow, can show the personal `DashboardClubsRail`, and avoids embedding activity updates. |
-| `EmptyHeroCard` | `lib/dashboard/presentation/widgets/empty_hero_card.dart:10` | Hero card variant shown on the empty dashboard prompting the user to book their first event. Its solid-white CTA uses `CatchButtonVariant.light` so the pill stays legible in dark mode. |
-| `DashedAvatar` | `lib/dashboard/presentation/widgets/dashed_avatar.dart:7` | Dashed-border circular avatar placeholder used in empty-state layouts. |
-| `StaticMapDark` | `lib/dashboard/presentation/widgets/static_map_dark.dart:3` | Static map image widget with dark mode support. |
+| `DashboardEmptySliverBody` | `lib/dashboard/presentation/widgets/dashboard_empty.dart:56` | Sliver body for the empty Home dashboard. Uses `CatchSectionStack` with the cover-story `EmptyHeroCard` followed by a `CatchDesignSection` journey for "How Catch works"; weekly activity, quick actions, and personal clubs stay out of the first-run composition. |
+| `EmptyHeroCard` | `lib/dashboard/presentation/widgets/empty_hero_card.dart:10` | Cover-story hero shown on the empty dashboard prompting the user to book their first event. Its copy matches the handoff first-run story, omits the old decorative glyph, and uses `CatchButtonVariant.light` so the CTA stays legible in dark mode. |
 
 ### Sliver Helpers
 
@@ -2147,9 +3123,10 @@ Generated 2026-05-06.
 | `_DashboardLoadingScreen` | `lib/dashboard/presentation/dashboard_screen.dart:220` | Loading scaffold for Home while profile/booked-run data resolves. |
 | `_DashboardErrorScreen` | `lib/dashboard/presentation/dashboard_screen.dart:229` | Branded error scaffold for Home profile/booked-run load failures. |
 | `_DashboardSectionStateCard` | `lib/dashboard/presentation/widgets/dashboard_full.dart:161` | Inline loading/error card for a dashboard section (e.g., "Loading your recent runs..."). |
-| `_NotificationTile` | `lib/dashboard/presentation/widgets/activity_section.dart:198` | Single recent-update row for backend-owned activity notifications. Uses `CatchSurface`, typed badges, relative time, unread styling, and optional route navigation. |
-| `_NotificationIconChip` | `lib/dashboard/presentation/widgets/activity_section.dart:296` | Compact icon container for notification types. It is decorative row chrome, not a standalone surface primitive. |
-| `_ActivityStateLabel` | `lib/dashboard/presentation/widgets/activity_section.dart:544` | Status label shown for the loading activity state. |
+| `_NotificationDayGroups` | `lib/dashboard/presentation/widgets/activity_section.dart:112` | Notifications screen day-group wrapper. Matches the handoff's tight Activity composition with first group flush, later groups separated by an 8px offset, top hairline, 18px inset, uppercase kicker, then `NotificationRow` children. |
+| `NotificationRow` | `lib/dashboard/presentation/widgets/activity_section.dart:158` | Handoff-style row for backend-owned activity notifications. It exposes the design contract (`type`, `title`, `time`, `body`, `unread`, `divider`, optional tap), renders on-surface with a type-colored glyph, optional inset divider, relative time, unread title/time color, and optional route navigation, and deliberately does not render card fills, badges, or icon chips. |
+| `_NotificationGroup` | `lib/dashboard/presentation/widgets/activity_section.dart:227` | Small adapter that renders a group of notification rows and injects row dividers after the first item. |
+| `_ActivityStateLabel` | `lib/dashboard/presentation/widgets/activity_section.dart:422` | Status label shown for the loading activity state. |
 
 ---
 
@@ -2160,11 +3137,19 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `HostEventToolsCarousel` | `lib/hosts/presentation/widgets/host_event_tools.dart:22` | Shared full-width host-event carousel for unbounded hosted events, including closed past hosted events retained for host operations. It renders self-contained cards with swipe snapping and no external section header, event-count badge, or footer chrome. |
+| `_HostEventsScaffold` | `lib/hosts/presentation/host_operations_screen.dart:588` | Host Events selected-club operations shell. Owns only the transient selected club index, renders the selected club name in the host AppBar, hides the switcher for a single club, and supplies the selected club to the flattened operations body. |
+| `_HostClubsScaffold` | `lib/hosts/presentation/host_operations_screen.dart:662` | Host Clubs selected-club operations shell. Owns transient selected club and Edit/Preview tab state, renders the selected club in the host AppBar, hides the switcher for a single club, and keeps owner-only edit/payout/team mutations out of co-host selections. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
+| `_HostClubTabRail` | `lib/hosts/presentation/host_operations_screen.dart:743` | Host Clubs Edit / Preview rail. Reuses `CatchOptionGroup` in the AppBar bottom slot so the host clubs screen follows the handoff tab composition without custom segmented chrome. |
+| `_HostOperationsTopBar` | `lib/hosts/presentation/host_operations_screen.dart:776` | Host app top bar used by Events and Clubs. Wraps `CatchTopBar` with a mono kicker, title, optional shared action slots, and optional bottom content so host tabs can expose club pickers and tab rails without custom chrome. |
+| `_HostMetaRow` | `lib/hosts/presentation/host_operations_screen.dart:897` | Host club metadata row: uppercase area/location, role badge, and activity chip. Keeps host tab color usage tied to activity meaning. |
+| `_HostClubProfileCard` | `lib/hosts/presentation/host_operations_screen.dart:972` | Host Clubs Edit tab body. Shows selected club metadata plus Identity, Contact, Event defaults, Public profile, Payouts, and Host team sections using `SettingsRow`, `HostPaymentAccountCard`, and `HostTeamManagementSection`; owner-only rows route to the edit-club flow. |
+| `_HostClubPreviewPane` | `lib/hosts/presentation/host_operations_screen.dart:1131` | Interim Host Clubs Preview tab body. Shows the selected club description and a route-backed public preview action until the public club preview components are made embeddable inside the host tab. |
+| `_HostEventRow` | `lib/hosts/presentation/host_operations_screen.dart:1177` | Flattened host event row. Uses `SettingsRow` with date icon, event title, time value, divider, and chevron tap target to route to Host Manage. |
 | `HostEventToolsPageIndicator` | `lib/hosts/presentation/widgets/host_event_tools.dart:164` | In-card hosted-event position indicator. Shows `N of total` plus a bounded progress rail so unbounded hosted-event counts do not grow the rendered indicator. |
 | `HostEventToolCard` | `lib/hosts/presentation/widgets/host_event_tools.dart:208` | Shared operational card for one hosted event. Adapts host event lifecycle, bounded in-card progress, date/time, meet point, booked/waitlist counts, and one contextual CTA into `EventActionCard` using the host palette. |
 | `HostToolPalette` | `lib/hosts/presentation/widgets/host_event_tools.dart:304` | Token-backed host-tool color helper for default host panels and attendance states. Use this instead of local orange-tinted containers for host chrome. |
@@ -2175,11 +3160,11 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `HostOperationsHomeScreen` | `lib/hosts/presentation/host_operations_screen.dart:30` | Host app Events tab. Watches clubs the signed-in host can operate, omits create-club header chrome, shows Add event per club, and routes event rows to Host Manage. |
-| `HostClubsScreen` | `lib/hosts/presentation/host_operations_screen.dart:51` | Host app Clubs tab. Separates owned clubs from co-hosted clubs and owns Edit club profile, View public profile, payouts, and host-team management instead of duplicating event CTAs. |
-| `HostAccountScreen` | `lib/hosts/presentation/host_operations_screen.dart:72` | Host settings surface for professional host identity and sign-out. Active profiles expose a View / edit profile action instead of only a create affordance. |
+| `HostOperationsHomeScreen` | `lib/hosts/presentation/host_operations_screen.dart:35` | Host app Events tab. Watches clubs the signed-in host can operate, sorts owned clubs before hosted clubs, and delegates the selected-club operations shell to `_HostEventsScaffold`. |
+| `HostClubsScreen` | `lib/hosts/presentation/host_operations_screen.dart:57` | Host app Clubs tab. Watches clubs the signed-in host can operate and delegates selected-club Edit/Preview composition to `_HostClubsScaffold` instead of rendering every operated club in one grouped scroll. |
+| `HostAccountScreen` | `lib/hosts/presentation/host_operations_screen.dart:85` | Host app Account tab for professional host identity and sign-out. Active profiles render handoff Edit / Preview info-row sections and open `_HostProfileEditorSheet` for profile edits without leaving Account. |
 | `HostTeamManagementSection` | `lib/hosts/presentation/widgets/host_team_management_section.dart:22` | Host-owned club-team editor rendered from the Host app Clubs tab. It lists host profiles and runs add, remove, and transfer mutations through `HostTeamManagementController`. |
-| `HostEventAttendancePanel` | `lib/hosts/presentation/widgets/host_event_attendance_panel.dart:31` | Shared host attendance panel. Watches `AttendanceSheetViewModel`, renders loading/error/event-not-found outer states, and delegates zero-participant, filtered-empty, profile-backed roster rows, and attendance toggle mutations to the lifecycle-specific Host Manage board/table surfaces. Lifecycle participation counts are compact filter tiles, not a separate stat strip, so Setup, Live, and Report each expose the statuses hosts need without repeating top-level metrics. Report mode exports Revenue and Ops CSV files through shared external sharing; revenue uses roster-visible payment ids plus event-price estimates until a backend host payment-report callable exposes actual settled/refunded amounts. |
+| `HostEventAttendancePanel` | `lib/hosts/presentation/widgets/host_event_attendance_panel.dart:34` | Shared host attendance panel. Watches `AttendanceSheetViewModel`, renders loading/error/event-not-found outer states, and delegates zero-participant, filtered-empty, profile-backed roster rows, and attendance toggle mutations to the lifecycle-specific Host Manage board/table surfaces. Lifecycle participation counts are compact filter tiles, not a separate stat strip, so Setup, Live, and Report each expose the statuses hosts need without repeating top-level metrics. Report mode exports Revenue and Ops CSV files through shared external sharing; revenue uses roster-visible payment ids plus event-price estimates until a backend host payment-report callable exposes actual settled/refunded amounts. |
 | `HostCreateClubScreen` | `lib/hosts/presentation/club_management/host_create_club_screen.dart:10` | Host route-facing create-club entry. Delegates to the host-owned create/edit club wizard while keeping the router free of form implementation imports. |
 | `HostEditClubRouteScreen` | `lib/hosts/presentation/club_management/host_create_club_screen.dart:17` | Host route-facing edit-club entry. Resolves a club by id, handles loading/not-found/error states, and delegates to the host-owned create/edit club wizard. |
 | `HostCreateEventRouteScreen` | `lib/hosts/presentation/event_management/host_create_event_screen.dart:10` | Host route-facing create-event entry. Resolves the host-owned club and delegates to the host-owned create-event wizard. |
@@ -2188,7 +3173,8 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `HostProfileScreen` | `lib/hosts/presentation/host_operations_screen.dart:147` | Professional host profile editor opened from Host settings. Saves display name, role title, and bio through `HostProfileRepository.saveHostProfile` so host identity management stays separate from dating-profile editing. |
+| `_HostProfileEditorSheet` | `lib/hosts/presentation/host_operations_screen.dart:384` | Route-local Host Account editor sheet. Reuses the professional profile field set and saves display name, role title, and bio without pushing the full-screen editor route. |
+| `HostProfileScreen` | `lib/hosts/presentation/host_operations_screen.dart:490` | Direct professional host profile editor route kept for compatibility. Saves display name, role title, and bio through `HostProfileRepository.saveHostProfile` so host identity management stays separate from dating-profile editing. |
 
 ---
 
@@ -2199,7 +3185,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `SwipeScreen` | `lib/swipes/presentation/swipe_screen.dart:22` | Catches decision screen. Watches the swipe queue provider, renders the first candidate as a full `ProfileSurface`, submits section likes/comments through `SwipeQueueNotifier.swipe`, and exposes a floating lower-left pass X instead of deck gestures. Empty-state attendance copy uses the viewer's `EventParticipation` edge instead of compatibility arrays, and stuck queue loads now surface a retryable `Catches unavailable` error instead of spinning forever. |
-| `FiltersScreen` | `lib/swipes/presentation/filters_screen.dart:19` | Swipe filters screen. Owns local age and interested-in draft state, uses `CatchRangeSlider` for the 18-60+ age range, saves through `FiltersController.saveFiltersMutation`, and pops on successful save. Pace range and run type are intentionally not exposed as filters. |
+| `FiltersScreen` | `lib/swipes/presentation/filters_screen.dart:23` | Swipe filters screen. Owns local age and interested-in draft state, uses `CatchTopBar`, handoff top body inset, `CatchRangeSlider` for the 18-60+ age range, en-dash range copy, handoff `SelectChip` gender choices, and a full-width `CatchButton` in `CatchBottomDock`; saves through `FiltersController.saveFiltersMutation` and pops on successful save. Pace range and run type are intentionally not exposed as filters. |
 | `EventRecapScreen` | `lib/swipes/presentation/event_recap_screen.dart:27` | Post-event recap screen showing event details and a checked-in attendee vibe grid. Watches `EventRecapViewModel`, uses keyed vibe tiles, `CatchSurface` for the recap hero, and `CatchEmptyState` for an empty attendee roster. |
 
 ### ConsumerWidget
@@ -2208,7 +3194,7 @@ Generated 2026-05-06.
 |---|---|---|
 | `SwipeHubScreen` | `lib/swipes/presentation/swipe_hub_screen.dart:21` | "Catches" tab. Gates screen-owned streams while the retained tab branch is inactive, lists edge-backed attended events with open catch windows, uses leaf widgets to read theme tokens locally, shows a `CatchSurface` intro card with projected checked-in count for the featured event, and lists active events with `AttendedEventTile` widgets. |
 | `ScrollableProfile` | `lib/swipes/presentation/widgets/scrollable_profile.dart:19` | Full-length scrollable profile body used inside `ProfileSurface`. Keeps the shared rendering path identical across Catches, Profile Preview, and Public Profile, renders the hero photo first, then contextual profile insights, profile prompts, one canonical `RUN PROFILE` running identity card, detail chips, inset photos, and lifestyle. Its internal vertical scroll view is non-primary, can accept an explicit controller and route-provided physics when embedded in a sliver route, and can report leading overscroll to a parent route for collapsible-header coordination. |
-| `ProfileSurface` | `lib/swipes/presentation/profile_surface.dart:8` | Shared cardless public profile renderer. Wraps `ScrollableProfile`, passes optional viewer/event context for compatibility insights, and mode-gates reaction controls so Catches can show section like/comment affordances while Preview/Public Profile remain passive. |
+| `ProfileSurface` | `lib/swipes/presentation/profile_surface.dart:9` | Shared cardless public profile renderer. Maps `ProfileCardContent` into the handoff-aligned `CatchProfileView`, passes optional viewer/event context for compatibility insights, renders passive compatibility and running-identity labels as `CatchBadge` metadata, applies the social-run activity pigment to the hero fallback and Running Rhythm block, and mode-gates reaction controls so Catches can show section like/comment affordances while Preview/Public Profile remain passive. |
 | `EventRecapViewModel` | `lib/swipes/presentation/event_recap_view_model.dart:11` | Recap data seam. Combines the event, current uid, and `eventParticipations` to derive checked-in count and the attendee IDs shown in the vibe grid without reading compatibility arrays. |
 | `_VibeTile` | `lib/swipes/presentation/run_recap_screen.dart:236` | Keyed attendee tile on the recap screen. Fetches its public profile, exposes tooltip/semantic selected state, and toggles local recap selection. |
 
@@ -2240,34 +3226,39 @@ Generated 2026-05-06.
 | `_RecapStat` | `lib/swipes/presentation/event_recap_screen.dart:200` | Single stat counter on the recap screen (for example, "12 Likes", "4 Matches"). |
 | `_ProfilePhoto` | `lib/swipes/presentation/event_recap_screen.dart:295` | Single profile photo in the recap attendee grid. |
 | `_EmptyRoster` | `lib/swipes/presentation/run_recap_screen.dart:316` | Empty state when the recap roster has no one. |
-| `_FilterSection` | `lib/swipes/presentation/filters_screen.dart:264` | Collapsible section in the filters screen (header + expandable body). |
-| `_FilterValue` | `lib/swipes/presentation/filters_screen.dart:296` | Single selectable filter value tile. |
+| `_FilterSection` | `lib/swipes/presentation/filters_screen.dart:221` | Static handoff filter section with mono kicker, tokenized vertical padding, bottom hairline, and body content. |
+| `_FilterValue` | `lib/swipes/presentation/filters_screen.dart:250` | Large range-value text shown above the age `CatchRangeSlider`. |
 
 ---
 
 ## Matches / Chats
 
+### ConsumerStatefulWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `ChatsListScreen` | `lib/matches/presentation/matches_list_screen.dart:10` | "Chats" / Host "Inbox" tab shell. Renders the pinned composable chats browse header plus the chat conversations body, and owns only transient host inbox filter state for the handoff `All` / `Unread · n` option row. |
+
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ChatsListScreen` | `lib/matches/presentation/matches_list_screen.dart:11` | "Chats" tab. Gates screen-owned streams while the retained tab branch is inactive, then renders the pinned composable chats browse header (title/subtitle, expandable search action) plus the chat conversations body. |
-| `ChatsList` | `lib/matches/presentation/widgets/chats_list.dart:13` | Sliver body for chat conversations fed from `ChatsListViewModel`. Uses a padded skeleton loading sliver, empty/error states, and delegates populated data to `ChatsListBody`. |
+| `ChatsList` | `lib/matches/presentation/widgets/chats_list.dart:14` | Sliver body for chat conversations fed from `ChatsListViewModel`. Uses a padded skeleton loading sliver, empty/error states, applies the host unread option filter when supplied, and delegates populated data to `ChatsListBody`. |
 | `MatchCelebrationDialog` | `lib/matches/presentation/widgets/match_celebration_dialog.dart:41` | Compatibility-named full-screen match celebration route. Uses `CatchCelebrationScreen` with match haptics, then routes the primary action into `ChatScreen` or dismisses back to swiping. |
-| `ChatListTile` | `lib/matches/presentation/chat_list_tile.dart:9` | Single conversation row in the inbox. Receives a `ChatThreadPreview`, renders one full-width `CatchSurface` row with `PersonAvatar`, latest preview text, timestamp, and row-level unread treatment: warm tint, primary border/accent, avatar ring, stronger text, and a visible 0/1 unread-chat pill near the timestamp. Routes to `ChatScreen`. |
-| `ChatNewMatchesRail` | `lib/matches/presentation/widgets/chat_new_matches_rail.dart:10` | Horizontal rail of no-message `ChatThreadPreview` matches at the top of the chats list. |
+| `ChatListTile` | `lib/matches/presentation/chat_list_tile.dart:10` | Single inbox row. Receives a `ChatThreadPreview`, renders directly on the page surface with an optional inset hairline divider, `PersonAvatar` (rounded square for host inquiries), display name, semantic `chatPreview` secondary text, timestamp, and row-level unread/new treatment through avatar ring, text color, timestamp color, unread badge, or a trailing new-match dot. Routes to `ChatScreen`. |
+| `ChatNewMatchesRail` | `lib/matches/presentation/widgets/chat_new_matches_rail.dart:10` | Legacy horizontal rail of no-message `ChatThreadPreview` matches. The handoff inbox no longer renders this rail from `ChatsListBody`; new matches are folded into the conversations list unless a future screen intentionally needs a separate rail. |
 | `_NewMatchAvatar` | `lib/matches/presentation/widgets/chat_new_matches_rail.dart:31` | Single new-match avatar in the rail — circular photo with name. |
-| `ChatSearchField` | `lib/matches/presentation/widgets/chat_search_field.dart:6` | Search text field for filtering chats list. Supports autofocus and a platform Done action so `ChatsSliverHeader` can expand search into the full browse-header row without rendering a separate keyboard-dismiss button. |
-| `ChatConversationsList` | `lib/matches/presentation/widgets/chat_conversations_list.dart:8` | Headerless `SliverList` of conversation previews, driven by `ChatsListViewModel`, with stable spacing between full-width chat surfaces. |
+| `ChatSearchField` | `lib/matches/presentation/widgets/chat_search_field.dart:6` | Chats query adapter over `CatchSearchField` for standalone chat search placements. `ChatsSliverHeader` now binds `chatSearchQueryProvider` directly through `CatchBrowseHeader` and the shared `CatchExpandingSearch` primitive. |
+| `ChatConversationsList` | `lib/matches/presentation/widgets/chat_conversations_list.dart:8` | Headerless `SliverList` of chat previews driven by `ChatsListViewModel`. Renders contiguous on-surface `ChatListTile` rows with row dividers instead of spacing between card surfaces; callers decide whether the input list includes new matches, conversations, or both. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ChatsEmptyState` | `lib/matches/presentation/widgets/chats_empty_state.dart:6` | Empty state shown when there are no chat conversations. |
-| `ChatsListBody` | `lib/matches/presentation/widgets/chats_list_body.dart:7` | Body wrapper for the chats list. Shows new-match rail and headerless conversation rows without a second "Messages" title. |
-| `ChatsSliverHeader` | `lib/matches/presentation/widgets/chats_sliver_header.dart:10` | Chats-specific wrapper around `CatchBrowseHeader`. It is rendered in the pinned sliver slot, owns temporary search-open state, wires the search action, and keeps query state in `chatSearchQueryProvider`. |
-| `_ChatsBrowseHeader` | `lib/matches/presentation/widgets/chats_sliver_header.dart:20` | Stateful chats browse-header adapter that removes the old count badge, animates search expansion, and clears `chatSearchQueryProvider` when search closes. |
+| `ChatsEmptyState` | `lib/matches/presentation/widgets/chats_empty_state.dart:6` | Empty state shown when there are no chat conversations, no search results, or no unread host queries. |
+| `ChatsListBody` | `lib/matches/presentation/widgets/chats_list_body.dart:7` | Body wrapper for the chats list. Folds `viewModel.newMatches` and `viewModel.conversations` into one handoff `CONVERSATIONS` section, then delegates contiguous rows to `ChatConversationsList` without rendering the old new-match rail. |
+| `ChatsSliverHeader` | `lib/matches/presentation/widgets/chats_sliver_header.dart:12` | Chats-specific wrapper around `CatchBrowseHeader`. It is rendered in the pinned sliver slot, expands its fixed bottom height for the host `OptionGroup`, wires search, and keeps query state in `chatSearchQueryProvider`. |
+| `_ChatsBrowseHeader` | `lib/matches/presentation/widgets/chats_sliver_header.dart:34` | Stateful chats browse-header adapter that removes the old count badge, animates search expansion through `CatchExpandingSearch`, binds `chatSearchQueryProvider`, and renders the host inbox `All` / `Unread · n` option row when supplied. |
 
 ---
 
@@ -2290,11 +3281,13 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `_ChatMutationListeners` | `lib/chats/presentation/chat_screen.dart:288` | Mutation snackbar boundary for chat send/send-image/report/block errors. Keeps mutation feedback out of the rendering widgets. |
-| `ChatTopBar` | `lib/chats/presentation/widgets/chat_top_bar.dart:10` | Chat app bar with avatar/name title and menu actions for profile/report/block. Navigation stays in the top-bar action because it is route UI, while safety actions are callbacks into the controller layer. |
-| `ChatRunContextHeader` | `lib/chats/presentation/widgets/chat_run_context_header.dart:9` | Header inside the chat showing the shared run context — run icon, run name, and date. |
-| `ChatMessageList` | `lib/chats/presentation/widgets/chat_message_list.dart:11` | Message-list renderer for loading, error, empty, and populated states. Uses `CatchEmptyState` for empty threads and variable-height `MessageBubble` rows for individual messages. Do not add `prototypeItem`/fixed item extents because chat bubbles can wrap or contain images. |
-| `ChatInputBar` | `lib/chats/presentation/widgets/chat_input_bar.dart:7` | Message input bar with text field, image picker button, and send button. |
-| `MessageBubble` | `lib/chats/presentation/widgets/message_bubble.dart:6` | Single chat message bubble. Renders differently for sent vs. received messages (alignment, color, corner rounding). Shows timestamp and optional image attachment. |
+| `ChatTopBar` | `lib/chats/presentation/widgets/chat_top_bar.dart:12` | Handoff `ConversationTopBar` for chat threads: surface top bar, hairline bottom rule, tappable avatar/name title, and overflow actions for share/report/block. Navigation stays in the top-bar action because it is route UI, while safety actions are callbacks into the controller layer. |
+| `ChatEventContextHeader` | `lib/chats/presentation/widgets/chat_event_context_header.dart:20` | Handoff `ChatThreadHeader` event-context band. Grounds the thread in the latest shared event with activity soft fill, accent hairline/glyph, mono activity stamp, and event title/date copy; falls back to the neutral "MATCHED THROUGH CATCH" state while event context loads. |
+| `chat_event_context_copy` helpers | `lib/chats/presentation/widgets/chat_event_context_copy.dart:3` | Shared Messaging copy source for event-context stamps, chat share-card titles, and empty-thread prompts. Keeps thread header, share card, and empty state language aligned with the latest shared event and preserves neutral fallbacks while event context is unavailable. |
+| `ChatMessageList` | `lib/chats/presentation/widgets/chat_message_list.dart:14` | Message-list renderer for loading, error, empty, and populated states. Inserts centered day separators, splits same-sender bubble runs across day boundaries, uses `CatchEmptyState` for empty threads, and now receives the latest shared event so the empty prompt can match the Messaging handoff's event-grounded copy before the `Say hi` CTA. It keeps variable-height `MessageBubble` rows for individual messages; do not add `prototypeItem`/fixed item extents because chat bubbles can wrap or contain images. |
+| `ChatInputBar` | `lib/chats/presentation/widgets/chat_input_bar.dart:10` | Handoff `ChatComposer`: bottom dock with quiet circular image action, raised pill text field, filled circular send action, disabled opacity, loading indicators, and real send/image callbacks. |
+| `SuvbotActionBar` | `lib/chats/presentation/widgets/suvbot_action_bar.dart:27` | Demo-only chat bottom dock for Suvbot conversations. Groups check/refresh, warm-state, reset, help, and match-tester actions without rendering the normal chat composer. Reset actions open a handoff `CatchBottomSheetScaffold` with tokenized `CatchSurface` action rows instead of raw Material list tiles; text-required match tester actions keep their focused input sheet. |
+| `MessageBubble` | `lib/chats/presentation/widgets/message_bubble.dart:10` | Handoff `ChatBubble`: end/start alignment by sender, primary vs surface fills, fused corners inside sender groups, quiet mono timestamps, pending timestamp state, and optional image attachment. |
 
 ---
 
@@ -2304,7 +3297,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PublicProfileScreen` | `lib/public_profile/presentation/public_profile_screen.dart:16` | Full-screen public profile view. Fetches `PublicProfile` by UID, passes the current viewer profile into the shared `ProfileSurface` when viewing someone else, and routes report/block actions through `PublicProfileController` mutations. |
+| `PublicProfileScreen` | `lib/public_profile/presentation/public_profile_screen.dart:18` | Full-screen public profile view. Fetches `PublicProfile` by UID, passes the current viewer profile into the shared `ProfileSurface` when viewing someone else, renders branded `CatchErrorState` / `CatchEmptyState` fallbacks for load failures and unavailable profiles, and routes report/block actions through `PublicProfileController` mutations. Report reasons render as shared `SettingsRow` action rows inside `CatchBottomSheetScaffold`. |
 
 ### StatelessWidget
 
@@ -2321,20 +3314,20 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ProfileScreen` | `lib/user_profile/presentation/profile_screen.dart:16` | Profile tab destination. Gates screen-owned streams while the retained tab branch is inactive, owns the route-level top safe area, uses `NestedScrollView` for a scroll-away Profile title header plus pinned `Edit`/`Preview` tab row, and native `TabBarView` paging for smooth horizontal tab swipes. The scroll-away title remains a normal outer sliver; the pinned tab row is wrapped in `SliverOverlapAbsorber`; each tab body starts with `SliverOverlapInjector`. Owns the `TabController` locally because tab selection is route UI state. |
-| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone profile tab content. Wraps the shared profile sections in a `ListView` for isolated/non-sliver usage and renders Profile strength, Photos, Profile prompts, About, Location, Background, Intentions, Lifestyle, and Running details as `CatchSectionCard`-style sentence-case sections. Profile-quality guidance is backed by the public-profile insight scorer. Uses `profileTabBodyPadding` for the shared Profile tab inset. `Display name` is the first editable About field and is the only public-facing profile name; onboarding identity fields such as date of birth and gender are readonly, and last name is not shown publicly. Profile prompt rows use catalog-backed pickers that hide prompt IDs already selected in other rows. Optional/profile-detail fields, including Instagram, remain editable. Running details owns pace, distances, reasons, and favorite run times. Discovery-only preferences such as interested-in genders and match age range live in Filters, not Edit Profile. Optional single-choice edit sheets open unselected when the underlying field is empty. |
-| `ProfileTabSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:48` | Sliver-native profile tab body. Reuses the same profile sections as `ProfileTab` but contributes a padded `SliverList` for parent `CustomScrollView` usage. Uses the same `profileTabBodyPadding` as Preview. |
+| `ProfileScreen` | `lib/user_profile/presentation/profile_screen.dart:16` | Profile tab destination. Gates screen-owned streams while the retained tab branch is inactive, owns the route-level top safe area, uses `NestedScrollView` for a scroll-away "Your profile" title plus a pinned handoff `CatchOptionGroup` Edit/Preview row, and keeps native `TabBarView` paging for smooth horizontal tab swipes. The pinned option row is wrapped in `SliverOverlapAbsorber`; each tab body starts with `SliverOverlapInjector`. Owns the `TabController` locally because tab selection is route UI state. Preview renders full-bleed below the option row, with the shared `ProfileSurface` owning the inner body gutter. |
+| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone signed-in edit tab content. Wraps the edit form in a `ListView` for isolated/non-sliver usage and renders the handoff sections Photos, Prompts, About you, Running, and Lifestyle through `CatchDesignSection`/`ProfileInfoSection` on-surface groups. `Display name` is the first editable About field and is the only public-facing profile name; onboarding identity fields such as date of birth and gender are readonly, and last name is not shown publicly. Profile prompt rows use catalog-backed pickers that hide prompt IDs already selected in other rows. Optional/profile-detail fields, including Instagram, remain editable. Running is always visible and owns pace, distances, reasons, and favorite run times. Discovery-only preferences such as interested-in genders and match age range live in Filters, not Edit Profile. Optional single-choice edit sheets open unselected when the underlying field is empty. |
+| `ProfileTabSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:69` | Sliver-native profile edit body. Reuses the same handoff sections as `ProfileTab` but contributes a padded sliver adapter for parent `CustomScrollView` usage. Uses `profileTabBodyPadding` for the edit body; Preview is full-bleed and no longer shares this inset. |
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PreviewTab` | `lib/user_profile/presentation/widgets/preview_tab.dart:5` | Preview tab showing how the user's profile looks to others by rendering the shared `ProfileSurface`, with owner-provided scroll controller, physics, bottom padding, and leading-overscroll callback when mounted inside ProfileScreen. |
-| `ProfileInfoSection` | `lib/user_profile/presentation/widgets/profile_info_section.dart:24` | Grouped section of `ProfileInfoTile` rows. Titled grouped sections render through `CatchSectionCard` with optional subtitle context, while untitled grouped sections keep the compact legacy card shell for embedded callers. |
-| `ProfileInfoTile` | `lib/user_profile/presentation/widgets/profile_info_tile.dart:6` | Single profile info row with compact muted icon, label, value or in-row value editor, and animated expanded chevron. Row-owned edits expand inline rather than opening a field sheet; values use restrained tokenized row typography and add affordance value text uses primary color. |
+| `PreviewTab` | `lib/user_profile/presentation/widgets/preview_tab.dart:5` | Preview tab showing how the user's profile looks to others by rendering the shared handoff `ProfileSurface`, with owner-provided scroll controller, physics, bottom padding, and leading-overscroll callback when mounted inside ProfileScreen. |
+| `ProfileInfoSection` | `lib/user_profile/presentation/widgets/profile_info_section.dart:24` | Grouped section of `ProfileInfoTile` rows. Titled grouped sections render through `CatchDesignSection` with optional count context and quiet inset row dividers, matching the handoff `InfoGroup`. Untitled grouped sections keep the compact legacy surface shell for embedded callers. |
+| `ProfileInfoTile` | `lib/user_profile/presentation/widgets/profile_info_tile.dart:6` | Handoff-style stacked `InfoRow` for edit-profile fields: muted 20px icon, quiet `fieldLabel` caption, `infoRowTitle` value or in-row value editor, primary add affordance, and animated chevron/row-height for row-owned inline edits. |
 | `_ProfileUnavailableBody` | `lib/user_profile/presentation/profile_screen.dart:103` | Missing-profile state. Prevents the profile route from rendering a blank body when the signed-in user profile is unavailable. |
-| `_PreviewTabSliverBody` | `lib/user_profile/presentation/profile_screen.dart:120` | Sliver-native preview body. Gives the shared `ProfileSurface` bounded remaining viewport height inside the profile route's preview tab scroll view, passes a dedicated profile scroll controller, applies `profileTabBodyPadding` inside the filled child, and bridges upward scroll plus leading overscroll to the outer Profile header. |
-| `_ProfileTitle` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:25` | Scroll-away Profile title row with one Settings action. Account actions live inside Settings, not in a second header overflow menu. |
-| `_ProfileTabBar` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:55` | Pinned Edit/Preview tab bar surface for the sliver-native profile route. The route-level `SafeArea` keeps it below device cutouts without adding an expanded-header gap. |
+| `_PreviewTabSliverBody` | `lib/user_profile/presentation/profile_screen.dart:120` | Sliver-native preview body. Gives the shared `ProfileSurface` bounded remaining viewport height inside the profile route's preview tab scroll view, passes a dedicated profile scroll controller, leaves the hero full-bleed with only the template's 8px option-row breathing room, and bridges upward scroll plus leading overscroll to the outer Profile header. |
+| `_ProfileTitle` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:25` | Scroll-away "Your profile" title row with one Settings action. Account actions live inside Settings, not in a second header overflow menu. |
+| `_ProfileTabBar` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:58` | Pinned Edit/Preview `CatchOptionGroup` surface for the sliver-native profile route. The route-level `SafeArea` keeps it below device cutouts without adding an expanded-header gap. |
 | `_SettingsButton` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:82` | Settings gear button in the scroll-away profile title header. |
 | `ProfileInlineEditableText` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:105` | Row-value editable text primitive built on `EditableText`. Preserves the closed row value style/position, supports multiline row-owned editing for Bio, and signals focus with cursor, selection, and a text-width underline instead of a boxed field. |
 
@@ -2357,26 +3350,28 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `OnboardingScreen` | `lib/onboarding/presentation/onboarding_screen.dart:16` | Multi-step onboarding flow shell. Manages step navigation via `PageController`, renders the step progress bar, and delegates to individual step pages. |
-| `NameDobPage` | `lib/onboarding/presentation/pages/name_dob_page.dart:11` | Name and date-of-birth entry page — text field + date picker. |
-| `GenderInterestPage` | `lib/onboarding/presentation/pages/gender_interest_page.dart:12` | Gender identity and interest selection page using `ChipField` with semantic chip keys for self-identification vs interested-in selections. |
-| `RunningPrefsPage` | `lib/onboarding/presentation/pages/running_prefs_page.dart:15` | Running preferences page — pace, preferred distances, reasons for running, and favorite run times. Uses `CatchRangeSlider` for the comfortable pace range and `ChipField` for selectable identity/preferences. |
+| `OnboardingScreen` | `lib/onboarding/presentation/onboarding_screen.dart:17` | Multi-step onboarding shell. Initializes the correct entry point for full, profile-completion-only, and run-preferences-only flows, owns back-step boundaries, renders the shared top bar, and delegates body composition to step pages. |
+| `NameDobPage` | `lib/onboarding/presentation/pages/name_dob_page.dart:13` | Handoff Name + DOB step: headline/subtitle, FIRST NAME / LAST NAME / DATE OF BIRTH / verified PHONE fields, date picker, private-last-name and birth-year helper copy, and sticky Continue footer through `OnboardingStepFrame`. |
+| `GenderInterestPage` | `lib/onboarding/presentation/pages/gender_interest_page.dart:13` | Handoff Gender step using uppercase section labels, `ChipField` selections, validation, stable semantic chip keys, and sticky Continue footer. |
+| `InstagramPage` | `lib/onboarding/presentation/pages/instagram_page.dart:10` | Handoff Instagram step with verification/privacy copy, HANDLE field, sticky Continue action, and secondary Skip for now action that advances without saving a handle. |
+| `ProfilePromptsPage` | `lib/onboarding/presentation/pages/profile_prompts_page.dart:20` | Handoff Prompts step: three prompt cards, duplicate-prompt filtering through `CatchSelectMenu`, inline answer fields, footer progress label, and disabled Continue until all prompt slots are answered. |
+| `RunningPrefsPage` | `lib/onboarding/presentation/pages/running_prefs_page.dart:19` | Handoff Running prefs step: TYPICAL PACE range panel on `CatchSurface`, `CatchRangeSlider`, favorite distance/reason/time chip groups, and sticky Save/Continue booking footer. |
 
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `WelcomePage` | `lib/onboarding/presentation/pages/welcome_page.dart:10` | Landing/welcome page shown at the start of onboarding — app logo, tagline, and phone CTA. The solid-white CTA uses `CatchButtonVariant.light` instead of screen-local white/foreground overrides. |
-| `PhotosPage` | `lib/onboarding/presentation/pages/photos_page.dart:13` | Photo upload page — renders `PhotoGrid` for the user to add/remove profile photos. |
+| `WelcomePage` | `lib/onboarding/presentation/pages/welcome_page.dart:10` | Dark editorial welcome screen from the handoff: Catch wordmark, RUN CLUB DATING kicker, large arrival headline, body copy, primary Continue with phone CTA, and secondary Explore events CTA. |
+| `PhotosPage` | `lib/onboarding/presentation/pages/photos_page.dart:19` | Handoff Photos step with header copy, `PhotoGrid`, divider-backed photo tip band, disabled-state continue hint, and sticky Continue footer. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_OnboardingTopBar` | `lib/onboarding/presentation/onboarding_screen.dart:94` | Top bar for onboarding screens — back button (when applicable) + optional "Skip" text action. |
-| `_ProgressBar` | `lib/onboarding/presentation/onboarding_screen.dart:138` | Horizontal progress bar showing current step in the onboarding flow. |
-| `OnboardingStepHeader` | `lib/onboarding/presentation/widgets/onboarding_step_header.dart:5` | Title + subtitle header for each onboarding step page. |
-| `_TrackPattern` | `lib/onboarding/presentation/pages/welcome_page.dart:81` | Decorative track/route pattern shown on the welcome page background. |
+| `_OnboardingTopBar` | `lib/onboarding/presentation/onboarding_screen.dart:143` | Top bar for non-welcome onboarding screens. Computes compact progress totals for full/profile-only/run-preferences-only modes and delegates back/progress chrome to `CatchStepFlowHeader`. |
+| `OnboardingStepHeader` | `lib/onboarding/presentation/widgets/onboarding_step_header.dart:6` | Handoff step title + subtitle header using the shared headline/prose roles. |
+| `OnboardingStepFrame` | `lib/onboarding/presentation/widgets/onboarding_step_header.dart:32` | Shared onboarding/auth step frame. Centers scroll content to the max content width and optionally pins a SafeArea-aware footer for primary actions and progress summaries. |
+| `_PromptField` | `lib/onboarding/presentation/pages/profile_prompts_page.dart:208` | Prompt-card row for onboarding prompts. Wraps prompt selection and answer entry in a `CatchSurface` while preserving duplicate prompt filtering and character count helper copy. |
 | `OnboardingFormKeys` | `lib/onboarding/presentation/onboarding_form_keys.dart:4` | Stable semantic keys for onboarding form controls whose visible labels repeat across sections. |
 
 ---
@@ -2387,22 +3382,33 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `AuthScreen` | `lib/auth/presentation/auth_screen.dart:7` | Phone-auth flow shell. Watches `AuthController.step` and switches between phone entry and OTP entry without owning local UI state. |
+| `AuthScreen` | `lib/auth/presentation/auth_screen.dart:7` | Phone-auth flow shell. Watches `AuthController.step` and switches between phone entry and OTP entry without owning visible handoff layout state; `PhonePage` and `OtpPage` provide the shared onboarding frame/header and sticky footer composition. |
 
 ### ConsumerStatefulWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PhonePage` | `lib/auth/presentation/phone_page.dart:16` | Phone number entry step. Owns local text field state, uses `AuthController.sendOtpMutation`, and exposes stable auth form keys for the phone field/send action. |
-| `OtpPage` | `lib/auth/presentation/otp_page.dart:17` | OTP entry step. Owns OTP field focus/timer mechanics, uses `AuthController.verifyOtpMutation`/`sendOtpMutation`, and exposes stable auth form keys for OTP, resend, and change-number actions. |
+| `PhonePage` | `lib/auth/presentation/phone_page.dart:24` | Handoff phone entry step. Uses `OnboardingStepFrame`, `OnboardingStepHeader`, country selector + phone input row, sticky Send code footer, and stable auth form keys while keeping `AuthController.sendOtpMutation` behavior. |
+| `OtpPage` | `lib/auth/presentation/otp_page.dart:19` | Handoff OTP entry step. Uses `CatchOtpCodeField`, resend countdown, Resend/Change number actions, sticky Verify footer, and existing auto-submit plus auth mutation behavior. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
 | `AuthFormKeys` | `lib/auth/presentation/auth_form_keys.dart:3` | Stable semantic keys for auth form controls and actions. |
-| `_OtpDigitField` | `lib/auth/presentation/otp_page.dart:214` | Invisible text field plus visual 6-digit OTP boxes. Reads design tokens locally and forwards changes/submits to `OtpPage`. |
-| `_OtpDigitBox` | `lib/auth/presentation/otp_page.dart:287` | Single visual OTP digit box with active-border state. |
+| `_CountryCodeSelector` | `lib/auth/presentation/phone_page.dart:143` | Country-code picker shell used by `PhonePage`; keeps the flag selector in the handoff's fixed-width control lane and applies Catch dialog/search styling. |
+| `CatchCodeInput` | `lib/core/widgets/catch_otp_code_field.dart:9` | Shared handoff `CodeInput` visual row used by `CatchOtpCodeField` and static OTP/code mocks. |
+| `CatchOtpCodeField` | `lib/core/widgets/catch_otp_code_field.dart:50` | Shared OTP primitive used by `OtpPage`; owns hidden platform input and delegates six visual cells to `CatchCodeInput` styling. |
+
+---
+
+## Launch Access
+
+### ConsumerWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `LaunchAccessApplicationScreen` | `lib/launch_access/presentation/launch_access_application_screen.dart:25` | Remote-Config-gated access application route. Shows disabled, signed-out, locked-status, or editable application states; the editable form collects city, role, event types, availability, host interest, invite/referral details, and reason copy before submitting through `LaunchAccessController.submitMutation`. Host-interest uses handoff `CatchToggle` row composition, while choice groups stay on `ChipField`. |
 
 ---
 
@@ -2414,12 +3420,18 @@ Generated 2026-05-06.
 |---|---|---|
 | `ProfilePhotoEditorScreen` | `lib/image_uploads/presentation/profile_photo_editor_screen.dart:14` | Add/edit profile-photo flow opened by onboarding and Edit Profile. It picks or replaces the image, shows a crop preview, lets the user choose an optional catalog photo prompt that is not already used by another profile photo, supports guarded deletion, and saves through `PhotoUploadController.savePhoto` so grouped `profilePhotos` stay synchronized and duplicate prompts are cleared. |
 
+### StatefulWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `OrderedPhotoPicker` | `lib/image_uploads/presentation/widgets/ordered_photo_picker.dart:31` | Shared ordered media picker for host club/event forms. Filters to previews with image data, renders add/photo tiles on `CatchSurface`, preserves semantic labels/tooltips, exposes stable add/remove keys, supports optional removal and reorder callbacks, and keeps callers responsible for upload/persistence state. |
+
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PhotoGrid` | `lib/image_uploads/presentation/photo_grid.dart:10` | Dense 3x2 profile photo grid over normalized `ProfilePhoto` objects. Uses `maximumProfilePhotoCount`, keyed slots, guarded delete callbacks, and long-press drag targets for reorder; callers own opening `ProfilePhotoEditorScreen` and enforcing the completed-profile minimum. |
-| `PhotoSlot` | `lib/image_uploads/presentation/widgets/photo_slot.dart:6` | Single keyed photo slot. Renders through `CatchSurface`, exposes semantic labels/tooltips for add/edit/delete/uploading/unavailable states, displays selected photo prompts where present, shows reorder target affordance, and blocks taps while inactive or loading. |
+| `PhotoGrid` | `lib/image_uploads/presentation/photo_grid.dart:10` | Dense 3x2 profile photo grid over normalized `ProfilePhoto` objects. Uses `maximumProfilePhotoCount`, keyed slots, guarded delete callbacks, optional reorder, and a hideable leading `MAIN` label; callers own opening `ProfilePhotoEditorScreen` and enforcing the completed-profile minimum. |
+| `PhotoSlot` | `lib/image_uploads/presentation/widgets/photo_slot.dart:6` | Single keyed profile-photo slot. Renders through `CatchSurface`, grades filled photos with `GradedImage`, shows DS striped material for pending uploads, dashed hairline targets for empty slots, semantic labels/tooltips for add/edit/delete/uploading/unavailable states, optional prompt and main-label overlays, reorder target affordance, and blocked taps while inactive or loading. |
 
 ---
 
@@ -2429,10 +3441,10 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CreateClubScreen` | `lib/hosts/presentation/club_management/create/create_club_screen.dart:18` | Host-owned create/edit club form. Uses shared `FormStepSpec` metadata with `CatchStepFlowHeader`, `StepperFooter`, create-only local drafts, cover/profile photo picking, host defaults, a dedicated event-success defaults step, and submit mutation feedback. Owner edit keeps the full wizard; co-host edit narrows to media-only updates. |
+| `CreateClubScreen` | `lib/hosts/presentation/club_management/create/create_club_screen.dart:18` | Host-owned create/edit club form. Uses shared `FormStepSpec` metadata with `CatchStepFlowHeader`, `StepperFooter`, create-only local drafts, cover/profile photo picking, host defaults, a dedicated event-success defaults step, and submit mutation feedback. Host-default controls use shared `SelectChip` and `CatchToggle` primitives. Owner edit keeps the full wizard; co-host edit narrows to media-only updates. |
 | `ClubBasicsStep` | `lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart:11` | First club form step. Keeps cover/profile media, club name, city, and area fields in one fully mounted scroll body so validation sees all required fields. In co-host media edit mode, non-media fields render disabled. |
 | `ClubDetailsStep` | `lib/hosts/presentation/club_management/create/widgets/club_details_step.dart:7` | Second club form step. Holds required description plus optional contact fields. |
-| `ClubHostDefaultsStep` | `lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart:12` | Third club form step. Configures club-level host defaults for admission, cohort caps, dynamic pricing, age range, and cancellation policy inherited by new events. |
+| `ClubHostDefaultsStep` | `lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart:17` | Third club form step. Configures club-level host defaults for admission, cohort caps, dynamic pricing, age range, cancellation policy, and default activity inherited by new events. Uses handoff `SelectChip` selectors and `CatchToggle` switches in both create-flow and embedded edit-mode layouts. |
 | `ClubEventSuccessDefaultsStep` | `lib/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart:6` | Fourth club form step. Wraps `EventSuccessDefaultsPanel` for the club's primary activity so event-success run-of-show defaults are edited separately from booking policy defaults. |
 | `CityPicker` | `lib/clubs/presentation/list/widgets/city_picker.dart:12` | Compact city scope picker for the clubs browse header. The closed trigger is a fixed-size circular `CatchControlShell` with a location icon only, while the full city label stays in tooltip/semantics and the token-styled bottom sheet. It updates `selectedClubCityProvider`, clears club search on city changes through the provider seam, listens for GPS/profile auto-selection, and keeps the selected city while the remote city list is loading or unavailable. |
 
@@ -2442,8 +3454,8 @@ Generated 2026-05-06.
 |---|---|---|
 | `ClubDetailScreen` | `lib/clubs/presentation/detail/club_detail_screen.dart:16` | Club detail screen. Fetches the club, current user profile, active membership edge, upcoming events, and reviews; join/leave mutations stay in `ClubMembershipController`. Renders `ClubDetailBody`. |
 | `ClubsList` | `lib/clubs/presentation/list/widgets/clubs_list.dart:14` | Sliver state-dispatch widget for the Explore tab's club directory state. Renders directory-card skeletons, error, city-empty, search-empty, filter-empty, and data slivers from `ClubsListViewModel`, which partitions joined/discover clubs from active membership edges, and owns join-mutation feedback. |
-| `ClubsSearchField` | `lib/clubs/presentation/list/widgets/clubs_search_field.dart:6` | Search text field for filtering Explore events and clubs. Supports autofocus and a platform Done action so `ClubsSliverHeader` can expand search into the full browse-header row without rendering a separate keyboard-dismiss button. |
-| `ClubsFilterRail` | `lib/clubs/presentation/list/widgets/clubs_filter_rail.dart:8` | Horizontal quick-filter rail for Explore browse. Uses `CatchChip` for explicit time windows (Tonight, Tomorrow, Weekend, This week, Anytime), compact distance filters (1/3/5/10 km), Joined, and contextual Clear actions backed by `clubBrowseFiltersProvider`. Event-first feed and club directory both read this filter state where their data supports it, the rail exposes a stable scroll key for tests/automation, and Explore can supply a transparent background while the controls float over the map. |
+| `ClubsSearchField` | `lib/clubs/presentation/list/widgets/clubs_search_field.dart:6` | Explore query adapter over `CatchSearchField` for standalone club search placements. `ClubsSliverHeader` now binds `clubSearchQueryProvider` directly through `CatchBrowseHeader` and the shared `CatchExpandingSearch` primitive. |
+| `ClubsFilterRail` | `lib/clubs/presentation/list/widgets/clubs_filter_rail.dart:18` | Handoff Explore scope/filter rail. Uses `CatchOptionGroup<ExploreTimeFilter>` for the visible time scopes (Tonight, Weekend, This week, Anytime), pins a trailing `CatchCountPill` filter affordance with an active-count badge, and moves secondary distance/joined filters into a tokenized `CatchBottomSheetScaffold` with handoff `SelectChip` choices. The rail stays backed by `clubBrowseFiltersProvider`, can receive transparent/opaque background colors from the floating map chrome, and keeps search/filter composition compact enough for compact mobile widths. |
 | `MembershipButton` | `lib/clubs/presentation/detail/widgets/membership_button.dart:7` | Join/Leave/Request membership button on the club detail screen. Calls `ClubMembershipController`. |
 | `MutationErrorSnackbarListener` | `lib/core/widgets/mutation_error_snackbar_listener.dart:13` | Watches a Riverpod `Mutation` and shows a `SnackBar` on error transition. Used for transient mutation errors such as join/leave club failures. |
 | `_DirectoryCard` | `lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart:3` | Directory-style club card router for Explore. Chooses the concept-lab-inspired photo card when cover/profile imagery exists and the no-cover identity card otherwise, while preserving host-before-joined role precedence and keeping only discoverable clubs eligible for the `Join` CTA. |
@@ -2452,9 +3464,9 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ClubsListScreen` | `lib/clubs/presentation/list/clubs_list_screen.dart:31` | Explore tab route. Owns the persistent sheet-over-map browse surface: `EventMapView` stays mounted behind a draggable sheet and receives its map view model from the same filtered event discovery feed used by the list. The map can fill the full viewport, but the full/list state paints an opaque top lid over the status-bar/notch area and header/filter chrome while the sheet begins below that chrome, so the closed page does not show map content in the safe area. The `Map` pill appears only in this full/list state; after opening, users close or resize by dragging the handle. Programmatic map open lands on a higher detent just under the filter strip, fades the top lid/header/filter backgrounds transparent, and keeps the city/search/filter controls floating over the map while the sheet edge rounds and selected map pins render a full-width ticket card unless the selected pin is the feed's actual featured event, in which case the spotlight card remains. User drags use soft settling zones: releases near the shorter bottom extent, map detent, or full/list state animate into those anchors, while the middle range can rest naturally. The peek state renders only aggregate result summary copy. Selecting a map pin stores the selected event id and snaps to the map selected-card state. The screen also listens for map camera-center changes so nearby event ordering can remain spatial, and a distance-ring tap cycles the active distance filter. |
+| `ClubsListScreen` | `lib/clubs/presentation/list/clubs_list_screen.dart:31` | Explore tab route. Owns the persistent sheet-over-map browse surface: `EventMapView` stays mounted behind a draggable sheet and receives its map view model from the same filtered event discovery feed used by the list. The map can fill the full viewport, but the full/list state paints an opaque top lid over the status-bar/notch area and header/filter chrome while the sheet begins below that chrome, so the closed page does not show map content in the safe area. The floating `Map` control uses shared `CatchCountPill` and appears only in this full/list state; after opening, users close or resize by dragging the handle. Programmatic map open lands on a higher detent just under the filter strip, fades the top lid/header/filter backgrounds transparent, and keeps the city/search/filter controls floating over the map while the sheet edge rounds and selected map pins render a full-width ticket card unless the selected pin is the feed's actual featured event, in which case the spotlight card remains. User drags use soft settling zones: releases near the shorter bottom extent, map detent, or full/list state animate into those anchors, while the middle range can rest naturally. The peek state renders only aggregate result summary copy. Selecting a map pin stores the selected event id and snaps to the map selected-card state. The screen also listens for map camera-center changes so nearby event ordering can remain spatial, and a distance-ring tap cycles the active distance filter. |
 | `ClubsListBody` | `lib/clubs/presentation/list/widgets/clubs_list_body.dart:10` | Sliver-native data body for the Explore tab. Production `ClubsListScreen` disables the old personal rail and directory stack, then composes the mixed `ExploreEventsSection` with the bottom-of-page `ExploreEventTypeBrowseGrid` without embedding a vertical `ListView` inside the parent `CustomScrollView`. Legacy callers can still opt into the joined-club rail or club directory through explicit flags. |
-| `ExploreEventsSection` | `lib/clubs/presentation/list/widgets/explore_events_section.dart:101` | Mixed Explore discovery section. Watches the event discovery feed, accepts candidate clubs from `ClubsListBody`, and leads the default This week filter with a no-gap ticket strip only when there are at least five day-level `EventDateRailCard` recommendations. Weekly-strip events are excluded from the remaining mixed feed, which interleaves leftover compact event rows, an Instax-like club spotlight, the editor-pick event spotlight, and compact club rows. Event taps route to `Routes.eventDetailScreen`, club taps route to `Routes.clubDetailScreen`, club cards use shared club identity atoms, and event rows use `EventCapacityPresenter` for going/left copy. Skeleton/error/empty states still belong to the event discovery feed, with club-only fallback content allowed when events are empty; debug builds can opt into non-tappable synthetic visual fill with `ENABLE_EXPLORE_SYNTHETIC_VISUAL_FILL`. |
+| `ExploreEventsSection` | `lib/clubs/presentation/list/widgets/explore_events_section.dart:101` | Mixed Explore discovery section. Watches the event discovery feed, accepts candidate clubs from `ClubsListBody`, and renders a handoff result-count line above the feed from the same visible `ExploreFeedViewModel` items (`1 PLAN` / `10 PLANS · JUN 11-17`), skipping that cue for club-only fallback content. It leads the default This week filter with a no-gap ticket strip only when there are at least five day-level `EventDateRailCard` recommendations. Weekly-strip events are excluded from the remaining mixed feed, which interleaves leftover compact event rows, an Instax-like club spotlight, the editor-pick event spotlight, and compact club rows. Event taps route to `Routes.eventDetailScreen`, club taps route to `Routes.clubDetailScreen`, club cards use shared club identity atoms, and event rows use `EventCapacityPresenter` for going/left copy. Skeleton/error/empty states still belong to the event discovery feed; debug builds can opt into non-tappable synthetic visual fill with `ENABLE_EXPLORE_SYNTHETIC_VISUAL_FILL`. |
 | `ExploreEventTypeBrowseGrid` | `lib/clubs/presentation/list/widgets/explore_event_type_browse_grid.dart:13` | Bottom-of-page Browse by event type surface. Reads the current Explore feed and `clubBrowseFiltersProvider`, renders `primaryBrowseActivityKinds` with the shared activity palette and visible-feed counts, and toggles `activityTag` filters from each tile. |
 | `ExplorePeekRail` | `lib/clubs/presentation/list/widgets/explore_peek_rail.dart:13` | Lead sliver builder for the Explore map sheet. `buildExploreMapSheetLeadSlivers` renders aggregate count/scope copy in collapsed mode, a selected-pin lead that branches between `CatchEventTicketCard` and `CatchEventSpotlightCard` based on the feed's featured event id, and the nearby horizontal rail with `CatchEventTicketCard` items, spatial reordering, and a semantic "See all" action in unselected half/full mode. |
 | `ClubDiscoverList` | `lib/clubs/presentation/list/widgets/club_discover_list.dart:8` | Club directory section of Explore with a real `SliverList` of directory cards. Passes joined and hosted club IDs separately so host-owned clubs are not mislabeled as ordinary joined clubs. |
@@ -2465,12 +3477,13 @@ Generated 2026-05-06.
 | `_CreateClubButton` | `lib/clubs/presentation/list/widgets/club_avatar_rail.dart:36` | Rounded-square create tile at the end of the avatar rail to create a new club. |
 | `ClubsBrowseHeaderContent` | `lib/clubs/presentation/list/widgets/clubs_sliver_header.dart:23` | Explore-specific wrapper around `CatchBrowseHeader`. It can render in the pinned sliver slot or inside Explore's floating chrome layer, owns temporary search-open state, wires city picker/search/create actions, accepts an optional background color, and keeps query state in `clubSearchQueryProvider` for event and club search. |
 | `ClubHeroAppBar` | `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart:16` | Club detail identity hero with cover-photo support, shared branded fallback, name, area/city, back, and share. The hero uses `clubInteractionHeroTag` and the same base `clubInteractionMediaPadding` as the Explore Polaroid club card, while `CatchViewportCurveFrame` clips only the media frame to the device-derived top viewport curve. The title/location caption sits outside that clipped frame on the page surface and uses `CatchLayout.clubDetailHero*` sizing constants, so long two-line club names do not crop the location row. Expanded and collapsed titles use the central `CatchTextStyles.clubDisplay` treatment. Rating and host-only ownership cues stay out of the hero, and no-photo headers use a shorter height. |
-| `ClubDetailBody` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:21` | Scrollable public club detail body on a white page surface: stats, the public multi-host strip, about copy, contact/membership/guest context, upcoming events list, then read-only club review aggregate. Host-app viewers see the same public schedule presentation as consumer viewers; host operation controls such as Add event, Edit club, payouts, and host-team editing live in Host Operations rather than this public profile body. Body gutters, first content inset, content gaps, section gaps, and bottom padding use semantic `CatchLayout.detailScreen*` constants instead of local raw spacers. Host rows show owner/host badges, profile affordances, and signed-in viewer message buttons backed by the host-inquiry conversation flow. |
+| `ClubDetailBody` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:21` | Scrollable public club detail body on a white page surface: hero, stats apron, then handoff-style `CatchDesignSection`s for Your hosts, About, What we do, From the club, Get in touch, Membership, and Join Catch before the existing schedule sliver and read-only club review aggregate. Host-app viewers see the same public schedule presentation as consumer viewers; host operation controls such as Add event, Edit club, payouts, and host-team editing live in Host Operations rather than this public profile body. Host rows keep owner/host badges, profile affordances, and signed-in viewer message buttons backed by the host-inquiry conversation flow. |
+| `ClubShareCard` | `lib/clubs/presentation/detail/widgets/club_share_card.dart:46` | Shareable club card rendered inside `RichShareCardSheet`. Uses `CatchSurface`, bounded rich-card aspect ratio constants, cover-photo or `ClubPolaroidArtwork`, shared club identity atoms for member/tag copy, and `clubShareText` for the public club deep link. |
 | `ClubScheduleSection` | `lib/clubs/presentation/detail/widgets/club_schedule_section.dart:9` | Sliver-native agenda section for a club's upcoming events. Reuses `EventAgendaSliverList` with detail-screen padding and agenda gap constants, shows the compact inline empty state when no events exist, routes selected events to detail, and marks host-owned schedules with the `HOSTED` event-tile status. |
 | `_ClubContactSection` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:148` | Contact info section: Instagram, website, WhatsApp, email rows. |
 | `_ContactRow` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:201` | Single contact row: icon, label, and value. |
-| `StatsStrip` | `lib/clubs/presentation/detail/widgets/stats_strip.dart:6` | Club detail stats wrapper. Adapts club metrics into the shared `CatchMetricStrip` so club and event detail metric rails use the same surface treatment. |
-| `CatchPolaroid` | `lib/clubs/presentation/shared/catch_polaroid.dart:12` | Shared club polaroid primitive: white framed media, mono caption, serif club title, editorial supporting copy, and optional footer/actions. Used by Explore club cards and directory club cards so image-backed and no-cover states share one named metaphor. |
+| `StatsStrip` | `lib/clubs/presentation/detail/widgets/stats_strip.dart:6` | Club detail stats wrapper. Adapts club metrics into the shared handoff `StatStrip` so club stats use the flat hairline-bordered data-pair row with uppercase mono labels. |
+| `CatchPolaroid` | `lib/clubs/presentation/shared/catch_polaroid.dart:12` | Shared club polaroid primitive: tight white framed media, mono caption, upright Archivo club title, optional title-row arrow, editorial supporting copy, and optional footer/actions. Used by Explore club cards and directory club cards so image-backed and no-cover states share one named metaphor. |
 | `ClubPolaroidArtwork` | `lib/clubs/presentation/shared/catch_polaroid.dart:115` | Map-style no-photo artwork for club polaroids and compact club crests. It avoids generated initials, uses a quiet location mark, and derives deterministic accents from `ClubCoverVisualPalette`. |
 | `ClubCoverVisualPalette` | `lib/clubs/presentation/shared/catch_polaroid.dart:175` | Deterministic club visual palette derived from `ActivityPalette` and tokens for production cards that need matching no-cover accents. |
 | `CreateClubPhotosPicker` | `lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart:9` | Ordered photo picker for the host create/edit club form. |
@@ -2490,38 +3503,43 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CreateEventScreen` | `lib/hosts/presentation/event_management/create/create_event_screen.dart:34` | Host-owned multi-step event creation flow for details, location, schedule, event policy, and event-success defaults. Uses shared `FormStepSpec` metadata, seeds policy and event-success defaults from `club.hostDefaults`, supports per-event overrides, manages draft save/restore and local form controllers, and saves optional event-success setup after event creation when enabled. On success renders `CreateEventSuccessScreen`; Manage event routes to canonical Host Manage rather than embedding management in the create flow. |
-| `EditHostedEventScreen` | `lib/hosts/presentation/edit_hosted_event_screen.dart:107` | Host-only published-event edit form for backend-supported operational fields: schedule when unlocked, meeting point, pinned starting point, extra directions, distance, pace, description, capacity, price, admission format, invite code, cohort/age limits, dynamic pricing, and cancellation policy. Schedule and booking-policy edits lock once the event has started or has booking, waitlist, or attendance activity. |
+| `CreateEventScreen` | `lib/hosts/presentation/event_management/create/create_event_screen.dart:34` | Host-owned multi-step event creation flow for details, location, schedule, event policy, and event-success defaults. Uses shared `FormStepSpec` metadata, `CatchStepFlowHeader`, handoff-aligned step bodies, `StepperFooter`, and shared `SelectChip`/`CatchToggle` controls for selections and switches. It seeds policy and event-success defaults from `club.hostDefaults`, manages draft save/restore, saves optional event-success setup, and routes Manage event to canonical Host Manage after success. |
+| `EditHostedEventScreen` | `lib/hosts/presentation/edit_hosted_event_screen.dart:107` | Host-only published-event edit form for backend-supported operational fields: schedule when unlocked, meeting point, pinned starting point, extra directions, distance, pace, description, capacity, price, admission format, invite code, cohort/age limits, dynamic pricing, and cancellation policy. Uses handoff `SelectChip` for editable pace/admission/cancellation selectors and `CatchToggle` for editable cohort-cap/demand-pricing switches; schedule and booking-policy edits lock once the event has started or has booking, waitlist, or attendance activity. |
 | `EventMapView` | `lib/events/presentation/event_map_screen.dart:19` | Reusable full-screen event map body. Uses a parent-supplied `AsyncValue<EventMapViewModel>` and retry callback when provided, otherwise can watch and invalidate `eventMapViewModelProvider` for tests/dev callers. It centers on device location unless the selected club city was manually overridden or location is unavailable, owns selected-event state, and composes `EventPinsMap`, map empty states, optional overlay controls, camera-center callbacks, and optional distance-ring taps. Explore mounts it behind its own draggable browse sheet; event-detail directions use `EventLocationMapScreen` instead. |
-| `HostEventManageScreen` | `lib/hosts/presentation/host_event_manage_screen.dart:108` | Canonical per-event host workspace. Keeps the Setup / Live / Report segmented lifecycle control directly under the app bar title and lets the participation panel own roster counts as filter tiles instead of repeating booked, waitlist, and revenue stat cards. Setup leads with participants before event details, event-success setup, and lower-priority admin/destructive actions; Live embeds the editable roster inside the event-success Live now flow so check-in status, current stage, QR check-in, and next-step navigation read as one operational surface; Report leads with the filtered event-report table before the post-event host report. Private-link sharing now uses shared event-invite copy rather than terse admin text. |
-| `LocationPickerScreen` | `lib/events/presentation/location_picker_screen.dart:17` | Chromeless map-based location picker. Lets hosts tap or search for a location and returns the selected `LocationCoordinate`; keeps confirm/search controls floating above the map. |
+| `HostEventManageScreen` | `lib/hosts/presentation/host_event_manage_screen.dart:114` | Canonical per-event host workspace. Mounts `HOST MANAGE`, event title, and Setup / Live / Report `CatchOptionGroup` in shared `CatchTopBar` chrome; lets the participation panel own roster counts as filter tiles instead of repeating booked, waitlist, and revenue stat cards. Setup leads with participants before event details, event-success setup, private links, and lower-priority admin/destructive actions; Live embeds the editable roster inside the event-success Live now flow; Report leads with the filtered event-report table before the post-event host report. Private-link sharing uses shared event-invite copy, and the full-event apron uses compact capacity/waitlist copy under the top bar. |
+| `LocationPickerScreen` | `lib/events/presentation/location_picker_screen.dart:16` | Chromeless map-based location picker. Lets hosts tap or search for a location and returns the selected `LocationCoordinate`; keeps confirm/search controls floating above the map. Autocomplete results render in a `CatchSurface` overlay with tokenized local suggestion rows rather than raw Material list tiles. |
 
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
 | `EditHostedEventRouteScreen` | `lib/hosts/presentation/edit_hosted_event_screen.dart:44` | Route-facing edit entry. Loads the host-owned club and event, rejects non-host viewers, and delegates to `EditHostedEventScreen` with optional route-provided event data. |
-| `HostEventManageRouteScreen` | `lib/hosts/presentation/host_event_manage_screen.dart:43` | Route-facing host manage entry used from the canonical `/clubs/:clubId/events/:eventId/manage` route plus dashboard, attendance, and event-success aliases. Loads the event and club by id, gates access to the club host, and delegates the loaded state plus optional lifecycle section to `HostEventManageScreen`. |
+| `HostEventManageRouteScreen` | `lib/hosts/presentation/host_event_manage_screen.dart:44` | Route-facing host manage entry used from the canonical `/clubs/:clubId/events/:eventId/manage` route plus dashboard, attendance, and event-success aliases. Loads the event and club by id, gates access to the club host, and delegates the loaded state plus optional lifecycle section to `HostEventManageScreen`. |
+| `_HostManageSectionPicker` | `lib/hosts/presentation/host_event_manage_screen.dart:317` | Setup / Live / Report mode picker for Host Event Manage. Renders the handoff `OptionGroup` labels and calls back into the screen's section state. |
 | `EventDetailScreen` | `lib/events/presentation/event_detail_screen.dart:17` | Route-facing event detail entry. Fetches `EventDetailViewModel`, renders scaffolded loading/error/not-found states, preserves optional route-provided event data plus source presentation mode/Hero tag, and delegates the loaded screen to `EventDetailBody` without nesting scaffolds. |
 | `EventLocationMapRouteScreen` | `lib/events/presentation/event_location_map_screen.dart:20` | Route-facing single-event map entry. Reuses `EventDetailViewModel` by `eventId`, renders chromeless load/error/not-found states with floating back controls, and delegates mapped events to `EventLocationMapScreen`. |
-| `EventDetailBody` | `lib/events/presentation/widgets/event_detail_body.dart:33` | Scrollable event detail body. Composes the source-aware hero app bar, overview, saved/share/calendar actions, optional saved-plan companion entry, booked-attendee invite card, social section, and a non-host bottom CTA. Uses semantic `CatchLayout.detailScreen*` body padding/gap constants and applies `EventDetailSurfaceStyle` so ticket-opened pages stay white and spotlight-opened pages use a black body without changing booking state ownership. |
+| `EventDetailBody` | `lib/events/presentation/widgets/event_detail_body.dart:33` | Scrollable event detail body. Composes the source-aware hero app bar, a flush ticket-stub band, the handoff-ordered overview stack, optional saved-plan companion entry, booked-attendee invite card, social sections, and a non-host bottom CTA. Uses `CatchDesignSection`/`CatchDetailSliverSectionList` for the body rhythm and preserves `EventDetailSurfaceStyle` for ticket/spotlight modes without changing booking state ownership. |
 | `EventDetailHeroAppBar` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:10` | Event detail hero app bar. Uses the shared event photo header for standard routes and a full-bleed ticket-mode visual band for card-opened routes; both paths prefer uploaded photos and fall back to activity artwork. Standard and ticket/spotlight expanded heights resolve through named `CatchLayout.eventDetailHero*` constants; ticket mode keeps the perforated ticket seam, shares the event display font with cards, and owns floating back/share/save/calendar actions without adding the club-detail viewport-curve inset. |
+| `EventDetailTicketStubBand` / `EventDetailHintList` / `EventDetailItinerary` / `EventDetailMapCard` / `EventDetailMechanismList` / `EventDetailPhotoStrip` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:10` | Flutter event-detail counterparts to the handoff primitives: ticket counter-foil, why-click hints, timed itinerary rail, activity-pigmented map preview, sign-up mechanics, and the canonical three-tile photo strip with activity-soft placeholders. They resolve pigment/glyph through `ActivityPalette` and derive copy from the current `Event` model. |
 | `EventPhotoHeader` | `lib/events/presentation/widgets/event_photo_header.dart:5` | Visual-only standard event hero wrapper. Delegates rendering to `CatchEventThumbnail` so uploaded event photos lead when present and activity artwork remains the no-photo/failure fallback; exposes the stable event-photo Hero tag for standard photo-header transitions and intentionally does not duplicate event title, location, stats, or activity copy. |
 | `EventStatsGrid` | `lib/events/presentation/widgets/event_stats_grid.dart:7` | Event detail stats adapter. Converts event facts into `CatchMetricStrip` items so event stats share the same rail, dividers, value styling, and responsive truncation as club detail stats, with optional dark surface colors for spotlight detail. |
-| `EventDetailCta` | `lib/events/presentation/widgets/event_detail_cta.dart:22` | Bottom CTA bar for non-host event detail viewers. Owns booking, cancellation, waitlist, eligibility, attended/past, free-booking celebration, and paid booking handoff states from the current viewer's `EventParticipation` edge; spotlight detail can render the footer on a dark surface. |
+| `EventDetailCta` | `lib/events/presentation/widgets/event_detail_cta.dart:22` | Bottom CTA bar for non-host event detail viewers. Owns booking, cancellation, waitlist, eligibility, attended/past, free-booking celebration, and paid booking handoff states from the current viewer's `EventParticipation` edge; booking-like actions use the event activity accent through `BottomCTA`, and spotlight detail can render the footer on a dark surface. |
 | `AttendanceSheetViewModel` | `lib/events/presentation/attendance_sheet_view_model.dart:10` | Attendance data seam. Combines the event stream with `eventParticipations` and derives attendee IDs plus checked-in state from participation statuses. |
-| `WhoIsGoing` | `lib/events/presentation/widgets/who_is_going.dart:36` | Event detail social roster. Watches `EventParticipationRoster` for booked counts and renders shared blurred `EventHypeAvatarStack` thumbnails using `PublicProfile.primaryPhotoThumbnailUrl`. |
-| `EventPinsMap` | `lib/events/presentation/widgets/event_pins_map.dart:10` | Shared Flutter map canvas for event pins. Used by Explore and `EventLocationMapScreen`; renders only events with exact coordinates and keeps map centering outside the pin widget. It reports camera-center changes on idle, draws optional user-location and distance-ring circles, clusters dense low-zoom pins with app-rendered count markers, and expands clusters by zooming in. Its no-network placeholder lays markers out spatially and exposes meeting-point selection labels so widget tests can exercise selected-pin flows without network map tiles. |
+| `EventHypeAvatarStack` | `lib/events/presentation/widgets/event_hype_avatar_stack.dart:68` | Shared attendee-hype avatar stack for event detail and roster surfaces. Obscured mode renders local activity-tinted veiled placeholders without fetching profile photos; revealed mode derives eligible signed-up/attended participants through `eventHypeAvatarsProvider`, applies the viewer gender-preference filter, joins public profile names/thumbnails, and renders `PersonAvatarStack`. |
+| `WhoIsGoing` | `lib/events/presentation/widgets/who_is_going.dart:36` | Event detail social roster. Watches `EventParticipationRoster` for booked counts and renders activity-tinted veiled `EventHypeAvatarStack` placeholders until roster visibility is allowed, using `event.activityKind` for the handoff tint. Standalone callers keep the local title/count header; `EventDetailSocialSection` suppresses it so the design-system section owns the label. |
+| `EventPinsMap` | `lib/events/presentation/widgets/event_pins_map.dart:10` | Shared Flutter map canvas for event pins. Used by Explore and `EventLocationMapScreen`; renders only events with exact coordinates and keeps map centering outside the pin widget. It reports camera-center changes on idle, draws optional user-location and distance-ring circles, clusters dense low-zoom pins with app-rendered count markers, and expands clusters by zooming in. Its no-network placeholder lays markers out spatially, exposes meeting-point selection labels so widget tests can exercise selected-pin flows without network map tiles, and keeps the painter boundary to concrete token-derived colors rather than prop-drilling `CatchTokens`. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CreateEventSuccessScreen` | `lib/hosts/presentation/event_management/create/create_event_success_screen.dart:9` | Host event-created success screen backed by `CatchCelebrationScreen`. Shows event confirmation details, explicit discoverable-but-invite-gated copy for invite-only events, and Manage event / Back to club actions. |
+| `CreateEventSuccessScreen` | `lib/hosts/presentation/event_management/create/create_event_success_screen.dart:9` | Host event-created success screen backed by `CatchCelebrationScreen`. Matches the handoff celebration composition with the `verifiedRounded` seal-check mark, event confirmation details, invite-only code/private-link rows, the Manage event tracking note, and Manage event / Back to club actions. |
 | `EventJoinedCelebrationScreen` | `lib/events/presentation/event_joined_celebration_screen.dart:8` | User event-signup celebration surface shared by free bookings and post-payment confirmation. Shows event details, optional payment details, haptics, and View event / Back home actions. |
 | `EventCheckInCelebrationScreen` | `lib/events/presentation/event_check_in_celebration_screen.dart:7` | Participant self-check-in celebration surface. Used only after user self-check-in from Home succeeds; host attendance remains an operational flow. |
+| `BookingConflictSheet` | `lib/events/presentation/widgets/booking_conflict_sheet.dart:32` | Booking handoff conflict-warning sheet. Renders the already-booked and incoming events as activity-colored rows, keeps warning copy and sheet chrome on Catch primitives, and exposes replace / keep-both / keep-existing callbacks for a future overlap-resolution flow. |
 | `EventCheckInLocationService` | `lib/events/presentation/event_check_in_location_service.dart:16` | Provider-backed location seam for self-check-in. Production uses Geolocator with high accuracy and a timeout; tests can inject coordinates without invoking platform plugins. |
 | `EventLocationMapScreen` | `lib/events/presentation/event_location_map_screen.dart:63` | Chromeless full-screen single-event map with one pinned exact starting point, floating back controls, and a bottom location summary. Reuses `EventPinsMap`; use only when `Event.hasExactStartingPoint` is true. |
+| `EventShareCard` | `lib/events/presentation/widgets/event_share_card.dart:42` | Shareable event invite card rendered inside `RichShareCardSheet`. Uses the activity visual palette, `EventActivityBackdrop`, tokenized info rows, price/spots pills, and `EventInviteShareCopy` so event detail, payment confirmation, and referral invite surfaces share the same visual card and link payload. |
 | `CreateEventStepHeader` | `lib/hosts/presentation/event_management/widgets/create_event_step_header.dart:4` | Header for the host create-event wizard: back action, step title, club name, step count, and progress bar. |
 | `CreateEventFormKeys` | `lib/hosts/presentation/event_management/create/create_event_form_keys.dart:3` | Stable semantic keys for host create/edit event form fields so widget tests target fields by purpose rather than layout order. |
 | `SavedEventsScreen` | `lib/events/presentation/saved_events_screen.dart:15` | Saved-events route. Streams the current user's saved event details, orders future saved events before past saved events, joins club names, and opens saved-event detail routes from shared agenda tiles. |
@@ -2532,10 +3550,11 @@ Generated 2026-05-06.
 | `EventDateRailCard` | `lib/events/presentation/widgets/event_tiles/event_date_rail_card.dart:18` | Shared date-rail event card extracted from the Explore mixed-feed row. Renders a clipped ticket silhouette with seam cutouts, activity-colored weekday/day/month tear-off stub, subtle perforation seam, compact activity stamp, optional supporting label, themed event-display title, time/price line, single capacity copy line, optional full-card Hero transition, and optional shared status pill for non-full states across Explore event rows plus agenda surfaces. `stripPosition` lets This week rows join into a continuous ticket strip while preserving the outer notches only on the first/last card, and single tickets paint a custom `CatchElevation.physicalShadow` behind an elevation-zero `PhysicalShape` so debug/golden rendering stays aligned with the intended soft lift rather than showing Flutter's shadow-debug outline. |
 | `EventAgendaTile` | `lib/events/presentation/widgets/event_tiles/event_agenda_tile.dart:6` | Agenda/list adapter for Calendar, Saved events, and club schedules. It maps `EventTileData` into `EventDateRailCard`, preferring club name in global contexts and meeting point in club-local schedules, while suppressing the old redundant `VIEW` and `OPEN` badge language through `eventTileCardStatusLabel`. |
 | `EventAgendaList` | `lib/events/presentation/widgets/event_agenda_list.dart:9` | Box-facing agenda list for events grouped by day. Sorts by start time by default, with `preserveInputOrder` for callers that precompute semantic order plus optional club-name/status builders, and renders `EventAgendaTile` directly. |
-| `EventDetailOverviewSection` | `lib/events/presentation/widgets/event_detail_overview_section.dart:10` | Static event facts section for the loaded event detail body below the title-bearing hero: shared stats rail, when/where and policy surfaces, "What to expect", cancellation/settlement copy, description, and requirements. Accepts `EventDetailSurfaceStyle` so the same content can sit on light ticket pages or the spotlight dark body. |
-| `EventDetailSocialSection` | `lib/events/presentation/widgets/event_detail_social_section.dart:10` | Social context section for the loaded event detail body: roster, guest lock prompt, divider, and event-scoped reviews for signed-in users. Accepts `EventDetailSurfaceStyle` for light/dark page continuity; review writing requires an attended `EventParticipation` and an event end time that has passed. |
+| `EventDetailOverviewSection` | `lib/events/presentation/widgets/event_detail_overview_section.dart:10` | Handoff-ordered event-detail body stack: The plan, Why you might click, Itinerary, Photos when available, Where, How sign-ups work, and Good to know. Uses `CatchDesignSection` plus event-detail primitives while retaining requirements, expectation, cancellation, and settlement policy copy from the existing event policy model. |
+| `EventDetailSocialSection` | `lib/events/presentation/widgets/event_detail_social_section.dart:10` | Social context sections for the loaded event detail body: Who's going and Reviews, both composed with `CatchDesignSection`. The roster supports a guest lock prompt and signed-in roster view; review writing requires an attended `EventParticipation` and an event end time that has passed. |
 | `MapOverlayControls` | `lib/events/presentation/widgets/map_overlay_controls.dart:5` | Floating safe-area controls for chromeless map surfaces. Provides rounded back affordance plus optional trailing/below content for map actions such as create-event confirm/search. |
-| `EventPolicyStep` | `lib/hosts/presentation/event_management/widgets/event_policy_step.dart:41` | Host create/edit event policy step for capacity, base price, admission preset, invite code, dynamic pricing, cancellation policy, eligibility bounds, and host payout copy. |
+| `EventDetailsStep` | `lib/hosts/presentation/event_management/widgets/event_details_step.dart:16` | First host create-event step. Renders event photos, activity type, optional custom format/structure, distance, pace, and description with handoff `SelectChip` choices and `CatchTextField` inputs. Activity type choices carry their own activity pigment; format and pace choices inherit the selected activity accent. |
+| `EventPolicyStep` | `lib/hosts/presentation/event_management/widgets/event_policy_step.dart:50` | Host create/edit event policy step for capacity, base price, admission preset, invite code, dynamic pricing, cancellation policy, eligibility bounds, and host payout copy. Uses handoff `SelectChip` selectors for admission/cancellation and `CatchToggle` for cohort caps and demand pricing. |
 | `EventSuccessStep` | `lib/hosts/presentation/event_management/widgets/event_success_step.dart:9` | Final host create-event live-guide step. Wraps `EventSuccessDefaultsPanel`, passing the current event capacity so structure defaults can estimate pods/teams from the booking policy while keeping live-guide setup separate from policy editing. |
 | `StepperFooter` | `lib/hosts/presentation/widgets/stepper_footer.dart:5` | Host form bottom action footer. Blends into the page background, renders draft as a ghost action when supplied, and gives the primary action a full-width lane so long labels scale within available width. |
 | `HostPaymentAccountCard` | `lib/hosts/presentation/payments/host_payment_account_card.dart:22` | Host-only payout readiness card for the Host app Clubs tab. Watches the signed-in host payment account, opens the provider setup/refresh flow through the payment repository seam, and stays out of public club detail. |
@@ -2548,10 +3567,13 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `EventSuccessManualQaScreen` | `lib/event_success/presentation/event_success_manual_qa_screen.dart:38` | Dev/staging manual QA harness. Uses Catch primitives to switch fixture event format and attendee opt-out states while rendering the canonical `HostEventManageScreen` beside the production attendee companion from one synchronized in-memory fixture store. The host pane overrides the exact Host Manage providers for event, roster, profile, event-success, and attendance-table state so Setup, Live, Report, and participation table changes stay covered without a duplicate host QA fixture. |
+| `EventSuccessManualQaScreen` | `lib/event_success/presentation/event_success_manual_qa_screen.dart:38` | Dev/staging manual QA harness. Uses handoff `SelectChip` choices for the fixture event-format selector and `CatchToggle` rows for attendee opt-out settings while rendering the canonical `HostEventManageScreen` beside the production attendee companion from one synchronized in-memory fixture store. The host pane overrides the exact Host Manage providers for event, roster, profile, event-success, and attendance-table state so Setup, Live, Report, and participation table changes stay covered without a duplicate host QA fixture. |
 | `_FirstHelloCheckInCard` | `lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart:3` | Attendee companion First Hello mission card. Renders a server/manual-QA-provided target, one short question, private answer chips, completion, and a fallback action without leaking broader attendee data. |
-| `EventSuccessHostPanel` | `lib/event_success/presentation/event_success_host_screen.dart:249` | Reusable host event-success panel with Setup, Live, and Report bodies. Setup derives recommendations from the event activity profile, keeps the editor visible for QA even when an unsaved started event is locked, and hides unsupported tools behind progressive disclosure. Live mode opens with one Live now console that combines the active stage, progress, attendee-facing state, optional embedded editable roster, current-step controls, and previous/next navigation before lower-priority supporting controls for wingman requests, reveal clues, conversation cues, assignments, and reveal controls. When Host Manage embeds the roster, the arrival control becomes a QR-only card instead of repeating attendance totals already shown by Live now plus the roster. Report mode summarizes signal quality from feedback response, assignment coverage, opt-outs, and wingman requests. Standalone uses can show its own picker; Host Manage passes a fixed lifecycle section and hides the inner picker. |
-| `EventSuccessDefaultsPanel` | `lib/event_success/presentation/event_success_defaults_panel.dart:14` | Shared event-success defaults form. Used by club create/edit and create event to toggle setup, normalize activity-specific recommendations against an optional target attendee count, and show a preset-review card before advanced controls. Guide notes, match clue questions, structure, and tools are progressively disclosed; questionnaire ownership is separate from tool switches, and wingman/openers are derived from module selection instead of repeated booleans. |
+| `EventSuccessHostPanel` | `lib/event_success/presentation/event_success_host_screen.dart:249` | Reusable host event-success panel with Setup, Live, and Report bodies. Setup derives recommendations from the event activity profile, keeps the editor visible for QA even when an unsaved started event is locked, and hides unsupported tools behind progressive disclosure. Live mode opens with one Live now console that combines the active stage, progress, attendee-facing state, optional embedded editable roster, current-step controls, and previous/next navigation before lower-priority supporting controls for wingman requests, reveal clues, conversation cues, assignments, and reveal controls. When Host Manage embeds the roster, the arrival control becomes a QR-only card instead of repeating attendance totals already shown by Live now plus the roster. Report mode summarizes signal quality from feedback response, assignment coverage, opt-outs, and wingman requests. Standalone uses `CatchOptionGroup` for its Setup / Live / Report picker; Host Manage passes a fixed lifecycle section and hides the inner picker. |
+| `EventSuccessDefaultsPanel` | `lib/event_success/presentation/event_success_defaults_panel.dart:14` | Shared event-success defaults form. Used by club create/edit and create event to toggle setup with a handoff `CatchToggle`, normalize activity-specific recommendations against an optional target attendee count, and show a preset-review card before advanced controls. Guide notes, match clue questions, structure, and tools are progressively disclosed; questionnaire ownership is separate from tool switches, and wingman/openers are derived from module selection instead of repeated booleans. |
+| `EventSuccessHostSetupFlow` | `lib/event_success/presentation/event_success_feature_blocks.dart:36` | Event-success concept-lab setup flow. Lets product iterate across playbooks, shows the selected playbook summary, embeds `EventSuccessStructureConfigEditor`, and toggles modules/readiness issues from an in-memory draft. Uses handoff `SelectChip` choices for the format selector. |
+| `EventSuccessSetupBody` | `lib/event_success/presentation/event_success_setup_body.dart:52` | Shared event-success setup body used by create-event defaults and Host Manage setup. Renders preset review, guide notes, lifecycle stage cards, structure, advanced match-clue questions, and safety footer while emitting draft changes to its owner. Uses handoff `CatchToggle` rows for module recommendations, `SelectChip` choices for rotation cadence / reveal countdown / match-clue mode, and tokenized `CatchSurface` disclosure rows for Guide notes and Advanced sections instead of Material `ExpansionTile`. |
+| `EventSuccessFeedbackForm` | `lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart:3` | Attendee companion post-event feedback form. Captures private welcome/structure ratings, people-met count, private note, and a Catch-private safety/comfort review flag. The safety/comfort flag uses handoff `CatchToggle` row composition, and submissions continue through `EventSuccessController.feedbackMutation`. |
 | `_SetupTab` | `lib/event_success/presentation/host_parts/event_success_host_setup.dart:3` | Event-success setup form for playbook selection, target attendee count, host goal, attendee prompt, structure config, module toggles, reveal-clue opt-in, wingman requests, and setup save/ensure mutations. Essentials render first; advanced structure, tool, and delivery controls are progressively disclosed, with multiline guide-note fields and host-facing group/team/table language. |
 
 ### ConsumerStatefulWidget
@@ -2573,9 +3595,11 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
+| `EventSuccessLabScreen` | `lib/event_success/presentation/event_success_lab_screen.dart:34` | Dev/staging-only event-success product lab. Labels the route as preview-only WIP, renders playbook cards, the module grid, actual feature blocks, and host-coach samples without Firestore writes or booking changes. Playbook module metadata uses shared `CatchBadge` labels while interactive setup choices remain on their own handoff controls. |
 | `_PrivateAfterglowRecapCard` | `lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart:3` | Private attendee-only post-event recap artifact. Summarizes the event, opener availability, and optional saved feedback while explicitly avoiding public share pressure or host-visible personal details. |
 | `EventSuccessPromptCard` | `lib/event_success/presentation/event_success_feature_blocks.dart:616` | Shared prompt card used by event-success preview and attendee companion surfaces. |
-| `EventSuccessStructureConfigEditor` | `lib/event_success/presentation/event_success_structure_config_editor.dart:10` | Shared structure editor for host setup and create-event defaults. Keeps internal unit modeling out of copy by exposing flow type, people-per-team/table/pod labels, auto versus fixed counts, and optional cadence/countdown controls supplied by the owning surface. |
+| `EventSuccessQuestionnaireConfigEditor` | `lib/event_success/presentation/event_success_questionnaire_config_editor.dart:15` | Shared questionnaire-template editor for host setup and create-event defaults. Lets hosts choose reusable question packs or switch to custom questions with handoff `SelectChip` choices, then previews the active pack with badges and question rows. Can open the custom-question builder inline or in a bottom sheet depending on the owning surface. |
+| `EventSuccessStructureConfigEditor` | `lib/event_success/presentation/event_success_structure_config_editor.dart:10` | Shared structure editor for host setup and create-event defaults. Keeps internal unit modeling out of copy by exposing flow type, people-per-team/table/pod labels, auto versus fixed counts, and optional cadence/countdown controls supplied by the owning surface. Uses handoff `SelectChip` choices for flow type, count mode, repeat policy, and assignment goals. |
 | `EventSuccessConversationCueCard` | `lib/event_success/presentation/event_success_feature_blocks.dart:655` | Shared conversation cue card used by host Live mode and preview surfaces for live prompts and post-match opener suggestions. The staged attendee companion uses its own copyable cue rows. |
 | `EventSuccessPostEventReport` | `lib/event_success/presentation/event_success_feature_blocks.dart:266` | Shared post-event report surface. Shows report metric pills, `Working well` strengths, and coach recommendation tiles while host-facing report copy stays aggregate and avoids personal attendee intelligence. |
 | `_HostReportSignalGrid` | `lib/event_success/presentation/host_parts/event_success_host_report.dart:114` | Host report signal-quality summary using `EventSuccessMetricPill` and `CatchBadge` primitives for feedback response, assignment coverage, opt-outs, and wingman requests. |
@@ -2615,8 +3639,11 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PaymentConfirmationScreen` | `lib/payments/presentation/payment_confirmation_screen.dart:22` | Post-payment confirmation route. Loads the event/club context and delegates the success UI to `EventJoinedCelebrationScreen`, adding payment quick actions, heads-up copy, stronger friend-invite sharing, and the stable Back home key. |
-| `_ConfirmationBody` | `lib/payments/presentation/payment_confirmation_screen.dart:55` | Thin payment confirmation adapter that composes `EventJoinedCelebrationScreen` with paid-event supplemental children and router actions. |
+| `PaymentConfirmationScreen` | `lib/payments/presentation/payment_confirmation_screen.dart:32` | Post-payment route for the Booking handoff. Loads event context, branches pending external checkout into the handoff checkout sheet, and delegates completed payments to `EventJoinedCelebrationScreen` with payment quick actions, heads-up copy, stronger friend-invite sharing, and the stable Back home key. |
+| `_PendingCheckoutBody` | `lib/payments/presentation/payment_confirmation_screen.dart:68` | Pending external-checkout adapter. Watches the payment record so a completed provider return auto-promotes into confirmation; otherwise renders the dimmed event backdrop plus `_CheckoutSheet` pending/failed state with checkout, payment-history, and back-to-event actions. |
+| `_CheckoutEventBackdrop` | `lib/payments/presentation/payment_confirmation_screen.dart:146` | Booking checkout backdrop behind the pending sheet. Uses the event activity pigment gradient, event title, basic date/location/price summary, and `CatchOpacity.paymentCheckoutScrim` overlay from the route. |
+| `_CheckoutSheet` | `lib/payments/presentation/payment_confirmation_screen.dart:203` | Flutter counterpart to the handoff `CheckoutSheet`: bottom-sheet surface with grabber, receipt/warning medallion, headline/body copy, event + price summary, Pending/Failed `CatchBadge`, provider checkout CTA when available, payment-history action, and back-to-event ghost action. |
+| `_ConfirmationBody` | `lib/payments/presentation/payment_confirmation_screen.dart:371` | Thin payment confirmation adapter that composes `EventJoinedCelebrationScreen` with paid-event supplemental children and router actions. |
 | `PaymentConfirmationKeys` | `lib/payments/presentation/payment_confirmation_keys.dart:3` | Stable semantic keys for confirmation quick actions, referral share, and sticky back-home CTA. |
 | `PaymentHistoryScreen` | `lib/payments/presentation/payment_history_screen.dart:20` | List of past payment transactions. Watches `watchPaymentsForUserProvider`, renders `_PaymentTile` items, and shows transaction details in `CatchBottomSheetScaffold`. |
 | `_PaymentList` | `lib/payments/presentation/payment_history_screen.dart:42` | The list view of payment tiles. |
@@ -2640,23 +3667,23 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `SettingsScreen` | `lib/safety/presentation/settings_screen.dart:29` | Full settings screen. Manages optimistic notification toggle state, wraps settings and sign-out mutations in shared snackbar error feedback, delegates preference/deletion/unblock writes to `SettingsController`, owns sign out through `AuthSessionController`, and composes account/history, discovery, notification, safety, about, and delete-account sections. |
+| `SettingsScreen` | `lib/safety/presentation/settings_screen.dart:31` | Full settings screen. Manages optimistic notification toggle state, wraps settings and sign-out mutations in shared snackbar error feedback, delegates preference/deletion/unblock writes to `SettingsController`, owns sign out through `AuthSessionController`, and composes the handoff Account / Notifications / Privacy & safety / About / Log out page-surface sections with `SettingsRow` and `CatchToggle` while retaining real history, host-app, blocked-user, and delete-account actions. |
 
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_BlockedAccountsSection` | `lib/safety/presentation/settings_screen.dart:454` | Section listing blocked accounts. Uses `CatchLoadingIndicator` for loading, `CatchEmptyState` for empty/error states, and renders `_BlockedAccountTile` rows for blocked users. |
-| `_BlockedAccountTile` | `lib/safety/presentation/settings_screen.dart:513` | Single blocked account row. Resolves the blocked user's public profile, renders a `PersonRow`, and routes the semantic unblock button through `SettingsController.unblockUserMutation`. |
+| `_BlockedAccountsSection` | `lib/safety/presentation/settings_screen.dart:575` | Privacy & safety footer listing blocked accounts under the handoff `Blocked users` row. Uses `CatchLoadingIndicator` for loading, `CatchEmptyState` for empty/error states, and renders `_BlockedAccountTile` rows for blocked users. |
+| `_BlockedAccountTile` | `lib/safety/presentation/settings_screen.dart:642` | Single blocked account row. Resolves the blocked user's public profile, renders a `PersonRow`, and routes the semantic unblock button through `SettingsController.unblockUserMutation`. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_SettingsSection` | `lib/safety/presentation/settings_screen.dart:420` | Private section helper that pairs a `SectionHeader` with the shared settings card shell. |
-| `_SettingsCard` | `lib/safety/presentation/settings_screen.dart:438` | Private `CatchSurface` wrapper for settings row groups. |
+| `_SettingsSection` | `lib/safety/presentation/settings_screen.dart:529` | Private Settings template section helper. Injects the first-row/no-divider and subsequent-row/inset-divider contract into `SettingsRow`, draws section hairlines directly on the page surface, and optionally renders a footer for blocked-account content. |
 | `SettingsKeys` | `lib/safety/presentation/settings_keys.dart:3` | Stable semantic keys for account action rows, settings switches, delete-account row, and blocked-user unblock buttons. |
 | `showConfirmDangerDialog` | `lib/core/widgets/confirm_danger_dialog.dart:4` | Shared destructive confirmation dialog helper used by safety/account actions such as block and delete-account confirmations. Delegates to `showCatchAdaptiveDialog` so iOS gets Cupertino alert chrome and Android/non-iOS platforms keep Material alert chrome. |
+| `showBlockUserDialog` | `lib/core/widgets/block_user_dialog.dart:4` | Safety-specific block confirmation helper. Supplies block copy and delegates to `showConfirmDangerDialog`, so public profile and chat block actions share the handoff confirm-card composition and platform-adaptive destructive action behavior. |
 
 ---
 
@@ -2728,5 +3755,3 @@ implementing it.
 |---|---|
 | Feature empty-state wrappers | Most now delegate to `CatchEmptyState`. Keep wrappers when they encode feature-specific copy/content semantics; inline only when the wrapper adds no meaning. |
 | `StatColumn`, `RunStatCell`, `HostStatChip` | They share a value-over-label concept, but host/profile/local chips still have different surface ownership. Detail-page metric rails should use `CatchMetricStrip` instead of new one-off stat rows. |
-| `StatusChip` and `CatchBadge` | `StatusChip` is enum-driven and semantic; `CatchBadge` is a general label primitive. Rebuild `StatusChip` on `CatchBadge` only if it removes real styling drift. |
-| `VibeTag` and `CatchChip` | Different interaction and visual roles. Keep separate unless a broader chip/token audit proves they should converge. |

@@ -17,7 +17,7 @@ class Recommendations extends StatelessWidget {
             .clamp(280.0, 340.0)
             .toDouble();
         return CatchHorizontalRail(
-          title: 'Recommended events',
+          title: 'Recommended for you',
           itemCount: recommendations.length,
           itemBuilder: (context, i) => RecommendCard.fromRecommendation(
             recommendation: recommendations[i],

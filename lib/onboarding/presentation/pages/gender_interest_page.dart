@@ -53,12 +53,18 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
     return Form(
       key: _formKey,
       child: OnboardingStepFrame(
+        footer: CatchButton(
+          label: 'Continue',
+          onPressed: _submit,
+          isLoading: mutation.isPending,
+          fullWidth: true,
+          size: CatchButtonSize.lg,
+        ),
         children: [
-          gapH32,
           const OnboardingStepHeader(title: 'How do you identify?'),
-          gapH32,
+          gapH28,
           ChipField<Gender>(
-            label: 'I am a...',
+            label: 'I AM A',
             values: Gender.values,
             selected: _gender != null ? {_gender!} : {},
             multiSelect: false,
@@ -70,9 +76,9 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
               setState(() => _gender = next.isEmpty ? null : next.first);
             },
           ),
-          gapH24,
+          gapH28,
           ChipField<Gender>(
-            label: 'Show me',
+            label: 'SHOW ME',
             values: Gender.values,
             selected: _interestedIn,
             multiSelect: true,
@@ -89,15 +95,6 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
             gapH16,
             ErrorBanner(message: mutationErrorMessage(mutation)),
           ],
-          gapH40,
-          CatchButton(
-            label: 'Continue',
-            onPressed: _submit,
-            isLoading: mutation.isPending,
-            fullWidth: true,
-            size: CatchButtonSize.lg,
-          ),
-          gapH32,
         ],
       ),
     );

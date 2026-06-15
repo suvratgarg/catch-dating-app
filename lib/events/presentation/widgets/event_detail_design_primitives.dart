@@ -1,0 +1,921 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/activity_map_pin.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:flutter/material.dart';
+
+class EventDetailTicketStubBand extends StatelessWidget {
+  const EventDetailTicketStubBand({
+    super.key,
+    required this.event,
+    this.notchBackgroundColor,
+  });
+
+  final Event event;
+  final Color? notchBackgroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final cells = _ticketStubCells(event);
+
+    return ColoredBox(
+      color: t.surface,
+      child: SizedBox(
+        height: CatchLayout.eventDetailTicketStubBandHeight,
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                Expanded(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (var index = 0; index < cells.length; index++)
+                        Expanded(
+                          child: _TicketStubCell(
+                            cell: cells[index],
+                            showDivider: index > 0,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                Divider(color: t.line, height: 1, thickness: 1),
+              ],
+            ),
+            Positioned.fill(
+              child: IgnorePointer(
+                child: CustomPaint(
+                  painter: _TicketStubNotchPainter(
+                    color: notchBackgroundColor ?? t.bg,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EventDetailHintList extends StatelessWidget {
+  const EventDetailHintList({
+    super.key,
+    required this.event,
+    this.textColor,
+    this.dividerColor,
+  });
+
+  final Event event;
+  final Color? textColor;
+  final Color? dividerColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final hints = _hintsFor(event);
+    final t = CatchTokens.of(context);
+    final activity = ActivityPalette.resolve(context, event.activityKind);
+
+    return _HairlineList(
+      itemCount: hints.length,
+      dividerColor: dividerColor,
+      itemBuilder: (context, index) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 7),
+            child: CatchSurface(
+              width: CatchLayout.eventDetailHintDotExtent,
+              height: CatchLayout.eventDetailHintDotExtent,
+              radius: CatchRadius.pill,
+              backgroundColor: activity.accent,
+              borderWidth: 0,
+              child: const SizedBox.shrink(),
+            ),
+          ),
+          gapW12,
+          Expanded(
+            child: Text(
+              hints[index],
+              style: CatchTextStyles.hint(context, color: textColor ?? t.ink),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class EventDetailItinerary extends StatelessWidget {
+  const EventDetailItinerary({
+    super.key,
+    required this.event,
+    this.titleColor,
+    this.detailColor,
+    this.dotBackgroundColor,
+  });
+
+  final Event event;
+  final Color? titleColor;
+  final Color? detailColor;
+  final Color? dotBackgroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final activity = ActivityPalette.resolve(context, event.activityKind);
+    final steps = _itineraryFor(event);
+
+    return Column(
+      children: [
+        for (var index = 0; index < steps.length; index++)
+          _ItineraryRow(
+            step: steps[index],
+            isLast: index == steps.length - 1,
+            accent: activity.accent,
+            railColor: t.line2,
+            titleColor: titleColor,
+            detailColor: detailColor,
+            dotBackgroundColor: dotBackgroundColor,
+          ),
+      ],
+    );
+  }
+}
+
+class EventDetailMapCard extends StatelessWidget {
+  const EventDetailMapCard({
+    super.key,
+    required this.event,
+    this.onTap,
+    this.surfaceColor,
+    this.borderColor,
+  });
+
+  final Event event;
+  final VoidCallback? onTap;
+  final Color? surfaceColor;
+  final Color? borderColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final activity = ActivityPalette.resolve(context, event.activityKind);
+    final canOpen = event.hasExactStartingPoint && onTap != null;
+    final note = event.hasExactStartingPoint
+        ? 'PIN READY'
+        : 'PIN DROPS MORNING-OF';
+
+    return Semantics(
+      button: canOpen,
+      label: event.locationName,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(CatchRadius.md),
+          onTap: canOpen ? onTap : null,
+          child: Ink(
+            height: CatchLayout.eventDetailMapCardHeight,
+            decoration: BoxDecoration(
+              color: surfaceColor ?? activity.soft,
+              border: Border.all(color: borderColor ?? t.line),
+              borderRadius: BorderRadius.circular(CatchRadius.md),
+            ),
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter: _MapGridPainter(
+                      lineColor: t.surface.withValues(alpha: 0.52),
+                      routeColor: activity.accent.withValues(alpha: 0.24),
+                    ),
+                  ),
+                ),
+                Center(
+                  child: ActivityMapPin(
+                    activityKind: event.activityKind,
+                    selected: true,
+                  ),
+                ),
+                Positioned(
+                  left: CatchSpacing.s2,
+                  right: CatchSpacing.s2,
+                  bottom: CatchSpacing.s2,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _MapPill(text: event.locationName, color: t.ink),
+                      ),
+                      gapW8,
+                      _MapPill(text: note, color: t.ink2),
+                      if (canOpen) ...[
+                        gapW8,
+                        Icon(
+                          CatchIcons.chevronRightRounded,
+                          color: t.ink2,
+                          size: CatchIcon.xs,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EventDetailMechanismList extends StatelessWidget {
+  const EventDetailMechanismList({
+    super.key,
+    required this.event,
+    this.dividerColor,
+    this.titleColor,
+    this.detailColor,
+  });
+
+  final Event event;
+  final Color? dividerColor;
+  final Color? titleColor;
+  final Color? detailColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final rows = _mechanismsFor(event);
+    final activity = ActivityPalette.resolve(context, event.activityKind);
+
+    return _HairlineList(
+      itemCount: rows.length,
+      dividerColor: dividerColor,
+      itemBuilder: (context, index) {
+        final row = rows[index];
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(row.icon, size: 19, color: activity.deep),
+            gapW12,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    row.title,
+                    style: CatchTextStyles.infoRowTitle(
+                      context,
+                      color: titleColor,
+                    ),
+                  ),
+                  if (row.detail.isNotEmpty) ...[
+                    const SizedBox(height: CatchSpacing.micro2),
+                    Text(
+                      row.detail,
+                      style: CatchTextStyles.supporting(
+                        context,
+                        color: detailColor,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+const _photoStripTileCount = 3;
+
+class EventDetailPhotoStrip extends StatelessWidget {
+  const EventDetailPhotoStrip({super.key, required this.event});
+
+  final Event event;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final activity = ActivityPalette.resolve(context, event.activityKind);
+    final photos = event.eventPhotos.take(_photoStripTileCount).toList();
+    if (photos.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            for (var index = 0; index < _photoStripTileCount; index++) ...[
+              Expanded(
+                child: _EventDetailPhotoStripTile(
+                  index: index,
+                  photo: index < photos.length ? photos[index] : null,
+                  backgroundColor: activity.soft,
+                  iconColor: activity.deep,
+                  icon: activity.glyph,
+                ),
+              ),
+              if (index != _photoStripTileCount - 1) gapW8,
+            ],
+          ],
+        ),
+        gapH8,
+        Row(
+          children: [
+            Text(
+              'EVENT PHOTOS',
+              style: CatchTextStyles.monoLabelS(context, color: t.ink),
+            ),
+            const Spacer(),
+            Text(
+              '${event.eventPhotos.length} UPLOADED',
+              style: CatchTextStyles.monoLabelS(context, color: t.ink3),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _EventDetailPhotoStripTile extends StatelessWidget {
+  const _EventDetailPhotoStripTile({
+    required this.index,
+    required this.photo,
+    required this.backgroundColor,
+    required this.iconColor,
+    required this.icon,
+  });
+
+  final int index;
+  final UploadedPhoto? photo;
+  final Color backgroundColor;
+  final Color iconColor;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      key: ValueKey('event-photo-strip-tile-$index'),
+      height: CatchLayout.eventDetailPhotoStripTileHeight,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(CatchRadius.infoTile),
+        child: photo == null
+            ? ColoredBox(
+                key: ValueKey('event-photo-strip-placeholder-$index'),
+                color: backgroundColor,
+                child: Icon(icon, color: iconColor, size: CatchIcon.lg),
+              )
+            : ColoredBox(
+                color: backgroundColor,
+                child: Image.network(
+                  photo!.thumbnailOrUrl,
+                  key: ValueKey('event-photo-strip-image-$index'),
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) =>
+                      Icon(icon, color: iconColor, size: CatchIcon.lg),
+                ),
+              ),
+      ),
+    );
+  }
+}
+
+class _TicketStubCellData {
+  const _TicketStubCellData({
+    required this.label,
+    required this.value,
+    this.detail,
+    this.icon,
+  });
+
+  final String label;
+  final String value;
+  final String? detail;
+  final IconData? icon;
+}
+
+class _TicketStubCell extends StatelessWidget {
+  const _TicketStubCell({required this.cell, required this.showDivider});
+
+  final _TicketStubCellData cell;
+  final bool showDivider;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Stack(
+      children: [
+        if (showDivider)
+          Positioned.fill(
+            child: CustomPaint(painter: _VerticalDashedPainter(color: t.line2)),
+          ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(
+            showDivider ? CatchSpacing.s3 : CatchSpacing.s5,
+            CatchSpacing.s2,
+            CatchSpacing.s3,
+            CatchSpacing.s2,
+          ),
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    cell.label.toUpperCase(),
+                    style: CatchTextStyles.monoLabelS(context),
+                  ),
+                  gapH6,
+                  Text(
+                    cell.value,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.mono(
+                      context,
+                      color: t.ink,
+                    ).copyWith(fontWeight: FontWeight.w700, height: 1.25),
+                  ),
+                  if (cell.detail != null) ...[
+                    const SizedBox(height: CatchSpacing.micro2),
+                    Text(
+                      cell.detail!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.numericMeta(
+                        context,
+                        color: t.ink2,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              if (cell.icon != null)
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Icon(cell.icon, size: 15, color: t.ink3),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HairlineList extends StatelessWidget {
+  const _HairlineList({
+    required this.itemCount,
+    required this.itemBuilder,
+    this.dividerColor,
+  });
+
+  final int itemCount;
+  final IndexedWidgetBuilder itemBuilder;
+  final Color? dividerColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Column(
+      children: [
+        for (var index = 0; index < itemCount; index++) ...[
+          if (index > 0)
+            Divider(
+              color: dividerColor ?? t.line,
+              height: CatchLayout.eventDetailHairlineDividerHeight,
+              thickness: 1,
+            ),
+          itemBuilder(context, index),
+        ],
+      ],
+    );
+  }
+}
+
+class _ItineraryStep {
+  const _ItineraryStep({
+    required this.time,
+    required this.title,
+    required this.detail,
+  });
+
+  final String time;
+  final String title;
+  final String detail;
+}
+
+class _ItineraryRow extends StatelessWidget {
+  const _ItineraryRow({
+    required this.step,
+    required this.isLast,
+    required this.accent,
+    required this.railColor,
+    this.titleColor,
+    this.detailColor,
+    this.dotBackgroundColor,
+  });
+
+  final _ItineraryStep step;
+  final bool isLast;
+  final Color accent;
+  final Color railColor;
+  final Color? titleColor;
+  final Color? detailColor;
+  final Color? dotBackgroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: CatchLayout.eventDetailItineraryTimeColumnWidth,
+            child: Text(
+              step.time,
+              style: CatchTextStyles.mono(
+                context,
+                color: t.ink,
+              ).copyWith(fontSize: 12, fontWeight: FontWeight.w700),
+            ),
+          ),
+          SizedBox(
+            width: CatchLayout.eventDetailItineraryRailColumnWidth,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 3),
+                  child: CatchSurface(
+                    width: CatchLayout.eventDetailItineraryDotExtent,
+                    height: CatchLayout.eventDetailItineraryDotExtent,
+                    radius: CatchRadius.pill,
+                    backgroundColor: dotBackgroundColor ?? t.surface,
+                    borderColor: accent,
+                    borderWidth: 2,
+                    child: const SizedBox.shrink(),
+                  ),
+                ),
+                if (!isLast)
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: SizedBox(
+                        width: 1.5,
+                        child: ColoredBox(color: railColor),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          gapW8,
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(bottom: isLast ? 0 : CatchSpacing.s3),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    step.title,
+                    style: CatchTextStyles.infoRowTitle(
+                      context,
+                      color: titleColor,
+                    ),
+                  ),
+                  const SizedBox(height: CatchSpacing.micro2),
+                  Text(
+                    step.detail,
+                    style: CatchTextStyles.supporting(
+                      context,
+                      color: detailColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MapPill extends StatelessWidget {
+  const _MapPill({required this.text, required this.color});
+
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      backgroundColor: CatchTokens.editorialLight.withValues(alpha: 0.93),
+      borderWidth: 0,
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s3,
+        vertical: CatchSpacing.s2,
+      ),
+      child: Text(
+        text,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: CatchTextStyles.monoLabelS(context, color: color),
+      ),
+    );
+  }
+}
+
+class _MechanismRow {
+  const _MechanismRow({
+    required this.icon,
+    required this.title,
+    required this.detail,
+  });
+
+  final IconData icon;
+  final String title;
+  final String detail;
+}
+
+class _TicketStubNotchPainter extends CustomPainter {
+  const _TicketStubNotchPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    final y = size.height / 2;
+    canvas.drawCircle(Offset(-8, y), 14, paint);
+    canvas.drawCircle(Offset(size.width + 8, y), 14, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _TicketStubNotchPainter oldDelegate) =>
+      oldDelegate.color != color;
+}
+
+class _VerticalDashedPainter extends CustomPainter {
+  const _VerticalDashedPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.2
+      ..style = PaintingStyle.stroke;
+    var y = CatchSpacing.s2;
+    while (y < size.height - CatchSpacing.s2) {
+      canvas.drawLine(Offset(0, y), Offset(0, y + 5), paint);
+      y += 11;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _VerticalDashedPainter oldDelegate) =>
+      oldDelegate.color != color;
+}
+
+class _MapGridPainter extends CustomPainter {
+  const _MapGridPainter({required this.lineColor, required this.routeColor});
+
+  final Color lineColor;
+  final Color routeColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final linePaint = Paint()
+      ..color = lineColor
+      ..strokeWidth = 1;
+    for (var x = 18.0; x < size.width; x += 34) {
+      canvas.drawLine(Offset(x, 0), Offset(x - 22, size.height), linePaint);
+    }
+    for (var y = 16.0; y < size.height; y += 30) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y + 18), linePaint);
+    }
+
+    final routePaint = Paint()
+      ..color = routeColor
+      ..strokeWidth = 7
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    final path = Path()
+      ..moveTo(size.width * 0.08, size.height * 0.72)
+      ..cubicTo(
+        size.width * 0.26,
+        size.height * 0.34,
+        size.width * 0.52,
+        size.height * 0.80,
+        size.width * 0.70,
+        size.height * 0.40,
+      )
+      ..cubicTo(
+        size.width * 0.78,
+        size.height * 0.22,
+        size.width * 0.90,
+        size.height * 0.32,
+        size.width * 0.94,
+        size.height * 0.24,
+      );
+    canvas.drawPath(path, routePaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _MapGridPainter oldDelegate) =>
+      oldDelegate.lineColor != lineColor ||
+      oldDelegate.routeColor != routeColor;
+}
+
+List<_TicketStubCellData> _ticketStubCells(Event event) {
+  final locationDetail = event.locationNotes;
+  return [
+    _TicketStubCellData(
+      label: 'When',
+      value: event.shortDateLabel,
+      detail: event.compactTimeRangeLabel,
+      icon: CatchIcons.calendarAdd,
+    ),
+    _TicketStubCellData(
+      label: 'Where',
+      value: event.locationName,
+      detail: locationDetail == null || locationDetail.isEmpty
+          ? null
+          : locationDetail,
+    ),
+    _TicketStubCellData(
+      label: _levelLabelFor(event.activityKind),
+      value: event.pace.label,
+      detail: event.activitySummaryLabel,
+    ),
+  ];
+}
+
+List<String> _hintsFor(Event event) {
+  final remaining = event.spotsRemaining;
+  final capacityHint = remaining == 0
+      ? 'This event is currently full; the waitlist keeps priority order.'
+      : remaining <= 3
+      ? 'Only $remaining ${remaining == 1 ? 'spot' : 'spots'} left before sign-ups move to waitlist.'
+      : '${event.spotsLabel} spots are already spoken for.';
+  return [capacityHint, _interactionHint(event.eventFormat.interactionModel)];
+}
+
+List<_ItineraryStep> _itineraryFor(Event event) {
+  final warmupTime = event.startTime.add(const Duration(minutes: 15));
+  return [
+    _ItineraryStep(
+      time: EventFormatters.time(event.startTime),
+      title: 'Gather at ${event.locationName}',
+      detail: 'Quick hellos, host check-in, and the plan for the group.',
+    ),
+    _ItineraryStep(
+      time: EventFormatters.time(warmupTime),
+      title: event.eventFormat.label,
+      detail: _activityPlanDetail(event),
+    ),
+    _ItineraryStep(
+      time: EventFormatters.time(event.endTime),
+      title: 'Wrap up',
+      detail:
+          'Attendees can linger naturally; private follow-up unlocks after.',
+    ),
+  ];
+}
+
+List<_MechanismRow> _mechanismsFor(Event event) {
+  final policy = event.effectiveEventPolicy;
+  final rows = <_MechanismRow>[
+    _MechanismRow(
+      icon: policy.admissionPolicy.manualApprovalRequired
+          ? CatchIcons.pendingActionsOutlined
+          : CatchIcons.groupOutlined,
+      title: _admissionTitle(policy.admissionPolicy),
+      detail: _admissionSummary(policy.admissionPolicy),
+    ),
+  ];
+
+  if (policy.admissionPolicy.waitlistPolicy.isEnabled || event.isFull) {
+    rows.add(
+      _MechanismRow(
+        icon: CatchIcons.pendingActionsOutlined,
+        title: 'If it fills, a waitlist',
+        detail: 'Spots free up in order as capacity changes or people cancel.',
+      ),
+    );
+  }
+
+  rows.add(
+    _MechanismRow(
+      icon: CatchIcons.receiptLongOutlined,
+      title: '${policy.cancellationPolicy.title} cancellation',
+      detail: policy.cancellationPolicy.attendeeSummary,
+    ),
+  );
+
+  return rows;
+}
+
+String _interactionHint(EventInteractionModel model) {
+  return switch (model) {
+    EventInteractionModel.pacePods =>
+      'The format keeps the pace conversational, with regroup points so nobody gets stranded.',
+    EventInteractionModel.pairedRotations =>
+      'Rotations give you natural one-on-one moments without managing the room yourself.',
+    EventInteractionModel.teamRotations =>
+      'Team structure creates low-pressure reasons to talk throughout the event.',
+    EventInteractionModel.seatedTable =>
+      'A seated format and host cues make the first conversation easier.',
+    EventInteractionModel.freeFormMixer =>
+      'Host nudges keep the room moving when it needs a little structure.',
+    EventInteractionModel.hostLedProgram =>
+      'The host runs the arc, so you can just show up and follow the moment.',
+    EventInteractionModel.openFormat =>
+      'The host shapes the format around the room and venue.',
+  };
+}
+
+String _activityPlanDetail(Event event) {
+  return switch (event.eventFormat.interactionModel) {
+    EventInteractionModel.pacePods =>
+      '${EventFormatters.distanceKm(event.distanceKm)} at a ${event.pace.label.toLowerCase()} pace, with host-led regroup points.',
+    EventInteractionModel.pairedRotations =>
+      'Paired or court-based rotations keep the activity moving and social.',
+    EventInteractionModel.teamRotations =>
+      'Host-led teams and rotations create a clear rhythm for the group.',
+    EventInteractionModel.seatedTable =>
+      'A table-led format with built-in prompts and host cues.',
+    EventInteractionModel.freeFormMixer =>
+      'A looser mixer with host nudges when the room needs direction.',
+    EventInteractionModel.hostLedProgram =>
+      'A host-led activity with clear arrival, activity, and follow-up moments.',
+    EventInteractionModel.openFormat =>
+      'The host adapts the format to the group and venue.',
+  };
+}
+
+String _levelLabelFor(ActivityKind activityKind) {
+  return switch (activityKind) {
+    ActivityKind.socialRun ||
+    ActivityKind.running ||
+    ActivityKind.walking ||
+    ActivityKind.cycling => 'Pace',
+    ActivityKind.pickleball ||
+    ActivityKind.padel ||
+    ActivityKind.tennis ||
+    ActivityKind.badminton => 'Skill',
+    ActivityKind.spinClass ||
+    ActivityKind.yoga ||
+    ActivityKind.strengthTraining => 'Intensity',
+    ActivityKind.pubQuiz ||
+    ActivityKind.barCrawl ||
+    ActivityKind.dinner ||
+    ActivityKind.singlesMixer ||
+    ActivityKind.openActivity => 'Energy',
+  };
+}
+
+String _admissionTitle(EventAdmissionPolicy policy) {
+  return switch (policy.format) {
+    EventAdmissionFormat.open => 'Open sign-up',
+    EventAdmissionFormat.inviteOnly => 'Invite only',
+    EventAdmissionFormat.manualApproval => 'Host approval',
+    EventAdmissionFormat.fixedCohortCaps => 'Cohort caps',
+    EventAdmissionFormat.balancedRatio => 'Balanced singles',
+    EventAdmissionFormat.membersOnly => 'Members only',
+  };
+}
+
+String _admissionSummary(EventAdmissionPolicy policy) {
+  return switch (policy.format) {
+    EventAdmissionFormat.open =>
+      'No approval needed; RSVP until ${policy.capacityLimit} spots are filled.',
+    EventAdmissionFormat.fixedCohortCaps =>
+      'Book within total capacity while cohort caps keep the room balanced.',
+    EventAdmissionFormat.balancedRatio =>
+      'Straight men and women are balanced within a small tolerance; other cohorts book within total capacity.',
+    EventAdmissionFormat.inviteOnly =>
+      'Only attendees with the host invite can book this event.',
+    EventAdmissionFormat.manualApproval =>
+      'Request a spot first; the host reviews requests before confirming.',
+    EventAdmissionFormat.membersOnly =>
+      'Only active club members can book this event.',
+  };
+}

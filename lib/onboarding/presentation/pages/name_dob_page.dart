@@ -74,8 +74,21 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
 
   String _formatDate(DateTime date) {
     final day = date.day.toString().padLeft(2, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    return '$day/$month/${date.year}';
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return '$day ${months[date.month - 1]} ${date.year}';
   }
 
   void _submit() {
@@ -102,23 +115,32 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
     return Form(
       key: _formKey,
       child: OnboardingStepFrame(
+        footer: CatchButton(
+          label: 'Continue',
+          onPressed: _submit,
+          fullWidth: true,
+          size: CatchButtonSize.lg,
+        ),
         children: [
-          gapH32,
-          const OnboardingStepHeader(title: 'What\'s your name?'),
-          gapH32,
+          const OnboardingStepHeader(
+            title: 'What\'s your name?',
+            subtitle: 'Last name stays private until you catch.',
+          ),
+          gapH20,
           CatchTextField(
-            label: 'First name (displayed)',
+            label: 'FIRST NAME',
             controller: _firstNameController,
             autofocus: shouldAutofocus,
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             autofillHints: const [AutofillHints.givenName],
+            helperText: 'Displayed on your profile.',
             validator: (v) =>
                 validateRequiredProfileName(v, label: 'First name'),
           ),
           gapH16,
           CatchTextField(
-            label: 'Last name',
+            label: 'LAST NAME',
             controller: _lastNameController,
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
@@ -127,19 +149,20 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
             validator: (v) =>
                 validateRequiredProfileName(v, label: 'Last name'),
           ),
-          gapH24,
+          gapH16,
           CatchTextField(
-            label: 'Date of birth',
+            label: 'DATE OF BIRTH',
             controller: _dateController,
             readOnly: true,
             onTap: _pickDate,
             prefixIcon: Icon(CatchIcons.calendarTodayOutlined),
-            suffixText: age != null ? 'Age $age' : null,
+            suffixText: age != null ? 'AGE $age' : null,
+            helperText: 'We never show your birth year.',
             validator: (_) => validateRequiredDateOfBirth(_selectedDate),
           ),
-          gapH24,
+          gapH16,
           CatchTextField(
-            label: 'Mobile number',
+            label: 'PHONE',
             controller: _phoneController,
             readOnly: true,
             keyboardType: TextInputType.phone,
@@ -148,18 +171,10 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
             prefixIcon: Icon(CatchIcons.phoneOutlined),
             prefixText: '${data.countryCode} ',
             suffixIcon: Icon(CatchIcons.verifiedRounded),
-            helperText: 'Verified via OTP',
+            helperText: 'Verified via OTP.',
             helperTone: CatchTextFieldSupportTone.success,
             validator: validateRequiredPhoneNumber,
           ),
-          gapH40,
-          CatchButton(
-            label: 'Continue',
-            onPressed: _submit,
-            fullWidth: true,
-            size: CatchButtonSize.lg,
-          ),
-          gapH32,
         ],
       ),
     );

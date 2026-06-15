@@ -10,12 +10,11 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
-import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/core/widgets/settings_row.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -119,6 +118,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final t = CatchTokens.of(context);
     final userProfile = ref.watch(watchUserProfileProvider).asData?.value;
     final phoneNumber = userProfile?.phoneNumber ?? '';
+    final email = userProfile?.email.trim() ?? '';
+    final blockedUsersAsync = ref.watch(watchBlockedUsersProvider);
+    final blockedCount = blockedUsersAsync.asData?.value.length;
     final deleting = ref
         .watch(SettingsController.requestAccountDeletionMutation)
         .isPending;
@@ -159,7 +161,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Scaffold(
               appBar: const CatchTopBar(title: 'Settings'),
               body: ListView(
-                padding: CatchInsets.pageBodyRelaxedTight,
+                padding: const EdgeInsets.fromLTRB(
+                  CatchSpacing.s5,
+                  CatchSpacing.s2,
+                  CatchSpacing.s5,
+                  CatchSpacing.s7,
+                ),
                 children: [
                   Center(
                     child: ConstrainedBox(
@@ -170,12 +177,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           _SettingsSection(
+                            first: true,
                             title: 'Account',
                             children: [
                               SettingsRow(
-                                label: 'Phone',
+                                label: 'Phone number',
                                 value: _formatPhoneForDisplay(phoneNumber),
                                 icon: CatchIcons.phoneOutlined,
+                              ),
+                              SettingsRow(
+                                label: 'Email',
+                                value: email.isEmpty ? 'Not added' : email,
+                                icon: CatchIcons.emailOutlined,
+                              ),
+                              SettingsRow(
+                                label: 'Edit profile',
+                                icon: CatchIcons.personOutlined,
+                                onTap: () => context.pushNamed(
+                                  Routes.profileScreen.name,
+                                ),
                               ),
                               SettingsRow(
                                 key: SettingsKeys.reviewHistoryRow,
@@ -202,25 +222,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 icon: CatchIcons.workOutlineRounded,
                                 onTap: _openHostApp,
                               ),
-                              SettingsRow(
-                                key: SettingsKeys.signOutRow,
-                                label: 'Sign out',
-                                value: 'Leave this device',
-                                icon: CatchIcons.logoutRounded,
-                                danger: true,
-                                trailing: signingOut
-                                    ? const SizedBox.square(
-                                        dimension: CatchIcon.control,
-                                        child: CatchLoadingIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      )
-                                    : null,
-                                onTap: signingOut ? null : _signOut,
-                              ),
                             ],
                           ),
-                          gapH20,
                           if (AppConfig.enableEventPolicyLab ||
                               AppConfig.enableEventSuccessPreview) ...[
                             _SettingsSection(
@@ -259,45 +262,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   ),
                               ],
                             ),
-                            gapH20,
                           ],
-                          _SettingsSection(
-                            title: 'Discovery',
-                            children: [
-                              SettingsRow(
-                                label: 'Who can see me',
-                                value: 'Runners on my events',
-                                icon: CatchIcons.visibilityOutlined,
-                              ),
-                              SettingsRow(
-                                label: 'Show me on map',
-                                icon: CatchIcons.mapOutlined,
-                                trailing: Switch.adaptive(
-                                  key: SettingsKeys.showOnMapSwitch,
-                                  value: _showOnMap,
-                                  onChanged: savingPreference
-                                      ? null
-                                      : (value) => _savePref(
-                                          preference:
-                                              SettingsPreference.showOnMap,
-                                          value: value,
-                                          apply: () => _showOnMap = value,
-                                          rollback: () => _showOnMap = !value,
-                                        ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          gapH20,
                           _SettingsSection(
                             title: 'Notifications',
                             children: [
                               SettingsRow(
-                                label: 'Matches and catches',
+                                label: 'Push notifications',
                                 icon: CatchIcons.favoriteOutline,
-                                trailing: Switch.adaptive(
+                                trailing: CatchToggle(
                                   key: SettingsKeys.newCatchesSwitch,
                                   value: _newCatches,
+                                  semanticLabel: 'Push notifications',
                                   onChanged: savingPreference
                                       ? null
                                       : (value) => _savePref(
@@ -312,9 +287,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               SettingsRow(
                                 label: 'Messages',
                                 icon: CatchIcons.chatBubbleOutlineRounded,
-                                trailing: Switch.adaptive(
+                                trailing: CatchToggle(
                                   key: SettingsKeys.messagesSwitch,
                                   value: _messages,
+                                  semanticLabel: 'Messages',
                                   onChanged: savingPreference
                                       ? null
                                       : (value) => _savePref(
@@ -329,9 +305,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               SettingsRow(
                                 label: 'Event reminders',
                                 icon: CatchIcons.directionsRunOutlined,
-                                trailing: Switch.adaptive(
+                                trailing: CatchToggle(
                                   key: SettingsKeys.eventRemindersSwitch,
                                   value: _eventReminders,
+                                  semanticLabel: 'Event reminders',
                                   onChanged: savingPreference
                                       ? null
                                       : (value) => _savePref(
@@ -347,9 +324,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               SettingsRow(
                                 label: 'Event changes and cancellations',
                                 icon: CatchIcons.eventRepeatOutlined,
-                                trailing: Switch.adaptive(
+                                trailing: CatchToggle(
                                   key: SettingsKeys.eventStatusUpdatesSwitch,
                                   value: _eventStatusUpdates,
+                                  semanticLabel:
+                                      'Event changes and cancellations',
                                   onChanged: savingPreference
                                       ? null
                                       : (value) => _savePref(
@@ -366,9 +345,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               SettingsRow(
                                 label: 'Club announcements',
                                 icon: CatchIcons.notificationsActiveOutlined,
-                                trailing: Switch.adaptive(
+                                trailing: CatchToggle(
                                   key: SettingsKeys.clubUpdatesSwitch,
                                   value: _clubUpdates,
+                                  semanticLabel: 'Club announcements',
                                   onChanged: savingPreference
                                       ? null
                                       : (value) => _savePref(
@@ -381,11 +361,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 ),
                               ),
                               SettingsRow(
-                                label: 'Weekly digest',
+                                label: 'Email updates',
                                 icon: CatchIcons.markEmailReadOutlined,
-                                trailing: Switch.adaptive(
+                                trailing: CatchToggle(
                                   key: SettingsKeys.weeklyDigestSwitch,
                                   value: _weeklyDigest,
+                                  semanticLabel: 'Email updates',
                                   onChanged: savingPreference
                                       ? null
                                       : (value) => _savePref(
@@ -400,47 +381,48 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               ),
                             ],
                           ),
-                          gapH20,
-                          const SectionHeader(title: 'Safety'),
-                          gapH8,
-                          const _BlockedAccountsSection(),
-                          gapH20,
                           _SettingsSection(
-                            title: 'About',
+                            title: 'Privacy & safety',
+                            footer: const _BlockedAccountsSection(),
                             children: [
                               SettingsRow(
-                                label: 'Help & support',
-                                value: 'Contact us',
-                                icon: CatchIcons.helpOutline,
-                                onTap: () => _openExternal(
-                                  Uri.parse('https://catchdates.com/help'),
+                                label: 'Blocked users',
+                                value: blockedCount?.toString(),
+                                icon: CatchIcons.shieldOutlined,
+                              ),
+                              SettingsRow(
+                                label: 'Who can see you',
+                                value: 'Runners on my events',
+                                icon: CatchIcons.visibilityOutlined,
+                              ),
+                              SettingsRow(
+                                label: 'Show me on map',
+                                icon: CatchIcons.mapOutlined,
+                                trailing: CatchToggle(
+                                  key: SettingsKeys.showOnMapSwitch,
+                                  value: _showOnMap,
+                                  semanticLabel: 'Show me on map',
+                                  onChanged: savingPreference
+                                      ? null
+                                      : (value) => _savePref(
+                                          preference:
+                                              SettingsPreference.showOnMap,
+                                          value: value,
+                                          apply: () => _showOnMap = value,
+                                          rollback: () => _showOnMap = !value,
+                                        ),
                                 ),
                               ),
                               SettingsRow(
-                                label: 'Privacy',
-                                value: 'Policy',
+                                label: 'Privacy policy',
                                 icon: CatchIcons.lockOutline,
                                 onTap: () => _openExternal(
                                   Uri.parse('https://catchdates.com/privacy'),
                                 ),
                               ),
                               SettingsRow(
-                                label: 'Terms',
-                                value: 'Legal',
-                                icon: CatchIcons.descriptionOutlined,
-                                onTap: () => _openExternal(
-                                  Uri.parse('https://catchdates.com/terms'),
-                                ),
-                              ),
-                            ],
-                          ),
-                          gapH20,
-                          _SettingsCard(
-                            children: [
-                              SettingsRow(
                                 key: SettingsKeys.deleteAccountRow,
                                 label: 'Delete account',
-                                value: 'Remove your profile',
                                 icon: CatchIcons.deleteOutline,
                                 danger: true,
                                 trailing: deleting
@@ -455,11 +437,58 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               ),
                             ],
                           ),
+                          _SettingsSection(
+                            title: 'About',
+                            children: [
+                              SettingsRow(
+                                label: 'Help & support',
+                                value: 'Contact us',
+                                icon: CatchIcons.helpOutline,
+                                onTap: () => _openExternal(
+                                  Uri.parse('https://catchdates.com/help'),
+                                ),
+                              ),
+                              SettingsRow(
+                                label: 'Terms',
+                                value: 'Legal',
+                                icon: CatchIcons.descriptionOutlined,
+                                onTap: () => _openExternal(
+                                  Uri.parse('https://catchdates.com/terms'),
+                                ),
+                              ),
+                              SettingsRow(
+                                label: 'Version',
+                                value: '1.0',
+                                icon: CatchIcons.infoOutline,
+                              ),
+                            ],
+                          ),
+                          _SettingsSection(
+                            title: '',
+                            hideTitle: true,
+                            children: [
+                              SettingsRow(
+                                key: SettingsKeys.signOutRow,
+                                label: 'Log out',
+                                icon: CatchIcons.logoutRounded,
+                                danger: true,
+                                trailing: signingOut
+                                    ? const SizedBox.square(
+                                        dimension: CatchIcon.control,
+                                        child: CatchLoadingIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : null,
+                                onTap: signingOut ? null : _signOut,
+                              ),
+                            ],
+                          ),
                           gapH20,
                           Center(
                             child: Text(
-                              'Catch v1.0 · made for runners and clubs',
-                              style: CatchTextStyles.supporting(
+                              'Catch 1.0 · made in Bombay',
+                              style: CatchTextStyles.statusLabel(
                                 context,
                                 color: t.ink3,
                               ),
@@ -498,35 +527,47 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 }
 
 class _SettingsSection extends StatelessWidget {
-  const _SettingsSection({required this.title, required this.children});
+  const _SettingsSection({
+    required this.title,
+    required this.children,
+    this.first = false,
+    this.hideTitle = false,
+    this.footer,
+  });
 
   final String title;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SectionHeader(title: title),
-        _SettingsCard(children: children),
-      ],
-    );
-  }
-}
-
-class _SettingsCard extends StatelessWidget {
-  const _SettingsCard({required this.children});
-
-  final List<Widget> children;
+  final List<SettingsRow> children;
+  final bool first;
+  final bool hideTitle;
+  final Widget? footer;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final topPadding = hideTitle ? CatchSpacing.s3 : 18.0;
 
-    return CatchSurface(
-      borderColor: t.line,
-      child: Column(children: children),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (!first) ...[
+          gapH8,
+          ColoredBox(
+            color: t.line,
+            child: const SizedBox(height: CatchStroke.hairline),
+          ),
+          SizedBox(height: topPadding),
+        ],
+        if (!hideTitle) ...[
+          Text(
+            title.toUpperCase(),
+            style: CatchTextStyles.kicker(context, color: t.ink2),
+          ),
+          gapH10,
+        ],
+        for (var i = 0; i < children.length; i++)
+          children[i].copyWith(divider: i > 0),
+        ?footer,
+      ],
     );
   }
 }
@@ -539,8 +580,13 @@ class _BlockedAccountsSection extends ConsumerWidget {
     final blockedUsersAsync = ref.watch(watchBlockedUsersProvider);
     final t = CatchTokens.of(context);
 
-    return _SettingsCard(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        ColoredBox(
+          color: t.line.withValues(alpha: CatchOpacity.profileInfoDivider),
+          child: const SizedBox(height: CatchStroke.hairline),
+        ),
         blockedUsersAsync.when(
           loading: () => const Padding(
             padding: CatchInsets.content,

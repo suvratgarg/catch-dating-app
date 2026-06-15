@@ -413,6 +413,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
               child: ChatMessageList(
                 messagesAsync: messagesAsync,
                 currentUid: uid,
+                event: event,
                 otherName: isSuvbot
                     ? 'Suvbot'
                     : isHostInquiry

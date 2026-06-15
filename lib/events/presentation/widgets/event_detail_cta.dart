@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -52,6 +53,8 @@ class EventDetailCta extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
+    final activity = ActivityPalette.resolve(context, event.activityKind);
+    final bookingAccent = activity.accent;
     final referenceNow = now ?? DateTime.now();
     final ctaBackground = darkSurface ? t.ink : null;
     final ctaDivider = darkSurface
@@ -182,6 +185,7 @@ class EventDetailCta extends ConsumerWidget {
                     );
                   },
             isLoading: acceptOfferMutation.isPending,
+            buttonAccentColor: bookingAccent,
             leadingContent: _WaitlistOfferLeading(
               expiresAt: participation?.waitlistOfferExpiresAt,
               isDeclining: declineOfferMutation.isPending,
@@ -219,6 +223,7 @@ class EventDetailCta extends ConsumerWidget {
                         ),
                   ),
             isLoading: joinWMutation.isPending,
+            buttonAccentColor: bookingAccent,
             backgroundColor: ctaBackground,
             dividerColor: ctaDivider,
           )
@@ -290,6 +295,7 @@ class EventDetailCta extends ConsumerWidget {
                       });
                     },
               isLoading: bookMutation.isPending,
+              buttonAccentColor: bookingAccent,
               backgroundColor: ctaBackground,
               dividerColor: ctaDivider,
               leadingContent: isFreeForViewer

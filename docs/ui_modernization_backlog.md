@@ -13,7 +13,6 @@ Keep entries small and self-describing — one line is fine.
 
 - `CatchCornerSash` — top-corner status mark on cards (replaces `EventTileStatusBadge` pill in hero card positions). See [catch_corner_sash.dart](../lib/core/widgets/catch_corner_sash.dart).
 - `CatchMetaRow` / `CatchMetaDotRow` — bullet-separated icon + text inline meta row. See [catch_meta_row.dart](../lib/core/widgets/catch_meta_row.dart).
-- `CatchKicker` — caps-tracked brand-orange time-line (e.g. `TONIGHT · 8:50 PM`). See [catch_kicker.dart](../lib/core/widgets/catch_kicker.dart).
 - `CatchDaySectionHeader` — sticky day-grouped section header with right-aligned count. See [catch_day_section_header.dart](../lib/core/widgets/catch_day_section_header.dart).
 - `EventDateRailCard` — shared left-date-rail event row for Explore, Calendar, Saved Events, and club schedules. See [event_date_rail_card.dart](../lib/events/presentation/widgets/event_tiles/event_date_rail_card.dart).
 - `EventActivityVisualSpec` / `EventActivityBackdrop` — mutable production activity visual schema keyed by `ActivityKind`, shared by Explore cards, ticket imagery, and event detail headers. See [event_activity_visuals.dart](../lib/events/presentation/event_activity_visuals.dart).

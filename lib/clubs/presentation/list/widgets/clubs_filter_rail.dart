@@ -1,33 +1,72 @@
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Single-row time + distance filter rail.
+/// Explore scope + filter rail.
 ///
-/// The rail is deliberately short: time chips (the primary scope) followed by
-/// a compact distance chip set, a "Joined" toggle, and a contextual Clear.
-/// Activity tag and area chips were removed from this rail — they crowded
-/// the row and pushed the more important time/distance filters off screen.
-/// Bring them back through the search field or a future "More filters" sheet
-/// when the use-case justifies it.
+/// Mirrors the handoff `OptionGroup`: the primary time scope stays visible as
+/// underline tabs while secondary filters move behind the trailing CountPill.
 class ClubsFilterRail extends ConsumerWidget {
   const ClubsFilterRail({super.key, this.backgroundColor});
 
   final Color? backgroundColor;
 
-  static const List<ExploreTimeFilter> _timeFilters = [
-    ExploreTimeFilter.tonight,
-    ExploreTimeFilter.tomorrow,
-    ExploreTimeFilter.weekend,
-    ExploreTimeFilter.thisWeek,
-    ExploreTimeFilter.anytime,
+  static const List<CatchOption<ExploreTimeFilter>> _timeOptions = [
+    CatchOption(value: ExploreTimeFilter.tonight, label: 'Tonight'),
+    CatchOption(value: ExploreTimeFilter.weekend, label: 'Weekend'),
+    CatchOption(value: ExploreTimeFilter.thisWeek, label: 'This week'),
+    CatchOption(value: ExploreTimeFilter.anytime, label: 'Anytime'),
   ];
 
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
+    final filters = ref.watch(clubBrowseFiltersProvider);
+    final filterController = ref.read(clubBrowseFiltersProvider.notifier);
+    final activeCount = _activeFilterCount(filters);
+
+    return ColoredBox(
+      color: backgroundColor ?? t.bg,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          CatchSpacing.s5,
+          CatchSpacing.s4,
+          CatchSpacing.s5,
+          0,
+        ),
+        child: CatchOptionGroup<ExploreTimeFilter>(
+          options: _timeOptions,
+          selected: filters.timeFilter,
+          onChanged: filterController.setTimeFilter,
+          trailing: CatchCountPill(
+            key: const ValueKey('explore-filter-pill'),
+            icon: CatchIcons.tune,
+            badge: activeCount == 0 ? null : '$activeCount',
+            onPressed: () => _showExploreFilterSheet(context),
+            semanticLabel: activeCount == 0
+                ? 'Open explore filters'
+                : 'Open explore filters, $activeCount active',
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ExploreFilterSheet extends ConsumerWidget {
+  const _ExploreFilterSheet();
+
   static const List<ExploreDistanceFilter> _distanceFilters = [
+    ExploreDistanceFilter.any,
     ExploreDistanceFilter.oneKm,
     ExploreDistanceFilter.threeKm,
     ExploreDistanceFilter.fiveKm,
@@ -38,106 +77,93 @@ class ClubsFilterRail extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final filters = ref.watch(clubBrowseFiltersProvider);
-    final filterController = ref.read(clubBrowseFiltersProvider.notifier);
+    final controller = ref.read(clubBrowseFiltersProvider.notifier);
+    final activeCount = _activeFilterCount(filters);
 
-    return ColoredBox(
-      color: backgroundColor ?? t.bg,
-      child: SingleChildScrollView(
-        key: const ValueKey('explore-filter-rail-scroll-view'),
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.micro2,
-          CatchSpacing.s5,
-          CatchSpacing.s3,
-        ),
-        child: Row(
-          children: [
-            for (final timeFilter in _timeFilters) ...[
-              CatchChip(
-                label: _timeFilterLabel(timeFilter),
-                active: filters.timeFilter == timeFilter,
-                icon: Icon(_timeFilterIcon(timeFilter)),
-                onTap: () => filterController.toggleTimeFilter(timeFilter),
-              ),
-              gapW8,
-            ],
-            _RailDivider(color: t.line2),
-            gapW8,
-            for (final distanceFilter in _distanceFilters) ...[
-              CatchChip(
-                label: _distanceFilterLabel(distanceFilter),
-                active: filters.distanceFilter == distanceFilter,
-                icon: Icon(CatchIcons.nearMeOutlined),
-                onTap: () =>
-                    filterController.toggleDistanceFilter(distanceFilter),
-              ),
-              gapW8,
-            ],
-            _RailDivider(color: t.line2),
-            gapW8,
-            CatchChip(
-              label: 'Joined',
-              active: filters.joinedOnly,
-              icon: Icon(CatchIcons.joined),
-              onTap: filterController.toggleJoinedOnly,
-            ),
-            if (filters.hasActiveFilters) ...[
-              gapW8,
-              CatchChip(
+    return CatchBottomSheetScaffold(
+      title: 'Explore filters',
+      subtitle: 'Narrow the map and feed without changing your time scope.',
+      action: Row(
+        children: [
+          if (activeCount > 0) ...[
+            Expanded(
+              child: CatchButton(
                 label: 'Clear',
-                icon: Icon(CatchIcons.clear),
-                onTap: filterController.clear,
+                variant: CatchButtonVariant.secondary,
+                onPressed: controller.clear,
               ),
-            ],
+            ),
+            gapW8,
           ],
-        ),
+          Expanded(
+            child: CatchButton(
+              label: 'Done',
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'DISTANCE',
+            style: CatchTextStyles.kicker(context, color: t.ink2),
+          ),
+          gapH12,
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (final distanceFilter in _distanceFilters)
+                SelectChip(
+                  label: _distanceFilterLabel(distanceFilter),
+                  active: filters.distanceFilter == distanceFilter,
+                  onTap: () => controller.setDistanceFilter(distanceFilter),
+                ),
+            ],
+          ),
+          gapH20,
+          Text('CLUBS', style: CatchTextStyles.kicker(context, color: t.ink2)),
+          gapH12,
+          SelectChip(
+            label: 'Joined clubs',
+            active: filters.joinedOnly,
+            onTap: controller.toggleJoinedOnly,
+          ),
+        ],
       ),
     );
   }
 }
 
-class _RailDivider extends StatelessWidget {
-  const _RailDivider({required this.color});
+Future<void> _showExploreFilterSheet(BuildContext context) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    backgroundColor: Colors.transparent,
+    builder: (_) => const _ExploreFilterSheet(),
+  );
+}
 
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: CatchStroke.hairline,
-      height: CatchLayout.clubFilterDividerHeight,
-      child: ColoredBox(color: color),
-    );
-  }
+int _activeFilterCount(ClubBrowseFilterSelection filters) {
+  var count = 0;
+  if (filters.timeFilter != defaultExploreTimeFilter) count += 1;
+  if (filters.distanceFilter != ExploreDistanceFilter.any) count += 1;
+  if (filters.highRatedOnly) count += 1;
+  if (filters.joinedOnly) count += 1;
+  if (filters.activityTag != null) count += 1;
+  if (filters.area != null) count += 1;
+  return count;
 }
 
 String _distanceFilterLabel(ExploreDistanceFilter filter) {
   return switch (filter) {
-    ExploreDistanceFilter.any => 'Any distance',
+    ExploreDistanceFilter.any => 'Any',
     ExploreDistanceFilter.oneKm => '1 km',
     ExploreDistanceFilter.threeKm => '3 km',
     ExploreDistanceFilter.fiveKm => '5 km',
     ExploreDistanceFilter.tenKm => '10 km',
-  };
-}
-
-String _timeFilterLabel(ExploreTimeFilter filter) {
-  return switch (filter) {
-    ExploreTimeFilter.anytime => 'Anytime',
-    ExploreTimeFilter.tonight => 'Tonight',
-    ExploreTimeFilter.tomorrow => 'Tomorrow',
-    ExploreTimeFilter.weekend => 'Weekend',
-    ExploreTimeFilter.thisWeek => 'This week',
-  };
-}
-
-IconData _timeFilterIcon(ExploreTimeFilter filter) {
-  return switch (filter) {
-    ExploreTimeFilter.anytime => CatchIcons.anytime,
-    ExploreTimeFilter.tonight => CatchIcons.tonight,
-    ExploreTimeFilter.tomorrow => CatchIcons.tomorrow,
-    ExploreTimeFilter.weekend => CatchIcons.weekend,
-    ExploreTimeFilter.thisWeek => CatchIcons.thisWeek,
   };
 }

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/entities/reorderable_animation_config.dart';
 import 'package:flutter_reorderable_grid_view/widgets/widgets.dart';
@@ -17,6 +18,14 @@ class OrderedPhotoPreview {
   final String? imageUrl;
 
   bool get hasImage => bytes != null || imageUrl != null;
+}
+
+abstract final class OrderedPhotoPickerKeys {
+  static ValueKey<String> addAction(String label) =>
+      ValueKey('ordered_photo_add_$label');
+
+  static ValueKey<String> removeAction(int index) =>
+      ValueKey('ordered_photo_remove_$index');
 }
 
 class OrderedPhotoPicker extends StatefulWidget {
@@ -153,15 +162,18 @@ class _OrderedPhotoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final borderRadius = BorderRadius.circular(CatchRadius.md);
 
     return Semantics(
       image: true,
       label: 'Photo ${index + 1}',
-      child: DecoratedBox(
-        decoration: BoxDecoration(color: t.raised, borderRadius: borderRadius),
-        child: ClipRRect(
-          borderRadius: borderRadius,
+      child: Tooltip(
+        message: 'Photo ${index + 1}',
+        excludeFromSemantics: true,
+        child: CatchSurface(
+          tone: CatchSurfaceTone.raised,
+          radius: CatchRadius.md,
+          borderWidth: 0,
+          clipBehavior: Clip.antiAlias,
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -171,7 +183,16 @@ class _OrderedPhotoTile extends StatelessWidget {
                 Image.network(
                   photo.imageUrl!,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => ColoredBox(color: t.raised),
+                  errorBuilder: (_, _, _) => ColoredBox(
+                    color: t.raised,
+                    child: Center(
+                      child: Icon(
+                        CatchIcons.brokenImageOutlined,
+                        size: CatchIcon.tile,
+                        color: t.ink2,
+                      ),
+                    ),
+                  ),
                 ),
               if (onRemove != null)
                 Positioned(
@@ -186,7 +207,7 @@ class _OrderedPhotoTile extends StatelessWidget {
                       shape: const CircleBorder(),
                       clipBehavior: Clip.antiAlias,
                       child: InkWell(
-                        key: ValueKey('ordered_photo_remove_$index'),
+                        key: OrderedPhotoPickerKeys.removeAction(index),
                         customBorder: const CircleBorder(),
                         onTap: onRemove,
                         child: SizedBox.square(
@@ -234,33 +255,41 @@ class _AddPhotoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final borderRadius = BorderRadius.circular(CatchRadius.md);
     return Semantics(
       button: true,
       enabled: onTap != null,
       label: label,
-      child: Material(
-        color: t.raised,
-        borderRadius: borderRadius,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          key: ValueKey('ordered_photo_add_$label'),
+      child: Tooltip(
+        message: label,
+        excludeFromSemantics: true,
+        child: CatchSurface(
+          key: OrderedPhotoPickerKeys.addAction(label),
+          tone: CatchSurfaceTone.raised,
+          radius: CatchRadius.md,
+          borderWidth: 0,
+          clipBehavior: Clip.antiAlias,
           onTap: onTap,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                CatchIcons.addPhotoAlternateOutlined,
-                size: CatchIcon.hero,
-                color: t.ink2,
-              ),
-              gapH8,
-              Text(
-                label,
-                style: CatchTextStyles.bodyLead(context, color: t.ink2),
-                textAlign: TextAlign.center,
-              ),
-            ],
+          padding: CatchInsets.contentDense,
+          child: ExcludeSemantics(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  CatchIcons.addPhotoAlternateOutlined,
+                  size: CatchIcon.hero,
+                  color: t.ink2,
+                ),
+                gapH8,
+                Text(
+                  label,
+                  style: CatchTextStyles.bodyLead(context, color: t.ink2),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         ),
       ),

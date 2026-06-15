@@ -5,8 +5,9 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/icon_btn.dart';
+import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,21 +51,19 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
           children: [
             for (final template
                 in EventSuccessQuestionnairePackLibrary.allTemplates)
-              CatchChip(
+              SelectChip(
                 label: template.title,
                 active:
                     !normalized.usesCustom &&
                     normalized.templateId == template.id,
-                icon: Icon(CatchIcons.styleOutlined),
                 enabled: enabled,
                 onTap: () => onChanged(
                   EventSuccessQuestionnaireConfig(templateId: template.id),
                 ),
               ),
-            CatchChip(
+            SelectChip(
               label: 'Custom',
               active: normalized.usesCustom,
-              icon: Icon(CatchIcons.editNoteRounded),
               enabled: enabled,
               onTap: () => onChanged(
                 normalized.usesCustom
@@ -341,11 +340,16 @@ class _CustomQuestionFields extends StatelessWidget {
               ),
             ),
             if (onRemove != null)
-              IconButton(
-                tooltip: 'Remove question',
-                icon: Icon(CatchIcons.deleteOutlineRounded),
-                color: t.danger,
-                onPressed: enabled ? onRemove : null,
+              Tooltip(
+                message: 'Remove question',
+                child: IconBtn(
+                  onTap: enabled ? onRemove : null,
+                  child: Icon(
+                    CatchIcons.deleteOutlineRounded,
+                    size: CatchIcon.md,
+                    color: enabled ? t.danger : t.ink3,
+                  ),
+                ),
               ),
           ],
         ),

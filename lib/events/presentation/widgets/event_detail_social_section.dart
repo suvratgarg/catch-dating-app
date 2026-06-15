@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
@@ -37,7 +38,6 @@ class EventDetailSocialSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final profile = userProfile;
     final canShowMemberContext = isAuthenticated && profile != null;
     final reviewAccessStarted = !event.endTime.isAfter(now ?? DateTime.now());
@@ -48,26 +48,34 @@ class EventDetailSocialSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (canShowMemberContext)
-          WhoIsGoing(
-            event: event,
-            userProfile: profile,
-            surfaceStyle: surfaceStyle,
-          )
-        else
-          _GuestWhoIsGoing(surfaceStyle: surfaceStyle),
+        CatchDesignSection(
+          kicker: "Who's going",
+          count: event.signedUpCount,
+          dividerColor: surfaceStyle?.dividerColor,
+          kickerColor: surfaceStyle?.headingColor,
+          child: canShowMemberContext
+              ? WhoIsGoing(
+                  event: event,
+                  userProfile: profile,
+                  surfaceStyle: surfaceStyle,
+                  showHeader: false,
+                )
+              : _GuestWhoIsGoing(surfaceStyle: surfaceStyle, showHeader: false),
+        ),
         if (canShowMemberContext) ...[
-          const SizedBox(height: CatchLayout.detailScreenSectionGap),
-          Divider(color: surfaceStyle?.dividerColor ?? t.line, height: 1),
-          const SizedBox(height: CatchLayout.detailScreenSectionGap),
-          EventReviewsSection(
-            clubId: clubId,
-            eventId: event.id,
-            reviews: reviews,
-            currentUid: profile.uid,
-            userProfile: profile,
-            isHost: isHost,
-            hasAttended: hasReviewAccess,
+          CatchDesignSection(
+            kicker: 'Reviews',
+            dividerColor: surfaceStyle?.dividerColor,
+            kickerColor: surfaceStyle?.headingColor,
+            child: EventReviewsSection(
+              clubId: clubId,
+              eventId: event.id,
+              reviews: reviews,
+              currentUid: profile.uid,
+              userProfile: profile,
+              isHost: isHost,
+              hasAttended: hasReviewAccess,
+            ),
           ),
         ],
       ],
@@ -76,9 +84,10 @@ class EventDetailSocialSection extends StatelessWidget {
 }
 
 class _GuestWhoIsGoing extends StatelessWidget {
-  const _GuestWhoIsGoing({this.surfaceStyle});
+  const _GuestWhoIsGoing({this.surfaceStyle, this.showHeader = true});
 
   final EventDetailSurfaceStyle? surfaceStyle;
+  final bool showHeader;
 
   @override
   Widget build(BuildContext context) {
@@ -91,24 +100,26 @@ class _GuestWhoIsGoing extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                CatchIcons.lockOutlineRounded,
-                size: CatchIcon.xs,
-                color: surfaceStyle?.mutedColor ?? t.ink3,
-              ),
-              const SizedBox(width: CatchSpacing.s2),
-              Text(
-                "Who's going",
-                style: CatchTextStyles.titleL(
-                  context,
-                  color: surfaceStyle?.headingColor,
+          if (showHeader) ...[
+            Row(
+              children: [
+                Icon(
+                  CatchIcons.lockOutlineRounded,
+                  size: CatchIcon.xs,
+                  color: surfaceStyle?.mutedColor ?? t.ink3,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: CatchLayout.detailScreenSupportingGap),
+                const SizedBox(width: CatchSpacing.s2),
+                Text(
+                  "Who's going",
+                  style: CatchTextStyles.titleL(
+                    context,
+                    color: surfaceStyle?.headingColor,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: CatchLayout.detailScreenSupportingGap),
+          ],
           Text(
             'Sign in to see who has booked this event.',
             style: CatchTextStyles.supporting(

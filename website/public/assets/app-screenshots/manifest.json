@@ -43,6 +43,56 @@
       "walkthroughStep": "Setup"
     },
     {
+      "id": "host-create-basics",
+      "audience": "host",
+      "surface": "Host create flow basics",
+      "device": "iphone-17-pro",
+      "webPath": "/assets/app-screenshots/host-create-basics.png",
+      "alt": "Catch host setup screen for the first basics step",
+      "caption": "Name the format, city, and first organizer details before the event rules appear.",
+      "walkthroughStep": "Basics"
+    },
+    {
+      "id": "host-create-location",
+      "audience": "host",
+      "surface": "Host create flow location",
+      "device": "iphone-17-pro",
+      "webPath": "/assets/app-screenshots/host-create-location.png",
+      "alt": "Catch location map screen with a pinned meeting point",
+      "caption": "Set the venue, precise meeting point, and arrival note guests will see.",
+      "walkthroughStep": "Location"
+    },
+    {
+      "id": "host-create-schedule",
+      "audience": "host",
+      "surface": "Host create flow schedule",
+      "device": "iphone-17-pro",
+      "webPath": "/assets/app-screenshots/host-create-schedule.png",
+      "alt": "Catch calendar screen showing planned events",
+      "caption": "Place the event into the host calendar with date, start time, and check-in timing.",
+      "walkthroughStep": "Schedule"
+    },
+    {
+      "id": "host-create-policy",
+      "audience": "host",
+      "surface": "Host create flow policy",
+      "device": "iphone-17-pro",
+      "webPath": "/assets/app-screenshots/host-create-policy.png",
+      "alt": "Catch event policy screen with admission and waitlist controls",
+      "caption": "Balance capacity, pricing, admission, waitlists, cohorts, and cancellation rules.",
+      "walkthroughStep": "Policy"
+    },
+    {
+      "id": "host-create-guide",
+      "audience": "host",
+      "surface": "Host create flow live guide",
+      "device": "iphone-17-pro",
+      "webPath": "/assets/app-screenshots/host-create-guide.png",
+      "alt": "Catch host live console with run of show and roster controls",
+      "caption": "Choose the live Event Success guide before the night starts.",
+      "walkthroughStep": "Live guide"
+    },
+    {
       "id": "host-live-console",
       "audience": "host",
       "surface": "Host live console",

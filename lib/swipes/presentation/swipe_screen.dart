@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -211,7 +212,7 @@ class _CatchesTopOverlay extends StatelessWidget {
           ),
           child: Row(
             children: [
-              _OverlayIconButton(
+              _OverlayIconAction(
                 tooltip: 'Back to Catches',
                 icon: CatchIcons.arrowBackIosNewRounded,
                 onPressed: onBack,
@@ -242,7 +243,7 @@ class _CatchesTopOverlay extends StatelessWidget {
                 ),
               ),
               gapW10,
-              _OverlayIconButton(
+              _OverlayIconAction(
                 tooltip: 'Filters',
                 icon: CatchIcons.tuneRounded,
                 onPressed: onFilters,
@@ -255,8 +256,8 @@ class _CatchesTopOverlay extends StatelessWidget {
   }
 }
 
-class _OverlayIconButton extends StatelessWidget {
-  const _OverlayIconButton({
+class _OverlayIconAction extends StatelessWidget {
+  const _OverlayIconAction({
     required this.tooltip,
     required this.icon,
     required this.onPressed,
@@ -272,18 +273,13 @@ class _OverlayIconButton extends StatelessWidget {
 
     return Tooltip(
       message: tooltip,
-      child: Material(
-        color: t.surface.withValues(alpha: CatchOpacity.floatingControlFill),
-        shape: const CircleBorder(),
-        elevation: CatchElevation.physicalControl,
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: onPressed,
-          child: SizedBox.square(
-            dimension: CatchLayout.floatingControlExtent,
-            child: Icon(icon, color: t.ink, size: CatchIcon.row),
-          ),
+      child: IconBtn(
+        size: CatchLayout.floatingControlExtent,
+        background: t.surface.withValues(
+          alpha: CatchOpacity.floatingControlFill,
         ),
+        onTap: onPressed,
+        child: Icon(icon, color: t.ink, size: CatchIcon.row),
       ),
     );
   }

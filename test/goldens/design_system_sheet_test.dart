@@ -14,13 +14,9 @@ import 'support/golden_pump.dart';
 /// dark. Regenerate intentionally with:
 ///   flutter test --update-goldens test/goldens
 void main() {
-  testWidgets(
-    'design system sheet (light + dark)',
-    (tester) async {
-      await matchCatchGolden(tester, 'design_system_sheet', builder: _sheet);
-    },
-    tags: const ['golden'],
-  );
+  testWidgets('design system sheet (light + dark)', (tester) async {
+    await matchCatchGolden(tester, 'design_system_sheet', builder: _sheet);
+  }, tags: const ['golden']);
 }
 
 Widget _sheet(BuildContext context) {
@@ -80,11 +76,11 @@ Widget _sheet(BuildContext context) {
         const SizedBox(height: CatchSpacing.s2),
         Text('Section title', style: CatchTextStyles.titleL(context)),
         Text(
-          'Functional UI body, set in Inter for controls and dense text.',
+          'Functional UI body, set in the platform font for controls and dense text.',
           style: CatchTextStyles.bodyL(context),
         ),
         Text(
-          'Editorial prose, set in Newsreader for bios and reading copy.',
+          'Editorial prose, set in Archivo for bios and reading copy.',
           style: CatchTextStyles.proseL(context),
         ),
         const SizedBox(height: CatchSpacing.s2),

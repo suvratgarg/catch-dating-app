@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/city_picker.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_search_field.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_browse_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -50,12 +49,15 @@ class _ClubsBrowseHeaderState extends ConsumerState<ClubsBrowseHeaderContent> {
       subtitle: 'Find an event worth showing up for.',
       leading: const CityPicker(),
       searchActive: searchActive,
-      searchField: ClubsSearchField(
-        autofocus: true,
-        onSubmitted: _closeEmptySearch,
-        onFocusChanged: _handleSearchFocusChanged,
-      ),
+      searchValue: query,
+      onSearchChanged: (value) =>
+          ref.read(clubSearchQueryProvider.notifier).setQuery(value),
+      searchPlaceholder: 'Search events or clubs',
+      searchAutofocus: true,
+      onSearchSubmitted: _closeEmptySearch,
+      onSearchFocusChanged: _handleSearchFocusChanged,
       onOpenSearch: () => setState(() => _searchOpen = true),
+      onCloseSearch: () => setState(() => _searchOpen = false),
       searchActionVisible: widget.showSearchAction,
       searchTooltip: 'Search events or clubs',
       searchSemanticLabel: 'Search events or clubs',

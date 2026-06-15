@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -103,6 +104,67 @@ void main() {
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatformOverride;
     }
+  });
+
+  testWidgets('navigation bar accepts host destination sets', (tester) async {
+    int? tappedIndex;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: const SizedBox.expand(),
+          bottomNavigationBar: AppShellNavigationBar(
+            currentIndex: 2,
+            unreadCount: 4,
+            items: [
+              AppShellNavigationItem(
+                label: 'Events',
+                materialIcon: CatchIcons.calendarMonthOutlined,
+                materialSelectedIcon: CatchIcons.calendarMonthOutlined,
+                cupertinoIcon: CupertinoIcons.calendar,
+                cupertinoSelectedIcon: CupertinoIcons.calendar,
+              ),
+              AppShellNavigationItem(
+                label: 'Clubs',
+                materialIcon: CatchIcons.groupsOutlined,
+                materialSelectedIcon: CatchIcons.groupsRounded,
+                cupertinoIcon: CupertinoIcons.person_2,
+                cupertinoSelectedIcon: CupertinoIcons.person_2_fill,
+              ),
+              AppShellNavigationItem(
+                label: 'Inbox',
+                materialIcon: CatchIcons.chatBubbleOutlineRounded,
+                materialSelectedIcon: CatchIcons.chatBubbleRounded,
+                cupertinoIcon: CupertinoIcons.chat_bubble_2,
+                cupertinoSelectedIcon: CupertinoIcons.chat_bubble_2_fill,
+                showsUnreadBadge: true,
+              ),
+              AppShellNavigationItem(
+                label: 'Account',
+                materialIcon: CatchIcons.settingsOutlined,
+                materialSelectedIcon: CatchIcons.settingsOutlined,
+                cupertinoIcon: CupertinoIcons.gear,
+                cupertinoSelectedIcon: CupertinoIcons.gear,
+              ),
+            ],
+            onDestinationSelected: (index) => tappedIndex = index,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(CatchTabDock<int>), findsOneWidget);
+    expect(find.byType(NavigationBar), findsNothing);
+    expect(find.text('HOME'), findsNothing);
+    expect(find.text('EVENTS'), findsOneWidget);
+    expect(find.text('CLUBS'), findsOneWidget);
+    expect(find.text('INBOX'), findsOneWidget);
+    expect(find.text('ACCOUNT'), findsOneWidget);
+    expect(find.text('4'), findsOneWidget);
+
+    await tester.tap(find.text('ACCOUNT'));
+    expect(tappedIndex, 3);
   });
 
   test('app notice controller dedupes notices by key', () {

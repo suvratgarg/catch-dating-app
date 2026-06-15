@@ -36,7 +36,11 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
     return CatchTopBar(
+      backgroundColor: t.surface,
+      border: true,
       titleWidget: _ChatTitle(
         name: name,
         photoUrl: photoUrl,

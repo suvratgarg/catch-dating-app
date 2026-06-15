@@ -21,6 +21,7 @@ class PhotoGrid extends StatefulWidget {
     this.onDeletePhoto,
     this.onReorderPhoto,
     this.canDeletePhotos = true,
+    this.mainLabel = 'MAIN',
   });
 
   final List<ProfilePhoto> profilePhotos;
@@ -29,6 +30,7 @@ class PhotoGrid extends StatefulWidget {
   final void Function(int index)? onDeletePhoto;
   final void Function(int fromIndex, int toIndex)? onReorderPhoto;
   final bool canDeletePhotos;
+  final String mainLabel;
 
   static const _crossAxisCount = 3;
 
@@ -92,6 +94,10 @@ class _PhotoGridState extends State<PhotoGrid> {
               index: index,
               url: photo?.url,
               prompt: photo?.prompt,
+              badgeLabel:
+                  photo != null && index == 0 && widget.mainLabel.isNotEmpty
+                  ? widget.mainLabel
+                  : null,
               isLoading: isLoading,
               isActive: isActive,
               onTap: () => widget.onSlotTapped(index),

@@ -14,13 +14,12 @@ import 'package:catch_dating_app/core/device_motion.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_draggable_sheet_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
@@ -614,49 +613,11 @@ class _ExploreSnapToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!isFull) return const SizedBox.shrink();
-    return _FloatingActionPill(
+    return CatchCountPill(
       label: mapLabel,
       icon: CatchIcons.map,
       onPressed: onShowMap,
-    );
-  }
-}
-
-class _FloatingActionPill extends StatelessWidget {
-  const _FloatingActionPill({
-    required this.label,
-    required this.icon,
-    required this.onPressed,
-  });
-
-  final String label;
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      radius: CatchRadius.pill,
-      elevation: CatchSurfaceElevation.raised,
-      backgroundColor: t.surface,
-      borderColor: t.line2,
-      padding: EdgeInsets.zero,
-      onTap: onPressed,
-      child: Padding(
-        padding: CatchInsets.listBody,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: CatchIcon.control, color: t.ink),
-            gapW8,
-            Text(
-              label,
-              style: CatchTextStyles.sectionTitle(context, color: t.ink),
-            ),
-          ],
-        ),
-      ),
+      semanticLabel: mapLabel,
     );
   }
 }

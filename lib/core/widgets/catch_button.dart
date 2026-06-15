@@ -22,6 +22,7 @@ class CatchButton extends StatefulWidget {
     this.fullWidth = false,
     this.isInteractive = true,
     this.semanticsLabel,
+    this.accentColor,
     this.backgroundColor,
     this.foregroundColor,
     this.borderColor,
@@ -36,6 +37,10 @@ class CatchButton extends StatefulWidget {
   final bool fullWidth;
   final bool isInteractive;
   final String? semanticsLabel;
+
+  /// Activity pigment for a primary button. The foreground is paired to white
+  /// unless [foregroundColor] is supplied explicitly.
+  final Color? accentColor;
   final Color? backgroundColor;
   final Color? foregroundColor;
   final Color? borderColor;
@@ -55,7 +60,16 @@ class _CatchButtonState extends State<CatchButton> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final spec = _ButtonSizeSpec.from(widget.size);
-    final palette = _ButtonPalette.from(widget.variant, t).copyWith(
+    var palette = _ButtonPalette.from(widget.variant, t);
+    final accent = widget.accentColor;
+    if (accent != null && widget.variant == CatchButtonVariant.primary) {
+      palette = palette.copyWith(
+        background: accent,
+        foreground: CatchTokens.editorialLight,
+        border: Colors.transparent,
+      );
+    }
+    palette = palette.copyWith(
       background: widget.backgroundColor,
       foreground: widget.foregroundColor,
       border: widget.borderColor,

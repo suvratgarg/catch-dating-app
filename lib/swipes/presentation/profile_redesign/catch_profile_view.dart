@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/graded_image.dart';
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
@@ -13,7 +13,7 @@ import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_co
 import 'package:flutter/material.dart';
 
 /// PHASE 2 — the flagship profile surface, in the locked editorial language:
-/// a DARK "wow" hero on a graded photo, Newsreader voice, IBM Plex Mono data,
+/// a DARK "wow" hero on a graded photo, Archivo voice, IBM Plex Mono data,
 /// proseL reading text, hairlines over boxes. Color = activity (the kicker +
 /// reaction affordances borrow the meeting activity's pigment).
 ///
@@ -260,7 +260,7 @@ class _SectionView extends StatelessWidget {
         accent: accent,
       ),
       ProfilePromptSectionData s => _Prompt(section: s),
-      ProfileRunningSection s => _Running(section: s),
+      ProfileRunningSection s => _Running(section: s, accent: accent),
       ProfileFactsSection s => _Facts(section: s),
       ProfilePhotoSection() => const SizedBox.shrink(),
     };
@@ -343,7 +343,10 @@ class _Compatibility extends StatelessWidget {
           Wrap(
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
-            children: [for (final s in section.confidence) CatchChip(label: s)],
+            children: [
+              for (final signal in section.confidence)
+                CatchBadge(label: signal),
+            ],
           ),
         ],
       ],
@@ -351,7 +354,7 @@ class _Compatibility extends StatelessWidget {
   }
 }
 
-// ── Prompt (mono question + Newsreader answer) ────────────────────────────────
+// ── Prompt (mono question + Archivo answer) ───────────────────────────────────
 
 class _Prompt extends StatelessWidget {
   const _Prompt({required this.section});
@@ -378,9 +381,10 @@ class _Prompt extends StatelessWidget {
 // ── Running identity ──────────────────────────────────────────────────────────
 
 class _Running extends StatelessWidget {
-  const _Running({required this.section});
+  const _Running({required this.section, this.accent});
 
   final ProfileRunningSection section;
+  final Color? accent;
 
   @override
   Widget build(BuildContext context) {
@@ -388,7 +392,7 @@ class _Running extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle('Running rhythm'),
+        _SectionTitle('Running rhythm', color: accent),
         gapH10,
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -414,7 +418,7 @@ class _Running extends StatelessWidget {
           Wrap(
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
-            children: [for (final tag in section.tags) CatchChip(label: tag)],
+            children: [for (final tag in section.tags) CatchBadge(label: tag)],
           ),
         ],
       ],

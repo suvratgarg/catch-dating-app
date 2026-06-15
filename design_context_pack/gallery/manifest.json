@@ -3,7 +3,7 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 47,
-    "captures": 31,
+    "captures": 36,
     "statusCounts": {
       "excluded": 6,
       "captured": 28,
@@ -313,6 +313,106 @@
         "salesDemo.host.eventSetup"
       ],
       "whatItIs": "Host Event Setup",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_basics",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_basics.png",
+        "dark": "dark/host_create_basics.png"
+      },
+      "marketingFixtureKeys": [
+        "salesDemo.host.createBasics"
+      ],
+      "whatItIs": "Host Create Basics",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_location",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_location.png",
+        "dark": "dark/host_create_location.png"
+      },
+      "marketingFixtureKeys": [
+        "salesDemo.host.createLocation"
+      ],
+      "whatItIs": "Host Create Location",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_schedule",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_schedule.png",
+        "dark": "dark/host_create_schedule.png"
+      },
+      "marketingFixtureKeys": [
+        "salesDemo.host.createSchedule"
+      ],
+      "whatItIs": "Host Create Schedule",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_policy",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_policy.png",
+        "dark": "dark/host_create_policy.png"
+      },
+      "marketingFixtureKeys": [
+        "salesDemo.host.createPolicy"
+      ],
+      "whatItIs": "Host Create Policy",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_guide",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_guide.png",
+        "dark": "dark/host_create_guide.png"
+      },
+      "marketingFixtureKeys": [
+        "salesDemo.host.createGuide"
+      ],
+      "whatItIs": "Host Create Guide",
       "keepChangeNotes": ""
     },
     {

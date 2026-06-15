@@ -7,13 +7,11 @@ Future<bool?> showConfirmDangerDialog({
   required String message,
   required String confirmLabel,
 }) {
-  return showCatchAdaptiveDialog<bool>(
+  return showCatchConfirmDialog(
     context: context,
     title: title,
     message: message,
-    actions: [
-      const CatchDialogAction(label: 'Cancel', value: false),
-      CatchDialogAction(label: confirmLabel, value: true, isDestructive: true),
-    ],
+    confirmLabel: confirmLabel,
+    danger: true,
   );
 }

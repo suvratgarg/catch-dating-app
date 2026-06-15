@@ -16,7 +16,7 @@ class OnboardingStepHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(title, style: CatchTextStyles.headlineS(context, color: t.ink)),
+        Text(title, style: CatchTextStyles.headline(context, color: t.ink)),
         if (subtitle != null && subtitle!.isNotEmpty) ...[
           gapH8,
           Text(
@@ -33,27 +33,61 @@ class OnboardingStepFrame extends StatelessWidget {
   const OnboardingStepFrame({
     super.key,
     required this.children,
-    this.padding = CatchInsets.pageHorizontalWide,
+    this.footer,
+    this.padding = const EdgeInsets.fromLTRB(
+      CatchSpacing.s5,
+      CatchSpacing.s5,
+      CatchSpacing.s5,
+      CatchSpacing.s0,
+    ),
+    this.footerPadding = const EdgeInsets.fromLTRB(
+      CatchSpacing.s5,
+      CatchSpacing.s3,
+      CatchSpacing.s5,
+      CatchSpacing.s6,
+    ),
   });
 
   final List<Widget> children;
+  final Widget? footer;
   final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry footerPadding;
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: padding,
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: CatchLayout.maxContentWidth,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: children,
-          ),
+    final content = Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxWidth: CatchLayout.maxContentWidth,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: children,
         ),
       ),
+    );
+
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(padding: padding, child: content),
+        ),
+        if (footer != null)
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: footerPadding,
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: CatchLayout.maxContentWidth,
+                  ),
+                  child: footer,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

@@ -34,9 +34,9 @@ default) and **Roadbook** (warm editorial soul — confident type, captioned
 photography, **warm-desaturated color grading**, restraint). Both are, in fact,
 restrained and mostly sans/monochrome.
 
-**Catch = editorial restraint + a serif voice + meaningful color.** We borrow their
+**Catch = editorial restraint + a typographic voice + meaningful color.** We borrow their
 discipline (grid, whitespace, hairlines, tracked labels, muted grading) but our
-*voice* is a serif, and our *only* color is meaningful — it tells you the activity.
+*voice* is Archivo, and our *only* color is meaningful — it tells you the activity.
 
 ### The seven principles (the bar every screen must meet)
 
@@ -47,8 +47,8 @@ discipline (grid, whitespace, hairlines, tracked labels, muted grading) but our
 4. **Photography is graded and framed, never raw filler.** One grade on every photo.
 5. **Color = activity.** No decorative brand accent; chroma appears only where an
    activity gives it (§3).
-6. **Tracked uppercase mono** for kickers/labels/data; **serif** for voice; **Inter**
-   for function.
+6. **Tracked uppercase mono** for kickers/labels/data; **Archivo** for voice/head;
+   the platform system font for function.
 7. **It must hold at text-scale 2.0 and in dark mode.** Editorial layouts live on type;
    if Dynamic Type breaks it, it isn't done.
 
@@ -135,28 +135,28 @@ Three roles, no competition:
 
 | Role | Family | Use |
 |---|---|---|
-| **Voice** (display + long-form body) | **Newsreader** (optical-sized serif) | screen titles, event/club/profile names, hero moments, **and** reading text (bios, descriptions) |
-| **Function** | **Inter** | buttons, nav, inputs, dense UI controls |
-| **Data** | **IBM Plex Mono** | time, price, counts, kickers, tracked uppercase labels |
+| **Voice / head** (display + long-form body) | **Archivo** (variable grotesque, with condensed widths for poster/head surfaces) | screen titles, event/club/profile names, hero moments, **and** reading text (bios, descriptions) |
+| **Function** | **Platform system font** (SF on iOS, Roboto on Android) | buttons, nav, inputs, dense UI controls |
+| **Data** | **IBM Plex Mono** | time, price, counts, kickers, uppercase labels |
 
-**Why Newsreader:** purpose-built for on-screen editorial reading — moderate contrast +
-generous x-height (legible at 15px) with a true optical axis (commanding at 50px) and
-real character. Chosen over Instrument Serif (too light/casual at display) and the
-Didones — Playfair/Bodoni — which **sacrifice legibility** at text sizes.
+**Why Archivo:** the current direction is typographic, restrained, and non-serif. Archivo
+gives Catch one voice face for dramatic headlines, names, prose, and condensed event/head
+surfaces without reintroducing a decorative brand accent. Function/body text stays native
+to the platform for legibility and Dynamic Type behavior.
 
-> The display face is a **"for now" pick** — owned centrally in `CatchFonts`, so it's a
-> contained, tunable swap if we revisit it.
+> The old Newsreader/Inter direction is retired. Keep the swap centralized in
+> `CatchFonts`, `CatchTextStyles`, and `design/tokens/catch.tokens.json`.
 
-**Legibility-first craft (applies regardless of face):**
-- **Optical sizing** — text cut (sturdier) small, display cut (finer) large.
+**Legibility-first craft:**
+- **Variable width** — condensed Archivo widths carry event/head surfaces; normal width
+  carries prose, prompts, and names.
 - **Dramatic scale jumps** — a large display over a small mono kicker; avoid many mid sizes.
-- **Tight display tracking + near-1.0 leading**; **generous body leading (~1.55–1.62)**.
+- **Zero display tracking + near-1.0 leading**; **generous body leading (~1.55–1.62)**.
 - **Upright titles; italic reserved as a single accent** (not italic-by-default).
-- Moderate stroke contrast everywhere but the very largest display.
 
 These map onto the existing `CatchTextStyles` roles — display/title styles move to
-Newsreader, body styles to Newsreader text optical size, labels/numerics to IBM Plex
-Mono, with Inter for control text.
+Archivo, labels/numerics to IBM Plex Mono, and controls/body support copy to the platform
+system font.
 
 ---
 
@@ -197,7 +197,8 @@ Mono, with Inter for control text.
 - **Activity pigment exact lightness** — current mid-tones are "fine for now"; build the
   system so they're **editable** and tune later.
 - **Bespoke activity emblem set** (~16 symbols) — design task; ship on Phosphor glyphs first.
-- **Display face** — Newsreader is a "for now" pick; revisit possible (centralized swap).
+- **Activity emblem set** — bespoke symbols remain deferred; ship on regular Phosphor
+  glyphs first.
 
 ---
 
@@ -215,11 +216,11 @@ What we tried and why, so we don't relitigate it:
 - **Activity art re-grade:** candy gradients → deep duotone (too dark) → **confident
   mid-tone pigments**; abstract patterns → **bespoke emblems** (deferred); grading decided
   **display-time, non-destructive**.
-- **Typography:** Instrument Serif too delicate at display; Didones (Playfair/Bodoni)
-  rejected for **poor legibility**; shortlisted screen-reading serifs (Newsreader / Source
-  Serif 4 / Literata); **Newsreader** chosen (legible body + commanding display).
+- **Typography:** earlier serif studies (Instrument Serif, Playfair/Bodoni, Newsreader,
+  Source Serif 4, Literata) were retired. The current locked stack is Archivo for voice/head,
+  platform system for function/body, and IBM Plex Mono for data.
 - **References studied:** Roadbook (warm-desaturated editorial, sans-leaning) + Wallpaper
-  (monochrome restraint). Catch = their restraint + a serif voice + meaningful color.
+  (monochrome restraint). Catch = their restraint + a typographic voice + meaningful color.
 - **Visual studies (runnable):** `visual_references/catch_identity_mock.html` (light+dark
   direction), `catch_activity_grading.html` (pigment + emblems + grading), `catch_typography.html`
   (type specimen). `lib/labs/identity_candidate_lab_app.dart` is **superseded** (old
@@ -233,8 +234,9 @@ What we tried and why, so we don't relitigate it:
 1. ✅ Encode this into `CatchTokens` (B&W light + dark base, no brand accent).
 2. ✅ Build the `ActivityPalette` expressive-layer `ThemeExtension` (mid-tone pigments,
    dark-aware, editable) + the display-time photo grade as a tunable token.
-3. ✅ Wire **Newsreader / Inter / IBM Plex Mono** into `CatchFonts` + `CatchTextStyles`
-   (upright titles, italic accent, optical sizing, scale/tracking/leading).
+3. ✅ Wire **Archivo / platform system / IBM Plex Mono** into `CatchFonts` +
+   `CatchTextStyles` (upright titles, condensed head roles, scale/zero
+   tracking/leading).
 4. ✅ Refresh or delete the superseded `identity_candidate_lab_app.dart`.
 
 **Then the plan's phases** ([`docs/plans/cryptic-hatching-hummingbird.md`](plans/cryptic-hatching-hummingbird.md)):

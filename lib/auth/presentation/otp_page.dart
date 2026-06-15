@@ -4,13 +4,14 @@ import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -122,64 +123,70 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         _secondsUntilResend == 0 &&
         !verifyMutation.isPending &&
         !sendMutation.isPending;
+    final canVerify =
+        AuthInput.isCompleteOtpCode(_otpController.text) &&
+        !verifyMutation.isPending &&
+        !sendMutation.isPending;
 
-    return Padding(
-      padding: CatchInsets.pageHorizontalWide,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          gapH32,
-          Text(
-            'Enter the code',
-            style: CatchTextStyles.headlineS(context, color: t.ink),
-          ),
-          gapH8,
-          Text(
-            'Sent to $displayPhoneNumber',
-            style: CatchTextStyles.bodyLead(context, color: t.ink2),
-          ),
-          gapH40,
-          CatchOtpCodeField(
-            inputKey: AuthFormKeys.otpField,
-            controller: _otpController,
-            autofocus: shouldAutofocus,
-            onSubmitted: _submit,
-            onChanged: _handleCodeChanged,
-          ),
-          if (verifyMutation.hasError) ...[
-            gapH16,
-            ErrorBanner(
-              message: appErrorMessage(
-                (verifyMutation as MutationError).error,
-                context: AppErrorContext.auth,
-              ),
-            ),
-          ],
-          if (sendMutation.hasError) ...[
-            gapH16,
-            ErrorBanner(
-              message: appErrorMessage(
-                (sendMutation as MutationError).error,
-                context: AppErrorContext.auth,
-              ),
-            ),
-          ],
-          gapH24,
-          if (verifyMutation.isPending) const CatchLoadingIndicator(),
+    return OnboardingStepFrame(
+      footer: CatchButton(
+        label: 'Verify',
+        icon: Icon(CatchIcons.checkRounded),
+        onPressed: canVerify ? () => _submit(_otpController.text) : null,
+        isLoading: verifyMutation.isPending,
+        fullWidth: true,
+        size: CatchButtonSize.lg,
+      ),
+      children: [
+        OnboardingStepHeader(
+          title: 'Enter the code',
+          subtitle: 'Sent to $displayPhoneNumber',
+        ),
+        gapH28,
+        CatchOtpCodeField(
+          inputKey: AuthFormKeys.otpField,
+          controller: _otpController,
+          autofocus: shouldAutofocus,
+          onSubmitted: _submit,
+          onChanged: _handleCodeChanged,
+        ),
+        if (verifyMutation.hasError) ...[
           gapH16,
-          Center(
-            child: CatchButton(
+          ErrorBanner(
+            message: appErrorMessage(
+              (verifyMutation as MutationError).error,
+              context: AppErrorContext.auth,
+            ),
+          ),
+        ],
+        if (sendMutation.hasError) ...[
+          gapH16,
+          ErrorBanner(
+            message: appErrorMessage(
+              (sendMutation as MutationError).error,
+              context: AppErrorContext.auth,
+            ),
+          ),
+        ],
+        gapH20,
+        Text(
+          _resendCooldownLabel,
+          style: CatchTextStyles.monoLabel(context, color: t.ink3),
+        ),
+        gapH12,
+        Wrap(
+          spacing: CatchSpacing.s3,
+          runSpacing: CatchSpacing.s2,
+          children: [
+            CatchButton(
               key: AuthFormKeys.resendOtp,
               label: _resendButtonLabel(sendMutation.isPending),
               onPressed: canResend ? _resendOtp : null,
               variant: CatchButtonVariant.ghost,
               size: CatchButtonSize.sm,
-              foregroundColor: t.primary,
+              foregroundColor: t.ink,
             ),
-          ),
-          gapH8,
-          Center(
-            child: CatchButton(
+            CatchButton(
               key: AuthFormKeys.changeNumber,
               label: 'Change number',
               onPressed: verifyMutation.isPending || sendMutation.isPending
@@ -191,21 +198,22 @@ class _OtpPageState extends ConsumerState<OtpPage> {
               size: CatchButtonSize.sm,
               foregroundColor: t.ink2,
             ),
-          ),
-          const Spacer(),
-          gapH32,
-        ],
-      ),
+          ],
+        ),
+      ],
     );
+  }
+
+  String get _resendCooldownLabel {
+    if (_secondsUntilResend == 0) return 'RESEND NOW';
+    final minutes = _secondsUntilResend ~/ 60;
+    final seconds = (_secondsUntilResend % 60).toString().padLeft(2, '0');
+    return 'RESEND IN $minutes:$seconds';
   }
 
   String _resendButtonLabel(bool isSending) {
     if (isSending) {
       return 'Sending OTP...';
-    }
-
-    if (_secondsUntilResend > 0) {
-      return 'Resend OTP in ${_secondsUntilResend}s';
     }
 
     return 'Resend OTP';

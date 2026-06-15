@@ -6,11 +6,11 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/list_tile_material.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
+import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
@@ -525,7 +525,7 @@ class _RotationCadenceChips extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final interval in const <int?>[null, 10, 15, 20, 30])
-                CatchChip(
+                SelectChip(
                   label: interval == null
                       ? 'No timed rotation'
                       : '$interval min',
@@ -570,7 +570,7 @@ class _RevealCountdownChips extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final seconds in const [0, 5, 10, 15])
-                CatchChip(
+                SelectChip(
                   label: seconds == 0 ? 'Off' : '${seconds}s',
                   active: value == seconds,
                   enabled: enabled,
@@ -783,7 +783,7 @@ class _QuestionnaireBlock extends StatelessWidget {
           runSpacing: CatchSpacing.s2,
           children: [
             for (final option in _QuestionnaireMode.values)
-              CatchChip(
+              SelectChip(
                 label: _questionnaireModeLabel(option),
                 active: mode == option,
                 enabled: editable,
@@ -827,7 +827,7 @@ String _questionnaireModeSubtitle(_QuestionnaireMode mode) {
   }
 }
 
-class _SetupDisclosureSection extends StatelessWidget {
+class _SetupDisclosureSection extends StatefulWidget {
   const _SetupDisclosureSection({
     required this.title,
     required this.subtitle,
@@ -841,36 +841,82 @@ class _SetupDisclosureSection extends StatelessWidget {
   final bool initiallyExpanded;
 
   @override
+  State<_SetupDisclosureSection> createState() =>
+      _SetupDisclosureSectionState();
+}
+
+class _SetupDisclosureSectionState extends State<_SetupDisclosureSection> {
+  late bool _expanded = widget.initiallyExpanded;
+
+  @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Theme(
-      data: Theme.of(
-        context,
-      ).copyWith(dividerColor: t.surface.withValues(alpha: CatchOpacity.none)),
-      child: ExpansionTile(
-        maintainState: true,
-        initiallyExpanded: initiallyExpanded,
-        tilePadding: EdgeInsets.zero,
-        childrenPadding: _disclosureChildrenPadding,
-        shape: const Border(),
-        collapsedShape: const Border(),
-        iconColor: t.primary,
-        collapsedIconColor: t.ink2,
-        title: Text(title, style: CatchTextStyles.labelL(context)),
-        subtitle: Padding(
-          padding: _disclosureSubtitlePadding,
-          child: Text(
-            subtitle,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Semantics(
+          button: true,
+          expanded: _expanded,
+          child: CatchSurface(
+            tone: CatchSurfaceTone.transparent,
+            radius: 0,
+            borderWidth: 0,
+            onTap: () => setState(() => _expanded = !_expanded),
+            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.title,
+                        style: CatchTextStyles.labelL(context),
+                      ),
+                      Padding(
+                        padding: _disclosureSubtitlePadding,
+                        child: Text(
+                          widget.subtitle,
+                          style: CatchTextStyles.supporting(
+                            context,
+                            color: t.ink2,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                gapW12,
+                AnimatedRotation(
+                  turns: _expanded ? 0.25 : 0,
+                  duration: CatchMotion.fast,
+                  curve: CatchMotion.standardCurve,
+                  child: Icon(
+                    CatchIcons.chevronRightRounded,
+                    color: _expanded ? t.primary : t.ink2,
+                    size: CatchIcon.sm,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: children,
-          ),
-        ],
-      ),
+        AnimatedSize(
+          duration: CatchMotion.fast,
+          curve: CatchMotion.standardCurve,
+          alignment: Alignment.topCenter,
+          child: _expanded
+              ? Padding(
+                  padding: _disclosureChildrenPadding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: widget.children,
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+      ],
     );
   }
 }
@@ -889,21 +935,31 @@ class _RecommendationSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return ListTileMaterial(
-      child: SwitchListTile.adaptive(
-        dense: true,
-        contentPadding: EdgeInsets.zero,
-        value: active,
-        onChanged: onChanged,
-        title: Text(
-          recommendation.module.title,
-          style: CatchTextStyles.labelL(context),
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                recommendation.module.title,
+                style: CatchTextStyles.labelL(context),
+              ),
+              gapH4,
+              Text(
+                recommendation.reason,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+            ],
+          ),
         ),
-        subtitle: Text(
-          recommendation.reason,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
+        gapW12,
+        CatchToggle(
+          value: active,
+          semanticLabel: recommendation.module.title,
+          onChanged: onChanged,
         ),
-      ),
+      ],
     );
   }
 }

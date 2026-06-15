@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
+import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -77,47 +77,48 @@ class HostAppShell extends ConsumerWidget {
         child: navigationShell,
       ),
       bottomNavigationBar: isAuthenticated
-          ? NavigationBar(
-              key: AppShellKeys.navigationBar,
-              selectedIndex: navigationShell.currentIndex,
+          ? AppShellNavigationBar(
+              currentIndex: navigationShell.currentIndex,
+              unreadCount: unreadCount,
+              items: _hostNavigationItems,
               onDestinationSelected: (index) => navigationShell.goBranch(
                 index,
                 initialLocation: index == navigationShell.currentIndex,
               ),
-              destinations: [
-                NavigationDestination(
-                  icon: Icon(CatchIcons.calendarMonthOutlined),
-                  selectedIcon: Icon(CatchIcons.calendarMonthOutlined),
-                  label: 'Events',
-                ),
-                NavigationDestination(
-                  icon: Icon(CatchIcons.groupsOutlined),
-                  selectedIcon: Icon(CatchIcons.groupsRounded),
-                  label: 'Clubs',
-                ),
-                NavigationDestination(
-                  icon: unreadCount > 0
-                      ? CatchIconBadge(
-                          label: '$unreadCount',
-                          child: Icon(CatchIcons.chatBubbleOutlineRounded),
-                        )
-                      : Icon(CatchIcons.chatBubbleOutlineRounded),
-                  selectedIcon: unreadCount > 0
-                      ? CatchIconBadge(
-                          label: '$unreadCount',
-                          child: Icon(CatchIcons.chatBubbleRounded),
-                        )
-                      : Icon(CatchIcons.chatBubbleRounded),
-                  label: 'Inbox',
-                ),
-                NavigationDestination(
-                  icon: Icon(CatchIcons.settingsOutlined),
-                  selectedIcon: Icon(CatchIcons.settingsOutlined),
-                  label: 'Account',
-                ),
-              ],
             )
           : null,
     );
   }
 }
+
+final _hostNavigationItems = [
+  AppShellNavigationItem(
+    label: 'Events',
+    materialIcon: CatchIcons.calendarMonthOutlined,
+    materialSelectedIcon: CatchIcons.calendarMonthOutlined,
+    cupertinoIcon: CupertinoIcons.calendar,
+    cupertinoSelectedIcon: CupertinoIcons.calendar,
+  ),
+  AppShellNavigationItem(
+    label: 'Clubs',
+    materialIcon: CatchIcons.groupsOutlined,
+    materialSelectedIcon: CatchIcons.groupsRounded,
+    cupertinoIcon: CupertinoIcons.person_2,
+    cupertinoSelectedIcon: CupertinoIcons.person_2_fill,
+  ),
+  AppShellNavigationItem(
+    label: 'Inbox',
+    materialIcon: CatchIcons.chatBubbleOutlineRounded,
+    materialSelectedIcon: CatchIcons.chatBubbleRounded,
+    cupertinoIcon: CupertinoIcons.chat_bubble_2,
+    cupertinoSelectedIcon: CupertinoIcons.chat_bubble_2_fill,
+    showsUnreadBadge: true,
+  ),
+  AppShellNavigationItem(
+    label: 'Account',
+    materialIcon: CatchIcons.settingsOutlined,
+    materialSelectedIcon: CatchIcons.settingsOutlined,
+    cupertinoIcon: CupertinoIcons.gear,
+    cupertinoSelectedIcon: CupertinoIcons.gear,
+  ),
+];

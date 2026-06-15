@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -50,22 +49,8 @@ class EventActivityVisualSpec {
 }
 
 IconData activityKindGlyph(ActivityKind activityKind) {
-  return switch (activityKind) {
-    ActivityKind.socialRun || ActivityKind.running => CatchIcons.running,
-    ActivityKind.walking => CatchIcons.walking,
-    ActivityKind.cycling || ActivityKind.spinClass => CatchIcons.cycling,
-    ActivityKind.pickleball ||
-    ActivityKind.padel ||
-    ActivityKind.tennis ||
-    ActivityKind.badminton => CatchIcons.racquet,
-    ActivityKind.yoga => CatchIcons.yoga,
-    ActivityKind.strengthTraining => CatchIcons.strength,
-    ActivityKind.pubQuiz => CatchIcons.pubQuiz,
-    ActivityKind.barCrawl => CatchIcons.barCrawl,
-    ActivityKind.dinner => CatchIcons.dinner,
-    ActivityKind.singlesMixer => CatchIcons.singlesMixer,
-    ActivityKind.openActivity => CatchIcons.openActivity,
-  };
+  return ActivityPalette.glyphs[activityKind] ??
+      ActivityPalette.glyphs[ActivityKind.openActivity]!;
 }
 
 const primaryBrowseActivityKinds = <ActivityKind>[

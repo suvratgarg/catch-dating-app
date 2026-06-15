@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/graded_image.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid_keys.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
@@ -37,6 +38,7 @@ void main() {
 
     expect(tappedSlots, isEmpty);
     expect(find.bySemanticsLabel('Photo 1 uploading'), findsOneWidget);
+    expect(find.text('PHOTO 01'), findsOneWidget);
     expect(find.bySemanticsLabel('Photo slot 2 unavailable'), findsOneWidget);
   });
 
@@ -85,5 +87,27 @@ void main() {
 
     expect(deletedSlots, [1]);
     expect(find.bySemanticsLabel('Edit photo 1'), findsOneWidget);
+    expect(find.byType(GradedImage), findsNWidgets(2));
+    expect(find.text('MAIN'), findsOneWidget);
+  });
+
+  testWidgets('main label can be hidden for embedded photo grids', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: PhotoGrid(
+            profilePhotos: [photo(0)],
+            onSlotTapped: (_) {},
+            mainLabel: '',
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(GradedImage), findsOneWidget);
+    expect(find.text('MAIN'), findsNothing);
   });
 }

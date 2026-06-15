@@ -59,7 +59,7 @@ class PersonRowData {
 /// Flexible person row used in:
 /// - **Chat inbox** — pass [data.lastMessage] to activate chat-thread layout
 /// - **Roster / waitlist** — leave [data.lastMessage] null, pass [trailing]
-/// - **Catches preview** — similar to roster; pass [trailing] = [StatusChip]
+/// - **Catches preview** — similar to roster; pass a badge as [trailing]
 ///
 /// Usage:
 /// ```dart
@@ -73,7 +73,7 @@ class PersonRowData {
 /// // Roster row
 /// PersonRow(
 ///   data: PersonRowData(name: 'Riya', metaLine: '5:30 /km · 26'),
-///   trailing: StatusChip(status: EventStatus.joined),
+///   trailing: CatchBadge(label: 'Joined', tone: CatchBadgeTone.brand),
 /// )
 /// ```
 class PersonRow extends StatelessWidget {
@@ -87,7 +87,7 @@ class PersonRow extends StatelessWidget {
 
   final PersonRowData data;
 
-  /// Optional widget shown at the right edge — [StatusChip], follow button, etc.
+  /// Optional widget shown at the right edge — badge, follow button, etc.
   final Widget? trailing;
   final VoidCallback? onTap;
   final double avatarSize;

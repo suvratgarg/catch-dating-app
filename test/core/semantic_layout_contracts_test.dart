@@ -14,18 +14,18 @@ void main() {
     expect(
       CatchInsets.formStepBody,
       const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s4,
-        CatchSpacing.s5,
-        CatchSpacing.s6,
+        CatchSpacing.screenPx,
+        CatchSpacing.screenPt,
+        CatchSpacing.screenPx,
+        CatchSpacing.screenPb,
       ),
     );
     expect(
       CatchInsets.formStepBodyRelaxed,
       const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s4,
-        CatchSpacing.s5,
+        CatchSpacing.screenPx,
+        CatchSpacing.screenPt,
+        CatchSpacing.screenPx,
         CatchSpacing.s8,
       ),
     );
@@ -43,7 +43,7 @@ void main() {
         CatchSpacing.s5,
         CatchSpacing.s3,
         CatchSpacing.s5,
-        CatchSpacing.s6,
+        CatchSpacing.screenPb,
       ),
     );
     expect(

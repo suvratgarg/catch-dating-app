@@ -36,11 +36,11 @@ class MessageBubble extends StatelessWidget {
       context,
       color: isMe ? t.primaryInk : t.ink,
     );
-    final timestampStyle = CatchTextStyles.statusLabel(
+    final timestampStyle = CatchTextStyles.meta(
       context,
       color: isMe
-          ? t.primaryInk.withValues(alpha: CatchOpacity.primaryInkProminent)
-          : t.ink2,
+          ? t.primaryInk.withValues(alpha: CatchOpacity.onDarkMuted)
+          : t.ink3,
     );
 
     return Padding(

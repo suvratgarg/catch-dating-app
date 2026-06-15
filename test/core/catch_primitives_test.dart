@@ -1,30 +1,64 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/activity_art.dart';
+import 'package:catch_dating_app/core/widgets/activity_avatar.dart';
+import 'package:catch_dating_app/core/widgets/activity_chip.dart';
+import 'package:catch_dating_app/core/widgets/activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/async_value_widget.dart';
+import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
+import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
+import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
 import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_expanding_search.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
+import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_panel.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_card.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_viewport_curve_frame.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
+import 'package:catch_dating_app/core/widgets/detail_row.dart';
+import 'package:catch_dating_app/core/widgets/distance_ring.dart';
+import 'package:catch_dating_app/core/widgets/graded_image.dart';
+import 'package:catch_dating_app/core/widgets/icon_btn.dart';
+import 'package:catch_dating_app/core/widgets/info_group.dart';
+import 'package:catch_dating_app/core/widgets/info_row.dart';
+import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/settings_row.dart';
+import 'package:catch_dating_app/core/widgets/stat_column.dart';
+import 'package:catch_dating_app/core/widgets/stat_strip.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -62,6 +96,28 @@ void main() {
     expect(styles.map((style) => style.decoration).toSet(), {
       TextDecoration.none,
     });
+  });
+
+  testWidgets('CatchKicker renders uppercase mono eyebrow sizes', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchKicker(
+          label: 'Was at · Sundowner 5K',
+          color: Colors.red,
+          size: CatchKickerSize.lg,
+        ),
+      ),
+    );
+
+    final text = tester.widget<Text>(find.text('WAS AT · SUNDOWNER 5K'));
+    final context = tester.element(find.text('WAS AT · SUNDOWNER 5K'));
+    expect(text.style?.color, Colors.red);
+    expect(
+      text.style?.fontSize,
+      CatchTextStyles.kickerLg(context, color: Colors.red).fontSize,
+    );
   });
 
   test('CatchViewportCurveFrame derives top curve from safe area', () {
@@ -143,6 +199,140 @@ void main() {
     },
   );
 
+  testWidgets('CatchButton pairs primary activity accent with white ink', (
+    tester,
+  ) async {
+    const accent = Color(0xFF116466);
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchButton(
+          key: const ValueKey('accent-button'),
+          label: 'Run crew',
+          onPressed: () {},
+          accentColor: accent,
+        ),
+      ),
+    );
+
+    final buttonFinder = find.byKey(const ValueKey('accent-button'));
+    final buttonBox = tester.widget<DecoratedBox>(
+      find.descendant(of: buttonFinder, matching: find.byType(DecoratedBox)),
+    );
+    final buttonLabel = tester.widget<Text>(
+      find.descendant(of: buttonFinder, matching: find.text('Run crew')),
+    );
+    final decoration = buttonBox.decoration as BoxDecoration;
+
+    expect(decoration.color, accent);
+    expect(buttonLabel.style?.color, CatchTokens.editorialLight);
+  });
+
+  testWidgets('BottomCTA forwards activity accent to the primary button', (
+    tester,
+  ) async {
+    const accent = Color(0xFF116466);
+
+    await tester.pumpWidget(
+      _wrap(
+        BottomCTA(
+          label: 'Join event',
+          onPressed: () {},
+          buttonAccentColor: accent,
+        ),
+      ),
+    );
+
+    final button = tester.widget<CatchButton>(
+      find.widgetWithText(CatchButton, 'Join event'),
+    );
+    expect(button.accentColor, accent);
+  });
+
+  testWidgets('IconBtn renders handoff icon button variants', (tester) async {
+    var taps = 0;
+
+    await tester.pumpWidget(
+      _wrap(
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconBtn.icon(
+              key: const ValueKey('bordered-icon-button'),
+              icon: CatchIcons.search,
+              onTap: () => taps++,
+            ),
+            IconBtn.icon(
+              key: const ValueKey('active-icon-button'),
+              icon: CatchIcons.favoriteRounded,
+              active: true,
+              accent: CatchTokens.sunsetLight.danger,
+              onTap: () {},
+            ),
+            IconBtn.icon(
+              key: const ValueKey('float-icon-button'),
+              icon: CatchIcons.close,
+              variant: IconBtnVariant.float,
+              onTap: () {},
+            ),
+            IconBtn.icon(
+              key: const ValueKey('plain-icon-button'),
+              icon: CatchIcons.more,
+              variant: IconBtnVariant.plain,
+              disabled: true,
+              onTap: () => taps++,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final borderedFinder = find.byKey(const ValueKey('bordered-icon-button'));
+    final floatFinder = find.byKey(const ValueKey('float-icon-button'));
+    final plainFinder = find.byKey(const ValueKey('plain-icon-button'));
+    final tokens = CatchTokens.of(tester.element(borderedFinder));
+    final borderedBox = tester.widget<DecoratedBox>(
+      find.descendant(of: borderedFinder, matching: find.byType(DecoratedBox)),
+    );
+    final activeIconTheme = tester.widget<IconTheme>(
+      find
+          .ancestor(
+            of: find.byIcon(CatchIcons.favoriteRounded),
+            matching: find.byType(IconTheme),
+          )
+          .first,
+    );
+    final floatBox = tester.widget<DecoratedBox>(
+      find.descendant(of: floatFinder, matching: find.byType(DecoratedBox)),
+    );
+    final plainBox = tester.widget<DecoratedBox>(
+      find.descendant(of: plainFinder, matching: find.byType(DecoratedBox)),
+    );
+
+    final borderedDecoration = borderedBox.decoration as BoxDecoration;
+    final floatDecoration = floatBox.decoration as BoxDecoration;
+    final plainDecoration = plainBox.decoration as BoxDecoration;
+
+    expect(
+      tester.getSize(borderedFinder),
+      const Size.square(CatchLayout.iconButtonSize),
+    );
+    expect(borderedDecoration.color, tokens.surface);
+    expect((borderedDecoration.border! as Border).top.color, tokens.line2);
+    expect(activeIconTheme.data.color, CatchTokens.sunsetLight.danger);
+    expect(floatDecoration.color, isNot(tokens.surface));
+    expect(floatDecoration.boxShadow, CatchElevation.iconButtonFloat);
+    expect(plainDecoration.color, Colors.transparent);
+    expect(plainDecoration.border, isNull);
+
+    await tester.tap(find.byIcon(CatchIcons.search));
+    await tester.pump();
+    await tester.tap(find.byIcon(CatchIcons.more));
+    await tester.pump();
+
+    expect(taps, 1);
+  });
+
   testWidgets('CatchButton renders all catalog variants', (tester) async {
     await tester.pumpWidget(
       _wrap(
@@ -200,6 +390,76 @@ void main() {
 
     expect(find.text('Profile setup'), findsOneWidget);
     expect(find.text('2/5'), findsOneWidget);
+  });
+
+  testWidgets('CatchStepHeader renders AppBar anatomy and progress hairline', (
+    tester,
+  ) async {
+    var backTaps = 0;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchStepHeader(
+          title: 'Basics',
+          subtitle: 'South Bombay Runners',
+          kicker: 'Create event',
+          step: 2,
+          total: 5,
+          onBack: () => backTaps++,
+        ),
+      ),
+    );
+
+    final progress = tester.widget<FractionallySizedBox>(
+      find.descendant(
+        of: find.byType(CatchStepHeader),
+        matching: find.byType(FractionallySizedBox),
+      ),
+    );
+
+    expect(find.text('CREATE EVENT'), findsOneWidget);
+    expect(find.text('Basics'), findsOneWidget);
+    expect(find.text('South Bombay Runners'), findsOneWidget);
+    expect(find.text('STEP 2 OF 5'), findsOneWidget);
+    expect(find.byIcon(CatchIcons.arrowBackIosNewRounded), findsOneWidget);
+    expect(
+      tester
+          .getSize(
+            find.descendant(
+              of: find.byType(CatchStepHeader),
+              matching: find.byWidgetPredicate(
+                (widget) =>
+                    widget is SizedBox &&
+                    widget.height == CatchLayout.stepHeaderProgressHeight,
+              ),
+            ),
+          )
+          .height,
+      CatchLayout.stepHeaderProgressHeight,
+    );
+    expect(progress.widthFactor, 0.4);
+
+    await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
+    await tester.pump();
+
+    expect(backTaps, 1);
+  });
+
+  testWidgets('CatchStepFlowHeader keeps zero-based step compatibility', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchStepFlowHeader(
+          title: 'Schedule',
+          currentStep: 0,
+          totalSteps: 3,
+        ),
+      ),
+    );
+
+    expect(find.text('Schedule'), findsOneWidget);
+    expect(find.text('STEP 1 OF 3'), findsOneWidget);
   });
 
   testWidgets('CatchButton light variant stays legible in dark mode', (
@@ -286,6 +546,25 @@ void main() {
     expect(valueLeft, greaterThan(labelRight));
   });
 
+  testWidgets('CatchToggle emits the next value on tap', (tester) async {
+    bool? nextValue;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchToggle(
+          value: false,
+          semanticLabel: 'Push notifications',
+          onChanged: (value) => nextValue = value,
+        ),
+      ),
+    );
+
+    await tester.tap(find.byType(CatchToggle));
+    await tester.pump();
+
+    expect(nextValue, isTrue);
+  });
+
   testWidgets(
     'CatchOtpCodeField renders visible digits over one hidden input',
     (tester) async {
@@ -318,6 +597,61 @@ void main() {
       expect(find.text('7'), findsNothing);
     },
   );
+
+  testWidgets('CatchCodeInput renders handoff cells and active caret', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchCodeInput(length: 4, value: '12', active: 3, height: 72),
+      ),
+    );
+
+    final tokens = CatchTokens.of(tester.element(find.byType(CatchCodeInput)));
+    final activeCellFinder = find.descendant(
+      of: find.byKey(const ValueKey('code_digit_3')),
+      matching: find.byType(AnimatedContainer),
+    );
+    final activeCell = tester.widget<AnimatedContainer>(activeCellFinder);
+    final decoration = activeCell.decoration! as BoxDecoration;
+    final border = decoration.border! as Border;
+
+    expect(find.text('1'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const ValueKey('code_digit_3'))).height,
+      72,
+    );
+    expect(decoration.color, tokens.surface);
+    expect(
+      decoration.borderRadius,
+      BorderRadius.circular(CatchRadius.interactiveTile),
+    );
+    expect(border.top.color, tokens.ink);
+    expect(border.top.width, 1.5);
+    expect(
+      find.descendant(
+        of: find.byType(CatchCodeInput),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is SizedBox && widget.width == CatchLayout.otpDigitGap,
+        ),
+      ),
+      findsNWidgets(3),
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('code_digit_3')),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is SizedBox &&
+              widget.width == CatchLayout.otpCaretWidth &&
+              widget.height == CatchLayout.otpCaretHeight,
+        ),
+      ),
+      findsOneWidget,
+    );
+  });
 
   testWidgets('CatchRangeSlider hides tick marks while preserving divisions', (
     tester,
@@ -460,6 +794,23 @@ void main() {
         ),
       ),
     );
+
+    final chipFinder = find.byType(CatchChip);
+    final tokens = CatchTokens.of(tester.element(chipFinder));
+    final decoration =
+        tester
+                .widget<DecoratedBox>(
+                  find.descendant(
+                    of: chipFinder,
+                    matching: find.byType(DecoratedBox),
+                  ),
+                )
+                .decoration
+            as BoxDecoration;
+
+    expect(decoration.color, Colors.transparent);
+    expect(decoration.border?.top.color, tokens.ink);
+    expect(decoration.border?.top.width, 1.5);
 
     await tester.tap(find.text('Easy'));
     await tester.pump();
@@ -662,14 +1013,25 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const Wrap(
+        Wrap(
           children: [
-            CatchBadge(label: 'pending'),
-            CatchBadge(label: 'paid', tone: CatchBadgeTone.success),
-            CatchBadge(
+            const CatchBadge(label: 'pending'),
+            const CatchBadge(label: 'paid', tone: CatchBadgeTone.success),
+            const CatchBadge(
               label: 'live - 6h left',
               tone: CatchBadgeTone.live,
               uppercase: true,
+            ),
+            CatchBadge(
+              label: 'reward',
+              tone: CatchBadgeTone.gold,
+              icon: CatchIcons.rated,
+            ),
+            CatchBadge(
+              label: 'checked in',
+              size: CatchBadgeSize.action,
+              accentColor: Colors.deepPurple,
+              icon: CatchIcons.checkRounded,
             ),
           ],
         ),
@@ -679,6 +1041,497 @@ void main() {
     expect(find.text('pending'), findsOneWidget);
     expect(find.text('paid'), findsOneWidget);
     expect(find.text('LIVE - 6H LEFT'), findsOneWidget);
+    expect(find.text('reward'), findsOneWidget);
+    expect(find.text('checked in'), findsOneWidget);
+    expect(
+      tester.getSize(find.widgetWithText(CatchBadge, 'checked in')).height,
+      33,
+    );
+    expect(find.byIcon(CatchIcons.checkRounded), findsOneWidget);
+  });
+
+  testWidgets('ActivityChip renders soft and primary activity registers', (
+    tester,
+  ) async {
+    var taps = 0;
+
+    await tester.pumpWidget(
+      _wrap(
+        Wrap(
+          children: [
+            const ActivityChip(activityKind: ActivityKind.socialRun),
+            ActivityChip(
+              activityKind: ActivityKind.pickleball,
+              primary: true,
+              label: 'Primary court',
+              onTap: () => taps++,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    expect(find.text('Social run'), findsOneWidget);
+    expect(find.text('Primary court'), findsOneWidget);
+
+    await tester.tap(find.text('Primary court'));
+    await tester.pump();
+
+    expect(taps, 1);
+  });
+
+  testWidgets(
+    'ActivityAvatar renders activity initials, ring, and dim states',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const Wrap(
+            children: [
+              ActivityAvatar(
+                activityKind: ActivityKind.socialRun,
+                initials: 'SR',
+                ring: true,
+              ),
+              ActivityAvatar(
+                activityKind: ActivityKind.pickleball,
+                initials: 'PB',
+                size: 44,
+                dim: true,
+              ),
+            ],
+          ),
+        ),
+      );
+
+      expect(find.text('SR'), findsOneWidget);
+      expect(find.text('PB'), findsOneWidget);
+      expect(ActivityAvatar.initialsOf('Social run'), 'SR');
+    },
+  );
+
+  testWidgets('PersonAvatarStack renders initials, veils, and overflow', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const PersonAvatarStack(
+          items: [PersonAvatarItem(name: 'Asha Shah')],
+          totalCount: 4,
+          size: 42,
+          limit: 3,
+          veiledCount: 2,
+          activityKind: ActivityKind.yoga,
+        ),
+      ),
+    );
+
+    expect(find.text('AS'), findsOneWidget);
+    expect(find.byIcon(CatchIcons.personOutlined), findsNWidgets(2));
+    expect(find.text('+1'), findsOneWidget);
+  });
+
+  testWidgets('ActivityMapPin renders selected flag and activity pigment pin', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const ActivityMapPin(
+          activityKind: ActivityKind.socialRun,
+          selected: true,
+          label: 'SOCIAL RUN · 6:30 AM',
+        ),
+      ),
+    );
+
+    expect(find.text('SOCIAL RUN · 6:30 AM'), findsOneWidget);
+    expect(find.byIcon(CatchIcons.pin), findsOneWidget);
+  });
+
+  testWidgets('DistanceRing renders tappable map radius label', (tester) async {
+    var taps = 0;
+
+    await tester.pumpWidget(
+      _wrap(DistanceRing(label: 'WITHIN 3 KM', onTap: () => taps++)),
+    );
+
+    expect(find.text('WITHIN 3 KM'), findsOneWidget);
+
+    await tester.tap(find.text('WITHIN 3 KM'));
+    await tester.pump();
+
+    expect(taps, 1);
+  });
+
+  testWidgets('ActivityArt renders generated activity backdrop with child', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 220,
+          child: ActivityArt(
+            activityKind: ActivityKind.yoga,
+            dim: true,
+            child: Center(child: Text('Ticket meta')),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Ticket meta'), findsOneWidget);
+  });
+
+  testWidgets('StatStrip renders uppercase labeled data pairs', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 320,
+          child: StatStrip(
+            items: [
+              StatStripItem(value: '124', label: 'Members'),
+              StatStripItem(value: '3', label: 'Upcoming'),
+              StatStripItem(value: '4.7', label: 'Rating'),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('124'), findsOneWidget);
+    expect(find.text('MEMBERS'), findsOneWidget);
+    expect(find.text('UPCOMING'), findsOneWidget);
+    expect(find.text('RATING'), findsOneWidget);
+  });
+
+  testWidgets('InfoGroup injects InfoRow dividers and row variants', (
+    tester,
+  ) async {
+    var toggleValue = false;
+
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => InfoGroup(
+            title: 'Account',
+            first: true,
+            rows: [
+              InfoRow(
+                icon: CatchIcons.personOutlineRounded,
+                caption: 'Name',
+                label: 'Aanya',
+                trailing: InfoRowTrailing.chevron,
+                onTap: () {},
+              ),
+              const InfoRow(label: 'Add bio', add: true),
+              InfoRow(
+                label: 'Visible',
+                trailing: InfoRowTrailing.toggle,
+                toggleValue: toggleValue,
+                onToggleChanged: (value) => setState(() => toggleValue = value),
+              ),
+              InfoRow(
+                icon: CatchIcons.deleteOutline,
+                label: 'Delete account',
+                danger: true,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('ACCOUNT'), findsOneWidget);
+    expect(find.text('Name'), findsOneWidget);
+    expect(find.text('Aanya'), findsOneWidget);
+    expect(find.text('+ Add bio'), findsOneWidget);
+    expect(find.text('Delete account'), findsOneWidget);
+    expect(find.byType(CatchKicker), findsOneWidget);
+
+    await tester.tap(find.byType(CatchToggle));
+    await tester.pump();
+
+    expect(toggleValue, isTrue);
+  });
+
+  testWidgets('CatchDesignSection composes the shared kicker leaf', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchDesignSection(
+          kicker: 'Why you might click',
+          first: true,
+          child: Text('Body copy'),
+        ),
+      ),
+    );
+
+    expect(find.byType(CatchKicker), findsOneWidget);
+    expect(find.text('WHY YOU MIGHT CLICK'), findsOneWidget);
+    expect(find.text('Body copy'), findsOneWidget);
+  });
+
+  testWidgets('CatchSectionStack lets Section own the handoff rhythm', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchSectionStack(
+          children: [
+            CatchDesignSection(
+              kicker: 'First',
+              first: true,
+              child: Text('First body'),
+            ),
+            CatchDesignSection(kicker: 'Second', child: Text('Second body')),
+          ],
+        ),
+      ),
+    );
+
+    final stack = tester.widget<CatchSectionStack>(
+      find.byType(CatchSectionStack),
+    );
+
+    expect(stack.gap, 0);
+    expect(stack.padding, CatchInsets.pageBody);
+    expect(find.byType(Divider), findsNothing);
+    expect(find.text('SECOND'), findsOneWidget);
+  });
+
+  testWidgets('CatchScreenBody owns the scrolling page gutter', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(
+          body: SizedBox(
+            width: 320,
+            height: 480,
+            child: CatchScreenBody(
+              pt: CatchSpacing.s2,
+              pb: CatchSpacing.s8,
+              child: SizedBox(height: 900, child: Text('Body')),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final bodyFinder = find.byType(CatchScreenBody);
+    final padding = tester.widget<Padding>(
+      find.descendant(of: bodyFinder, matching: find.byType(Padding)).first,
+    );
+    final minHeight = tester.widget<ConstrainedBox>(
+      find
+          .descendant(of: bodyFinder, matching: find.byType(ConstrainedBox))
+          .first,
+    );
+
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
+    expect(
+      padding.padding,
+      const EdgeInsets.fromLTRB(
+        CatchSpacing.screenPx,
+        CatchSpacing.s2,
+        CatchSpacing.screenPx,
+        CatchSpacing.s8,
+      ),
+    );
+    expect(minHeight.constraints.minHeight, 480);
+  });
+
+  testWidgets('CatchScreenBody can drop the gutter without owning scroll', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchScreenBody(
+          gutter: false,
+          scrollable: false,
+          child: Text('Full bleed body'),
+        ),
+      ),
+    );
+
+    final padding = tester.widget<Padding>(
+      find
+          .descendant(
+            of: find.byType(CatchScreenBody),
+            matching: find.byType(Padding),
+          )
+          .first,
+    );
+
+    expect(find.byType(SingleChildScrollView), findsNothing);
+    expect(
+      padding.padding,
+      const EdgeInsets.fromLTRB(
+        CatchSpacing.s0,
+        CatchSpacing.screenPt,
+        CatchSpacing.s0,
+        CatchSpacing.screenPb,
+      ),
+    );
+  });
+
+  testWidgets('CatchDesignSection accents only a lead activity section', (
+    tester,
+  ) async {
+    late Color activityAccent;
+
+    await tester.pumpWidget(
+      _wrap(
+        Builder(
+          builder: (context) {
+            activityAccent = ActivityPalette.resolve(
+              context,
+              ActivityKind.socialRun,
+            ).accent;
+            return const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CatchDesignSection(
+                  kicker: 'The plan',
+                  activityKind: ActivityKind.socialRun,
+                  lead: true,
+                  first: true,
+                  child: Text('Lead body'),
+                ),
+                CatchDesignSection(
+                  kicker: 'Details',
+                  activityKind: ActivityKind.socialRun,
+                  child: Text('Neutral body'),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+
+    final lead = tester.widget<Text>(find.text('THE PLAN'));
+    final neutral = tester.widget<Text>(find.text('DETAILS'));
+    expect(lead.style?.color, activityAccent);
+    expect(neutral.style?.color, CatchTokens.sunsetLight.ink);
+  });
+
+  testWidgets('compact core atoms render with shared primitives', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 320,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CatchCornerSash(
+                label: 'Saved',
+                icon: CatchIcons.saved,
+                tone: CatchSashTone.success,
+              ),
+              gapH12,
+              CatchMetaDotRow(
+                entries: [
+                  CatchMetaEntry(
+                    label: 'Tonight',
+                    icon: CatchIcons.calendarTodayOutlined,
+                  ),
+                  const CatchMetaEntry(label: 'Bandra'),
+                ],
+                trailing: const CatchMetaEntry(label: '2.3 km'),
+              ),
+              gapH12,
+              const DetailRow(label: 'Payment ID', value: 'pay_123'),
+              gapH12,
+              const StatColumn(value: '24', label: 'members', center: true),
+              gapH12,
+              const GradedImage(
+                enabled: false,
+                child: SizedBox.square(
+                  dimension: 12,
+                  child: ColoredBox(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Saved'), findsOneWidget);
+    expect(find.text('Tonight'), findsOneWidget);
+    expect(find.text('Bandra'), findsOneWidget);
+    expect(find.text('2.3 km'), findsOneWidget);
+    expect(find.text('Payment ID'), findsOneWidget);
+    expect(find.text('pay_123'), findsOneWidget);
+    expect(find.text('24'), findsOneWidget);
+    expect(find.text('members'), findsOneWidget);
+    expect(find.byType(ListTile), findsNothing);
+  });
+
+  testWidgets('CatchStartupLoadingScreen shows branded loading state', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const CatchStartupLoadingScreen(),
+      ),
+    );
+
+    expect(find.bySemanticsLabel('Catch'), findsOneWidget);
+    expect(find.byType(CatchLoadingIndicator), findsOneWidget);
+  });
+
+  testWidgets('CatchStatusBar renders handoff light and surface states', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(const CatchStatusBar(time: '10:24', surface: true)),
+    );
+
+    final time = tester.widget<Text>(find.text('10:24'));
+    final surface = tester.widget<ColoredBox>(
+      find.descendant(
+        of: find.byType(CatchStatusBar),
+        matching: find.byType(ColoredBox),
+      ),
+    );
+    final iconTheme = tester.widget<IconTheme>(
+      find.descendant(
+        of: find.byType(CatchStatusBar),
+        matching: find.byType(IconTheme),
+      ),
+    );
+
+    expect(surface.color, CatchTokens.sunsetLight.surface);
+    expect(time.style?.fontSize, CatchLayout.statusBarTimeFontSize);
+    expect(time.style?.fontWeight, FontWeight.w700);
+    expect(time.style?.color, CatchTokens.sunsetLight.ink);
+    expect(iconTheme.data.color, CatchTokens.sunsetLight.ink);
+    expect(find.byIcon(CatchIcons.statusCellSignal), findsOneWidget);
+    expect(find.byIcon(CatchIcons.statusWifi), findsOneWidget);
+    expect(find.byIcon(CatchIcons.statusBattery), findsOneWidget);
+  });
+
+  testWidgets('CatchStatusBar renders paper ink on dark wow surfaces', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(const CatchStatusBar(tone: CatchStatusBarTone.dark)),
+    );
+
+    final time = tester.widget<Text>(find.text('9:41'));
+    final iconTheme = tester.widget<IconTheme>(
+      find.descendant(
+        of: find.byType(CatchStatusBar),
+        matching: find.byType(IconTheme),
+      ),
+    );
+
+    expect(time.style?.color, CatchTokens.sunsetDark.ink);
+    expect(iconTheme.data.color, CatchTokens.sunsetDark.ink);
   });
 
   testWidgets('CatchSurface supports padding, fixed size, and tap handling', (
@@ -707,6 +1560,109 @@ void main() {
     expect(tapped, isTrue);
   });
 
+  testWidgets('CatchPanel renders the handoff card surface', (tester) async {
+    await tester.pumpWidget(
+      _wrap(const CatchPanel(width: 240, child: Text('Panel content'))),
+    );
+
+    final panelSurface = tester.widget<CatchSurface>(find.byType(CatchSurface));
+    expect(find.text('Panel content'), findsOneWidget);
+    expect(panelSurface.width, 240);
+    expect(panelSurface.padding, CatchInsets.contentRelaxed);
+    expect(panelSurface.radius, CatchRadius.md);
+    expect(panelSurface.elevation, CatchSurfaceElevation.card);
+  });
+
+  testWidgets('CatchEmptyState defaults to the handoff quiet placeholder', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchEmptyState(
+          icon: CatchIcons.search,
+          title: 'Nothing here yet',
+          message: 'Try another filter or check back soon.',
+          action: CatchButton(label: 'Browse events', onPressed: () {}),
+        ),
+      ),
+    );
+
+    expect(find.byType(CatchSurface), findsNothing);
+
+    final icon = tester.widget<Icon>(find.byIcon(CatchIcons.search));
+    final title = tester.widget<Text>(find.text('Nothing here yet'));
+    final message = tester.widget<Text>(
+      find.text('Try another filter or check back soon.'),
+    );
+    final titleContext = tester.element(find.text('Nothing here yet'));
+    final messageContext = tester.element(
+      find.text('Try another filter or check back soon.'),
+    );
+
+    expect(icon.size, 34);
+    expect(icon.color, CatchTokens.sunsetLight.ink3);
+    expect(
+      title.style?.fontSize,
+      CatchTextStyles.sectionTitle(titleContext).fontSize,
+    );
+    expect(
+      message.style?.fontSize,
+      CatchTextStyles.bodyS(messageContext).fontSize,
+    );
+    expect(message.style?.color, CatchTokens.sunsetLight.ink2);
+    expect(find.text('Browse events'), findsOneWidget);
+  });
+
+  testWidgets('CatchBottomSheetScaffold renders the handoff plain sheet', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchBottomSheetScaffold(
+          title: 'Filters',
+          subtitle: 'Tune what shows up first.',
+          badge: '2',
+          badgeTone: CatchBadgeTone.gold,
+          action: CatchButton(label: 'Apply', onPressed: () {}),
+          child: const Text('Sheet body'),
+        ),
+      ),
+    );
+
+    expect(find.byType(BottomSheetGrabber), findsOneWidget);
+    expect(find.text('Filters'), findsOneWidget);
+    expect(find.text('Tune what shows up first.'), findsOneWidget);
+    expect(find.widgetWithText(CatchBadge, '2'), findsOneWidget);
+    expect(find.text('Sheet body'), findsOneWidget);
+    expect(find.text('Apply'), findsOneWidget);
+  });
+
+  testWidgets('CatchBottomSheetScaffold renders the branded sheet header', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchBottomSheetScaffold(
+          title: 'Set up payouts',
+          subtitle: 'Powered by Stripe',
+          glyph: CatchIcons.hostBadge,
+          trailing: const Text('Soon'),
+          grabber: false,
+          child: const Text('Stripe body'),
+        ),
+      ),
+    );
+
+    expect(find.byType(BottomSheetGrabber), findsNothing);
+    final glyph = tester.widget<Icon>(find.byIcon(CatchIcons.hostBadge));
+    expect(glyph.size, CatchLayout.sheetGlyphIconSize);
+    expect(glyph.color, CatchTokens.sunsetLight.primaryInk);
+    expect(find.text('Set up payouts'), findsOneWidget);
+    expect(find.text('Powered by Stripe'), findsOneWidget);
+    expect(find.text('Soon'), findsOneWidget);
+    expect(find.text('Stripe body'), findsOneWidget);
+  });
+
   testWidgets('CatchSectionCard renders sentence-case title and trailing', (
     tester,
   ) async {
@@ -726,6 +1682,7 @@ void main() {
     expect(find.text('28%'), findsOneWidget);
     expect(find.text('Section body'), findsOneWidget);
     expect(find.text('PROFILE STRENGTH'), findsNothing);
+    expect(find.byType(CatchPanel), findsOneWidget);
   });
 
   testWidgets('CatchFrameworkErrorView renders branded recovery UI', (
@@ -761,6 +1718,7 @@ void main() {
     );
 
     expect(find.text('Developer details'), findsOneWidget);
+    expect(find.byType(ExpansionTile), findsNothing);
     await tester.tap(find.text('Developer details'));
     await pumpFeatureUi(tester);
     expect(find.textContaining('Bad state: boom'), findsOneWidget);
@@ -1057,6 +2015,50 @@ void main() {
     );
   });
 
+  testWidgets('CatchTextField supports underline, trailing, and mono data', (
+    tester,
+  ) async {
+    final controller = TextEditingController(text: '42');
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 320,
+          child: CatchTextField(
+            label: 'Distance',
+            controller: controller,
+            variant: CatchTextFieldVariant.underline,
+            textAlign: TextAlign.center,
+            mono: true,
+            focused: true,
+            trailing: const Text('KM'),
+          ),
+        ),
+      ),
+    );
+
+    final editableText = tester.widget<EditableText>(find.byType(EditableText));
+    final shell = tester.widget<AnimatedContainer>(
+      find
+          .descendant(
+            of: find.byType(CatchTextField),
+            matching: find.byType(AnimatedContainer),
+          )
+          .first,
+    );
+    final decoration = shell.decoration! as BoxDecoration;
+    final border = decoration.border! as Border;
+
+    expect(find.text('KM'), findsOneWidget);
+    expect(editableText.textAlign, TextAlign.center);
+    expect(
+      editableText.style.fontFeatures,
+      contains(const FontFeature.tabularFigures()),
+    );
+    expect(border.bottom.width, CatchStroke.underline);
+  });
+
   testWidgets('CatchTextField compact pill centers hint and icon vertically', (
     tester,
   ) async {
@@ -1092,6 +2094,124 @@ void main() {
     );
   });
 
+  testWidgets('CatchSearchField renders pill search and clear behavior', (
+    tester,
+  ) async {
+    var query = 'tempo';
+    var submitted = '';
+    var focused = false;
+
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => CatchSearchField(
+            value: query,
+            placeholder: 'Search clubs',
+            semanticLabel: 'Search clubs',
+            onChanged: (value) => setState(() => query = value),
+            onSubmitted: (value) => submitted = value,
+            onFocusChanged: (value) => focused = value,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byIcon(CatchIcons.search), findsOneWidget);
+    expect(find.byIcon(CatchIcons.clearCircle), findsOneWidget);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      'tempo',
+    );
+
+    await tester.tap(find.byType(TextField));
+    await tester.pump();
+    expect(focused, isTrue);
+
+    await tester.enterText(find.byType(TextField), 'asha');
+    await tester.pump();
+    expect(query, 'asha');
+
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pump();
+    expect(submitted, 'asha');
+
+    await tester.tap(find.byIcon(CatchIcons.clearCircle));
+    await tester.pump();
+    expect(query, isEmpty);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      isEmpty,
+    );
+  });
+
+  testWidgets(
+    'CatchExpandingSearch opens, clears, and closes from the app bar slot',
+    (tester) async {
+      var query = 'tempo';
+      var opened = false;
+      var closed = false;
+
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) => SizedBox(
+              width: 280,
+              child: CatchExpandingSearch(
+                progress: 0,
+                maxWidth: 280,
+                value: query,
+                placeholder: 'Search clubs',
+                onChanged: (value) => setState(() => query = value),
+                onOpenSearch: () => opened = true,
+                onCloseSearch: () => closed = true,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(CatchSearchField), findsNothing);
+      expect(tester.getSize(find.byType(CatchExpandingSearch)).width, 280);
+      expect(find.byIcon(CatchIcons.search), findsOneWidget);
+
+      await tester.tap(find.byIcon(CatchIcons.search));
+      await tester.pump();
+      expect(opened, isTrue);
+
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) => SizedBox(
+              width: 280,
+              child: CatchExpandingSearch(
+                progress: 1,
+                maxWidth: 280,
+                value: query,
+                placeholder: 'Search clubs',
+                onChanged: (value) => setState(() => query = value),
+                onOpenSearch: () => opened = true,
+                onCloseSearch: () => closed = true,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(CatchSearchField), findsOneWidget);
+      expect(find.byIcon(CatchIcons.clearCircle), findsOneWidget);
+
+      await tester.tap(find.byIcon(CatchIcons.clearCircle));
+      await tester.pump();
+      expect(query, isEmpty);
+      expect(closed, isFalse);
+      expect(find.byIcon(CatchIcons.close), findsOneWidget);
+
+      await tester.tap(find.byIcon(CatchIcons.close));
+      await tester.pump();
+      expect(closed, isTrue);
+    },
+  );
+
   testWidgets('CatchDropdownField validates and reports selection changes', (
     tester,
   ) async {
@@ -1124,6 +2244,94 @@ void main() {
 
     expect(selected, cityOptionByName('mumbai')!);
     expect(formKey.currentState!.validate(), isTrue);
+  });
+
+  testWidgets('CatchMenu renders handoff rows and selection state', (
+    tester,
+  ) async {
+    String? selected;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchMenu<String>(
+          width: 220,
+          items: [
+            CatchMenuItem(
+              value: 'owner',
+              label: 'Owner club',
+              sublabel: 'OWNER',
+              icon: CatchIcons.hostBadge,
+              selected: true,
+            ),
+            CatchMenuItem(
+              value: 'delete',
+              label: 'Delete club',
+              icon: CatchIcons.deleteOutline,
+              danger: true,
+            ),
+          ],
+          onSelected: (value, _) => selected = value,
+        ),
+      ),
+    );
+
+    final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
+    expect(surface.width, 220);
+    expect(surface.radius, CatchRadius.md);
+    expect(surface.elevation, CatchSurfaceElevation.overlay);
+    expect(find.text('Owner club'), findsOneWidget);
+    expect(find.text('OWNER'), findsOneWidget);
+    expect(find.byIcon(CatchIcons.check), findsOneWidget);
+    expect(find.byType(Divider), findsOneWidget);
+
+    await tester.tap(find.text('Delete club'));
+    await tester.pump();
+
+    expect(selected, 'delete');
+  });
+
+  testWidgets('CatchActionMenu opens the shared handoff menu panel', (
+    tester,
+  ) async {
+    String? selected;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchActionMenu<String>(
+          tooltip: 'More actions',
+          items: [
+            CatchActionMenuItem(
+              value: 'active',
+              label: 'Active club',
+              sublabel: 'HOST',
+              icon: CatchIcons.hostBadge,
+              selected: true,
+            ),
+            CatchActionMenuItem(
+              value: 'remove',
+              label: 'Remove host',
+              icon: CatchIcons.deleteOutline,
+              isDestructive: true,
+            ),
+          ],
+          onSelected: (value) => selected = value,
+        ),
+      ),
+    );
+
+    await tester.tap(find.byTooltip('More actions'));
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(CatchMenu<String>), findsOneWidget);
+    expect(find.text('Active club'), findsOneWidget);
+    expect(find.text('HOST'), findsOneWidget);
+    expect(find.byIcon(CatchIcons.check), findsOneWidget);
+
+    await tester.tap(find.text('Remove host'));
+    await pumpFeatureUi(tester);
+
+    expect(selected, 'remove');
+    expect(find.byType(CatchMenu<String>), findsNothing);
   });
 
   testWidgets('CatchSelectMenu uses normal menu corners for pill triggers', (
