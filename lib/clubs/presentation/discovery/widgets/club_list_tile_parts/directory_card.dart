@@ -231,9 +231,8 @@ class _ClubLogoCrest extends StatelessWidget {
       ),
       child: ClipOval(
         child: logoUrl != null && logoUrl.isNotEmpty
-            ? Image.network(
+            ? CatchNetworkImage(
                 logoUrl,
-                fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => _ClubLogoFallback(club: club),
               )
             : _ClubLogoFallback(club: club),

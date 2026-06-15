@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
+import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/entities/reorderable_animation_config.dart';
@@ -180,9 +181,8 @@ class _OrderedPhotoTile extends StatelessWidget {
               if (photo.bytes != null)
                 Image.memory(photo.bytes!, fit: BoxFit.cover)
               else
-                Image.network(
+                CatchNetworkImage(
                   photo.imageUrl!,
-                  fit: BoxFit.cover,
                   errorBuilder: (_, _, _) => ColoredBox(
                     color: t.raised,
                     child: Center(

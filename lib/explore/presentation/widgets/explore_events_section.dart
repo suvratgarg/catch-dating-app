@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
+import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/graded_image.dart';
@@ -591,9 +592,8 @@ class _ExploreClubCover extends StatelessWidget {
       return ClubPolaroidArtwork(club: club, compact: compact);
     }
     return CatchGradedImage(
-      child: Image.network(
+      child: CatchNetworkImage(
         url,
-        fit: BoxFit.cover,
         errorBuilder: (_, _, _) =>
             ClubPolaroidArtwork(club: club, compact: compact),
       ),

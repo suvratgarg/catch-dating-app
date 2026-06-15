@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/activity_map_pin.dart';
+import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -379,10 +380,9 @@ class _EventDetailPhotoStripTile extends StatelessWidget {
               )
             : ColoredBox(
                 color: backgroundColor,
-                child: Image.network(
+                child: CatchNetworkImage(
                   photo!.thumbnailOrUrl,
                   key: ValueKey('event-photo-strip-image-$index'),
-                  fit: BoxFit.cover,
                   errorBuilder: (_, _, _) =>
                       Icon(icon, color: iconColor, size: CatchIcon.lg),
                 ),

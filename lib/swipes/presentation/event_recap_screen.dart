@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -358,7 +359,7 @@ class _ProfilePhoto extends StatelessWidget {
         child: Icon(CatchIcons.personRounded, size: CatchIcon.fallbackAvatar),
       );
     }
-    return Image.network(photoUrl, fit: BoxFit.cover);
+    return CatchNetworkImage(photoUrl);
   }
 }
 

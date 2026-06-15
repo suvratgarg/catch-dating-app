@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CatchPersonAvatarItem {
@@ -121,9 +122,8 @@ class CatchPersonAvatar extends StatelessWidget {
       avatar = _shell(
         size: innerSize,
         child: _obscureIfNeeded(
-          child: Image.network(
+          child: CatchNetworkImage(
             imageUrl!,
-            fit: BoxFit.cover,
             errorBuilder: (_, _, _) =>
                 _GradientPlaceholder(name: name, size: innerSize),
           ),

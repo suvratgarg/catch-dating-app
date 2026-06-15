@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
@@ -462,9 +463,8 @@ class _ClubPhotoStrip extends StatelessWidget {
                     borderRadius: BorderRadius.circular(CatchRadius.infoTile),
                     child: ColoredBox(
                       color: t.primarySoft,
-                      child: Image.network(
+                      child: CatchNetworkImage(
                         photos[index].thumbnailOrUrl,
-                        fit: BoxFit.cover,
                         errorBuilder: (_, _, _) => Icon(
                           CatchIcons.groupsOutlined,
                           color: t.ink2,

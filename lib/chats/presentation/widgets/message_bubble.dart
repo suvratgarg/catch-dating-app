@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -231,7 +232,7 @@ class _MediaMessageBody extends StatelessWidget {
               borderRadius: BorderRadius.circular(CatchRadius.md),
               child: AspectRatio(
                 aspectRatio: CatchAspectRatio.standardPhoto,
-                child: Image.network(
+                child: CatchNetworkImage(
                   imageUrl!,
                   fit: BoxFit.contain,
                   errorBuilder: (_, _, _) => const SizedBox.shrink(),

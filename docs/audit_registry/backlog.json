@@ -920,13 +920,13 @@
     {
       "id": "LIB-IMAGE-PRIMITIVE-001",
       "title": "Introduce CatchNetworkImage and migrate ~16 raw Image.network sites",
-      "status": "queued",
+      "status": "done",
       "area": "presentation,core",
       "priority": "medium",
       "rules": [
         "IMAGE-NETWORK-PRIMITIVE-001"
       ],
-      "summary": "Create a caching + decode-sized + errorBuilder network-image primitive and migrate the ~16 raw Image.network sites (person_avatar, profile_photo_editor, event_recap thumbnail, etc.).",
+      "summary": "DONE (analyze clean + tests green): added lib/core/widgets/catch_network_image.dart (CatchNetworkImage) as the single network-image seam \u2014 drop-in for Image.network with decode-sizing (cacheWidth/cacheHeight via explicit size or screen-width cap, ResizeImage), a default branded errorBuilder, and semanticLabel/loadingBuilder pass-through. Migrated all 16 raw Image.network sites; the 2 that lacked an errorBuilder (event_recap thumbnail, profile_photo_editor preview) now fail gracefully. When the redesigned image component lands it swaps in at this one seam.",
       "source": "deep_semantic_audit_2026-06"
     },
     {

@@ -142,6 +142,15 @@ Finder _exploreListScrollable() {
   );
 }
 
+/// Returns the network URL backing an [Image] widget, unwrapping the
+/// [ResizeImage] that [CatchNetworkImage] applies for decode-sizing.
+String? _networkImageUrl(Widget widget) {
+  if (widget is! Image) return null;
+  final image = widget.image;
+  final provider = image is ResizeImage ? image.imageProvider : image;
+  return provider is NetworkImage ? provider.url : null;
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
@@ -1066,21 +1075,13 @@ void main() {
       expect(find.text('4.8'), findsOneWidget); // title rating
       expect(
         find.byWidgetPredicate(
-          (widget) =>
-              widget is Image &&
-              widget.image is NetworkImage &&
-              (widget.image as NetworkImage).url ==
-                  'https://example.com/club-cover.jpg',
+          (widget) => _networkImageUrl(widget) == 'https://example.com/club-cover.jpg',
         ),
         findsWidgets,
       );
       expect(
         find.byWidgetPredicate(
-          (widget) =>
-              widget is Image &&
-              widget.image is NetworkImage &&
-              (widget.image as NetworkImage).url ==
-                  'https://example.com/club-logo.jpg',
+          (widget) => _networkImageUrl(widget) == 'https://example.com/club-logo.jpg',
         ),
         findsWidgets,
       );
