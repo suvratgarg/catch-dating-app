@@ -1005,19 +1005,6 @@
       "summary": "loadRepeatAttendeeCount scans the club's lifetime participation history per scorecard refresh; syncClubReviewStats does a full reviews read on every review write (incl ownerResponse-only edits); algoliaExploreIndex re-indexes every event on a club write; adminGetOverview paginates the whole Auth base twice. Add before/after diff guards + count() aggregations / bounded queries (may need Firestore indexes)."
     },
     {
-      "id": "BACKEND-INPUT-ID-VALIDATION-001",
-      "title": "Bound free-text + validate client-supplied ids/paths",
-      "status": "queued",
-      "area": "functions,contracts",
-      "priority": "medium",
-      "rules": [
-        "FN-INPUT-001",
-        "FN-AUTHZ-001"
-      ],
-      "source": "deep_semantic_audit_2026-06",
-      "summary": "occupation/company accept unbounded strings (projected to publicProfiles) \u2014 add maxLength in contracts + regen; createClub accepts an arbitrary client clubId that becomes the public slug; joinWaitlist marketingConversion doc id is the client analytics.eventId (cross-lead clobber). Validate/own these server-side."
-    },
-    {
       "id": "LIB-ORPHAN-ON-FAILURE-001",
       "title": "Guard create-then-upload / upload-then-write orphans",
       "status": "queued",
@@ -1162,6 +1149,16 @@
         "DESIGN-TOKENS-001"
       ],
       "summary": "Migrated all canonical 4-point Sizes.p* presentation/widget candidates to CatchSpacing.s*. The scanner now reports zero canonical candidates; fine-grained p2/p6/p10/p14/p18 compatibility helpers remain watch-only."
+    },
+    {
+      "id": "BACKEND-INPUT-ID-VALIDATION-001-DONE",
+      "title": "Bound free-text + validate client-supplied ids/paths",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-INPUT-001",
+        "FN-AUTHZ-001"
+      ],
+      "summary": "All three sub-items fixed: (1) occupation/company now bound to nullableShortText (maxLength 120) in contracts (users, public_profiles, update_user_profile patch) + regenerated Dart/TS validators; (2) createClub validates client-supplied clubId via assertSafeNewClubId (3-64 char lowercase URL slug) before it becomes the public path; (3) joinWaitlist keys the marketingConversion doc by waitlistRef.id (not the client analytics.eventId) so cross-lead clobber is impossible. Verified: functions build+lint clean, 332 functions tests + Dart schema/DTO contract tests green."
     }
   ]
 }

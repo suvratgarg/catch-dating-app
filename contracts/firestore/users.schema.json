@@ -195,11 +195,11 @@
       "x-catch-ownership": "client-writable"
     },
     "occupation": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/nullableString",
+      "$ref": "../shared/profile_common.schema.json#/definitions/nullableShortText",
       "x-catch-ownership": "client-writable"
     },
     "company": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/nullableString",
+      "$ref": "../shared/profile_common.schema.json#/definitions/nullableShortText",
       "x-catch-ownership": "client-writable"
     },
     "education": {

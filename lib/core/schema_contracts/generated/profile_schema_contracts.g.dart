@@ -660,12 +660,14 @@ const schemaUpdateUserProfileCallablePayloadSchema =
             'string',
             'null',
           ],
+          'maxLength': 120,
         },
         'company': <String, Object?>{
           'type': <Object?>[
             'string',
             'null',
           ],
+          'maxLength': 120,
         },
         'education': <String, Object?>{
           'type': <Object?>[

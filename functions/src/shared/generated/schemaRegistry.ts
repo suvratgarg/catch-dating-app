@@ -1248,6 +1248,7 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "string",
         "null"
       ],
+      "maxLength": 120,
       "x-catch-ownership": "client-writable"
     },
     "company": {
@@ -1255,6 +1256,7 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "string",
         "null"
       ],
+      "maxLength": 120,
       "x-catch-ownership": "client-writable"
     },
     "education": {
@@ -1900,6 +1902,7 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "string",
         "null"
       ],
+      "maxLength": 120,
       "x-catch-ownership": "trigger-owned"
     },
     "company": {
@@ -1907,6 +1910,7 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "string",
         "null"
       ],
+      "maxLength": 120,
       "x-catch-ownership": "trigger-owned"
     },
     "education": {
@@ -11561,13 +11565,15 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
           "type": [
             "string",
             "null"
-          ]
+          ],
+          "maxLength": 120
         },
         "company": {
           "type": [
             "string",
             "null"
-          ]
+          ],
+          "maxLength": 120
         },
         "education": {
           "type": [

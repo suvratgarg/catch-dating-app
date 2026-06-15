@@ -339,6 +339,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         'string',
         'null',
       ],
+      'maxLength': 120,
       'x-catch-ownership': 'trigger-owned',
     },
     'company': <String, Object?>{
@@ -346,6 +347,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         'string',
         'null',
       ],
+      'maxLength': 120,
       'x-catch-ownership': 'trigger-owned',
     },
     'education': <String, Object?>{

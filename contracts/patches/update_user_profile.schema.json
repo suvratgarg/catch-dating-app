@@ -186,10 +186,10 @@
           "$ref": "../shared/profile_common.schema.json#/definitions/heightCm"
         },
         "occupation": {
-          "$ref": "../shared/profile_common.schema.json#/definitions/nullableString"
+          "$ref": "../shared/profile_common.schema.json#/definitions/nullableShortText"
         },
         "company": {
-          "$ref": "../shared/profile_common.schema.json#/definitions/nullableString"
+          "$ref": "../shared/profile_common.schema.json#/definitions/nullableShortText"
         },
         "education": {
           "$ref": "../shared/profile_common.schema.json#/definitions/educationLevel"
