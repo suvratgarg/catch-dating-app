@@ -63,18 +63,17 @@ class PublicProfileRepository {
         () async {
           if (uids.isEmpty) return [];
 
-          final profiles = <PublicProfile>[];
-          final seen = <String>{};
-          for (final uid in uids) {
-            if (!seen.add(uid)) continue;
-
-            final doc = await _publicProfileRef(uid).get();
-            final profile = doc.data();
-            if (doc.exists && profile != null) {
-              profiles.add(profile);
-            }
-          }
-          return profiles;
+          // Keep per-document reads (public-profile rules evaluate block /
+          // deletion per doc id, which a whereIn query cannot), but fetch them
+          // in parallel instead of awaiting each one sequentially.
+          final uniqueUids = <String>{...uids}.toList(growable: false);
+          final docs = await Future.wait(
+            uniqueUids.map((uid) => _publicProfileRef(uid).get()),
+          );
+          return [
+            for (final doc in docs)
+              if (doc.exists && doc.data() != null) doc.data()!,
+          ];
         },
         context: const BackendErrorContext(
           service: BackendService.firestore,

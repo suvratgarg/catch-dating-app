@@ -11,6 +11,7 @@ import 'package:catch_dating_app/reviews/presentation/star_rating.dart';
 import 'package:catch_dating_app/reviews/presentation/write_review_controller.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Shows a bottom sheet for creating or editing a review.
@@ -193,6 +194,9 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
             maxLines: 3,
             hintText: 'Share your experience',
             textCapitalization: TextCapitalization.sentences,
+            // Mirror the backend review-comment maxLength so the user can't type
+            // past the limit and hit a server rejection on submit.
+            inputFormatters: [LengthLimitingTextInputFormatter(1000)],
           ),
           if (mutation.hasError) ...[
             gapH12,
