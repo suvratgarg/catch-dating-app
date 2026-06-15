@@ -1,16 +1,16 @@
 {
-  "version": "2.6.14",
-  "updated": "2026-05-26",
+  "version": "2.6.20",
+  "updated": "2026-06-15",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
-    "updated": "2026-05-19",
-    "command": "bash tool/widget_cleanup_scan.sh",
+    "updated": "2026-06-15",
+    "command": "bash tool/widget_cleanup_scan.sh --summary",
     "counts": {
-      "centralized_widget_timing": 32,
+      "centralized_widget_timing": 0,
       "async_unit_flush": 0,
-      "positional_widget_finders": 15,
-      "presentation_repository_reaches": 3,
+      "positional_widget_finders": 0,
+      "presentation_repository_reaches": 0,
       "catch_tokens_prop_drilling": 0,
       "raw_material_button_candidates": 0,
       "raw_text_input_candidates": 0,
@@ -23,43 +23,19 @@
       "raw_range_slider_candidates": 0,
       "raw_number_stepper_candidates": 0,
       "feature_tappable_candidates": 0,
-      "literal_sized_box_spacing_candidates": 160,
-      "raw_decorated_surface_candidates": 83,
-      "unstyled_text_candidates": 12,
-      "legacy_spacing_canonical_candidates": 11,
-      "fine_grained_spacing_compatibility": 25,
-      "presentation_plugin_imports": 1,
+      "literal_sized_box_spacing_candidates": 0,
+      "raw_decorated_surface_candidates": 0,
+      "unstyled_text_candidates": 0,
+      "legacy_spacing_canonical_candidates": 0,
+      "fine_grained_spacing_compatibility": 0,
+      "presentation_plugin_imports": 0,
       "raw_error_surface_candidates": 0
     },
     "notes": [
-      "The widget timing matches are the intentional centralized pumpFeatureUi helper plus two calendar test pumps queued for a later testability pass.",
-      "Feature tappable scanner now skips built-in labeled buttons, tooltipped controls, and tappables already wrapped in Semantics or Tooltip.",
-      "Fixed-white pill CTA scanner reports zero candidates after moving white CTA fills to CatchButtonVariant.light.",
-      "Raw range slider scanner reports zero candidates after moving age/pace sliders to CatchRangeSlider.",
-      "Raw number stepper scanner reports zero candidates after moving Create Run duration and Edit Profile height to CatchNumberStepper.",
-      "Raw Material/Cupertino button scanner reports zero candidates after moving text-only actions to CatchTextButton.",
-      "Raw text input scanner reports zero candidates after moving OTP entry to CatchOtpCodeField.",
-      "Profile bottom-sheet editor scanner reports zero candidates after moving normal Edit Profile field edits to inline expansion.",
-      "Profile inline chip-label scanner reports zero candidates after hiding repeated ChipField labels inside expanded profile tiles.",
-      "Profile inline chip Clear-action scanner reports zero candidates after moving nullable single-choice chip clearing to tap-selected-chip-again plus Done.",
-      "Profile stacked text-tile editor scanner reports zero candidates after moving normal text Profile rows to in-row value editing.",
-      "Profile stacked chip-tile editor scanner reports zero candidates after moving selected Profile chips into the row value slot and showing only available alternatives below.",
-      "Profile inline drawers now use ProfileInlineDisclosure/ProfileInlineAnimatedBody for shared open/close motion and dynamic body-height changes.",
-      "Profile inline drawers now preserve full width while animating vertical reveal/fade, preventing Cancel/Done action rows from sliding sideways. Shared inline editor panel owns profile editor padding, save errors, and action placement.",
-      "Profile row-owned text editors now use ProfileInlineEditableText so active text keeps the closed row style and icon-relative position with only cursor and text-width underline feedback.",
-      "The decorated-surface scanner includes the ProfileInlineEditableText underline AnimatedContainer; that is intentional primitive-local focus chrome, not a feature-local card/surface.",
-      "The decorated-surface scanner includes primitive-local avatar obscuring/hero texture chrome; those are intentional low-level visual effects, not feature-local replacement surfaces.",
-      "ChipField now enforces optionality for empty selections: optional fields may clear, required single-/multi-choice fields keep at least one selected value.",
-      "CatchChip now constrains long labels so inline chip editors do not need field-local overflow patches.",
-      "The 2026-05-08 scanner snapshot was taken in a dirty worktree with unrelated run-club draft UI changes; broad decorated-surface and unstyled-Text counts include that active work.",
-      "Review surface refactor kept raw button/input scans clean and reduced literal SizedBox spacing candidates to 178.",
-      "Literal SizedBox spacing, decorated surface, and unstyled Text scans are intentionally broad triage queues for focused feature batches, not automatic lint failures.",
-      "Legacy spacing scanner is split between canonical 4-point migration candidates and intentional fine-grained compatibility helpers.",
-      "Canonical spacing migration should be piecemeal and touch-driven.",
-      "Raw error-surface candidates are clean after the hard CatchErrorText removal and direct primitive migration.",
-      "Stream lifecycle watch audit on 2026-05-06 found only one-shot auth/payment protocol timeout usage, not Firestore snapshot listener timeouts.",
-      "Error UI watch audit on 2026-05-06 found no CatchErrorText regression and zero scanner raw error-surface candidates.",
-      "The 2026-05-19 release cleanup removed the remaining raw Material button candidate and unresolved feature tappable candidates. Remaining timing, positional finder, spacing, decorated-surface, unstyled-text, presentation repository, and plugin-import matches are broad audit queues, not release blockers by themselves."
+      "2026-06-15 live scanner reports zero matches across all widget cleanup categories.",
+      "2026-06-15 whole-project analyzer hygiene pass applied 65 dart fix changes across import ordering, redundant default arguments, and initializing formals; flutter analyze --no-fatal-infos now reports no issues.",
+      "Raw test timing calls now route through shared pumpFeatureUi/pumpFeatureUiFor helpers in manual QA, golden, and UI capture harnesses.",
+      "Definition catalog now reports zero consolidation candidates after local private-helper collision renames and centralizing duplicate date formats in AppTimeFormatters. See docs/audit_registry/consolidation_candidates.json."
     ]
   },
   "pending": [
@@ -341,6 +317,30 @@
       ]
     },
     {
+      "id": "PROFILE-GOLDEN-BASELINE-DRIFT-001",
+      "title": "Review and refresh profile golden baselines",
+      "status": "identified",
+      "area": "swipes,user_profile,goldens",
+      "priority": "medium",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "WIDGET-CATALOG-001",
+        "DOC-HYGIENE-001"
+      ],
+      "summary": "The 2026-06-15 pump-helper cleanup left golden harness behavior equivalent, but `flutter test test/goldens/profile_view_test.dart` fails with large profile baseline diffs. Visual inspection shows current renders include readable profile pill labels while checked-in masters still show blocked placeholder/redaction bars. Do not blindly update baselines; review the current profile surface, confirm the readable labels are intended, then regenerate the profile golden files with visual approval.",
+      "paths": [
+        "test/goldens/profile_view_test.dart",
+        "test/goldens/support/golden_pump.dart",
+        "test/goldens/baseline/profile_redesign.light.png",
+        "test/goldens/baseline/profile_redesign.dark.png",
+        "test/goldens/baseline/profile_redesign_dense_long_content.light.png",
+        "test/goldens/baseline/profile_redesign_dense_long_content.dark.png",
+        "test/goldens/baseline/profile_redesign_missing_photos_dynamic_type.light.png",
+        "test/goldens/baseline/profile_redesign_missing_photos_dynamic_type.dark.png",
+        "docs/public_profile_overhaul_tracker.md"
+      ]
+    },
+    {
       "id": "CELEBRATION-SOUND-001",
       "title": "Add optional sound to full-screen celebration moments",
       "status": "watch",
@@ -551,7 +551,7 @@
         "STREAM-LIFECYCLE-001",
         "PROVIDER-SEAM-001"
       ],
-      "summary": "Known Firestore listener lifecycle issues are resolved and this queue is now watch-only. Dashboard booked-runs and run-club streams no longer use idle Stream.timeout, and no remaining lib `.timeout` usage targets Firestore snapshot listeners. Home pauses booked-runs while inactive, AppShell no longer prewarms the Clubs list stream, Clubs/Catches/Chats/Profile tab roots gate screen-owned providers while inactive, run-club stream families are autoDispose, and route-owned providers for run detail, chat messages, match detail, payment history, and blocked users have auto-dispose tests. Keep shell-level streams only when they drive shell-wide UI such as auth, current user, connectivity, FCM, or unread badges. Future realtime streams must be auto-dispose, retained-tab gated, or explicitly documented as global/prewarmed with read-cost rationale.",
+      "summary": "Known Firestore listener lifecycle issues are resolved and this queue is now watch-only. Dashboard booked-runs and run-club streams no longer use idle Stream.timeout, and no remaining lib `.timeout` usage targets Firestore snapshot listeners. Home pauses booked-runs while inactive, AppShell no longer prewarms the Explore stream, Explore/Catches/Chats/Profile tab roots gate screen-owned providers while inactive, run-club stream families are autoDispose, and route-owned providers for run detail, chat messages, match detail, payment history, and blocked users have auto-dispose tests. Keep shell-level streams only when they drive shell-wide UI such as auth, current user, connectivity, FCM, or unread badges. Future realtime streams must be auto-dispose, retained-tab gated, or explicitly documented as global/prewarmed with read-cost rationale.",
       "paths": [
         "lib/core/presentation/app_shell_active_tab.dart",
         "lib/core/presentation/app_shell.dart",
@@ -645,7 +645,7 @@
         "DESIGN-PRIMITIVES-001",
         "WIDGET-TEST-001"
       ],
-      "summary": "The match preview contract is now backend-owned and the chat list uses one thread preview per match, but remaining follow-ups still need a focused pass: inspect and clean seeded duplicate match/message data for the active phone account, run device QA on the Chats list and thread, decide whether to replace the current matches-count badge with a real presence model or rename it, polish chat tile width/separators/surfaces against shared spacing primitives, keep the new-match horizontal rail queued for product implementation, and audit chat image/media moderation plus profile thumbnail backfill in real data. Do not treat synthetic duplicate data as a UI bug until Firestore documents and seed scripts are inspected.",
+      "summary": "The match preview contract is now backend-owned and the chat list uses one thread preview per match. The 2026-06-15 formatter cleanup moved chat tile relative timestamps onto AppTimeFormatters so match/chat presentation no longer owns direct intl date constructors. Remaining follow-ups still need focused passes: inspect and clean seeded duplicate match/message data for the active phone account, run device QA on the Chats list and thread, decide whether to replace the current matches-count badge with a real presence model or rename it, polish chat tile width/separators/surfaces against shared spacing primitives, keep the new-match horizontal rail queued for product implementation, and audit chat image/media moderation plus profile thumbnail backfill in real data. Do not treat synthetic duplicate data as a UI bug until Firestore documents and seed scripts are inspected.",
       "paths": [
         "lib/matches/presentation/chats_list_screen.dart",
         "lib/matches/presentation/widgets/chats_list.dart",

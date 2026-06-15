@@ -131,7 +131,7 @@ Each call below currently uses the light fallback; add `context: context` (all a
 | `lib/events/presentation/widgets/event_tiles/event_date_rail_card.dart` | 51 | add `context: context` |
 | `lib/events/presentation/widgets/event_tiles/event_compact_row.dart` | 35 | add `context: context` |
 | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart` | 196 | add `context: context` |
-| `lib/clubs/presentation/list/widgets/explore_event_type_browse_grid.dart` | 136 | add `context: context` |
+| `lib/explore/presentation/widgets/explore_event_type_browse_grid.dart` | 136 | add `context: context` |
 
 **DoD:** event/club cards show dark-aware activity colors when the system theme is dark.
 
@@ -352,8 +352,8 @@ historical implementation detail.
 6. **event_success** (`lib/event_success/**` + `docs/event_success.md`) — preserve the
    ceremony; re-grade to tokens.
 
-**Then retire dead sandboxes:** delete `lib/clubs/presentation/list/widgets/explore_concept/**` and
-its dev route in `lib/routing/` (`rg -n "explore_concept|ExploreConcept" lib/routing`), and any
+**Then retire dead sandboxes:** verify no `explore_concept/**` sandbox remains under the Explore
+feature and no dev route remains in `lib/routing/` (`rg -n "explore_concept|ExploreConcept" lib/routing`), plus any
 remaining `lib/labs/` not used as the re-skin proof. **DoD:** modernization backlog cleared; no
 placeholder-era screens; anti-drift gate green repo-wide.
 

@@ -275,7 +275,7 @@ absorber/injector pair and preview-card scroll bridge.
 | Surface | Direction |
 |---|---|
 | Home dashboard | Keep one `CustomScrollView` with `DashboardSliverHeader`; do not reintroduce Dashboard/Activity tabs without a product decision. |
-| Clubs list | Keep sliver-native. This remains the strongest mixed rail/list pattern. |
+| Explore | Keep sliver-native. This remains the strongest mixed event/club discovery pattern. |
 | Chats list | Keep sliver shell; make populated body sliver-native only if list scale or tests demand it. |
 | Event detail | Keep sliver-native because the collapsing hero justifies it. |
 | Club detail | Keep sliver-native with agenda-style event list. |
