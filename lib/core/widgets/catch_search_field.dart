@@ -146,22 +146,25 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                 if (value.text.isEmpty) {
                   if (widget.emptyTrailingIcon != null &&
                       widget.onEmptyTrailingPressed != null) {
-                    return IconButton(
-                      tooltip:
-                          widget.emptyTrailingTooltip ?? widget.placeholder,
-                      constraints: const BoxConstraints.tightFor(
-                        width: CatchLayout.searchFieldClearSize,
-                        height: CatchLayout.searchFieldClearSize,
+                    return SizedBox.square(
+                      dimension: CatchLayout.searchFieldClearSize,
+                      child: IconButton(
+                        tooltip:
+                            widget.emptyTrailingTooltip ?? widget.placeholder,
+                        padding: EdgeInsets.zero,
+                        style: IconButton.styleFrom(
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        icon: Icon(
+                          widget.emptyTrailingIcon,
+                          size: CatchLayout.searchFieldClearIconSize,
+                          color: t.ink3,
+                        ),
+                        onPressed: widget.enabled
+                            ? widget.onEmptyTrailingPressed
+                            : null,
                       ),
-                      padding: EdgeInsets.zero,
-                      icon: Icon(
-                        widget.emptyTrailingIcon,
-                        size: CatchLayout.searchFieldClearIconSize,
-                        color: t.ink3,
-                      ),
-                      onPressed: widget.enabled
-                          ? widget.onEmptyTrailingPressed
-                          : null,
                     );
                   }
 
@@ -170,19 +173,22 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                   );
                 }
 
-                return IconButton(
-                  tooltip: 'Clear ${widget.placeholder}',
-                  constraints: const BoxConstraints.tightFor(
-                    width: CatchLayout.searchFieldClearSize,
-                    height: CatchLayout.searchFieldClearSize,
+                return SizedBox.square(
+                  dimension: CatchLayout.searchFieldClearSize,
+                  child: IconButton(
+                    tooltip: 'Clear ${widget.placeholder}',
+                    padding: EdgeInsets.zero,
+                    style: IconButton.styleFrom(
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    icon: Icon(
+                      CatchIcons.clearCircle,
+                      size: CatchLayout.searchFieldClearIconSize,
+                      color: t.ink3,
+                    ),
+                    onPressed: widget.enabled ? _clear : null,
                   ),
-                  padding: EdgeInsets.zero,
-                  icon: Icon(
-                    CatchIcons.clearCircle,
-                    size: CatchLayout.searchFieldClearIconSize,
-                    color: t.ink3,
-                  ),
-                  onPressed: widget.enabled ? _clear : null,
                 );
               },
             ),

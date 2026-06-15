@@ -79,8 +79,8 @@ class BookingConflictSheet extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: CatchSurface(
-                  width: 52,
-                  height: 52,
+                  width: CatchLayout.eventDetailConflictMedallionExtent,
+                  height: CatchLayout.eventDetailConflictMedallionExtent,
                   radius: CatchRadius.pill,
                   backgroundColor: t.warning.withValues(
                     alpha: CatchOpacity.warningFill,
@@ -177,8 +177,8 @@ class _BookingConflictEventRow extends StatelessWidget {
       child: Row(
         children: [
           CatchSurface(
-            width: 38,
-            height: 38,
+            width: CatchLayout.eventDetailConflictEventGlyphExtent,
+            height: CatchLayout.eventDetailConflictEventGlyphExtent,
             radius: CatchRadius.sm,
             borderWidth: 0,
             gradient: visual == null

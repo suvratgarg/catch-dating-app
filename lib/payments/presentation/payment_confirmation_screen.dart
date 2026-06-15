@@ -156,7 +156,7 @@ class _CheckoutEventBackdrop extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
-          height: 230,
+          height: CatchLayout.paymentCheckoutBackdropHeight,
           child: DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -260,8 +260,8 @@ class _CheckoutSheet extends StatelessWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: CatchSurface(
-                width: 52,
-                height: 52,
+                width: CatchLayout.paymentCheckoutMedallionExtent,
+                height: CatchLayout.paymentCheckoutMedallionExtent,
                 radius: CatchRadius.pill,
                 backgroundColor: medallionFill,
                 borderWidth: 0,

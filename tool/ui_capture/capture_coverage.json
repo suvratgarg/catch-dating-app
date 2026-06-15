@@ -238,7 +238,14 @@
       "routeId": "hostCreateEventScreen",
       "status": "captured",
       "priority": "P1",
-      "captureIds": ["host_event_setup"],
+      "captureIds": [
+        "host_event_setup",
+        "host_create_basics",
+        "host_create_location",
+        "host_create_schedule",
+        "host_create_policy",
+        "host_create_guide"
+      ],
       "reason": "Host app create-event route owns the host event setup flow."
     },
     {

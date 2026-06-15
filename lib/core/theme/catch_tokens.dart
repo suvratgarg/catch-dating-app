@@ -1435,6 +1435,9 @@ abstract final class CatchLayout {
   static const double searchFieldIconGap = 10.0;
   static const double searchFieldClearSize = 32.0;
   static const double searchFieldClearIconSize = 16.0;
+  static const double toggleTrackWidth = 46.0;
+  static const double toggleTrackHeight = 28.0;
+  static const double toggleKnobExtent = 22.0;
   static const double menuRowVerticalPadding = 13.0;
   static const double menuRowGap = 10.0;
   static const double menuRowIconSize = 17.0;
@@ -1505,6 +1508,17 @@ abstract final class CatchLayout {
   static const double eventHeroBadgeExtent = 56.0;
   static const double eventHeroBadgeRadius = eventHeroBadgeExtent / 2;
   static const double eventHeroBadgeIconSize = 26.0;
+  static const double eventDetailTicketStubBandHeight = 72.0;
+  static const double eventDetailHintDotExtent = 7.0;
+  static const double eventDetailMapCardHeight = 126.0;
+  static const double eventDetailHairlineDividerHeight = 25.0;
+  static const double eventDetailItineraryTimeColumnWidth = 50.0;
+  static const double eventDetailItineraryRailColumnWidth = 20.0;
+  static const double eventDetailItineraryDotExtent = 9.0;
+  static const double eventDetailConflictMedallionExtent = 52.0;
+  static const double eventDetailConflictEventGlyphExtent = 38.0;
+  static const double paymentCheckoutBackdropHeight = 230.0;
+  static const double paymentCheckoutMedallionExtent = 52.0;
   static const double eventSuccessStageNavExtent = CatchSpacing.s12;
   static const double eventSuccessStageGlyphExtent = 88.0;
   static const double eventSuccessStageGlyphIconSize = CatchSpacing.s10;

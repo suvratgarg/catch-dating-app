@@ -36,8 +36,8 @@ class CatchToggle extends StatelessWidget {
               ? CatchOpacity.visible
               : CatchOpacity.disabledControl,
           child: SizedBox(
-            width: 46,
-            height: 28,
+            width: CatchLayout.toggleTrackWidth,
+            height: CatchLayout.toggleTrackHeight,
             child: DecoratedBox(
               decoration: BoxDecoration(
                 color: trackColor,
@@ -61,7 +61,9 @@ class CatchToggle extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: const SizedBox.square(dimension: 22),
+                    child: const SizedBox.square(
+                      dimension: CatchLayout.toggleKnobExtent,
+                    ),
                   ),
                 ),
               ),

@@ -30,7 +30,7 @@ class EventDetailTicketStubBand extends StatelessWidget {
     return ColoredBox(
       color: t.surface,
       child: SizedBox(
-        height: 72,
+        height: CatchLayout.eventDetailTicketStubBandHeight,
         child: Stack(
           children: [
             Column(
@@ -95,8 +95,8 @@ class EventDetailHintList extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 7),
             child: CatchSurface(
-              width: 7,
-              height: 7,
+              width: CatchLayout.eventDetailHintDotExtent,
+              height: CatchLayout.eventDetailHintDotExtent,
               radius: CatchRadius.pill,
               backgroundColor: activity.accent,
               borderWidth: 0,
@@ -185,7 +185,7 @@ class EventDetailMapCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(CatchRadius.md),
           onTap: canOpen ? onTap : null,
           child: Ink(
-            height: 126,
+            height: CatchLayout.eventDetailMapCardHeight,
             decoration: BoxDecoration(
               color: surfaceColor ?? activity.soft,
               border: Border.all(color: borderColor ?? t.line),
@@ -495,7 +495,11 @@ class _HairlineList extends StatelessWidget {
       children: [
         for (var index = 0; index < itemCount; index++) ...[
           if (index > 0)
-            Divider(color: dividerColor ?? t.line, height: 25, thickness: 1),
+            Divider(
+              color: dividerColor ?? t.line,
+              height: CatchLayout.eventDetailHairlineDividerHeight,
+              thickness: 1,
+            ),
           itemBuilder(context, index),
         ],
       ],
@@ -542,7 +546,7 @@ class _ItineraryRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 50,
+            width: CatchLayout.eventDetailItineraryTimeColumnWidth,
             child: Text(
               step.time,
               style: CatchTextStyles.mono(
@@ -552,14 +556,14 @@ class _ItineraryRow extends StatelessWidget {
             ),
           ),
           SizedBox(
-            width: 20,
+            width: CatchLayout.eventDetailItineraryRailColumnWidth,
             child: Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 3),
                   child: CatchSurface(
-                    width: 9,
-                    height: 9,
+                    width: CatchLayout.eventDetailItineraryDotExtent,
+                    height: CatchLayout.eventDetailItineraryDotExtent,
                     radius: CatchRadius.pill,
                     backgroundColor: dotBackgroundColor ?? t.surface,
                     borderColor: accent,

@@ -149,6 +149,7 @@ class _WhoIsGoingContent extends ConsumerWidget {
             activityKind: event.activityKind,
             size: 44,
             limit: 7,
+            obscured: event.isUpcoming,
             showOverflowCount: true,
           ),
           gapH12,

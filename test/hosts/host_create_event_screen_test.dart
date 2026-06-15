@@ -258,9 +258,17 @@ void main() {
         findsOneWidget,
       );
       expect(find.textContaining('3 teams'), findsNothing);
+      expect(find.text('Advanced', skipOffstage: false), findsOneWidget);
+      expect(
+        find.text(
+          'Optional extras you opt into intentionally.',
+          skipOffstage: false,
+        ),
+        findsOneWidget,
+      );
       expect(
         find.text('Match clue questions', skipOffstage: false),
-        findsOneWidget,
+        findsNothing,
       );
       expect(
         find.text('"Help me say hi" requests', skipOffstage: false),
@@ -1050,7 +1058,7 @@ void main() {
         find.byKey(CreateEventFormKeys.deleteDraft('delete-draft')),
       );
       await _pumpTestAnimation(tester);
-      await tester.tap(find.widgetWithText(TextButton, 'Delete'));
+      await tester.tap(_dialogAction('Delete'));
       await _pumpTestAnimation(tester);
 
       final remainingDrafts = await draftRepository.loadDrafts(
@@ -1213,16 +1221,6 @@ Future<void> _submitValidEvent(WidgetTester tester) async {
 
   await _enterCreateEventText(tester, CreateEventFormKeys.capacity, '18');
   await _enterCreateEventText(tester, CreateEventFormKeys.price, '249.5');
-  final cohortCapsToggle = find.byKey(
-    CreateEventFormKeys.cohortCapsToggle,
-    skipOffstage: false,
-  );
-  await tester.ensureVisible(cohortCapsToggle);
-  await tester.pump();
-  await tester.tap(cohortCapsToggle);
-  await _pumpTestAnimation(tester);
-  await _enterCreateEventText(tester, CreateEventFormKeys.maxMen, '9');
-  await _enterCreateEventText(tester, CreateEventFormKeys.maxWomen, '9');
   await _enterCreateEventText(tester, CreateEventFormKeys.minAge, '21');
   await _enterCreateEventText(tester, CreateEventFormKeys.maxAge, '35');
   await _pumpTestAnimation(tester);

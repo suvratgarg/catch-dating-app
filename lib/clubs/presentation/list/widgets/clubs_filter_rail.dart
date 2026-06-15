@@ -140,6 +140,7 @@ class _ExploreFilterSheet extends ConsumerWidget {
 Future<void> _showExploreFilterSheet(BuildContext context) {
   return showModalBottomSheet<void>(
     context: context,
+    isScrollControlled: true,
     useSafeArea: true,
     backgroundColor: Colors.transparent,
     builder: (_) => const _ExploreFilterSheet(),
