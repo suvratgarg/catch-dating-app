@@ -1,14 +1,17 @@
 import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_clubs_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
@@ -131,6 +134,7 @@ class DashboardFullSliverBody extends ConsumerWidget {
               if (followedClubIds.isNotEmpty)
                 DashboardClubsRail(clubIds: followedClubIds),
               ..._buildRecommendedEventsSection(
+                ref: ref,
                 recommendationsSection: viewModel.recommendationsSection,
               ),
             ],
@@ -141,6 +145,7 @@ class DashboardFullSliverBody extends ConsumerWidget {
   }
 
   List<Widget> _buildRecommendedEventsSection({
+    required WidgetRef ref,
     required DashboardSectionModel<List<DashboardEventRecommendation>>
     recommendationsSection,
   }) {
@@ -153,10 +158,14 @@ class DashboardFullSliverBody extends ConsumerWidget {
       ];
     }
 
-    if (recommendationsSection.hasError) {
-      return const [
-        _DashboardSectionStateCard(
-          message: 'Unable to load recommended events.',
+    final error = recommendationsSection.error;
+    if (error != null) {
+      return [
+        CatchInlineErrorState.fromError(
+          error,
+          context: AppErrorContext.dashboard,
+          compact: true,
+          onRetry: () => ref.invalidate(dashboardRecommendedEventsProvider),
         ),
       ];
     }

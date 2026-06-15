@@ -83,33 +83,6 @@ class EventClockMark extends StatelessWidget {
   }
 }
 
-class EventCapacityProgress extends StatelessWidget {
-  const EventCapacityProgress({
-    super.key,
-    required this.color,
-    required this.value,
-    this.minHeight = 5,
-  });
-
-  final Color color;
-  final double value;
-  final double minHeight;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(CatchRadius.pill),
-      child: LinearProgressIndicator(
-        minHeight: minHeight,
-        value: value,
-        color: color,
-        backgroundColor: t.line,
-      ),
-    );
-  }
-}
-
 enum EventStatusPillTone { soft, dark }
 
 class EventStatusPill extends StatelessWidget {

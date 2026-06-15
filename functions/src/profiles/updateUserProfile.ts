@@ -63,6 +63,10 @@ export async function updateUserProfileHandler(
 ): Promise<{updated: boolean}> {
   const uid = requireAuth(request);
   const {fields} = validateUpdateUserProfilePayload(request.data);
+  // storagePath/thumbnailStoragePath are client-supplied and are later used as
+  // admin-SDK deletion targets (here and in account deletion), so a path
+  // outside the caller's own users/{uid}/ prefix must never be accepted.
+  assertProfilePhotoStoragePathsOwned(uid, fields.profilePhotos);
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "updateUserProfile");
 
@@ -104,6 +108,39 @@ export async function updateUserProfileHandler(
   }
 
   return {updated: true};
+}
+
+/**
+ * Rejects profile photos whose Storage paths fall outside the caller's own
+ * users/{uid}/ prefix. These paths are persisted verbatim and later deleted via
+ * the admin SDK, so accepting a foreign path would allow cross-user Storage
+ * deletion.
+ * @param {string} uid Authenticated owner uid.
+ * @param {unknown} photos Candidate profilePhotos patch value.
+ */
+function assertProfilePhotoStoragePathsOwned(
+  uid: string,
+  photos: unknown
+): void {
+  if (!Array.isArray(photos)) return;
+  const isOwnedPathOrEmpty = (value: unknown): boolean => {
+    if (value === undefined || value === null) return true;
+    if (typeof value !== "string") return false;
+    const trimmed = value.trim();
+    return trimmed.length === 0 || trimmed.startsWith(`users/${uid}/`);
+  };
+  for (const photo of photos) {
+    if (!isRecord(photo)) continue;
+    if (
+      !isOwnedPathOrEmpty(photo.storagePath) ||
+      !isOwnedPathOrEmpty(photo.thumbnailStoragePath)
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        "Profile photo storage paths must belong to your own account."
+      );
+    }
+  }
 }
 
 /**

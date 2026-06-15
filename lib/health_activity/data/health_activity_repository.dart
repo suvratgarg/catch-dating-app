@@ -42,10 +42,14 @@ class HealthActivityRepository {
 
     final permission = await _client.hasActivityReadPermission();
     final requestedBefore = await _hasRequestedActivityPermission();
-    final shouldFetch =
-        permission == true ||
-        (capabilities.platform == HealthActivityPlatform.appleHealth &&
-            requestedBefore);
+    // HealthKit reports the auth dialog *closing* as success even when the user
+    // denied READ access, so on Apple Health we can only infer permission from
+    // "requested before" — never trust it as a confirmed connection.
+    final hasInferredApplePermission =
+        permission != true &&
+        capabilities.platform == HealthActivityPlatform.appleHealth &&
+        requestedBefore;
+    final shouldFetch = permission == true || hasInferredApplePermission;
     if (!shouldFetch) {
       return WeeklyActivitySnapshot.permissionRequired(
         referenceDate: now,
@@ -61,6 +65,17 @@ class HealthActivityRepository {
         startTime: weekStart,
         endTime: weekEnd,
       );
+      if (activities.isEmpty && hasInferredApplePermission) {
+        // An empty result under inferred (unconfirmed) Apple permission most
+        // likely means the user never actually granted READ access, not that
+        // they had no activity. Re-surface the connect CTA so they aren't
+        // stranded on a permanently-empty "connected" card.
+        return WeeklyActivitySnapshot.permissionRequired(
+          referenceDate: now,
+          platformLabel: capabilities.platformLabel,
+          refreshedAt: refreshedAt,
+        );
+      }
       return WeeklyActivitySnapshot.connected(
         referenceDate: now,
         platformLabel: capabilities.platformLabel,

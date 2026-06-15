@@ -100,9 +100,9 @@ void main() {
       final tags = emotionalRunTagsForProfile(profile);
 
       expect(tags.map((tag) => tag.label), [
-        'Events for headspace',
+        'Runs for headspace',
         'Social miles',
-        'Long-event person',
+        'Long-run person',
         'Easy miles',
       ]);
       expect(tags.first.source, EmotionalRunTagSource.selected);
@@ -157,7 +157,7 @@ void main() {
       expect(reasons.map((reason) => reason.label), [
         'You met at Thursday Morning Event',
         'You are both looking for long-term relationship',
-        'You both event for community',
+        'You both run for community',
       ]);
     });
 

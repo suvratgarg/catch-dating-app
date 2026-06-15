@@ -9,6 +9,8 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -71,10 +73,11 @@ class _RichShareCardSheetState extends State<RichShareCardSheet> {
         text: widget.text,
         origin: origin,
       );
-    } on Object {
+    } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to share this card.')),
+      showCatchErrorSnackBar(
+        context,
+        ExternalActionException('Unable to share this card.', cause: error),
       );
     } finally {
       if (mounted) setState(() => _sharing = false);

@@ -139,7 +139,7 @@ void main() {
         [
           'You met at Friday Evening Event',
           'You both want new friends',
-          'You both event to make friends',
+          'You both run to make friends',
         ],
       );
     });

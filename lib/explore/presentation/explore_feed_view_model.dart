@@ -429,6 +429,11 @@ final exploreFeedViewModelProvider = Provider<AsyncValue<ExploreFeedViewModel>>(
         : ref.watch(
             watchEventsByIdsProvider(EventsByIdQuery(searchResult.eventIds)),
           );
+    // Personal event enrichment (out-of-city joined/saved events) is
+    // intentionally non-blocking: the feed renders immediately from in-city
+    // discovery and personal events stream in progressively, degrading
+    // gracefully if that secondary query is slow or fails. Search results, by
+    // contrast, are the primary content and must block/surface errors.
     if (searchEventsAsync.isLoading) return const AsyncLoading();
     if (searchEventsAsync.hasError) {
       return AsyncError(

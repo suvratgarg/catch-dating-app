@@ -122,15 +122,15 @@ String _relationshipGoalReason(RelationshipGoal goal) {
 String _runningReasonCompatibilityLabel(List<RunReason> reasons) {
   if (reasons.length == 1) {
     return switch (reasons.single) {
-      RunReason.social => 'You both event to make friends',
-      RunReason.fitness => 'You both event to stay fit',
-      RunReason.challenge => 'You both event to push limits',
-      RunReason.community => 'You both event for community',
-      RunReason.mindfulness => 'You both event for headspace',
-      RunReason.weightLoss => 'You both event for fitness goals',
-      RunReason.raceTraining => 'You both event for race training',
+      RunReason.social => 'You both run to make friends',
+      RunReason.fitness => 'You both run to stay fit',
+      RunReason.challenge => 'You both run to push limits',
+      RunReason.community => 'You both run for community',
+      RunReason.mindfulness => 'You both run for headspace',
+      RunReason.weightLoss => 'You both run for fitness goals',
+      RunReason.raceTraining => 'You both run for race training',
     };
   }
 
-  return 'You both event for ${_joinLabels(reasons.map((reason) => reason.label.toLowerCase()))}';
+  return 'You both run for ${_joinLabels(reasons.map((reason) => reason.label.toLowerCase()))}';
 }

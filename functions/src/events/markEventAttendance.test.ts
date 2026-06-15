@@ -49,6 +49,15 @@ class FakeFirestore {
     return new FakeBatch(this);
   }
 
+  async runTransaction<T>(
+    updateFn: (tx: FakeTransaction) => Promise<T>
+  ): Promise<T> {
+    const tx = new FakeTransaction(this);
+    const result = await updateFn(tx);
+    tx.commit();
+    return result;
+  }
+
   get(path: string): FakeData | undefined {
     const data = this.docs[path];
     return data === undefined ? undefined : {...data};
@@ -73,6 +82,28 @@ class FakeBatch {
   }
 
   async commit(): Promise<void> {
+    for (const write of this.writes) write();
+  }
+}
+
+class FakeTransaction {
+  private readonly writes: Array<() => void> = [];
+
+  constructor(private readonly firestore: FakeFirestore) {}
+
+  async get(ref: FakeDocRef): Promise<FakeSnapshot> {
+    return new FakeSnapshot(this.firestore.get(ref.path));
+  }
+
+  update(ref: FakeDocRef, data: FakeData): void {
+    this.writes.push(() => this.firestore.merge(ref.path, data));
+  }
+
+  set(ref: FakeDocRef, data: FakeData): void {
+    this.writes.push(() => this.firestore.merge(ref.path, data));
+  }
+
+  commit(): void {
     for (const write of this.writes) write();
   }
 }

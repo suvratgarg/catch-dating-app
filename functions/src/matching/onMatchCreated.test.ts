@@ -25,6 +25,15 @@ class FakeDocRef {
   async set(data: FakeData): Promise<void> {
     this.firestore.set(this.path, data);
   }
+
+  async create(data: FakeData): Promise<void> {
+    if (this.firestore.get(this.path) !== undefined) {
+      const error = new Error("ALREADY_EXISTS") as Error & {code: number};
+      error.code = 6;
+      throw error;
+    }
+    this.firestore.set(this.path, data);
+  }
 }
 
 class FakeSnapshot {
@@ -196,5 +205,20 @@ test("onMatchCreatedHandler propagates demo metadata to notifications",
         synthetic: true,
       }
     );
+  }
+);
+
+test(
+  "onMatchCreatedHandler sends the match push only once across redeliveries",
+  async () => {
+    const h = harness();
+
+    await onMatchCreatedHandler(event(), h.deps);
+    assert.equal(h.notifications.length, 2);
+
+    // Simulate an at-least-once redelivery of the same match event: the
+    // activity notifications re-set idempotently, but the push must not repeat.
+    await onMatchCreatedHandler(event(), h.deps);
+    assert.equal(h.notifications.length, 2);
   }
 );

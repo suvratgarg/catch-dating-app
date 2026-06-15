@@ -13,6 +13,7 @@ import {
   setActivityNotification,
 } from "../shared/notifications";
 import {demoMetadataFromSources} from "../shared/demoMetadata";
+import {withEventReceipt} from "../shared/eventReceipts";
 import {buildMatchSignalFacts} from "../marketplace/signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,
@@ -129,21 +130,35 @@ export async function onMatchCreatedHandler(
 
   if (pushTargets.length === 0) return;
 
-  logger.info("Sending match notifications", {
-    matchId,
-    tokenCount: pushTargets.length,
-  });
-
-  await Promise.allSettled(
-    pushTargets.map((target) =>
-      deps.sendNotification({
-        token: target.token,
-        title: "It's a catch",
-        body: target.body,
-        type: "match",
+  // Guard the push behind an event receipt: this trigger is at-least-once, and
+  // the activity notifications above are idempotent (deterministic id), but a
+  // redelivery would otherwise re-send the match push.
+  await withEventReceipt(
+    db,
+    {
+      receiptId: `onMatchCreated_${matchId}`,
+      handler: "onMatchCreated",
+      matchId,
+      eventId: latestEventId,
+    },
+    async () => {
+      logger.info("Sending match notifications", {
         matchId,
-      })
-    )
+        tokenCount: pushTargets.length,
+      });
+
+      await Promise.allSettled(
+        pushTargets.map((target) =>
+          deps.sendNotification({
+            token: target.token,
+            title: "It's a catch",
+            body: target.body,
+            type: "match",
+            matchId,
+          })
+        )
+      );
+    }
   );
 }
 

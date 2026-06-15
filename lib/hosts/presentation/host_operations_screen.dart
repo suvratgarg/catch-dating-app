@@ -684,11 +684,18 @@ class _HostProfileMissingState extends ConsumerWidget {
               CatchButton(
                 label: 'Create host profile',
                 icon: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
-                onPressed: () => unawaited(
-                  ref
-                      .read(hostProfileRepositoryProvider)
-                      .ensureHostProfile(uid: uid, displayName: 'Catch Host'),
-                ),
+                onPressed: () async {
+                  try {
+                    await ref
+                        .read(hostProfileRepositoryProvider)
+                        .ensureHostProfile(
+                          uid: uid,
+                          displayName: 'Catch Host',
+                        );
+                  } catch (error) {
+                    if (context.mounted) showCatchErrorSnackBar(context, error);
+                  }
+                },
               ),
             ],
           ),

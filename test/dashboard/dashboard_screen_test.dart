@@ -551,7 +551,10 @@ void main() {
 
         await tester.pump();
 
-        expect(find.text('Unable to load your recent events.'), findsOneWidget);
+        // Errors now route through the canonical CatchInlineErrorState with
+        // mapped copy + retry (ERROR-UI-002), not a fixed hidden message.
+        expect(find.text('Dashboard unavailable'), findsOneWidget);
+        expect(find.text('Try again'), findsOneWidget);
       },
     );
 
@@ -636,7 +639,10 @@ void main() {
         );
         await _pumpDashboardUi(tester);
 
-        expect(find.text('Unable to load recommended events.'), findsOneWidget);
+        // Recommendations load failures now surface the canonical
+        // CatchInlineErrorState with mapped copy + retry (ERROR-UI-002).
+        expect(find.text('Dashboard unavailable'), findsOneWidget);
+        expect(find.text('Try again'), findsOneWidget);
       },
     );
 

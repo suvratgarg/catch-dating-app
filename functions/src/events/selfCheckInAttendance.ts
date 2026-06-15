@@ -216,18 +216,26 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
 
   // ── 5. Mark attendance ──────────────────────────────────────────────────
 
-  const batch = db.batch();
-  batch.update(eventRef, {
-    checkedInCount: admin.firestore.FieldValue.increment(1),
+  // Re-read the status and apply the count delta in one transaction so
+  // concurrent or retried self-check-ins only increment on the
+  // signedUp -> attended edge (idempotent; no double-count).
+  await db.runTransaction(async (tx) => {
+    const currentSnap = await tx.get(participationRef);
+    const currentStatus = currentSnap.exists ?
+      (currentSnap.data() as {status?: string}).status :
+      undefined;
+    if (currentStatus === "attended") return;
+    tx.update(eventRef, {
+      checkedInCount: admin.firestore.FieldValue.increment(1),
+    });
+    tx.set(participationRef, eventParticipationPatch({
+      exists: currentSnap.exists,
+      eventId,
+      clubId: event.clubId,
+      uid: userId,
+      status: "attended",
+    }), {merge: true});
   });
-  batch.set(participationRef, eventParticipationPatch({
-    exists: participationSnap.exists,
-    eventId,
-    clubId: event.clubId,
-    uid: userId,
-    status: "attended",
-  }), {merge: true});
-  await batch.commit();
   await incrementInviteLinkCounterBestEffort({
     db,
     inviteLinkId: existingParticipation?.inviteLinkId,

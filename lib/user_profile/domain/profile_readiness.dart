@@ -39,7 +39,11 @@ extension UserProfileReadiness on UserProfile {
     final answeredPromptIds = normalizeProfilePromptAnswers(
       profilePrompts,
     ).map((answer) => answer.promptId).toSet();
-    return defaultProfilePromptIds.every(answeredPromptIds.contains);
+    // The prompts UI lets users freely swap any default slot for another
+    // catalog prompt, so readiness requires N distinct answered prompts rather
+    // than the specific default ids — otherwise choosing a non-default prompt
+    // soft-locks profile completion (the router redirect never resolves).
+    return answeredPromptIds.length >= maxProfilePromptAnswers;
   }
 }
 

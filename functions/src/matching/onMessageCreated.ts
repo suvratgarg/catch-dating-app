@@ -18,6 +18,7 @@ import {
 import {
   refreshEventSuccessScorecard,
 } from "../marketplace/eventSuccessScorecards";
+import {moderateText} from "../moderation/textFilter";
 
 interface MessageCreatedEvent {
   id?: string;
@@ -59,6 +60,14 @@ export async function onMessageCreatedHandler(
   const message = event.data?.data() as ChatMessageDocument | undefined;
   if (!message) return;
 
+  // Never surface blocked content through the push or the denormalized
+  // lastMessagePreview. moderateChatMessage redacts the stored message on a
+  // separate (racing) trigger, so the push/preview must redact independently.
+  const displayMessage =
+    message.text && moderateText(message.text).action === "block" ?
+      {...message, text: "[message removed for review]"} :
+      message;
+
   const db = deps.firestore();
   const eventId = event.id ?? `${matchId}_${messageId}`;
   const matchRef = db.collection("matches").doc(matchId);
@@ -70,7 +79,7 @@ export async function onMessageCreatedHandler(
   let shouldNotify = false;
   let isFirstMessage = false;
   let notificationTitle = "New message";
-  let notificationBody = buildMessageBody(message);
+  let notificationBody = buildMessageBody(displayMessage);
   let scorecardEventIds: string[] = [];
 
   await db.runTransaction(async (tx) => {
@@ -100,14 +109,14 @@ export async function onMessageCreatedHandler(
       (senderProfileDoc.data() as PublicProfileDocument | undefined)?.name ??
       "New message";
     notificationTitle = senderName;
-    notificationBody = buildMessageBody(message);
+    notificationBody = buildMessageBody(displayMessage);
     const messageSentAt = message.sentAt ?? deps.serverTimestamp();
 
     // Keep match-list metadata server-owned. The client writes only the
     // message. The receipt makes this increment idempotent across retries.
     tx.update(matchRef, {
       lastMessageAt: messageSentAt,
-      lastMessagePreview: buildMessagePreview(message),
+      lastMessagePreview: buildMessagePreview(displayMessage),
       lastMessageSenderId: message.senderId,
       [`unreadCounts.${message.senderId}`]: 0,
       [`unreadCounts.${recipientId}`]: 1,

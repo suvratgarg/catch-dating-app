@@ -349,7 +349,7 @@ class _CatchesEmptyState extends StatelessWidget {
                         gapW10,
                         Expanded(
                           child: Text(
-                            'Dating stays locked until you actually event together. No cold stranger browsing.',
+                            'Dating stays locked until you actually run together. No cold stranger browsing.',
                             style: CatchTextStyles.proseM(
                               context,
                               color: t.ink2,

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -45,11 +46,23 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     ProfileReactionTarget? reactionTarget,
     String? comment,
   }) async {
-    await ref
-        .read(
-          swipeQueueProvider(widget.eventId, vibeIds: widget.vibeIds).notifier,
-        )
-        .swipe(direction, reactionTarget: reactionTarget, comment: comment);
+    try {
+      await ref
+          .read(
+            swipeQueueProvider(widget.eventId, vibeIds: widget.vibeIds).notifier,
+          )
+          .swipe(direction, reactionTarget: reactionTarget, comment: comment);
+    } catch (error) {
+      // The deck only advances after the write succeeds, so on failure we keep
+      // the current profile and surface the error instead of silently stalling.
+      if (mounted) {
+        showCatchErrorSnackBar(
+          context,
+          error,
+          errorContext: AppErrorContext.swipes,
+        );
+      }
+    }
   }
 
   @override

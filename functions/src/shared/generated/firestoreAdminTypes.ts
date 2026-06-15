@@ -1713,10 +1713,10 @@ export interface RateLimitDocument {
  * Server-owned idempotency receipt stored at functionEventReceipts/{receiptId}.
  */
 export interface FunctionEventReceiptDocument {
-  handler: "onMessageCreated";
-  eventId: string;
-  matchId: string;
-  messageId: string;
+  handler: "onMessageCreated" | "onMatchCreated" | "moderatePhotoOnUpload";
+  eventId?: string;
+  matchId?: string;
+  messageId?: string;
   createdAt: FirebaseFirestore.Timestamp;
 }
 

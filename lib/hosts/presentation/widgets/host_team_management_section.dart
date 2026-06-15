@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
@@ -115,12 +116,17 @@ class HostTeamManagementSection extends ConsumerWidget {
     );
     if (confirmed != true) return;
 
-    await HostTeamManagementController.removeHostMutation.run(
-      ref,
-      (tx) => tx
-          .get(hostTeamManagementControllerProvider.notifier)
-          .removeHost(clubId: club.id, uid: host.uid),
-    );
+    try {
+      await HostTeamManagementController.removeHostMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostTeamManagementControllerProvider.notifier)
+            .removeHost(clubId: club.id, uid: host.uid),
+      );
+    } catch (error) {
+      if (context.mounted) showCatchErrorSnackBar(context, error);
+      return;
+    }
     if (!context.mounted) return;
     ScaffoldMessenger.of(
       context,
@@ -144,12 +150,17 @@ class HostTeamManagementSection extends ConsumerWidget {
     );
     if (confirmed != true) return;
 
-    await HostTeamManagementController.transferOwnershipMutation.run(
-      ref,
-      (tx) => tx
-          .get(hostTeamManagementControllerProvider.notifier)
-          .transferOwnership(clubId: club.id, uid: host.uid),
-    );
+    try {
+      await HostTeamManagementController.transferOwnershipMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostTeamManagementControllerProvider.notifier)
+            .transferOwnership(clubId: club.id, uid: host.uid),
+      );
+    } catch (error) {
+      if (context.mounted) showCatchErrorSnackBar(context, error);
+      return;
+    }
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Ownership transferred to ${host.displayName}.')),

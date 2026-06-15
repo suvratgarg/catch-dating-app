@@ -614,7 +614,6 @@ void main() {
 
       expect(find.text('6 going · full'), findsOneWidget);
       expect(find.text('FULL'), findsNothing);
-      expect(find.byType(EventCapacityProgress), findsNothing);
     });
 
     testWidgets('Explore event type browse grid updates the activity filter', (

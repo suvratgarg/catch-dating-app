@@ -1,9 +1,11 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
@@ -31,9 +33,14 @@ class SavedEventsScreen extends ConsumerWidget {
       body: SafeArea(
         child: savedEventsAsync.when(
           loading: () => const CatchLoadingIndicator(),
-          error: (_, _) => const _SavedEventsMessage(
-            title: 'Saved events unavailable',
-            message: 'Your saved events could not be loaded.',
+          error: (error, _) => CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.event,
+            onRetry: uid == null
+                ? null
+                : () => ref.invalidate(
+                    watchSavedEventDetailsForUserProvider(uid),
+                  ),
           ),
           data: (events) {
             if (events.isEmpty) {
@@ -65,10 +72,13 @@ class SavedEventsScreen extends ConsumerWidget {
                 ),
                 if (clubNames == null)
                   SliverFillRemaining(
+                    hasScrollBody: false,
                     child: clubNamesAsync.hasError
-                        ? const _SavedEventsMessage(
-                            title: 'Saved events unavailable',
-                            message: 'Club names could not be loaded.',
+                        ? CatchErrorState.fromError(
+                            clubNamesAsync.error!,
+                            context: AppErrorContext.event,
+                            onRetry: () =>
+                                ref.invalidate(clubNameLookupProvider),
                           )
                         : const CatchLoadingIndicator(),
                   )

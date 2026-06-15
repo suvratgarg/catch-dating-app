@@ -45,6 +45,7 @@
 
 import {HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import * as logger from "firebase-functions/logger";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -111,6 +112,9 @@ export const DEFAULT_RATE_LIMIT: RateLimitConfig = {
   windowMs: 60 * 1000,
 };
 
+/** Actions already warned about (once per instance) to avoid log spam. */
+const warnedMissingRateLimitActions = new Set<string>();
+
 // ── Implementation ─────────────────────────────────────────────────────────
 
 /**
@@ -132,7 +136,20 @@ export async function checkRateLimit(
   action: string,
   config?: RateLimitConfig
 ): Promise<void> {
-  const limit = config ?? RATE_LIMITS[action] ?? DEFAULT_RATE_LIMIT;
+  // Surface actions that silently fall back to the loose default so a missing
+  // RATE_LIMITS registration is visible instead of degrading limits unnoticed.
+  let limit = config ?? RATE_LIMITS[action];
+  if (limit === undefined) {
+    if (!warnedMissingRateLimitActions.has(action)) {
+      warnedMissingRateLimitActions.add(action);
+      logger.warn(
+        "checkRateLimit: action has no explicit RATE_LIMITS entry; " +
+          "using DEFAULT_RATE_LIMIT. Register it in RATE_LIMITS.",
+        {action, default: DEFAULT_RATE_LIMIT}
+      );
+    }
+    limit = DEFAULT_RATE_LIMIT;
+  }
   const windowKey = Math.floor(Date.now() / limit.windowMs);
   const docId = `${uid}_${action}_${windowKey}`;
 

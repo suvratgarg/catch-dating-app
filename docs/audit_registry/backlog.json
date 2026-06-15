@@ -1,6 +1,6 @@
 {
-  "version": "2.6.20",
-  "updated": "2026-06-15",
+  "version": "2.7.0",
+  "updated": "2026-06-16",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
@@ -68,7 +68,10 @@
       "status": "watch",
       "area": "contracts,repositories",
       "priority": "low",
-      "rules": ["CODEGEN-001", "CONTROLLER-BOUNDARY-001"],
+      "rules": [
+        "CODEGEN-001",
+        "CONTROLLER-BOUNDARY-001"
+      ],
       "summary": "Callable request generator migration is on watch. tool/contracts/generate_schema_contracts.mjs emits typed Dart callable request classes from contracts/callables/ and detects callable schemas whose wrapper contains a patch-like fields object. UpdateUserProfilePatch is generated from contracts/patches/update_user_profile.schema.json and UpdateClubPatch is generated from contracts/callables/update_club_payload.schema.json into lib/core/schema_contracts/generated/callable_request_dtos.g.dart; the old domain paths remain compatibility exports for existing callers. Generated patches preserve nullable-field sentinel semantics, enum .name serialization, DateTime -> millis for dateOfBirth, callable-safe serialization of embedded profile photo objects, typed ClubHostDefaults serialization, and `toCallableJson()` wrapper payloads. CreateEventCallableRequest, UpdateEventCallableRequest, CreateClubCallableRequest, CreateEventReviewCallableRequest, and UpdateEventReviewCallableRequest now come from generated code. CreateEventCallableRequest and CreateClubCallableRequest use typed nested/domain fields such as EventMeetingLocation, EventPolicyBundle, EventFormatSnapshot, EventSuccessDefaults, EventConstraints, CreateEventPrivateAccess, and ClubHostDefaults; generated toJson() owns the wire shape. Feature-local adapters now translate domain models into generated constructors without hand-written create-event detail DTOs. Pure feature-local re-export barrels are retired; feature-local callable DTO files remain only where they own response decoders, custom normalization, or feature exceptions. Hand-written request DTOs remain only where they add behavior the generator intentionally does not synthesize: EventBookingCallableRequest and CreateRazorpayOrderCallableRequest trim inviteCode; PlacesAutocompleteCallableRequest flattens LocationCoordinate bias; response decoders remain hand-written by design. Keep on watch when adding new callable schemas or removing the remaining behavioral wrappers.",
       "paths": [
         "tool/contracts/generate_schema_contracts.mjs",
@@ -94,8 +97,10 @@
       "status": "watch",
       "area": "contracts,domain",
       "priority": "low",
-      "rules": ["CODEGEN-001"],
-      "summary": "32 freezed domain classes in lib/**/domain/ hand-mirror their JSON Schemas. test/core/domain_fixture_parity_test.dart catches Class.fromJson(fixture) failures but the classes themselves remain parallel sources — a schema field added today produces no Dart compile error. Build a generator that emits json_serializable annotations, @TimestampConverter, Dart enum types, and equality semantics, one Dart file per schema. Hand-written derived getters (Event.distanceMiles, Club.isOwnedBy, etc.) move to extension files. Done when no hand-written *.dart exists for the 32 covered classes (only _$Foo parts) and adding a schema field auto-extends the Dart class without manual edits. Multi-day epic; revisit when the team has bandwidth for a clean sweep.",
+      "rules": [
+        "CODEGEN-001"
+      ],
+      "summary": "32 freezed domain classes in lib/**/domain/ hand-mirror their JSON Schemas. test/core/domain_fixture_parity_test.dart catches Class.fromJson(fixture) failures but the classes themselves remain parallel sources \u2014 a schema field added today produces no Dart compile error. Build a generator that emits json_serializable annotations, @TimestampConverter, Dart enum types, and equality semantics, one Dart file per schema. Hand-written derived getters (Event.distanceMiles, Club.isOwnedBy, etc.) move to extension files. Done when no hand-written *.dart exists for the 32 covered classes (only _$Foo parts) and adding a schema field auto-extends the Dart class without manual edits. Multi-day epic; revisit when the team has bandwidth for a clean sweep.",
       "paths": [
         "tool/contracts/generate_schema_contracts.mjs",
         "contracts/firestore/",
@@ -115,7 +120,9 @@
       "status": "queued",
       "area": "contracts,functions",
       "priority": "low",
-      "rules": ["CODEGEN-001"],
+      "rules": [
+        "CODEGEN-001"
+      ],
       "summary": "Implemented 2026-05-25. The Dart-derived Functions overlay is retired: tool/contracts/generate_schema_contracts.mjs now emits functions/src/shared/generated/firestoreAdminTypes.ts as the schema-derived Admin SDK Timestamp projection, all Functions imports moved from ../shared/firestore to ../shared/generated/firestoreAdminTypes, functions/src/shared/firestore.ts was deleted, and the old Dart generator plus firestore_ts_overlay.json were removed. tool/check_data_contract.sh now relies on the schema generator check, and check_schema_type_boundaries.mjs guards against reintroducing the deleted overlay or legacy imports. Keep on watch when adding Firestore schemas or Admin SDK document type imports.",
       "paths": [
         "tool/contracts/generate_schema_contracts.mjs",
@@ -134,7 +141,9 @@
       "status": "watch",
       "area": "image_uploads,contracts",
       "priority": "medium",
-      "rules": ["EXTERNAL-SIDE-EFFECT-001"],
+      "rules": [
+        "EXTERNAL-SIDE-EFFECT-001"
+      ],
       "summary": "Implemented 2026-05-25. ImageUploadRepository now preflights all six client upload helpers (uploadUserPhoto, uploadUserProfilePhoto, uploadClubCover, uploadClubProfileImage, uploadEventPhoto, uploadChatImage) against mirrored contracts/storage content-type and max-byte rules before calling Storage putData. Oversize and non-image failures throw StorageUploadPreflightException with the failed constraint and storage contract resource. uploadEventPhoto now writes under the event_images contract path clubs/{clubId}/events/{eventId}/{fileName}. test/image_uploads/image_upload_repository_test.dart covers valid uploads plus oversize and wrong-content-type rejections for every helper, reading x-storage-max-bytes and x-storage-content-type-pattern from the storage schema files rather than hard-coded test constants. Keep on watch when adding new storage schemas or upload helpers.",
       "paths": [
         "lib/image_uploads/data/image_upload_repository.dart",
@@ -149,7 +158,9 @@
       "status": "watch",
       "area": "user_profile,public_profile,migrations",
       "priority": "medium",
-      "rules": ["FIRESTORE-RULES-TEST-001"],
+      "rules": [
+        "FIRESTORE-RULES-TEST-001"
+      ],
       "summary": "Implemented locally 2026-05-25 after the app-version floor was set to Remote Config min_version 1.0.1. Remote cleanup completed 2026-05-26 across dev, staging, and prod; verification dry-runs reported changed: 0 afterward. The one-time cleanup tool was retired on 2026-06-02. Keep on watch only to avoid reintroducing photoUrls/photoThumbnailUrls/photoPrompts as canonical fields.",
       "paths": [
         "contracts/migrations/profile_photos_storage.json",
@@ -165,11 +176,14 @@
     },
     {
       "id": "SWIPES-RENAME-CONTINUE-001",
-      "title": "Continue swipes → profileDecisions rename from dual_write to retire_old",
+      "title": "Continue swipes \u2192 profileDecisions rename from dual_write to retire_old",
       "status": "watch",
       "area": "swipes,firestore,migrations",
       "priority": "medium",
-      "rules": ["FIRESTORE-RULES-TEST-001", "CONTROLLER-BOUNDARY-001"],
+      "rules": [
+        "FIRESTORE-RULES-TEST-001",
+        "CONTROLLER-BOUNDARY-001"
+      ],
       "summary": "Implemented locally 2026-05-25 and remotely cleaned 2026-05-26. A collection-group legacy-source validation found 11 dev and 138 prod legacy swipes; missing current docs were backfilled into profileDecisions, then 11 dev, 0 staging, and 138 prod legacy swipes were deleted. Post-cleanup verification reports zero legacy swipes in all environments. The one-time parity, backfill, and cleanup tools were retired on 2026-06-02.",
       "paths": [
         "contracts/migrations/swipes_to_profile_decisions.json",
@@ -184,7 +198,9 @@
       "status": "watch",
       "area": "user_profile,onboarding,swipes",
       "priority": "low",
-      "rules": ["CONTROLLER-BOUNDARY-001"],
+      "rules": [
+        "CONTROLLER-BOUNDARY-001"
+      ],
       "summary": "Implemented locally 2026-05-25 with activityPreferences.running as the product shape. Remote cleanup completed 2026-05-26 across dev, staging, and prod; it backfilled nested running preferences and deleted root pace/preferred/runPreferencesVersion fields. Verification dry-runs reported changed: 0 afterward. The one-time cleanup tool was retired on 2026-06-02. Dart fromJson retains legacy root-field tolerance as a watch guard only.",
       "paths": [
         "contracts/firestore/users.schema.json",
@@ -778,6 +794,178 @@
         "docs/ui_architecture.md",
         "docs/widget_catalog.md"
       ]
+    },
+    {
+      "id": "PAY-WEBHOOK-001",
+      "title": "Add Razorpay webhook + reconciliation sweep + pending order doc",
+      "status": "queued",
+      "area": "payments,functions",
+      "priority": "high",
+      "rules": [
+        "FN-PAY-001"
+      ],
+      "summary": "FLAGGED INFRA (needs deploy). No Razorpay webhook exists, so a payment captured after the client times out is never reconciled (charged-but-unbooked). Add a signature-verified onRequest webhook (payment.captured/order.paid) mirroring stripeWebhook, write a 'pending' payments doc at order creation keyed by orderId, and a scheduled sweep for captured-but-unverified orders. Client mitigation (10-min timeout + sheet clear) already shipped in lib/payments/data/payment_repository.dart.",
+      "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "PAY-REFUND-STATE-001",
+      "title": "Distinct non-recoverable refund state + alert (Razorpay + Stripe)",
+      "status": "queued",
+      "area": "payments,functions,contracts",
+      "priority": "high",
+      "rules": [
+        "FN-PAY-001"
+      ],
+      "summary": "FLAGGED (schema). A failed automatic refund is recorded with status 'completed' (only signUpFailed:true) with no recovery path. Add a distinct terminal status (needs_manual_refund/refund_failed) + structured alert/metric; covers verifyRazorpayPayment, stripeWebhook, cancelEventSignUp, mutateEvent refund loops.",
+      "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "REVIEW-TRUST-001",
+      "title": "Gate public review writes + count only verified reviews in club rating",
+      "status": "queued",
+      "area": "reviews,functions",
+      "priority": "high",
+      "rules": [
+        "FN-AUTHZ-001",
+        "FN-MOD-001"
+      ],
+      "summary": "FLAGGED PRODUCT/SECURITY. createPublicClubReview accepts fully unauthenticated writes that poison club rating aggregates (syncClubReviewStats counts unverified reviews), diverging from the verified-attendee trust model. Decide: require auth/verified attendance, and/or aggregate only verified reviews. Also moderate review comments/reviewer names/host responses.",
+      "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "CHAT-MOD-CHANNEL-001",
+      "title": "Moderate at write boundary so push + preview never leak blocked content",
+      "status": "done",
+      "area": "chats,moderation,functions",
+      "priority": "high",
+      "rules": [
+        "FN-MOD-001"
+      ],
+      "summary": "DONE (build+test green, redaction regression test added): onMessageCreated now runs the synchronous moderateText filter and redacts blocked content in BOTH the FCM push body and the denormalized lastMessagePreview, so banned content cannot leak even though the stored doc is redacted by a separate (racing) moderateChatMessage trigger. REMAINING (FN-MOD-001 broader): moderate public review comments / reviewer names / host responses (REVIEW-TRUST-001).",
+      "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "ACCOUNT-DELETION-ATOMICITY-001",
+      "title": "Make account deletion re-entrant and compensated",
+      "status": "queued",
+      "area": "safety,functions",
+      "priority": "medium",
+      "rules": [
+        "FN-DATA-001"
+      ],
+      "summary": "requestAccountDeletion runs destructive Storage delete before multi-batch Firestore + Auth delete with no compensation or tombstone re-entry guard; count decrements double-apply on retry. Gate decrements on the tombstone, keep edge-flip+count-delta atomic, and order durable Firestore work before irreversible Storage/Auth deletes. (storagePath cross-user deletion already hardened.)",
+      "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "PROFILE-PHONE-OTP-001",
+      "title": "OTP re-verification flow to allow phone edits",
+      "status": "queued",
+      "area": "user_profile,auth,functions",
+      "priority": "medium",
+      "rules": [
+        "FN-AUTHZ-001"
+      ],
+      "summary": "FLAGGED PRODUCT. Phone is now display-only (lib/user_profile/.../profile_tab.dart) because editing it diverged Firestore from the Auth identity. To re-enable editing, add an OTP re-verification flow that updates the Firebase Auth phone credential before accepting the new number.",
+      "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "BACKEND-IDEMPOTENCY-RECEIPT-001",
+      "title": "Extract shared withEventReceipt() and apply to all triggers/webhooks",
+      "status": "in_progress",
+      "area": "functions",
+      "priority": "medium",
+      "rules": [
+        "FN-IDEMP-001"
+      ],
+      "summary": "DONE: extracted shared withEventReceipt() primitive (functions/src/shared/eventReceipts.ts) using an atomic create() claim; generalized the contracts/firestore/function_event_receipts schema (handler enum + optional message fields) and regenerated. Applied to onMatchCreated (push now guarded against redelivery; redelivery regression test added). REMAINING: apply to moderatePhotoOnUpload (.add() auto-id duplicate flags) and the future Razorpay webhook (PAY-WEBHOOK-001); invite paidCount increment.",
+      "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "BACKEND-ATOMIC-COUNTS-001",
+      "title": "Move denormalized count mutations into source-read transactions",
+      "status": "done",
+      "area": "functions",
+      "priority": "medium",
+      "rules": [
+        "FN-DATA-001"
+      ],
+      "summary": "DONE (build+lint+332 functions tests green): markEventAttendance and selfCheckInAttendance now read the participation edge and apply the checkedInCount delta inside one db.runTransaction, conditioned on the in-transaction status (idempotent on the signedUp->attended edge; no double-count). Ported a runTransaction FakeFirestore into markEventAttendance.test.ts. GAP: selfCheckInAttendance has no direct unit test (no harness existed) \u2014 add one. invite paidCount transactionality still pending.",
+      "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "LIB-ERROR-SURFACE-ROLLOUT-001",
+      "title": "Roll out canonical error surfaces across ~27 client sites",
+      "status": "in_progress",
+      "area": "presentation",
+      "priority": "high",
+      "rules": [
+        "ERROR-UI-002",
+        "MUTATION-ERROR-SURFACE-001"
+      ],
+      "summary": "PRODUCTION SITES DONE (verified, flutter analyze clean + tests green): saved_events, calendar, safety blocked-accounts, host team remove/transfer, host_operations create-profile, host_event_manage invite links, profile_screen photo upload, rich_share_card_sheet, dashboard recommendations, stride/weekly (DashboardSectionModel now carries the error object), plus force_update + swipe (Batch A). REMAINING: in-dev event_success companion mutation surfacing (feedback/wingman/live cards/reveal) + host _ErrorText -> ErrorBanner (lower priority); low-severity Image.network errorBuilder gaps folded into LIB-IMAGE-PRIMITIVE-001.",
+      "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "COPY-SWEEP-001",
+      "title": "Systematic run->event copy-corruption sweep + golden",
+      "status": "queued",
+      "area": "presentation,public_profile,contracts",
+      "priority": "medium",
+      "rules": [
+        "COPY-VERB-INTEGRITY-001"
+      ],
+      "summary": "The automated run->event rename corrupted user-facing copy beyond the cited sites (fixed: compatibility.dart, run_tags.dart x2, swipe_hub). Do a full sweep distinguishing corruption from intentional product renames (e.g. contracts/catalogs/profile_prompts.json 'A perfect event with me looks like...' / 'Tell runners what kind of event' is a half-applied rename to decide on), and add a copy golden.",
+      "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "LIB-IMAGE-PRIMITIVE-001",
+      "title": "Introduce CatchNetworkImage and migrate ~16 raw Image.network sites",
+      "status": "queued",
+      "area": "presentation,core",
+      "priority": "medium",
+      "rules": [
+        "IMAGE-NETWORK-PRIMITIVE-001"
+      ],
+      "summary": "Create a caching + decode-sized + errorBuilder network-image primitive and migrate the ~16 raw Image.network sites (person_avatar, profile_photo_editor, event_recap thumbnail, etc.).",
+      "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "LIB-DATA-ACCESS-DEDUP-001",
+      "title": "Consolidate whereIn fan-out + batched providers; remove N+1",
+      "status": "in_progress",
+      "area": "data,presentation",
+      "priority": "medium",
+      "rules": [
+        "DATA-ACCESS-BATCH-001",
+        "DESIGN-PRIMITIVES-001"
+      ],
+      "summary": "DONE: extracted the triplicated private _chunks<T> helper (clubs/events/saved_event repositories) into one shared lib/core/firestore_chunks.dart#chunkedForWhereIn (encodes the whereIn-10 limit). Verified: analyze clean + 410 client tests green. REMAINING: the larger whereIn fan-out + merge-stream machinery (event_repository.dart) is still duplicated across two event repositories \u2014 extract a shared merged-stream helper; and per-tile/sequential profile reads (reviews_history, event_recap, blocked list) still need batched providers.",
+      "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "LIB-DEAD-CODE-SWEEP-001",
+      "title": "Remove remaining dead code and no-op conditionals",
+      "status": "in_progress",
+      "area": "presentation,core",
+      "priority": "medium",
+      "rules": [
+        "DEAD-PUBLIC-SYMBOL-001",
+        "NO-OP-CONDITIONAL-001"
+      ],
+      "summary": "DONE (verified, analyze clean + 372 tests green): deleted dead files event_pin_renderer, eligibility_step, chat_search_field; deleted dead classes DashboardEmpty (relocated _steps to live DashboardEmptySliverBody), EventCapacityProgress (+ stale test assertion), ErrorMessageWidget (+ fixed stale AsyncValueWidget doc); collapsed 4 no-op conditionals (mutation_error_snackbar_listener latent MutationState-as-error bug, onboarding progressTotal, auth_input displayPhoneNumber, catch_meta_row isLast, catch_select_menu chevron). NOTE: event_discovery_repository \"dead any arm\" is REQUIRED for switch exhaustiveness (false positive, left as-is). REMAINING (lower value / need intent): instagram_page unreachable (maybe intentional in-dev), analytics taxonomy (needs product intent), chat_controller resetUnread, country_markets currencyMinorUnitFactor, app_shell_keys.offlineNotice, location_coordinate.isValid, chat_list_tile _UnreadCountPill plural arm.",
+      "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "LIB-DATA-INTEGRITY-001",
+      "title": "Fix client read-modify-set, non-atomic batch writes, and orphan-on-failure",
+      "status": "in_progress",
+      "area": "data,presentation",
+      "priority": "medium",
+      "rules": [
+        "FIRESTORE-PARTIAL-WRITE-001"
+      ],
+      "summary": "DONE: activity_notification markAllRead now commits one atomic WriteBatch instead of N best-effort Future.wait updates. REMAINING: event_success plan/preference/compatibility read-modify-set -> partial update (in-dev, last-write-wins race); create_event_controller + chat sendImage orphan documents/images on failed retry; write_review_sheet has no client-side length cap (backend enforces 1000; CatchTextField lacks a maxLength param \u2014 add one). ",
+      "source": "deep_semantic_audit_2026-06"
     }
   ],
   "next_up": [
@@ -792,6 +980,38 @@
     "SCREEN-SPACING-SYSTEM-001"
   ],
   "completed": [
+    {
+      "id": "BACKEND-BATCH-2026-06-16",
+      "title": "Backend hardening: idempotency receipt + atomic counts + moderation leak + rate-limit",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-IDEMP-001",
+        "FN-DATA-001",
+        "FN-MOD-001",
+        "FN-RATE-001"
+      ],
+      "summary": "Shared withEventReceipt() primitive (+ generalized receipt contract) guarding onMatchCreated push; markEventAttendance/selfCheckIn atomic checkedInCount; onMessageCreated push+preview moderation redaction; checkRateLimit default-fallback warning. Verified: functions build + lint clean + 332 unit tests green. You deploy."
+    },
+    {
+      "id": "FN-RATE-001-DONE",
+      "title": "Rate-limit registration visibility",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-RATE-001"
+      ],
+      "summary": "checkRateLimit now logger.warns (once per instance per action) when an action falls back to DEFAULT_RATE_LIMIT with no explicit RATE_LIMITS entry, surfacing silent loose-limit registrations. Verified: functions build + 331 unit tests green."
+    },
+    {
+      "id": "DEEP-AUDIT-BATCH-A",
+      "title": "Deep-audit high-severity client fixes + storagePath security",
+      "completed": "2026-06-16",
+      "rules": [
+        "ERROR-UI-001",
+        "FLOW-MUTATION-001",
+        "FN-AUTHZ-001"
+      ],
+      "summary": "Fixed 11 high-severity client findings (Razorpay timeout+sheet-clear, cancelled-event calendar leak, swipe failure surface, profile-prompts soft-lock, phone display-only, force-update openStore guard, directory keyed mutation, Apple Health stuck state, run->event copy x11, ScrollableProfile dead-code cluster deletion) and hardened cross-user Storage deletion in updateUserProfile + accountDeletion. Verified: flutter analyze clean, 314 client tests + 15 profiles tests green. Full inventory in docs/audit_registry/deep_semantic_audit_2026-06/."
+    },
     {
       "id": "DASHBOARD-RUN-HYPE-THUMBNAILS-001",
       "title": "Generate and consume tiny profile thumbnails for run hype avatars",

@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +31,7 @@ class AsyncValueWidget<T> extends StatelessWidget {
   /// Optional custom loading widget. Defaults to [CatchLoadingIndicator].
   final Widget Function()? loading;
 
-  /// Optional custom error widget. Defaults to [ErrorMessageWidget].
+  /// Optional custom error widget. Defaults to [CatchErrorState].
   final Widget Function(Object error, StackTrace? stackTrace)? error;
   final AppErrorContext errorContext;
   final VoidCallback? onRetry;
@@ -91,28 +90,6 @@ class AsyncValueSliverWidget<T> extends StatelessWidget {
           fillRemaining: fillErrorRemaining,
         );
       },
-    );
-  }
-}
-
-/// Simple error display widget used by [AsyncValueWidget].
-@Deprecated('Use CatchErrorState instead.')
-class ErrorMessageWidget extends StatelessWidget {
-  const ErrorMessageWidget(this.errorMessage, {super.key});
-
-  final String errorMessage;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        errorMessage,
-        style: CatchTextStyles.supporting(
-          context,
-          color: Theme.of(context).colorScheme.error,
-        ),
-        textAlign: TextAlign.center,
-      ),
     );
   }
 }

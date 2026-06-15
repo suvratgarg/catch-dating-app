@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/firestore_chunks.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show
@@ -177,7 +178,7 @@ class EventRepository {
 
     controller = StreamController<List<Event>>(
       onListen: () {
-        final chunks = _chunks(uniqueIds, 10).toList(growable: false);
+        final chunks = chunkedForWhereIn(uniqueIds).toList(growable: false);
         final eventsByChunk = <int, List<Event>>{};
         for (var i = 0; i < chunks.length; i += 1) {
           final chunk = chunks[i];
@@ -289,7 +290,7 @@ class EventRepository {
             return;
           }
 
-          final chunks = _chunks(eventIds, 10).toList(growable: false);
+          final chunks = chunkedForWhereIn(eventIds).toList(growable: false);
           final eventsByChunk = <int, List<Event>>{};
 
           for (var i = 0; i < chunks.length; i += 1) {
@@ -344,7 +345,7 @@ class EventRepository {
           final nowDateTime = DateTime.now();
           final now = Timestamp.fromDate(nowDateTime);
           final events = <Event>[];
-          for (final chunk in _chunks(uniqueClubIds, 10)) {
+          for (final chunk in chunkedForWhereIn(uniqueClubIds)) {
             final snap = await _eventsRef
                 .where('clubId', whereIn: chunk)
                 .where('startTime', isGreaterThan: now)
@@ -701,13 +702,6 @@ class EventRepository {
       resource: _collectionPath,
     ),
   );
-}
-
-Iterable<List<T>> _chunks<T>(List<T> values, int size) sync* {
-  for (var start = 0; start < values.length; start += size) {
-    final end = start + size > values.length ? values.length : start + size;
-    yield values.sublist(start, end);
-  }
 }
 
 @riverpod

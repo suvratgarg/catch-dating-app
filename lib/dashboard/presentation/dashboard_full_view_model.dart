@@ -21,13 +21,18 @@ class DashboardSectionModel<T> {
     required this.status,
     this.message,
     this.data,
+    this.error,
   });
 
   const DashboardSectionModel.loading(String message)
     : this._(status: DashboardSectionStatus.loading, message: message);
 
-  const DashboardSectionModel.error(String message)
-    : this._(status: DashboardSectionStatus.error, message: message);
+  const DashboardSectionModel.error(String message, {Object? error})
+    : this._(
+        status: DashboardSectionStatus.error,
+        message: message,
+        error: error,
+      );
 
   const DashboardSectionModel.data(T data)
     : this._(status: DashboardSectionStatus.data, data: data);
@@ -35,6 +40,10 @@ class DashboardSectionModel<T> {
   final DashboardSectionStatus status;
   final String? message;
   final T? data;
+
+  /// The original error for error-status sections, so the UI can render mapped
+  /// copy + retry via the canonical error primitives instead of a fixed string.
+  final Object? error;
 
   bool get isLoading => status == DashboardSectionStatus.loading;
   bool get hasError => status == DashboardSectionStatus.error;
@@ -104,10 +113,10 @@ DashboardFullViewModel buildDashboardFullViewModel({
     loading: () => const DashboardSectionModel<List<Event>>.loading(
       'Loading your recent events...',
     ),
-    error: (error, stackTrace) =>
-        const DashboardSectionModel<List<Event>>.error(
-          'Unable to load your recent events.',
-        ),
+    error: (error, stackTrace) => DashboardSectionModel<List<Event>>.error(
+      'Unable to load your recent events.',
+      error: error,
+    ),
     data: DashboardSectionModel<List<Event>>.data,
   );
   final weeklyActivitySection = _buildWeeklyActivitySection(
@@ -123,8 +132,9 @@ DashboardFullViewModel buildDashboardFullViewModel({
           'Loading recommended events...',
         ),
     error: (error, stackTrace) =>
-        const DashboardSectionModel<List<DashboardEventRecommendation>>.error(
+        DashboardSectionModel<List<DashboardEventRecommendation>>.error(
           'Unable to load recommended events.',
+          error: error,
         ),
     data: (candidates) =>
         DashboardSectionModel<List<DashboardEventRecommendation>>.data(
@@ -199,8 +209,9 @@ DashboardSectionModel<WeeklyActivitySnapshot> _buildWeeklyActivitySection({
   final platformSnapshot = weeklyActivityAsync?.asData?.value;
   if (attendedEventsAsync.hasError &&
       platformSnapshot?.hasPlatformConnection != true) {
-    return const DashboardSectionModel<WeeklyActivitySnapshot>.error(
+    return DashboardSectionModel<WeeklyActivitySnapshot>.error(
       'Unable to load your recent events.',
+      error: attendedEventsAsync.error,
     );
   }
 

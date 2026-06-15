@@ -3,6 +3,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_controller.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_keys.dart';
@@ -53,16 +55,29 @@ class UpdateRequiredScreen extends ConsumerWidget {
                 key: UpdateRequiredKeys.updateNowButton,
                 label: 'Update now',
                 onPressed: () async {
-                  final opened = await ref
-                      .read(updateRequiredControllerProvider)
-                      .openStore(
-                        platform: Theme.of(context).platform,
-                        config: config,
+                  // openStore can throw (no store app, platform channel error);
+                  // without this guard the user is stranded on the undismissable
+                  // gate with no feedback.
+                  try {
+                    final opened = await ref
+                        .read(updateRequiredControllerProvider)
+                        .openStore(
+                          platform: Theme.of(context).platform,
+                          config: config,
+                        );
+                    if (!opened && context.mounted) {
+                      showCatchErrorSnackBar(
+                        context,
+                        const ExternalActionException(
+                          'Could not open the app store. Please update Catch '
+                          'from your device\'s app store.',
+                        ),
                       );
-                  if (!opened && context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Could not open store')),
-                    );
+                    }
+                  } catch (error) {
+                    if (context.mounted) {
+                      showCatchErrorSnackBar(context, error);
+                    }
                   }
                 },
                 icon: Icon(CatchIcons.openInNew),

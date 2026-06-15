@@ -6,10 +6,10 @@
  * Server-owned idempotency receipt stored at functionEventReceipts/{receiptId}.
  */
 export interface FunctionEventReceiptDocument {
-  handler: "onMessageCreated";
-  eventId: string;
-  matchId: string;
-  messageId: string;
+  handler: "onMessageCreated" | "onMatchCreated" | "moderatePhotoOnUpload";
+  eventId?: string;
+  matchId?: string;
+  messageId?: string;
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

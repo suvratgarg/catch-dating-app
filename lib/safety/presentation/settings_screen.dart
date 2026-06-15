@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -592,15 +593,12 @@ class _BlockedAccountsSection extends ConsumerWidget {
             padding: CatchInsets.content,
             child: CatchLoadingIndicator(),
           ),
-          error: (_, _) => Padding(
+          error: (error, _) => Padding(
             padding: CatchInsets.content,
-            child: CatchEmptyState(
-              icon: CatchIcons.blockOutlined,
-              title: 'Unable to load blocked accounts',
-              message: 'Try again in a moment.',
-              iconSize: CatchIcon.tile,
-              titleStyle: CatchTextStyles.sectionTitle(context),
-              messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
+            child: CatchInlineErrorState.fromError(
+              error,
+              compact: true,
+              onRetry: () => ref.invalidate(watchBlockedUsersProvider),
             ),
           ),
           data: (blockedUsers) {

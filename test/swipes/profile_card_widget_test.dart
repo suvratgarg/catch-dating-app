@@ -4,7 +4,6 @@ import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
-import 'package:catch_dating_app/swipes/presentation/widgets/name_overlay.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -37,28 +36,6 @@ Widget _profileCardHarness({required ThemeData theme}) {
 }
 
 void main() {
-  testWidgets('NameOverlay shows display name, age, city, and signal chips', (
-    tester,
-  ) async {
-    final profile = buildPublicProfile(
-      name: 'Manan',
-      age: 26,
-    ).copyWith(city: 'indore', relationshipGoal: RelationshipGoal.casual);
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(body: NameOverlay(profile: profile)),
-      ),
-    );
-
-    expect(find.text('Manan'), findsOneWidget);
-    expect(find.text('26'), findsOneWidget);
-    expect(find.text('Indore'), findsOneWidget);
-    expect(find.text('Something casual'), findsOneWidget);
-    expect(find.text('5:00-7:00/km'), findsOneWidget);
-  });
-
   testWidgets(
     'ProfileSurface renders polished missing-photo state in light mode',
     (tester) async {

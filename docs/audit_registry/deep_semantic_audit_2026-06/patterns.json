@@ -1,0 +1,567 @@
+{
+  "generated_at": "2026-06-16",
+  "read_policy": "Machine-checkable registry of recurring cross-cutting patterns surfaced by the deep semantic audit. Each entry maps a stable pattern_key to its definition, canonical fix, and target rule id so future passes tag findings with an existing key instead of inventing near-duplicates. Promote high-frequency patterns to rules in ../rules.json and flip status to 'rule-enforced' once a lint/CI gate exists.",
+  "patterns": [
+    {
+      "pattern_key": "error_state_uses_empty_state_no_retry",
+      "surface": "lib",
+      "title": "Data-load failures render CatchEmptyState/hand-rolled cards with no retry instead of CatchErrorState/CatchInlineErrorState",
+      "definition": "ERROR-UI-001 requires app-facing load failures to surface mapped copy (appErrorDescriptor) plus a retry affordance. Multiple screens instead route stream/future errors into a dead empty-state or bespoke card, discarding the error object and stranding users on an 'unavailable' panel with no recovery. The canonical CatchErrorState.fromError / CatchInlineErrorState.fromError primitives exist (verified: catch_error_state.dart:25-46 yields descriptor-mapped title/message + retryable-gated retry) and are used correctly in 25+ sibling screens, so this is pure inconsistency.",
+      "canonical_fix": "Replace each error-branch CatchEmptyState/bespoke card with CatchErrorState.fromError (full screen), CatchSliverErrorState.fromError (sliver), or CatchInlineErrorState.fromError (compact section), passing the actual error and an onRetry that ref.invalidate()s the failing provider. Reserve CatchEmptyState strictly for genuinely-empty success states.",
+      "suggested_rule_id": "ERROR-UI-001",
+      "estimated_sites": 8,
+      "affected": [
+        "lib/calendar/presentation/calendar_screen.dart",
+        "lib/events/presentation/saved_events_screen.dart",
+        "lib/dashboard/presentation/widgets/dashboard_full.dart",
+        "lib/dashboard/presentation/widgets/stride_card.dart",
+        "lib/safety/presentation/settings_screen.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "mutation_error_not_surfaced",
+      "surface": "lib",
+      "title": "MutationError is watched only for isPending; failures are silently swallowed with no user feedback",
+      "definition": "Several controllers expose a Mutation that the UI watches only via isPending to drive a spinner, never checking hasError. On failure the spinner clears, optimistic state never applies (or a toggle silently reverts), and the user is told nothing \u2014 including on the most security-sensitive action (ownership transfer) and the core swipe loop (deck stalls). riverpod 3.3.2 Mutation.run() rethrows, so the fix is to surface the error, not to assume success. The convention exists in-feature (questionnaire section, filters_screen).",
+      "canonical_fix": "Either wrap the .run() call in try/catch + showCatchErrorSnackBar(context, error), or add a mutation.hasError branch rendering ErrorBanner.fromError / a ref.listen MutationErrorSnackbarListener at the screen level. Standardize on one of these two per surface.",
+      "suggested_rule_id": "ERROR-UI-001",
+      "estimated_sites": 7,
+      "affected": [
+        "lib/swipes/presentation/swipe_screen.dart",
+        "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
+        "lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart",
+        "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+        "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart",
+        "lib/hosts/presentation/widgets/host_team_management_section.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "raw_or_hardcoded_snackbar_bypasses_mapped_error",
+      "surface": "lib",
+      "title": "Raw/const SnackBar(Text(...)) or bare Text used for errors, bypassing showCatchErrorSnackBar/ErrorBanner and losing mapped copy",
+      "definition": "Transient/inline errors are shown via hand-rolled SnackBars or bare Text with hardcoded strings, discarding the real error object (often an AppException whose authored .message is user-meaningful, e.g. 'That image is too large'). This loses styling, retry, and the permission-vs-network distinction. showCatchErrorSnackBar and ErrorBanner.fromError are the canonical mapped-copy primitives and are used correctly elsewhere.",
+      "canonical_fix": "Route transient failures through showCatchErrorSnackBar(context, error) and inline/form errors through ErrorBanner.fromError(error, context: ...); delete the shared local _ErrorText helper in event_success and the parallel raw uploadError-to-string path. Pass the captured error, never a hardcoded string.",
+      "suggested_rule_id": "ERROR-UI-001",
+      "estimated_sites": 10,
+      "affected": [
+        "lib/core/widgets/rich_share_card_sheet.dart",
+        "lib/force_update/presentation/update_required_screen.dart",
+        "lib/user_profile/presentation/profile_screen.dart",
+        "lib/image_uploads/presentation/photo_upload_controller.dart",
+        "lib/hosts/presentation/host_event_manage_screen.dart",
+        "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
+        "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "read_modify_set_full_document_set",
+      "surface": "lib",
+      "title": "Read-modify-set / full-document set() of client snapshot instead of partial update() of changed keys",
+      "definition": "Three event_success write paths read a doc then set() the whole client-held snapshot. This (a) re-emits createdAt/updatedAt as client Timestamp.fromDate, downgrading server-anchored timestamps to host-clock time, and (b) for the two independent opt-out toggles creates a genuine last-write-wins race (they use distinct mutations, so busy-gating does not cross-block). It trips Firestore rules diff() and clobbers concurrent writes \u2014 the anti-pattern the project explicitly warns against.",
+      "canonical_fix": "Use _ref.set({...changedKeysOnly, 'updatedAt': FieldValue.serverTimestamp()}, SetOptions(merge: true)) or .update() writing only the changed/host-editable keys; reserve full set() for the transaction-guarded initial create. Eliminate the pre-read for preference/compatibility.",
+      "suggested_rule_id": "FIRESTORE-PARTIAL-WRITE-001",
+      "estimated_sites": 3,
+      "affected": [
+        "lib/event_success/data/event_success_repository/plan.dart",
+        "lib/event_success/data/event_success_repository/preference.dart",
+        "lib/event_success/data/event_success_repository/compatibility.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "firestore_whereIn_fanout_and_chunks_duplication",
+      "surface": "lib",
+      "title": "Triplicated whereIn fan-out/merge stream machinery and a thrice-defined _chunks helper",
+      "definition": "The 'watch source stream -> collect ids -> split into 10-id chunks -> fan out one whereIn snapshot subscription per chunk -> emit once all chunks resolve -> teardown' pattern is copy-pasted near-verbatim across three methods in two repositories, and the generic _chunks<T> helper is defined three times. Any leak/teardown/generation-guard fix must be applied in three places, and the clubNameLookupProvider N-read provider could reuse the batched form. This is real fragility, not a token-style duplicate a scanner would catch.",
+      "canonical_fix": "Extract a core firestore util: Stream<List<Event>> watchByIdStream({required Stream<List<String>> idStream, required CollectionReference ref, bool descending}) plus a single chunked<T>(List<T>, int) extension; delete the three private copies and have all fan-out sites delegate.",
+      "suggested_rule_id": "DESIGN-PRIMITIVES-001",
+      "estimated_sites": 6,
+      "affected": [
+        "lib/events/data/event_repository.dart",
+        "lib/events/data/saved_event_repository.dart",
+        "lib/clubs/data/clubs_repository.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "n_plus_one_and_per_tile_realtime_profile_reads",
+      "surface": "lib",
+      "title": "Sequential per-uid Firestore reads and per-list-tile live snapshot listeners for static display data",
+      "definition": "fetchPublicProfiles awaits N per-uid gets sequentially (linear latency on event rosters), and several list/grid surfaces open one persistent realtime snapshot listener PER tile (or do N per-id fetchClub reads) purely to render static name/photo/date labels they never live-update. This wastes round-trips, opens N listeners that are never torn down per-item, and clubNameLookupProvider also leaks a non-autoDispose family instance per query. Batched/one-shot reads already exist (watchClubsByIds, fetchPublicProfiles, fetchEvent).",
+      "canonical_fix": "Parallelize fetchPublicProfiles with Future.wait over the deduped uid set; resolve roster/list profiles ONCE in a FutureProvider keyed by the id list and pass resolved values into tiles instead of per-tile watch streams; expose a one-shot fetchEvent provider for static labels; convert clubNameLookupProvider to autoDispose @riverpod backed by the batched whereIn read.",
+      "suggested_rule_id": "DATA-ACCESS-BATCH-001",
+      "estimated_sites": 6,
+      "affected": [
+        "lib/public_profile/data/public_profile_repository.dart",
+        "lib/clubs/presentation/club_name_lookup.dart",
+        "lib/reviews/presentation/reviews_history_screen.dart",
+        "lib/safety/presentation/settings_screen.dart",
+        "lib/swipes/presentation/event_recap_screen.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "uncached_image_network_no_decode_sizing_or_errorbuilder",
+      "surface": "lib",
+      "title": "Raw Image.network app-wide: no caching/decode-sizing, and some sites omit errorBuilder",
+      "definition": "All ~16 network-image sites use raw Image.network with no cacheWidth/cacheHeight and no caching package, so avatars/thumbnails decode at full resolution and re-decode on scroll re-attach across rosters, chat, swipe cards. Separately, two sites omit the errorBuilder fallback their siblings provide, so a broken URL shows Flutter's default broken-image glyph. This is a consistent app-wide convention gap, not a per-file regression.",
+      "canonical_fix": "Introduce one CatchNetworkImage primitive that passes cacheWidth/cacheHeight = logicalSize*devicePixelRatio (or wraps cached_network_image) and provides a default branded errorBuilder/loadingBuilder; route all Image.network sites through it.",
+      "suggested_rule_id": "IMAGE-NETWORK-PRIMITIVE-001",
+      "estimated_sites": 16,
+      "affected": [
+        "lib/core/widgets/person_avatar.dart",
+        "lib/image_uploads/presentation/profile_photo_editor_screen.dart",
+        "lib/swipes/presentation/event_recap_screen.dart",
+        "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "run_to_event_rename_grammar_corruption",
+      "surface": "lib",
+      "title": "Automated run->event rename corrupted user-facing copy (\"You both event to make friends\", \"Long-event person\")",
+      "definition": "An automated rename replaced the verb 'run' with 'event' in user-visible compatibility-reason and emotional-run-tag labels, producing nonsense English rendered verbatim into Text widgets on the profile match-signals surface. Adjacent labels are untouched, confirming a targeted rename artifact. This is directly user-facing on a flagship screen.",
+      "canonical_fix": "Restore the intended verb in all affected RunReason/EmotionalRunTag labels ('You both run to make friends', 'Runs for headspace', 'Long-run person', etc.). Add a copy snapshot/golden test over CompatibilityReason.label and EmotionalRunTag labels to prevent regression.",
+      "suggested_rule_id": "COPY-VERB-INTEGRITY-001",
+      "estimated_sites": 9,
+      "affected": [
+        "lib/public_profile/domain/profile_insights/compatibility.dart",
+        "lib/public_profile/domain/profile_insights/run_tags.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "inline_repository_write_in_widget_no_controller",
+      "surface": "lib",
+      "title": "Host-profile repository writes performed inline in widgets with no controller/mutation seam",
+      "definition": "The entire host-profile write surface (ensureHostProfile/saveHostProfile) bypasses the controller/PROVIDER-SEAM convention every other feature follows \u2014 calling the repository directly from widgets, with one fire-and-forget unawaited call that has no try/catch, no loading, and no feedback (duplicate writes on repeated taps), plus two widgets each hand-rolling an ad-hoc bool _saving instead of a Mutation. No HostProfileController exists.",
+      "canonical_fix": "Introduce a HostProfileController exposing ensureHostProfileMutation/saveProfileMutation; drive all three sites via .run with isPending gating and showCatchErrorSnackBar on failure, removing the duplicated _saving fields.",
+      "suggested_rule_id": "CONTROLLER-BOUNDARY-001",
+      "estimated_sites": 4,
+      "affected": [
+        "lib/hosts/presentation/host_operations_screen.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "host_form_validators_and_mappers_duplicated",
+      "surface": "lib",
+      "title": "Host form validators and admission/preset mappers copy-pasted byte-for-byte across create/edit forms",
+      "definition": "_validateAge (18-99 + sibling cross-check), positive-int validators (>=1), _inviteCodeValidator (4-64), _policyFor cancellation mapping, and the admission-preset->default-preset mapping are duplicated across 3-4 host forms. These encode business-rule constants that must stay in sync between create and edit; the duplication invites silent drift where one path accepts what the other rejects.",
+      "canonical_fix": "Extract one shared validators/mappers module (or static methods on EventPolicyDefaults / extensions on EventAdmissionPreset / EventCancellationPolicyId) for age-range, positive-int, invite-code, _policyFor, and the *FromSelected admission mapping; import from all host forms. Deleting eligibility_step.dart removes one copy.",
+      "suggested_rule_id": "DESIGN-PRIMITIVES-001",
+      "estimated_sites": 5,
+      "affected": [
+        "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+        "lib/hosts/presentation/edit_hosted_event_screen.dart",
+        "lib/hosts/presentation/event_management/widgets/club_host_defaults_step.dart",
+        "lib/hosts/presentation/event_management/create/create_event_screen.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "create_then_upload_partial_write",
+      "surface": "lib",
+      "title": "Event/club document created before photos upload; failed retry orphans photoless or duplicate documents",
+      "definition": "create_event and create_club both generate a fresh id per submit() call, write the document durably, THEN upload photos and patch photoUrl. A photo-upload failure leaves a photoless doc; the footer re-enables on error (isPending-only gating) so re-submit regenerates a new id and creates a SECOND document with no rollback. This is a money/data-integrity-adjacent partial-write hazard under FLOW-MUTATION-001.",
+      "canonical_fix": "Upload photos first and pass URLs into createEvent/createClub so the doc is created complete; or hold a stable id across retries and make the photo step resumable/idempotent. Surface that the doc already exists after a successful create so the user manages it rather than re-submitting.",
+      "suggested_rule_id": "FLOW-MUTATION-001",
+      "estimated_sites": 2,
+      "affected": [
+        "lib/hosts/presentation/event_management/create/create_event_controller.dart",
+        "lib/clubs/presentation/create/create_club_controller.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "completion_readiness_vs_ui_drift",
+      "surface": "lib",
+      "title": "Router/readiness gate disagrees with the UI affordance, soft-locking profile completion",
+      "definition": "The prompts UI lets users pick any of 5 catalog prompts, but the router gate hasRequiredProfilePrompts requires the EXACT 3 default ids, and completeSocialProfile writes profileComplete:true without validating ids. A user who swaps in a non-default prompt answers 3 valid prompts, completes, yet hasSocialReadyProfile stays false and go_router loops them back to prompts with no way to finish. The same swap affordance exists in the profile edit tab, so existing users can downgrade below the gate too.",
+      "canonical_fix": "Make gate and UI agree: either loosen hasRequiredProfilePrompts to require N distinct catalog prompts (matching free choice), or constrain both the prompts page and profile_tab to mandate the default ids / validate against hasRequiredProfilePrompts before enabling Continue.",
+      "suggested_rule_id": "READINESS-UI-PARITY-001",
+      "estimated_sites": 3,
+      "affected": [
+        "lib/onboarding/presentation/pages/profile_prompts_page.dart",
+        "lib/user_profile/presentation/widgets/profile_tab.dart",
+        "lib/routing/go_router.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "state_error_thrown_inside_backend_error_context",
+      "surface": "lib",
+      "title": "Domain StateError thrown inside withBackendErrorContext is rewritten to generic copy, hiding the authored message",
+      "definition": "submitApplication throws StateError with specific user-actionable copy inside the withBackendErrorContext closure. Because StateError extends Error (not Exception) it never matches the sealed AppException short-circuit in normalizeBackendError, so it falls through to a generic BackendOperationException('...try again') and the author's intended message (e.g. 'This access application is already locked for review.') never reaches the user \u2014 notably on a transaction-time race the user cannot recover from by retrying.",
+      "canonical_fix": "Throw an AppException subtype (ValidationException / non-retryable BackendOperationException) with the intended copy instead of StateError, or move precondition checks outside the withBackendErrorContext closure. Audit other repositories for StateError thrown inside the backend-error wrapper.",
+      "suggested_rule_id": "DOMAIN-ERROR-TYPE-001",
+      "estimated_sites": 2,
+      "affected": [
+        "lib/launch_access/data/launch_access_repository.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "dead_orphaned_code_from_incomplete_migration",
+      "surface": "lib",
+      "title": "Whole widgets/getters/funnels left orphaned by superseded migrations (zero production references)",
+      "definition": "Multiple sizable surfaces are fully unreferenced in lib/ and only kept alive by their own definitions or negative tests: the 587-line ScrollableProfile cluster (superseded by CatchProfileView), EventPinRenderer + its sole-consumer text styles (live map ships default Google markers), EligibilityStep (superseded by EventPolicyStep), DashboardEmpty, EventCapacityProgress + its presenter getter, ChatSearchField, plus 14 declared-but-never-emitted analytics funnel events and several unwired domain getters. None are under the in-dev/labs carve-out. This is maintenance drag and misleads readers about what ships.",
+      "canonical_fix": "Run a dead-code sweep: delete ScrollableProfile + its now-orphaned section widgets, EventPinRenderer (or wire it into EventPinsMap), EligibilityStep, DashboardEmpty, EventCapacityProgress + .progress, ChatSearchField; either wire the 14 analytics funnel events at controller seams or prune the constants. Add a CI dead-public-symbol check.",
+      "suggested_rule_id": "DEAD-CODE-SWEEP-001",
+      "estimated_sites": 12,
+      "affected": [
+        "lib/swipes/presentation/widgets/scrollable_profile.dart",
+        "lib/events/presentation/widgets/event_pin_renderer.dart",
+        "lib/hosts/presentation/event_management/widgets/eligibility_step.dart",
+        "lib/dashboard/presentation/widgets/dashboard_empty.dart",
+        "lib/events/presentation/widgets/event_tiles/event_visual_atoms.dart",
+        "lib/matches/presentation/widgets/chat_search_field.dart",
+        "lib/analytics/app_analytics.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "dead_no_op_ternary",
+      "surface": "lib",
+      "title": "Ternary/if-else with identical branches (computed condition has no effect)",
+      "definition": "Several conditionals compute a flag but return the same value on both branches, so documented or intended behavior is silently unenforced: catch_meta_row FlexFit (last-entry-ellipsise layout never enforced), the select-menu disabled chevron tint, the attendee reveal title, the onboarding progressTotal, and the discovery availability switch arm. Most are cosmetic, but the FlexFit one defeats the widget's stated overflow contract. They read as leftover refactor scaffolding that misleads maintainers.",
+      "canonical_fix": "Resolve each: implement the intended divergent branch (e.g. FlexFit.tight for non-last entries; a dimmer disabled chevron tone) or collapse to the single value and drop the dead flag. A lint for ternary/switch arms with structurally-identical branches would catch these.",
+      "suggested_rule_id": "NO-OP-CONDITIONAL-001",
+      "estimated_sites": 6,
+      "affected": [
+        "lib/core/widgets/catch_meta_row.dart",
+        "lib/core/widgets/catch_select_menu.dart",
+        "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart",
+        "lib/onboarding/presentation/onboarding_screen.dart",
+        "lib/events/data/event_discovery_repository.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "fontstyle_italic_silently_ignored",
+      "surface": "lib",
+      "title": "CatchFonts serif/clubDisplay/eventDisplay accept a fontStyle param they silently discard",
+      "definition": "voice() hard-codes FontStyle.normal, and serif/clubDisplay/eventDisplay accept a fontStyle parameter but never forward it (sans() does), so the API lies. This has produced the codebase's only FontStyle.italic call site (club_share_card) which reads as italic but renders upright.",
+      "canonical_fix": "Drop the fontStyle parameter from serif/clubDisplay/eventDisplay and their CatchTextStyles wrappers (variable font is roman-only by spec), making the constraint explicit at call sites; remove the no-op fontStyle:FontStyle.italic arg in club_share_card.",
+      "suggested_rule_id": "API-NO-DEAD-PARAM-001",
+      "estimated_sites": 2,
+      "affected": [
+        "lib/core/theme/catch_fonts.dart",
+        "lib/clubs/presentation/detail/widgets/club_share_card.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "retired_sunset_alias_reference",
+      "surface": "lib",
+      "title": "Code still references the retired sunsetLight palette alias instead of the canonical light token",
+      "definition": "Per the active 'retiring Sunset' initiative, the backward-compat alias sunsetLight (= light) should be eliminated. Verified it remains referenced at 3 call sites beyond its declaration; the values are identical so behavior is unchanged, but the alias cannot be deleted until these are swept.",
+      "canonical_fix": "Replace CatchTokens.sunsetLight with CatchTokens.light at the three sites, then delete the alias in catch_tokens.dart. A deprecation annotation on the alias makes this analyzer-enforced (deprecated_member_use_from_same_package).",
+      "suggested_rule_id": "RETIRE-SUNSET-ALIAS-001",
+      "estimated_sites": 3,
+      "affected": [
+        "lib/core/widgets/catch_button.dart",
+        "lib/core/widgets/catch_framework_error_view.dart",
+        "lib/clubs/presentation/shared/catch_polaroid.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "injected_clock_vs_datetime_now",
+      "surface": "lib",
+      "title": "Domain getter hardcodes DateTime.now() while adjacent callers thread an injected referenceNow",
+      "definition": "EventParticipation.hasHostApproval calls DateTime.now() internally, but its three consumers evaluate adjacent timing branches against an injected referenceNow. Within one resolution pass two different clocks decide adjacent branches, which near the waitlist-offer-expiry boundary can yield inconsistent viewer status and makes the approved-to-book path untestable with a fixed now.",
+      "canonical_fix": "Add hasHostApprovalAt(DateTime now) and call it with referenceNow at all three consumers; keep the no-arg getter only as a thin delegate if any non-clocked caller remains. Audit for other DateTime.now() in domain getters that have clocked callers.",
+      "suggested_rule_id": "INJECTED-CLOCK-001",
+      "estimated_sites": 3,
+      "affected": [
+        "lib/events/domain/event_participation.dart",
+        "lib/events/presentation/widgets/viewer_event_availability.dart",
+        "lib/events/presentation/widgets/event_detail_cta.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "frozen_countdown_snapshot",
+      "surface": "lib",
+      "title": "Relative time/countdown labels computed once in build() with no ticker, going stale",
+      "definition": "Countdown and relative-time labels ('Closes in', 'In 12m', editorial sashes) call DateTime.now() in the build path with nothing driving periodic rebuilds, so they freeze at the last rebuild and can read time remaining after a window actually closes \u2014 misleading on time-window-driven screens.",
+      "canonical_fix": "Drive short-horizon relative labels from a shared low-frequency ticker provider (1-min Timer/StreamProvider) or an AnimatedWidget, or drop minute-precision relative forms in favor of the absolute time already shown.",
+      "suggested_rule_id": "LIVE-TIME-LABEL-001",
+      "estimated_sites": 4,
+      "affected": [
+        "lib/swipes/presentation/swipe_hub_screen.dart",
+        "lib/explore/presentation/widgets/explore_events_section.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "explore_dual_discovery_pipeline_duplication",
+      "surface": "lib",
+      "title": "Two parallel explore pipelines re-derive the same filter/scope logic (4.5 threshold, _sameFilterValue) and time-filter on divergent data",
+      "definition": "The clubs pipeline and the events feed each hardcode the same 4.5 high-rated threshold and define _sameFilterValue verbatim in both files, and they time-filter on different data (club.nextEventAt vs event.startTime), so the same chip can show inconsistent club/event membership. The 260-line god-provider's scattered guard batches are what let the personalEventsAsync guard slip through.",
+      "canonical_fix": "Promote 4.5 to a named const and extract one shared exploreFilterValuesEqual helper; decompose the feed god-provider into intermediate providers (viewer-context, discovered-events) so all async guards live in one place and a missing guard is structurally hard to introduce.",
+      "suggested_rule_id": "DESIGN-PRIMITIVES-001",
+      "estimated_sites": 3,
+      "affected": [
+        "lib/explore/presentation/explore_feed_view_model.dart",
+        "lib/explore/presentation/explore_view_model.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "provider_family_keyed_on_unnormalized_input",
+      "surface": "lib",
+      "title": "Provider family keyed on raw un-normalized input, so whitespace variants duplicate billable work",
+      "definition": "exploreServerSearchProvider keys on the raw query while the body and repository both re-trim; the query state is only trimLeft()ed, so 'run' and 'run ' become two distinct autoDispose entries each firing a separate billable Cloud Function call returning identical results. Every other consumer trims, proving the raw key is the outlier.",
+      "canonical_fix": "Normalize at the seam: trim before constructing the family argument (or fully trim in setQuery instead of trimLeft) so the cache key is canonical and whitespace variants collapse to one entry/one callable.",
+      "suggested_rule_id": "PROVIDER-FAMILY-KEY-NORMALIZE-001",
+      "estimated_sites": 1,
+      "affected": [
+        "lib/search/data/explore_search_repository.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "unkeyed_static_mutation_in_list_items",
+      "surface": "lib",
+      "title": "Single static unkeyed Mutation watched by every list tile, so one item's action spins/disables all",
+      "definition": "Every directory tile watches one global ClubMembershipController.joinMutation and runs it with no key, so tapping Join on one club flips isPending for all visible Join buttons and a single failure surfaces ambiguously across them. Riverpod's Mutation keying exists precisely to differentiate concurrent calls in lists.",
+      "canonical_fix": "Key the mutation per club (joinMutation(club.id)) so each tile observes only its own pending/error state; apply the same keying to leave/pushNotifications mutations wherever multiple instances co-exist.",
+      "suggested_rule_id": "KEYED-MUTATION-IN-LIST-001",
+      "estimated_sites": 1,
+      "affected": [
+        "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "duplicate_dashboard_section_state_card",
+      "surface": "lib",
+      "title": "Structurally identical private *_SectionStateCard widgets duplicated across dashboard files",
+      "definition": "_StrideSectionStateCard and _DashboardSectionStateCard are byte-for-byte equivalent (same CatchSurface/Row/icon/loading/text), and their error halves should collapse into CatchInlineErrorState while the loading halves should share one compact loading-card primitive. Two copies drift independently.",
+      "canonical_fix": "Delete both private cards; route error halves through CatchInlineErrorState.fromError and extract/reuse one compact loading-card primitive (or CatchSkeleton).",
+      "suggested_rule_id": "DESIGN-PRIMITIVES-001",
+      "estimated_sites": 2,
+      "affected": [
+        "lib/dashboard/presentation/widgets/stride_card.dart",
+        "lib/dashboard/presentation/widgets/dashboard_full.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "app_shell_fcm_and_observability_duplication",
+      "surface": "lib",
+      "title": "Host and consumer app shells duplicate FCM-init provider and diverge on observability uid sync",
+      "definition": "HostAppShell hand-writes an FCM-init provider byte-identical to the codegen appShellFcmInitialization, and copy-pastes the error-report and sign-out reset blocks. Worse, it omits the analytics user-id sync the consumer shell performs, so in the host app analytics events are not attributed to the signed-in user and the analytics id is never cleared on sign-out.",
+      "canonical_fix": "Have HostAppShell watch the existing codegen appShellFcmInitializationProvider, and factor _syncObservabilityUserId (errorLogger + analytics) into a shared helper called by both shells.",
+      "suggested_rule_id": "DESIGN-PRIMITIVES-001",
+      "estimated_sites": 2,
+      "affected": [
+        "lib/core/presentation/host_app_shell.dart",
+        "lib/core/presentation/app_shell.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "chat_bubble_and_route_helper_duplication",
+      "surface": "lib",
+      "title": "Chat bubble shape/surface logic and role->route mapping duplicated across chat/match widgets",
+      "definition": "The 4-corner grouped-bubble BorderRadius + isMe surface coloring is reproduced verbatim in MessageBubble and _ShareCardBubble (a shape tweak must be made twice), and the AppConfig.appRole.isHost ? hostChatScreen : chatScreen route expression is duplicated across two list widgets (one recomputed per row inside the item builder).",
+      "canonical_fix": "Extract chatBubbleRadius({isMe, isFirstInGroup, isLastInGroup}) / a ChatBubbleSurface widget, and a Routes.chatRouteNameForRole() accessor hoisted above the builder; consume from both pairs.",
+      "suggested_rule_id": "DESIGN-PRIMITIVES-001",
+      "estimated_sites": 4,
+      "affected": [
+        "lib/chats/presentation/widgets/message_bubble.dart",
+        "lib/chats/presentation/widgets/chat_share_card.dart",
+        "lib/matches/presentation/widgets/chat_conversations_list.dart",
+        "lib/matches/presentation/widgets/chat_new_matches_rail.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "event_optimistic_effect_before_write",
+      "surface": "lib",
+      "title": "Celebratory side-effect (haptic/chime) fires before the mutation confirms success",
+      "definition": "Self check-in dispatches play(liveEntry) before selfCheckInMutation.run with no success-gating, so the 'you're checked in' cue fires even when the check-in fails (e.g. venue/location verification rejects). The effect is correctly behind a provider (EXTERNAL-SIDE-EFFECT-001 satisfied); the bug is ordering.",
+      "canonical_fix": "Play success effects only inside the mutation success continuation, after the write resolves.",
+      "suggested_rule_id": "EFFECT-AFTER-SUCCESS-001",
+      "estimated_sites": 1,
+      "affected": [
+        "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "trigger_webhook_no_idempotency_receipt",
+      "surface": "functions",
+      "title": "At-least-once triggers and webhooks lack a central event-receipt idempotency guard",
+      "definition": "Firestore/Storage triggers and payment webhooks fire at-least-once and are redelivered. Side effects that are not id-deterministic (FCM pushes, auto-id flag writes, counter increments) are re-applied on every redelivery. onMessageCreated has the correct pattern (functionEventReceipts: tx.create on a deterministic receipt id, with a regression test) but it is not reused: onMatchCreated re-sends the match push, moderatePhotoOnUpload writes duplicate moderationFlags via .add() auto-id, the Stripe webhook relies solely on per-handler status checks (which are themselves incomplete), and invite paidCount increments double-count. A single shared event-receipt primitive applied at the handler boundary would make these trivially retry-safe.",
+      "canonical_fix": "Extract the onMessageCreated functionEventReceipts pattern into a shared withEventReceipt(event.id|deterministicKey, fn) helper that tx.create's a receipt and no-ops on already-exists. Apply at the entry of every onDocument*/onObjectFinalized trigger and the Stripe/Razorpay webhooks. Keep id-deterministic durable writes as-is; wrap the non-idempotent side effects (push, .add() flags, counter increments).",
+      "suggested_rule_id": "FN-IDEMP-001",
+      "estimated_sites": 5,
+      "affected": [
+        "functions/src/matching/onMatchCreated.ts",
+        "functions/src/moderation/moderatePhoto.ts",
+        "functions/src/payments/stripeWebhook.ts",
+        "functions/src/payments/verifyRazorpayPayment.ts",
+        "functions/src/matching/onMessageCreated.ts"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "non_atomic_backend_owned_count",
+      "surface": "functions",
+      "title": "Non-transactional read-modify-write on backend-owned denormalized aggregates",
+      "definition": "Denormalized counts (events.checkedInCount/bookedCount/genderCounts, clubs.memberCount, invite paidCount) are backend-owned and consumed by capacity gates, scorecards and matching eligibility. Several paths read the source outside a transaction and then issue an increment based on the stale read, so concurrent or retried calls double-count or lose updates. markEventAttendance and selfCheckInAttendance both read the participation edge non-transactionally then increment checkedInCount; demoOps repairEventAggregates/repairClubMemberCounts overwrite shared production aggregates outside any transaction; the invite paidCount increment is gated by a separate non-transactional read; account-deletion decrements straddle batches so a retry double-decrements.",
+      "canonical_fix": "Move every aggregate mutation into the same db.runTransaction that reads the source edge/status, and condition the +/-1 on the observed in-transaction state transition. Use the existing incrementInviteLinkCounterInTransaction instead of the best-effort variant. For account deletion, gate decrements on a tombstone and keep edge-flip + count-delta in one atomic unit.",
+      "suggested_rule_id": "FN-DATA-001",
+      "estimated_sites": 5,
+      "affected": [
+        "functions/src/events/markEventAttendance.ts",
+        "functions/src/events/selfCheckInAttendance.ts",
+        "functions/src/demoOps/suvbot.ts",
+        "functions/src/payments/verifyRazorpayPayment.ts",
+        "functions/src/safety/accountDeletion.ts"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "payment_refund_not_recoverable_and_unreconciled",
+      "surface": "functions",
+      "title": "Captured payments can be stuck charged-but-unbooked with no automated recovery",
+      "definition": "There is no Razorpay webhook, so verifyRazorpayPayment (a client callable) is the only reconciliation path \u2014 a payment captured after the client dies is never noticed (no pending doc is even written at order creation). When an automatic refund fails on either provider, the payment is recorded with the SAME status 'completed' as a successful booking (only flagged signUpFailed:true), with no distinct terminal state, retry queue, or alert beyond logger.error. Event/host-cancellation refund loops similarly log-and-forget. For an INR/payments product this is money-stuck with no self-healing.",
+      "canonical_fix": "Add a Razorpay onRequest webhook (X-Razorpay-Signature HMAC) handling payment.captured/order.paid, mirroring stripeWebhook; write a 'pending' payments doc keyed by orderId at order creation; introduce a distinct 'refund_failed'/'needs_manual_refund' terminal status with a structured alert/metric; and add a scheduled reconciliation sweep that finds captured-but-unverified orders and refund-failed payments.",
+      "suggested_rule_id": "FN-PAY-001",
+      "estimated_sites": 5,
+      "affected": [
+        "functions/src/payments/verifyRazorpayPayment.ts",
+        "functions/src/payments/stripeWebhook.ts",
+        "functions/src/payments/createRazorpayOrder.ts",
+        "functions/src/events/cancelEventSignUp.ts",
+        "functions/src/events/mutateEvent.ts"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "callable_missing_dedicated_rate_limit",
+      "surface": "functions",
+      "title": "Callables silently inherit the 30/min default rate limit (or none at all in demoOps)",
+      "definition": "checkRateLimit resolves config ?? RATE_LIMITS[action] ?? DEFAULT_RATE_LIMIT (30/min), so any action string absent from RATE_LIMITS silently degrades to the loose default with no signal \u2014 README documents per-action limits. 15 used actions are missing entries, including the high-impact transferClubOwnership and requestClubClaim ownership/claim flows and the eventSuccess generators; the entire demoOps surface calls checkRateLimit nowhere despite fanning out into full-collection scans and destructive batch writes. Adding an action without a limit is an undetectable policy regression.",
+      "canonical_fix": "Add explicit RATE_LIMITS entries for every action string used (tighter caps for transferClubOwnership/requestClubClaim/demoOps), wire checkRateLimit into demoOps, and make checkRateLimit emit logger.warn (or fail a guard test) when an action is missing from RATE_LIMITS and no explicit config was passed, so the silent-default regression is surfaced.",
+      "suggested_rule_id": "FN-RATE-001",
+      "estimated_sites": 8,
+      "affected": [
+        "functions/src/shared/rateLimit.ts",
+        "functions/src/clubs/clubClaims.ts",
+        "functions/src/clubs/manageClubHosts.ts",
+        "functions/src/clubs/clubHostConversations.ts",
+        "functions/src/demoOps/suvbot.ts",
+        "functions/src/search/exploreSearch.ts"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "unbounded_query_or_trigger_amplification",
+      "surface": "functions",
+      "title": "Unbounded collection scans and full-recompute triggers on hot churn paths",
+      "definition": "Several request/trigger paths read whole collections with no .limit()/filter and recompute on every write with no debounce or before/after diff guard. loadRepeatAttendeeCount scans the club's entire lifetime participation history on every scorecard refresh (reached from all 5 triggers); the scorecard recompute itself runs a 6-collection fan-out plus N+1 per-attendee swipe queries on every participation/payment/offer write with no coalescing; the Algolia club trigger re-indexes every event in the club on each member/review/nextEvent churn write; syncClubReviewStats re-reads all reviews on ownerResponse-only edits; demoOps collectIncomingSwipes scans the entire profileDecisions tree. Cost/latency grow linearly with data and compound the missing rate limits.",
+      "canonical_fix": "Add before/after diff guards so triggers skip when no indexed/aggregate field changed; constrain queries with uid-chunked IN filters (activeUids is already known), time windows, and .limit(); debounce/coalesce scorecard refreshes via a dirty-marker + scheduled reconciler; replace per-attendee N+1 fan-outs with collectionGroup queries; bound generator participant sets with a documented attendee ceiling.",
+      "suggested_rule_id": "FN-PERF-001",
+      "estimated_sites": 6,
+      "affected": [
+        "functions/src/marketplace/eventSuccessScorecards.ts",
+        "functions/src/search/algoliaExploreIndex.ts",
+        "functions/src/reviews/syncClubReviewStats.ts",
+        "functions/src/demoOps/suvbot.ts",
+        "functions/src/eventSuccess/generateEventSuccessRotations.ts",
+        "functions/src/admin/overview.ts"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "client_supplied_id_or_path_not_validated",
+      "surface": "functions",
+      "title": "Client-supplied identifiers/paths used as document ids, canonical URLs, or storage targets without ownership/format validation",
+      "definition": "Backend must derive/validate resource identity server-side. updateUserProfile stores client-supplied profilePhotos[].storagePath/url verbatim with no users/{uid}/ ownership check, and the account-deletion sink then admin-SDK-deletes those paths \u2014 enabling cross-user Storage deletion (high). createClub accepts an arbitrary client clubId that becomes the public canonical path/slug (length-only schema, no pattern). joinWaitlist uses the client-supplied analytics.eventId as the marketingConversionEvents doc id with an unconditional set() overwrite on an unauthenticated endpoint (cross-lead clobber), and turns an unbounded email into a base64url doc id that can overflow the 1500-byte limit.",
+      "canonical_fix": "Validate every client-supplied storagePath against users/${uid}/ (reuse safeProfilePhotoStoragePath) and reject otherwise; harden deletion sinks to only delete paths under users/${uid}/. Derive doc ids server-side (auto-id or server-keyed) and use tx.create not set() for new-record writes; store client analytics ids only as fields. Add strict patterns/length bounds to id-shaped schema fields and hash unbounded inputs used as keys.",
+      "suggested_rule_id": "FN-AUTHZ-001",
+      "estimated_sites": 4,
+      "affected": [
+        "functions/src/profiles/updateUserProfile.ts",
+        "functions/src/safety/accountDeletion.ts",
+        "functions/src/clubs/createClub.ts",
+        "functions/src/waitlist/joinWaitlist.ts"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "moderation_does_not_cover_all_channels",
+      "surface": "functions",
+      "title": "Content moderation does not cover the notification channel or the denormalized preview, and bypasses entire surfaces",
+      "definition": "moderateChatMessage and onMessageCreated are two independent onCreate triggers on the same message path; moderation only redacts the stored message.text, so the FCM push body (computed from the original snapshot by onMessageCreated) always delivers blocked content to the victim's lock screen, and the banned text persists in the server-owned lastMessagePreview. Separately, the entire reviews surface (comment, public reviewerName, host response) bypasses moderateText despite public rendering, and the static word-list filter is trivially obfuscation-bypassed. Redaction-after-fan-out can never win the race.",
+      "canonical_fix": "Moderate synchronously at the write boundary (or screen with isBlocked in the push path and the preview builder) so blocked content is never persisted in deliverable form, eliminating the two-racing-triggers design. Run review comment/reviewerName/host response through moderateText. Normalize separators/leetspeak/homoglyphs before matching for the BLOCK tier.",
+      "suggested_rule_id": "FN-MOD-001",
+      "estimated_sites": 4,
+      "affected": [
+        "functions/src/moderation/moderateMessage.ts",
+        "functions/src/matching/onMessageCreated.ts",
+        "functions/src/reviews/mutateReview.ts",
+        "functions/src/moderation/textFilter.ts"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "unbounded_input_or_leak_to_logs_and_clients",
+      "surface": "functions",
+      "title": "Unbounded free-text inputs and PII/upstream detail leaking to logs and clients",
+      "definition": "occupation/company accept unbounded strings (no maxLength, unlike every peer field) and are projected to publicProfiles, allowing multi-MB doc bloat; joinWaitlist email is unbounded. Raw upstream Google Places error.message is forwarded verbatim to clients (config-detail leak) and all upstream faults are flattened to 'internal'; Algolia error paths interpolate raw upstream bodies into logs; joinWaitlist logs raw email PII to Cloud Logging. These are individually low/medium but recur across slices and indicate missing input-bound and output-sanitization conventions.",
+      "canonical_fix": "Add maxLength to occupation/company and email in the contract sources and regenerate; return a fixed generic client message for upstream failures (log detail server-side) and map status codes to correct HttpsError codes; log leadId/hashed-email instead of raw PII; log structured context instead of raw upstream bodies.",
+      "suggested_rule_id": "FN-INPUT-001",
+      "estimated_sites": 4,
+      "affected": [
+        "functions/src/shared/generated/schemaRegistry.ts",
+        "functions/src/waitlist/joinWaitlist.ts",
+        "functions/src/places/googlePlaces.ts",
+        "functions/src/search/algoliaExploreIndex.ts"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "duplicated_logic_across_sibling_modules",
+      "surface": "functions",
+      "title": "Authorization/eligibility/attendance logic copy-pasted across sibling modules, enabling divergent bugs",
+      "definition": "The cohort/orientation eligibility predicate, moduleSelected, fetchUidsBlockedWithViewer and chunk/pairKey are byte-duplicated across all four event-success files \u2014 and this duplication is directly causal to the wingman authorization gap (the eligibility predicate was copied into firstHello's fetch path but the wingman submit path silently lacks it). The host vs self attendance state machine is duplicated across markEventAttendance and selfCheckInAttendance, so the shared non-atomic count bug must be fixed twice.",
+      "canonical_fix": "Extract a shared eventSuccess module (eligibility predicate, moduleSelected, blocked-pair helper, chunk/pairKey) imported by all callables so fetch and submit paths cannot drift; extract applyAttendanceTransition(tx, ...) shared by the host and self check-in callables, keeping only policy differences in the handler bodies.",
+      "suggested_rule_id": "FN-DUP-001",
+      "estimated_sites": 6,
+      "affected": [
+        "functions/src/eventSuccess/wingmanRequests.ts",
+        "functions/src/eventSuccess/firstHelloCheckIn.ts",
+        "functions/src/eventSuccess/generateEventSuccessRotations.ts",
+        "functions/src/eventSuccess/generateEventSuccessPods.ts",
+        "functions/src/events/markEventAttendance.ts",
+        "functions/src/events/selfCheckInAttendance.ts"
+      ],
+      "status": "open"
+    },
+    {
+      "pattern_key": "function_inventory_doc_drift",
+      "surface": "functions",
+      "title": "Canonical functions/README.md inventory omits the live Stripe surface and ~30 other exports",
+      "definition": "CLAUDE.md declares functions/README.md the source-of-truth for the Cloud Functions inventory and secrets, but it documents payments as Razorpay-only and omits the entire Stripe surface \u2014 including stripeWebhook, an HTTP money-movement endpoint authenticated only by Stripe signature (not App Check/Auth) \u2014 plus its two secrets and ~30 other exports (admin/claim/payout-onboarding callables, scorecard triggers). transferClubOwnership and the public-review callables are also absent from docs/backend_operation_catalog.md. There is no CI guard diffing exported symbols against the docs, so reviewers/auditors understate the live attack surface.",
+      "canonical_fix": "Refresh the README inventory tables directly from src/index.ts (explicitly listing the Stripe surface and stripeWebhook as signature-authed HTTP, plus STRIPE_SECRET_KEY/STRIPE_WEBHOOK_SECRET), add the missing callables to the operation catalog, and add a CI check that diffs exported symbols in index.ts against the documented inventory.",
+      "suggested_rule_id": "FN-DOC-001",
+      "estimated_sites": 3,
+      "affected": [
+        "functions/README.md",
+        "docs/backend_operation_catalog.md",
+        "functions/src/index.ts"
+      ],
+      "status": "open"
+    }
+  ]
+}

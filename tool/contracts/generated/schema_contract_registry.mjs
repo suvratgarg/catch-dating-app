@@ -11062,16 +11062,15 @@ export const functionEventReceiptDocumentSchema = {
   "x-owner": "idempotent Firestore trigger handlers",
   "required": [
     "handler",
-    "eventId",
-    "matchId",
-    "messageId",
     "createdAt"
   ],
   "properties": {
     "handler": {
       "type": "string",
       "enum": [
-        "onMessageCreated"
+        "onMessageCreated",
+        "onMatchCreated",
+        "moderatePhotoOnUpload"
       ],
       "x-catch-ownership": "server-only"
     },

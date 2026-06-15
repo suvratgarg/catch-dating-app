@@ -51,7 +51,7 @@ export async function requestAccountDeletionHandler(
   const userData = userSnap.data() ?? {};
 
   await deleteStoragePaths(
-    profilePhotoDeletionStoragePaths(userData),
+    profilePhotoDeletionStoragePaths(uid, userData),
     deps.storageBucket()
   );
 
@@ -477,13 +477,18 @@ class BatchQueue {
  * @return {string[]} Storage object paths to delete.
  */
 function profilePhotoDeletionStoragePaths(
+  uid: string,
   user: FirebaseFirestore.DocumentData
 ): string[] {
   const paths = new Set<string>();
+  // storagePath/url are client-supplied (via updateUserProfile), so only delete
+  // objects the account actually owns — never a path targeting another user.
+  const ownsPath = (value: string): boolean =>
+    value.startsWith(`users/${uid}/`);
   const addPath = (value: unknown) => {
     if (typeof value !== "string") return;
     const trimmed = value.trim();
-    if (trimmed.length > 0) paths.add(trimmed);
+    if (trimmed.length > 0 && ownsPath(trimmed)) paths.add(trimmed);
   };
   const addUrl = (value: unknown) => {
     if (typeof value !== "string") return;

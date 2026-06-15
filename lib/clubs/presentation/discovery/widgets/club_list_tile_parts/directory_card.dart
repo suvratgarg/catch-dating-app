@@ -384,7 +384,11 @@ class _JoinClubButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final joinMutation = ref.watch(ClubMembershipController.joinMutation);
+    // Key by clubId so each tile observes only its own join state; an unkeyed
+    // shared mutation would spin/disable every visible Join button at once.
+    final joinMutation = ref.watch(
+      ClubMembershipController.joinMutation(clubId),
+    );
 
     return CatchButton(
       label: 'Join',
@@ -411,7 +415,7 @@ class _JoinClubButton extends ConsumerWidget {
   }
 
   void _joinClub(WidgetRef ref) {
-    ClubMembershipController.joinMutation.run(ref, (transaction) async {
+    ClubMembershipController.joinMutation(clubId).run(ref, (transaction) async {
       await transaction
           .get(clubMembershipControllerProvider.notifier)
           .join(clubId);
