@@ -50,18 +50,12 @@ goldens (it loads nothing in tests) — use activity art or inject a fake image.
 
 ## How fonts work (the tricky part)
 
-`flutter test` stubs all HTTP to 400, so `google_fonts` can't fetch. We instead:
+Goldens load the same bundled font assets the app ships:
 
-1. Commit the real font files in `test/goldens/fonts/` (Newsreader roman+italic
-   variable, Inter variable, IBM Plex Mono Regular/Medium/SemiBold/Bold).
-2. In `flutter_test_config.dart` (auto-run for this dir only — the app's other
-   ~1200 tests are untouched), register them via `FontLoader` under the **exact
-   variant family names google_fonts emits** (`Newsreader_800`, `Inter_600`,
-   `IBMPlexMono_700`, …; w800 mono clamps to `_700`). Roman weights all map to the
-   one variable file (Flutter drives the weight axis); italics map to the italic
-   file; mono uses per-weight statics.
-3. Disable `GoogleFonts.config.allowRuntimeFetching`; the resulting "not found in
-   assets" notice is swallowed by the guarded zone in `golden_pump.dart`.
+1. `flutter_test_config.dart` registers Archivo and IBM Plex Mono via
+   `FontLoader`; the platform system font remains platform-owned.
+2. Archivo weights/widths are driven through `FontVariation` in `CatchFonts`.
+3. Mono uses the bundled per-weight statics.
 
 This is **test-only** — no fonts are added to the app bundle. If `CatchFonts`
 changes the display face, re-probe the emitted family names and update the loader.

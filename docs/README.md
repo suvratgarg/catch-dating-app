@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 4.1.9
-updated: 2026-06-02
+version: 4.1.13
+updated: 2026-06-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -90,6 +90,7 @@ durable owners above or closed in code.
 | `event_success_theatrical_experience_tracker.md` | Event Success live ceremony polish is active: native sensory cues, attendee moment theatre, host showtime console, invite-loop follow-up, private afterglow recap planning, and the optional First Hello arrival ritual. |
 | `sales_demo_seed_tracker.md` | Sales-grade synthetic supply is active: canonical personas/assets, cohort scope, image production, U.S./India market packs, host sales scenario, event policy coverage, and migration of lower-quality demo surfaces remain. |
 | `marketing_landing_page_tracker.md` | Marketing site research and preview are active; keep until the approved website rewrite and app visual-direction follow-up are folded into durable owner docs. |
+| `plans/website_mockup_functionality_gap_tracker.md` | Website mockup implementation is active: canonical website components, homepage discovery, URL-backed directory filters, listing share/event/review improvements, claim states, and host product modules are implemented; deferred backend/product decisions remain tracked until shipped or migrated into web architecture docs. |
 | `plans/admin_analytics_dashboard_tracker.md` | Admin console implementation is active: live ops actions, deployment, analytics APIs, and finance ledger work remain. Pairs with `admin_analytics_dashboard_spec.md`. |
 | `plans/host_consumer_app_split_tracker.md` | Host/consumer app split implementation record: app role, router split, host shell, consumer cleanup, host identity, professional message-host chat, push tokens, native targets, Firebase configs, App Check, and deep-link contracts are implemented; keep as evidence until host store/TestFlight release follow-ups are folded into release docs. |
 
