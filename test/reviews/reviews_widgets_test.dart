@@ -198,7 +198,9 @@ void main() {
         uidProvider.overrideWith((ref) => Stream.value(user.uid)),
         watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
         reviewsRepositoryProvider.overrideWith((ref) => repository),
-        watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
+        watchEventsByIdsProvider(
+          EventsByIdQuery([event.id]),
+        ).overrideWith((ref) => Stream.value([event])),
       ],
     );
     addTearDown(container.dispose);
