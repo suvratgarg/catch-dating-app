@@ -299,7 +299,6 @@ class EventDetailMechanismList extends StatelessWidget {
 }
 
 const _photoStripTileCount = 3;
-const _photoStripTileHeight = 108.0;
 
 class EventDetailPhotoStrip extends StatelessWidget {
   const EventDetailPhotoStrip({super.key, required this.event});
@@ -369,7 +368,7 @@ class _EventDetailPhotoStripTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       key: ValueKey('event-photo-strip-tile-$index'),
-      height: _photoStripTileHeight,
+      height: CatchLayout.eventDetailPhotoStripTileHeight,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(CatchRadius.infoTile),
         child: photo == null

@@ -1511,6 +1511,7 @@ abstract final class CatchLayout {
   static const double eventDetailTicketStubBandHeight = 72.0;
   static const double eventDetailHintDotExtent = 7.0;
   static const double eventDetailMapCardHeight = 126.0;
+  static const double eventDetailPhotoStripTileHeight = 108.0;
   static const double eventDetailHairlineDividerHeight = 25.0;
   static const double eventDetailItineraryTimeColumnWidth = 50.0;
   static const double eventDetailItineraryRailColumnWidth = 20.0;
