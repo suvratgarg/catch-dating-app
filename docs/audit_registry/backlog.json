@@ -877,7 +877,7 @@
       "rules": [
         "FN-IDEMP-001"
       ],
-      "summary": "DONE: extracted shared withEventReceipt() primitive (functions/src/shared/eventReceipts.ts) using an atomic create() claim; generalized the contracts/firestore/function_event_receipts schema (handler enum + optional message fields) and regenerated. Applied to onMatchCreated (push now guarded against redelivery; redelivery regression test added). REMAINING: apply to moderatePhotoOnUpload (.add() auto-id duplicate flags) and the future Razorpay webhook (PAY-WEBHOOK-001); invite paidCount increment.",
+      "summary": "DONE: extracted shared withEventReceipt() primitive (functions/src/shared/eventReceipts.ts) using an atomic create() claim; generalized the contracts/firestore/function_event_receipts schema (handler enum + optional message fields) and regenerated. Applied to onMatchCreated (push now guarded against redelivery; redelivery regression test added). REMAINING: apply to moderatePhotoOnUpload (.add() auto-id duplicate flags) and the future Razorpay webhook (PAY-WEBHOOK-001); invite paidCount increment. moderatePhotoOnUpload now writes its moderation flag with a deterministic path-keyed id via create() (idempotent) instead of .add() auto-id. Razorpay webhook (PAY-WEBHOOK-001) remains the last receipt application.",
       "source": "deep_semantic_audit_2026-06"
     },
     {
@@ -980,6 +980,15 @@
     "SCREEN-SPACING-SYSTEM-001"
   ],
   "completed": [
+    {
+      "id": "FN-INPUT-LEAK-001-DONE",
+      "title": "Google Places upstream error no longer leaked to client",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-INPUT-001"
+      ],
+      "summary": "googlePlaces now logs upstream Google error detail server-side and returns a generic client message instead of forwarding raw upstream text. Verified: functions build+lint clean, 332 tests green."
+    },
     {
       "id": "BACKEND-BATCH-2026-06-16",
       "title": "Backend hardening: idempotency receipt + atomic counts + moderation leak + rate-limit",
