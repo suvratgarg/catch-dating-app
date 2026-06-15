@@ -3,12 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('LocationCoordinate', () {
-    test('validates latitude and longitude bounds', () {
-      expect(const LocationCoordinate(19.0760, 72.8777).isValid, isTrue);
-      expect(const LocationCoordinate(-91, 72.8777).isValid, isFalse);
-      expect(const LocationCoordinate(19.0760, 181).isValid, isFalse);
-    });
-
     test('builds from nullable primitive coordinate fields', () {
       expect(
         LocationCoordinate.fromNullable(latitude: 19.0760, longitude: 72.8777),

@@ -17,7 +17,6 @@ class ChatController extends _$ChatController {
   static final sendImageMutation = Mutation<void>();
   static final blockUserMutation = Mutation<void>();
   static final reportUserMutation = Mutation<void>();
-  static final resetUnreadMutation = Mutation<void>();
 
   @override
   void build() {}
@@ -80,14 +79,5 @@ class ChatController extends _$ChatController {
           contextId: matchId,
           reasonCode: 'chat_safety_concern',
         );
-  }
-
-  Future<void> resetUnread({
-    required String matchId,
-    required String uid,
-  }) async {
-    await ref
-        .read(conversationRepositoryProvider)
-        .markRead(conversationId: matchId, uid: uid);
   }
 }

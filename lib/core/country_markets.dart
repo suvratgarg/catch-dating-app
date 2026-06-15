@@ -16,7 +16,6 @@ class CountryMarket implements Labelled {
     required this.currencySymbol,
     required this.defaultCityName,
     required this.timeZone,
-    this.currencyMinorUnitFactor = 100,
   });
 
   final String isoCode;
@@ -27,7 +26,6 @@ class CountryMarket implements Labelled {
   final String currencySymbol;
   final String defaultCityName;
   final String timeZone;
-  final int currencyMinorUnitFactor;
 }
 
 class CurrencyDefinition {

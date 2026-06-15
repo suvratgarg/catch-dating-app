@@ -20,12 +20,6 @@ class LocationCoordinate {
     return LocationCoordinate(latitude, longitude);
   }
 
-  bool get isValid =>
-      latitude >= -90 &&
-      latitude <= 90 &&
-      longitude >= -180 &&
-      longitude <= 180;
-
   double distanceTo(LocationCoordinate other) {
     final dLat = _toRadians(other.latitude - latitude);
     final dLng = _toRadians(other.longitude - longitude);
