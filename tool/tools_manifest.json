@@ -548,6 +548,19 @@
       "checks": ["bash -n tool/run_host_dev_simulator.sh"]
     },
     {
+      "id": "env:ci-toolchain",
+      "category": "env",
+      "path": "tool/ci/check_toolchain_consistency.sh",
+      "command": "bash tool/ci/check_toolchain_consistency.sh",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates checked-in CI toolchain pins against package-level runtime declarations.",
+      "checks": [
+        "bash -n tool/ci/check_toolchain_consistency.sh",
+        "bash tool/ci/check_toolchain_consistency.sh"
+      ]
+    },
+    {
       "id": "env:firebase",
       "category": "env",
       "path": "tool/firebase_with_env.sh",
