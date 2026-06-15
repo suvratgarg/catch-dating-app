@@ -13,15 +13,13 @@ class WelcomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const d = CatchTokens.sunsetDark;
-    final t = CatchTokens.of(context);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
-      child: DecoratedBox(
-        decoration: BoxDecoration(gradient: t.heroGrad),
+      child: ColoredBox(
+        color: d.bg,
         child: Stack(
           children: [
-            const Positioned.fill(child: _TrackPattern()),
             SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -37,20 +35,21 @@ class WelcomePage extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'CATCH',
-                                style: CatchTextStyles.kicker(
+                                'Catch.',
+                                style: CatchTextStyles.headlineS(
                                   context,
                                   color: d.ink,
                                 ),
                               ),
-                              gapH12,
-                              Image.asset(
-                                'assets/branding/catch_icon.png',
-                                width: CatchLayout.welcomeBrandMarkExtent,
-                                height: CatchLayout.welcomeBrandMarkExtent,
-                                semanticLabel: 'Catch',
-                              ),
                               const Spacer(),
+                              Text(
+                                'RUN CLUB DATING',
+                                style: CatchTextStyles.kicker(
+                                  context,
+                                  color: d.ink3,
+                                ),
+                              ),
+                              gapH16,
                               Text(
                                 'Love arrives\nat mile\nthree.',
                                 style: CatchTextStyles.display(
@@ -60,8 +59,8 @@ class WelcomePage extends ConsumerWidget {
                               ),
                               gapH16,
                               Text(
-                                'Meet someone on a group event. Catch people you '
-                                'actually ran with - not strangers 30 miles away.',
+                                'Join a group run. Match only with people you '
+                                'actually ran with - never strangers 30 miles away.',
                                 style: CatchTextStyles.proseL(
                                   context,
                                   color: d.ink.withValues(
@@ -71,17 +70,17 @@ class WelcomePage extends ConsumerWidget {
                               ),
                               gapH24,
                               CatchButton(
-                                label: 'Explore events',
-                                onPressed: () => context.go('/clubs'),
+                                label: 'Continue with phone',
+                                onPressed: () =>
+                                    context.go(_authLocation(context)),
                                 variant: CatchButtonVariant.light,
                                 size: CatchButtonSize.lg,
                                 fullWidth: true,
                               ),
-                              gapH12,
+                              gapH10,
                               CatchButton(
-                                label: 'Continue with phone',
-                                onPressed: () =>
-                                    context.go(_authLocation(context)),
+                                label: 'Explore events',
+                                onPressed: () => context.go('/clubs'),
                                 variant: CatchButtonVariant.secondary,
                                 size: CatchButtonSize.lg,
                                 fullWidth: true,
@@ -123,63 +122,4 @@ String? _safeFrom(String? from) {
   final uri = Uri.tryParse(from);
   if (uri == null || uri.hasScheme || uri.hasAuthority) return null;
   return uri.toString();
-}
-
-class _TrackPattern extends StatelessWidget {
-  const _TrackPattern();
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(painter: _TrackPatternPainter());
-  }
-}
-
-class _TrackPatternPainter extends CustomPainter {
-  static const _stripeWidth = 5.0;
-  static const _stripeGap = 10.0;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = CatchTokens.editorialLight.withValues(
-        alpha: CatchOpacity.welcomeTrackPattern,
-      )
-      ..strokeWidth = _stripeWidth;
-
-    _drawStripedCircle(
-      canvas,
-      center: Offset(size.width * 0.92, size.height * 0.12),
-      radius: size.width * 0.34,
-      paint: paint,
-    );
-    _drawStripedCircle(
-      canvas,
-      center: Offset(-size.width * 0.05, size.height * 0.88),
-      radius: size.width * 0.42,
-      paint: paint,
-    );
-  }
-
-  void _drawStripedCircle(
-    Canvas canvas, {
-    required Offset center,
-    required double radius,
-    required Paint paint,
-  }) {
-    canvas.save();
-    canvas.clipPath(
-      Path()..addOval(Rect.fromCircle(center: center, radius: radius)),
-    );
-    canvas.translate(center.dx, center.dy);
-    canvas.rotate(0.6);
-
-    for (var x = -radius * 2; x <= radius * 2; x += _stripeGap) {
-      canvas.drawLine(Offset(x, -radius * 2), Offset(x, radius * 2), paint);
-    }
-
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -6,9 +6,12 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -310,17 +313,11 @@ class _CircleActionButton extends StatelessWidget {
 
     return Tooltip(
       message: label,
-      child: SizedBox.square(
-        dimension: CatchLayout.suvbotCircleActionExtent,
-        child: IconButton(
-          onPressed: pending ? null : onPressed,
-          icon: Icon(icon, size: CatchIcon.md),
-          color: t.ink2,
-          style: IconButton.styleFrom(
-            backgroundColor: t.surface,
-            side: BorderSide(color: t.line),
-          ),
-        ),
+      child: IconBtn(
+        size: CatchLayout.suvbotCircleActionExtent,
+        background: t.surface,
+        onTap: pending ? null : onPressed,
+        child: Icon(icon, size: CatchIcon.md, color: pending ? t.ink3 : t.ink2),
       ),
     );
   }
@@ -373,50 +370,108 @@ Future<void> _showResetSheet(
 }) {
   return showModalBottomSheet<void>(
     context: context,
-    showDragHandle: true,
+    isScrollControlled: true,
     builder: (context) => SafeArea(
       child: SingleChildScrollView(
-        child: Padding(
-          padding: _demoActionSheetPadding,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('Reset demo state', style: CatchTextStyles.titleL(context)),
-              const SizedBox(height: CatchSpacing.s1),
-              Text(
-                'These actions only touch demo-owned data.',
-                style: CatchTextStyles.supporting(context),
-              ),
-              const SizedBox(height: CatchSpacing.s3),
-              for (final action in actions) ...[
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: Icon(_iconFor(action.icon)),
-                  title: Text(
-                    action.label,
-                    style: CatchTextStyles.sectionTitle(context),
-                  ),
-                  subtitle: Text(
-                    action.description,
-                    style: CatchTextStyles.supporting(context),
-                  ),
-                  enabled: !pending,
-                  onTap: pending
-                      ? null
-                      : () {
-                          Navigator.of(context).pop();
-                          unawaited(onAction(action));
-                        },
-                ),
-                if (action != actions.last) const Divider(height: 1),
-              ],
-            ],
+        child: CatchBottomSheetScaffold(
+          title: 'Reset demo state',
+          subtitle: 'These actions only touch demo-owned data.',
+          child: Builder(
+            builder: (context) {
+              final t = CatchTokens.of(context);
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (final (index, action) in actions.indexed) ...[
+                    _SuvbotResetActionRow(
+                      action: action,
+                      pending: pending,
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        unawaited(onAction(action));
+                      },
+                    ),
+                    if (index != actions.length - 1)
+                      Divider(height: 1, color: t.line),
+                  ],
+                ],
+              );
+            },
           ),
         ),
       ),
     ),
   );
+}
+
+class _SuvbotResetActionRow extends StatelessWidget {
+  const _SuvbotResetActionRow({
+    required this.action,
+    required this.pending,
+    required this.onTap,
+  });
+
+  final SuvbotActionItem action;
+  final bool pending;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final tone = action.destructive ? t.danger : t.ink;
+    return AnimatedOpacity(
+      opacity: pending ? CatchOpacity.disabledControl : 1,
+      duration: CatchMotion.fast,
+      curve: CatchMotion.standardCurve,
+      child: CatchSurface(
+        tone: CatchSurfaceTone.transparent,
+        radius: 0,
+        borderWidth: 0,
+        onTap: pending ? null : onTap,
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.s1,
+          vertical: CatchSpacing.s3,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: CatchSpacing.micro2),
+              child: Icon(
+                _iconFor(action.icon),
+                color: tone,
+                size: CatchIcon.row,
+              ),
+            ),
+            gapW12,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    action.label,
+                    style: CatchTextStyles.infoRowTitle(context, color: tone),
+                  ),
+                  gapH4,
+                  Text(
+                    action.description,
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                  ),
+                ],
+              ),
+            ),
+            gapW12,
+            Icon(
+              CatchIcons.chevronRightRounded,
+              color: action.destructive ? t.danger : t.ink3,
+              size: CatchIcon.sm,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 Future<void> _showMatchTesterSheet(

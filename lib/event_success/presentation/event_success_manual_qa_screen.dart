@@ -9,8 +9,10 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
@@ -93,12 +95,7 @@ class _EventSuccessManualQaScreenState
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: AppBar(
-        title: Text(
-          'Event success manual QA',
-          style: CatchTextStyles.sectionTitle(context),
-        ),
-      ),
+      appBar: const CatchTopBar(title: 'Event success manual QA', border: true),
       body: SafeArea(
         child: FutureBuilder<_ManualQaStore>(
           future: _storeFuture,
@@ -578,10 +575,9 @@ class _ManualQaControls extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final value in _ManualQaScenario.values)
-                CatchChip(
+                SelectChip(
                   label: value.label,
                   active: scenario == value,
-                  icon: Icon(value.icon),
                   onTap: () => onScenarioChanged(value),
                 ),
             ],
@@ -863,22 +859,19 @@ class _AttendeeQaControls extends StatelessWidget {
       children: [
         const _ControlLabel('Attendee choices'),
         gapH8,
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CatchChip(
+            _ManualQaToggleRow(
               label: 'Micro-pods opt-out',
-              active: microPodsOptedOut,
-              icon: Icon(CatchIcons.visibilityOffOutlined),
-              onTap: () => onMicroPodsOptOutChanged(!microPodsOptedOut),
+              value: microPodsOptedOut,
+              onChanged: onMicroPodsOptOutChanged,
             ),
-            CatchChip(
+            gapH8,
+            _ManualQaToggleRow(
               label: 'Rotations opt-out',
-              active: guidedRotationsOptedOut,
-              icon: Icon(CatchIcons.blockOutlined),
-              onTap: () =>
-                  onGuidedRotationsOptOutChanged(!guidedRotationsOptedOut),
+              value: guidedRotationsOptedOut,
+              onChanged: onGuidedRotationsOptOutChanged,
             ),
             if (firstHelloEnabled)
               CatchBadge(
@@ -935,6 +928,28 @@ class _DarkPill extends StatelessWidget {
   }
 }
 
+class _ManualQaToggleRow extends StatelessWidget {
+  const _ManualQaToggleRow({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String label;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: Text(label, style: CatchTextStyles.labelL(context))),
+        CatchToggle(value: value, semanticLabel: label, onChanged: onChanged),
+      ],
+    );
+  }
+}
+
 enum _ManualQaScenario {
   socialRun,
   racketPairs,
@@ -946,13 +961,6 @@ enum _ManualQaScenario {
     _ManualQaScenario.racketPairs => 'Racket pairs',
     _ManualQaScenario.quizTeams => 'Quiz teams',
     _ManualQaScenario.singlesMixer => 'Singles mixer',
-  };
-
-  IconData get icon => switch (this) {
-    _ManualQaScenario.socialRun => CatchIcons.directionsRunRounded,
-    _ManualQaScenario.racketPairs => CatchIcons.sportsTennisRounded,
-    _ManualQaScenario.quizTeams => CatchIcons.quizOutlined,
-    _ManualQaScenario.singlesMixer => CatchIcons.favoriteBorderRounded,
   };
 
   ActivityKind get activityKind => switch (this) {

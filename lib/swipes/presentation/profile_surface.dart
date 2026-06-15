@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_card_content.dart';
@@ -53,6 +54,7 @@ class ProfileSurface extends StatelessWidget {
       age: profile.age,
       running: profile.activityPreferences.running,
       kicker: _kicker(sharedRunTitle),
+      kickerActivity: ActivityKind.socialRun,
       metaLine: _metaLine(profile),
     );
 

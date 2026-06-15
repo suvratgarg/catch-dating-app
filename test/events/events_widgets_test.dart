@@ -153,6 +153,7 @@ void main() {
         );
 
         expect(find.text('Requirements'), findsOneWidget);
+        expect(find.byType(CatchBadge), findsNWidgets(3));
         expect(find.text('AGE 21–35'), findsOneWidget);
         expect(find.text('MAX 8 MEN'), findsOneWidget);
         expect(find.text('MAX 10 WOMEN'), findsOneWidget);
@@ -342,6 +343,7 @@ void main() {
 
       expect(find.text('21+ YEARS'), findsOneWidget);
       expect(find.text('UP TO 35 YEARS'), findsOneWidget);
+      expect(find.byType(CatchBadge), findsNWidgets(2));
     });
 
     testWidgets('when step renders schedule validation text', (tester) async {

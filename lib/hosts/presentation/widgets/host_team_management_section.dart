@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
@@ -53,12 +54,18 @@ class HostTeamManagementSection extends ConsumerWidget {
           Row(
             children: [
               const Expanded(child: SectionHeader(title: 'Host team')),
-              IconButton.filledTonal(
-                tooltip: 'Add host',
-                onPressed: actionPending
-                    ? null
-                    : () => unawaited(_showAddHostSheet(context)),
-                icon: Icon(CatchIcons.personAddAlt1Rounded),
+              Tooltip(
+                message: 'Add host',
+                child: IconBtn(
+                  onTap: actionPending
+                      ? null
+                      : () => unawaited(_showAddHostSheet(context)),
+                  child: Icon(
+                    CatchIcons.personAddAlt1Rounded,
+                    size: CatchIcon.md,
+                    color: actionPending ? t.ink3 : t.ink,
+                  ),
+                ),
               ),
             ],
           ),

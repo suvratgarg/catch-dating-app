@@ -5,18 +5,14 @@ import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_card.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart';
-import 'package:catch_dating_app/public_profile/domain/profile_insights.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -106,9 +102,9 @@ typedef _ProfileTabContentBuilder =
 
 const profileTabBodyPadding = EdgeInsets.fromLTRB(
   CatchSpacing.s5,
-  CatchSpacing.s2,
+  CatchSpacing.micro18,
   CatchSpacing.s5,
-  CatchSpacing.s8,
+  CatchSpacing.s7,
 );
 
 class _ProfileTabContent extends ConsumerStatefulWidget {
@@ -147,13 +143,9 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     final user = widget.user;
     final uploadState = widget.uploadState;
     final profilePhotos = user.effectiveProfilePhotos;
-    final profileQuality = profileQualitySummary(
-      publicProfileFromUserProfile(user),
-    );
     final completedPromptCount = user.profilePrompts
         .where((prompt) => prompt.answer.trim().isNotEmpty)
         .length;
-    final showRunningDetails = user.hasCurrentRunPreferences;
     final basics = [
       _textEntry(
         context: context,
@@ -250,7 +242,17 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         value: user.height != null ? '${user.height} cm' : 'Height',
       ),
     ];
-    final background = [
+    final about = [
+      ...basics,
+      _singleEnumEntry<CityOption>(
+        context: context,
+        icon: CatchIcons.locationOnOutlined,
+        label: 'City',
+        values: defaultCityOptions,
+        value: cityOptionByName(user.city),
+        fieldName: 'city',
+        patchForValue: (value) => UpdateUserProfilePatch(city: value?.name),
+      ),
       _textEntry(
         context: context,
         icon: CatchIcons.workOutline,
@@ -301,8 +303,6 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         placeholder: 'Languages',
         patchForValues: (values) => UpdateUserProfilePatch(languages: values),
       ),
-    ];
-    final intentions = [
       _singleEnumEntry<RelationshipGoal>(
         context: context,
         icon: CatchIcons.favoriteOutline,
@@ -359,17 +359,6 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         value: user.children,
         fieldName: 'children',
         patchForValue: (value) => UpdateUserProfilePatch(children: value),
-      ),
-    ];
-    final location = [
-      _singleEnumEntry<CityOption>(
-        context: context,
-        icon: CatchIcons.locationOnOutlined,
-        label: 'City',
-        values: defaultCityOptions,
-        value: cityOptionByName(user.city),
-        fieldName: 'city',
-        patchForValue: (value) => UpdateUserProfilePatch(city: value?.name),
       ),
     ];
     final running = [
@@ -482,86 +471,55 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     }, growable: false);
 
     return widget.builder(context, [
-      _ProfileQualityGuidanceCard(summary: profileQuality),
-      gapH14,
-      _ProfilePhotosSection(
-        profilePhotos: profilePhotos,
-        uploadState: uploadState,
-        onSlotTapped: (index) => unawaited(
-          openProfilePhotoEditor(
-            context: context,
-            ref: ref,
-            index: index,
-            photo: index < profilePhotos.length ? profilePhotos[index] : null,
-            canDelete: profilePhotos.length > minimumProfilePhotoCount,
+      CatchSectionList(
+        gap: 0,
+        children: [
+          _ProfilePhotosSection(
+            first: true,
+            profilePhotos: profilePhotos,
+            uploadState: uploadState,
+            onSlotTapped: (index) => unawaited(
+              openProfilePhotoEditor(
+                context: context,
+                ref: ref,
+                index: index,
+                photo: index < profilePhotos.length
+                    ? profilePhotos[index]
+                    : null,
+                canDelete: profilePhotos.length > minimumProfilePhotoCount,
+              ),
+            ),
+            onDeletePhoto: (index) => unawaited(
+              PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+                await tx
+                    .get(photoUploadControllerProvider.notifier)
+                    .deletePhoto(index);
+              }),
+            ),
+            onReorderPhoto: (fromIndex, toIndex) => unawaited(
+              PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+                await tx
+                    .get(photoUploadControllerProvider.notifier)
+                    .reorderPhoto(fromIndex: fromIndex, toIndex: toIndex);
+              }),
+            ),
           ),
-        ),
-        onDeletePhoto: (index) => unawaited(
-          PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
-            await tx
-                .get(photoUploadControllerProvider.notifier)
-                .deletePhoto(index);
-          }),
-        ),
-        onReorderPhoto: (fromIndex, toIndex) => unawaited(
-          PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
-            await tx
-                .get(photoUploadControllerProvider.notifier)
-                .reorderPhoto(fromIndex: fromIndex, toIndex: toIndex);
-          }),
-        ),
+          ProfileInfoSection(
+            title: 'Prompts',
+            subtitle:
+                '$completedPromptCount of $maxProfilePromptAnswers answered',
+            entries: prompts,
+            grouped: true,
+          ),
+          ProfileInfoSection(title: 'About you', entries: about, grouped: true),
+          ProfileInfoSection(title: 'Running', entries: running, grouped: true),
+          ProfileInfoSection(
+            title: 'Lifestyle',
+            entries: lifestyle,
+            grouped: true,
+          ),
+        ],
       ),
-      gapH14,
-      ProfileInfoSection(
-        title: 'Profile prompts',
-        subtitle: '$completedPromptCount of $maxProfilePromptAnswers answered',
-        entries: prompts,
-        grouped: true,
-      ),
-      gapH14,
-      ProfileInfoSection(
-        title: 'About',
-        subtitle: 'Private basics and visible profile details',
-        entries: basics,
-        grouped: true,
-      ),
-      gapH14,
-      ProfileInfoSection(
-        title: 'Location',
-        subtitle: 'Used for local runs and discovery',
-        entries: location,
-        grouped: true,
-      ),
-      gapH14,
-      ProfileInfoSection(
-        title: 'Background',
-        subtitle: 'Work, education, and community context',
-        entries: background,
-        grouped: true,
-      ),
-      gapH14,
-      ProfileInfoSection(
-        title: 'Intentions',
-        subtitle: 'What you want people to know upfront',
-        entries: intentions,
-        grouped: true,
-      ),
-      gapH14,
-      ProfileInfoSection(
-        title: 'Lifestyle',
-        subtitle: 'Everyday habits that shape compatibility',
-        entries: lifestyle,
-        grouped: true,
-      ),
-      if (showRunningDetails) ...[
-        gapH14,
-        ProfileInfoSection(
-          title: 'Running details',
-          subtitle: 'Your pace, distances, and running rhythm',
-          entries: running,
-          grouped: true,
-        ),
-      ],
       gapH32,
     ]);
   }
@@ -778,6 +736,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
 
 class _ProfilePhotosSection extends StatelessWidget {
   const _ProfilePhotosSection({
+    required this.first,
     required this.profilePhotos,
     required this.uploadState,
     required this.onSlotTapped,
@@ -785,6 +744,7 @@ class _ProfilePhotosSection extends StatelessWidget {
     required this.onReorderPhoto,
   });
 
+  final bool first;
   final List<ProfilePhoto> profilePhotos;
   final PhotoUploadState uploadState;
   final void Function(int index) onSlotTapped;
@@ -796,9 +756,10 @@ class _ProfilePhotosSection extends StatelessWidget {
     final completedCount = profilePhotos.length;
     final canDeletePhotos = completedCount > minimumProfilePhotoCount;
 
-    return CatchSectionCard(
-      title: 'Photos',
-      subtitle: '$completedCount of $maximumProfilePhotoCount added',
+    return CatchDesignSection(
+      kicker: 'Photos',
+      count: '$completedCount of $maximumProfilePhotoCount added',
+      first: first,
       child: PhotoGrid(
         profilePhotos: profilePhotos,
         loadingIndices: uploadState.loadingIndices,
@@ -807,99 +768,6 @@ class _ProfilePhotosSection extends StatelessWidget {
         onDeletePhoto: canDeletePhotos ? onDeletePhoto : null,
         onReorderPhoto: onReorderPhoto,
       ),
-    );
-  }
-}
-
-class _ProfileQualityGuidanceCard extends StatelessWidget {
-  const _ProfileQualityGuidanceCard({required this.summary});
-
-  final ProfileQualitySummary summary;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final progress = summary.score / 100;
-    final suggestions = summary.suggestions.take(2).toList(growable: false);
-
-    return CatchSectionCard(
-      title: 'Profile strength',
-      trailing: Text(
-        summary.isStrong ? 'Strong' : '${summary.score}%',
-        style: CatchTextStyles.statCompact(context, color: t.ink),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(CatchRadius.pill),
-            child: LinearProgressIndicator(
-              minHeight: 7,
-              value: progress,
-              backgroundColor: t.line.withValues(
-                alpha: CatchOpacity.profileProgressTrack,
-              ),
-              valueColor: AlwaysStoppedAnimation<Color>(
-                summary.isStrong ? t.success : t.primary,
-              ),
-            ),
-          ),
-          gapH10,
-          Text(
-            '${summary.completedItems} of ${summary.totalItems} profile basics complete',
-            style: CatchTextStyles.proseM(context, color: t.ink2),
-          ),
-          if (suggestions.isNotEmpty) ...[
-            gapH12,
-            for (final suggestion in suggestions.indexed) ...[
-              _ProfileQualitySuggestionRow(suggestion: suggestion.$2),
-              if (suggestion.$1 < suggestions.length - 1) gapH8,
-            ],
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _ProfileQualitySuggestionRow extends StatelessWidget {
-  const _ProfileQualitySuggestionRow({required this.suggestion});
-
-  final ProfileQualitySuggestion suggestion;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: CatchSpacing.micro2),
-          child: Icon(
-            CatchIcons.addCircleOutlineRounded,
-            size: 16,
-            color: t.primary,
-          ),
-        ),
-        gapW8,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                suggestion.title,
-                style: CatchTextStyles.sectionTitle(context, color: t.ink),
-              ),
-              gapH2,
-              Text(
-                suggestion.detail,
-                style: CatchTextStyles.proseM(context, color: t.ink2),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

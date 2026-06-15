@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -43,31 +42,45 @@ class _InstagramPageState extends ConsumerState<InstagramPage> {
     final t = CatchTokens.of(context);
 
     return OnboardingStepFrame(
+      footer: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchButton(
+            label: 'Continue',
+            onPressed: _submit,
+            fullWidth: true,
+            size: CatchButtonSize.lg,
+          ),
+          gapH12,
+          Center(
+            child: CatchButton(
+              label: 'Skip for now',
+              onPressed: () => ref
+                  .read(onboardingControllerProvider.notifier)
+                  .advanceToPhotos(),
+              variant: CatchButtonVariant.ghost,
+              size: CatchButtonSize.sm,
+              foregroundColor: t.ink2,
+            ),
+          ),
+        ],
+      ),
       children: [
-        gapH32,
-        const OnboardingStepHeader(title: "What's your Instagram?"),
-        gapH8,
-        Text(
-          'This helps us verify you for early access. Your handle is never shown to other users.',
-          style: CatchTextStyles.proseM(context, color: t.ink2),
+        const OnboardingStepHeader(
+          title: 'Your Instagram',
+          subtitle:
+              'Helps us verify you for early access. Your handle is never shown to other users.',
         ),
-        gapH32,
+        gapH28,
         CatchTextField(
           controller: _controller,
-          label: 'Instagram handle',
-          keyboardType: TextInputType.text,
+          label: 'HANDLE',
+          hintText: '@yourhandle',
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => _submit(),
           prefixText: '@',
         ),
-        gapH40,
-        CatchButton(
-          label: 'Continue',
-          onPressed: _submit,
-          fullWidth: true,
-          size: CatchButtonSize.lg,
-        ),
-        gapH32,
       ],
     );
   }

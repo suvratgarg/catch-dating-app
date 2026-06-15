@@ -4,9 +4,9 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
@@ -49,12 +49,7 @@ class EventSuccessLabScreen extends StatelessWidget {
         : playbooks.first;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Event Success Lab',
-          style: CatchTextStyles.titleL(context),
-        ),
-      ),
+      appBar: const CatchTopBar(title: 'Event success lab', border: true),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -326,9 +321,9 @@ class _PlaybookCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final module in playbook.modules.take(6))
-                CatchChip(label: module.title),
+                CatchBadge(label: module.title),
               if (playbook.modules.length > 6)
-                CatchChip(label: '+${playbook.modules.length - 6} more'),
+                CatchBadge(label: '+${playbook.modules.length - 6} more'),
             ],
           ),
           const SizedBox(height: CatchSpacing.s4),

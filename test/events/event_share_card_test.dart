@@ -1,11 +1,12 @@
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/rich_share_card_sheet.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../test_pump_helpers.dart';
 import 'events_test_helpers.dart';
 
 void main() {
@@ -46,16 +47,17 @@ void main() {
     );
 
     await tester.tap(find.text('Open'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
+    expect(find.byKey(RichShareCardSheetKeys.cardPreview), findsOneWidget);
     expect(find.byType(EventShareCard), findsOneWidget);
     expect(find.text('CATCH INVITE'), findsOneWidget);
     expect(find.text(event.title), findsOneWidget);
     expect(find.text('Bandra'), findsOneWidget);
 
-    await tester.tap(find.byType(CatchButton).last);
+    await tester.tap(find.byKey(RichShareCardSheetKeys.shareButton));
     await tester.pump();
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.runAsync(() async {
       for (var i = 0; i < 20 && sharedParams == null; i++) {
         await Future<void>.delayed(const Duration(milliseconds: 10));

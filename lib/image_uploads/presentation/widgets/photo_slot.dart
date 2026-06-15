@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/graded_image.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid_keys.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class PhotoSlot extends StatelessWidget {
     required this.isActive,
     required this.onTap,
     this.prompt,
+    this.badgeLabel,
     this.onDelete,
     this.isReorderTarget = false,
   });
@@ -27,6 +29,7 @@ class PhotoSlot extends StatelessWidget {
   final bool isActive;
   final VoidCallback onTap;
   final PhotoPromptAnswer? prompt;
+  final String? badgeLabel;
   final VoidCallback? onDelete;
   final bool isReorderTarget;
 
@@ -36,7 +39,9 @@ class PhotoSlot extends StatelessWidget {
     final borderRadius = BorderRadius.circular(CatchRadius.lg);
 
     final hasPhoto = url != null;
+    final isPendingPhoto = isLoading && !hasPhoto;
     final promptLabel = prompt?.displayPrompt.trim();
+    final mainBadgeLabel = badgeLabel?.trim();
     final label = switch ((hasPhoto, isLoading, isActive)) {
       (true, true, _) => 'Photo ${index + 1} uploading',
       (true, false, _) => 'Edit photo ${index + 1}',
@@ -47,116 +52,127 @@ class PhotoSlot extends StatelessWidget {
 
     final Widget content;
     if (url != null) {
-      content = Image.network(
-        url!,
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: double.infinity,
-        errorBuilder: (context, error, stackTrace) => ColoredBox(
-          color: t.raised,
-          child: Center(
-            child: Icon(
-              CatchIcons.brokenImageOutlined,
-              size: CatchIcon.tile,
-              color: t.ink2,
+      content = GradedImage(
+        child: Image.network(
+          url!,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+          errorBuilder: (context, error, stackTrace) => ColoredBox(
+            color: t.raised,
+            child: Center(
+              child: Icon(
+                CatchIcons.brokenImageOutlined,
+                size: CatchIcon.tile,
+                color: t.ink2,
+              ),
             ),
           ),
         ),
       );
+    } else if (isPendingPhoto) {
+      content = _StripedPhotoPlaceholder(index: index);
     } else if (isActive) {
-      content = ColoredBox(
-        color: t.primarySoft,
-        child: Center(
-          child: Icon(
-            CatchIcons.addRounded,
-            size: CatchIcon.hero,
-            color: t.primary,
-          ),
-        ),
+      content = Center(
+        child: Icon(CatchIcons.addRounded, size: CatchIcon.hero, color: t.ink3),
       );
     } else {
-      content = ColoredBox(color: t.raised);
+      content = Center(
+        child: Icon(
+          CatchIcons.addRounded,
+          size: CatchIcon.hero,
+          color: t.ink3.withValues(alpha: CatchOpacity.disabledControl),
+        ),
+      );
     }
 
+    final showMainBadge =
+        hasPhoto &&
+        !isLoading &&
+        mainBadgeLabel != null &&
+        mainBadgeLabel.isNotEmpty;
+
     return Semantics(
+      container: true,
       label: label,
       button: isActive && !isLoading,
       enabled: isActive && !isLoading,
       image: hasPhoto,
       child: Tooltip(
         message: label,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: t.raised,
-            borderRadius: borderRadius,
-          ),
+        excludeFromSemantics: true,
+        child: CatchSurface(
+          borderRadius: borderRadius,
+          tone: CatchSurfaceTone.raised,
+          borderWidth: 0,
+          clipBehavior: Clip.antiAlias,
           child: Stack(
             fit: StackFit.expand,
             children: [
-              ClipRRect(
-                borderRadius: borderRadius,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    content,
-                    if (isLoading)
-                      ColoredBox(
-                        color: CatchTokens.editorialDark.withValues(
-                          alpha: CatchOpacity.photoUploadLoadingScrim,
-                        ),
-                        child: const Center(
-                          child: CatchLoadingIndicator(
-                            color: CatchTokens.editorialLight,
-                          ),
-                        ),
-                      ),
-                    if (!isLoading && url != null)
-                      Positioned(
-                        bottom: CatchSpacing.micro6,
-                        right: CatchSpacing.micro6,
-                        child: CatchIconTile(
-                          icon: CatchIcons.editOutlined,
-                          iconColor: t.ink,
-                          backgroundColor: t.surface.withValues(
-                            alpha: CatchOpacity.photoSlotEditChrome,
-                          ),
-                          borderColor: t.surface.withValues(
-                            alpha: CatchOpacity.photoSlotEditChrome,
-                          ),
-                          size: CatchIcon.row,
-                          iconSize: CatchIcon.sm,
-                          radius: CatchRadius.pill,
-                        ),
-                      ),
-                    if (!isLoading &&
-                        hasPhoto &&
-                        promptLabel != null &&
-                        promptLabel.isNotEmpty)
-                      Positioned(
-                        left: CatchSpacing.micro6,
-                        right: CatchLayout.photoSlotDeleteControlInset,
-                        bottom: CatchSpacing.micro6,
-                        child: CatchSurface(
-                          radius: CatchRadius.sm,
-                          backgroundColor: CatchTokens.editorialDark.withValues(
-                            alpha: CatchOpacity.photoPromptScrim,
-                          ),
-                          borderWidth: 0,
-                          padding: CatchInsets.infoTileContent,
-                          child: Text(
-                            prompt!.displayPrompt,
-                            style: CatchTextStyles.labelS(
-                              context,
-                              color: CatchTokens.editorialLight,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                  ],
+              content,
+              if (isLoading)
+                ColoredBox(
+                  color: CatchTokens.editorialDark.withValues(
+                    alpha: CatchOpacity.photoUploadLoadingScrim,
+                  ),
+                  child: const Center(
+                    child: CatchLoadingIndicator(
+                      color: CatchTokens.editorialLight,
+                    ),
+                  ),
                 ),
-              ),
+              if (showMainBadge)
+                Positioned(
+                  top: CatchSpacing.s2,
+                  left: CatchSpacing.s2,
+                  child: ExcludeSemantics(
+                    child: _PhotoSlotMainBadge(label: mainBadgeLabel),
+                  ),
+                ),
+              if (!isLoading && url != null)
+                Positioned(
+                  bottom: CatchSpacing.micro6,
+                  right: CatchSpacing.micro6,
+                  child: CatchIconTile(
+                    icon: CatchIcons.editOutlined,
+                    iconColor: t.ink,
+                    backgroundColor: t.surface.withValues(
+                      alpha: CatchOpacity.photoSlotEditChrome,
+                    ),
+                    borderColor: t.surface.withValues(
+                      alpha: CatchOpacity.photoSlotEditChrome,
+                    ),
+                    size: CatchIcon.row,
+                    iconSize: CatchIcon.sm,
+                    radius: CatchRadius.pill,
+                  ),
+                ),
+              if (!isLoading &&
+                  hasPhoto &&
+                  promptLabel != null &&
+                  promptLabel.isNotEmpty)
+                Positioned(
+                  left: CatchSpacing.micro6,
+                  right: CatchLayout.photoSlotDeleteControlInset,
+                  bottom: CatchSpacing.micro6,
+                  child: CatchSurface(
+                    radius: CatchRadius.sm,
+                    backgroundColor: CatchTokens.editorialDark.withValues(
+                      alpha: CatchOpacity.photoPromptScrim,
+                    ),
+                    borderWidth: 0,
+                    padding: CatchInsets.infoTileContent,
+                    child: Text(
+                      prompt!.displayPrompt,
+                      style: CatchTextStyles.labelS(
+                        context,
+                        color: CatchTokens.editorialLight,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
               Material(
                 type: MaterialType.transparency,
                 borderRadius: borderRadius,
@@ -186,7 +202,7 @@ class PhotoSlot extends StatelessWidget {
                           dimension: CatchLayout.photoSlotDeleteExtent,
                           child: Icon(
                             CatchIcons.closeRounded,
-                            size: 18,
+                            size: CatchIcon.sm,
                             color: t.ink,
                           ),
                         ),
@@ -195,12 +211,17 @@ class PhotoSlot extends StatelessWidget {
                   ),
                 ),
               IgnorePointer(
-                child: CatchSurface(
-                  borderRadius: borderRadius,
-                  tone: CatchSurfaceTone.transparent,
-                  borderColor: isReorderTarget ? t.primary : t.line,
-                  borderWidth: isReorderTarget ? 2 : 1,
-                  child: const SizedBox.expand(),
+                child: CustomPaint(
+                  painter: _PhotoSlotBorderPainter(
+                    borderRadius: borderRadius,
+                    color: isReorderTarget ? t.primary : t.line2,
+                    width: isReorderTarget
+                        ? CatchStroke.selection - 1
+                        : hasPhoto || isPendingPhoto
+                        ? CatchStroke.hairline
+                        : CatchStroke.underline,
+                    dashed: !hasPhoto && !isPendingPhoto,
+                  ),
                 ),
               ),
             ],
@@ -209,4 +230,135 @@ class PhotoSlot extends StatelessWidget {
       ),
     );
   }
+}
+
+class _StripedPhotoPlaceholder extends StatelessWidget {
+  const _StripedPhotoPlaceholder({required this.index});
+
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CustomPaint(
+      painter: _PhotoSlotStripePainter(
+        background: t.raised,
+        stripe: t.ink.withValues(alpha: 0.05),
+      ),
+      child: Center(
+        child: ExcludeSemantics(
+          child: Text(
+            'PHOTO ${(index + 1).toString().padLeft(2, '0')}',
+            style: CatchTextStyles.monoLabelS(context, color: t.ink3),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PhotoSlotMainBadge extends StatelessWidget {
+  const _PhotoSlotMainBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      backgroundColor: t.ink,
+      radius: CatchRadius.pill,
+      borderWidth: 0,
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.micro10,
+        vertical: CatchSpacing.s1,
+      ),
+      child: Text(
+        label.toUpperCase(),
+        style: CatchTextStyles.badge(context, color: t.bg),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+}
+
+class _PhotoSlotStripePainter extends CustomPainter {
+  const _PhotoSlotStripePainter({
+    required this.background,
+    required this.stripe,
+  });
+
+  final Color background;
+  final Color stripe;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final backgroundPaint = Paint()..color = background;
+    canvas.drawRect(Offset.zero & size, backgroundPaint);
+
+    final stripePaint = Paint()
+      ..color = stripe
+      ..strokeWidth = CatchSpacing.s2;
+    const gap = CatchSpacing.micro18;
+    for (double start = -size.height; start < size.width; start += gap) {
+      canvas.drawLine(
+        Offset(start, size.height),
+        Offset(start + size.height, 0),
+        stripePaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_PhotoSlotStripePainter oldDelegate) =>
+      oldDelegate.background != background || oldDelegate.stripe != stripe;
+}
+
+class _PhotoSlotBorderPainter extends CustomPainter {
+  const _PhotoSlotBorderPainter({
+    required this.borderRadius,
+    required this.color,
+    required this.width,
+    required this.dashed,
+  });
+
+  final BorderRadius borderRadius;
+  final Color color;
+  final double width;
+  final bool dashed;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final rrect = borderRadius.toRRect(rect).deflate(width / 2);
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = width;
+    if (!dashed) {
+      canvas.drawRRect(rrect, paint);
+      return;
+    }
+
+    final path = Path()..addRRect(rrect);
+    for (final metric in path.computeMetrics()) {
+      double distance = 0;
+      const dash = CatchSpacing.s2;
+      const gap = CatchSpacing.s1;
+      while (distance < metric.length) {
+        final next = (distance + dash).clamp(0, metric.length).toDouble();
+        canvas.drawPath(metric.extractPath(distance, next), paint);
+        distance += dash + gap;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_PhotoSlotBorderPainter oldDelegate) =>
+      oldDelegate.borderRadius != borderRadius ||
+      oldDelegate.color != color ||
+      oldDelegate.width != width ||
+      oldDelegate.dashed != dashed;
 }

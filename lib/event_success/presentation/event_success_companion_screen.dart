@@ -16,7 +16,9 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/list_tile_material.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
@@ -59,14 +61,20 @@ part 'companion_parts/event_success_companion_wingman.dart';
 part 'companion_parts/event_success_companion_feedback.dart';
 part 'companion_parts/event_success_companion_afterglow.dart';
 
-AppBar _companionAppBar(BuildContext context) => AppBar(
-  title: Text('Event companion', style: CatchTextStyles.titleL(context)),
-  leading: IconButton(
-    icon: Icon(CatchIcons.arrowBackRounded),
-    tooltip: 'Back',
-    onPressed: _companionCanPop(context) ? () => _popCompanion(context) : null,
-  ),
-);
+PreferredSizeWidget _companionAppBar(BuildContext context) {
+  final t = CatchTokens.of(context);
+  final canPop = _companionCanPop(context);
+  return CatchTopBar(
+    title: 'Event companion',
+    border: true,
+    leading: CatchTopBarIconAction(
+      tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+      icon: CatchIcons.arrowBackIosNewRounded,
+      foregroundColor: canPop ? t.ink : t.ink3,
+      onPressed: canPop ? () => _popCompanion(context) : null,
+    ),
+  );
+}
 
 bool _companionCanPop(BuildContext context) =>
     Navigator.maybeOf(context)?.canPop() ?? false;

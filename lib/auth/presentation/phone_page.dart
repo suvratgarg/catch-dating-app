@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -66,97 +67,73 @@ class _PhonePageState extends ConsumerState<PhonePage> {
     final shouldAutofocus = ref.watch(
       authControllerProvider.select((data) => data.step == AuthStep.phone),
     );
-    final t = CatchTokens.of(context);
 
-    return Padding(
-      padding: CatchInsets.pageHorizontalWide,
-      child: Column(
+    return Form(
+      key: _formKey,
+      child: OnboardingStepFrame(
+        footer: CatchButton(
+          key: AuthFormKeys.sendCode,
+          label: 'Send code',
+          icon: Icon(CatchIcons.arrowForwardRounded),
+          onPressed: _submit,
+          isLoading: mutation.isPending,
+          fullWidth: true,
+          size: CatchButtonSize.lg,
+        ),
         children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    gapH32,
-                    Text(
-                      "What's your number?",
-                      style: CatchTextStyles.headlineS(context, color: t.ink),
-                    ),
-                    gapH8,
-                    Text(
-                      "We'll send you a one-time code to verify.",
-                      style: CatchTextStyles.bodyLead(context, color: t.ink2),
-                    ),
-                    gapH40,
-                    const CatchFormFieldLabel(label: 'Mobile number'),
-                    const SizedBox(height: CatchSpacing.s2),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _CountryCodeSelector(
-                          countryCode: ref.watch(
-                            authControllerProvider.select((d) => d.countryCode),
-                          ),
-                          onChanged: (code) {
-                            ref
-                                .read(authControllerProvider.notifier)
-                                .setCountryCode(code);
-                            AuthController.sendOtpMutation.reset(ref);
-                          },
-                        ),
-                        gapW12,
-                        Expanded(
-                          child: CatchTextField(
-                            key: AuthFormKeys.phoneField,
-                            label: 'Mobile number',
-                            showLabel: false,
-                            controller: _phoneController,
-                            autofocus: shouldAutofocus,
-                            keyboardType: TextInputType.phone,
-                            textInputAction: TextInputAction.done,
-                            autofillHints: const [
-                              AutofillHints.telephoneNumberNational,
-                            ],
-                            onSubmitted: (_) => _submit(),
-                            onChanged: (_) =>
-                                AuthController.sendOtpMutation.reset(ref),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                              LengthLimitingTextInputFormatter(
-                                AuthInput.maxPhoneDigits,
-                              ),
-                            ],
-                            hintText: '98765 43210',
-                            validator: AuthInput.phoneNumberError,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (mutation.hasError) ...[
-                      gapH16,
-                      ErrorBanner(
-                        message: appErrorMessage(
-                          (mutation as MutationError).error,
-                          context: AppErrorContext.auth,
-                        ),
-                      ),
-                    ],
+          const OnboardingStepHeader(
+            title: "What's your number?",
+            subtitle: "We'll send you a one-time code to verify.",
+          ),
+          gapH28,
+          const CatchFormFieldLabel(label: 'Mobile number'),
+          const SizedBox(height: CatchSpacing.s2),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _CountryCodeSelector(
+                countryCode: ref.watch(
+                  authControllerProvider.select((d) => d.countryCode),
+                ),
+                onChanged: (code) {
+                  ref
+                      .read(authControllerProvider.notifier)
+                      .setCountryCode(code);
+                  AuthController.sendOtpMutation.reset(ref);
+                },
+              ),
+              gapW8,
+              Expanded(
+                child: CatchTextField(
+                  key: AuthFormKeys.phoneField,
+                  label: 'Mobile number',
+                  showLabel: false,
+                  controller: _phoneController,
+                  autofocus: shouldAutofocus,
+                  keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.done,
+                  autofillHints: const [AutofillHints.telephoneNumberNational],
+                  onSubmitted: (_) => _submit(),
+                  onChanged: (_) => AuthController.sendOtpMutation.reset(ref),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(AuthInput.maxPhoneDigits),
                   ],
+                  hintText: '98765 43210',
+                  validator: AuthInput.phoneNumberError,
                 ),
               ),
+            ],
+          ),
+          if (mutation.hasError) ...[
+            gapH16,
+            ErrorBanner(
+              message: appErrorMessage(
+                (mutation as MutationError).error,
+                context: AppErrorContext.auth,
+              ),
             ),
-          ),
-          CatchButton(
-            key: AuthFormKeys.sendCode,
-            label: 'Send code',
-            onPressed: _submit,
-            isLoading: mutation.isPending,
-            fullWidth: true,
-            size: CatchButtonSize.lg,
-          ),
-          gapH32,
+          ],
         ],
       ),
     );

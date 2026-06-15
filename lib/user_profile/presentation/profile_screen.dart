@@ -225,7 +225,7 @@ class _PreviewTabSliverBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverFillRemaining(
       child: Padding(
-        padding: profileTabBodyPadding,
+        padding: const EdgeInsets.only(top: CatchSpacing.s2),
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(

@@ -15,6 +15,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommend_card.dart';
@@ -79,7 +80,7 @@ class _CardVariationLabScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: AppBar(title: const Text('Club + Event Card Lab')),
+      appBar: const CatchTopBar(title: 'Club + event card lab', border: true),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(

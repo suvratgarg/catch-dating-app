@@ -11,8 +11,8 @@ import 'package:flutter/widgets.dart';
 
 /// Maps [ProfileCardContent] (which already projects a `PublicProfile` into
 /// display content + insights) onto the section-based [ProfileView] the flagship
-/// renders. Section order and reaction targets mirror the legacy
-/// `ScrollableProfile` 1:1 so no like/comment affordance is lost.
+/// renders. Section order mirrors the handoff profile template:
+/// compatibility, prompts, running, photos, details, then lifestyle.
 ProfileView profileViewFromCardContent(
   ProfileCardContent content, {
   required String name,
@@ -90,46 +90,29 @@ ProfileView profileViewFromCardContent(
 
   final additional = content.additionalPhotos;
 
-  // 4 · First inset photo (matches legacy order: after running, before details).
-  if (additional.isNotEmpty) {
-    sections.add(_photoSection(name, additional.first, ordinal: 2));
+  // 4 · Inset photos.
+  for (final (index, photo) in additional.indexed) {
+    sections.add(_photoSection(name, photo, ordinal: index + 2));
   }
 
-  // 5 · Relationship intent.
-  final relationshipGoal = content.relationshipGoal;
-  if (relationshipGoal != null) {
-    sections.add(
-      ProfileFactsSection(
-        title: 'Looking for',
-        facts: [
-          ProfileFact(
-            icon: CatchIcons.favoriteOutlineRounded,
-            text: relationshipGoal.label,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 6 · Details.
-  if (content.attributes.isNotEmpty) {
+  // 5 · Details.
+  final detailsFacts = _detailsFacts(content);
+  if (detailsFacts.isNotEmpty) {
     sections.add(
       ProfileFactsSection(
         title: 'Details',
-        facts: content.attributes
-            .map((fact) => ProfileFact(icon: fact.icon, text: fact.text))
-            .toList(),
+        facts: detailsFacts,
         reaction: _target(
           'details',
           SwipeReactionTargetType.details,
           'Details',
-          content.attributes.map((fact) => fact.text).join(' · '),
+          detailsFacts.map((fact) => fact.text).join(' · '),
         ),
       ),
     );
   }
 
-  // 7 · Lifestyle.
+  // 6 · Lifestyle.
   if (content.lifestyle.isNotEmpty) {
     sections.add(
       ProfileFactsSection(
@@ -145,11 +128,6 @@ ProfileView profileViewFromCardContent(
         ),
       ),
     );
-  }
-
-  // 8 · Remaining photos (3+).
-  for (final (index, photo) in additional.skip(1).indexed) {
-    sections.add(_photoSection(name, photo, ordinal: index + 3));
   }
 
   final hero = content.primaryPhoto;
@@ -170,6 +148,15 @@ ProfileView profileViewFromCardContent(
     metaLine: metaLine,
     sections: sections,
   );
+}
+
+List<ProfileFact> _detailsFacts(ProfileCardContent content) {
+  return [
+    if (content.relationshipGoal case final goal?)
+      ProfileFact(icon: CatchIcons.favoriteBorderRounded, text: goal.label),
+    for (final fact in content.attributes)
+      ProfileFact(icon: fact.icon, text: fact.text),
+  ];
 }
 
 ProfilePhotoSection _photoSection(

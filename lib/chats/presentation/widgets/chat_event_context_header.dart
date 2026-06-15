@@ -39,9 +39,13 @@ class ChatEventContextHeader extends StatelessWidget {
     return Padding(
       padding: _contextHeaderOuterPadding,
       child: CatchSurface(
+        radius: CatchRadius.md,
         backgroundColor: visual?.soft ?? t.primarySoft,
         borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),
-        padding: CatchInsets.contentDense,
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.s3,
+          vertical: CatchSpacing.micro10,
+        ),
         child: Row(
           children: [
             CatchIconTile(
@@ -59,18 +63,18 @@ class ChatEventContextHeader extends StatelessWidget {
                 children: [
                   Text(
                     stamp,
-                    style: CatchTextStyles.labelM(
+                    style: CatchTextStyles.badge(
                       context,
                       color: accent,
-                    ).copyWith(fontWeight: FontWeight.w800),
+                    ).copyWith(fontSize: 10, fontWeight: FontWeight.w800),
                   ),
                   gapH2,
                   Text(
                     date == null ? title : '$title · $date',
-                    style: CatchTextStyles.supporting(
+                    style: CatchTextStyles.chatThreadContext(
                       context,
                       color: t.ink,
-                    ).copyWith(fontWeight: FontWeight.w600),
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

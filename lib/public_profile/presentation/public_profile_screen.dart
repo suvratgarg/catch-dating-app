@@ -1,11 +1,15 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
+import 'package:catch_dating_app/core/widgets/settings_row.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
@@ -180,26 +184,20 @@ class PublicProfileScreen extends ConsumerWidget {
                     submitting: submitting,
                     viewerProfile: currentUser,
                   ),
-            error: (_, _) => Center(
-              child: Padding(
-                padding: CatchInsets.contentSpacious,
-                child: Text(
-                  'Unable to load this profile.',
-                  style: CatchTextStyles.bodyLead(context, color: t.ink2),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+            error: (error, _) => CatchErrorState.fromError(
+              error,
+              context: AppErrorContext.profile,
+              onRetry: () => ref.invalidate(watchPublicProfileProvider(uid)),
             ),
             data: (loadedProfile) {
               if (loadedProfile == null) {
                 return Center(
-                  child: Padding(
-                    padding: CatchInsets.contentSpacious,
-                    child: Text(
-                      'This profile is unavailable.',
-                      style: CatchTextStyles.bodyLead(context, color: t.ink2),
-                      textAlign: TextAlign.center,
-                    ),
+                  child: CatchEmptyState(
+                    icon: CatchIcons.personOffOutlined,
+                    title: 'Profile unavailable',
+                    message: 'This profile is no longer available on Catch.',
+                    surface: false,
+                    iconStyle: CatchEmptyStateIconStyle.plain,
                   ),
                 );
               }
@@ -262,10 +260,9 @@ class _ReportReasonTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(label),
-      trailing: Icon(CatchIcons.chevronRightRounded),
+    return SettingsRow(
+      label: label,
+      icon: CatchIcons.flagOutlined,
       onTap: () => Navigator.of(context).pop(value),
     );
   }

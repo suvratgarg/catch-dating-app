@@ -23,12 +23,13 @@ class CatchPolaroid extends StatelessWidget {
     this.onTap,
     this.padding = CatchInsets.contentDense,
     this.paddingKey,
-    this.radius = CatchRadius.lg,
-    this.mediaRadius = CatchRadius.sm,
+    this.radius = CatchLayout.clubPolaroidRadius,
+    this.mediaRadius = CatchLayout.clubPolaroidMediaRadius,
     this.titleMaxLines = 1,
     this.titleStyle,
     this.captionColor,
     this.subtitleStyle,
+    this.showArrow = true,
   });
 
   final Widget media;
@@ -46,6 +47,7 @@ class CatchPolaroid extends StatelessWidget {
   final TextStyle? titleStyle;
   final Color? captionColor;
   final TextStyle? subtitleStyle;
+  final bool showArrow;
 
   @override
   Widget build(BuildContext context) {
@@ -104,18 +106,30 @@ class CatchPolaroid extends StatelessWidget {
                   ),
                 ),
                 gapH4,
-                Text(
-                  title,
-                  maxLines: titleMaxLines,
-                  overflow: TextOverflow.ellipsis,
-                  style:
-                      titleStyle ??
-                      CatchTextStyles.clubDisplay(
-                        context,
-                        size: 30,
-                        height: 0.98,
-                        fontStyle: FontStyle.italic,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        maxLines: titleMaxLines,
+                        overflow: TextOverflow.ellipsis,
+                        style:
+                            titleStyle ??
+                            CatchTextStyles.clubDisplay(
+                              context,
+                              size: CatchLayout.clubPolaroidTitleSize,
+                            ),
                       ),
+                    ),
+                    if (showArrow) ...[
+                      gapW10,
+                      Icon(
+                        CatchIcons.forwardArrow,
+                        size: CatchIcon.sm,
+                        color: t.ink2,
+                      ),
+                    ],
+                  ],
                 ),
                 if (subtitle != null && subtitle!.isNotEmpty) ...[
                   gapH4,

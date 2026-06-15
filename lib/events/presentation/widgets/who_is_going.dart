@@ -41,11 +41,13 @@ class WhoIsGoing extends ConsumerWidget {
     required this.event,
     required this.userProfile,
     this.surfaceStyle,
+    this.showHeader = true,
   });
 
   final Event event;
   final UserProfile userProfile;
   final EventDetailSurfaceStyle? surfaceStyle;
+  final bool showHeader;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -60,6 +62,7 @@ class WhoIsGoing extends ConsumerWidget {
         userProfile: userProfile,
         fallbackTotal: event.signedUpCount,
         surfaceStyle: surfaceStyle,
+        showHeader: showHeader,
       ),
       error: (e, _) => CatchInlineErrorState.fromError(
         e,
@@ -73,6 +76,7 @@ class WhoIsGoing extends ConsumerWidget {
         roster: roster,
         userProfile: userProfile,
         surfaceStyle: surfaceStyle,
+        showHeader: showHeader,
       ),
     );
   }
@@ -85,6 +89,7 @@ class _WhoIsGoingContent extends ConsumerWidget {
     required this.userProfile,
     this.fallbackTotal,
     this.surfaceStyle,
+    this.showHeader = true,
   });
 
   final Event event;
@@ -92,6 +97,7 @@ class _WhoIsGoingContent extends ConsumerWidget {
   final UserProfile userProfile;
   final int? fallbackTotal;
   final EventDetailSurfaceStyle? surfaceStyle;
+  final bool showHeader;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -102,27 +108,29 @@ class _WhoIsGoingContent extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                "Who's going",
-                style: CatchTextStyles.titleL(
-                  context,
-                  color: surfaceStyle?.headingColor,
+        if (showHeader) ...[
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  "Who's going",
+                  style: CatchTextStyles.titleL(
+                    context,
+                    color: surfaceStyle?.headingColor,
+                  ),
                 ),
               ),
-            ),
-            Text(
-              '$total/${event.capacityLimit}',
-              style: CatchTextStyles.labelL(
-                context,
-                color: surfaceStyle?.bodyColor ?? t.ink2,
+              Text(
+                '$total/${event.capacityLimit}',
+                style: CatchTextStyles.labelL(
+                  context,
+                  color: surfaceStyle?.bodyColor ?? t.ink2,
+                ),
               ),
-            ),
-          ],
-        ),
-        gapH12,
+            ],
+          ),
+          gapH12,
+        ],
         if (total == 0)
           _EmptyRosterMessage(
             title: event.isUpcoming
@@ -138,6 +146,7 @@ class _WhoIsGoingContent extends ConsumerWidget {
             eventId: event.id,
             totalCount: total,
             viewerInterestedInGenders: userProfile.interestedInGenders,
+            activityKind: event.activityKind,
             size: 44,
             limit: 7,
             showOverflowCount: true,

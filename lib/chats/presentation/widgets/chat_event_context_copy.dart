@@ -32,3 +32,32 @@ String chatShareCardTitleFor(Event? event) {
   if (event == null) return 'After the event';
   return 'After ${event.eventFormat.eventTitleLabel.toLowerCase()}';
 }
+
+String chatEmptyThreadMessageFor({
+  required Event? event,
+  required String otherName,
+}) {
+  if (event == null) return 'Say hi to $otherName!';
+  return '${_emptyThreadContextLead(event)}. Say hi to $otherName!';
+}
+
+String _emptyThreadContextLead(Event event) {
+  final title = event.title;
+  return switch (event.activityKind) {
+    ActivityKind.socialRun || ActivityKind.running => 'You both ran $title',
+    ActivityKind.walking => 'You both walked $title',
+    ActivityKind.pickleball => 'You both played pickleball at $title',
+    ActivityKind.padel => 'You both played padel at $title',
+    ActivityKind.tennis => 'You both played tennis at $title',
+    ActivityKind.badminton => 'You both played badminton at $title',
+    ActivityKind.cycling => 'You both rode $title',
+    ActivityKind.spinClass ||
+    ActivityKind.yoga ||
+    ActivityKind.strengthTraining ||
+    ActivityKind.pubQuiz ||
+    ActivityKind.barCrawl ||
+    ActivityKind.dinner ||
+    ActivityKind.singlesMixer ||
+    ActivityKind.openActivity => 'You both met at $title',
+  };
+}

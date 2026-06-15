@@ -10,10 +10,10 @@ import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
-import 'package:catch_dating_app/core/widgets/list_tile_material.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_config_provider.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
@@ -248,25 +248,42 @@ class _LaunchAccessApplicationFormState
               },
             ),
             gapH24,
-            ListTileMaterial(
-              child: SwitchListTile.adaptive(
-                value: draft.wantsToHost,
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  'I might host',
-                  style: CatchTextStyles.sectionTitle(context, color: t.ink),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'I might host',
+                        style: CatchTextStyles.sectionTitle(
+                          context,
+                          color: t.ink,
+                        ),
+                      ),
+                      gapH4,
+                      Text(
+                        'Useful if you already run a club, venue, or social format.',
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink2,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                subtitle: Text(
-                  'Useful if you already run a club, venue, or social format.',
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                gapW12,
+                CatchToggle(
+                  value: draft.wantsToHost,
+                  semanticLabel: 'I might host',
+                  onChanged: (value) {
+                    LaunchAccessController.submitMutation.reset(ref);
+                    ref
+                        .read(launchAccessControllerProvider.notifier)
+                        .setWantsToHost(value);
+                  },
                 ),
-                onChanged: (value) {
-                  LaunchAccessController.submitMutation.reset(ref);
-                  ref
-                      .read(launchAccessControllerProvider.notifier)
-                      .setWantsToHost(value);
-                },
-              ),
+              ],
             ),
             gapH24,
             CatchTextField(

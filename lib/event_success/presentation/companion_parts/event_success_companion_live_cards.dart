@@ -604,10 +604,16 @@ class _EventCheckInQrScannerSheetState
                     style: CatchTextStyles.sectionTitle(context),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(CatchIcons.closeRounded),
-                  tooltip: 'Close',
-                  onPressed: () => Navigator.of(context).maybePop(false),
+                Tooltip(
+                  message: 'Close',
+                  child: IconBtn(
+                    onTap: () => Navigator.of(context).maybePop(false),
+                    child: Icon(
+                      CatchIcons.closeRounded,
+                      size: CatchIcon.md,
+                      color: t.ink2,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -780,13 +786,19 @@ class _StageCueLine extends StatelessWidget {
                     style: CatchTextStyles.sectionTitle(context),
                   ),
                 ),
-                IconButton(
-                  tooltip:
+                Tooltip(
+                  message:
                       cue.moment == EventSuccessConversationCueMoment.postEvent
                       ? 'Copy opener'
                       : 'Copy cue',
-                  icon: Icon(CatchIcons.contentCopyRounded, size: CatchIcon.md),
-                  onPressed: () => _copyCue(context, cue),
+                  child: IconBtn(
+                    onTap: () => _copyCue(context, cue),
+                    child: Icon(
+                      CatchIcons.contentCopyRounded,
+                      size: CatchIcon.md,
+                      color: t.primary,
+                    ),
+                  ),
                 ),
               ],
             ),

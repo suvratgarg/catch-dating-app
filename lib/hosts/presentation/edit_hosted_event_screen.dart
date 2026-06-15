@@ -20,22 +20,22 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
-import 'package:catch_dating_app/core/widgets/list_tile_material.dart';
-import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
+import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
+import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_policy_step.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
-import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/picker_tile.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
@@ -428,19 +428,14 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   runSpacing: CatchSpacing.s2,
                   children: PaceLevel.values
                       .map(
-                        (pace) => Semantics(
-                          button: true,
-                          selected: _selectedPace == pace,
-                          label: 'Select ${pace.label} pace',
-                          child: GestureDetector(
-                            onTap: _canEdit
-                                ? () => setState(() => _selectedPace = pace)
-                                : null,
-                            child: VibeTag(
-                              label: pace.label,
-                              active: _selectedPace == pace,
-                            ),
-                          ),
+                        (pace) => SelectChip(
+                          label: pace.label,
+                          active: _selectedPace == pace,
+                          enabled: _canEdit,
+                          semanticsLabel: 'Select ${pace.label} pace',
+                          onTap: _canEdit
+                              ? () => setState(() => _selectedPace = pace)
+                              : null,
                         ),
                       )
                       .toList(),
@@ -514,16 +509,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       ),
       bottomNavigationBar: SafeArea(
         top: false,
-        child: Padding(
-          padding: CatchInsets.listBody,
-          child: CatchButton(
-            key: EditHostedEventKeys.saveButton,
-            label: 'Save changes',
-            onPressed: !_canEdit || mutation.isPending ? null : _saveChanges,
-            isLoading: mutation.isPending,
-            fullWidth: true,
-            icon: Icon(CatchIcons.saveOutlined),
-          ),
+        child: _EditHostedEventFooter(
+          isLoading: mutation.isPending,
+          onSave: !_canEdit || mutation.isPending ? null : _saveChanges,
         ),
       ),
     );
@@ -902,17 +890,11 @@ class _EditablePolicyCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final preset in EventAdmissionPreset.values)
-                Semantics(
-                  button: true,
-                  selected: admissionPreset == preset,
-                  label: preset.title,
-                  child: GestureDetector(
-                    onTap: () => onAdmissionPresetChanged(preset),
-                    child: VibeTag(
-                      label: preset.label,
-                      active: admissionPreset == preset,
-                    ),
-                  ),
+                SelectChip(
+                  label: preset.label,
+                  active: admissionPreset == preset,
+                  semanticsLabel: preset.title,
+                  onTap: () => onAdmissionPresetChanged(preset),
                 ),
             ],
           ),
@@ -944,20 +926,34 @@ class _EditablePolicyCard extends StatelessWidget {
           ],
           if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
             gapH12,
-            ListTileMaterial(
-              child: SwitchListTile.adaptive(
-                contentPadding: EdgeInsets.zero,
-                value: cohortCapsEnabled,
-                onChanged: onCohortCapsEnabledChanged,
-                title: Text(
-                  'Cohort caps',
-                  style: CatchTextStyles.labelL(context),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Cohort caps',
+                        style: CatchTextStyles.labelL(context),
+                      ),
+                      gapH4,
+                      Text(
+                        'Optionally cap straight men and straight women without making this a separate admission format.',
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink2,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                subtitle: Text(
-                  'Optionally cap straight men and straight women without making this a separate admission format.',
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                gapW12,
+                CatchToggle(
+                  value: cohortCapsEnabled,
+                  onChanged: onCohortCapsEnabledChanged,
+                  semanticLabel: 'Cohort caps',
                 ),
-              ),
+              ],
             ),
             if (cohortCapsEnabled) ...[
               gapH12,
@@ -997,20 +993,34 @@ class _EditablePolicyCard extends StatelessWidget {
           ],
           if (admissionPreset == EventAdmissionPreset.balancedSingles) ...[
             gapH12,
-            ListTileMaterial(
-              child: SwitchListTile.adaptive(
-                contentPadding: EdgeInsets.zero,
-                value: dynamicPricingEnabled,
-                onChanged: onDynamicPricingChanged,
-                title: Text(
-                  'Demand pricing',
-                  style: CatchTextStyles.labelL(context),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Demand pricing',
+                        style: CatchTextStyles.labelL(context),
+                      ),
+                      gapH4,
+                      Text(
+                        'Increase price for the over-demand cohort while preserving the event balance.',
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink2,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                subtitle: Text(
-                  'Increase price for the over-demand cohort while preserving the event balance.',
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                gapW12,
+                CatchToggle(
+                  value: dynamicPricingEnabled,
+                  onChanged: onDynamicPricingChanged,
+                  semanticLabel: 'Demand pricing',
                 ),
-              ),
+              ],
             ),
             if (dynamicPricingEnabled) ...[
               gapH12,
@@ -1083,17 +1093,11 @@ class _EditablePolicyCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final policyId in EventCancellationPolicyId.values)
-                Semantics(
-                  button: true,
-                  selected: cancellationPolicyId == policyId,
-                  label: _policyFor(policyId).title,
-                  child: GestureDetector(
-                    onTap: () => onCancellationPolicyChanged(policyId),
-                    child: VibeTag(
-                      label: _policyFor(policyId).title.toUpperCase(),
-                      active: cancellationPolicyId == policyId,
-                    ),
-                  ),
+                SelectChip(
+                  label: _policyFor(policyId).title.toUpperCase(),
+                  active: cancellationPolicyId == policyId,
+                  semanticsLabel: _policyFor(policyId).title,
+                  onTap: () => onCancellationPolicyChanged(policyId),
                 ),
             ],
           ),
@@ -1103,6 +1107,40 @@ class _EditablePolicyCard extends StatelessWidget {
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _EditHostedEventFooter extends StatelessWidget {
+  const _EditHostedEventFooter({required this.isLoading, required this.onSave});
+
+  final bool isLoading;
+  final VoidCallback? onSave;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.bg,
+        border: Border(top: BorderSide(color: t.line)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          CatchSpacing.s5,
+          CatchSpacing.s3,
+          CatchSpacing.s5,
+          CatchSpacing.micro18,
+        ),
+        child: CatchButton(
+          key: EditHostedEventKeys.saveButton,
+          label: 'Save changes',
+          onPressed: onSave,
+          isLoading: isLoading,
+          fullWidth: true,
+          icon: Icon(CatchIcons.saveOutlined),
+        ),
       ),
     );
   }

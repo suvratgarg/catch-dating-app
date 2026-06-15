@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -134,6 +135,8 @@ Finder _profileInfoTile(String label) => find.byWidgetPredicate(
   (widget) => widget is ProfileInfoTile && widget.label == label,
 );
 
+Finder _profileOptionGroup() => find.byType(CatchOptionGroup<int>);
+
 Finder _catchChip(String label) => find.byWidgetPredicate(
   (widget) => widget is CatchChip && widget.label == label,
 );
@@ -144,7 +147,7 @@ final _perfectRunPromptTitle = profilePromptDefinition(
 
 void main() {
   testWidgets(
-    'Profile sliver header uses Profile title with Edit and Preview tabs',
+    'Profile sliver header uses Your profile title with Edit and Preview options',
     (tester) async {
       const topSafeArea = 47.0;
       tester.view.devicePixelRatio = 1.0;
@@ -165,8 +168,8 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Profile'), findsOneWidget);
-      expect(find.text('Profile').hitTestable(), findsOneWidget);
+      expect(find.text('Your profile'), findsOneWidget);
+      expect(find.text('Your profile').hitTestable(), findsOneWidget);
       expect(find.text('Edit'), findsOneWidget);
       expect(find.text('Preview'), findsOneWidget);
       expect(find.text('Edit profile'), findsNothing);
@@ -177,19 +180,21 @@ void main() {
         tester.getTopRight(find.byTooltip('Settings')).dx,
         lessThanOrEqualTo(370),
       );
-      final profileTitleBottom = tester.getBottomLeft(find.text('Profile')).dy;
-      final tabsTop = tester.getTopLeft(find.byType(TabBar)).dy;
+      final profileTitleBottom = tester
+          .getBottomLeft(find.text('Your profile'))
+          .dy;
+      final tabsTop = tester.getTopLeft(_profileOptionGroup()).dy;
       expect(tabsTop, greaterThan(profileTitleBottom));
       expect(tabsTop - profileTitleBottom, lessThanOrEqualTo(24));
 
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -260));
       await pumpFeatureUi(tester);
 
-      expect(find.text('Profile').hitTestable(), findsNothing);
+      expect(find.text('Your profile').hitTestable(), findsNothing);
       expect(find.text('Edit'), findsOneWidget);
       expect(find.text('Preview'), findsOneWidget);
       expect(
-        tester.getTopLeft(find.byType(TabBar)).dy,
+        tester.getTopLeft(_profileOptionGroup()).dy,
         greaterThanOrEqualTo(topSafeArea),
       );
     },
@@ -261,7 +266,7 @@ void main() {
       findsOneWidget,
     );
 
-    final tabBarBottom = tester.getBottomLeft(find.byType(TabBar)).dy;
+    final tabBarBottom = tester.getBottomLeft(_profileOptionGroup()).dy;
     final bodyTop = tester.getTopLeft(find.byType(PhotoGrid)).dy;
     expect(bodyTop, greaterThanOrEqualTo(tabBarBottom));
 
@@ -271,9 +276,12 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.text('Profile').hitTestable(), findsNothing);
+    expect(find.text('Your profile').hitTestable(), findsNothing);
     expect(find.text('Edit').hitTestable(), findsOneWidget);
-    expect(tester.getTopLeft(find.byType(TabBar)).dy, greaterThanOrEqualTo(0));
+    expect(
+      tester.getTopLeft(_profileOptionGroup()).dy,
+      greaterThanOrEqualTo(0),
+    );
   });
 
   testWidgets('Profile preview card can scroll back to the top', (
@@ -304,7 +312,7 @@ void main() {
     final previewScrollView = find.byKey(CatchProfileView.scrollViewKey);
     final previewScroll = tester.widget<CustomScrollView>(previewScrollView);
     final previewController = previewScroll.controller!;
-    final tabBarBottom = tester.getBottomLeft(find.byType(TabBar)).dy;
+    final tabBarBottom = tester.getBottomLeft(_profileOptionGroup()).dy;
 
     expect(previewController.offset, 0);
 
@@ -321,7 +329,7 @@ void main() {
       tester.getTopLeft(previewScrollView).dy,
       greaterThanOrEqualTo(tabBarBottom + 8),
     );
-    expect(tester.getTopLeft(previewScrollView).dx, 20);
+    expect(tester.getTopLeft(previewScrollView).dx, 0);
   });
 
   testWidgets('Profile preview upward drag pins the profile tabs', (
@@ -350,15 +358,15 @@ void main() {
     final previewScrollView = find.byKey(CatchProfileView.scrollViewKey);
     final previewScroll = tester.widget<CustomScrollView>(previewScrollView);
 
-    expect(find.text('Profile').hitTestable(), findsOneWidget);
+    expect(find.text('Your profile').hitTestable(), findsOneWidget);
     expect(previewScroll.controller!.offset, 0);
 
     await tester.drag(previewScrollView, const Offset(0, -260));
     await pumpFeatureUi(tester);
 
-    expect(find.text('Profile').hitTestable(), findsNothing);
+    expect(find.text('Your profile').hitTestable(), findsNothing);
     expect(find.text('Preview').hitTestable(), findsOneWidget);
-    expect(tester.getTopLeft(find.byType(TabBar)).dy, lessThanOrEqualTo(8));
+    expect(tester.getTopLeft(_profileOptionGroup()).dy, lessThanOrEqualTo(8));
     expect(previewScroll.controller!.offset, lessThan(260));
   });
 
@@ -385,10 +393,10 @@ void main() {
     await tester.tap(find.text('Preview'));
     await pumpFeatureUi(tester);
 
-    await tester.drag(find.byType(TabBar), const Offset(0, -220));
+    await tester.drag(_profileOptionGroup(), const Offset(0, -220));
     await pumpFeatureUi(tester);
 
-    expect(find.text('Profile').hitTestable(), findsNothing);
+    expect(find.text('Your profile').hitTestable(), findsNothing);
 
     final previewScrollView = find.byKey(CatchProfileView.scrollViewKey);
     final previewScroll = tester.widget<CustomScrollView>(previewScrollView);
@@ -397,7 +405,7 @@ void main() {
     await tester.drag(previewScrollView, const Offset(0, 220));
     await pumpFeatureUi(tester);
 
-    expect(find.text('Profile').hitTestable(), findsOneWidget);
+    expect(find.text('Your profile').hitTestable(), findsOneWidget);
   });
 
   testWidgets('ProfileInfoTile wraps long values without overflowing', (
@@ -464,7 +472,7 @@ void main() {
     expect(find.text('+919876543210'), findsOneWidget);
   });
 
-  testWidgets('ProfileTab starts with compact profile controls', (
+  testWidgets('ProfileTab starts with handoff profile edit sections', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1.0;
@@ -491,10 +499,12 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.byType(PhotoGrid), findsOneWidget);
-    expect(find.text('Profile strength'), findsOneWidget);
-    expect(find.text('Photos'), findsOneWidget);
-    expect(find.text('Profile prompts'), findsOneWidget);
-    expect(find.text('PROFILE PROMPTS'), findsNothing);
+    expect(find.text('Profile strength'), findsNothing);
+    expect(find.textContaining('PHOTOS', findRichText: true), findsOneWidget);
+    expect(find.textContaining('PROMPTS', findRichText: true), findsOneWidget);
+    expect(find.text('ABOUT YOU'), findsOneWidget);
+    expect(find.text('RUNNING'), findsOneWidget);
+    expect(find.text('LIFESTYLE'), findsOneWidget);
     expect(_profileInfoTile(_perfectRunPromptTitle), findsOneWidget);
   });
 
@@ -732,13 +742,13 @@ void main() {
   });
 
   testWidgets(
-    'ProfileTab hides running details until run preferences are set',
+    'ProfileTab keeps the handoff Running section available before setup',
     (tester) async {
       final user = buildUser(name: 'Suvrat Garg', runPreferencesVersion: 0);
       await _pumpProfileTab(tester, user);
 
-      expect(find.text('Running details'), findsNothing);
-      expect(_profileInfoTile('Pace range'), findsNothing);
+      expect(find.text('RUNNING'), findsOneWidget);
+      expect(_profileInfoTile('Pace range'), findsOneWidget);
     },
   );
 
@@ -1025,7 +1035,7 @@ void main() {
 
     expect(expandedChevronCenter.dx, closeTo(collapsedChevronCenter.dx, 0.1));
     expect(expandedTileHeight - collapsedTileHeight, lessThanOrEqualTo(8));
-    expect(doneTop.dy - editableBottom.dy, lessThanOrEqualTo(18));
+    expect(doneTop.dy - editableBottom.dy, lessThanOrEqualTo(20));
   });
 
   testWidgets('height inline edit uses bounded plus-minus controls', (

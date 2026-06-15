@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/matches/presentation/chat_list_tile.dart';
@@ -45,11 +44,15 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.byType(CatchSurface), findsOneWidget);
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('You matched!'), findsOneWidget);
+    expect(find.byType(PersonAvatar), findsOneWidget);
+    expect(
+      tester.widget<PersonAvatar>(find.byType(PersonAvatar)).borderWidth,
+      CatchStroke.underline,
+    );
 
-    await tester.tap(find.byType(CatchSurface));
+    await tester.tap(find.byType(ChatListTile));
     await tester.pump();
 
     expect(tapped, isTrue);
@@ -94,12 +97,9 @@ void main() {
 
     final context = tester.element(find.byType(ChatListTile));
     final tokens = CatchTokens.of(context);
-    final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
     final avatar = tester.widget<PersonAvatar>(find.byType(PersonAvatar));
 
-    expect(surface.backgroundColor, tokens.primarySoft);
-    expect(surface.borderColor, tokens.primary.withValues(alpha: 0.36));
-    expect(avatar.borderWidth, 2);
+    expect(avatar.borderWidth, CatchStroke.underline);
     expect(avatar.borderColor, tokens.primary);
     expect(find.text('1'), findsOneWidget);
     expect(

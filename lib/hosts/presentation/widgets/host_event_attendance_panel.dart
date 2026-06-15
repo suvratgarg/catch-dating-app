@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -1119,6 +1120,7 @@ Color _filterBackground(CatchBadgeTone tone, CatchTokens t) {
     CatchBadgeTone.danger => t.danger.withValues(
       alpha: CatchOpacity.controlOverlayPressed,
     ),
+    CatchBadgeTone.gold => t.gold.withValues(alpha: CatchOpacity.subtleFill),
     CatchBadgeTone.solid => t.surface,
     CatchBadgeTone.live => t.primarySoft.withValues(
       alpha: CatchOpacity.eventSuccessBouncyGlow,
@@ -1131,6 +1133,7 @@ Color _filterForeground(CatchBadgeTone tone, CatchTokens t) {
   return switch (tone) {
     CatchBadgeTone.success => t.success,
     CatchBadgeTone.warning => t.gold,
+    CatchBadgeTone.gold => t.gold,
     CatchBadgeTone.brand || CatchBadgeTone.live => t.primary,
     CatchBadgeTone.danger => t.danger,
     CatchBadgeTone.solid => t.ink,
@@ -1412,37 +1415,52 @@ class _DecisionControls extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Tooltip(
-          message: 'Open profile',
-          child: IconButton(
-            visualDensity: VisualDensity.compact,
-            iconSize: CatchIcon.md,
-            color: t.ink2,
-            onPressed: () => _openPublicProfile(context, uid),
-            icon: Icon(CatchIcons.personSearchOutlined),
-          ),
+        _DecisionIconAction(
+          tooltip: 'Open profile',
+          icon: CatchIcons.personSearchOutlined,
+          color: t.ink2,
+          onPressed: () => _openPublicProfile(context, uid),
         ),
-        Tooltip(
-          message: 'Approve request',
-          child: IconButton(
-            visualDensity: VisualDensity.compact,
-            iconSize: CatchIcon.md,
-            color: t.success,
-            onPressed: isPending ? null : onApprove,
-            icon: Icon(CatchIcons.checkCircleOutlineRounded),
-          ),
+        gapW4,
+        _DecisionIconAction(
+          tooltip: 'Approve request',
+          icon: CatchIcons.checkCircleOutlineRounded,
+          color: t.success,
+          onPressed: isPending ? null : onApprove,
         ),
-        Tooltip(
-          message: 'Decline request',
-          child: IconButton(
-            visualDensity: VisualDensity.compact,
-            iconSize: CatchIcon.md,
-            color: t.danger,
-            onPressed: isPending ? null : onDecline,
-            icon: Icon(CatchIcons.cancelOutlined),
-          ),
+        gapW4,
+        _DecisionIconAction(
+          tooltip: 'Decline request',
+          icon: CatchIcons.cancelOutlined,
+          color: t.danger,
+          onPressed: isPending ? null : onDecline,
         ),
       ],
+    );
+  }
+}
+
+class _DecisionIconAction extends StatelessWidget {
+  const _DecisionIconAction({
+    required this.tooltip,
+    required this.icon,
+    required this.color,
+    required this.onPressed,
+  });
+
+  final String tooltip;
+  final IconData icon;
+  final Color color;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: IconBtn(
+        onTap: onPressed,
+        child: Icon(icon, size: CatchIcon.md, color: color),
+      ),
     );
   }
 }

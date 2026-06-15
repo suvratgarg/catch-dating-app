@@ -63,6 +63,7 @@ class _DirectoryPhotoCard extends StatelessWidget {
       captionColor: t.ink3,
       title: club.name,
       subtitle: club.description,
+      showArrow: false,
       footer: _ClubDirectoryFooter(
         club: club,
         isJoined: isJoined,
@@ -100,6 +101,7 @@ class _DirectoryIdentityCard extends StatelessWidget {
       title: club.name,
       titleMaxLines: 2,
       subtitle: club.description,
+      showArrow: false,
       footer: _ClubDirectoryFooter(
         club: club,
         isJoined: isJoined,

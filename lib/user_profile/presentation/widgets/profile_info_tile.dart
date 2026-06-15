@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-const _tilePadding = CatchInsets.contentVertical;
+const _tilePadding = EdgeInsets.symmetric(vertical: CatchSpacing.micro14);
 const _profileInfoTrailingWidth = CatchSpacing.s10;
 
 class ProfileInfoTile extends StatelessWidget {
@@ -44,8 +44,8 @@ class ProfileInfoTile extends StatelessWidget {
             isAddAffordance ? '+ $value' : value,
             key: ValueKey('profile-info-$label-$value-$isAddAffordance'),
             style: isAddAffordance
-                ? CatchTextStyles.labelL(context, color: t.primary)
-                : CatchTextStyles.sectionTitle(context, color: t.ink),
+                ? CatchTextStyles.infoRowTitle(context, color: t.primary)
+                : CatchTextStyles.infoRowTitle(context, color: t.ink),
           );
     final valueSlot = valueContent ?? defaultValueContent;
     final valueArea = animateValueContent
@@ -72,9 +72,9 @@ class ProfileInfoTile extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: CatchTextStyles.kicker(context, color: t.ink2),
+                style: CatchTextStyles.fieldLabel(context, color: t.ink3),
               ),
-              gapH4,
+              gapH2,
               valueArea,
             ],
           ),

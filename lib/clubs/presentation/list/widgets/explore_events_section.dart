@@ -166,12 +166,26 @@ List<Widget> _exploreContentSlivers(
     return const [SliverToBoxAdapter(child: SizedBox.shrink())];
   }
   return [
-    if (thisWeekItems.isNotEmpty)
+    if (layoutViewModel.count > 0)
       SliverToBoxAdapter(
         child: Padding(
           padding: EdgeInsets.fromLTRB(
             CatchSpacing.s5,
             pinnedDayHeaders ? CatchSpacing.s4 : CatchSpacing.s3,
+            CatchSpacing.s5,
+            CatchSpacing.s1,
+          ),
+          child: _ExploreResultCountLine(
+            line: _exploreResultCountLine(layoutViewModel),
+          ),
+        ),
+      ),
+    if (thisWeekItems.isNotEmpty)
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            CatchSpacing.s5,
+            CatchSpacing.s3,
             CatchSpacing.s5,
             cards.isEmpty ? CatchSpacing.s4 : CatchSpacing.s2,
           ),
@@ -309,6 +323,46 @@ class _MixedClubRowCard extends _MixedExploreCard {
   final Club club;
 }
 
+class _ExploreResultCountLine extends StatelessWidget {
+  const _ExploreResultCountLine({required this.line});
+
+  final String line;
+
+  @override
+  Widget build(BuildContext context) {
+    return _ExploreMonoLabel(line, color: CatchTokens.of(context).ink3);
+  }
+}
+
+String _exploreResultCountLine(ExploreFeedViewModel viewModel) {
+  final count = viewModel.count;
+  final noun = count == 1 ? 'PLAN' : 'PLANS';
+  final dateSpan = _exploreDateSpanLabel(viewModel.items);
+  if (dateSpan == null) return '$count $noun';
+  return '$count $noun · $dateSpan';
+}
+
+String? _exploreDateSpanLabel(List<ExploreEventItem> items) {
+  if (items.isEmpty) return null;
+  final starts = items.map((item) => item.event.startTime).toList()..sort();
+  final first = starts.first;
+  final last = starts.last;
+  final sameDay =
+      first.year == last.year &&
+      first.month == last.month &&
+      first.day == last.day;
+  if (sameDay) return _monthDayLabel(first);
+  if (first.year == last.year && first.month == last.month) {
+    return '${EventFormatters.shortMonth(first).toUpperCase()} '
+        '${first.day}-${last.day}';
+  }
+  return '${_monthDayLabel(first)}-${_monthDayLabel(last)}';
+}
+
+String _monthDayLabel(DateTime value) {
+  return '${EventFormatters.shortMonth(value).toUpperCase()} ${value.day}';
+}
+
 class _ExploreHero extends ConsumerWidget {
   const _ExploreHero({required this.item});
 
@@ -426,7 +480,6 @@ class _ExploreClubPolaroidCard extends StatelessWidget {
     final isSynthetic = _isSyntheticExploreClub(club);
     final card = CatchPolaroid(
       onTap: isSynthetic ? null : () => _openClub(context, club),
-      radius: CatchRadius.sm,
       paddingKey: const ValueKey('explore-club-polaroid-padding'),
       media: _ExploreClubCover(club: club),
       mediaOverlay: Positioned(
@@ -437,8 +490,8 @@ class _ExploreClubPolaroidCard extends StatelessWidget {
       caption: (club.nextEventLabel ?? 'Club to know').toUpperCase(),
       captionColor: t.ink3,
       title: club.name,
-      titleStyle: CatchTextStyles.clubDisplay(context, size: 30, height: 0.98),
       subtitle: _clubSupportingLabel(club),
+      showArrow: false,
       footer: Row(
         children: [
           Expanded(child: _ExploreClubTags(club: club)),

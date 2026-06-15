@@ -37,13 +37,18 @@ import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_draggable_sheet_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
-import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_viewport_curve_frame.dart';
+import 'package:catch_dating_app/core/widgets/select_chip.dart';
+import 'package:catch_dating_app/core/widgets/stat_strip.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
@@ -142,6 +147,37 @@ void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
   group('Clubs widgets', () {
+    testWidgets('CatchPolaroid uses handoff title and arrow defaults', (
+      tester,
+    ) async {
+      await pumpTestApp(
+        tester,
+        CatchPolaroid(
+          media: const ColoredBox(color: Colors.black),
+          caption: 'CLUB TO KNOW',
+          title: 'Neighbourhood Club',
+          onTap: () {},
+        ),
+      );
+
+      final title = tester.widget<Text>(find.text('Neighbourhood Club'));
+      expect(title.style?.fontSize, CatchLayout.clubPolaroidTitleSize);
+      expect(title.style?.fontStyle, isNot(FontStyle.italic));
+      expect(find.byIcon(CatchIcons.forwardArrow), findsOneWidget);
+
+      await pumpTestApp(
+        tester,
+        const CatchPolaroid(
+          media: ColoredBox(color: Colors.black),
+          caption: 'CLUB TO KNOW',
+          title: 'Neighbourhood Club',
+          showArrow: false,
+        ),
+      );
+
+      expect(find.byIcon(CatchIcons.forwardArrow), findsNothing);
+    });
+
     testWidgets('ClubsList shows the empty state when there are no clubs', (
       tester,
     ) async {
@@ -343,6 +379,7 @@ void main() {
       // weekly strip until there are enough day-level picks to justify it.
       expect(find.text('This week'), findsNothing);
       expect(find.textContaining('COMING UP'), findsNothing);
+      expect(find.textContaining('1 PLAN'), findsOneWidget);
       expect(find.textContaining(event.title), findsWidgets);
       expect(find.textContaining('Pace Social'), findsWidgets);
       expect(find.text('8 going · 4 spots left'), findsOneWidget);
@@ -815,7 +852,7 @@ void main() {
       final scrolledTitleTop = tester.getTopLeft(find.text('Explore')).dy;
       expect(scrolledTitleTop, greaterThanOrEqualTo(0));
       expect(scrolledTitleTop, lessThanOrEqualTo(initialTitleTop));
-      expect(find.byType(CatchTextField), findsNothing);
+      expect(find.byType(CatchSearchField), findsNothing);
 
       await tester.tap(find.byIcon(CatchIcons.search));
       await tester.pump();
@@ -825,22 +862,22 @@ void main() {
       await tester.pump(midSearchMorphFrame);
 
       final morphingSearchWidth = tester
-          .getSize(find.byType(CatchTextField))
+          .getSize(find.byType(CatchSearchField))
           .width;
       expect(
         morphingSearchWidth,
-        greaterThan(CatchTextField.compactControlHeight),
+        greaterThan(CatchLayout.browseHeaderSearchExtent),
       );
 
       await _pumpClubUi(tester);
 
       final expandedSearchWidth = tester
-          .getSize(find.byType(CatchTextField))
+          .getSize(find.byType(CatchSearchField))
           .width;
       expect(expandedSearchWidth, greaterThan(morphingSearchWidth));
       expect(
-        tester.getSize(find.byType(CatchTextField)).height,
-        CatchTextField.compactControlHeight,
+        tester.getSize(find.byType(CatchSearchField)).height,
+        CatchLayout.browseHeaderSearchExtent,
       );
       expect(find.byIcon(CatchIcons.arrowBackRounded), findsNothing);
       expect(find.byIcon(CatchIcons.keyboardHideRounded), findsNothing);
@@ -854,7 +891,7 @@ void main() {
 
       expect(container.read(clubSearchQueryProvider), 'asha');
 
-      await tester.tap(find.byIcon(CatchIcons.closeRounded));
+      await tester.tap(find.byIcon(CatchIcons.clearCircle));
       await tester.pump();
 
       expect(container.read(clubSearchQueryProvider), isEmpty);
@@ -865,7 +902,7 @@ void main() {
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await _pumpClubUi(tester);
 
-      expect(find.byType(CatchTextField), findsNothing);
+      expect(find.byType(CatchSearchField), findsNothing);
     });
 
     testWidgets('CityPicker renders a circular city trigger', (tester) async {
@@ -1198,9 +1235,9 @@ void main() {
       expect(find.text('3'), findsNWidgets(2));
       expect(find.text('1'), findsOneWidget);
       expect(find.text('₹30'), findsOneWidget);
-      expect(find.byType(CatchMetricStrip), findsOneWidget);
-      expect(find.text('Members'), findsOneWidget);
-      expect(find.text('Upcoming'), findsOneWidget);
+      expect(find.byType(StatStrip), findsOneWidget);
+      expect(find.text('MEMBERS'), findsOneWidget);
+      expect(find.text('UPCOMING'), findsOneWidget);
       expect(find.text('4.7'), findsOneWidget);
     });
 
@@ -2040,7 +2077,7 @@ void main() {
       // visual choice; assert "at least one" so future tightening doesn't
       // re-break the test.
       expect(find.byType(CatchSkeleton), findsAtLeastNWidgets(1));
-      expect(find.byType(CatchTextField), findsNothing);
+      expect(find.byType(CatchSearchField), findsNothing);
     });
 
     testWidgets(
@@ -2071,13 +2108,13 @@ void main() {
 
         expect(find.byType(CityPicker), findsOneWidget);
         expect(find.byIcon(CatchIcons.locationOnOutlined), findsOneWidget);
-        expect(find.byType(CatchTextField), findsNothing);
+        expect(find.byType(CatchSearchField), findsNothing);
         expect(find.text('No clubs in Mumbai yet'), findsOneWidget);
 
         await tester.tap(find.byTooltip('Search events or clubs'));
         await _pumpClubUi(tester);
 
-        expect(find.byType(CatchTextField), findsOneWidget);
+        expect(find.byType(CatchSearchField), findsOneWidget);
       },
     );
 
@@ -2117,25 +2154,32 @@ void main() {
       );
       await _pumpClubUi(tester);
 
-      // New short filter rail: time pills (tonight/tomorrow/weekend/this
-      // week/anytime), compact distance chips (1/3/5/10 km), Joined toggle.
-      // High-rated, activity-tag, and area chips were intentionally retired
-      // from this rail — they pushed the primary filters off screen.
+      // Handoff chrome: scope tabs stay visible, secondary filters move behind
+      // the trailing CountPill.
+      expect(find.byType(CatchOptionGroup<ExploreTimeFilter>), findsOneWidget);
       expect(find.text('Tonight'), findsOneWidget);
-      expect(find.text('Tomorrow'), findsOneWidget);
+      expect(find.text('Tomorrow'), findsNothing);
       expect(find.text('Weekend'), findsOneWidget);
-      expect(find.text('3 km'), findsOneWidget);
       expect(find.text('This week'), findsOneWidget);
       expect(find.text('Anytime'), findsOneWidget);
-      expect(find.text('Joined'), findsOneWidget);
+      expect(find.byKey(const ValueKey('explore-filter-pill')), findsOneWidget);
+      expect(find.byType(CatchCountPill), findsWidgets);
+      expect(find.text('3 km'), findsNothing);
+      expect(find.text('Joined clubs'), findsNothing);
       expect(find.text('Rated 4.5+'), findsNothing);
       expect(find.text('Tempo Queens'), findsOneWidget);
 
-      // Default time filter selection means the Clear chip should appear
-      // only once the user has changed something. Toggle tonight to make
-      // sure the chip rail tracks the change.
       await tester.tap(find.text('Tonight'));
       await _pumpClubUi(tester);
+
+      await tester.tap(find.byKey(const ValueKey('explore-filter-pill')));
+      await _pumpClubUi(tester);
+
+      expect(find.text('Explore filters'), findsOneWidget);
+      expect(find.text('3 km'), findsOneWidget);
+      expect(find.text('Joined clubs'), findsOneWidget);
+      expect(_selectChip('3 km'), findsOneWidget);
+      expect(_selectChip('Joined clubs'), findsOneWidget);
       expect(find.text('Clear'), findsOneWidget);
     });
 
@@ -3121,29 +3165,19 @@ void main() {
       );
       await _pumpClubUi(tester);
 
-      expect(find.text('Club basics'), findsOneWidget);
+      expect(find.text('Edit club'), findsOneWidget);
+      expect(find.text('Identity'), findsOneWidget);
+      expect(find.text('Contact'), findsOneWidget);
+      expect(find.text('Event defaults'), findsOneWidget);
+      expect(find.text('Next'), findsNothing);
       expect(find.widgetWithText(TextField, 'Morning Miles'), findsOneWidget);
       expect(find.widgetWithText(TextField, 'Palasia'), findsOneWidget);
       expect(find.text('Indore'), findsOneWidget);
-
-      await tester.tap(find.text('Next'));
-      await _pumpClubUi(tester);
-
-      expect(find.text('Next'), findsOneWidget);
       expect(
         find.widgetWithText(TextField, 'Indore morning loops.'),
         findsOneWidget,
       );
-
-      await tester.tap(find.text('Next'));
-      await _pumpClubUi(tester);
-
-      expect(find.text('Next'), findsOneWidget);
       expect(find.text('Default event policy'), findsOneWidget);
-
-      await tester.tap(find.text('Next'));
-      await _pumpClubUi(tester);
-
       expect(find.text('Save changes'), findsOneWidget);
       expect(find.text('Default event success'), findsOneWidget);
     });
@@ -3185,17 +3219,10 @@ void main() {
         );
         await _pumpClubUi(tester);
 
-        await tester.tap(find.text('Next'));
-        await _pumpClubUi(tester);
-
         await _enterCreateClubText(tester, 'Instagram handle', '');
         await _enterCreateClubText(tester, 'Phone number', '');
         await _enterCreateClubText(tester, 'Email', '');
 
-        await tester.tap(find.text('Next'));
-        await _pumpClubUi(tester);
-        await tester.tap(find.text('Next'));
-        await _pumpClubUi(tester);
         await tester.tap(find.text('Save changes'));
         await _pumpClubUi(tester);
 
@@ -3311,11 +3338,14 @@ void main() {
         await _pumpClubUi(tester);
 
         expect(find.text('Default event policy'), findsOneWidget);
+        expect(find.byType(CatchToggle), findsOneWidget);
+        expect(_selectChip('OPEN', active: true), findsOneWidget);
 
         await tester.tap(find.text('Next'));
         await _pumpClubUi(tester);
 
         expect(find.text('Default event success'), findsOneWidget);
+        expect(find.byType(CatchToggle), findsWidgets);
 
         await tester.tap(find.text('Create club'));
         await _pumpClubUi(tester);
@@ -3331,6 +3361,15 @@ void main() {
 Finder _catchButtonWithLabel(String label) {
   return find.byWidgetPredicate(
     (widget) => widget is CatchButton && widget.label == label,
+  );
+}
+
+Finder _selectChip(String label, {bool? active}) {
+  return find.byWidgetPredicate(
+    (widget) =>
+        widget is SelectChip &&
+        widget.label == label &&
+        (active == null || widget.active == active),
   );
 }
 

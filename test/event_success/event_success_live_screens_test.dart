@@ -4,6 +4,8 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
@@ -89,6 +91,7 @@ void main() {
     );
 
     expect(find.text('Setup'), findsWidgets);
+    expect(find.byType(CatchOptionGroup<EventSuccessHostTab>), findsOneWidget);
     expect(find.text('Target attendees'), findsOneWidget);
     expect(find.text('Group flow'), findsWidgets);
     expect(find.text('Host goal'), findsOneWidget);
@@ -1896,6 +1899,13 @@ void main() {
         400,
         scrollable: findPrimaryScrollable(),
       );
+      final safetyConcernToggle = _toggle(
+        'I want Catch to review a safety or comfort concern',
+      );
+      await tester.ensureVisible(safetyConcernToggle);
+      await tester.pump();
+      await tester.tap(safetyConcernToggle);
+      await tester.pump();
       await tester.drag(findPrimaryScrollable(), const Offset(0, -180));
       await tester.pump();
       await tester.tap(find.text('Submit feedback'));
@@ -1906,7 +1916,7 @@ void main() {
           .doc('event-1_runner-1')
           .get();
       expect(feedback.data()?['welcomeRating'], 4);
-      expect(feedback.data()?['safetyConcern'], false);
+      expect(feedback.data()?['safetyConcern'], true);
     },
   );
 
@@ -2847,6 +2857,12 @@ EventSuccessWingmanRequest _wingmanRequest({
   );
 }
 
+Finder _toggle(String label) {
+  return find.byWidgetPredicate(
+    (widget) => widget is CatchToggle && widget.semanticLabel == label,
+  );
+}
+
 class _WingmanTestFirebaseFunctions extends Fake implements FirebaseFunctions {
   _WingmanTestFirebaseFunctions(this._firestore, {required this.requesterUid});
 
@@ -2878,9 +2894,9 @@ class _FakeEventSuccessLiveEffectsController
 class _WingmanTestHttpsCallable extends Fake implements HttpsCallable {
   _WingmanTestHttpsCallable(
     this.name, {
-    required FirebaseFirestore firestore,
+    required this._firestore,
     required this.requesterUid,
-  }) : _firestore = firestore;
+  });
 
   final String name;
   final FirebaseFirestore _firestore;

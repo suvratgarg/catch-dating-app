@@ -70,7 +70,7 @@ class ProfileCompatibilitySection extends ProfileSection {
   final List<String> confidence;
 }
 
-/// A prompt: tracked-mono question + Newsreader answer.
+/// A prompt: tracked-mono question + Archivo answer.
 class ProfilePromptSectionData extends ProfileSection {
   const ProfilePromptSectionData({
     required this.question,

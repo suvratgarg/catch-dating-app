@@ -353,7 +353,25 @@ class _EventPinsMapPlaceholder extends StatelessWidget {
             children: [
               Positioned.fill(
                 child: CustomPaint(
-                  painter: _EventPinsMapPlaceholderPainter(tokens: t),
+                  painter: _EventPinsMapPlaceholderPainter(
+                    backgroundColor: t.primarySoft,
+                    waterColor: t.primary.withValues(
+                      alpha: CatchOpacity.mapDistanceRingFill,
+                    ),
+                    parkColor: t.success.withValues(
+                      alpha: CatchOpacity.photoScrimLight,
+                    ),
+                    roadColor: t.ink.withValues(
+                      alpha: CatchOpacity.photoScrimMedium,
+                    ),
+                    minorRoadColor: t.ink.withValues(
+                      alpha: CatchOpacity.photoScrimLight,
+                    ),
+                    routeColor: t.primary.withValues(
+                      alpha: CatchOpacity.mapDistanceRingStroke,
+                    ),
+                    dotColor: t.ink.withValues(alpha: CatchOpacity.warningFill),
+                  ),
                 ),
               ),
               for (final indexed in items.indexed)
@@ -394,19 +412,31 @@ class _EventPinsMapPlaceholder extends StatelessWidget {
 }
 
 class _EventPinsMapPlaceholderPainter extends CustomPainter {
-  const _EventPinsMapPlaceholderPainter({required this.tokens});
+  const _EventPinsMapPlaceholderPainter({
+    required this.backgroundColor,
+    required this.waterColor,
+    required this.parkColor,
+    required this.roadColor,
+    required this.minorRoadColor,
+    required this.routeColor,
+    required this.dotColor,
+  });
 
-  final CatchTokens tokens;
+  final Color backgroundColor;
+  final Color waterColor;
+  final Color parkColor;
+  final Color roadColor;
+  final Color minorRoadColor;
+  final Color routeColor;
+  final Color dotColor;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final basePaint = Paint()..color = tokens.primarySoft;
+    final basePaint = Paint()..color = backgroundColor;
     canvas.drawRect(Offset.zero & size, basePaint);
 
     final waterPaint = Paint()
-      ..color = tokens.primary.withValues(
-        alpha: CatchOpacity.mapDistanceRingFill,
-      )
+      ..color = waterColor
       ..style = PaintingStyle.fill;
     final waterPath = Path()
       ..moveTo(size.width * 0.58, 0)
@@ -433,7 +463,7 @@ class _EventPinsMapPlaceholderPainter extends CustomPainter {
     canvas.drawPath(waterPath, waterPaint);
 
     final parkPaint = Paint()
-      ..color = tokens.success.withValues(alpha: CatchOpacity.photoScrimLight)
+      ..color = parkColor
       ..style = PaintingStyle.fill;
     canvas.drawRRect(
       RRect.fromRectAndRadius(
@@ -461,11 +491,11 @@ class _EventPinsMapPlaceholderPainter extends CustomPainter {
     );
 
     final roadPaint = Paint()
-      ..color = tokens.ink.withValues(alpha: CatchOpacity.photoScrimMedium)
+      ..color = roadColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
     final minorRoadPaint = Paint()
-      ..color = tokens.ink.withValues(alpha: CatchOpacity.photoScrimLight)
+      ..color = minorRoadColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
     for (var i = -2; i < 8; i += 1) {
@@ -486,9 +516,7 @@ class _EventPinsMapPlaceholderPainter extends CustomPainter {
     }
 
     final routePaint = Paint()
-      ..color = tokens.primary.withValues(
-        alpha: CatchOpacity.mapDistanceRingStroke,
-      )
+      ..color = routeColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;
@@ -512,8 +540,7 @@ class _EventPinsMapPlaceholderPainter extends CustomPainter {
       );
     canvas.drawPath(routePath, routePaint);
 
-    final dotPaint = Paint()
-      ..color = tokens.ink.withValues(alpha: CatchOpacity.warningFill);
+    final dotPaint = Paint()..color = dotColor;
     for (var i = 0; i < 12; i += 1) {
       final x = size.width * ((i * 0.19) % 1.0);
       final y = size.height * (0.12 + ((i * 0.31) % 0.74));
@@ -523,7 +550,13 @@ class _EventPinsMapPlaceholderPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _EventPinsMapPlaceholderPainter oldDelegate) =>
-      oldDelegate.tokens != tokens;
+      oldDelegate.backgroundColor != backgroundColor ||
+      oldDelegate.waterColor != waterColor ||
+      oldDelegate.parkColor != parkColor ||
+      oldDelegate.roadColor != roadColor ||
+      oldDelegate.minorRoadColor != minorRoadColor ||
+      oldDelegate.routeColor != routeColor ||
+      oldDelegate.dotColor != dotColor;
 }
 
 bool _samePoint(LocationCoordinate a, LocationCoordinate b) =>

@@ -65,7 +65,7 @@ void main() {
         await pumpOnboardingUi(tester);
 
         expect(find.text('Gender'), findsOneWidget);
-        expect(find.text('2/2'), findsOneWidget);
+        expect(find.text('STEP 2 OF 2'), findsOneWidget);
         await tester.tap(find.byTooltip('Back'));
         await pumpOnboardingUi(tester);
 
@@ -74,7 +74,7 @@ void main() {
           OnboardingStep.nameDob,
         );
         expect(find.text('Your name'), findsOneWidget);
-        expect(find.text('1/2'), findsOneWidget);
+        expect(find.text('STEP 1 OF 2'), findsOneWidget);
       },
     );
   });
@@ -121,7 +121,7 @@ void main() {
 
       expect(find.text('Asha'), findsOneWidget);
       expect(find.text('Runner'), findsOneWidget);
-      expect(find.text('15/04/1997'), findsOneWidget);
+      expect(find.text('15 Apr 1997'), findsOneWidget);
       expect(find.text('9876543210'), findsOneWidget);
 
       await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
@@ -156,7 +156,7 @@ void main() {
         tester
             .widget<EditableText>(
               find.descendant(
-                of: find.widgetWithText(CatchTextField, 'Mobile number'),
+                of: find.widgetWithText(CatchTextField, 'PHONE'),
                 matching: find.byType(EditableText),
               ),
             )
@@ -404,7 +404,7 @@ void main() {
         child: const RunningPrefsPage(),
       );
 
-      expect(find.text('Favorite event times'), findsOneWidget);
+      expect(find.text('FAVOURITE EVENT TIMES'), findsOneWidget);
       expect(find.text('Morning'), findsOneWidget);
       expect(find.text('Evening'), findsOneWidget);
     });

@@ -53,8 +53,31 @@ class PhotosPage extends ConsumerWidget {
     );
 
     return OnboardingStepFrame(
+      footer: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchButton(
+            label: 'Continue',
+            onPressed: canContinue
+                ? () => ref
+                      .read(onboardingControllerProvider.notifier)
+                      .goToStepAndSaveDraft(OnboardingStep.prompts)
+                : null,
+            fullWidth: true,
+            size: CatchButtonSize.lg,
+          ),
+          if (continueHint != null) ...[
+            gapH12,
+            Text(
+              continueHint,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ],
+      ),
       children: [
-        gapH32,
         OnboardingStepHeader(
           title: profileCompletionOnly
               ? 'Complete your profile for Catches'
@@ -63,22 +86,7 @@ class PhotosPage extends ConsumerWidget {
               ? 'Catches need photos so people can decide who they want to meet. You can still book events with your current details.'
               : 'Add at least 2 photos so others can find you.',
         ),
-        gapH8,
-        Row(
-          children: [
-            Icon(CatchIcons.bolt, size: CatchIcon.xs, color: t.ink2),
-            gapW8,
-            Expanded(
-              child: Text(
-                profileCompletionOnly
-                    ? 'This only gates Catches. Event booking stays available.'
-                    : 'Running photos boost catches by 2.3×',
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-            ),
-          ],
-        ),
-        gapH24,
+        gapH20,
         PhotoGrid(
           profilePhotos: profilePhotos,
           loadingIndices: uploadState.loadingIndices,
@@ -114,26 +122,24 @@ class PhotosPage extends ConsumerWidget {
             );
           },
         ),
-        gapH24,
-        CatchButton(
-          label: 'Continue',
-          onPressed: canContinue
-              ? () => ref
-                    .read(onboardingControllerProvider.notifier)
-                    .goToStepAndSaveDraft(OnboardingStep.prompts)
-              : null,
-          fullWidth: true,
-          size: CatchButtonSize.lg,
+        gapH16,
+        Divider(height: 1, color: t.line),
+        gapH12,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(CatchIcons.bolt, size: CatchIcon.xs, color: t.accent),
+            gapW8,
+            Expanded(
+              child: Text(
+                profileCompletionOnly
+                    ? 'This only gates Catches. Event booking stays available.'
+                    : 'Running photos boost catches by 2.3x.',
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+            ),
+          ],
         ),
-        if (continueHint != null) ...[
-          gapH12,
-          Text(
-            continueHint,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-            textAlign: TextAlign.center,
-          ),
-        ],
-        gapH32,
       ],
     );
   }

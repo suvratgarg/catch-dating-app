@@ -252,6 +252,45 @@ void main() {
       expect(find.text('Say hi to Taylor!'), findsOneWidget);
     });
 
+    testWidgets('empty match thread grounds the prompt in the shared event', (
+      tester,
+    ) async {
+      final event = buildEvent(startTime: DateTime(2026, 5, 29, 19));
+      final matchRepository = FakeMatchRepository(match: buildMatch());
+      final conversationRepository = FakeConversationRepository();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            matchRepositoryProvider.overrideWithValue(matchRepository),
+            conversationRepositoryProvider.overrideWithValue(
+              conversationRepository,
+            ),
+            watchEventProvider(
+              'event-1',
+            ).overrideWith((ref) => Stream.value(event)),
+            watchPublicProfileProvider('runner-2').overrideWith(
+              (ref) => Stream.value(
+                buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ChatScreen(matchId: 'match-1'),
+          ),
+        ),
+      );
+
+      await pumpFeatureUi(tester);
+
+      expect(
+        find.text('You both ran ${event.title}. Say hi to Taylor!'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('resets unread once the uid becomes available after mount', (
       tester,
     ) async {
@@ -517,6 +556,8 @@ void main() {
       await tester.tap(find.text('Reset...'));
       await pumpFeatureUi(tester);
       expect(find.text('Reset demo state'), findsOneWidget);
+      expect(find.text('Delete demo chat state.'), findsOneWidget);
+      expect(find.byType(ListTile), findsNothing);
       await tester.tap(find.text('Reset chats'));
       await pumpFeatureUi(tester);
 

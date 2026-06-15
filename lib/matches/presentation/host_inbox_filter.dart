@@ -1,0 +1,1 @@
+enum HostInboxFilter { all, unread }

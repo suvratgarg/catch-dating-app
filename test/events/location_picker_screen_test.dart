@@ -233,6 +233,7 @@ void main() {
 
       expect(find.text('Cubbon Park'), findsWidgets);
       expect(find.text('Bengaluru, Karnataka'), findsOneWidget);
+      expect(find.byType(ListTile), findsNothing);
 
       await tester.tap(find.text('Cubbon Park'));
       await tester.pump();

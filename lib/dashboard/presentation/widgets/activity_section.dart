@@ -1,23 +1,11 @@
-import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
-import 'package:catch_dating_app/core/widgets/section_header.dart';
-import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -61,23 +49,16 @@ class ActivitySection extends ConsumerWidget {
     final notificationsAsync = ref.watch(
       watchActivityNotificationsProvider(uid),
     );
-    final eventsAsync = ref.watch(watchSignedUpEventsProvider(uid));
 
-    final isLoading = notificationsAsync.isLoading || eventsAsync.isLoading;
-    final error = notificationsAsync.error ?? eventsAsync.error;
+    final isLoading = notificationsAsync.isLoading;
+    final error = notificationsAsync.error;
     final notifications =
         notificationsAsync.asData?.value ?? const <ActivityNotification>[];
-    final events = eventsAsync.asData?.value ?? const <Event>[];
     final visibleNotifications = notifications
         .where((notification) => notification.isVisibleInActivity)
         .toList(growable: false);
     final notificationItems = _NotificationItem.fromNotifications(
       visibleNotifications,
-    );
-    final upcomingEvents = _upcomingEvents(events);
-
-    final hasUnread = visibleNotifications.any(
-      (notification) => notification.isUnread,
     );
 
     return Column(
@@ -106,10 +87,9 @@ class ActivitySection extends ConsumerWidget {
             compact: true,
             onRetry: () {
               ref.invalidate(watchActivityNotificationsProvider(uid));
-              ref.invalidate(watchSignedUpEventsProvider(uid));
             },
           ),
-        ] else if (upcomingEvents.isEmpty && notificationItems.isEmpty) ...[
+        ] else if (notificationItems.isEmpty) ...[
           if (showEmptyState)
             CatchEmptyState(
               icon: CatchIcons.notificationsNoneRounded,
@@ -122,216 +102,193 @@ class ActivitySection extends ConsumerWidget {
               messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
             ),
         ] else ...[
-          if (upcomingEvents.isNotEmpty) ...[
-            const SectionHeader(title: 'Upcoming events', heavy: true),
-            for (final entry in upcomingEvents.indexed) ...[
-              EventCompactRow(
-                event: entry.$2,
-                onTap: () => context.push(_eventRoute(entry.$2)),
-              ),
-              if (entry.$1 != upcomingEvents.length - 1) gapH10,
-            ],
-            if (notificationItems.isNotEmpty) gapH24,
-          ],
-          if (notificationItems.isNotEmpty) ...[
-            SectionHeader(
-              title: 'Recent updates',
-              heavy: true,
-              trailing: showMarkAllReadAction && hasUnread
-                  ? CatchTextButton(
-                      label: 'Mark all read',
-                      onPressed: () =>
-                          _markAllRead(ref, visibleNotifications, context),
-                    )
-                  : null,
-            ),
-            for (final group in _groupItems(notificationItems)) ...[
-              SectionHeader(
-                title: group.label,
-                padding: const EdgeInsets.only(
-                  top: CatchSpacing.s1,
-                  bottom: CatchSpacing.s2,
-                ),
-              ),
-              for (final entry in group.items.indexed) ...[
-                _NotificationTile(item: entry.$2),
-                if (entry.$1 != group.items.length - 1) gapH10,
-              ],
-              gapH16,
-            ],
-          ],
+          _NotificationDayGroups(groups: _groupItems(notificationItems)),
         ],
       ],
     );
   }
-
-  Future<void> _markAllRead(
-    WidgetRef ref,
-    List<ActivityNotification> notifications,
-    BuildContext context,
-  ) async {
-    final container = ProviderScope.containerOf(context, listen: false);
-    try {
-      await ref
-          .read(activityControllerProvider.notifier)
-          .markAllRead(notifications: notifications, uid: uid);
-    } catch (error, stackTrace) {
-      container
-          .read(errorLoggerProvider)
-          .logAppException(
-            normalizeBackendError(
-              error,
-              stackTrace: stackTrace,
-              context: const BackendErrorContext(
-                service: BackendService.local,
-                action: 'mark activity read',
-                resource: 'activity_section',
-              ),
-            ),
-          );
-      if (context.mounted) {
-        showCatchErrorSnackBar(context, error);
-      }
-    }
-  }
 }
 
-class _NotificationTile extends StatelessWidget {
-  const _NotificationTile({required this.item});
+class _NotificationDayGroups extends StatelessWidget {
+  const _NotificationDayGroups({required this.groups});
 
-  final _NotificationItem item;
+  final List<_ActivityGroup> groups;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final visual = _NotificationVisual.from(item.type, t);
 
-    return Semantics(
-      button: item.route != null,
-      label: '${item.title}. ${item.subtitle}',
-      child: CatchSurface(
-        onTap: item.route == null ? null : () => context.push(item.route!),
-        borderColor: item.isUnread
-            ? visual.accent.withValues(alpha: CatchOpacity.activityUnreadBorder)
-            : t.line,
-        backgroundColor: item.isUnread
-            ? visual.accent.withValues(alpha: CatchOpacity.activityUnreadFill)
-            : t.surface,
-        padding: CatchInsets.contentDense,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _NotificationIconChip(visual: visual),
-            gapW12,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          item.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style:
-                              CatchTextStyles.sectionTitle(
-                                context,
-                                color: t.ink,
-                              ).copyWith(
-                                fontWeight: item.isUnread
-                                    ? FontWeight.w700
-                                    : FontWeight.w600,
-                              ),
-                        ),
-                      ),
-                      gapW8,
-                      Text(
-                        item.timeLabel,
-                        style: CatchTextStyles.supporting(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (final groupEntry in groups.indexed)
+          Padding(
+            padding: EdgeInsets.only(
+              top: groupEntry.$1 == 0 ? 0 : CatchSpacing.s2,
+            ),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                border: groupEntry.$1 == 0
+                    ? const Border()
+                    : Border(top: BorderSide(color: t.line)),
+              ),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: groupEntry.$1 == 0 ? 0 : CatchSpacing.micro18,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      groupEntry.$2.label.toUpperCase(),
+                      style: CatchTextStyles.kicker(context, color: t.ink2),
+                    ),
+                    gapH8,
+                    _NotificationGroup(items: groupEntry.$2.items),
+                  ],
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class NotificationRow extends StatelessWidget {
+  const NotificationRow({
+    super.key,
+    this.type = ActivityNotificationType.eventReminder,
+    this.title = '',
+    this.time = '',
+    this.body = '',
+    this.unread = false,
+    this.divider = false,
+    this.onTap,
+  });
+
+  final ActivityNotificationType type;
+  final String title;
+  final String time;
+  final String body;
+  final bool unread;
+  final bool divider;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final visual = _NotificationVisual.from(type, t);
+    final titleColor = unread ? t.ink : t.ink2;
+    final timeColor = unread ? t.primary : t.ink3;
+    final row = Padding(
+      padding: CatchInsets.contentVerticalMedium,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: CatchIcon.md,
+            child: Icon(visual.icon, color: visual.accent, size: CatchIcon.md),
+          ),
+          gapW12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: CatchTextStyles.infoRowTitle(
                           context,
-                          color: t.ink3,
+                          color: titleColor,
                         ),
                       ),
-                    ],
-                  ),
-                  gapH4,
+                    ),
+                    gapW8,
+                    Text(
+                      time.toUpperCase(),
+                      style: CatchTextStyles.monoLabelS(
+                        context,
+                        color: timeColor,
+                      ),
+                    ),
+                  ],
+                ),
+                if (body.isNotEmpty) ...[
+                  gapH3,
                   Text(
-                    item.subtitle,
+                    body,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: CatchTextStyles.supporting(context, color: t.ink2),
                   ),
-                  gapH8,
-                  Wrap(
-                    spacing: CatchSpacing.s1,
-                    runSpacing: CatchSpacing.s1,
-                    children: [
-                      CatchBadge(
-                        label: visual.label,
-                        tone: visual.badgeTone,
-                        icon: visual.badgeIcon,
-                      ),
-                      if (item.isUnread)
-                        const CatchBadge(
-                          label: 'New',
-                          tone: CatchBadgeTone.live,
-                        ),
-                    ],
-                  ),
                 ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return Semantics(
+      button: onTap != null,
+      label: body.isEmpty ? title : '$title. $body',
+      child: Stack(
+        children: [
+          if (divider)
+            Positioned(
+              top: 0,
+              left: CatchIcon.md + CatchSpacing.s3,
+              right: 0,
+              child: Divider(
+                height: 1,
+                color: t.line.withValues(alpha: CatchOpacity.subtleBorder),
               ),
             ),
-            if (item.route != null) ...[
-              gapW8,
-              Icon(
-                CatchIcons.chevronRightRounded,
-                size: CatchIcon.control,
-                color: t.ink3,
-              ),
-            ],
-          ],
-        ),
+          if (onTap == null) row else InkWell(onTap: onTap, child: row),
+        ],
       ),
     );
   }
 }
 
-class _NotificationIconChip extends StatelessWidget {
-  const _NotificationIconChip({required this.visual});
+class _NotificationGroup extends StatelessWidget {
+  const _NotificationGroup({required this.items});
 
-  final _NotificationVisual visual;
+  final List<_NotificationItem> items;
 
   @override
   Widget build(BuildContext context) {
-    return CatchIconTile(
-      icon: visual.icon,
-      iconColor: visual.accent,
-      backgroundColor: visual.background,
-      borderColor: visual.border,
+    return Column(
+      children: [
+        for (final entry in items.indexed)
+          NotificationRow(
+            type: entry.$2.type,
+            title: entry.$2.title,
+            time: entry.$2.timeLabel,
+            body: entry.$2.subtitle,
+            unread: entry.$2.isUnread,
+            divider: entry.$1 > 0,
+            onTap: entry.$2.route == null
+                ? null
+                : () => context.push(entry.$2.route!),
+          ),
+      ],
     );
   }
 }
 
 class _NotificationVisual {
-  const _NotificationVisual({
-    required this.icon,
-    required this.label,
-    required this.badgeTone,
-    required this.accent,
-    required this.background,
-    required this.border,
-    this.badgeIcon,
-  });
+  const _NotificationVisual({required this.icon, required this.accent});
 
   final IconData icon;
-  final String label;
-  final CatchBadgeTone badgeTone;
   final Color accent;
-  final Color background;
-  final Color border;
-  final IconData? badgeIcon;
 
   static _NotificationVisual from(
     ActivityNotificationType type,
@@ -339,79 +296,43 @@ class _NotificationVisual {
   ) {
     _NotificationVisual visual({
       required IconData icon,
-      required String label,
-      required CatchBadgeTone tone,
       required Color accent,
-      IconData? badgeIcon,
-      double backgroundAlpha = CatchOpacity.activityIconFill,
     }) {
-      return _NotificationVisual(
-        icon: icon,
-        label: label,
-        badgeTone: tone,
-        accent: accent,
-        background: accent.withValues(alpha: backgroundAlpha),
-        border: accent.withValues(alpha: CatchOpacity.activityIconBorder),
-        badgeIcon: badgeIcon,
-      );
+      return _NotificationVisual(icon: icon, accent: accent);
     }
 
     return switch (type) {
       ActivityNotificationType.message => visual(
         icon: CatchIcons.chatBubbleOutlineRounded,
-        label: 'Message',
-        tone: CatchBadgeTone.neutral,
         accent: t.ink2,
-        badgeIcon: CatchIcons.chatBubbleOutlineRounded,
       ),
       ActivityNotificationType.match => visual(
         icon: CatchIcons.favoriteRounded,
-        label: 'Catch',
-        tone: CatchBadgeTone.brand,
         accent: t.primary,
-        badgeIcon: CatchIcons.favoriteRounded,
       ),
       ActivityNotificationType.eventReminder => visual(
-        icon: CatchIcons.notificationsActiveOutlined,
-        label: 'Reminder',
-        tone: CatchBadgeTone.live,
+        icon: CatchIcons.notificationsNoneRounded,
         accent: t.primary,
-        badgeIcon: CatchIcons.notificationsActiveOutlined,
       ),
       ActivityNotificationType.eventSignup => visual(
         icon: CatchIcons.checkCircleOutlineRounded,
-        label: 'Booked',
-        tone: CatchBadgeTone.success,
         accent: t.success,
-        badgeIcon: CatchIcons.checkRounded,
       ),
       ActivityNotificationType.waitlistPromotion => visual(
-        icon: CatchIcons.eventAvailableRounded,
-        label: 'Waitlist',
-        tone: CatchBadgeTone.warning,
+        icon: CatchIcons.scheduleRounded,
         accent: t.warning,
-        badgeIcon: CatchIcons.scheduleRounded,
       ),
       ActivityNotificationType.eventCancelled => visual(
         icon: CatchIcons.eventBusyRounded,
-        label: 'Cancelled',
-        tone: CatchBadgeTone.danger,
         accent: t.danger,
-        badgeIcon: CatchIcons.closeRounded,
       ),
       ActivityNotificationType.eventUpdated => visual(
         icon: CatchIcons.updateRounded,
-        label: 'Updated',
-        tone: CatchBadgeTone.neutral,
-        accent: t.accent,
-        badgeIcon: CatchIcons.updateRounded,
+        accent: t.ink2,
       ),
       ActivityNotificationType.clubUpdate => visual(
         icon: CatchIcons.groupsRounded,
-        label: 'Club',
-        tone: CatchBadgeTone.neutral,
-        accent: t.accent,
-        badgeIcon: CatchIcons.groupsRounded,
+        accent: t.ink2,
       ),
     };
   }
@@ -497,20 +418,6 @@ class _NotificationItem {
     if (difference.inHours < 24) return '${difference.inHours}h';
     return '${difference.inDays}d';
   }
-}
-
-List<Event> _upcomingEvents(List<Event> events) {
-  final now = DateTime.now();
-  final upcoming =
-      events.where((event) => event.isUpcomingAt(now)).toList(growable: false)
-        ..sort((a, b) => a.startTime.compareTo(b.startTime));
-  return upcoming.take(3).toList(growable: false);
-}
-
-String _eventRoute(Event event) {
-  return Routes.eventDetailScreen.path
-      .replaceFirst(':clubId', event.clubId)
-      .replaceFirst(':eventId', event.id);
 }
 
 List<_ActivityGroup> _groupItems(List<_NotificationItem> items) {

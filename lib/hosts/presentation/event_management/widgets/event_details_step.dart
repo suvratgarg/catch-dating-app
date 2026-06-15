@@ -1,10 +1,11 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
+import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_photo_picker.dart';
@@ -50,6 +51,10 @@ class EventDetailsStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final activityAccent = ActivityPalette.resolve(
+      context,
+      selectedActivityKind,
+    ).accent;
     return Form(
       key: formKey,
       child: SingleChildScrollView(
@@ -72,17 +77,15 @@ class EventDetailsStep extends StatelessWidget {
               runSpacing: CatchSpacing.s2,
               children: ActivityKind.eventCreationDefaults
                   .map(
-                    (activityKind) => Semantics(
-                      button: true,
-                      selected: selectedActivityKind == activityKind,
-                      label: 'Select ${activityKind.label}',
-                      child: GestureDetector(
-                        onTap: () => onActivityKindChanged(activityKind),
-                        child: VibeTag(
-                          label: activityKind.label,
-                          active: selectedActivityKind == activityKind,
-                        ),
-                      ),
+                    (activityKind) => SelectChip(
+                      label: activityKind.label,
+                      active: selectedActivityKind == activityKind,
+                      accentColor: ActivityPalette.resolve(
+                        context,
+                        activityKind,
+                      ).accent,
+                      semanticsLabel: 'Select ${activityKind.label}',
+                      onTap: () => onActivityKindChanged(activityKind),
                     ),
                   )
                   .toList(),
@@ -114,18 +117,13 @@ class EventDetailsStep extends StatelessWidget {
                 runSpacing: CatchSpacing.s2,
                 children: EventInteractionModel.values
                     .map(
-                      (model) => Semantics(
-                        button: true,
-                        selected: selectedInteractionModel == model,
-                        label: 'Select ${model.label}',
-                        child: GestureDetector(
-                          key: CreateEventFormKeys.interactionModel(model.name),
-                          onTap: () => onInteractionModelChanged(model),
-                          child: VibeTag(
-                            label: model.label,
-                            active: selectedInteractionModel == model,
-                          ),
-                        ),
+                      (model) => SelectChip(
+                        key: CreateEventFormKeys.interactionModel(model.name),
+                        label: model.label,
+                        active: selectedInteractionModel == model,
+                        accentColor: activityAccent,
+                        semanticsLabel: 'Select ${model.label}',
+                        onTap: () => onInteractionModelChanged(model),
                       ),
                     )
                     .toList(),
@@ -168,21 +166,16 @@ class EventDetailsStep extends StatelessWidget {
                       runSpacing: CatchSpacing.s2,
                       children: PaceLevel.values
                           .map(
-                            (p) => Semantics(
-                              button: true,
-                              selected: selectedPace == p,
-                              label: 'Select ${p.label} pace',
-                              child: GestureDetector(
-                                onTap: () {
-                                  final next = selectedPace == p ? null : p;
-                                  onPaceChanged(next);
-                                  field.didChange(next);
-                                },
-                                child: VibeTag(
-                                  label: p.label,
-                                  active: selectedPace == p,
-                                ),
-                              ),
+                            (p) => SelectChip(
+                              label: p.label,
+                              active: selectedPace == p,
+                              accentColor: activityAccent,
+                              semanticsLabel: 'Select ${p.label} pace',
+                              onTap: () {
+                                final next = selectedPace == p ? null : p;
+                                onPaceChanged(next);
+                                field.didChange(next);
+                              },
                             ),
                           )
                           .toList(),

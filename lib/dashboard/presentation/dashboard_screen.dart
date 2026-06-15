@@ -87,10 +87,7 @@ class DashboardScreen extends ConsumerWidget {
                   ? _DashboardHeaderModel.empty()
                   : _DashboardHeaderModel.full(context, user),
               dashboardSliver: showEmptyDashboard
-                  ? DashboardEmptySliverBody(
-                      weeklyActivitySection: viewModel.weeklyActivitySection,
-                      followedClubIds: followedClubIds,
-                    )
+                  ? const DashboardEmptySliverBody()
                   : DashboardFullSliverBody(
                       viewModel: viewModel,
                       user: user,

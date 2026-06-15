@@ -14,23 +14,22 @@ class ChatConversationsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: CatchInsets.pageHorizontal,
+      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
-          if (index.isOdd) return const SizedBox(height: CatchSpacing.s3);
-
-          final preview = matches[index ~/ 2];
+          final preview = matches[index];
           final routeName = AppConfig.appRole.isHost
               ? Routes.hostChatScreen.name
               : Routes.chatScreen.name;
           return ChatListTile(
             preview: preview,
+            divider: index > 0,
             onTap: () => context.goNamed(
               routeName,
               pathParameters: {'matchId': preview.matchId},
             ),
           );
-        }, childCount: matches.isEmpty ? 0 : matches.length * 2 - 1),
+        }, childCount: matches.length),
       ),
     );
   }

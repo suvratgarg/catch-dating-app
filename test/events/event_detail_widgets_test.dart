@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
+import 'package:catch_dating_app/core/widgets/rich_share_card_sheet.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
@@ -22,6 +24,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_view_model.dar
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
@@ -159,6 +162,62 @@ void main() {
     });
   });
 
+  group('EventDetailPhotoStrip', () {
+    testWidgets('renders canonical three-tile strip with placeholders', (
+      tester,
+    ) async {
+      final event = buildEvent().copyWith(
+        eventPhotos: [
+          UploadedPhoto.fromUpload(
+            url: 'https://example.test/event-photo.jpg',
+            storagePath: 'events/event-1/photos/photo-0.jpg',
+            position: 0,
+            now: DateTime(2026, 6, 15),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SizedBox(
+              width: 360,
+              child: EventDetailPhotoStrip(event: event),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('EVENT PHOTOS'), findsOneWidget);
+      expect(find.text('1 UPLOADED'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('event-photo-strip-tile-0')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('event-photo-strip-tile-1')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('event-photo-strip-tile-2')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('event-photo-strip-image-0')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('event-photo-strip-placeholder-1')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('event-photo-strip-placeholder-2')),
+        findsOneWidget,
+      );
+    });
+  });
+
   group('EventDetailCta', () {
     testWidgets('books a free event from the eligible state', (tester) async {
       final fakePaymentRepository = FakePaymentRepository();
@@ -178,6 +237,11 @@ void main() {
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
+
+      final button = tester.widget<CatchButton>(
+        find.widgetWithText(CatchButton, 'Join event — 18 spots left'),
+      );
+      expect(button.accentColor, isNotNull);
 
       await tester.tap(find.text('Join event — 18 spots left'));
       await tester.pump();
@@ -1343,15 +1407,16 @@ void main() {
         find.text('Bring someone into the room'),
       );
       await tester.tap(find.text('Invite a friend'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(sharedParams, isNull);
+      expect(find.byKey(RichShareCardSheetKeys.cardPreview), findsOneWidget);
       expect(find.byType(EventShareCard), findsOneWidget);
       expect(find.text('CATCH INVITE'), findsOneWidget);
 
-      await tester.tap(find.byType(CatchButton).last);
+      await tester.tap(find.byKey(RichShareCardSheetKeys.shareButton));
       await tester.pump();
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       await tester.runAsync(() async {
         for (var i = 0; i < 20 && sharedParams == null; i++) {
           await Future<void>.delayed(const Duration(milliseconds: 10));

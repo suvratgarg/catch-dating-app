@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -7,10 +8,9 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_stats_grid.dart';
 import 'package:catch_dating_app/events/presentation/widgets/requirements_row.dart';
-import 'package:catch_dating_app/events/presentation/widgets/when_where_card.dart';
 import 'package:flutter/material.dart';
 
 class EventDetailOverviewSection extends StatelessWidget {
@@ -28,26 +28,101 @@ class EventDetailOverviewSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final description = event.description.trim();
+    final style = surfaceStyle;
 
-    return CatchSectionList(
-      gap: CatchLayout.detailScreenContentGap,
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        EventStatsGrid(event: event, surfaceStyle: surfaceStyle),
-        WhenWhereCard(
-          event: event,
-          onLocationTap: onLocationTap,
-          surfaceStyle: surfaceStyle,
-        ),
-        if (description.isNotEmpty)
-          _EventDescription(
-            description: description,
-            surfaceStyle: surfaceStyle,
+        CatchDesignSection(
+          kicker: 'The plan',
+          activityKind: event.activityKind,
+          lead: true,
+          first: true,
+          dividerColor: style?.dividerColor,
+          child: _EventDescription(
+            description: description.isEmpty
+                ? _fallbackPlan(event)
+                : description,
+            surfaceStyle: style,
           ),
-        if (event.hasRequirements)
-          RequirementsRow(event: event, surfaceStyle: surfaceStyle),
-        _WhatToExpectSection(event: event, surfaceStyle: surfaceStyle),
-        _EventPolicySummary(event: event, surfaceStyle: surfaceStyle),
+        ),
+        CatchDesignSection(
+          kicker: 'Why you might click',
+          dividerColor: style?.dividerColor,
+          kickerColor: style?.headingColor,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              EventDetailHintList(
+                event: event,
+                textColor: style?.headingColor,
+                dividerColor: style?.dividerColor,
+              ),
+              gapH12,
+              Text(
+                'Based on event format, capacity and booking rules — never shown to the group.',
+                style: CatchTextStyles.supporting(
+                  context,
+                  color: style?.bodyColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+        CatchDesignSection(
+          kicker: 'Itinerary',
+          dividerColor: style?.dividerColor,
+          kickerColor: style?.headingColor,
+          child: EventDetailItinerary(
+            event: event,
+            titleColor: style?.headingColor,
+            detailColor: style?.bodyColor,
+            dotBackgroundColor: style?.surfaceBackground,
+          ),
+        ),
+        if (event.eventPhotos.isNotEmpty)
+          CatchDesignSection(
+            kicker: 'Photos',
+            dividerColor: style?.dividerColor,
+            kickerColor: style?.headingColor,
+            child: EventDetailPhotoStrip(event: event),
+          ),
+        CatchDesignSection(
+          kicker: 'Where',
+          dividerColor: style?.dividerColor,
+          kickerColor: style?.headingColor,
+          child: EventDetailMapCard(
+            event: event,
+            onTap: onLocationTap,
+            borderColor: style?.borderColor,
+          ),
+        ),
+        CatchDesignSection(
+          kicker: 'How sign-ups work',
+          dividerColor: style?.dividerColor,
+          kickerColor: style?.headingColor,
+          child: EventDetailMechanismList(
+            event: event,
+            dividerColor: style?.dividerColor,
+            titleColor: style?.headingColor,
+            detailColor: style?.bodyColor,
+          ),
+        ),
+        CatchDesignSection(
+          kicker: 'Good to know',
+          dividerColor: style?.dividerColor,
+          kickerColor: style?.headingColor,
+          child: CatchSectionList(
+            gap: CatchLayout.detailScreenContentGap,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (event.hasRequirements)
+                RequirementsRow(event: event, surfaceStyle: style),
+              _WhatToExpectSection(event: event, surfaceStyle: style),
+              _EventPolicySummary(event: event, surfaceStyle: style),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -84,6 +159,13 @@ class _EventDescription extends StatelessWidget {
       ],
     );
   }
+}
+
+String _fallbackPlan(Event event) {
+  if (event.eventFormat.isDistanceBased) {
+    return 'A ${EventFormatters.distanceKm(event.distanceKm)} ${event.eventFormat.label.toLowerCase()} at a ${event.pace.label.toLowerCase()} pace from ${event.locationName}.';
+  }
+  return 'A hosted ${event.eventFormat.label.toLowerCase()} built around a clear arrival, shared activity, and low-pressure follow-up.';
 }
 
 class _WhatToExpectSection extends StatelessWidget {

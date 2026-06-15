@@ -18,6 +18,7 @@ import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
@@ -170,7 +171,16 @@ class EventDetailBody extends ConsumerWidget {
               isSaved: isSaved,
             ),
           ),
+          SliverToBoxAdapter(
+            child: EventDetailTicketStubBand(
+              event: event,
+              notchBackgroundColor: style.pageBackground,
+            ),
+          ),
           CatchDetailSliverSectionList(
+            gap: 0,
+            topPadding: CatchSpacing.screenPt,
+            bottomPadding: CatchSpacing.screenPb,
             sections: [
               EventDetailOverviewSection(
                 event: event,

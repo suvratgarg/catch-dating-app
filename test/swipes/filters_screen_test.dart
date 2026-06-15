@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -61,16 +62,33 @@ void main() {
     await pumpFeatureUi(tester);
     expect(find.text('Pace range'), findsNothing);
     expect(find.text('Event type'), findsNothing);
-    expect(find.text('18 - 60+'), findsOneWidget);
+    expect(find.text('18 – 60+'), findsOneWidget);
     expect(find.byKey(SwipeKeys.ageRangeSlider), findsOneWidget);
     expect(find.byType(CatchRangeSlider), findsOneWidget);
+    expect(find.byType(SelectChip), findsNWidgets(Gender.values.length));
+    expect(
+      tester
+          .widget<SelectChip>(
+            find.byKey(SwipeKeys.genderFilterChip(Gender.woman.name)),
+          )
+          .active,
+      isTrue,
+    );
 
     await tester.tap(find.byKey(SwipeKeys.genderFilterChip(Gender.man.name)));
     tester
         .widget<CatchRangeSlider>(find.byKey(SwipeKeys.ageRangeSlider))
         .onChanged!(const RangeValues(20, 60));
     await tester.pump();
-    expect(find.text('20 - 60+'), findsOneWidget);
+    expect(find.text('20 – 60+'), findsOneWidget);
+    expect(
+      tester
+          .widget<SelectChip>(
+            find.byKey(SwipeKeys.genderFilterChip(Gender.man.name)),
+          )
+          .active,
+      isTrue,
+    );
 
     final applyButton = tester.widget<CatchButton>(
       find.byKey(SwipeKeys.applyFiltersButton),

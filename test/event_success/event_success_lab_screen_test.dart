@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_lab_screen.dart';
@@ -14,7 +16,7 @@ void main() {
       MaterialApp(theme: AppTheme.light, home: const EventSuccessLabScreen()),
     );
 
-    expect(find.text('Event Success Lab'), findsOneWidget);
+    expect(find.text('Event success lab'), findsOneWidget);
     expect(find.text('Event Success Layer'), findsOneWidget);
     expect(find.text('Work in progress'), findsOneWidget);
     expect(find.text('Preview only'), findsOneWidget);
@@ -45,6 +47,7 @@ void main() {
     );
 
     expect(find.text('Pickleball Partner Rotations'), findsOneWidget);
+    expect(_badge('Timed partner rotations'), findsWidgets);
 
     await tester.scrollUntilVisible(
       find.text('Pub Quiz Team Mixer'),
@@ -98,10 +101,14 @@ void main() {
     );
 
     expect(find.text('Social Event Lite'), findsOneWidget);
-    await tester.tap(find.text('Pickleball'));
+    expect(_selectChip('Social run', active: true), findsOneWidget);
+    expect(_selectChip('Pickleball', active: false), findsOneWidget);
+
+    await tester.tap(_selectChip('Pickleball'));
     await pumpFeatureUi(tester);
 
     expect(find.text('Pickleball Partner Rotations'), findsOneWidget);
+    expect(_selectChip('Pickleball', active: true), findsOneWidget);
 
     final checkInSwitch = find.bySemanticsLabel(
       'Attendance and live roster tool',
@@ -137,4 +144,19 @@ void main() {
       findsOneWidget,
     );
   });
+}
+
+Finder _selectChip(String label, {bool? active}) {
+  return find.byWidgetPredicate(
+    (widget) =>
+        widget is SelectChip &&
+        widget.label == label &&
+        (active == null || widget.active == active),
+  );
+}
+
+Finder _badge(String label) {
+  return find.byWidgetPredicate(
+    (widget) => widget is CatchBadge && widget.label == label,
+  );
 }

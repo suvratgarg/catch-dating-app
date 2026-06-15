@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_clubs_rail.dart';
@@ -106,42 +107,33 @@ class DashboardFullSliverBody extends ConsumerWidget {
     );
     final clubNames = clubNamesAsync.asData?.value;
 
-    return SliverPadding(
-      padding: CatchInsets.pageBodyUnderHeader,
-      sliver: SliverToBoxAdapter(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: CatchLayout.maxContentWidth,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (focusEvents.isNotEmpty) ...[
-                  EventFocusRail(
-                    upcomingEvents: viewModel.upcomingEvents,
-                    arrivalAction: viewModel.arrivalAction,
-                    activeSwipeEvent: viewModel.activeSwipeEvent,
-                    pendingReviewEvent: viewModel.pendingReviewEvent,
-                    reviewer: user,
-                    clubNameBuilder: (event) => clubNames?[event.clubId],
-                  ),
-                  gapH18,
-                ],
-                DashboardStrideSection(
-                  section: viewModel.weeklyActivitySection,
+    return SliverToBoxAdapter(
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.maxContentWidth,
+          ),
+          child: CatchSectionStack(
+            padding: CatchInsets.pageBodyUnderHeader,
+            gap: CatchSpacing.micro18,
+            children: [
+              if (focusEvents.isNotEmpty)
+                EventFocusRail(
+                  upcomingEvents: viewModel.upcomingEvents,
+                  arrivalAction: viewModel.arrivalAction,
+                  activeSwipeEvent: viewModel.activeSwipeEvent,
+                  pendingReviewEvent: viewModel.pendingReviewEvent,
+                  reviewer: user,
+                  clubNameBuilder: (event) => clubNames?[event.clubId],
                 ),
-                gapH18,
-                const QuickActions(),
-                if (followedClubIds.isNotEmpty) ...[
-                  gapH18,
-                  DashboardClubsRail(clubIds: followedClubIds),
-                ],
-                ..._buildRecommendedEventsSection(
-                  recommendationsSection: viewModel.recommendationsSection,
-                ),
-              ],
-            ),
+              DashboardStrideSection(section: viewModel.weeklyActivitySection),
+              const QuickActions(),
+              if (followedClubIds.isNotEmpty)
+                DashboardClubsRail(clubIds: followedClubIds),
+              ..._buildRecommendedEventsSection(
+                recommendationsSection: viewModel.recommendationsSection,
+              ),
+            ],
           ),
         ),
       ),
@@ -154,7 +146,6 @@ class DashboardFullSliverBody extends ConsumerWidget {
   }) {
     if (recommendationsSection.isLoading) {
       return const [
-        gapH18,
         _DashboardSectionStateCard(
           message: 'Loading recommended events...',
           isLoading: true,
@@ -164,7 +155,6 @@ class DashboardFullSliverBody extends ConsumerWidget {
 
     if (recommendationsSection.hasError) {
       return const [
-        gapH18,
         _DashboardSectionStateCard(
           message: 'Unable to load recommended events.',
         ),
@@ -175,7 +165,7 @@ class DashboardFullSliverBody extends ConsumerWidget {
         recommendationsSection.data ?? const <DashboardEventRecommendation>[];
     return recommendations.isEmpty
         ? const []
-        : [gapH18, Recommendations(recommendations: recommendations)];
+        : [Recommendations(recommendations: recommendations)];
   }
 }
 

@@ -252,18 +252,21 @@ class _StageNav extends StatelessWidget {
     final canPop = _companionCanPop(context);
     return Row(
       children: [
-        IconButton.filledTonal(
-          tooltip: 'Back',
-          color: canPop
-              ? foreground
-              : foreground.withValues(alpha: CatchOpacity.eventSuccessDisabled),
-          style: IconButton.styleFrom(
-            backgroundColor: foreground.withValues(
-              alpha: CatchOpacity.subtleFill,
+        Tooltip(
+          message: 'Back',
+          child: IconBtn(
+            background: foreground.withValues(alpha: CatchOpacity.subtleFill),
+            onTap: canPop ? () => _popCompanion(context) : null,
+            child: Icon(
+              CatchIcons.arrowBackRounded,
+              size: CatchIcon.md,
+              color: canPop
+                  ? foreground
+                  : foreground.withValues(
+                      alpha: CatchOpacity.eventSuccessDisabled,
+                    ),
             ),
           ),
-          onPressed: canPop ? () => _popCompanion(context) : null,
-          icon: Icon(CatchIcons.arrowBackRounded),
         ),
         gapW8,
         Expanded(

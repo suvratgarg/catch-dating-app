@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +33,14 @@ class RequirementsRow extends StatelessWidget {
         Wrap(
           spacing: CatchSpacing.micro6,
           runSpacing: CatchSpacing.micro6,
-          children: chips.map((l) => VibeTag(label: l)).toList(),
+          children: [
+            for (final label in chips)
+              CatchBadge(
+                label: label,
+                tone: CatchBadgeTone.brand,
+                uppercase: true,
+              ),
+          ],
         ),
       ],
     );
