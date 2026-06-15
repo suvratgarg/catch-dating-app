@@ -378,30 +378,6 @@
       ]
     },
     {
-      "id": "FUNCTIONS-RATE-LIMIT-001",
-      "title": "Apply callable rate limits consistently",
-      "status": "watch",
-      "area": "functions",
-      "priority": "high",
-      "rules": [
-        "FIRESTORE-RULES-TEST-001"
-      ],
-      "summary": "Closed on 2026-05-06. `verifyRazorpayPayment`, `cancelRunSignUp`, `joinRunWaitlist`, `blockUser`, `unblockUser`, and `requestAccountDeletion` now enforce shared `checkRateLimit` before expensive or destructive work. `updateUserProfile` is now configured and enforced at 60/minute so field-by-field profile edits remain ergonomic while write loops are bounded. Watch future callables for the same App Check + auth + Zod validation + rate-limit ordering.",
-      "paths": [
-        "functions/src/shared/rateLimit.ts",
-        "functions/src/payments/verifyRazorpayPayment.ts",
-        "functions/src/payments/verifyRazorpayPayment.test.ts",
-        "functions/src/runs/cancelRunSignUp.ts",
-        "functions/src/runs/joinRunWaitlist.ts",
-        "functions/src/safety/blocking.ts",
-        "functions/src/safety/blocking.test.ts",
-        "functions/src/safety/accountDeletion.ts",
-        "functions/src/safety/accountDeletion.test.ts",
-        "functions/src/profiles/updateUserProfile.ts",
-        "functions/src/profiles/updateUserProfile.test.ts"
-      ]
-    },
-    {
       "id": "NOTIFICATIONS-QUEUE",
       "title": "Complete backend-owned notification fan-out",
       "status": "watch",
@@ -1154,6 +1130,15 @@
         "FN-PAY-001"
       ],
       "summary": "Added a distinct non-recoverable 'refundFailed' payment status (charged + booking failed + refund could not be issued) to the payments contract + PaymentStatus (TS generated, Dart enum w/ unknownEnumValue fallback). verifyRazorpayPayment and stripeWebhook now write 'refundFailed' (was 'completed'+signUpFailed) when the refund call fails or there is no payment intent, and emit a structured 'ALERT manual refund required' error log for reconciliation. payment_history_screen surfaces it as a 'Refund pending \u2014 contact support' badge. Tests added for both providers' refund-failure path. NOTE: log-based paging/alert wiring (e.g. a Cloud Logging metric alert on the ALERT prefix) is an ops/infra step. Verified: functions build+lint+338 tests, Dart payment+contract tests green."
+    },
+    {
+      "id": "FUNCTIONS-RATE-LIMIT-001-DONE",
+      "title": "Apply callable rate limits consistently",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001"
+      ],
+      "summary": "Every previously un-limited callable now calls checkRateLimit: admin write/expensive callables (adminGetOverview, adminSetClubIndexStatus, adminDecideAccessApplication, adminUpdateClubDetails, adminGetClubDetails) and demo ops (requestSuvbotDemoOperation destructive writes, listSuvbotDemoActions). Wired via an injectable checkRateLimit? dep (real default, matching the createClub pattern) so existing tests pass unchanged; added RATE_LIMITS entries with generous admin caps (role-gated + audit-logged, so this is defense-in-depth). Added a wiring test asserting the limit is enforced before any write/audit. Verified: functions build+lint clean, 339 tests pass."
     }
   ]
 }

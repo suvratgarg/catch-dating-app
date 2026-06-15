@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAdmin} from "./adminAuth";
 import {writeAdminAuditLog} from "./adminAudit";
+import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 
 const authScanPageSize = 1000;
 
@@ -66,6 +67,11 @@ interface OverviewDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => Date;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
+  checkRateLimit?: (
+    db: FirebaseFirestore.Firestore,
+    uid: string,
+    action: string
+  ) => Promise<void>;
 }
 
 const defaultDeps: OverviewDeps = {
@@ -73,6 +79,7 @@ const defaultDeps: OverviewDeps = {
   firestore: () => admin.firestore(),
   now: () => new Date(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  checkRateLimit: defaultCheckRateLimit,
 };
 
 /**
@@ -141,6 +148,7 @@ export async function adminGetOverviewHandler(
 ): Promise<AdminOverviewResponse> {
   const adminContext = requireAdmin(request);
   const db = deps.firestore();
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetOverview");
   const now = deps.now();
   const today = startOfUtcDay(now);
   const week = startOfSevenDayWindow(now);

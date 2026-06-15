@@ -104,6 +104,16 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   createClub: {maxRequests: 3, windowMs: 60 * 60 * 1000},
   requestAccountDeletion: {maxRequests: 3, windowMs: 60 * 60 * 1000},
   createPublicClubReview: {maxRequests: 5, windowMs: 60 * 60 * 1000},
+  // Admin/internal callables. Generous limits — these are role-gated and
+  // audit-logged, so the cap is defense-in-depth against a compromised admin
+  // token or a runaway client, not a primary control.
+  adminGetOverview: {maxRequests: 30, windowMs: 60 * 1000},
+  adminGetClubDetails: {maxRequests: 60, windowMs: 60 * 1000},
+  adminSetClubIndexStatus: {maxRequests: 30, windowMs: 60 * 1000},
+  adminDecideAccessApplication: {maxRequests: 30, windowMs: 60 * 1000},
+  adminUpdateClubDetails: {maxRequests: 30, windowMs: 60 * 1000},
+  requestSuvbotDemoOperation: {maxRequests: 20, windowMs: 60 * 1000},
+  listSuvbotDemoActions: {maxRequests: 60, windowMs: 60 * 1000},
 };
 
 /** Default limit: 30/min for actions not explicitly listed above. */

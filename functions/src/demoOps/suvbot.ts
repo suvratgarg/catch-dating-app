@@ -4,6 +4,7 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
+import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
   schemaProfileDecisionCollectionPath,
   schemaProfileDecisionOutgoingSubcollectionPath,
@@ -79,6 +80,11 @@ export interface SuvbotDeps {
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   timestampFromDate: (date: Date) => FirebaseFirestore.Timestamp;
   now: () => Date;
+  checkRateLimit?: (
+    db: FirebaseFirestore.Firestore,
+    uid: string,
+    action: string
+  ) => Promise<void>;
 }
 
 export interface SuvbotOperationResult {
@@ -99,6 +105,7 @@ const defaultDeps: SuvbotDeps = {
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   timestampFromDate: (date) => admin.firestore.Timestamp.fromDate(date),
   now: () => new Date(),
+  checkRateLimit: defaultCheckRateLimit,
 };
 
 const SUVBOT_ACTION_CATALOG: readonly SuvbotActionDescriptor[] = [
@@ -193,6 +200,11 @@ export async function requestSuvbotDemoOperationHandler(
   deps: SuvbotDeps = defaultDeps
 ): Promise<SuvbotOperationResult> {
   const uid = requireAuth(request);
+  await deps.checkRateLimit?.(
+    deps.firestore(),
+    uid,
+    "requestSuvbotDemoOperation"
+  );
   const data = normalizeSuvbotRequest(request.data);
   return runSuvbotDemoOperationForUser({
     uid,
@@ -216,6 +228,7 @@ export async function listSuvbotDemoActionsHandler(
 ): Promise<{actions: SuvbotActionDescriptor[]; matchId: string}> {
   const uid = requireAuth(request);
   const db = deps.firestore();
+  await deps.checkRateLimit?.(db, uid, "listSuvbotDemoActions");
   await assertSuvbotAccess(db, uid);
   const {matchId} = await ensureSuvbotThread(db, uid, deps);
   return {actions: suvbotActionCatalog(), matchId};

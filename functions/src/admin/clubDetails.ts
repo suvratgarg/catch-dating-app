@@ -14,17 +14,24 @@ import {
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {requireAdminRole} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 
 const clubDetailsRoles = ["admin", "adminOwner", "support"] as const;
 
 interface ClubDetailsDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
+  checkRateLimit?: (
+    db: FirebaseFirestore.Firestore,
+    uid: string,
+    action: string
+  ) => Promise<void>;
 }
 
 const defaultDeps: ClubDetailsDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  checkRateLimit: defaultCheckRateLimit,
 };
 
 type ClubDetailsPatch = AdminUpdateClubDetailsCallablePayload["fields"];
@@ -95,13 +102,15 @@ export async function adminGetClubDetailsHandler(
   request: CallableRequest<unknown>,
   deps: ClubDetailsDeps = defaultDeps
 ): Promise<AdminGetClubDetailsResponse> {
-  requireAdminRole(request, clubDetailsRoles);
+  const adminContext = requireAdminRole(request, clubDetailsRoles);
   const data = validateCallableWithAjv<AdminGetClubDetailsCallablePayload>(
     request,
     validateAdminGetClubDetailsCallablePayload,
     normalizeAdminGetClubDetailsPayload
   );
-  const clubRef = deps.firestore().collection("clubs").doc(data.clubId);
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetClubDetails");
+  const clubRef = db.collection("clubs").doc(data.clubId);
   const clubSnap = await clubRef.get();
   if (!clubSnap.exists) {
     throw new HttpsError("not-found", "Organizer listing not found.");
@@ -134,6 +143,7 @@ export async function adminUpdateClubDetailsHandler(
   }
 
   const db = deps.firestore();
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminUpdateClubDetails");
   const clubRef = db.collection("clubs").doc(data.clubId);
   await db.runTransaction(async (tx) => {
     const clubSnap = await tx.get(clubRef);
