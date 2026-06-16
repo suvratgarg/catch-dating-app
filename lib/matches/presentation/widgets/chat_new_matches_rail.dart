@@ -58,10 +58,13 @@ class _NewMatchAvatar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CatchPersonAvatar(
-                  size: 64,
+                  size: CatchLayout.chatNewMatchAvatarExtent,
                   name: preview.displayName,
                   imageUrl: preview.photoUrl,
-                  borderWidth: 2,
+                  // Same "new/emphasis" ring as the chat list tile's
+                  // highlighted avatars (see ChatListTile) so the unread/new
+                  // treatment reads identically across both surfaces.
+                  borderWidth: CatchStroke.underline,
                   borderColor: CatchTokens.of(context).primary,
                 ),
                 gapH6,

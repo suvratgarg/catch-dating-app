@@ -40,76 +40,62 @@
   },
   "pending": [
     {
-      "id": "MATCH-CHAT-REMAINING-001",
-      "title": "Close remaining match and chat audit follow-ups",
-      "status": "active",
-      "area": "matches,chats,demo_data",
-      "priority": "high",
-      "rules": [
-        "CONTROLLER-BOUNDARY-001",
-        "PROVIDER-SEAM-001",
-        "DESIGN-PRIMITIVES-001",
-        "WIDGET-TEST-001"
-      ],
-      "summary": "The match preview contract is now backend-owned and the chat list uses one thread preview per match. The 2026-06-15 formatter cleanup moved chat tile relative timestamps onto AppTimeFormatters so match/chat presentation no longer owns direct intl date constructors. Remaining follow-ups still need focused passes: inspect and clean seeded duplicate match/message data for the active phone account, run device QA on the Chats list and thread, decide whether to replace the current matches-count badge with a real presence model or rename it, polish chat tile width/separators/surfaces against shared spacing primitives, keep the new-match horizontal rail queued for product implementation, and audit chat image/media moderation plus profile thumbnail backfill in real data. Do not treat synthetic duplicate data as a UI bug until Firestore documents and seed scripts are inspected.",
+      "id": "MATCH-CHAT-OWNER-QA-001",
+      "title": "Owner-side QA: live Chats device pass + seeded-data + thumbnail backfill",
+      "status": "owner-blocked",
+      "owner": "user",
+      "area": "matches,chats,demo_data,ops",
+      "priority": "medium",
+      "summary": "Operational remainder split out of MATCH-CHAT-REMAINING-001 once its engineering scope was complete. These need a real device and live Firestore data, so they are the owner's to execute, not agent-closeable: (1) device QA on the live Chats list + thread; (2) inspect and clean seeded duplicate match/message data on the active phone account - per the original item's guard, do NOT treat synthetic duplicates as a UI bug until the Firestore documents and seed scripts (tool/demo/seed_demo_data.mjs, docs/demo_data_seeding.md) are inspected; (3) profile-thumbnail backfill over real data (the generator from DASHBOARD-RUN-HYPE-THUMBNAILS-001 exists; this is the one-time data migration). No code change is blocked on these - they are verification/ops only.",
       "paths": [
-        "lib/matches/presentation/chats_list_screen.dart",
+        "lib/matches/presentation/matches_list_screen.dart",
         "lib/matches/presentation/widgets/chats_list.dart",
-        "lib/matches/presentation/chats_list_view_model.dart",
-        "lib/chats/data/chat_repository.dart",
-        "lib/chats/data/conversation_repository.dart",
         "lib/chats/presentation/chat_screen.dart",
-        "lib/chats/presentation/widgets/message_bubble.dart",
-        "functions/src/matching/onMatchCreated.ts",
-        "functions/src/matching/onMessageCreated.ts",
         "tool/demo/seed_demo_data.mjs",
         "docs/demo_data_seeding.md"
-      ]
+      ],
+      "source": "deep_semantic_audit_2026-06"
+    }
+  ],
+  "next_up": [],
+  "completed": [
+    {
+      "id": "PAY-WEBHOOK-001-DONE",
+      "title": "Razorpay webhook + reconciliation sweep + pending-order tracking",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-PAY-001",
+        "FN-IDEMP-001"
+      ],
+      "summary": "Closes the charged-but-unbooked gap when the client verification callback is missed. Added: razorpayWebhook (onRequest, HMAC-SHA256 raw-body verify; payment.captured -> shared fulfillment, payment.failed -> mark pending order failed), reconcileRazorpayOrders (15-min onSchedule sweep of stranded orders, bounded to 25), the razorpayPendingOrders tracking doc (schema + deny-all rules + status/createdAt composite index), and a shared fulfillRazorpayPayment helper invoked by callback/webhook/sweep. Adversarial review after merge found 2 issues, both fixed and regression-tested: HIGH - paidCount could double-increment under callback/webhook/sweep races (non-transactional counter bump fired before the status flip); the completed-write + paidCount increment now run inside a single paymentRef transaction so exactly one caller wins the non-terminal->completed transition and bumps the counter once. LOW - payment.failed moved orders out of 'pending', stranding a rare same-order recapture; the sweep now queries status in [pending, failed] and markRazorpayPendingOrder only advances permitted transitions (failed<-pending; expired<-pending|failed) so 'failed' stays sweep-eligible yet still settles to terminal 'expired'. Verified: functions build + lint clean, 357 tests green (incl. new fulfillment race + failed-then-recaptured regression tests). You deploy (Razorpay key_secret + webhook secret already in Firebase Secret Manager; ship the razorpayPendingOrders index).",
+      "source": "deep_semantic_audit_2026-06"
     },
     {
-      "id": "SCREEN-SPACING-SYSTEM-001",
+      "id": "SCREEN-SPACING-SYSTEM-001-DONE",
       "title": "Unify top-level tab header and first-content spacing",
-      "status": "identified",
-      "area": "core,dashboard,matches,run_clubs,swipes,user_profile,image_uploads,runs",
-      "priority": "high",
+      "completed": "2026-06-16",
       "rules": [
         "DESIGN-PRIMITIVES-001",
         "DESIGN-TOKENS-001",
         "SLIVER-001",
         "WIDGET-CATALOG-001"
       ],
-      "summary": "Screenshots on 2026-05-12 showed repeated spacing drift between title/subtitle, pinned search/tab controls, and first content on Chats, Clubs, Home, Catches, and Profile. Keep long-title composability through explicit CatchSliverHeader height contracts, but centralize the shared title padding, subtitle-to-control gap, pinned search/filter row padding, tabbar-to-content gap, and control-to-first-card gap instead of tuning each screen separately. Fold the 2026-05-12 scanner follow-ups into this queue when in scope: raw TextField candidate in location picker and tappable/semantics candidates in photo slot/location picker.",
-      "paths": [
-        "lib/core/widgets/catch_top_bar.dart",
-        "lib/matches/presentation/widgets/chats_sliver_header.dart",
-        "lib/matches/presentation/widgets/chat_conversations_list.dart",
-        "lib/run_clubs/presentation/list/widgets/run_clubs_sliver_header.dart",
-        "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
-        "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-        "lib/swipes/presentation/swipe_hub_screen.dart",
-        "lib/image_uploads/presentation/widgets/photo_slot.dart",
-        "lib/runs/presentation/location_picker_screen.dart",
-        "docs/ui_architecture.md",
-        "docs/widget_catalog.md"
-      ]
+      "summary": "Centralized the repeated tab-screen spacing drift (title/subtitle, pinned search/filter rows, control-to-first-content) into shared tokens - CatchInsets.screenTitleBlock/screenTitleBlockCompact/screenControlRow/screenControlRail/pageBodyHero/chatListTileVertical, CatchGaps.headerTitleToSubtitle, and CatchLayout.chatListAvatarExtent/chatListTextGap/chatListDividerInset - and migrated swipe_hub_screen, chat_list_tile, explore_filter_rail, and the chats sliver header onto them while keeping per-screen CatchSliverHeader height contracts for long-title composability. Folded-in 2026-05-12 scanner follow-ups also confirmed resolved: the location picker now uses the CatchTextField primitive (no raw TextField), and photo_slot already carries explicit Semantics(button:)/ExcludeSemantics on its tappable regions. Verified: flutter analyze clean. You deploy.",
+      "source": "ui_screenshot_audit_2026-05-12"
     },
     {
-      "id": "PAY-WEBHOOK-001",
-      "title": "Add Razorpay webhook + reconciliation sweep + pending order doc",
-      "status": "queued",
-      "area": "payments,functions",
-      "priority": "high",
+      "id": "MATCH-CHAT-REMAINING-001-DONE",
+      "title": "Close remaining match and chat audit follow-ups (engineering scope)",
+      "completed": "2026-06-16",
       "rules": [
-        "FN-PAY-001"
+        "CONTROLLER-BOUNDARY-001",
+        "PROVIDER-SEAM-001",
+        "DESIGN-PRIMITIVES-001",
+        "WIDGET-TEST-001"
       ],
-      "summary": "FLAGGED INFRA (needs deploy). No Razorpay webhook exists, so a payment captured after the client times out is never reconciled (charged-but-unbooked). Add a signature-verified onRequest webhook (payment.captured/order.paid) mirroring stripeWebhook, write a 'pending' payments doc at order creation keyed by orderId, and a scheduled sweep for captured-but-unverified orders. Client mitigation (10-min timeout + sheet clear) already shipped in lib/payments/data/payment_repository.dart.",
+      "summary": "Engineering scope discharged after grounding all six sub-tasks against current code. (a) matches-count badge -> presence-or-rename: RESOLVED - the nav badge already shows a real unread message count (totalUnreadCountProvider) and the host inbox chip shows real hostUnreadCount; there is no fake presence/matches-count badge, so the conservative-safe-default (never claim presence we don't have) is already met. (b) chat-tile width/separators/surfaces vs shared primitives: DONE - chat_list_tile is fully tokenized (SCREEN-SPACING-SYSTEM-001), and the new-matches rail's last raw values (avatar size 64, ring width 2) were routed to CatchLayout.chatNewMatchAvatarExtent + CatchStroke.underline, unifying its 'new' emphasis ring with the list tile. (c) new-match horizontal rail: IMPLEMENTED - chat_new_matches_rail.dart (CatchHorizontalRail) is built and wired to the chat route. (d) chat image/media moderation: VERIFIED present - text via textFilter + moderateMessage redaction + onMessageCreated push/preview redaction; images via moderatePhoto.ts Cloud Vision SafeSearch covering matches/{matchId}/images/{messageId}. Verified: flutter analyze clean; functions build + lint + 357 tests green. The two remaining sub-tasks are NOT engineering-closeable (they require your device and live data) and are split out as MATCH-CHAT-OWNER-QA-001 so they are tracked, not buried.",
       "source": "deep_semantic_audit_2026-06"
-    }
-  ],
-  "next_up": [
-    "SCREEN-SPACING-SYSTEM-001"
-  ],
-  "completed": [
+    },
     {
       "id": "FN-INPUT-LEAK-001-DONE",
       "title": "Google Places upstream error no longer leaked to client",

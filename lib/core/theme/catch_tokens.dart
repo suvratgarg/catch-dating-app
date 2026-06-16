@@ -1734,6 +1734,7 @@ abstract final class CatchLayout {
   static const double skeletonTextShortWidth = 64.0;
   static const double skeletonTextTitleWidth = 132.0;
   static const double chatNewMatchTileWidth = 64.0;
+  static const double chatNewMatchAvatarExtent = 64.0;
   static const double clubFilterDividerHeight = 22.0;
   static const double profileTagPillHorizontalPadding = 11.0;
   static const double profileTagPillVerticalPadding = 7.0;
