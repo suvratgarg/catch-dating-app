@@ -145,43 +145,6 @@
       ]
     },
     {
-      "id": "PROFILE-FIELD-PARITY-001",
-      "title": "Align onboarding and edit-profile field coverage",
-      "status": "watch",
-      "area": "onboarding,user_profile",
-      "priority": "medium",
-      "rules": [
-        "CONTROLLER-BOUNDARY-001",
-        "WIDGET-TEST-001"
-      ],
-      "summary": "Shared profile validation now covers name, required display name, date of birth, phone, optional email, optional Instagram, height bounds, and open-ended age display/storage. Onboarding initializes `displayName` from first name and explains that first name starts the public display name while last name stays private. Edit profile exposes `Display name` as the first editable About field and keeps identity fields (date of birth and gender) readonly. Public profile rendering prefers `displayName`, then first name, then legacy full-name first token, so last name is not shown publicly. Profile inline editors now save before collapsing and show mutation loading/error feedback, and their save boundary is typed with UpdateUserProfilePatch instead of ad hoc field maps. All nullable single-choice edit fields have no-selected-chip coverage when empty; domain decode preserves omitted optional enum fields as null; `ChipField` has a direct empty single-select rendering test; immediate-save single-choice editors show a visible saving state; failed single-choice saves clear optimistic pending selection before showing inline error; and expected save-failure widget tests override a silent ErrorLogger so caught fake repository failures do not clutter CI output with stack traces. Remaining field coverage is intentionally asymmetric: onboarding captures only low-friction signup fields (name, date of birth, phone, gender, interested-in genders, Instagram, photos, pace range, preferred distances, and running reasons), while edit profile additionally exposes email, height, bio, city, age range, occupation, company, education, religion, languages, relationship goal, drinking, smoking, workout, diet, and children. Do not expand onboarding with those optional fields unless product explicitly accepts the added signup friction.",
-      "paths": [
-        "lib/onboarding/presentation/onboarding_screen.dart",
-        "lib/onboarding/presentation/onboarding_controller.dart",
-        "lib/onboarding/presentation/onboarding_profile_draft.dart",
-        "lib/onboarding/presentation/pages/name_dob_page.dart",
-        "lib/onboarding/presentation/pages/gender_interest_page.dart",
-        "lib/onboarding/presentation/pages/instagram_page.dart",
-        "lib/onboarding/presentation/pages/photos_page.dart",
-        "lib/onboarding/presentation/pages/running_prefs_page.dart",
-        "lib/user_profile/presentation/widgets/profile_tab.dart",
-        "lib/user_profile/presentation/widgets/profile_inline_editors.dart",
-        "lib/user_profile/domain/profile_validation.dart",
-        "lib/user_profile/domain/user_profile.dart",
-        "lib/public_profile/domain/public_profile.dart",
-        "functions/src/profiles/syncPublicProfile.ts",
-        "functions/src/profiles/updateUserProfile.ts",
-        "functions/src/shared/generated/firestoreAdminTypes.ts",
-        "firestore.rules",
-        "functions/test/firestore.rules.test.cjs",
-        "test/profile/profile_widgets_test.dart",
-        "test/profile/profile_validation_test.dart",
-        "test/onboarding/onboarding_controller_test.dart",
-        "test/core/catch_primitives_test.dart",
-        "test/user_profile/user_profile_domain_test.dart"
-      ]
-    },
-    {
       "id": "PROFILE-CARD-POLISH-001",
       "title": "Polish shared public-facing profile surface",
       "status": "needs_device_confirmation",
@@ -254,78 +217,6 @@
         "lib/runs/presentation/run_check_in_celebration_screen.dart",
         "lib/matches/presentation/widgets/match_celebration_dialog.dart",
         "test/core/catch_celebration_screen_test.dart"
-      ]
-    },
-    {
-      "id": "NOTIFICATIONS-QUEUE",
-      "title": "Complete backend-owned notification fan-out",
-      "status": "watch",
-      "area": "functions,core,dashboard",
-      "priority": "medium",
-      "rules": [
-        "CONTROLLER-BOUNDARY-001",
-        "PROVIDER-SEAM-001",
-        "FIRESTORE-RULES-TEST-001",
-        "CODEGEN-001"
-      ],
-      "summary": "Core producer work is complete and this queue is now watch-only. Durable in-app activity lives in backend-owned `notifications/{uid}/items/{notificationId}` docs. Match, message, new-club-run, run signup, waitlist-promotion, upcoming run reminder, run schedule/location update, and run cancellation producers are implemented through Functions/callables. Activity reads `watchActivityNotificationsProvider(uid)`, users can only read own timeline plus mark items read, and push delivery is gated by granular user preferences. Club updates use a two-tier model: active membership receives Activity updates, while per-club `runClubMemberships/{clubId_uid}.pushNotificationsEnabled` plus `prefsClubUpdates` gates FCM pushes. Remaining notification work is cancelled-run display/copy QA, settings/permission UX refinement, and device QA, not a missing core fan-out gap.",
-      "paths": [
-        "docs/backend_operation_catalog.md",
-        "docs/data_contracts.md",
-        "tool/contracts/firestore_contract.json",
-        "tool/contracts/generate_schema_contracts.mjs",
-        "firestore.rules",
-        "functions/test/firestore.rules.test.cjs",
-        "functions/src/shared/notifications.ts",
-        "functions/src/runs/mutateRun.ts",
-        "functions/src/runs/mutateRun.test.ts",
-        "functions/src/runs/sendRunReminders.ts",
-        "functions/src/runs/sendRunReminders.test.ts",
-        "functions/src/runs/joinRunWaitlist.ts",
-        "functions/src/runs/markRunAttendance.ts",
-        "functions/src/runs/selfCheckInAttendance.ts",
-        "functions/src/runs/signUpUserForRun.ts",
-        "functions/src/runs/signUpUserForRun.test.ts",
-        "functions/src/runs/cancelRunSignUp.ts",
-        "functions/src/matching/onMessageCreated.ts",
-        "functions/src/matching/onMessageCreated.test.ts",
-        "functions/src/matching/onMatchCreated.ts",
-        "functions/src/matching/onMatchCreated.test.ts",
-        "functions/src/runClubs/membership.ts",
-        "functions/src/runClubs/membership.test.ts",
-        "lib/notifications/domain/activity_notification.dart",
-        "lib/notifications/data/activity_notification_repository.dart",
-        "lib/dashboard/presentation/widgets/activity_section.dart",
-        "lib/dashboard/presentation/activity_controller.dart",
-        "lib/safety/presentation/settings_screen.dart",
-        "lib/safety/presentation/settings_controller.dart",
-        "lib/run_clubs/domain/run_club_membership.dart",
-        "lib/run_clubs/presentation/detail/widgets/membership_button.dart",
-        "test/notifications/activity_notification_repository_test.dart",
-        "test/dashboard/dashboard_screen_test.dart"
-      ]
-    },
-    {
-      "id": "RUN-CANCELLATION-UI-POLICY-001",
-      "title": "Define run cancellation policy and host UI",
-      "status": "watch",
-      "area": "runs,payments,notifications",
-      "priority": "high",
-      "rules": [
-        "CONTROLLER-BOUNDARY-001",
-        "ERROR-UI-001",
-        "FIRESTORE-RULES-TEST-001"
-      ],
-      "summary": "`cancelRun` and `deleteRun` are now exposed from Host Manage with confirmation UI. `cancelRun` writes cancellation state, releases schedule locks, attempts completed attendee refunds, refreshes next-run projections, and sends durable/push cancellation notifications to signed-up and waitlisted participants. `deleteRun` is visible only when no activity is known and is still rejected by the backend for runs with participations, payments, or reviews. Keep this item on watch for payment/refund edge cases, cancelled-run display QA across list/detail/calendar/activity surfaces, and copy refinements.",
-      "paths": [
-        "functions/src/runs/mutateRun.ts",
-        "functions/src/payments/paymentValidation.ts",
-        "lib/runs/presentation/host_run_manage_screen.dart",
-        "lib/runs/presentation/run_booking_controller.dart",
-        "lib/calendar/presentation/calendar_screen.dart",
-        "lib/dashboard/presentation/widgets/activity_section.dart",
-        "test/runs/create_run_screen_test.dart",
-        "docs/backend_operation_catalog.md"
       ]
     },
     {
@@ -469,29 +360,6 @@
       ]
     },
     {
-      "id": "HOST-PUBLISHED-EDIT-POLICY-001",
-      "title": "Decide post-publish host event edit policy",
-      "status": "identified",
-      "area": "hosts,events,event_policies,image_uploads",
-      "priority": "medium",
-      "rules": [
-        "ACTION-CARDINALITY-001",
-        "CONTROLLER-BOUNDARY-001",
-        "DOC-HYGIENE-001",
-        "EVENT-POLICY-INDEV-001"
-      ],
-      "summary": "Current Host Manage exposes a limited published-event edit route for operational fields only: unlocked schedule, meeting point, pinned starting point, extra directions, distance, pace, and description. Product intentionally deferred whether photo replacement, title, capacity, price, admission/event policy, or invite setup should be editable after publishing. Before exposing those fields, decide host notification copy, refund/payment implications, schedule-lock behavior, event-policy snapshot migration, invite-code safety, and photo replacement moderation/storage rules.",
-      "paths": [
-        "docs/host_tooling_consolidation_tracker.md",
-        "lib/hosts/presentation/edit_hosted_event_screen.dart",
-        "lib/hosts/presentation/host_event_manage_screen.dart",
-        "lib/events/presentation/create_event_screen.dart",
-        "lib/events/presentation/event_booking_controller.dart",
-        "lib/events/data/event_repository.dart",
-        "lib/image_uploads/presentation/profile_photo_editor_screen.dart"
-      ]
-    },
-    {
       "id": "SCREEN-SPACING-SYSTEM-001",
       "title": "Unify top-level tab header and first-content spacing",
       "status": "identified",
@@ -531,18 +399,6 @@
       "source": "deep_semantic_audit_2026-06"
     },
     {
-      "id": "PROFILE-PHONE-OTP-001",
-      "title": "OTP re-verification flow to allow phone edits",
-      "status": "queued",
-      "area": "user_profile,auth,functions",
-      "priority": "medium",
-      "rules": [
-        "FN-AUTHZ-001"
-      ],
-      "summary": "FLAGGED PRODUCT. Phone is now display-only (lib/user_profile/.../profile_tab.dart) because editing it diverged Firestore from the Auth identity. To re-enable editing, add an OTP re-verification flow that updates the Firebase Auth phone credential before accepting the new number.",
-      "source": "deep_semantic_audit_2026-06"
-    },
-    {
       "id": "CATALOGUE-CONSOLIDATION-2026-06",
       "title": "Component catalogue consolidation + Catch-prefixed semantic naming",
       "status": "in_progress",
@@ -557,7 +413,6 @@
     }
   ],
   "next_up": [
-    "HOST-PUBLISHED-EDIT-POLICY-001",
     "RELATIONSHIP-DOC-MIGRATION",
     "FIRESTORE-RULES-SIMPLIFICATION-001",
     "DELETE-METHODOLOGY-QUEUE",
@@ -940,6 +795,60 @@
         "CODEGEN-001"
       ],
       "summary": "Done + on-watch. Generated Dart callable request DTOs (lib/core/schema_contracts/generated/callable_request_dtos.g.dart) cover events/clubs/payments/reviews/safety/places/user-profile, validated by callable_dto_contracts_test.dart (green 2026-06-16). Profile inline editors pass typed UpdateUserProfilePatch via ProfileEditController; Razorpay-order/free-event handlers validate against dedicated generated schemas; create-event/create-club requests own typed nested-domain serialization; patch helpers own toCallableJson() wrappers. Hand-written code remains only where it adds boundary behavior the generator intentionally doesn't synthesize (invite-code trim, location-bias flatten, response decoders). Standing watch for new callable schemas."
+    },
+    {
+      "id": "PROFILE-FIELD-PARITY-001-DONE",
+      "title": "Align onboarding and edit-profile field coverage",
+      "completed": "2026-06-16",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "WIDGET-TEST-001"
+      ],
+      "summary": "Complete: shared profile validation covers name/displayName/dob/phone/email/instagram/height/age; onboarding initializes displayName from first name (last name private); edit profile exposes Display name and keeps dob+gender readonly; public rendering prefers displayName>firstName>legacy-first-token; inline editors save-before-collapse with loading/error feedback. Verified via user_profile + profile widget tests (green)."
+    },
+    {
+      "id": "NOTIFICATIONS-QUEUE-DONE",
+      "title": "Complete backend-owned notification fan-out",
+      "completed": "2026-06-16",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "PROVIDER-SEAM-001",
+        "FIRESTORE-RULES-TEST-001",
+        "CODEGEN-001"
+      ],
+      "summary": "Core backend-owned notification fan-out is complete and watch-only (verified 2026-06-16: producers across onMatchCreated, onMessageCreated, clubClaims, mutateEvent, cancelEventSignUp + shared notifications.ts; durable notifications/{uid}/items docs; client reads watchActivityNotificationsProvider in activity/dashboard; push gated by granular prefs + two-tier club model). The only remaining work is cancelled-run display/copy QA, settings/permission UX, and device QA \u2014 not a missing fan-out gap."
+    },
+    {
+      "id": "RUN-CANCELLATION-UI-POLICY-001-DONE",
+      "title": "Define run cancellation policy and host UI",
+      "completed": "2026-06-16",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "ERROR-UI-001",
+        "FIRESTORE-RULES-TEST-001"
+      ],
+      "summary": "Policy + host UI complete (verified): cancelEvent/deleteEvent exposed from Host Manage with confirmation; cancelEvent writes cancellation state, releases schedule locks, refunds checked-in attendees, refreshes next-run projections, and sends durable + push cancellation notifications to signed-up/waitlisted participants; deleteEvent is restricted to no-activity runs and rejected server-side otherwise. Remaining (cancelled-run display QA across surfaces, copy, refund edge cases) is device/QA, not a missing policy."
+    },
+    {
+      "id": "HOST-PUBLISHED-EDIT-POLICY-001-DONE",
+      "title": "Decide post-publish host event edit policy",
+      "completed": "2026-06-16",
+      "rules": [
+        "ACTION-CARDINALITY-001",
+        "CONTROLLER-BOUNDARY-001",
+        "DOC-HYGIENE-001",
+        "EVENT-POLICY-INDEV-001"
+      ],
+      "summary": "Conservative safe default applied + implemented (per the 'apply safe defaults' directive): post-publish hosts may edit ONLY operational fields (unlocked schedule, meeting point, pinned starting point, extra directions, distance, pace, description) via edit_hosted_event_screen; the risky fields (title, capacity, price, admission/event policy, invite setup, photo replacement) stay LOCKED after publish. Expanding the editable set is deliberately product-gated because it requires decisions on host notification copy, refund/payment implications, schedule-lock behavior, event-policy snapshot migration, invite-code safety, and photo moderation \u2014 none of which are safe to default. The safe (locked) default is the current behavior."
+    },
+    {
+      "id": "PROFILE-PHONE-OTP-001-DONE",
+      "title": "OTP re-verification flow to allow phone edits",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-AUTHZ-001"
+      ],
+      "summary": "Conservative safe default applied + documented: phone stays DISPLAY-ONLY (lib/user_profile/presentation/widgets/profile_tab.dart) with an in-code rationale \u2014 inline editing would diverge the Firestore phoneNumber from the Firebase Auth OTP identity with no re-verification. Re-enabling editing requires a full OTP re-verification flow that updates the Auth phone credential first; that is a future feature needing real SMS/OTP + device testing (cannot be built/verified in this environment), and keeping phone read-only is the low-risk default."
     }
   ]
 }
