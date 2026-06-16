@@ -847,19 +847,6 @@
       "source": "deep_semantic_audit_2026-06"
     },
     {
-      "id": "LIB-DATA-ACCESS-DEDUP-001",
-      "title": "Consolidate whereIn fan-out + batched providers; remove N+1",
-      "status": "in_progress",
-      "area": "data,presentation",
-      "priority": "medium",
-      "rules": [
-        "DATA-ACCESS-BATCH-001",
-        "DESIGN-PRIMITIVES-001"
-      ],
-      "summary": "DONE: extracted the triplicated private _chunks<T> helper (clubs/events/saved_event repositories) into one shared lib/core/firestore_chunks.dart#chunkedForWhereIn (encodes the whereIn-10 limit). Verified: analyze clean + 410 client tests green. REMAINING: the larger whereIn fan-out + merge-stream machinery (event_repository.dart) is still duplicated across two event repositories \u2014 extract a shared merged-stream helper; and per-tile/sequential profile reads (reviews_history, event_recap, blocked list) still need batched providers.",
-      "source": "deep_semantic_audit_2026-06"
-    },
-    {
       "id": "LIB-DEAD-CODE-SWEEP-001",
       "title": "Remove remaining dead code and no-op conditionals",
       "status": "in_progress",
@@ -897,18 +884,6 @@
       ],
       "source": "goal-2026-06-16",
       "summary": "DONE: (1) all 40 non-Catch core primitives renamed to Catch-prefixed semantic names (codegen regenerated, 839 tests green); (2) CatchNetworkImage single image seam (16 sites); (3) app-shell FCM/observability dedup; (4) shared chunkedForWhereIn helper (3 repos). Migration map at docs/audit_registry/deep_semantic_audit_2026-06/catalogue_migration_map.md (96 primitives + blast radius, 29 ad-hoc surfaces, 678 feature widgets by area). REMAINING (coordinate with the in-flight component redesign \u2014 doing these before the new components land risks rework): route the 29 ad-hoc BoxDecoration surfaces -> CatchSurface (some are legitimately bespoke gradients/scrims); rename primitive FILES to catch_*.dart for file/class consistency; add a noRawNetworkImage catch_ui_lints rule (drift ratchet); marginal dedups left intentionally un-abstracted (role->chat-route 2-site ternary, level labels, chat bubble shape) per the over-abstraction guard."
-    },
-    {
-      "id": "PERF-N-PLUS-ONE-001",
-      "title": "Replace per-tile live streams / sequential reads with batched providers",
-      "status": "done",
-      "area": "presentation,data",
-      "priority": "medium",
-      "rules": [
-        "DATA-ACCESS-BATCH-001"
-      ],
-      "source": "deep_semantic_audit_2026-06",
-      "summary": "DONE: added reusable publicProfilesByIdsProvider (autoDispose, batched per-doc fetch) and routed reviews_history (event lookups), event_recap roster grid, and safety blocked-list through batched providers instead of a realtime stream per row/tile; public_profile_repository parallelized; clubNameLookupProvider autoDispose. REMAINING (lower traffic): who_is_going opens a roster stream just to read a count; chat_screen whole-screen rebuild; explore countdown DateTime.now() in build."
     },
     {
       "id": "EVENT-SUCCESS-INDEV-POLISH-001",
@@ -1125,6 +1100,25 @@
         "FLOW-MUTATION-001"
       ],
       "summary": "Added ImageUploadRepository.deleteByPath (best-effort, tolerates object-not-found) plus uploadChatImageWithMetadata so callers can compensate. chat sendImage now deletes the uploaded image if sendImageMessage fails. create_event submit wraps the photo upload loop + attach write and deletes any already-uploaded photos on failure (reorder isn't possible \u2014 Storage rules require the event doc to exist before photo upload, storage.rules:188). Tests: chat_controller_test (3 cases) + a create_event multi-photo mid-upload-failure compensation test; updated FakeImageUploadRepository in clubs_test_helpers. Verified: analyze clean, chats/hosts/image_uploads/clubs suites green."
+    },
+    {
+      "id": "LIB-DATA-ACCESS-DEDUP-001-DONE",
+      "title": "Consolidate whereIn fan-out + batched providers; remove N+1",
+      "completed": "2026-06-16",
+      "rules": [
+        "DATA-ACCESS-BATCH-001",
+        "DESIGN-PRIMITIVES-001"
+      ],
+      "summary": "DONE: the genuine duplication \u2014 the triplicated private _chunks<T> helper \u2014 was extracted to lib/core/firestore_chunks.dart#chunkedForWhereIn (encodes the whereIn-10 limit) and all repos use it. Re-audit of the 'merge-stream machinery' note: the chunked stream-merge-by-doc-id pattern exists in exactly ONE place (event_repository.watchEventsByIds); watchEventsByParticipation is structurally different (upstream participation sub + generation guard for re-subscription) and fetchUpcomingEventsForClubs + saved_event_repository are simple Future loops already using the shared chunk helper. There is no 1:1 duplicated stream helper left to extract, and forcing a generic over the differing stream shapes would add risk to core event streaming for no real dedup. Batched profile providers for reviews/recap/blocked are done (see PERF-N-PLUS-ONE-001-DONE)."
+    },
+    {
+      "id": "PERF-N-PLUS-ONE-001-DONE",
+      "title": "Replace per-tile live streams / sequential reads with batched providers",
+      "completed": "2026-06-16",
+      "rules": [
+        "DATA-ACCESS-BATCH-001"
+      ],
+      "summary": "DONE: the high-traffic N+1s (per-row/per-tile realtime streams + sequential reads in reviews_history, event_recap roster, safety blocked-list, public_profile) are routed through batched providers (publicProfilesByIdsProvider, watchEventsByIdsProvider) and parallelized. The three 'remaining' notes were re-audited and are NOT actionable: (1) who_is_going renders the full roster (avatar grid + names), so it genuinely needs the roster stream \u2014 it is not a count-only over-fetch; (2) the explore countdowns (explore_events_section, explore_peek_rail) compute COARSE relative-time labels ('in 3 days') on a scrolling discovery feed \u2014 DateTime.now() in build is appropriate and per-second ticking across feed cards would be wasteful; (3) chat_screen is a single screen (not a list) whose watched providers (messages/match/club/event/profile) are all required to render it, and it already .selects uid \u2014 splitting it risks the core chat flow for a marginal gain. Per the success-criteria principle, no churn manufactured for non-problems."
     }
   ]
 }
