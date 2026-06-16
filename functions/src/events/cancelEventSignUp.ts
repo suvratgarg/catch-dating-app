@@ -422,7 +422,18 @@ export async function cancelEventSignUpHandler(
   });
 
   for (const promotionPush of promotionPushes) {
-    await deps.sendNotification(promotionPush);
+    try {
+      await deps.sendNotification(promotionPush);
+    } catch (notificationError) {
+      // Log and continue — the cancellation has already committed and the
+      // waitlist-promotion push is a best-effort side effect. A failed push
+      // must not abort the function before the refund below runs.
+      logger.error(
+        "Waitlist promotion push failed for event",
+        eventId,
+        notificationError
+      );
+    }
   }
 
   // Issue a refund outside the transaction when the selected policy allows it.

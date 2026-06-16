@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
+import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -31,5 +32,11 @@ class AuthSessionController extends _$AuthSessionController {
     OnboardingController.completeMutation.reset(ref);
     ref.invalidate(authControllerProvider);
     ref.invalidate(onboardingControllerProvider);
+    // keepAlive clubs-browse state is user-scoped (selected city, search query,
+    // and filters) and must not survive into the next signed-in session.
+    ref.invalidate(selectedClubCityProvider);
+    ref.invalidate(selectedClubCityWasUserSelectedProvider);
+    ref.invalidate(clubSearchQueryProvider);
+    ref.invalidate(clubBrowseFiltersProvider);
   }
 }

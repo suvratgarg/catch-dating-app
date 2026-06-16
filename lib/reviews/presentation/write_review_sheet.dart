@@ -133,12 +133,12 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
     final submitting = mutation.isPending || deleteMutation.isPending;
 
     ref.listen(WriteReviewController.submitMutation, (prev, next) {
-      if (prev?.isPending == true && next.isSuccess) {
+      if (prev?.isPending == true && next.isSuccess && context.mounted) {
         Navigator.of(context).pop();
       }
     });
     ref.listen(WriteReviewController.deleteMutation, (prev, next) {
-      if (prev?.isPending == true && next.isSuccess) {
+      if (prev?.isPending == true && next.isSuccess && context.mounted) {
         Navigator.of(context).pop();
       }
     });

@@ -452,8 +452,12 @@ BackendErrorMapper _paymentErrorMapper({required String fallbackMessage}) {
         context: context,
       );
     }
+    // Unexpected error types (e.g. Razorpay SDK or network errors not wrapped
+    // in a FirebaseFunctionsException) must never surface raw `toString()` text
+    // to users. Show the stable fallback message; keep the raw detail in
+    // debugMessage for diagnostics.
     return PaymentFailedException(
-      error.toString().isEmpty ? fallbackMessage : error.toString(),
+      fallbackMessage,
       debugMessage: '${error.runtimeType}: $error',
       cause: error,
       stackTrace: stackTrace,
