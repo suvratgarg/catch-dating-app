@@ -1,3 +1,9 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_domain_classes.mjs
+// Then run: dart run build_runner build
+//
+// Data shape emitted from contracts/firestore/payments.schema.json.
+// Derived behavior, if any, lives in a hand-written companion extension file.
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/labelled.dart';
