@@ -115,30 +115,33 @@ class _SetupTabState extends State<_SetupTab> {
           padding: widget.padding,
           children: [
             if (unsavedFrozen) ...[
-              _NoticeCard(
+              CatchInfoCard(
                 icon: CatchIcons.lockClockRounded,
+                padding: CatchInsets.content,
                 title: eventHasStarted
                     ? 'Event started without a saved guide'
                     : 'Live guide can no longer be saved',
-                body: eventHasStarted
+                message: eventHasStarted
                     ? 'This event began before a live guide was saved. Attendance and check-in still work, but the Live tab won\'t have any guided controls for this event.'
                     : 'Bookings have already started. Attendance and check-in still work, but the Live tab won\'t have guided controls unless a guide was saved first.',
               ),
               gapH16,
             ] else if (!widget.planIsPersisted) ...[
-              _NoticeCard(
+              CatchInfoCard(
                 icon: CatchIcons.cloudUploadOutlined,
+                padding: CatchInsets.content,
                 title: 'Setup not saved yet',
-                body:
+                message:
                     'This default plan is visible here only. Save it so the Live tab is ready when the event starts.',
               ),
               gapH16,
             ],
             if (setupFrozen && widget.planIsPersisted) ...[
-              _NoticeCard(
+              CatchInfoCard(
                 icon: CatchIcons.lockClockRounded,
+                padding: CatchInsets.content,
                 title: 'Settings are locked',
-                body: hasParticipantActivity
+                message: hasParticipantActivity
                     ? 'Bookings have started, so the saved guide is locked in. Switch to the Live tab to drive the event in real time once it starts.'
                     : 'The event has started — setup is locked. Use the Live tab to control the event right now, and the Report tab afterward.',
               ),
@@ -402,47 +405,6 @@ class _UnsavedChangesPill extends StatelessWidget {
           style: CatchTextStyles.supporting(context, color: t.warning),
         ),
       ],
-    );
-  }
-}
-
-class _NoticeCard extends StatelessWidget {
-  const _NoticeCard({
-    required this.icon,
-    required this.title,
-    required this.body,
-  });
-
-  final IconData icon;
-  final String title;
-  final String body;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: t.primary),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: CatchTextStyles.sectionTitle(context)),
-                gapH4,
-                Text(
-                  body,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
