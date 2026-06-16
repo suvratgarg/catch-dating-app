@@ -266,10 +266,34 @@ CandidateDisposition _dispositionFor({
     );
   }
 
-  if (path == 'lib/main.dart') {
+  if (path == 'lib/main.dart' || path == 'lib/app_bootstrap.dart') {
     return const CandidateDisposition(
       status: CandidateStatus.intentional,
-      reason: 'bootstrap framework/platform error handler',
+      reason: 'bootstrap framework/platform error handler + central logging',
+    );
+  }
+
+  if (path == 'lib/image_uploads/data/image_upload_repository.dart' &&
+      rule.id == 'raw_firebase_exception_type') {
+    return const CandidateDisposition(
+      status: CandidateStatus.intentional,
+      reason: 'best-effort deleteByPath cleanup swallows object-not-found',
+    );
+  }
+
+  if (path == 'lib/core/fcm_service.dart' &&
+      rule.id == 'direct_firestore_write') {
+    return const CandidateDisposition(
+      status: CandidateStatus.verified,
+      reason: 'fcmToken write sits inside a normalizeBackendError try/catch',
+    );
+  }
+
+  if (path == 'lib/launch_access/data/launch_access_repository.dart' &&
+      rule.id == 'direct_firestore_write') {
+    return const CandidateDisposition(
+      status: CandidateStatus.verified,
+      reason: 'transaction.set runs inside withBackendErrorContext',
     );
   }
 

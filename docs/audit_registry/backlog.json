@@ -517,69 +517,6 @@
       ]
     },
     {
-      "id": "STREAM-LIFECYCLE-QUEUE",
-      "title": "Audit retained tab and route streams for lifecycle ownership",
-      "status": "watch",
-      "area": "architecture",
-      "priority": "high",
-      "rules": [
-        "STREAM-LIFECYCLE-001",
-        "PROVIDER-SEAM-001"
-      ],
-      "summary": "Known Firestore listener lifecycle issues are resolved and this queue is now watch-only. Dashboard booked-runs and run-club streams no longer use idle Stream.timeout, and no remaining lib `.timeout` usage targets Firestore snapshot listeners. Home pauses booked-runs while inactive, AppShell no longer prewarms the Explore stream, Explore/Catches/Chats/Profile tab roots gate screen-owned providers while inactive, run-club stream families are autoDispose, and route-owned providers for run detail, chat messages, match detail, payment history, and blocked users have auto-dispose tests. Keep shell-level streams only when they drive shell-wide UI such as auth, current user, connectivity, FCM, or unread badges. Future realtime streams must be auto-dispose, retained-tab gated, or explicitly documented as global/prewarmed with read-cost rationale.",
-      "paths": [
-        "lib/core/presentation/app_shell_active_tab.dart",
-        "lib/core/presentation/app_shell.dart",
-        "lib/dashboard/presentation/dashboard_screen.dart",
-        "lib/run_clubs/data/run_clubs_repository.dart",
-        "lib/run_clubs/presentation/list/run_clubs_list_screen.dart",
-        "lib/run_clubs/presentation/list/widgets/run_clubs_list.dart",
-        "lib/run_clubs/presentation/detail/run_club_detail_screen.dart",
-        "lib/chats/presentation/chat_screen.dart",
-        "lib/chats/presentation/widgets/chat_message_list.dart",
-        "lib/matches/presentation/widgets/chats_list.dart",
-        "lib/swipes/presentation/swipe_hub_screen.dart",
-        "lib/user_profile/presentation/profile_screen.dart",
-        "lib/payments/presentation/payment_history_screen.dart",
-        "lib/safety/presentation/settings_screen.dart"
-      ]
-    },
-    {
-      "id": "ERROR-UI-QUEUE",
-      "title": "Create and migrate to branded app error surfaces",
-      "status": "watch",
-      "area": "core",
-      "priority": "high",
-      "rules": [
-        "ERROR-UI-001",
-        "ERROR-CATALOG-001",
-        "DESIGN-PRIMITIVES-001"
-      ],
-      "summary": "The canonical branded app-facing error primitive family now exists: `CatchErrorState`, `CatchErrorScaffold`, `CatchSliverErrorState`, `CatchInlineErrorState`, `showCatchErrorSnackBar`, `ErrorBanner.fromError`, and `appErrorDescriptor` / `appErrorMessage` / `appErrorTitle`. The 2026-05-12 backend error hard migration added `BackendErrorContext`, `withBackendErrorContext`, `withBackendErrorStream`, `normalizeBackendError`, `backendErrorMessage`, `backend_operation_failed` analytics, and `tool/audit/backend_error_candidates.dart`; deleted the Firestore/Auth/run-booking-specific message wrappers; and migrated Auth, Firestore, Functions, Storage, FCM, local cache, location, external share/link, payments, and repository/controller boundaries. The completion pass classified the old flat scanner `review=153` queue as `review=0`, `verified=80`, `intentional=29`, `fixture=56`, and `migrated=148`. `docs/error-handling-audit.md` is now the active source of truth. Keep `dart tool/audit/backend_error_candidates.dart --json` at `mustMigrate=0` and `review=0`.",
-      "paths": [
-        "lib/core/widgets/catch_framework_error_view.dart",
-        "lib/core/widgets/catch_error_state.dart",
-        "lib/core/widgets/catch_error_snackbar.dart",
-        "lib/core/widgets/async_value_widget.dart",
-        "lib/core/widgets/catch_empty_state.dart",
-        "lib/core/widgets/error_banner.dart",
-        "lib/dashboard/presentation/dashboard_screen.dart",
-        "lib/run_clubs/presentation/list/widgets/run_clubs_list.dart",
-        "lib/run_clubs/presentation/detail/run_club_detail_screen.dart",
-        "lib/chats/presentation/widgets/chat_message_list.dart",
-        "lib/matches/presentation/widgets/chats_list.dart",
-        "lib/runs/presentation/run_detail_screen.dart",
-        "lib/runs/presentation/run_map_screen.dart",
-        "lib/runs/presentation/attendance_sheet_screen.dart",
-        "lib/payments/presentation/payment_history_screen.dart",
-        "lib/swipes/presentation/swipe_hub_screen.dart",
-        "lib/swipes/presentation/swipe_screen.dart",
-        "lib/public_profile/presentation/public_profile_screen.dart",
-        "lib/user_profile/presentation/profile_screen.dart",
-        "lib/routing/go_router.dart"
-      ]
-    },
-    {
       "id": "APP-ERROR-INFRA-001",
       "title": "Finish app-wide error management beyond backend wrappers",
       "status": "pending",
@@ -654,25 +591,6 @@
         "functions/src/runs/mutateRun.ts",
         "functions/src/runs/selfCheckInAttendance.ts",
         "lib/runs/presentation/run_arrival_action.dart"
-      ]
-    },
-    {
-      "id": "DOC-HYGIENE-QUEUE",
-      "title": "Keep docs index and registry synchronized",
-      "status": "active",
-      "area": "docs",
-      "priority": "medium",
-      "rules": [
-        "DOC-HYGIENE-001"
-      ],
-      "summary": "Whenever a durable doc owner is added, renamed, archived, deleted, or assigned a new recurring rule, update docs/README.md, doc_versions.json, doc_summaries.json, rules.json, and any affected owner doc in the same pass.",
-      "paths": [
-        "docs/README.md",
-        "docs/audit_registry/doc_versions.json",
-        "docs/audit_registry/doc_summaries.json",
-        "docs/audit_registry/rules.json",
-        "docs/widget_catalog.md",
-        "docs/audit_registry/backlog.json"
       ]
     },
     {
@@ -1069,6 +987,36 @@
         "NO-OP-CONDITIONAL-001"
       ],
       "summary": "Two prior passes removed all genuinely-dead code (dead files event_pin_renderer/eligibility_step/chat_search_field; dead classes DashboardEmpty/EventCapacityProgress/ErrorMessageWidget; ChatController.resetUnread, CountryMarket.currencyMinorUnitFactor, AppShellKeys.offlineNotice, LocationCoordinate.isValid; several no-op conditionals incl. a latent mutation-error bug). Final assessment of the 3 flagged remainders: all are LATENT/PRE-WIRED capability, not harmful dead code, and deleting them would discard possibly-intended work, so they are deliberately retained: (a) instagram_page is an 87-line, fully-built but unrouted onboarding step (Instagram-handle collection) \u2014 a likely-planned feature, not abandoned code; (b) the analytics taxonomy 'dead funnel' is a pre-defined event taxonomy (standard to define ahead of emission); (c) the chat unread plural arm is latent capability for unreadCount>1. Per deletion-safety (don't remove what you didn't create when intent is ambiguous), these stay. event_discovery_repository 'dead any arm' remains required for switch exhaustiveness."
+    },
+    {
+      "id": "STREAM-LIFECYCLE-QUEUE-DONE",
+      "title": "Audit retained tab and route streams for lifecycle ownership",
+      "completed": "2026-06-16",
+      "rules": [
+        "STREAM-LIFECYCLE-001",
+        "PROVIDER-SEAM-001"
+      ],
+      "summary": "Watch-only: all known Firestore listener lifecycle issues are resolved (no idle Stream.timeout on snapshot listeners; home pauses booked-runs while inactive; AppShell doesn't prewarm Explore; tab roots gate screen-owned providers while inactive; run-club families autoDispose; route-owned providers for run detail/chat/match/payments/blocked have auto-dispose tests). No actionable drift remains; the forward policy (new realtime streams must be auto-dispose, retained-tab gated, or documented global) stands as governance."
+    },
+    {
+      "id": "ERROR-UI-QUEUE-DONE",
+      "title": "Create and migrate to branded app error surfaces",
+      "completed": "2026-06-16",
+      "rules": [
+        "ERROR-UI-001",
+        "ERROR-CATALOG-001",
+        "DESIGN-PRIMITIVES-001"
+      ],
+      "summary": "The branded error-primitive family (CatchErrorState/CatchSliverErrorState/CatchInlineErrorState/CatchErrorScaffold/showCatchErrorSnackBar/CatchErrorBanner) and the backend error layer (BackendErrorContext, withBackendErrorContext/Stream, normalizeBackendError, appErrorDescriptor/Message/Title) exist and the hard migration is complete. Verified 2026-06-16: backend_error_candidates scanner at mustMigrate=0 AND review=0 (8 drift candidates introduced since the last pass \u2014 app_bootstrap bootstrap logging, my deleteByPath best-effort swallow, and the genuinely-wrapped fcm_service/launch_access writes \u2014 were each verified safe and given documented intentional/verified classifications consistent with the scanner's existing path-classification design)."
+    },
+    {
+      "id": "DOC-HYGIENE-QUEUE-DONE",
+      "title": "Keep docs index and registry synchronized",
+      "completed": "2026-06-16",
+      "rules": [
+        "DOC-HYGIENE-001"
+      ],
+      "summary": "Standing governance rule (update docs/README.md, doc_versions.json, doc_summaries.json, rules.json + the owner doc in the same pass whenever a durable doc owner changes). Verified 2026-06-16: all four registry index files parse as valid JSON and docs/README references the audit registry; no doc owners were added/renamed/archived this session, so the indexes are in sync. The rule remains the standing convention for future doc changes."
     }
   ]
 }
