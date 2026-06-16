@@ -3,7 +3,7 @@ import {signUpUserForEvent} from "../events/signUpUserForEvent";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {hasHostApprovedJoinRequest} from "../events/eventPolicy";
 import {
-  incrementInviteLinkCounterBestEffort,
+  incrementInviteLinkCounterInTransaction,
   InviteAttribution,
 } from "../events/inviteLinks";
 import {buildPaymentRecord, VerifiedPaymentBooking} from "./paymentValidation";
@@ -90,9 +90,6 @@ export async function fulfillRazorpayPayment({
     return {fulfilled: existingStatus === "completed", alreadyFinalized: true};
   }
 
-  const shouldIncrementPaidCount =
-    inviteAttribution !== null && existingStatus !== "completed";
-
   // Sign the user up. If this fails (e.g. event filled up in a race between
   // order creation and payment), issue an immediate refund so the user is
   // never charged for a spot they didn't get.
@@ -146,16 +143,7 @@ export async function fulfillRazorpayPayment({
     throw signUpError;
   }
 
-  // Record the completed payment.
-  if (shouldIncrementPaidCount && inviteAttribution) {
-    await incrementInviteLinkCounterBestEffort({
-      db,
-      inviteLinkId: inviteAttribution.inviteLinkId,
-      field: "paidCount",
-    });
-  }
-
-  await paymentRef.set({
+  const completedRecord = {
     ...buildPaymentRecord({
       userId: booking.userId,
       orderId,
@@ -168,6 +156,33 @@ export async function fulfillRazorpayPayment({
       inviteSource: booking.inviteSource,
     }),
     createdAt: deps.serverTimestamp(),
+  };
+
+  // Atomically flip the payment to "completed" and (exactly once) bump the
+  // invite paidCount. The transaction's read-then-write on paymentRef
+  // serializes the client callback, webhook, and reconciliation sweep: only the
+  // caller that observes a non-terminal status *inside* the transaction writes
+  // the completed record and the single counter increment; the losers retry,
+  // re-read "completed", and no-op. This closes the paidCount double-increment
+  // race where all callers passed the pre-signup status read before any of them
+  // had flipped the doc. (signUpUserForEvent above is already idempotent via
+  // its own existing-participation guard, so re-running it for every caller is
+  // safe; only the counter needed an atomic gate.)
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(paymentRef);
+    const status = snap.data()?.status as string | undefined;
+    if (status !== undefined && terminalPaymentStatuses.has(status)) {
+      return;
+    }
+    tx.set(paymentRef, completedRecord);
+    if (inviteAttribution) {
+      incrementInviteLinkCounterInTransaction({
+        tx,
+        db,
+        attribution: inviteAttribution,
+        field: "paidCount",
+      });
+    }
   });
 
   await deletePendingOrderBestEffort(db, orderId);
@@ -262,9 +277,29 @@ export async function writeRazorpayPendingOrder({
 }
 
 /**
- * Marks a pending order terminal (failed/expired) without touching the
- * canonical payments record. Used by the webhook (payment.failed) and the
- * reconciliation sweep (no captured payment after the grace window).
+ * Permitted source statuses for each {@link markRazorpayPendingOrder} target.
+ *
+ * - `failed` (webhook payment.failed) may only advance a still-`pending` order,
+ *   so a stray late payment.failed can never resurrect an already-`expired` or
+ *   fulfilled-then-deleted order.
+ * - `expired` (reconciliation, no captured payment) may settle both a `pending`
+ *   order (abandoned checkout) and a `failed` one (a failed attempt that was
+ *   never recaptured), giving the sweep a terminal state to retire either into.
+ *
+ * Crucially `failed` is NOT terminal: a `failed` order stays sweep-eligible
+ * (see the reconciliation query) so a later same-order recapture can fulfill.
+ */
+const pendingOrderTransitions: Record<"failed" | "expired", Set<string>> = {
+  failed: new Set(["pending"]),
+  expired: new Set(["pending", "failed"]),
+};
+
+/**
+ * Marks a pending order failed/expired without touching the canonical payments
+ * record. Used by the webhook (payment.failed) and the reconciliation sweep (no
+ * captured payment after the grace window). Only advances the doc along a
+ * permitted transition (see {@link pendingOrderTransitions}); any other current
+ * status is a no-op.
  * @param {object} params Update parameters.
  * @return {Promise<void>} Resolves when the doc settles.
  */
@@ -282,6 +317,10 @@ export async function markRazorpayPendingOrder({
   const ref = db.collection("razorpayPendingOrders").doc(orderId);
   const snap = await ref.get();
   if (!snap.exists) return;
+  const current = snap.data()?.status as string | undefined;
+  if (current === undefined || !pendingOrderTransitions[status].has(current)) {
+    return;
+  }
   await ref.set({
     status,
     updatedAt: serverTimestamp(),

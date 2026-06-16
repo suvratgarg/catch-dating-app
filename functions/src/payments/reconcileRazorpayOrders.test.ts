@@ -101,6 +101,61 @@ test("reconcileRazorpayOrdersHandler expires an order with no captured payment",
     );
   });
 
+test(
+  "reconcileRazorpayOrdersHandler fulfills a failed order that was recaptured",
+  async () => {
+    // A payment.failed webhook already moved this order to "failed", but the
+    // user retried and a later attempt on the SAME order was captured. The
+    // sweep must still pick it up ("failed" stays sweep-eligible) and fulfill.
+    const firestore = new FakeFirestore({
+      "razorpayPendingOrders/order_stale": {
+        provider: "razorpay",
+        orderId: "order_stale",
+        userId: "runner-1",
+        eventId: "trusted-event",
+        amountInPaise: 25000,
+        currency: "INR",
+        status: "failed",
+        createdAt: ts(0),
+      },
+    });
+    const signUps: Array<{eventId: string; userId: string}> = [];
+
+    const summary = await reconcileRazorpayOrdersHandler({
+      firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
+      createClient: () => razorpayClient({
+        payments: [{
+          id: "pay_recaptured",
+          order_id: "order_stale",
+          amount: 25000,
+          currency: "INR",
+          status: "captured",
+          refund_status: "null",
+        }],
+      }),
+      now: () => new Date(60 * 60 * 1000),
+      timestampFromDate: (date) =>
+        ts(date.getTime()) as unknown as FirebaseFirestore.Timestamp,
+      serverTimestamp: () => "server-now",
+      signUpForEvent: async (_db, eventId, userId) => {
+        signUps.push({eventId, userId});
+      },
+      graceMs: 15 * 60 * 1000,
+      batchLimit: 25,
+    });
+
+    assert.deepEqual(summary, {processed: 1, fulfilled: 1, expired: 0});
+    assert.deepEqual(signUps, [{eventId: "trusted-event", userId: "runner-1"}]);
+    const payment = firestore.data["payments/pay_recaptured"] as
+      Record<string, unknown>;
+    assert.equal(payment.status, "completed");
+    // Fulfillment removes the tracking doc once the booking succeeds.
+    assert.equal(
+      firestore.data["razorpayPendingOrders/order_stale"],
+      undefined
+    );
+  });
+
 test("reconcileRazorpayOrdersHandler skips orders inside the grace window",
   async () => {
     const firestore = new FakeFirestore({
@@ -192,6 +247,26 @@ class FakeFirestore {
 
   collection(collectionPath: string) {
     return new FakeCollectionRef(this, collectionPath);
+  }
+
+  // Fulfillment completes the payment + bumps paidCount inside a transaction;
+  // the fake forwards tx reads/writes to the doc refs.
+  async runTransaction<T>(
+    updateFn: (tx: {
+      get: (ref: FakeDocRef) => Promise<unknown>;
+      set: (
+        ref: FakeDocRef,
+        data: Record<string, unknown>,
+        options?: {merge?: boolean}
+      ) => void;
+    }) => Promise<T>
+  ): Promise<T> {
+    return updateFn({
+      get: (ref) => ref.get(),
+      set: (ref, data, options) => {
+        void ref.set(data, options);
+      },
+    });
   }
 }
 
@@ -290,6 +365,9 @@ class FakeDocRef {
 function matchesFilter(data: unknown, filter: QueryFilter): boolean {
   const value = (data as Record<string, unknown>)[filter.field];
   if (filter.op === "==") return value === filter.value;
+  if (filter.op === "in") {
+    return Array.isArray(filter.value) && filter.value.includes(value);
+  }
   if (filter.op === "<") return tsMillis(value) < tsMillis(filter.value);
   throw new Error(`Unsupported fake query op ${filter.op}`);
 }

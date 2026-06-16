@@ -431,29 +431,57 @@ function createPaymentsFirestore(paymentDoc: {
     set: (data: Record<string, unknown>) => Promise<void>;
   };
 }): FirebaseFirestore.Firestore {
+  const docFor = (path: string, docId: string) => {
+    if (path === "payments") return paymentDoc.ref;
+    if (path === "eventInviteLinks") {
+      return {
+        set: async (data: Record<string, unknown>) => {
+          paymentDoc.inviteLinkSetCalls.push({docId, data});
+        },
+      };
+    }
+    return {
+      get: async () => ({
+        exists: false,
+        data: () => undefined,
+      }),
+      // The shared fulfillment helper best-effort deletes the pending-order
+      // tracking doc; a no-op keeps these focused tests quiet.
+      delete: async () => undefined,
+    };
+  };
   return {
     collection: (path: string) => ({
-      doc: (docId: string) => {
-        if (path === "payments") return paymentDoc.ref;
-        if (path === "eventInviteLinks") {
-          return {
-            set: async (data: Record<string, unknown>) => {
-              paymentDoc.inviteLinkSetCalls.push({docId, data});
-            },
-          };
-        }
-        return {
-          get: async () => ({
-            exists: false,
-            data: () => undefined,
-          }),
-          // The shared fulfillment helper best-effort deletes the pending-order
-          // tracking doc; a no-op keeps these focused tests quiet.
-          delete: async () => undefined,
-        };
-      },
+      doc: (docId: string) => docFor(path, docId),
     }),
+    // The completion + paidCount increment now run inside a transaction; the
+    // fake routes tx reads/writes straight to the same doc stubs.
+    runTransaction: async <T>(
+      updateFn: (tx: FakeTransaction) => Promise<T>
+    ): Promise<T> => {
+      const tx: FakeTransaction = {
+        get: (ref) => ref.get(),
+        set: (ref, data, options) => {
+          void ref.set(data, options);
+        },
+      };
+      return updateFn(tx);
+    },
   } as unknown as FirebaseFirestore.Firestore;
+}
+
+interface FakeTransaction {
+  get: (ref: {
+    get: () => Promise<{
+      exists: boolean;
+      data: () => Record<string, unknown> | undefined;
+    }>;
+  }) => Promise<unknown>;
+  set: (
+    ref: {set: (data: Record<string, unknown>, options?: unknown) => unknown},
+    data: Record<string, unknown>,
+    options?: unknown
+  ) => void;
 }
 
 function failOnClientUse(): Razorpay {

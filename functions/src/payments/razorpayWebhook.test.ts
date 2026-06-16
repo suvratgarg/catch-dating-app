@@ -209,6 +209,27 @@ class FakeFirestore {
   collection(collectionPath: string) {
     return new FakeCollectionRef(this, collectionPath);
   }
+
+  // Fulfillment completes the payment + bumps paidCount inside a transaction;
+  // the fake serializes nothing (single-threaded tests) and just forwards
+  // reads/writes to the doc refs.
+  async runTransaction<T>(
+    updateFn: (tx: {
+      get: (ref: FakeDocRef) => Promise<unknown>;
+      set: (
+        ref: FakeDocRef,
+        data: Record<string, unknown>,
+        options?: {merge?: boolean}
+      ) => void;
+    }) => Promise<T>
+  ): Promise<T> {
+    return updateFn({
+      get: (ref) => ref.get(),
+      set: (ref, data, options) => {
+        void ref.set(data, options);
+      },
+    });
+  }
 }
 
 class FakeCollectionRef {

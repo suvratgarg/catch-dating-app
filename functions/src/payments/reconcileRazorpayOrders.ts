@@ -68,9 +68,16 @@ export async function reconcileRazorpayOrdersHandler(
     new Date(deps.now().getTime() - deps.graceMs)
   );
 
+  // Sweep both "pending" (never resolved) and "failed" (a payment.failed
+  // webhook landed, but the user may have retried and a later attempt on the
+  // SAME order could still be captured). Including "failed" closes the gap
+  // where a failed-then-recaptured order would otherwise be stranded — see
+  // markRazorpayPendingOrder: "failed" is intentionally non-terminal. Orders
+  // settle to "expired" (terminal, not swept) once the grace window passes with
+  // no capture, so this can't sweep the same doc forever.
   const snap = await db
     .collection("razorpayPendingOrders")
-    .where("status", "==", "pending")
+    .where("status", "in", ["pending", "failed"])
     .where("createdAt", "<", cutoff)
     .orderBy("createdAt", "asc")
     .limit(deps.batchLimit)
