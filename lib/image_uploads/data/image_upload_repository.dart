@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:catch_dating_app/core/app_error_context.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -139,12 +140,19 @@ class ImageUploadRepository {
     int? imageQuality,
   }) {
     final policy = policyForPurpose(purpose);
-    return _picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: policy.maxWidth,
-      maxHeight: policy.maxHeight,
-      imageQuality: imageQuality ?? policy.quality,
-      requestFullMetadata: false,
+    return withAppErrorContext(
+      () => _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: policy.maxWidth,
+        maxHeight: policy.maxHeight,
+        imageQuality: imageQuality ?? policy.quality,
+        requestFullMetadata: false,
+      ),
+      context: const AppErrorContext(
+        operation: AppOperation.plugin,
+        action: 'pick a photo',
+        resource: 'image_picker',
+      ),
     );
   }
 
@@ -154,12 +162,19 @@ class ImageUploadRepository {
     int? limit,
   }) {
     final policy = policyForPurpose(purpose);
-    return _picker.pickMultiImage(
-      maxWidth: policy.maxWidth,
-      maxHeight: policy.maxHeight,
-      imageQuality: imageQuality ?? policy.quality,
-      limit: limit,
-      requestFullMetadata: false,
+    return withAppErrorContext(
+      () => _picker.pickMultiImage(
+        maxWidth: policy.maxWidth,
+        maxHeight: policy.maxHeight,
+        imageQuality: imageQuality ?? policy.quality,
+        limit: limit,
+        requestFullMetadata: false,
+      ),
+      context: const AppErrorContext(
+        operation: AppOperation.plugin,
+        action: 'pick photos',
+        resource: 'image_picker',
+      ),
     );
   }
 
