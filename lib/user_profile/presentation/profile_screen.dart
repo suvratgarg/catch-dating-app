@@ -3,9 +3,9 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/async_value_widget.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -114,13 +114,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                 ),
               ];
             },
-            body: userProfileAsync.when<Widget>(
+            body: AsyncValueWidget(
+              value: userProfileAsync,
               loading: () => const Center(child: CatchLoadingIndicator()),
-              error: (e, _) => CatchErrorState.fromError(
-                e,
-                context: AppErrorContext.profile,
-                onRetry: () => ref.invalidate(watchUserProfileProvider),
-              ),
+              errorContext: AppErrorContext.profile,
+              onRetry: () => ref.invalidate(watchUserProfileProvider),
               data: (user) {
                 if (user == null) {
                   return const _ProfileUnavailableBody();
