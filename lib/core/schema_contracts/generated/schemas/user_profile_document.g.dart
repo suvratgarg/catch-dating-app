@@ -475,6 +475,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         'string',
         'null',
       ],
+      'maxLength': 120,
       'x-catch-ownership': 'client-writable',
     },
     'company': <String, Object?>{
@@ -482,6 +483,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         'string',
         'null',
       ],
+      'maxLength': 120,
       'x-catch-ownership': 'client-writable',
     },
     'education': <String, Object?>{

@@ -5,9 +5,9 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_empty_state.dart';
@@ -66,7 +66,7 @@ class ExploreList extends ConsumerWidget {
                   filters: filters,
                 ),
               )
-            : MutationErrorSnackbarListener(
+            : CatchMutationErrorListener(
                 mutation: ClubMembershipController.joinMutation,
                 child: ExploreBody(
                   viewModel: value,

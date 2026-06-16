@@ -51,7 +51,10 @@ class LaunchAccessRepository {
     () async {
       final normalized = draft.normalized();
       if (!normalized.canSubmit) {
-        throw StateError('Please complete your access application.');
+        throw const ValidationException(
+          'Please complete your access application.',
+          code: 'launch-access-incomplete',
+        );
       }
 
       final ref = _applicationRef(uid);
@@ -67,8 +70,9 @@ class LaunchAccessRepository {
             'uid': snap.id,
           });
           if (!existing.status.canEditApplication) {
-            throw StateError(
+            throw const ValidationException(
               'This access application is already locked for review.',
+              code: 'launch-access-locked',
             );
           }
           status = existing.status;

@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
-import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
@@ -53,7 +53,7 @@ void main() {
     await _enterText(tester, CreateEventFormKeys.meetingPoint, 'New gate');
     await tester.ensureVisible(find.byKey(CreateEventFormKeys.distance));
     await tester.pump();
-    expect(find.byType(SelectChip), findsWidgets);
+    expect(find.byType(CatchSelectChip), findsWidgets);
     expect(find.byType(CatchToggle), findsOneWidget);
 
     await _enterText(tester, CreateEventFormKeys.distance, '7.5');

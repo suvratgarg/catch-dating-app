@@ -7,9 +7,9 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/widgets/catch_settings_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
-import 'package:catch_dating_app/core/widgets/settings_row.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
@@ -137,9 +137,9 @@ class PublicProfileScreen extends ConsumerWidget {
       }
     });
 
-    return MutationErrorSnackbarListener(
+    return CatchMutationErrorListener(
       mutation: PublicProfileController.blockUserMutation,
-      child: MutationErrorSnackbarListener(
+      child: CatchMutationErrorListener(
         mutation: PublicProfileController.reportUserMutation,
         child: Scaffold(
           appBar: CatchTopBar(
@@ -258,7 +258,7 @@ class _ReportReasonTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsRow(
+    return CatchSettingsRow(
       label: label,
       icon: CatchIcons.flagOutlined,
       onTap: () => Navigator.of(context).pop(value),

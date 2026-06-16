@@ -4,16 +4,13 @@ import {
   onCall,
 } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import * as logger from "firebase-functions/logger";
 import Razorpay from "razorpay";
 import {signUpUserForEvent} from "../events/signUpUserForEvent";
-import {eventParticipationId} from "../shared/relationshipDocuments";
-import {hasHostApprovedJoinRequest} from "../events/eventPolicy";
+import {verifyPaidEventBooking} from "./paymentValidation";
 import {
-  incrementInviteLinkCounterBestEffort,
-  InviteAttribution,
-} from "../events/inviteLinks";
-import {buildPaymentRecord, verifyPaidEventBooking} from "./paymentValidation";
+  fulfillRazorpayPayment,
+  razorpayRefundFromClient,
+} from "./razorpayFulfillment";
 import {
   createRazorpayClient,
   razorpayKeyId,
@@ -91,98 +88,23 @@ export async function verifyRazorpayPaymentHandler(
     payment,
     expectedUserId: userId,
   });
-  const inviteAttribution = inviteAttributionFromBooking(booking);
-  const paymentRef = db.collection("payments").doc(paymentId);
-  const existingPaymentSnap = await paymentRef.get();
-  const shouldIncrementPaidCount =
-    inviteAttribution !== null &&
-    existingPaymentSnap.data()?.status !== "completed";
 
-  // Sign the user up for the event. If this fails (e.g. event filled up in a
-  // race condition between order creation and payment), issue an immediate
-  // refund so the user is never charged for a spot they didn't get.
-  try {
-    const participationSnap = await db
-      .collection("eventParticipations")
-      .doc(eventParticipationId(booking.eventId, userId))
-      .get();
-    const hasHostApproval =
-      hasHostApprovedJoinRequest(participationSnap.data());
-    await deps.signUpForEvent(db, booking.eventId, userId, paymentId, {
-      hasValidInvite: booking.inviteVerified,
-      ...(hasHostApproval ? {hasHostApproval} : {}),
-      ...(inviteAttribution ? {inviteAttribution} : {}),
-    });
-  } catch (signUpError) {
-    let refundSucceeded = false;
-    try {
-      await razorpay.payments.refund(paymentId, {
-        amount: booking.amountInPaise,
-      });
-      refundSucceeded = true;
-    } catch (refundError) {
-      logger.error("Refund failed for payment", paymentId, refundError);
-    }
-
-    await paymentRef.set({
-      ...buildPaymentRecord({
-        userId,
-        orderId,
-        paymentId,
-        eventId: booking.eventId,
-        amountInPaise: booking.amountInPaise,
-        currency: booking.currency,
-        status: refundSucceeded ? "refunded" : "completed",
-        signUpFailed: true,
-        inviteLinkId: booking.inviteLinkId,
-        inviteSource: booking.inviteSource,
-      }),
-      createdAt: deps.serverTimestamp(),
-    });
-
-    throw signUpError;
-  }
-
-  // Record the completed payment.
-  if (shouldIncrementPaidCount && inviteAttribution) {
-    await incrementInviteLinkCounterBestEffort({
-      db,
-      inviteLinkId: inviteAttribution.inviteLinkId,
-      field: "paidCount",
-    });
-  }
-
-  await paymentRef.set({
-    ...buildPaymentRecord({
-      userId,
-      orderId,
-      paymentId,
-      eventId: booking.eventId,
-      amountInPaise: booking.amountInPaise,
-      currency: booking.currency,
-      status: "completed",
-      inviteLinkId: booking.inviteLinkId,
-      inviteSource: booking.inviteSource,
-    }),
-    createdAt: deps.serverTimestamp(),
+  // Fulfillment (sign up -> completed payments doc, or refund-on-failure) is
+  // shared with the Razorpay webhook and the reconciliation sweep so all three
+  // paths stay idempotent and never double-fulfill or double-charge.
+  await fulfillRazorpayPayment({
+    db,
+    orderId,
+    paymentId,
+    booking,
+    deps: {
+      signUpForEvent: deps.signUpForEvent,
+      refund: razorpayRefundFromClient(razorpay),
+      serverTimestamp: deps.serverTimestamp,
+    },
   });
 
   return {verified: true, eventId: booking.eventId};
-}
-
-/**
- * Converts verified booking metadata into invite attribution.
- * @param {object} booking Verified booking metadata.
- * @return {InviteAttribution|null} Invite attribution when available.
- */
-function inviteAttributionFromBooking(booking: {
-  inviteLinkId?: string | null;
-  inviteSource?: string | null;
-}): InviteAttribution | null {
-  return booking.inviteLinkId ? {
-    inviteLinkId: booking.inviteLinkId,
-    inviteSource: booking.inviteSource ?? null,
-  } : null;
 }
 
 /**

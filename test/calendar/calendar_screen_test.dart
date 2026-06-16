@@ -82,11 +82,11 @@ void main() {
         ],
       );
 
-      expect(find.text('Calendar unavailable'), findsOneWidget);
-      expect(
-        find.text('Your planned events could not be loaded.'),
-        findsOneWidget,
-      );
+      // Load failures now route through the canonical CatchErrorState with
+      // mapped copy and a retry affordance (ERROR-UI-002), not a dead
+      // empty-state message.
+      expect(find.text('Event unavailable'), findsOneWidget);
+      expect(find.text('Reload event'), findsOneWidget);
       expect(find.text('No planned events yet'), findsNothing);
     });
 

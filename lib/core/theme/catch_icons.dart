@@ -75,6 +75,25 @@ abstract final class CatchIcons {
   // ── Status badges / sashes ───────────────────────────────────────────────
   static IconData get check => PhosphorIconsRegular.check;
   static IconData get joinedCheck => PhosphorIconsBold.check;
+
+  /// Verified host/club seal (design-system `ph-fill ph-seal-check`).
+  static IconData get sealCheck => PhosphorIconsFill.sealCheck;
+
+  /// "Go there" affordance for nav actions (View club / open) — `arrow-up-right`.
+  static IconData get arrowUpRight => PhosphorIconsRegular.arrowUpRight;
+
+  /// Peek-at-profile affordance (host request review) — `eye`.
+  static IconData get eye => PhosphorIconsRegular.eye;
+
+  /// Message-host / chat affordance (`chat-circle`).
+  static IconData get chatCircle => PhosphorIconsRegular.chatCircle;
+
+  /// Quiet "matching opens" / catch-window whisper mark (`sparkle`).
+  static IconData get sparkle => PhosphorIconsRegular.sparkle;
+
+  /// Selection-control marks (OptionCard): filled-look check + empty circle.
+  static IconData get checkCircle => PhosphorIconsRegular.checkCircle;
+  static IconData get circle => PhosphorIconsRegular.circle;
   static IconData get saved => PhosphorIconsFill.bookmarkSimple;
   static IconData get savedOutlined => PhosphorIconsRegular.bookmarkSimple;
   static IconData get hostBadge => PhosphorIconsFill.shield;

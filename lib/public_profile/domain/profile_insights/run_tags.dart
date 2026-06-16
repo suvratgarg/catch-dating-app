@@ -27,7 +27,7 @@ List<EmotionalRunTag> emotionalRunTagsForProfile(PublicProfile profile) {
       case RunReason.mindfulness:
         add(
           EmotionalRunTagKind.headspaceRunner,
-          'Events for headspace',
+          'Runs for headspace',
           source: EmotionalRunTagSource.selected,
         );
       case RunReason.raceTraining:
@@ -75,7 +75,7 @@ List<EmotionalRunTag> emotionalRunTagsForProfile(PublicProfile profile) {
   final distances = running.preferredDistances.toSet();
   if (distances.contains(PreferredDistance.marathon) ||
       distances.contains(PreferredDistance.halfMarathon)) {
-    add(EmotionalRunTagKind.longRunPerson, 'Long-event person');
+    add(EmotionalRunTagKind.longRunPerson, 'Long-run person');
   } else if (distances.contains(PreferredDistance.tenK)) {
     add(EmotionalRunTagKind.tenKReady, '10K ready');
   } else if (distances.contains(PreferredDistance.fiveK)) {

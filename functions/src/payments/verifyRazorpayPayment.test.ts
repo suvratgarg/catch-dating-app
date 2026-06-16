@@ -178,6 +178,134 @@ test(
 );
 
 test(
+  "verifyRazorpayPaymentHandler records refundFailed when the refund throws",
+  async () => {
+    const paymentDoc = createPaymentDocRecorder();
+
+    await assert.rejects(
+      verifyRazorpayPaymentHandler(
+        buildRequest({
+          auth: {uid: "runner-1"},
+          data: {
+            paymentId: "pay_123",
+            orderId: "order_123",
+            signature: "sig_123",
+          },
+        }),
+        {
+          firestore: () => createPaymentsFirestore(paymentDoc),
+          createClient: () =>
+          ({
+            orders: {
+              fetch: async () => ({
+                id: "order_123",
+                amount: 25000,
+                currency: "INR",
+                amount_paid: 25000,
+                amount_due: 0,
+                notes: {
+                  eventId: "trusted-event",
+                  userId: "runner-1",
+                },
+              }),
+            },
+            payments: {
+              fetch: async () => ({
+                id: "pay_123",
+                order_id: "order_123",
+                amount: 25000,
+                currency: "INR",
+                status: "captured",
+                refund_status: "null",
+              }),
+              refund: async () => {
+                throw new Error("Razorpay refund API unavailable.");
+              },
+            },
+          }) as unknown as Razorpay,
+          serverTimestamp: () => "server-now",
+          signUpForEvent: async () => {
+            throw new HttpsError(
+              "failed-precondition",
+              "This event is now full."
+            );
+          },
+          verifySignature: () => true,
+        }
+      ),
+      isHttpsError("failed-precondition", "This event is now full.")
+    );
+
+    assert.equal(paymentDoc.setCalls.length, 1);
+    assert.equal(paymentDoc.setCalls[0].status, "refundFailed");
+    assert.equal(paymentDoc.setCalls[0].signUpFailed, true);
+  }
+);
+
+test(
+  "verifyRazorpayPaymentHandler is a no-op for an already-completed payment",
+  async () => {
+    const paymentDoc = createPaymentDocRecorder({
+      existing: {status: "completed"},
+    });
+    let signUpCalled = false;
+
+    const result = await verifyRazorpayPaymentHandler(
+      buildRequest({
+        auth: {uid: "runner-1"},
+        data: {
+          paymentId: "pay_123",
+          orderId: "order_123",
+          signature: "sig_123",
+        },
+      }),
+      {
+        firestore: () => createPaymentsFirestore(paymentDoc),
+        createClient: () =>
+        ({
+          orders: {
+            fetch: async () => ({
+              id: "order_123",
+              amount: 25000,
+              currency: "INR",
+              amount_paid: 25000,
+              amount_due: 0,
+              notes: {
+                eventId: "trusted-event",
+                userId: "runner-1",
+              },
+            }),
+          },
+          payments: {
+            fetch: async () => ({
+              id: "pay_123",
+              order_id: "order_123",
+              amount: 25000,
+              currency: "INR",
+              status: "captured",
+              refund_status: "null",
+            }),
+            refund: async () => {
+              throw new Error("Refund should not be called when idempotent.");
+            },
+          },
+        }) as unknown as Razorpay,
+        serverTimestamp: () => "server-now",
+        signUpForEvent: async () => {
+          signUpCalled = true;
+        },
+        verifySignature: () => true,
+      }
+    );
+
+    // No re-sign-up and no payment writes for an already-finalized payment.
+    assert.equal(signUpCalled, false);
+    assert.deepEqual(paymentDoc.setCalls, []);
+    assert.deepEqual(result, {verified: true, eventId: "trusted-event"});
+  }
+);
+
+test(
   "verifyRazorpayPaymentHandler rejects invalid signatures before fetching",
   async () => {
     const paymentDoc = createPaymentDocRecorder();
@@ -270,7 +398,9 @@ function buildRequest({
   };
 }
 
-function createPaymentDocRecorder() {
+function createPaymentDocRecorder(
+  options: {existing?: Record<string, unknown>} = {}
+) {
   const setCalls: Array<Record<string, unknown>> = [];
   const inviteLinkSetCalls: Array<{
     docId: string;
@@ -281,8 +411,8 @@ function createPaymentDocRecorder() {
     inviteLinkSetCalls,
     ref: {
       get: async () => ({
-        exists: false,
-        data: () => undefined,
+        exists: options.existing !== undefined,
+        data: () => options.existing,
       }),
       set: async (data: Record<string, unknown>) => {
         setCalls.push(data);
@@ -301,26 +431,57 @@ function createPaymentsFirestore(paymentDoc: {
     set: (data: Record<string, unknown>) => Promise<void>;
   };
 }): FirebaseFirestore.Firestore {
+  const docFor = (path: string, docId: string) => {
+    if (path === "payments") return paymentDoc.ref;
+    if (path === "eventInviteLinks") {
+      return {
+        set: async (data: Record<string, unknown>) => {
+          paymentDoc.inviteLinkSetCalls.push({docId, data});
+        },
+      };
+    }
+    return {
+      get: async () => ({
+        exists: false,
+        data: () => undefined,
+      }),
+      // The shared fulfillment helper best-effort deletes the pending-order
+      // tracking doc; a no-op keeps these focused tests quiet.
+      delete: async () => undefined,
+    };
+  };
   return {
     collection: (path: string) => ({
-      doc: (docId: string) => {
-        if (path === "payments") return paymentDoc.ref;
-        if (path === "eventInviteLinks") {
-          return {
-            set: async (data: Record<string, unknown>) => {
-              paymentDoc.inviteLinkSetCalls.push({docId, data});
-            },
-          };
-        }
-        return {
-          get: async () => ({
-            exists: false,
-            data: () => undefined,
-          }),
-        };
-      },
+      doc: (docId: string) => docFor(path, docId),
     }),
+    // The completion + paidCount increment now run inside a transaction; the
+    // fake routes tx reads/writes straight to the same doc stubs.
+    runTransaction: async <T>(
+      updateFn: (tx: FakeTransaction) => Promise<T>
+    ): Promise<T> => {
+      const tx: FakeTransaction = {
+        get: (ref) => ref.get(),
+        set: (ref, data, options) => {
+          void ref.set(data, options);
+        },
+      };
+      return updateFn(tx);
+    },
   } as unknown as FirebaseFirestore.Firestore;
+}
+
+interface FakeTransaction {
+  get: (ref: {
+    get: () => Promise<{
+      exists: boolean;
+      data: () => Record<string, unknown> | undefined;
+    }>;
+  }) => Promise<unknown>;
+  set: (
+    ref: {set: (data: Record<string, unknown>, options?: unknown) => unknown},
+    data: Record<string, unknown>,
+    options?: unknown
+  ) => void;
 }
 
 function failOnClientUse(): Razorpay {

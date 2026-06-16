@@ -3,10 +3,10 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
@@ -126,15 +126,6 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
         ],
       ),
       children: [
-        OnboardingStepHeader(
-          title: widget.profileCompletionOnly
-              ? 'Add prompts to start catching'
-              : 'Show your personality',
-          subtitle: widget.profileCompletionOnly
-              ? 'Prompts give people something real to respond to before you match.'
-              : 'Answer 3 prompts to complete your profile.',
-        ),
-        gapH20,
         for (var index = 0; index < maxProfilePromptAnswers; index += 1) ...[
           _PromptField(
             definition: profilePromptDefinition(_selectedPromptIds[index]),
@@ -147,7 +138,7 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
         ],
         if (mutation.hasError) ...[
           gapH16,
-          ErrorBanner(message: mutationErrorMessage(mutation)),
+          CatchErrorBanner(message: mutationErrorMessage(mutation)),
         ],
       ],
     );

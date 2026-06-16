@@ -9,10 +9,10 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
@@ -575,7 +575,7 @@ class _ManualQaControls extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final value in _ManualQaScenario.values)
-                SelectChip(
+                CatchSelectChip(
                   label: value.label,
                   active: scenario == value,
                   onTap: () => onScenarioChanged(value),

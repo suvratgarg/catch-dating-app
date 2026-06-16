@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:catch_dating_app/core/app_error_context.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -139,12 +140,19 @@ class ImageUploadRepository {
     int? imageQuality,
   }) {
     final policy = policyForPurpose(purpose);
-    return _picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: policy.maxWidth,
-      maxHeight: policy.maxHeight,
-      imageQuality: imageQuality ?? policy.quality,
-      requestFullMetadata: false,
+    return withAppErrorContext(
+      () => _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: policy.maxWidth,
+        maxHeight: policy.maxHeight,
+        imageQuality: imageQuality ?? policy.quality,
+        requestFullMetadata: false,
+      ),
+      context: const AppErrorContext(
+        operation: AppOperation.plugin,
+        action: 'pick a photo',
+        resource: 'image_picker',
+      ),
     );
   }
 
@@ -154,12 +162,19 @@ class ImageUploadRepository {
     int? limit,
   }) {
     final policy = policyForPurpose(purpose);
-    return _picker.pickMultiImage(
-      maxWidth: policy.maxWidth,
-      maxHeight: policy.maxHeight,
-      imageQuality: imageQuality ?? policy.quality,
-      limit: limit,
-      requestFullMetadata: false,
+    return withAppErrorContext(
+      () => _picker.pickMultiImage(
+        maxWidth: policy.maxWidth,
+        maxHeight: policy.maxHeight,
+        imageQuality: imageQuality ?? policy.quality,
+        limit: limit,
+        requestFullMetadata: false,
+      ),
+      context: const AppErrorContext(
+        operation: AppOperation.plugin,
+        action: 'pick photos',
+        resource: 'image_picker',
+      ),
     );
   }
 
@@ -317,13 +332,47 @@ class ImageUploadRepository {
     required String matchId,
     required String messageId,
     required XFile image,
-  }) => upload(
+  }) async => (await uploadChatImageWithMetadata(
+    matchId: matchId,
+    messageId: messageId,
+    image: image,
+  )).url;
+
+  /// Uploads a chat image and returns both the URL and the final Storage path
+  /// so the caller can compensate (delete the object) if the dependent message
+  /// write fails — otherwise the upload would leak as an orphan.
+  Future<UploadedImage> uploadChatImageWithMetadata({
+    required String matchId,
+    required String messageId,
+    required XFile image,
+  }) => uploadWithMetadata(
     storagePath:
         'matches/$matchId/images/${messageId}_'
         '${DateTime.now().millisecondsSinceEpoch}',
     image: image,
     purpose: ImageUploadPurpose.chatImage,
   );
+
+  // ── Compensation ──────────────────────────────────────────────────────────
+
+  /// Best-effort deletion of a previously uploaded Storage object.
+  ///
+  /// Used to compensate when a write that depends on an upload fails (e.g. the
+  /// chat message document write fails after the image is already in Storage),
+  /// so the upload does not leak as an orphaned object. A missing object is
+  /// treated as success, and any other failure is swallowed — the caller is
+  /// already handling the primary error and must not be derailed by cleanup.
+  Future<void> deleteByPath(String storagePath) async {
+    if (storagePath.isEmpty) return;
+    try {
+      await _storage.ref(storagePath).delete();
+    } on FirebaseException catch (error) {
+      if (error.code == 'object-not-found') return;
+      // Swallow: cleanup is best-effort and must not mask the original error.
+    } catch (_) {
+      // Swallow: see above.
+    }
+  }
 
   // ── Internal ──────────────────────────────────────────────────────────────
 

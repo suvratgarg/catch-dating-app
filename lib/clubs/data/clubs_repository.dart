@@ -6,6 +6,7 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/firestore_chunks.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show
@@ -157,7 +158,7 @@ class ClubsRepository {
 
     controller = StreamController<List<Club>>(
       onListen: () {
-        final chunks = _chunks(uniqueIds, 10).toList(growable: false);
+        final chunks = chunkedForWhereIn(uniqueIds).toList(growable: false);
         final clubsByChunk = <int, List<Club>>{};
         for (var i = 0; i < chunks.length; i += 1) {
           final chunk = chunks[i];
@@ -451,13 +452,4 @@ class ClubsByIdQuery {
 
   @override
   int get hashCode => _equality.hash(clubIds);
-}
-
-Iterable<List<T>> _chunks<T>(List<T> values, int size) sync* {
-  for (var i = 0; i < values.length; i += size) {
-    yield values.sublist(
-      i,
-      i + size > values.length ? values.length : i + size,
-    );
-  }
 }

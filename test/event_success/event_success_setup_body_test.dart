@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
-import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('setup body uses SelectChip for live guide choices', (
+  testWidgets('setup body uses CatchSelectChip for live guide choices', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -134,7 +134,7 @@ Future<void> _tapSelectChip(WidgetTester tester, String label) async {
 }
 
 void _invokeSelectChip(WidgetTester tester, String label) {
-  tester.widgetList<SelectChip>(_selectChip(label)).last.onTap!();
+  tester.widgetList<CatchSelectChip>(_selectChip(label)).last.onTap!();
 }
 
 Future<void> _tapToggle(WidgetTester tester, String label) async {
@@ -153,7 +153,7 @@ Finder _toggle(String label) {
 Finder _selectChip(String label, {bool? active}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is SelectChip &&
+        widget is CatchSelectChip &&
         widget.label == label &&
         (active == null || widget.active == active),
   );

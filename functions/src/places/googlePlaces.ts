@@ -1,5 +1,6 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import {defineSecret} from "firebase-functions/params";
+import * as logger from "firebase-functions/logger";
 
 export const googleMapsPlacesApiKey = defineSecret(
   "GOOGLE_MAPS_PLACES_API_KEY"
@@ -251,9 +252,16 @@ async function parsePlacesResponse<T>(response: Response): Promise<T> {
   }
 
   if (!response.ok) {
-    const message = extractGoogleErrorMessage(json) ??
-      "Google Places request failed.";
-    throw new HttpsError("internal", message);
+    // Log the upstream detail for ops, but never forward raw Google error text
+    // (which can carry key/quota/infra detail) to the client.
+    logger.warn("Google Places request failed", {
+      status: response.status,
+      upstreamMessage: extractGoogleErrorMessage(json),
+    });
+    throw new HttpsError(
+      "internal",
+      "Place lookup is unavailable right now. Please try again."
+    );
   }
 
   return json as T;

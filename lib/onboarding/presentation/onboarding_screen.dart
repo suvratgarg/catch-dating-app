@@ -164,14 +164,15 @@ class _OnboardingTopBar extends StatelessWidget {
         : step == OnboardingStep.genderInterest
         ? 1
         : 0;
-    final progressTotal = runPreferencesOnly
-        ? 1
-        : socialOnly
-        ? 2
-        : 2;
+    final progressTotal = runPreferencesOnly ? 1 : 2;
+    final copy = step.headerCopy(
+      profileCompletionOnly: profileCompletionOnly,
+      runPreferencesOnly: runPreferencesOnly,
+    );
 
     return CatchStepFlowHeader(
-      title: step.appBarTitle,
+      title: copy.title,
+      subtitle: copy.subtitle,
       currentStep: progressStep,
       totalSteps: progressTotal,
       onBack: onBack,

@@ -1,12 +1,15 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_stride_actions.dart';
+import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,10 +38,13 @@ class _DashboardStrideSectionState
         isLoading: true,
       );
     }
-    if (section.hasError) {
-      return _StrideSectionStateCard(
-        message:
-            section.message ?? 'Unable to load your weekly running activity.',
+    final error = section.error;
+    if (error != null) {
+      return CatchInlineErrorState.fromError(
+        error,
+        context: AppErrorContext.dashboard,
+        compact: true,
+        onRetry: () => ref.invalidate(weeklyActivityProvider),
       );
     }
 
@@ -247,9 +253,10 @@ class StrideBarColumn extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: fraction > 0
                       ? t.primary.withValues(
+                          // Today reads fullest; other days sit back at ~55%.
                           alpha: isToday
-                              ? CatchOpacity.strideTodayBar
-                              : CatchOpacity.visible,
+                              ? CatchOpacity.visible
+                              : CatchOpacity.strideInactiveBar,
                         )
                       : t.line2,
                   borderRadius: BorderRadius.circular(CatchRadius.xs),

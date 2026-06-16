@@ -1,0 +1,330 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:flutter/material.dart';
+
+/// Design-system `CoverStory` (`components/explore/CoverStory`): the dark "wow"
+/// cover that opens Explore — tonight's headline event as a magazine cover. A
+/// near-black ground, an activity-pigment radial glow, a faint diagonal scrim, a
+/// giant ghosted activity glyph, a condensed Archivo headline, and a paper CTA +
+/// mono data block. Also serves as a neutral masthead (omit [activityKind] for
+/// the brand glow, set [showGhostGlyph] false, pass [body] for a hook line).
+///
+/// Dark is reserved for wow surfaces — never use this as a list row. The app
+/// shell owns the real status bar, so it is not embedded here.
+class CatchCoverStory extends StatelessWidget {
+  const CatchCoverStory({
+    super.key,
+    this.activityKind,
+    this.kicker,
+    required this.title,
+    this.body,
+    this.cta,
+    this.onCta,
+    this.data,
+    this.data2,
+    this.showGhostGlyph = true,
+    this.location,
+    this.onLocation,
+    this.showSearch = false,
+    this.onSearch,
+    this.radius = 0,
+  });
+
+  final ActivityKind? activityKind;
+  final String? kicker;
+  final String title;
+  final String? body;
+  final String? cta;
+  final VoidCallback? onCta;
+  final String? data;
+
+  /// Optional second mono data line, stacked under [data] (design-system cover
+  /// shows `time · price` over `going · left`).
+  final String? data2;
+  final bool showGhostGlyph;
+  final String? location;
+  final VoidCallback? onLocation;
+  final bool showSearch;
+  final VoidCallback? onSearch;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    const d = CatchTokens.dark;
+    final paper = d.ink;
+    final activity = activityKind == null
+        ? null
+        : ActivityPalette.resolve(context, activityKind!);
+    final accent = activity?.accent ?? d.primary;
+    final deep = activity?.deep ?? d.primary;
+    final hasChrome =
+        (location != null && location!.isNotEmpty) || showSearch;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: DecoratedBox(
+        decoration: BoxDecoration(color: d.bg),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: const Alignment(0.7, 1.2),
+                    radius: 1.2,
+                    colors: [
+                      deep.withValues(alpha: CatchOpacity.coverStoryGlow),
+                      deep.withValues(alpha: CatchOpacity.none),
+                    ],
+                    stops: const [0, 0.6],
+                  ),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _DiagonalScrimPainter(
+                  color: paper.withValues(alpha: CatchOpacity.coverStoryScrim),
+                ),
+              ),
+            ),
+            if (showGhostGlyph && activity != null)
+              Positioned(
+                right: -CatchLayout.coverStoryGhostRightInset,
+                bottom: -CatchLayout.coverStoryGhostBottomInset,
+                child: Icon(
+                  activity.glyph,
+                  size: CatchLayout.coverStoryGhostGlyphSize,
+                  color: paper.withValues(
+                    alpha: CatchOpacity.coverStoryGhostGlyph,
+                  ),
+                ),
+              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (hasChrome) _Chrome(paper: paper, story: this),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    CatchSpacing.s5,
+                    CatchSpacing.s11,
+                    CatchSpacing.s5,
+                    CatchSpacing.s6,
+                  ),
+                  child: _Content(paper: paper, accent: accent, story: this),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Chrome extends StatelessWidget {
+  const _Chrome({required this.paper, required this.story});
+
+  final Color paper;
+  final CatchCoverStory story;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.s3,
+        CatchSpacing.s5,
+        CatchSpacing.s0,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (story.location != null && story.location!.isNotEmpty)
+            GestureDetector(
+              onTap: story.onLocation,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    story.location!.toUpperCase(),
+                    style: CatchTextStyles.kicker(
+                      context,
+                      color: paper.withValues(
+                        alpha: CatchOpacity.coverStoryLocation,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: CatchSpacing.micro6),
+                  Icon(
+                    CatchIcons.expandMoreRounded,
+                    size: CatchIcon.xs,
+                    color: paper.withValues(
+                      alpha: CatchOpacity.coverStoryLocation,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            const SizedBox.shrink(),
+          if (story.showSearch)
+            Semantics(
+              button: true,
+              label: 'Search',
+              child: GestureDetector(
+                onTap: story.onSearch,
+                child: Container(
+                  width: CatchLayout.coverStorySearchExtent,
+                  height: CatchLayout.coverStorySearchExtent,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: paper.withValues(
+                        alpha: CatchOpacity.coverStorySearchBorder,
+                      ),
+                    ),
+                  ),
+                  child: Icon(
+                    CatchIcons.searchRounded,
+                    size: CatchIcon.control,
+                    color: paper,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Content extends StatelessWidget {
+  const _Content({
+    required this.paper,
+    required this.accent,
+    required this.story,
+  });
+
+  final Color paper;
+  final Color accent;
+  final CatchCoverStory story;
+
+  @override
+  Widget build(BuildContext context) {
+    final dataLines = [
+      if (story.data != null && story.data!.isNotEmpty) story.data!,
+      if (story.data2 != null && story.data2!.isNotEmpty) story.data2!,
+    ];
+    final hasData = dataLines.isNotEmpty;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (story.kicker != null && story.kicker!.isNotEmpty) ...[
+          Text(
+            story.kicker!.toUpperCase(),
+            style: CatchTextStyles.kickerLg(
+              context,
+              color: Color.lerp(paper, accent, CatchOpacity.coverStoryKickerMix),
+            ),
+          ),
+          const SizedBox(height: CatchSpacing.s3),
+        ],
+        Text(story.title, style: CatchTextStyles.eventTitle(context, color: paper)),
+        if (story.body != null && story.body!.isNotEmpty) ...[
+          const SizedBox(height: CatchSpacing.micro14),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
+            child: Text(
+              story.body!,
+              style: CatchTextStyles.bodyM(
+                context,
+                color: paper.withValues(alpha: CatchOpacity.coverStoryBody),
+              ),
+            ),
+          ),
+        ],
+        if (story.cta != null || hasData) ...[
+          const SizedBox(height: CatchSpacing.s5),
+          Row(
+            children: [
+              if (story.cta != null)
+                Expanded(
+                  child: CatchButton(
+                    label: story.cta!,
+                    onPressed: story.onCta,
+                    backgroundColor: paper,
+                    foregroundColor: CatchTokens.light.ink,
+                    fullWidth: true,
+                    size: CatchButtonSize.lg,
+                  ),
+                ),
+              if (hasData) ...[
+                if (story.cta != null)
+                  const SizedBox(width: CatchSpacing.micro14),
+                // Flexible + single-line ellipsis so the data block yields to the
+                // Expanded CTA on narrow widths / large text scales instead of
+                // overflowing the Row.
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (var i = 0; i < dataLines.length; i++) ...[
+                        if (i > 0) const SizedBox(height: CatchSpacing.micro3),
+                        Text(
+                          dataLines[i],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.end,
+                          style: CatchTextStyles.monoLabel(
+                            context,
+                            color: paper.withValues(
+                              alpha: CatchOpacity.coverStoryData,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+/// Faint repeating diagonal hairlines (135°) for the cover's paper texture.
+class _DiagonalScrimPainter extends CustomPainter {
+  const _DiagonalScrimPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = CatchStroke.underline;
+    const stride = 18.0;
+    for (double x = -size.height; x < size.width; x += stride) {
+      canvas.drawLine(
+        Offset(x, size.height),
+        Offset(x + size.height, 0),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DiagonalScrimPainter oldDelegate) =>
+      oldDelegate.color != color;
+}

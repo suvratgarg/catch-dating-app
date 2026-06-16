@@ -83,7 +83,8 @@ durable owners above or closed in code.
 
 | Tracker | Why It Remains |
 |---|---|
-| `ui_elevation_implementation.md` | Execution checklist for the UI elevation initiative (encode tokens/fonts → re-skin proof → flagship Profile → rollout). Self-contained for an implementing agent; pairs with `design_language.md`. Delete once the rollout completes. |
+| `ds_resync_audit_2026-06.md` | Active execution tracker for re-syncing `lib/` to the latest Catch design-system spec (event-detail vertical first). Holds the 2026-06-16 gap audit, owner decisions, and the dependency-ordered porting plan. **Supersedes the font/type language in `ui_elevation_implementation.md` and `design_language.md`** (Archivo + system font + IBM Plex Mono; Newsreader/Inter/Sunset retired). Delete once the port completes and durable findings migrate to `design_language.md`. |
+| `ui_elevation_implementation.md` | Execution checklist for the UI elevation initiative (encode tokens/fonts → re-skin proof → flagship Profile → rollout). Self-contained for an implementing agent; pairs with `design_language.md`. **Font section is stale** (Newsreader/Inter) — see `ds_resync_audit_2026-06.md`. Delete once the rollout completes. |
 | `host_tooling_consolidation_tracker.md` | Host tooling is mostly consolidated, but Edit run and club archive/delete UX are still open product decisions. |
 | `public_profile_overhaul_tracker.md` | Cardless profile surfaces are implemented, but profile prompt picker, richer compatibility reasons, quality coaching, visual regression coverage, device QA, and user-facing "swipe" copy cleanup remain. |
 | `config_cicd_platform_audit_2026-05-21.md` | Config/CI/CD/platform hardening is mostly closed, but Crashlytics script noise, analytics plist verification, contract-source migration, and Razorpay env guard follow-ups remain. |

@@ -41,7 +41,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const d = CatchTokens.sunsetDark;
+    const d = CatchTokens.dark;
     final t = CatchTokens.of(context);
     final width = MediaQuery.of(context).size.width;
     final isTicketPresentation =
@@ -175,7 +175,8 @@ class _LegacyEventHeroSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const d = CatchTokens.sunsetDark;
+    const d = CatchTokens.dark;
+    final visual = eventActivityVisual(event.activityKind, context: context);
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -184,11 +185,28 @@ class _LegacyEventHeroSurface extends StatelessWidget {
           left: CatchSpacing.s5,
           right: CatchSpacing.s5,
           bottom: CatchLayout.eventDetailHeroTitleBottomInset,
-          child: Text(
-            event.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.headline(context, color: d.ink),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: _HeroActivityBadge(visual: visual),
+              ),
+              const SizedBox(height: CatchSpacing.s3),
+              Text(
+                event.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.eventDisplay(
+                  context,
+                  size: CatchLayout.eventDetailHeroStandardTitleSize,
+                  height: CatchLayout.eventDetailTicketTitleLineHeight,
+                  weight: FontWeight.w700,
+                  color: d.ink,
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -229,7 +247,7 @@ class _EventDetailTicketSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const d = CatchTokens.sunsetDark;
+    const d = CatchTokens.dark;
     final t = CatchTokens.of(context);
     final visual = eventActivityVisual(event.activityKind, context: context);
     final isSpotlight =
@@ -355,6 +373,7 @@ class _EventDetailTicketSurface extends StatelessWidget {
                                         .eventDetailTicketTitleExpandedSize,
                               height:
                                   CatchLayout.eventDetailTicketTitleLineHeight,
+                              weight: FontWeight.w700,
                               color: titleColor,
                             ),
                           ),
@@ -393,17 +412,28 @@ class _HeroActivityBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const d = CatchTokens.sunsetDark;
+    const d = CatchTokens.dark;
+    // Design-system EventHero activity tag: frosted pill carrying the activity
+    // glyph + label (the only chroma is the glyph; chrome stays neutral).
     return CatchSurface(
-      width: CatchLayout.eventHeroBadgeExtent,
-      height: CatchLayout.eventHeroBadgeExtent,
-      borderRadius: BorderRadius.circular(CatchLayout.eventHeroBadgeRadius),
+      padding: CatchInsets.compactLabelContent,
+      radius: CatchRadius.pill,
       backgroundColor: d.ink.withValues(alpha: CatchOpacity.lightOverlayFill),
       borderColor: d.ink.withValues(alpha: CatchOpacity.lightOverlayBorder),
-      child: Icon(
-        visual.icon,
-        color: d.ink,
-        size: CatchLayout.eventHeroBadgeIconSize,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            visual.icon,
+            color: d.ink,
+            size: CatchLayout.activityChipIconSize,
+          ),
+          const SizedBox(width: CatchSpacing.micro6),
+          Text(
+            visual.label.toUpperCase(),
+            style: CatchTextStyles.monoLabel(context, color: d.ink),
+          ),
+        ],
       ),
     );
   }
@@ -416,7 +446,7 @@ class _HeroTimeChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const d = CatchTokens.sunsetDark;
+    const d = CatchTokens.dark;
     return CatchSurface(
       padding: CatchInsets.compactControlContent,
       radius: CatchRadius.md,

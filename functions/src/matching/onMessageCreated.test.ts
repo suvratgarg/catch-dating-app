@@ -242,3 +242,33 @@ test("onMessageCreatedHandler refreshes every event attached to the match",
     assert.deepEqual(h.scorecardRefreshes, ["event-1", "event-2"]);
   }
 );
+
+test("onMessageCreatedHandler redacts blocked content in push and preview",
+  async () => {
+    const h = harness();
+
+    await onMessageCreatedHandler(
+      {
+        id: "event-1",
+        params: {matchId: "match-1", messageId: "message-1"},
+        data: {
+          data: () => ({
+            senderId: "runner-1",
+            // Block-list term — the push and the denormalized preview must not
+            // carry it (the stored doc is redacted by a separate trigger).
+            text: "you stupid kafir",
+            sentAt: {seconds: 1, nanoseconds: 0},
+          }),
+        },
+      },
+      h.deps
+    );
+
+    assert.equal(
+      h.firestore.get("matches/match-1")?.lastMessagePreview,
+      "[message removed for review]"
+    );
+    assert.equal(h.notifications.length, 1);
+    assert.equal(h.notifications[0]?.body, "[message removed for review]");
+  }
+);

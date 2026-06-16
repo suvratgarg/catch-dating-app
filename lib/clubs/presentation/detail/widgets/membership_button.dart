@@ -4,8 +4,8 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -107,7 +107,7 @@ class _ClubBellButton extends StatelessWidget {
       label: enabled
           ? 'Disable club push notifications'
           : 'Enable club push notifications',
-      child: IconBtn(
+      child: CatchIconButton(
         size: 52,
         background: background,
         onTap: isLoading ? null : onPressed,

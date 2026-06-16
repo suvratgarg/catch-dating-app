@@ -499,10 +499,13 @@ export const joinWaitlist = onRequest(
       marketingAnalytics?.formVariant === "host" || role === "host" ?
         "host_lead_submitted" :
         "waitlist_submitted";
+    // Key the conversion doc by the lead (email-derived waitlist id), not the
+    // client-supplied analytics eventId, so two leads sharing a client eventId
+    // can't clobber each other. The client eventId stays in the eventId field.
     const conversionRef = admin
       .firestore()
       .collection("marketingConversionEvents")
-      .doc(conversionEventId);
+      .doc(waitlistRef.id);
     let alreadyJoined = false;
 
     await admin.firestore().runTransaction(async (transaction) => {

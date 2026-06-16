@@ -3,10 +3,10 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
-import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
@@ -190,7 +190,7 @@ class EventPolicyStep extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final preset in EventAdmissionPreset.values)
-                SelectChip(
+                CatchSelectChip(
                   key: CreateEventFormKeys.admissionPreset(preset.name),
                   label: preset.label,
                   active: admissionPreset == preset,
@@ -504,7 +504,7 @@ class EventPolicyStep extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final policyId in EventCancellationPolicyId.values)
-                SelectChip(
+                CatchSelectChip(
                   label: _policyFor(policyId).title.toUpperCase(),
                   active: cancellationPolicyId == policyId,
                   semanticsLabel: _policyFor(policyId).title,

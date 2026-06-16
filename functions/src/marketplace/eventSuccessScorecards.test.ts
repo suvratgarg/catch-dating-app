@@ -366,6 +366,56 @@ test(
   }
 );
 
+test(
+  "refreshEventSuccessScorecard counts repeat attendees from prior events",
+  async () => {
+    const writes: Record<string, unknown> = {};
+    await refreshEventSuccessScorecard("event-2", {
+      firestore: () => fakeFirestore({
+        "events/event-2": {
+          clubId: "club-1",
+          bookedCount: 2,
+          checkedInCount: 2,
+        },
+        // Current event roster.
+        "eventParticipations/event-2_user-1": {
+          eventId: "event-2",
+          clubId: "club-1",
+          uid: "user-1",
+          status: "attended",
+        },
+        "eventParticipations/event-2_user-2": {
+          eventId: "event-2",
+          clubId: "club-1",
+          uid: "user-2",
+          status: "attended",
+        },
+        // user-1 also attended a different event at the same club -> repeat.
+        "eventParticipations/event-1_user-1": {
+          eventId: "event-1",
+          clubId: "club-1",
+          uid: "user-1",
+          status: "attended",
+        },
+        // user-2's only other participation is at a different club -> not a
+        // repeat for club-1.
+        "eventParticipations/event-9_user-2": {
+          eventId: "event-9",
+          clubId: "club-2",
+          uid: "user-2",
+          status: "attended",
+        },
+      }, writes),
+      serverTimestamp: () => "SERVER_TIMESTAMP" as never,
+    });
+
+    const scorecard = writes["eventSuccessScorecards/event-2"] as {
+      funnel: {repeatAttendeeCount: number};
+    };
+    assert.equal(scorecard.funnel.repeatAttendeeCount, 1);
+  }
+);
+
 test("writeEventSafetyReportIfNeeded stores safety review", async () => {
   const writes: Record<string, unknown> = {};
   await writeEventSafetyReportIfNeeded(

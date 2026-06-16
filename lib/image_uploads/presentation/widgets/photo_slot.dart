@@ -1,10 +1,11 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/graded_image.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid_keys.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:flutter/material.dart';
@@ -52,10 +53,9 @@ class PhotoSlot extends StatelessWidget {
 
     final Widget content;
     if (url != null) {
-      content = GradedImage(
-        child: Image.network(
+      content = CatchGradedImage(
+        child: CatchNetworkImage(
           url!,
-          fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) => ColoredBox(

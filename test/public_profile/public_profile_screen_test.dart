@@ -2,7 +2,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/settings_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_settings_row.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
@@ -65,7 +65,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Report Riya'), findsOneWidget);
-    expect(find.byType(SettingsRow), findsNWidgets(4));
+    expect(find.byType(CatchSettingsRow), findsNWidgets(4));
     expect(find.text('Harassment or abuse'), findsOneWidget);
   });
 }

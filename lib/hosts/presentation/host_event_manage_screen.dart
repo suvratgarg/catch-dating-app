@@ -12,15 +12,16 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -616,11 +617,9 @@ class _HostInviteLinksList extends ConsumerWidget {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('${response.label} copied.')));
-    } catch (_) {
+    } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not create invite link.')),
-      );
+      showCatchErrorSnackBar(context, error);
     }
   }
 }
@@ -693,7 +692,7 @@ class _HostInviteLinkRow extends ConsumerWidget {
             gapW8,
             Tooltip(
               message: 'Copy link',
-              child: IconBtn(
+              child: CatchIconButton(
                 onTap: () => unawaited(_copyInviteLink(context, url)),
                 child: Icon(CatchIcons.contentCopyRounded, size: CatchIcon.sm),
               ),
@@ -702,7 +701,7 @@ class _HostInviteLinkRow extends ConsumerWidget {
               gapW8,
               Tooltip(
                 message: 'Disable link',
-                child: IconBtn(
+                child: CatchIconButton(
                   onTap: () => unawaited(_disableInviteLink(context, ref)),
                   child: Icon(
                     CatchIcons.hourglassDisabledRounded,
@@ -911,7 +910,7 @@ class _HostEventActionsCard extends ConsumerWidget {
           ),
           if (errorMutation.hasError) ...[
             gapH12,
-            ErrorBanner.fromError(
+            CatchErrorBanner.fromError(
               (errorMutation as MutationError).error,
               context: AppErrorContext.event,
             ),

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/matches/presentation/chat_list_tile.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
@@ -46,9 +46,9 @@ void main() {
 
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('You matched!'), findsOneWidget);
-    expect(find.byType(PersonAvatar), findsOneWidget);
+    expect(find.byType(CatchPersonAvatar), findsOneWidget);
     expect(
-      tester.widget<PersonAvatar>(find.byType(PersonAvatar)).borderWidth,
+      tester.widget<CatchPersonAvatar>(find.byType(CatchPersonAvatar)).borderWidth,
       CatchStroke.underline,
     );
 
@@ -97,7 +97,7 @@ void main() {
 
     final context = tester.element(find.byType(ChatListTile));
     final tokens = CatchTokens.of(context);
-    final avatar = tester.widget<PersonAvatar>(find.byType(PersonAvatar));
+    final avatar = tester.widget<CatchPersonAvatar>(find.byType(CatchPersonAvatar));
 
     expect(avatar.borderWidth, CatchStroke.underline);
     expect(avatar.borderColor, tokens.primary);

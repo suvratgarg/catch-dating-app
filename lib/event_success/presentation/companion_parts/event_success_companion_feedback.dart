@@ -270,7 +270,7 @@ class _FeedbackIconAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return Tooltip(
       message: tooltip,
-      child: IconBtn(
+      child: CatchIconButton(
         onTap: onPressed,
         child: Icon(icon, size: CatchIcon.md, color: color),
       ),

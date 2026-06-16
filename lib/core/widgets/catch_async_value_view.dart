@@ -1,0 +1,95 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// Generic widget that handles the three states of an [AsyncValue]:
+/// loading, error, and data.
+///
+/// Usage:
+/// ```dart
+/// CatchAsyncValueView<List<Club>>(
+///   value: ref.watch(watchClubsProvider),
+///   data: (clubs) => ListView(...),
+/// )
+/// ```
+class CatchAsyncValueView<T> extends StatelessWidget {
+  const CatchAsyncValueView({
+    super.key,
+    required this.value,
+    required this.data,
+    this.loading,
+    this.error,
+    this.errorContext = AppErrorContext.generic,
+    this.onRetry,
+  });
+
+  final AsyncValue<T> value;
+  final Widget Function(T) data;
+
+  /// Optional custom loading widget. Defaults to [CatchLoadingIndicator].
+  final Widget Function()? loading;
+
+  /// Optional custom error widget. Defaults to [CatchErrorState].
+  final Widget Function(Object error, StackTrace? stackTrace)? error;
+  final AppErrorContext errorContext;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return value.when(
+      data: data,
+      loading: loading ?? (() => const CatchLoadingIndicator()),
+      error:
+          error ??
+          ((e, _) => CatchErrorState.fromError(
+            e,
+            context: errorContext,
+            onRetry: onRetry,
+          )),
+    );
+  }
+}
+
+/// Sliver equivalent of [CatchAsyncValueView].
+class CatchAsyncValueSliver<T> extends StatelessWidget {
+  const CatchAsyncValueSliver({
+    super.key,
+    required this.value,
+    required this.data,
+    this.loading,
+    this.error,
+    this.errorContext = AppErrorContext.generic,
+    this.onRetry,
+    this.fillErrorRemaining = true,
+  });
+
+  final AsyncValue<T> value;
+  final Widget Function(T) data;
+  final Widget Function()? loading;
+  final Widget Function(Object error, StackTrace? stackTrace)? error;
+  final AppErrorContext errorContext;
+  final VoidCallback? onRetry;
+  final bool fillErrorRemaining;
+
+  @override
+  Widget build(BuildContext context) {
+    return value.when(
+      data: data,
+      loading: () => SliverToBoxAdapter(
+        child: loading?.call() ?? const CatchLoadingIndicator(),
+      ),
+      error: (e, st) {
+        final custom = error?.call(e, st);
+        if (custom != null) return SliverToBoxAdapter(child: custom);
+        return CatchSliverErrorState.fromError(
+          e,
+          context: errorContext,
+          onRetry: onRetry,
+          fillRemaining: fillErrorRemaining,
+        );
+      },
+    );
+  }
+}

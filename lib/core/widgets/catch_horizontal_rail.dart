@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/section_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:flutter/material.dart';
 
 /// A section with a header and a horizontally-scrolling rail of items.
@@ -46,7 +46,7 @@ class CatchHorizontalRail extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionHeader(
+        CatchSectionHeader(
           title: title,
           titleStyle: CatchTextStyles.titleL(context),
           padding: headerPadding,

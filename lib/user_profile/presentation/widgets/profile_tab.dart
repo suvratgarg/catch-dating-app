@@ -175,18 +175,14 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         label: 'Gender',
         value: user.gender.label,
       ),
-      _textEntry(
-        context: context,
+      // Phone is the OTP identity credential. It is display-only here; editing
+      // it inline would let Firestore phoneNumber diverge from the Firebase Auth
+      // identity with no re-verification. Changing it requires an OTP
+      // re-verification flow that updates the Auth credential first.
+      ProfileInfoEntry(
         icon: CatchIcons.phoneOutlined,
         label: 'Phone',
         value: user.phoneNumber,
-        title: 'Phone number',
-        fieldName: 'phoneNumber',
-        patchForValue: (value) =>
-            UpdateUserProfilePatch(phoneNumber: value as String),
-        keyboardType: TextInputType.phone,
-        autofillHints: const [AutofillHints.telephoneNumber],
-        validator: validateRequiredPhoneNumber,
       ),
       _textEntry(
         context: context,

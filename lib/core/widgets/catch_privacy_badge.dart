@@ -1,0 +1,68 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:flutter/material.dart';
+
+enum CatchPrivacyBadgeKind { you, catchPrivate, host }
+
+class CatchPrivacyBadge extends StatelessWidget {
+  const CatchPrivacyBadge({super.key, this.kind = CatchPrivacyBadgeKind.you});
+
+  final CatchPrivacyBadgeKind kind;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final data = _PrivacyBadgeData.from(kind);
+
+    return Semantics(
+      label: data.label,
+      child: CatchSurface(
+        tone: CatchSurfaceTone.transparent,
+        borderColor: t.line2,
+        radius: CatchRadius.pill,
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.micro10,
+          vertical: CatchSpacing.s1,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(data.icon, size: 11, color: t.ink3),
+            gapW4,
+            Text(
+              data.label.toUpperCase(),
+              style: CatchTextStyles.badge(context, color: t.ink3),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PrivacyBadgeData {
+  const _PrivacyBadgeData({required this.label, required this.icon});
+
+  final String label;
+  final IconData icon;
+
+  static _PrivacyBadgeData from(CatchPrivacyBadgeKind kind) {
+    return switch (kind) {
+      CatchPrivacyBadgeKind.you => _PrivacyBadgeData(
+        label: 'Private to you',
+        icon: CatchIcons.lockOutlineRounded,
+      ),
+      CatchPrivacyBadgeKind.catchPrivate => _PrivacyBadgeData(
+        label: 'Catch private',
+        icon: CatchIcons.lockOutlineRounded,
+      ),
+      CatchPrivacyBadgeKind.host => _PrivacyBadgeData(
+        label: 'Host can see',
+        icon: CatchIcons.visibilityOutlined,
+      ),
+    };
+  }
+}

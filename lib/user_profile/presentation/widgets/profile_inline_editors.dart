@@ -17,11 +17,11 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart'
         CatchTokens;
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
@@ -76,7 +76,7 @@ mixin _InlineSaveState<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   Widget? buildSaveError() {
     final error = _saveError;
     if (error == null) return null;
-    return ErrorBanner(
+    return CatchErrorBanner(
       message: appErrorMessage(error, context: AppErrorContext.profile),
     );
   }
@@ -599,7 +599,7 @@ class _ProfileInlineTextEntryEditorState
       ),
       saveError: _validationError == null
           ? buildSaveError()
-          : ErrorBanner(message: _validationError!),
+          : CatchErrorBanner(message: _validationError!),
       actionLeading: widget.showCounter && widget.maxLength != null
           ? AnimatedBuilder(
               animation: _controller,
@@ -791,7 +791,7 @@ class _ProfileInlinePromptEntryEditorState
       ),
       saveError: _validationError == null
           ? buildSaveError()
-          : ErrorBanner(message: _validationError!),
+          : CatchErrorBanner(message: _validationError!),
       actionLeading: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) => Text(

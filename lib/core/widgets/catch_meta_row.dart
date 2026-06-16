@@ -79,7 +79,6 @@ class _MetaEntryFlow extends StatelessWidget {
   Widget build(BuildContext context) {
     final children = <Widget>[];
     for (var i = 0; i < entries.length; i++) {
-      final isLast = i == entries.length - 1;
       if (i > 0) {
         children.add(
           Padding(
@@ -95,7 +94,6 @@ class _MetaEntryFlow extends StatelessWidget {
       }
       children.add(
         Flexible(
-          fit: isLast ? FlexFit.loose : FlexFit.loose,
           child: _buildEntry(
             context,
             entries[i],

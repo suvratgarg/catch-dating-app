@@ -13,13 +13,14 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
-import 'package:catch_dating_app/core/widgets/person_row.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
@@ -52,14 +53,14 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-part 'companion_parts/event_success_companion_shared.dart';
-part 'companion_parts/event_success_companion_reveal_cinematic.dart';
-part 'companion_parts/event_success_companion_questionnaire.dart';
-part 'companion_parts/event_success_companion_arrival_mission.dart';
-part 'companion_parts/event_success_companion_live_cards.dart';
-part 'companion_parts/event_success_companion_wingman.dart';
-part 'companion_parts/event_success_companion_feedback.dart';
 part 'companion_parts/event_success_companion_afterglow.dart';
+part 'companion_parts/event_success_companion_arrival_mission.dart';
+part 'companion_parts/event_success_companion_feedback.dart';
+part 'companion_parts/event_success_companion_live_cards.dart';
+part 'companion_parts/event_success_companion_questionnaire.dart';
+part 'companion_parts/event_success_companion_reveal_cinematic.dart';
+part 'companion_parts/event_success_companion_shared.dart';
+part 'companion_parts/event_success_companion_wingman.dart';
 
 PreferredSizeWidget _companionAppBar(BuildContext context) {
   final t = CatchTokens.of(context);
@@ -497,57 +498,87 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
             eventSuccessAssignmentPeerProfilesProvider(rotationPeerUidsKey),
           );
 
-    return EventSuccessCompanionScreen(
-      event: event,
-      plan: plan,
-      userProfile: profile,
-      participation: participation,
-      wingmanRequestCandidates: candidates,
-      wingmanRequest: wingmanRequestAsync.asData?.value,
-      compatibilityResponse: compatibilityAsync.asData?.value,
-      existingFeedback: feedback,
-      assignment: assignment,
-      assignmentPeerProfiles:
-          peersAsync.asData?.value ?? const <PublicProfile>[],
-      assignmentPeersLoading: peersAsync.isLoading,
-      microPodsOptedOut: microPodsOptedOut,
-      rotationAssignment: rotationAssignment,
-      rotationPeerProfiles:
-          rotationPeersAsync.asData?.value ?? const <PublicProfile>[],
-      rotationPeersLoading: rotationPeersAsync.isLoading,
-      guidedRotationsOptedOut: guidedRotationsOptedOut,
-      arrivalMission: activeArrivalMission,
-      now: referenceNow,
-      onStartArrivalMission: () async {
-        await EventSuccessController.firstHelloStartMutation.run(
-          ref,
-          (tx) => tx
-              .get(eventSuccessControllerProvider.notifier)
-              .startFirstHelloMission(event: event),
-        );
-      },
-      onCompleteArrivalMission: (mission, answerId) async {
-        await EventSuccessController.firstHelloCompleteMutation.run(
-          ref,
-          (tx) => tx
-              .get(eventSuccessControllerProvider.notifier)
-              .completeFirstHelloMission(
-                event: event,
-                mission: mission,
-                answerId: answerId,
-              ),
-        );
-      },
-      onSkipArrivalMission: () {
-        EventBookingController.selfCheckInMutation.run(
-          ref,
-          (tx) => tx
-              .get(eventBookingControllerProvider.notifier)
-              .selfCheckIn(eventId: event.id),
-        );
-      },
+    // Surface companion action failures (feedback, wingman, opt-outs, first
+    // hello, match clues). These run as fire-and-forget mutations from the
+    // cards, so without these listeners a failed write would be silent.
+    return _wrapCompanionMutationListeners(
+      EventSuccessCompanionScreen(
+        event: event,
+        plan: plan,
+        userProfile: profile,
+        participation: participation,
+        wingmanRequestCandidates: candidates,
+        wingmanRequest: wingmanRequestAsync.asData?.value,
+        compatibilityResponse: compatibilityAsync.asData?.value,
+        existingFeedback: feedback,
+        assignment: assignment,
+        assignmentPeerProfiles:
+            peersAsync.asData?.value ?? const <PublicProfile>[],
+        assignmentPeersLoading: peersAsync.isLoading,
+        microPodsOptedOut: microPodsOptedOut,
+        rotationAssignment: rotationAssignment,
+        rotationPeerProfiles:
+            rotationPeersAsync.asData?.value ?? const <PublicProfile>[],
+        rotationPeersLoading: rotationPeersAsync.isLoading,
+        guidedRotationsOptedOut: guidedRotationsOptedOut,
+        arrivalMission: activeArrivalMission,
+        now: referenceNow,
+        onStartArrivalMission: () async {
+          await EventSuccessController.firstHelloStartMutation.run(
+            ref,
+            (tx) => tx
+                .get(eventSuccessControllerProvider.notifier)
+                .startFirstHelloMission(event: event),
+          );
+        },
+        onCompleteArrivalMission: (mission, answerId) async {
+          await EventSuccessController.firstHelloCompleteMutation.run(
+            ref,
+            (tx) => tx
+                .get(eventSuccessControllerProvider.notifier)
+                .completeFirstHelloMission(
+                  event: event,
+                  mission: mission,
+                  answerId: answerId,
+                ),
+          );
+        },
+        onSkipArrivalMission: () {
+          EventBookingController.selfCheckInMutation.run(
+            ref,
+            (tx) => tx
+                .get(eventBookingControllerProvider.notifier)
+                .selfCheckIn(eventId: event.id),
+          );
+        },
+      ),
     );
   }
+
+  Widget _wrapCompanionMutationListeners(Widget child) =>
+      CatchMutationErrorListener(
+        mutation: EventSuccessController.feedbackMutation,
+        child: CatchMutationErrorListener(
+          mutation: EventSuccessController.compatibilityResponseMutation,
+          child: CatchMutationErrorListener(
+            mutation: EventSuccessController.wingmanRequestMutation,
+            child: CatchMutationErrorListener(
+              mutation: EventSuccessController.firstHelloStartMutation,
+              child: CatchMutationErrorListener(
+                mutation: EventSuccessController.firstHelloCompleteMutation,
+                child: CatchMutationErrorListener(
+                  mutation: EventSuccessController.microPodsOptOutMutation,
+                  child: CatchMutationErrorListener(
+                    mutation:
+                        EventSuccessController.guidedRotationsOptOutMutation,
+                    child: child,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
 }
 
 class EventSuccessCompanionScreen extends ConsumerStatefulWidget {

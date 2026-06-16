@@ -17,7 +17,15 @@
 
 export type Gender = "man" | "woman" | "nonBinary" | "other";
 
-export type PaymentStatus = "pending" | "completed" | "failed" | "refunded";
+/**
+ * refundFailed marks a booking that failed AND whose automatic refund could not be issued, so the charge is stuck and needs manual reconciliation.
+ */
+export type PaymentStatus =
+  | "pending"
+  | "completed"
+  | "failed"
+  | "refunded"
+  | "refundFailed";
 
 /**
  * One structured written profile prompt answer stored on users and publicProfiles.
@@ -669,6 +677,10 @@ export interface ClubDocument {
   memberCount: number;
   rating: number;
   reviewCount: number;
+  /**
+   * Published reviews that are verified (attended a Catch event). Only these back the headline rating; unverified public reviews cannot move the score.
+   */
+  verifiedReviewCount?: number;
   nextEventAt: FirebaseFirestore.Timestamp | null;
   nextEventLabel: string | null;
   instagramHandle: string | null;
@@ -1456,7 +1468,10 @@ export interface PaymentDocument {
   amountMinor?: number;
   currency: string;
   provider?: "razorpay" | "stripe";
-  status: "pending" | "completed" | "failed" | "refunded";
+  /**
+   * refundFailed marks a booking that failed AND whose automatic refund could not be issued, so the charge is stuck and needs manual reconciliation.
+   */
+  status: "pending" | "completed" | "failed" | "refunded" | "refundFailed";
   providerPaymentId?: string | null;
   checkoutSessionId?: string | null;
   hostUserId?: string;
@@ -1503,6 +1518,24 @@ export interface HostPaymentAccountDocument {
   lastStripeEventId?: string | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned tracking record for a created-but-not-yet-fulfilled Razorpay order, stored at razorpayPendingOrders/{orderId}. Lets the webhook and reconciliation sweep recover bookings when the client verification callback never lands. Deleted once the matching payments/{paymentId} completed record exists.
+ */
+export interface RazorpayPendingOrderDocument {
+  provider: "razorpay";
+  orderId: string;
+  userId: string;
+  eventId: string;
+  amountInPaise: number;
+  currency: string;
+  /**
+   * pending until fulfilled (then the doc is deleted); failed when Razorpay reported payment.failed; expired when the reconciliation sweep found no captured payment after the grace window.
+   */
+  status: "pending" | "failed" | "expired";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt?: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -1713,10 +1746,10 @@ export interface RateLimitDocument {
  * Server-owned idempotency receipt stored at functionEventReceipts/{receiptId}.
  */
 export interface FunctionEventReceiptDocument {
-  handler: "onMessageCreated";
-  eventId: string;
-  matchId: string;
-  messageId: string;
+  handler: "onMessageCreated" | "onMatchCreated" | "moderatePhotoOnUpload";
+  eventId?: string;
+  matchId?: string;
+  messageId?: string;
   createdAt: FirebaseFirestore.Timestamp;
 }
 

@@ -5,40 +5,84 @@ import {
   syncClubReviewStatsHandler,
 } from "./syncClubReviewStats";
 
-test("refreshClubReviewStats recomputes rating and count", async () => {
+test("rating reflects verified published reviews only", async () => {
   const firestore = fakeFirestore({
     "clubs/club-1": {rating: 0, reviewCount: 0},
-    "reviews/review-1": {clubId: "club-1", rating: 5},
-    "reviews/review-2": {clubId: "club-1", rating: 3},
-    "reviews/review-3": {clubId: "club-2", rating: 1},
+    // Two verified, published reviews: 5 and 3 -> average 4.
+    "reviews/r1": review("club-1", 5, "verified", "published"),
+    "reviews/r2": review("club-1", 3, "verified", "published"),
+    // Unverified public review with a 1 must NOT drag the score down.
+    "reviews/r3": review("club-1", 1, "unverified", "published"),
+    // Another club's review is ignored entirely.
+    "reviews/r4": review("club-2", 1, "verified", "published"),
   });
 
-  await refreshClubReviewStats("club-1", {
-    firestore: () => firestore as never,
-  });
+  await refreshClubReviewStats("club-1", {firestore: () => firestore as never});
 
-  assert.deepEqual(firestore.get("clubs/club-1"), {
-    rating: 4,
-    reviewCount: 2,
-  });
+  const club = firestore.get("clubs/club-1");
+  assert.equal(club?.rating, 4);
+  assert.equal(club?.reviewCount, 3);
+  assert.equal(club?.verifiedReviewCount, 2);
 });
 
-test("refreshClubReviewStats resets aggregate after last review deletion",
+test("rating is zero when no verified reviews back it", async () => {
+  const firestore = fakeFirestore({
+    "clubs/club-1": {rating: 4.5, reviewCount: 0},
+    "reviews/r1": review("club-1", 5, "unverified", "published"),
+    "reviews/r2": review("club-1", 4, "unverified", "published"),
+  });
+
+  await refreshClubReviewStats("club-1", {firestore: () => firestore as never});
+
+  const club = firestore.get("clubs/club-1");
+  assert.equal(club?.rating, 0);
+  assert.equal(club?.reviewCount, 2);
+  assert.equal(club?.verifiedReviewCount, 0);
+});
+
+test("pending and rejected reviews are excluded from both counts",
   async () => {
     const firestore = fakeFirestore({
-      "clubs/club-1": {rating: 4.5, reviewCount: 2},
+      "clubs/club-1": {rating: 0, reviewCount: 0},
+      "reviews/r1": review("club-1", 5, "verified", "published"),
+      "reviews/r2": review("club-1", 1, "verified", "pending"),
+      "reviews/r3": review("club-1", 1, "verified", "rejected"),
+      "reviews/r4": review("club-1", 4, "unverified", "published"),
     });
 
     await refreshClubReviewStats("club-1", {
       firestore: () => firestore as never,
     });
 
-    assert.deepEqual(firestore.get("clubs/club-1"), {
-      rating: 0,
-      reviewCount: 0,
-    });
+    const club = firestore.get("clubs/club-1");
+    assert.equal(club?.rating, 5);
+    assert.equal(club?.reviewCount, 2);
+    assert.equal(club?.verifiedReviewCount, 1);
   }
 );
+
+test("aggregate resets to zero after the last review is removed", async () => {
+  const firestore = fakeFirestore({
+    "clubs/club-1": {rating: 4.5, reviewCount: 2, verifiedReviewCount: 2},
+  });
+
+  await refreshClubReviewStats("club-1", {firestore: () => firestore as never});
+
+  const club = firestore.get("clubs/club-1");
+  assert.equal(club?.rating, 0);
+  assert.equal(club?.reviewCount, 0);
+  assert.equal(club?.verifiedReviewCount, 0);
+});
+
+test("missing club is a no-op", async () => {
+  const firestore = fakeFirestore({
+    "reviews/r1": review("club-1", 5, "verified", "published"),
+  });
+
+  await refreshClubReviewStats("club-1", {firestore: () => firestore as never});
+
+  assert.equal(firestore.get("clubs/club-1"), undefined);
+});
 
 test("syncClubReviewStatsHandler refreshes moved review clubs", async () => {
   const refreshed: string[] = [];
@@ -65,32 +109,28 @@ test("syncClubReviewStatsHandler refreshes moved review clubs", async () => {
   };
 
   await syncClubReviewStatsHandler(
-    {clubId: "club-1"} as never,
-    {clubId: "club-2"} as never,
+    {clubId: "club-1"},
+    {clubId: "club-2"},
     deps
   );
 
   assert.deepEqual(refreshed.sort(), ["club-1", "club-2"]);
 });
 
+function review(
+  clubId: string,
+  rating: number,
+  verificationStatus: string,
+  moderationStatus: string
+) {
+  return {clubId, rating, verificationStatus, moderationStatus};
+}
+
 function fakeFirestore(initialDocs: Record<string, Record<string, unknown>>) {
   const docs = structuredClone(initialDocs);
   return {
     get: (path: string) => docs[path],
-    collection: (collectionPath: string) => ({
-      doc: (docId: string) => docRef(`${collectionPath}/${docId}`),
-      where: (field: string, operator: string, value: unknown) => {
-        assert.equal(operator, "==");
-        return {
-          get: async () => ({
-            docs: Object.entries(docs)
-              .filter(([path]) => path.startsWith(`${collectionPath}/`))
-              .filter(([, data]) => data[field] === value)
-              .map(([, data]) => ({data: () => ({...data})})),
-          }),
-        };
-      },
-    }),
+    collection: (collectionPath: string) => queryRef(collectionPath, []),
   };
 
   function docRef(path: string) {
@@ -105,6 +145,40 @@ function fakeFirestore(initialDocs: Record<string, Record<string, unknown>>) {
       ) => {
         docs[path] = options.merge ? {...docs[path], ...patch} : patch;
       },
+    };
+  }
+
+  function queryRef(
+    collectionPath: string,
+    filters: Array<{field: string; value: unknown}>
+  ) {
+    const matching = () =>
+      Object.entries(docs)
+        .filter(([path]) => path.startsWith(`${collectionPath}/`))
+        .filter(([, data]) =>
+          filters.every((filter) => data[filter.field] === filter.value)
+        )
+        .map(([, data]) => data);
+
+    return {
+      doc: (docId: string) => docRef(`${collectionPath}/${docId}`),
+      where: (field: string, operator: string, value: unknown) => {
+        assert.equal(operator, "==");
+        return queryRef(collectionPath, [...filters, {field, value}]);
+      },
+      count: () => ({
+        get: async () => ({data: () => ({count: matching().length})}),
+      }),
+      aggregate: () => ({
+        get: async () => {
+          const rows = matching();
+          const ratings = rows.map((row) => Number(row.rating ?? 0));
+          const averageRating = ratings.length === 0 ?
+            null :
+            ratings.reduce((sum, value) => sum + value, 0) / ratings.length;
+          return {data: () => ({count: rows.length, averageRating})};
+        },
+      }),
     };
   }
 }

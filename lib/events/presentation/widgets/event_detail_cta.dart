@@ -6,9 +6,9 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_cta.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_domain_readiness.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
@@ -86,6 +86,8 @@ class EventDetailCta extends ConsumerWidget {
         .supportsPaidBookingsForCurrency(event.currency);
     final quotedPriceInPaise = event.priceInPaiseFor(userProfile);
     final isFreeForViewer = quotedPriceInPaise == 0;
+    final spotsRemaining = EventCapacityPresenter(event).spotsRemaining;
+    final isScarce = spotsRemaining > 0 && spotsRemaining <= 3;
     final needsRunPreferences =
         event.requiresRunPreferences && !userProfile.hasCurrentRunPreferences;
 
@@ -117,14 +119,14 @@ class EventDetailCta extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (errorMutation.hasError)
-          ErrorBanner(
+          CatchErrorBanner(
             message: appErrorMessage(
               (errorMutation as MutationError).error,
               context: AppErrorContext.event,
             ),
           ),
         if (hasActiveWaitlistOffer)
-          BottomCTA(
+          CatchBottomCta(
             label: !isFreeForViewer && !supportsPaid
                 ? 'Paid booking unavailable'
                 : isFreeForViewer
@@ -203,7 +205,7 @@ class EventDetailCta extends ConsumerWidget {
             dividerColor: ctaDivider,
           )
         else if (canRequestHostApproval)
-          BottomCTA(
+          CatchBottomCta(
             buttonKey: EventActionKeys.joinWaitlistButton,
             label: needsRunPreferences
                 ? 'Set run preferences'
@@ -229,7 +231,7 @@ class EventDetailCta extends ConsumerWidget {
           )
         else
           switch (status) {
-            EventSignUpStatus.eligible => BottomCTA(
+            EventSignUpStatus.eligible => CatchBottomCta(
               buttonKey: EventActionKeys.bookButton,
               label: !isFreeForViewer && !supportsPaid
                   ? 'Paid booking unavailable'
@@ -298,6 +300,8 @@ class EventDetailCta extends ConsumerWidget {
               buttonAccentColor: bookingAccent,
               backgroundColor: ctaBackground,
               dividerColor: ctaDivider,
+              catchLine: 'Matching opens for everyone who goes',
+              catchLineAccent: bookingAccent,
               leadingContent: isFreeForViewer
                   ? null
                   : PriceLeading(
@@ -305,6 +309,8 @@ class EventDetailCta extends ConsumerWidget {
                         quotedPriceInPaise,
                         currencyCode: event.currency,
                       ),
+                      note: isScarce ? '$spotsRemaining spots left' : null,
+                      warn: isScarce,
                     ),
             ),
             EventSignUpStatus.signedUp => (() {
@@ -316,7 +322,7 @@ class EventDetailCta extends ConsumerWidget {
                 return const SizedBox.shrink();
               }
 
-              return BottomCTA(
+              return CatchBottomCta(
                 buttonKey: EventActionKeys.cancelBookingButton,
                 label: 'Cancel booking',
                 onPressed: cancelMutation.isPending
@@ -333,7 +339,7 @@ class EventDetailCta extends ConsumerWidget {
                 dividerColor: ctaDivider,
               );
             })(),
-            EventSignUpStatus.full => BottomCTA(
+            EventSignUpStatus.full => CatchBottomCta(
               buttonKey: EventActionKeys.joinWaitlistButton,
               label: needsRunPreferences
                   ? 'Set run preferences'
@@ -358,7 +364,7 @@ class EventDetailCta extends ConsumerWidget {
               backgroundColor: ctaBackground,
               dividerColor: ctaDivider,
             ),
-            EventSignUpStatus.waitlisted => BottomCTA(
+            EventSignUpStatus.waitlisted => CatchBottomCta(
               label: requiresHostApproval
                   ? 'Withdraw request'
                   : 'Leave waitlist',
@@ -374,20 +380,20 @@ class EventDetailCta extends ConsumerWidget {
               backgroundColor: ctaBackground,
               dividerColor: ctaDivider,
             ),
-            EventSignUpStatus.attended => BottomCTA(
+            EventSignUpStatus.attended => CatchBottomCta(
               label: 'You attended this event',
               onPressed: null,
               leadingContent: const AttendedLeading(),
               backgroundColor: ctaBackground,
               dividerColor: ctaDivider,
             ),
-            EventSignUpStatus.past => BottomCTA(
+            EventSignUpStatus.past => CatchBottomCta(
               label: 'This event has ended',
               onPressed: null,
               backgroundColor: ctaBackground,
               dividerColor: ctaDivider,
             ),
-            EventSignUpStatus.ineligible => BottomCTA(
+            EventSignUpStatus.ineligible => CatchBottomCta(
               label: switch (eligibility) {
                 AgeTooYoung(:final minAge) => 'Must be $minAge+ to join',
                 AgeTooOld(:final maxAge) => 'Must be $maxAge or younger',
@@ -462,24 +468,37 @@ EventSignUpStatus _statusForEligibility(EventEligibility eligibility) {
 }
 
 class PriceLeading extends StatelessWidget {
-  const PriceLeading({super.key, required this.price});
+  const PriceLeading({
+    super.key,
+    required this.price,
+    this.note,
+    this.warn = false,
+  });
 
   final String price;
 
+  /// Secondary line under the price. Defaults to "per person"; when [warn] is
+  /// true it renders as a warning-toned tracked-mono scarcity note.
+  final String? note;
+  final bool warn;
+
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(price, style: CatchTextStyles.titleL(context)),
-        Text(
-          'per person',
-          style: CatchTextStyles.supporting(
-            context,
-            color: CatchTokens.of(context).ink2,
-          ),
-        ),
+        Text(price, style: CatchTextStyles.numericLarge(context)),
+        warn
+            ? Text(
+                (note ?? '').toUpperCase(),
+                style: CatchTextStyles.monoLabel(context, color: t.warning),
+              )
+            : Text(
+                note ?? 'per person',
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
       ],
     );
   }

@@ -1,11 +1,11 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/privacy_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('PrivacyBadge renders each handoff visibility mode', (
+  testWidgets('CatchPrivacyBadge renders each handoff visibility mode', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -15,9 +15,9 @@ void main() {
           body: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              PrivacyBadge(),
-              PrivacyBadge(kind: PrivacyBadgeKind.catchPrivate),
-              PrivacyBadge(kind: PrivacyBadgeKind.host),
+              CatchPrivacyBadge(),
+              CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.catchPrivate),
+              CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.host),
             ],
           ),
         ),

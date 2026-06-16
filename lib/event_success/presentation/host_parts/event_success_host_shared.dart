@@ -397,8 +397,8 @@ class _WingmanRequestHostRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PersonRow(
-          data: PersonRowData(
+        CatchPersonRow(
+          data: CatchPersonRowData(
             name: requester?.name ?? 'Attendee',
             imageUrl: requester?.primaryPhotoThumbnailUrl,
             seed: request.requesterUid,

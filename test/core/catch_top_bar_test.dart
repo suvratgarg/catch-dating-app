@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -25,7 +25,7 @@ void main() {
 
     expect(find.text('Settings'), findsOneWidget);
     expect(tester.getSize(find.byType(CatchTopBar)).height, 56);
-    expect(find.byType(IconBtn), findsNothing);
+    expect(find.byType(CatchIconButton), findsNothing);
     expect(
       _topBarMaterial(tester).color,
       AppTheme.light.scaffoldBackgroundColor,
@@ -53,7 +53,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(IconBtn), findsNWidgets(2));
+    expect(find.byType(CatchIconButton), findsNWidgets(2));
 
     await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
     await tester.pump();
@@ -181,7 +181,7 @@ void main() {
     await tester.pumpWidget(_wrap(const CatchTopBar(showBackButton: true)));
 
     expect(find.byIcon(CatchIcons.arrowBackIosNewRounded), findsOneWidget);
-    expect(find.byType(IconBtn), findsOneWidget);
+    expect(find.byType(CatchIconButton), findsOneWidget);
   });
 
   testWidgets('CatchTopBar supports tab bottoms and overflow menus', (

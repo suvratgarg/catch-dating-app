@@ -17,9 +17,6 @@ const schemaFunctionEventReceiptDocumentSchema = <String, Object?>{
   'x-owner': 'idempotent Firestore trigger handlers',
   'required': <Object?>[
     'handler',
-    'eventId',
-    'matchId',
-    'messageId',
     'createdAt',
   ],
   'properties': <String, Object?>{
@@ -27,6 +24,8 @@ const schemaFunctionEventReceiptDocumentSchema = <String, Object?>{
       'type': 'string',
       'enum': <Object?>[
         'onMessageCreated',
+        'onMatchCreated',
+        'moderatePhotoOnUpload',
       ],
       'x-catch-ownership': 'server-only',
     },

@@ -6,8 +6,8 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
-import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
@@ -70,12 +70,12 @@ void main() {
         );
         await _openCreateEventFlow(tester);
 
-        expect(find.byType(SelectChip), findsWidgets);
+        expect(find.byType(CatchSelectChip), findsWidgets);
         await _fillBasicsStep(tester);
         expect(
           find.byWidgetPredicate(
             (widget) =>
-                widget is SelectChip &&
+                widget is CatchSelectChip &&
                 widget.label == 'Moderate' &&
                 widget.active,
           ),
@@ -116,7 +116,7 @@ void main() {
         expect(
           find.byWidgetPredicate(
             (widget) =>
-                widget is SelectChip && widget.label == 'OPEN' && widget.active,
+                widget is CatchSelectChip && widget.label == 'OPEN' && widget.active,
           ),
           findsOneWidget,
         );
@@ -800,13 +800,13 @@ void main() {
       await _pumpHostActionFrame(tester);
       await _pumpTestAnimation(tester);
 
-      expect(find.text('Live now'), findsOneWidget);
+      expect(find.text('LIVE NOW'), findsOneWidget);
       expect(find.text('Editable roster'), findsOneWidget);
-      expect(find.text('Guest'), findsOneWidget);
-      expect(find.text('Status'), findsOneWidget);
-      expect(find.text('Host action'), findsOneWidget);
-      expect(find.text('Due'), findsWidgets);
-      expect(find.text('In'), findsWidgets);
+      expect(find.text('GUEST'), findsOneWidget);
+      expect(find.text('STATUS'), findsOneWidget);
+      expect(find.text('HOST ACTION'), findsOneWidget);
+      expect(find.text('DUE'), findsWidgets);
+      expect(find.text('IN'), findsWidgets);
       expect(find.text('Harsh'), findsOneWidget);
       expect(find.text('Manan'), findsOneWidget);
       expect(find.text('Host check-in QR'), findsOneWidget);
@@ -1278,7 +1278,7 @@ Future<void> _tapActivityKind(WidgetTester tester, String label) async {
 Future<void> _tapCreateEventChip(WidgetTester tester, String label) async {
   final finder = find.byWidgetPredicate(
     (widget) =>
-        (widget is SelectChip && widget.label == label) ||
+        (widget is CatchSelectChip && widget.label == label) ||
         (widget is CatchChip && widget.label == label),
     description: 'selectable chip labeled $label',
     skipOffstage: false,

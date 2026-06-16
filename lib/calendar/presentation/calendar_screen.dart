@@ -1,15 +1,17 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/stat_column.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -57,9 +59,17 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               return const CatchLoadingIndicator();
             }
             if (signedUpEventsAsync.hasError || savedEventsAsync.hasError) {
-              return const _CalendarMessage(
-                title: 'Calendar unavailable',
-                body: 'Your planned events could not be loaded.',
+              return CatchErrorState.fromError(
+                signedUpEventsAsync.error ?? savedEventsAsync.error!,
+                context: AppErrorContext.event,
+                onRetry: uid == null
+                    ? null
+                    : () {
+                        ref.invalidate(watchSignedUpEventsProvider(uid));
+                        ref.invalidate(
+                          watchSavedEventDetailsForUserProvider(uid),
+                        );
+                      },
               );
             }
 
@@ -227,10 +237,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     if (clubNames == null) {
       return [
         SliverFillRemaining(
+          hasScrollBody: false,
           child: clubNamesAsync.hasError
-              ? const _CalendarMessage(
-                  title: 'Calendar unavailable',
-                  body: 'Club names could not be loaded.',
+              ? CatchErrorState.fromError(
+                  clubNamesAsync.error!,
+                  context: AppErrorContext.event,
+                  onRetry: () => ref.invalidate(clubNameLookupProvider),
                 )
               : const CatchLoadingIndicator(),
         ),
@@ -242,11 +254,16 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         events: summary.agendaEvents,
         showClubName: true,
         clubNameBuilder: (event) => clubNames[event.clubId],
-        badgeLabelBuilder: (event) =>
-            summary.isSavedOnly(event) ? 'SAVED' : 'JOINED',
-        statusBuilder: (event) => summary.isSavedOnly(event)
-            ? EventTileStatus.saved
-            : EventTileStatus.joined,
+        badgeLabelBuilder: (event) {
+          if (event.isCancelled) return 'CANCELLED';
+          return summary.isSavedOnly(event) ? 'SAVED' : 'JOINED';
+        },
+        statusBuilder: (event) {
+          if (event.isCancelled) return EventTileStatus.cancelled;
+          return summary.isSavedOnly(event)
+              ? EventTileStatus.saved
+              : EventTileStatus.joined;
+        },
         today: summary.today,
         preserveInputOrder: true,
         dayKeyBuilder: _agendaDayKey,
@@ -459,7 +476,7 @@ class _CalendarStatsHeader extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: StatColumn(
+                  child: CatchStatColumn(
                     key: const ValueKey('calendar.stats.planned'),
                     label: 'Planned',
                     value: '${summary.events.length}',
@@ -467,7 +484,7 @@ class _CalendarStatsHeader extends StatelessWidget {
                 ),
                 const _StatDivider(),
                 Expanded(
-                  child: StatColumn(
+                  child: CatchStatColumn(
                     key: const ValueKey('calendar.stats.distance'),
                     label: 'Distance',
                     value: '${summary.totalDistance.round()} km',
@@ -475,7 +492,7 @@ class _CalendarStatsHeader extends StatelessWidget {
                 ),
                 const _StatDivider(),
                 Expanded(
-                  child: StatColumn(
+                  child: CatchStatColumn(
                     key: const ValueKey('calendar.stats.next'),
                     label: 'Next',
                     value: summary.nextEvent == null
@@ -698,15 +715,20 @@ class _CalendarEventSummary {
     final sorted = byId.values.toList()
       ..sort((a, b) => a.startTime.compareTo(b.startTime));
     final today = DateUtils.dateOnly(now);
-    final totalDistance = sorted.fold<double>(
-      0,
-      (sum, event) => sum + event.distanceKm,
-    );
+    // Cancelled events stay visible in the agenda (shown with a CANCELLED
+    // badge) but never count toward distance stats and are never the user's
+    // "next" event.
+    final totalDistance = sorted
+        .where((event) => !event.isCancelled)
+        .fold<double>(0, (sum, event) => sum + event.distanceKm);
 
     final upcoming = <Event>[];
+    final cancelledUpcoming = <Event>[];
     final past = <Event>[];
     for (final event in sorted) {
-      if (event.startTime.isBefore(now)) {
+      if (!event.startTime.isBefore(now) && event.isCancelled) {
+        cancelledUpcoming.add(event);
+      } else if (event.startTime.isBefore(now)) {
         past.add(event);
       } else {
         upcoming.add(event);
@@ -720,7 +742,7 @@ class _CalendarEventSummary {
 
     return _CalendarEventSummary(
       events: sorted,
-      agendaEvents: [...upcoming, ...latestPastFirst],
+      agendaEvents: [...upcoming, ...cancelledUpcoming, ...latestPastFirst],
       savedOnlyEventIds: savedOnlyEventIds,
       today: today,
       anchorDate: anchorDate,

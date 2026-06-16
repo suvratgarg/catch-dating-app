@@ -12,10 +12,10 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_settings_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
-import 'package:catch_dating_app/core/widgets/section_header.dart';
-import 'package:catch_dating_app/core/widgets/settings_row.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:flutter/material.dart';
@@ -99,13 +99,13 @@ class _HostPaymentAccountCardState
                 ),
                 child: Column(
                   children: [
-                    SettingsRow(
+                    CatchSettingsRow(
                       label: 'Country',
                       value: _countryLabel(country),
                       icon: CatchIcons.locationOnOutlined,
                       showChevron: false,
                     ),
-                    SettingsRow(
+                    CatchSettingsRow(
                       label: 'Default currency',
                       value: currency.toUpperCase(),
                       icon: CatchIcons.paymentsOutlined,
@@ -187,7 +187,7 @@ class _HostPaymentAccountCardState
         children: [
           Row(
             children: [
-              const Expanded(child: SectionHeader(title: 'Payouts')),
+              const Expanded(child: CatchSectionHeader(title: 'Payouts')),
               CatchBadge(
                 label: presentation.badge,
                 tone: presentation.tone,
@@ -223,7 +223,7 @@ class _HostPaymentAccountCardState
           ],
           if (_error != null) ...[
             gapH12,
-            ErrorBanner(message: appErrorMessage(_error!)),
+            CatchErrorBanner(message: appErrorMessage(_error!)),
           ],
           gapH12,
           Row(

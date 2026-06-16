@@ -1,8 +1,6 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
-import {
-  ReviewDocument,
-} from "../shared/generated/firestoreAdminTypes";
+import {AggregateField} from "firebase-admin/firestore";
 
 interface SyncClubReviewStatsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -13,7 +11,18 @@ const defaultDeps: SyncClubReviewStatsDeps = {
 };
 
 /**
- * Recomputes the denormalized rating and review count for one club.
+ * Recomputes the denormalized rating and review counts for one club.
+ *
+ * Trust model: the headline {@code rating} is computed from VERIFIED reviews
+ * only (those created after an attended Catch event), so unverified
+ * public-listing reviews — which anyone can submit — can never move a club's
+ * score. {@code reviewCount} still reflects every published review so the
+ * listing page count matches what is rendered, and {@code verifiedReviewCount}
+ * exposes how many of those actually back the rating.
+ *
+ * The counts and rating come from Firestore aggregation queries
+ * (count()/average()) rather than reading every review document, so the cost
+ * of this trigger stays bounded as a club accumulates reviews.
  * @param {string} clubId
  * @param {SyncClubReviewStatsDeps} deps Injectable Firebase dependencies.
  * @return {Promise<void>}
@@ -30,18 +39,30 @@ export async function refreshClubReviewStats(
     return;
   }
 
-  const reviewsSnap = await db
+  const publishedReviews = db
     .collection("reviews")
     .where("clubId", "==", clubId)
-    .get();
+    .where("moderationStatus", "==", "published");
 
-  const reviews = reviewsSnap.docs.map((doc) => doc.data() as ReviewDocument);
-  const reviewCount = reviews.length;
-  const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+  const [publishedAgg, verifiedAgg] = await Promise.all([
+    publishedReviews.count().get(),
+    publishedReviews
+      .where("verificationStatus", "==", "verified")
+      .aggregate({
+        count: AggregateField.count(),
+        averageRating: AggregateField.average("rating"),
+      })
+      .get(),
+  ]);
+
+  const reviewCount = publishedAgg.data().count;
+  const verifiedReviewCount = verifiedAgg.data().count;
+  const averageRating = verifiedAgg.data().averageRating;
 
   await clubRef.set({
-    rating: reviewCount == 0 ? 0 : totalRating / reviewCount,
+    rating: verifiedReviewCount === 0 ? 0 : averageRating ?? 0,
     reviewCount,
+    verifiedReviewCount,
   }, {merge: true});
 }
 
@@ -53,8 +74,8 @@ export async function refreshClubReviewStats(
  * @return {Promise<void>}
  */
 export async function syncClubReviewStatsHandler(
-  before: ReviewDocument | undefined,
-  after: ReviewDocument | undefined,
+  before: {clubId?: string} | undefined,
+  after: {clubId?: string} | undefined,
   deps: SyncClubReviewStatsDeps = defaultDeps
 ): Promise<void> {
   const clubIds = new Set<string>();
@@ -76,8 +97,8 @@ export async function syncClubReviewStatsHandler(
 export const syncClubReviewStats = onDocumentWritten(
   "reviews/{reviewId}",
   async (event) => {
-    const before = event.data?.before.data() as ReviewDocument | undefined;
-    const after = event.data?.after.data() as ReviewDocument | undefined;
+    const before = event.data?.before.data() as {clubId?: string} | undefined;
+    const after = event.data?.after.data() as {clubId?: string} | undefined;
     await syncClubReviewStatsHandler(before, after);
   }
 );

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
@@ -8,19 +9,10 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-final hostAppShellFcmInitializationProvider = FutureProvider.family
-    .autoDispose<void, String>((ref, uid) async {
-      final fcmService = ref.watch(fcmServiceProvider);
-      if (!fcmService.isSupportedPlatform) return;
-
-      await fcmService.initialize(uid: uid, router: ref.read(goRouterProvider));
-    });
 
 class HostAppShell extends ConsumerWidget {
   const HostAppShell({super.key, required this.navigationShell});
@@ -42,10 +34,13 @@ class HostAppShell extends ConsumerWidget {
         connectivityResults != null &&
         connectivityResultsAreOffline(connectivityResults);
     final errorLogger = ref.read(errorLoggerProvider);
+    final analytics = ref.read(appAnalyticsProvider);
 
     if (isAuthenticated) {
-      ref.watch(hostAppShellFcmInitializationProvider(uid));
-      ref.listen(hostAppShellFcmInitializationProvider(uid), (previous, next) {
+      // Reuse the shared FCM-init provider so host and consumer shells cannot
+      // drift apart.
+      ref.watch(appShellFcmInitializationProvider(uid));
+      ref.listen(appShellFcmInitializationProvider(uid), (previous, next) {
         if (!next.hasError) return;
         FlutterError.reportError(
           FlutterErrorDetails(
@@ -61,11 +56,12 @@ class HostAppShell extends ConsumerWidget {
     }
 
     errorLogger.setUserId(uid.isEmpty ? null : uid);
+    analytics.setUserId(uid.isEmpty ? null : uid);
     ref.listen(uidProvider, (previous, next) {
       final nextUid = next.asData?.value;
-      errorLogger.setUserId(
-        nextUid == null || nextUid.isEmpty ? null : nextUid,
-      );
+      final normalized = nextUid == null || nextUid.isEmpty ? null : nextUid;
+      errorLogger.setUserId(normalized);
+      analytics.setUserId(normalized);
       if (nextUid == null && previous?.asData?.value != null) {
         unawaited(ref.read(fcmServiceProvider).reset());
       }
@@ -73,7 +69,7 @@ class HostAppShell extends ConsumerWidget {
 
     return Scaffold(
       body: CatchNoticeHost(
-        persistentNotices: [if (isOffline) const AppNotice.offline()],
+        persistentNotices: [if (isOffline) const CatchNoticeData.offline()],
         child: navigationShell,
       ),
       bottomNavigationBar: isAuthenticated

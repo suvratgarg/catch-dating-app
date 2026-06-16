@@ -4,8 +4,8 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_photo_picker.dart';
@@ -77,7 +77,7 @@ class EventDetailsStep extends StatelessWidget {
               runSpacing: CatchSpacing.s2,
               children: ActivityKind.eventCreationDefaults
                   .map(
-                    (activityKind) => SelectChip(
+                    (activityKind) => CatchSelectChip(
                       label: activityKind.label,
                       active: selectedActivityKind == activityKind,
                       accentColor: ActivityPalette.resolve(
@@ -117,7 +117,7 @@ class EventDetailsStep extends StatelessWidget {
                 runSpacing: CatchSpacing.s2,
                 children: EventInteractionModel.values
                     .map(
-                      (model) => SelectChip(
+                      (model) => CatchSelectChip(
                         key: CreateEventFormKeys.interactionModel(model.name),
                         label: model.label,
                         active: selectedInteractionModel == model,
@@ -166,7 +166,7 @@ class EventDetailsStep extends StatelessWidget {
                       runSpacing: CatchSpacing.s2,
                       children: PaceLevel.values
                           .map(
-                            (p) => SelectChip(
+                            (p) => CatchSelectChip(
                               label: p.label,
                               active: selectedPace == p,
                               accentColor: activityAccent,

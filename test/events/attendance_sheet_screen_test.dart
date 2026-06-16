@@ -35,13 +35,13 @@ void main() {
     await _settleAttendanceSheet(tester);
 
     expect(find.text('Check-in board'), findsOneWidget);
-    expect(find.text('All'), findsOneWidget);
-    expect(find.text('Due'), findsOneWidget);
-    expect(find.text('In'), findsOneWidget);
-    expect(find.text('Waitlist'), findsOneWidget);
-    expect(find.text('Guest'), findsOneWidget);
-    expect(find.text('Status'), findsOneWidget);
-    expect(find.text('Host action'), findsOneWidget);
+    expect(find.text('ALL'), findsOneWidget);
+    expect(find.text('DUE'), findsOneWidget);
+    expect(find.text('IN'), findsOneWidget);
+    expect(find.text('WAITLIST'), findsOneWidget);
+    expect(find.text('GUEST'), findsOneWidget);
+    expect(find.text('STATUS'), findsOneWidget);
+    expect(find.text('HOST ACTION'), findsOneWidget);
     expect(find.text('No attendees yet'), findsNothing);
     expect(
       find.text('Signed-up participants will appear here when they book.'),
@@ -72,13 +72,13 @@ void main() {
     await _settleAttendanceSheet(tester);
 
     expect(find.text('Participation'), findsOneWidget);
-    expect(find.text('All'), findsOneWidget);
-    expect(find.text('Booked'), findsOneWidget);
-    expect(find.text('Waitlist'), findsOneWidget);
-    expect(find.text('Slots'), findsOneWidget);
-    expect(find.text('Guest'), findsOneWidget);
-    expect(find.text('Signal'), findsOneWidget);
-    expect(find.text('Host action'), findsOneWidget);
+    expect(find.text('ALL'), findsOneWidget);
+    expect(find.text('BOOKED'), findsOneWidget);
+    expect(find.text('WAITLIST'), findsOneWidget);
+    expect(find.text('SLOTS'), findsOneWidget);
+    expect(find.text('GUEST'), findsOneWidget);
+    expect(find.text('SIGNAL'), findsOneWidget);
+    expect(find.text('HOST ACTION'), findsOneWidget);
     expect(find.text('No participants yet'), findsOneWidget);
     expect(
       find.text('Booked and waitlisted people will appear here.'),
@@ -109,13 +109,13 @@ void main() {
     await _settleAttendanceSheet(tester);
 
     expect(find.text('Event report'), findsOneWidget);
-    expect(find.text('All'), findsOneWidget);
-    expect(find.text('Attended'), findsOneWidget);
-    expect(find.text('No-show'), findsOneWidget);
-    expect(find.text('Waitlist'), findsOneWidget);
-    expect(find.text('Name'), findsOneWidget);
-    expect(find.text('Attendance'), findsOneWidget);
-    expect(find.text('Payment'), findsOneWidget);
+    expect(find.text('ALL'), findsOneWidget);
+    expect(find.text('ATTENDED'), findsOneWidget);
+    expect(find.text('NO-SHOW'), findsOneWidget);
+    expect(find.text('WAITLIST'), findsOneWidget);
+    expect(find.text('NAME'), findsOneWidget);
+    expect(find.text('ATTENDANCE'), findsOneWidget);
+    expect(find.text('PAYMENT'), findsOneWidget);
     expect(find.text('No participants yet'), findsOneWidget);
     expect(
       find.text(
@@ -309,15 +309,15 @@ void main() {
       'runner-3',
     ]);
     expect(find.text('Check-in board'), findsOneWidget);
-    expect(find.text('Guest'), findsOneWidget);
-    expect(find.text('Status'), findsOneWidget);
-    expect(find.text('Host action'), findsOneWidget);
+    expect(find.text('GUEST'), findsOneWidget);
+    expect(find.text('STATUS'), findsOneWidget);
+    expect(find.text('HOST ACTION'), findsOneWidget);
     expect(find.text('Asha'), findsOneWidget);
     expect(find.text('Kabir'), findsOneWidget);
     expect(find.text('Meera'), findsOneWidget);
     expect(find.text('Due'), findsWidgets);
     expect(find.text('In'), findsWidgets);
-    expect(find.text('Waitlist'), findsOneWidget);
+    expect(find.text('WAITLIST'), findsOneWidget);
     expect(find.text('Check in'), findsOneWidget);
     expect(find.text('Undo'), findsOneWidget);
 
@@ -498,18 +498,18 @@ void main() {
     );
     await _settleAttendanceSheet(tester);
 
-    expect(find.text('Requests'), findsWidgets);
+    expect(find.text('REQUESTS'), findsWidgets);
     expect(find.text('Request'), findsOneWidget);
-    expect(find.text('View profile'), findsOneWidget);
+    expect(find.text('VIEW PROFILE'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Approve request'));
+    await tester.tap(find.bySemanticsLabel('Approve request'));
     await tester.pump();
 
     expect(fakeEventRepository.decidedJoinRequestEventId, 'request-event');
     expect(fakeEventRepository.decidedJoinRequestUserId, 'runner-2');
     expect(fakeEventRepository.decidedJoinRequestDecision, 'approve');
 
-    await tester.tap(find.byTooltip('Decline request'));
+    await tester.tap(find.bySemanticsLabel('Decline request'));
     await tester.pump();
 
     expect(fakeEventRepository.decidedJoinRequestEventId, 'request-event');

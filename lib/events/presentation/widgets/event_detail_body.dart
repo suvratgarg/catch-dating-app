@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/external_share.dart';
@@ -212,6 +215,13 @@ class EventDetailBody extends ConsumerWidget {
                   surfaceStyle: style,
                 ),
               Divider(color: style.dividerColor, height: 1),
+              _EventDetailHostsSection(
+                event: event,
+                clubId: clubId,
+                currentUid: userProfile?.uid,
+                canMessageHost: showConsumerActions && isAuthenticated,
+                surfaceStyle: style,
+              ),
               EventDetailSocialSection(
                 event: event,
                 clubId: clubId,
@@ -568,4 +578,135 @@ class _GuestBookCta extends StatelessWidget {
       ),
     );
   }
+}
+
+/// "Your hosts" section — watches the event's club and renders the design-system
+/// [EventDetailHostCard] from it, wiring View club (→ club detail) and, for
+/// signed-in consumers, Message host (→ host inquiry chat).
+class _EventDetailHostsSection extends ConsumerWidget {
+  const _EventDetailHostsSection({
+    required this.event,
+    required this.clubId,
+    required this.currentUid,
+    required this.canMessageHost,
+    this.surfaceStyle,
+  });
+
+  final Event event;
+  final String clubId;
+  final String? currentUid;
+  final bool canMessageHost;
+  final EventDetailSurfaceStyle? surfaceStyle;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final club = ref.watch(fetchClubProvider(clubId)).asData?.value;
+    if (club == null) return const SizedBox.shrink();
+
+    final hostProfiles = club.displayHostProfiles;
+    final hostProfile = hostProfiles.isEmpty ? null : hostProfiles.first;
+    final hostUid = hostProfile?.uid ?? club.ownerOrPrimaryHostUserId;
+    final style = surfaceStyle;
+    final canMessage =
+        canMessageHost &&
+        hostUid != null &&
+        currentUid != null &&
+        currentUid != hostUid;
+
+    return CatchDesignSection(
+      kicker: 'Your hosts',
+      dividerColor: style?.dividerColor,
+      kickerColor: style?.headingColor,
+      child: EventDetailHostCard(
+        activityKind: event.activityKind,
+        hostName: club.displayHostName,
+        photoUrl: hostProfile?.avatarUrl ?? club.logoPhotoUrl,
+        meta: _hostMeta(club),
+        verified: club.ownerOrPrimaryHostUserId != null,
+        stats: _hostStats(club),
+        surfaceColor: style?.surfaceBackground,
+        borderColor: style?.borderColor,
+        nameColor: style?.headingColor,
+        metaColor: style?.bodyColor,
+        statValueColor: style?.headingColor,
+        statLabelColor: style?.mutedColor,
+        dividerColor: style?.dividerColor,
+        onViewClub: () => context.pushNamed(
+          Routes.clubDetailScreen.name,
+          pathParameters: {'clubId': club.id},
+        ),
+        onMessage: canMessage
+            ? () => unawaited(
+                _messageHost(context, ref, clubId: club.id, hostUid: hostUid),
+              )
+            : null,
+      ),
+    );
+  }
+}
+
+const List<String> _monthAbbrevs = <String>[
+  'JAN',
+  'FEB',
+  'MAR',
+  'APR',
+  'MAY',
+  'JUN',
+  'JUL',
+  'AUG',
+  'SEP',
+  'OCT',
+  'NOV',
+  'DEC',
+];
+
+String _hostMeta(Club club) {
+  final month = _monthAbbrevs[(club.createdAt.month - 1).clamp(0, 11)];
+  final parts = <String>['HOSTING SINCE $month ${club.createdAt.year}'];
+  final area = club.area.trim();
+  if (area.isNotEmpty) parts.add(area.toUpperCase());
+  return parts.join(' · ');
+}
+
+List<EventDetailHostStat> _hostStats(Club club) {
+  final stats = <EventDetailHostStat>[];
+  if (club.memberCount > 0) {
+    stats.add(
+      EventDetailHostStat(value: '${club.memberCount}', label: 'Members'),
+    );
+  }
+  if (club.reviewCount > 0) {
+    stats
+      ..add(
+        EventDetailHostStat(
+          value: club.rating.toStringAsFixed(1),
+          label: 'Rating',
+        ),
+      )
+      ..add(
+        EventDetailHostStat(value: '${club.reviewCount}', label: 'Reviews'),
+      );
+  }
+  return stats;
+}
+
+Future<void> _messageHost(
+  BuildContext context,
+  WidgetRef ref, {
+  required String clubId,
+  required String hostUid,
+}) async {
+  final matchId = await ClubHostContactController.startConversationMutation.run(
+    ref,
+    (tx) => tx
+        .get(clubHostContactControllerProvider.notifier)
+        .startConversation(clubId: clubId, hostUid: hostUid),
+  );
+  if (!context.mounted) return;
+  unawaited(
+    context.pushNamed(
+      Routes.chatScreen.name,
+      pathParameters: {'matchId': matchId},
+    ),
+  );
 }

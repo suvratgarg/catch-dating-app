@@ -5,13 +5,13 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
-import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/review_keys.dart';
 import 'package:catch_dating_app/reviews/presentation/star_rating.dart';
@@ -294,7 +294,7 @@ class ReviewCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              PersonAvatar(name: review.reviewerName, size: 32),
+              CatchPersonAvatar(name: review.reviewerName, size: 32),
               gapW8,
               Expanded(
                 child: Column(
@@ -311,7 +311,7 @@ class ReviewCard extends StatelessWidget {
               if (isOwn && onEdit != null)
                 Tooltip(
                   message: 'Edit review',
-                  child: IconBtn(
+                  child: CatchIconButton(
                     key: ReviewKeys.editReviewButton(review.id),
                     onTap: onEdit!,
                     child: Icon(
@@ -326,7 +326,7 @@ class ReviewCard extends StatelessWidget {
                   message: review.ownerResponse == null
                       ? 'Respond as host'
                       : 'Edit host response',
-                  child: IconBtn(
+                  child: CatchIconButton(
                     key: ReviewKeys.respondToReviewButton(review.id),
                     onTap: onRespond!,
                     child: Icon(
@@ -377,7 +377,7 @@ class _ReviewOwnerResponseBlock extends StatelessWidget {
         children: [
           Row(
             children: [
-              PersonAvatar(
+              CatchPersonAvatar(
                 name: response.hostName,
                 imageUrl: response.hostAvatarUrl,
                 size: 24,
@@ -460,7 +460,7 @@ class _ReviewResponseSheetState extends ConsumerState<_ReviewResponseSheet> {
             .setOwnerResponse(reviewId: widget.review.id, message: message);
       });
     } catch (_) {
-      // Inline ErrorBanner owns user-facing error display.
+      // Inline CatchErrorBanner owns user-facing error display.
     }
   }
 
@@ -503,7 +503,7 @@ class _ReviewResponseSheetState extends ConsumerState<_ReviewResponseSheet> {
           ),
           if (mutation.hasError) ...[
             gapH12,
-            ErrorBanner(message: mutationErrorMessage(mutation)),
+            CatchErrorBanner(message: mutationErrorMessage(mutation)),
           ],
         ],
       ),

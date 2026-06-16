@@ -21,7 +21,8 @@ class CatchFormFieldLabel extends StatelessWidget {
     final t = CatchTokens.of(context);
     final labelStyle = large
         ? CatchTextStyles.labelL(context, color: hasError ? t.danger : t.ink2)
-        : CatchTextStyles.labelM(context, color: hasError ? t.danger : t.ink2);
+        // `.t-field-label` — 11.5 / w500 / ink3 (sentence case, not mono).
+        : CatchTextStyles.fieldLabel(context, color: hasError ? t.danger : null);
 
     return Semantics(
       label: isOptional ? '$label, optional' : label,

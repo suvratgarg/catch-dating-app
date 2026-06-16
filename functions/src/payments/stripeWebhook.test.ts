@@ -110,6 +110,39 @@ test("stripeWebhookHandler refunds when booking loses the race after payment",
     );
   });
 
+test("stripeWebhookHandler marks refundFailed when the refund itself fails",
+  async () => {
+    const firestore = new FakeFirestore({
+      "payments/payment_1": {
+        status: "pending",
+        createdAt: "created-at",
+      },
+    });
+    const payload = checkoutEventPayload("checkout.session.completed");
+
+    await assert.rejects(
+      stripeWebhookHandler(payload, stripeSignature(payload), "whsec_test", {
+        firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
+        stripe: () => stripeClient({
+          retrieveCheckoutSession: async () => checkoutSession(),
+          createRefund: async () => {
+            throw new Error("Stripe refund API unavailable.");
+          },
+        }),
+        serverTimestamp: () => "server-now",
+        signUpForEvent: async () => {
+          throw new HttpsError("failed-precondition", "This event is full.");
+        },
+      }),
+      isHttpsError("failed-precondition", "This event is full.")
+    );
+
+    const record = firestore.data["payments/payment_1"] as
+      Record<string, unknown>;
+    assert.equal(record.status, "refundFailed");
+    assert.equal(record.signUpFailed, true);
+  });
+
 test("stripeWebhookHandler marks expired checkout sessions as failed",
   async () => {
     const firestore = new FakeFirestore({

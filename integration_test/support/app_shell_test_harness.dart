@@ -15,7 +15,6 @@ import 'package:catch_dating_app/core/celebration/celebration_effects_controller
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/device_motion.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/location_service.dart';
@@ -303,7 +302,6 @@ List<Object> appShellTestOverrides({
       (ref) => Stream.value(const [ConnectivityResult.wifi]),
     ),
     deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
-    deviceMotionSourceProvider.overrideWithValue(const _NoDeviceMotionSource()),
     cityListProvider.overrideWith((ref) async => const [testShellCity]),
     onboardingDraftRepositoryProvider.overrideWithValue(
       onboarding_helpers.FakeOnboardingDraftRepository(),
@@ -428,7 +426,7 @@ List<Object> appShellTestOverrides({
       paymentRepository ?? event_helpers.FakePaymentRepository(),
     ),
     celebrationEffectsControllerProvider.overrideWithValue(
-      const _NoopCelebrationEffectsController(),
+      _NoopCelebrationEffectsController(),
     ),
     eventCheckInLocationServiceProvider.overrideWithValue(
       const _FakeEventCheckInLocationService(),
@@ -555,13 +553,6 @@ class _NoopLocationInitializer extends LocationInitializer {
 class _NoDeviceLocation extends DeviceLocation {
   @override
   Future<LocationCoordinate?> build() async => null;
-}
-
-class _NoDeviceMotionSource implements DeviceMotionSource {
-  const _NoDeviceMotionSource();
-
-  @override
-  Stream<DeviceMotionSample> watchMotion() => const Stream.empty();
 }
 
 class _FakeEventCheckInLocationService implements EventCheckInLocationService {
@@ -869,7 +860,7 @@ class FakeShellClubDraftRepository implements ClubDraftRepository {
 }
 
 class _NoopCelebrationEffectsController extends CelebrationEffectsController {
-  const _NoopCelebrationEffectsController();
+  _NoopCelebrationEffectsController();
 
   @override
   Future<void> play(CelebrationMomentKind kind) async {}

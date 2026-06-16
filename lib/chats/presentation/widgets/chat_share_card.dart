@@ -9,7 +9,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -116,7 +116,7 @@ class _ChatShareCardSheetState extends State<ChatShareCardSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const BottomSheetGrabber(),
+          const CatchBottomSheetGrabber(),
           gapH16,
           RepaintBoundary(
             key: _captureKey,

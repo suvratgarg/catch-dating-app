@@ -278,9 +278,21 @@ export const moderatePhotoOnUpload = onObjectFinalized(
         ),
       };
 
-      const flagRef = await admin.firestore()
+      // Deterministic id keyed on the uploaded object path so retries of this
+      // at-least-once Storage trigger don't create duplicate moderation flags.
+      const flagId = `photo_${filePath.replace(/[^A-Za-z0-9_-]/g, "_")}`;
+      const flagRef = admin.firestore()
         .collection("moderationFlags")
-        .add(flagData);
+        .doc(flagId);
+      try {
+        await flagRef.create(flagData);
+      } catch (error) {
+        // ALREADY_EXISTS (gRPC code 6) means a prior retried delivery already
+        // flagged this object — continue idempotently.
+        if ((error as {code?: number} | null)?.code !== 6) {
+          throw error;
+        }
+      }
 
       // ── Block: delete the photo ────────────────────────────────────────
 

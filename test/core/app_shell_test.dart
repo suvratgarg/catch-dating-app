@@ -171,23 +171,23 @@ void main() {
     final container = ProviderContainer();
     addTearDown(container.dispose);
 
-    final controller = container.read(appNoticeControllerProvider.notifier);
+    final controller = container.read(catchNoticeControllerProvider.notifier);
     controller.show(
-      const AppNotice(
+      const CatchNoticeData(
         id: 'match.first',
         title: 'First match',
         dedupeKey: 'match',
       ),
     );
     controller.show(
-      const AppNotice(
+      const CatchNoticeData(
         id: 'match.second',
         title: 'Second match',
         dedupeKey: 'match',
       ),
     );
 
-    final notices = container.read(appNoticeControllerProvider).notices;
+    final notices = container.read(catchNoticeControllerProvider).notices;
     expect(notices, hasLength(1));
     expect(notices.single.title, 'Second match');
   });
@@ -206,7 +206,7 @@ void main() {
             ),
             child: Scaffold(
               body: CatchNoticeHost(
-                persistentNotices: [AppNotice.offline()],
+                persistentNotices: [CatchNoticeData.offline()],
                 child: SizedBox.expand(),
               ),
             ),
@@ -237,9 +237,9 @@ void main() {
 
     final context = tester.element(find.byType(CatchNoticeHost));
     ProviderScope.containerOf(context)
-        .read(appNoticeControllerProvider.notifier)
+        .read(catchNoticeControllerProvider.notifier)
         .show(
-          const AppNotice(
+          const CatchNoticeData(
             id: 'match.created',
             title: 'New match',
             message: 'You matched with Ananya.',

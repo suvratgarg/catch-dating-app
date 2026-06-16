@@ -122,8 +122,8 @@ class _WingmanRequestSectionState
             for (final candidate in widget.candidates)
               Padding(
                 padding: _wingmanCandidateRowGap,
-                child: PersonRow(
-                  data: PersonRowData(
+                child: CatchPersonRow(
+                  data: CatchPersonRowData(
                     name: candidate.name,
                     imageUrl: candidate.primaryPhotoThumbnailUrl,
                     seed: candidate.uid,

@@ -8,10 +8,10 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -313,7 +313,7 @@ class _CircleActionButton extends StatelessWidget {
 
     return Tooltip(
       message: label,
-      child: IconBtn(
+      child: CatchIconButton(
         size: CatchLayout.suvbotCircleActionExtent,
         background: t.surface,
         onTap: pending ? null : onPressed,

@@ -112,6 +112,49 @@ int _strongCompatibilityPairCount(
   return pairs.length;
 }
 
+/// Mono "config" line for the rotation run-of-show list (design-system
+/// `RotationCard` config): unit kind · round cadence · repeat strategy · reveal
+/// countdown. Rendered uppercase by the mono-label style.
+String _rotationConfigLine(EventSuccessStructureConfig config) {
+  final parts = <String>[config.unitKind.label];
+  final interval = config.rotationIntervalMinutes;
+  if (interval != null && interval > 0) {
+    parts.add('$interval min rounds');
+  }
+  parts.add(config.rotationRepeatStrategy.label);
+  parts.add('${config.revealCountdownSeconds}s reveal');
+  return parts.join(' · ');
+}
+
+/// Human pairings for a revealed rotation round ("Asha ⇄ Kabir, Meera ⇄ Zara").
+/// Returns null when the round has no pairings; group rotations fall back to a
+/// group count. Callers must only pass revealed rounds — hidden rounds stay
+/// masked.
+String? _revealRoundPairsLabel(
+  List<EventSuccessAssignment> assignments,
+  int roundIndex,
+  Map<String, PublicProfile> profilesByUid,
+) {
+  final seen = <String>{};
+  final pairs = <String>[];
+  for (final assignment in assignments) {
+    for (final slot in assignment.rotationSlots) {
+      if (slot.roundIndex != roundIndex) continue;
+      final ids = [assignment.uid, slot.peerUid]..sort();
+      if (!seen.add(ids.join('__'))) continue;
+      final a = profilesByUid[ids[0]]?.name ?? 'Guest';
+      final b = profilesByUid[ids[1]]?.name ?? 'Guest';
+      pairs.add('$a ⇄ $b');
+    }
+  }
+  if (pairs.isNotEmpty) return pairs.join(', ');
+  final groupCount = _uniqueGroupRotationCountForRound(assignments, roundIndex);
+  if (groupCount > 0) {
+    return '$groupCount ${groupCount == 1 ? 'group' : 'groups'} this round';
+  }
+  return null;
+}
+
 int _uniqueGroupRotationCountForRound(
   List<EventSuccessAssignment> assignments,
   int roundIndex,

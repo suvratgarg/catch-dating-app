@@ -8,8 +8,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
+import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/rich_share_card_sheet.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +22,7 @@ Future<void> showClubShareCardSheet(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (_) => RichShareCardSheet(
+    builder: (_) => CatchShareCardSheet(
       card: ClubShareCard(club: club),
       share: share,
       fileName: 'catch-club-card.png',
@@ -114,7 +114,7 @@ class ClubShareCard extends StatelessWidget {
                       ),
                       const Spacer(),
                       Text(
-                        'Hosted by ${club.hostName}',
+                        'Hosted by ${club.displayHostName}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: CatchTextStyles.labelS(context, color: t.ink2),

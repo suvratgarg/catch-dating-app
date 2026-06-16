@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {CallableRequest} from "firebase-functions/v2/https";
+import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {adminSetClubIndexStatusHandler} from "./clubIndexing";
 
 type FakeData = Record<string, unknown>;
@@ -282,3 +282,41 @@ test("adminSetClubIndexStatusHandler blocks viewer-only admins", async () => {
     (error) => assertHttpsCode(error, "permission-denied")
   );
 });
+
+test("adminSetClubIndexStatusHandler enforces the rate limit before writing",
+  async () => {
+    const h = harness({
+      "clubs/afterfly-run-club-indore": clubDoc(),
+    });
+    const rateLimitCalls: string[] = [];
+
+    await assert.rejects(
+      () => adminSetClubIndexStatusHandler(
+        callableRequest("admin-1", {
+          clubId: "afterfly-run-club-indore",
+          indexStatus: "indexReady",
+          checklist: completeChecklist(),
+        }, {support: true}),
+        {
+          ...h.deps,
+          checkRateLimit: async (
+            _db: FirebaseFirestore.Firestore,
+            uid: string,
+            action: string
+          ) => {
+            rateLimitCalls.push(`${uid}:${action}`);
+            throw new HttpsError("resource-exhausted", "Too many requests.");
+          },
+        }
+      ),
+      (error) => assertHttpsCode(error, "resource-exhausted")
+    );
+
+    assert.deepEqual(rateLimitCalls, ["admin-1:adminSetClubIndexStatus"]);
+    // The page must be untouched when the request is throttled.
+    const page = h.firestore.get("clubs/afterfly-run-club-indore")
+      ?.publicPage as {indexStatus?: string} | undefined;
+    assert.equal(page?.indexStatus, "noindex");
+    assert.equal(h.firestore.auditLogs().length, 0);
+  }
+);

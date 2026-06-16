@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/firestore_chunks.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/saved_event.dart';
@@ -109,7 +110,7 @@ class SavedEventRepository {
                 return;
               }
 
-              final chunks = _chunks(eventIds, 10).toList(growable: false);
+              final chunks = chunkedForWhereIn(eventIds).toList(growable: false);
               final eventsByChunk = <int, List<Event>>{};
 
               for (var i = 0; i < chunks.length; i += 1) {
@@ -211,10 +212,3 @@ Stream<SavedEvent?> watchSavedEvent(Ref ref, String uid, String eventId) => ref
 Stream<List<Event>> watchSavedEventDetailsForUser(Ref ref, String uid) => ref
     .watch(savedEventRepositoryProvider)
     .watchSavedEventDetailsForUser(uid: uid);
-
-Iterable<List<T>> _chunks<T>(List<T> values, int size) sync* {
-  for (var start = 0; start < values.length; start += size) {
-    final end = start + size > values.length ? values.length : start + size;
-    yield values.sublist(start, end);
-  }
-}

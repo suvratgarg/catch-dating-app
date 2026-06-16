@@ -9,52 +9,52 @@ part of 'catch_notice.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(AppNoticeController)
-final appNoticeControllerProvider = AppNoticeControllerProvider._();
+@ProviderFor(CatchNoticeController)
+final catchNoticeControllerProvider = CatchNoticeControllerProvider._();
 
-final class AppNoticeControllerProvider
-    extends $NotifierProvider<AppNoticeController, AppNoticeQueue> {
-  AppNoticeControllerProvider._()
+final class CatchNoticeControllerProvider
+    extends $NotifierProvider<CatchNoticeController, CatchNoticeQueue> {
+  CatchNoticeControllerProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'appNoticeControllerProvider',
+        name: r'catchNoticeControllerProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$appNoticeControllerHash();
+  String debugGetCreateSourceHash() => _$catchNoticeControllerHash();
 
   @$internal
   @override
-  AppNoticeController create() => AppNoticeController();
+  CatchNoticeController create() => CatchNoticeController();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(AppNoticeQueue value) {
+  Override overrideWithValue(CatchNoticeQueue value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<AppNoticeQueue>(value),
+      providerOverride: $SyncValueProvider<CatchNoticeQueue>(value),
     );
   }
 }
 
-String _$appNoticeControllerHash() =>
-    r'bf5dc9de316249b4ea560a139e43d92d8d9802d6';
+String _$catchNoticeControllerHash() =>
+    r'ba920e9854a371ee413a433a299e9659273a967a';
 
-abstract class _$AppNoticeController extends $Notifier<AppNoticeQueue> {
-  AppNoticeQueue build();
+abstract class _$CatchNoticeController extends $Notifier<CatchNoticeQueue> {
+  CatchNoticeQueue build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<AppNoticeQueue, AppNoticeQueue>;
+    final ref = this.ref as $Ref<CatchNoticeQueue, CatchNoticeQueue>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AppNoticeQueue, AppNoticeQueue>,
-              AppNoticeQueue,
+              AnyNotifier<CatchNoticeQueue, CatchNoticeQueue>,
+              CatchNoticeQueue,
               Object?,
               Object?
             >;

@@ -25,6 +25,9 @@ mixin _EventSuccessCompatibilityRepository on _EventSuccessRepositoryCore {
   }) => withBackendErrorContext(
     () async {
       final ref = _compatibilityResponseDoc(eventId: event.id, uid: uid);
+      // This doc is owned by a single user (event+uid) and each save fully
+      // replaces it, so the read (only to preserve the original createdAt) is
+      // not part of a contended read-modify-set.
       final existing = (await ref.get()).data();
       final now = DateTime.now();
       final response = EventSuccessCompatibilityResponse(

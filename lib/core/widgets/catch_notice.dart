@@ -15,8 +15,8 @@ enum CatchNoticeTone { status, success, warning, danger, event }
 
 enum _AppNoticeFallbackIcon { status, offline }
 
-class AppNotice {
-  const AppNotice({
+class CatchNoticeData {
+  const CatchNoticeData({
     required this.id,
     required this.title,
     this.message,
@@ -30,7 +30,7 @@ class AppNotice {
     this.dismissible = true,
   }) : _fallbackIcon = _AppNoticeFallbackIcon.status;
 
-  const AppNotice.offline()
+  const CatchNoticeData.offline()
     : id = 'connectivity.offline',
       title = "You're offline",
       message = 'Some content may be out of date.',
@@ -68,20 +68,20 @@ class AppNotice {
 }
 
 @immutable
-class AppNoticeQueue {
-  const AppNoticeQueue([this.notices = const <AppNotice>[]]);
+class CatchNoticeQueue {
+  const CatchNoticeQueue([this.notices = const <CatchNoticeData>[]]);
 
-  final List<AppNotice> notices;
+  final List<CatchNoticeData> notices;
 
-  AppNotice? get current => notices.isEmpty ? null : notices.first;
+  CatchNoticeData? get current => notices.isEmpty ? null : notices.first;
 }
 
 @Riverpod(keepAlive: true)
-class AppNoticeController extends _$AppNoticeController {
+class CatchNoticeController extends _$CatchNoticeController {
   @override
-  AppNoticeQueue build() => const AppNoticeQueue();
+  CatchNoticeQueue build() => const CatchNoticeQueue();
 
-  void show(AppNotice notice) {
+  void show(CatchNoticeData notice) {
     final dedupeKey = notice.dedupeKey;
     final notices = [
       for (final item in state.notices)
@@ -89,17 +89,17 @@ class AppNoticeController extends _$AppNoticeController {
       notice,
     ]..sort((a, b) => b.priority.compareTo(a.priority));
 
-    state = AppNoticeQueue(List.unmodifiable(notices));
+    state = CatchNoticeQueue(List.unmodifiable(notices));
   }
 
   void dismiss(String id) {
-    state = AppNoticeQueue(
+    state = CatchNoticeQueue(
       List.unmodifiable(state.notices.where((notice) => notice.id != id)),
     );
   }
 
   void clear() {
-    state = const AppNoticeQueue();
+    state = const CatchNoticeQueue();
   }
 }
 
@@ -107,11 +107,11 @@ class CatchNoticeHost extends ConsumerStatefulWidget {
   const CatchNoticeHost({
     super.key,
     required this.child,
-    this.persistentNotices = const <AppNotice>[],
+    this.persistentNotices = const <CatchNoticeData>[],
   });
 
   final Widget child;
-  final List<AppNotice> persistentNotices;
+  final List<CatchNoticeData> persistentNotices;
 
   @override
   ConsumerState<CatchNoticeHost> createState() => _CatchNoticeHostState();
@@ -129,15 +129,15 @@ class _CatchNoticeHostState extends ConsumerState<CatchNoticeHost> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AppNotice?>(
-      appNoticeControllerProvider.select((queue) => queue.current),
+    ref.listen<CatchNoticeData?>(
+      catchNoticeControllerProvider.select((queue) => queue.current),
       (previous, next) => _scheduleAutoDismiss(next),
     );
 
     final eventNotice = ref.watch(
-      appNoticeControllerProvider.select((queue) => queue.current),
+      catchNoticeControllerProvider.select((queue) => queue.current),
     );
-    final notices = <AppNotice>[...widget.persistentNotices, ?eventNotice];
+    final notices = <CatchNoticeData>[...widget.persistentNotices, ?eventNotice];
 
     return Stack(
       children: [
@@ -168,7 +168,7 @@ class _CatchNoticeHostState extends ConsumerState<CatchNoticeHost> {
                             onDismiss: notice.dismissible
                                 ? () => ref
                                       .read(
-                                        appNoticeControllerProvider.notifier,
+                                        catchNoticeControllerProvider.notifier,
                                       )
                                       .dismiss(notice.id)
                                 : null,
@@ -187,7 +187,7 @@ class _CatchNoticeHostState extends ConsumerState<CatchNoticeHost> {
     );
   }
 
-  void _scheduleAutoDismiss(AppNotice? notice) {
+  void _scheduleAutoDismiss(CatchNoticeData? notice) {
     if (_scheduledNoticeId == notice?.id) return;
 
     _dismissTimer?.cancel();
@@ -198,7 +198,7 @@ class _CatchNoticeHostState extends ConsumerState<CatchNoticeHost> {
 
     _dismissTimer = Timer(duration, () {
       if (!mounted) return;
-      ref.read(appNoticeControllerProvider.notifier).dismiss(notice.id);
+      ref.read(catchNoticeControllerProvider.notifier).dismiss(notice.id);
     });
   }
 }
@@ -206,7 +206,7 @@ class _CatchNoticeHostState extends ConsumerState<CatchNoticeHost> {
 class CatchNotice extends StatelessWidget {
   const CatchNotice({super.key, required this.notice, this.onDismiss});
 
-  final AppNotice notice;
+  final CatchNoticeData notice;
   final VoidCallback? onDismiss;
 
   @override

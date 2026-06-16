@@ -5,7 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
-import 'package:catch_dating_app/core/widgets/select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:flutter/material.dart';
 
@@ -59,7 +59,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           runSpacing: CatchSpacing.s2,
           children: [
             for (final kind in EventSuccessUnitKind.values)
-              SelectChip(
+              CatchSelectChip(
                 label: kind.label,
                 active: value.unitKind == kind,
                 enabled: enabled,
@@ -118,7 +118,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                           spacing: CatchSpacing.s2,
                           runSpacing: CatchSpacing.s2,
                           children: [
-                            SelectChip(
+                            CatchSelectChip(
                               label: 'Auto',
                               active: value.unitCount == null,
                               enabled:
@@ -129,7 +129,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                                     )
                                   : null,
                             ),
-                            SelectChip(
+                            CatchSelectChip(
                               label: 'Fixed',
                               active: value.unitCount != null,
                               enabled:
@@ -229,7 +229,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final strategy in EventSuccessRotationRepeatStrategy.values)
-                SelectChip(
+                CatchSelectChip(
                   label: strategy.label,
                   active: value.rotationRepeatStrategy == strategy,
                   enabled: enabled,
@@ -335,7 +335,7 @@ class _ActivityAttributeGoalChips extends StatelessWidget {
           children: [
             for (final attribute
                 in EventSuccessActivityAssignmentAttribute.values)
-              SelectChip(
+              CatchSelectChip(
                 label: labelFor(attribute),
                 active: attributes.contains(attribute),
                 enabled: enabled,

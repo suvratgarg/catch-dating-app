@@ -17,7 +17,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
-import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
+import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
@@ -468,15 +468,15 @@ class _ChatMutationListeners extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MutationErrorSnackbarListener(
+    return CatchMutationErrorListener(
       mutation: ChatController.sendMessageMutation,
-      child: MutationErrorSnackbarListener(
+      child: CatchMutationErrorListener(
         mutation: ChatController.sendImageMutation,
-        child: MutationErrorSnackbarListener(
+        child: CatchMutationErrorListener(
           mutation: ChatController.reportUserMutation,
-          child: MutationErrorSnackbarListener(
+          child: CatchMutationErrorListener(
             mutation: ChatController.blockUserMutation,
-            child: MutationErrorSnackbarListener(
+            child: CatchMutationErrorListener(
               mutation: SuvbotController.requestMutation,
               child: child,
             ),

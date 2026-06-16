@@ -17,6 +17,19 @@ a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
 
+### 2.5.279
+
+- Retired Explore's **wrist-lift map reveal** (changelog 2.5.141 / 2.5.142). With
+  the Explore map-as-canvas → feed-primary rewrite, `lib/core/device_motion.dart`
+  (`DeviceMotionSource`), `ExploreMapMotionRevealRecognizer`, and the `sensors_plus`
+  dependency were deleted; the map now opens only via the bottom-left Map pill →
+  `ExploreMapScreen` route.
+- Explore's featured-event spotlight now renders the DS dark `CatchCoverStory`
+  (with a `data2` second mono line) instead of `CatchEventSpotlightCard`; the cover
+  is CTA-driven ('View event') and opens a `spotlightDark` detail without the
+  shared-element card morph. The map-sheet selected-lead path still uses
+  `CatchEventSpotlightCard`.
+
 ### 2.5.278
 
 - Added `CatchErrorIcon` as the shared branded error medallion primitive.

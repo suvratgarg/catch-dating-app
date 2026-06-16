@@ -9,8 +9,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -152,7 +152,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         ),
         if (verifyMutation.hasError) ...[
           gapH16,
-          ErrorBanner(
+          CatchErrorBanner(
             message: appErrorMessage(
               (verifyMutation as MutationError).error,
               context: AppErrorContext.auth,
@@ -161,7 +161,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         ],
         if (sendMutation.hasError) ...[
           gapH16,
-          ErrorBanner(
+          CatchErrorBanner(
             message: appErrorMessage(
               (sendMutation as MutationError).error,
               context: AppErrorContext.auth,

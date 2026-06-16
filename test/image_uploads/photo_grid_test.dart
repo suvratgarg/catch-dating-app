@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/graded_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid_keys.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
@@ -87,7 +87,7 @@ void main() {
 
     expect(deletedSlots, [1]);
     expect(find.bySemanticsLabel('Edit photo 1'), findsOneWidget);
-    expect(find.byType(GradedImage), findsNWidgets(2));
+    expect(find.byType(CatchGradedImage), findsNWidgets(2));
     expect(find.text('MAIN'), findsOneWidget);
   });
 
@@ -107,7 +107,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(GradedImage), findsOneWidget);
+    expect(find.byType(CatchGradedImage), findsOneWidget);
     expect(find.text('MAIN'), findsNothing);
   });
 }

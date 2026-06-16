@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
-import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_manual_qa_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import '../test_pump_helpers.dart';
 
 void main() {
@@ -38,13 +39,13 @@ void main() {
     expect(find.text('HOST MANAGE'), findsOneWidget);
     await _scrollHostManageUntilVisible(tester, 'Participation');
     expect(find.text('Participation'), findsOneWidget);
-    expect(find.text('Guest'), findsOneWidget);
+    expect(find.text('GUEST'), findsOneWidget);
     expect(find.text('Attendee experience'), findsOneWidget);
     expect(find.text('Event companion'), findsOneWidget);
     expect(find.text('Fixture data'), findsOneWidget);
 
     await _tapHostSection(tester, 'Live');
-    expect(find.text('Live now'), findsOneWidget);
+    expect(find.text('LIVE NOW'), findsOneWidget);
     expect(find.text('Sign in required'), findsNothing);
 
     await _tapHostSection(tester, 'Report');
@@ -66,7 +67,7 @@ void main() {
 
     await _tapHostSection(tester, 'Live');
 
-    expect(find.text('Live now'), findsOneWidget);
+    expect(find.text('LIVE NOW'), findsOneWidget);
     expect(
       find.textContaining('Step 1/4: Check in and skill confirm'),
       findsWidgets,
@@ -173,20 +174,20 @@ void main() {
     await _pumpManualQaReady(tester);
 
     await _tapHostSection(tester, 'Live');
-    await _scrollHostManageUntilVisible(tester, 'Guest');
+    await _scrollHostManageUntilVisible(tester, 'GUEST');
 
-    expect(find.text('All'), findsWidgets);
-    expect(find.text('Due'), findsWidgets);
-    expect(find.text('In'), findsWidgets);
-    expect(find.text('Waitlist'), findsWidgets);
-    expect(find.text('Guest'), findsOneWidget);
-    expect(find.text('Status'), findsOneWidget);
-    expect(find.text('Host action'), findsOneWidget);
+    expect(find.text('ALL'), findsWidgets);
+    expect(find.text('DUE'), findsWidgets);
+    expect(find.text('IN'), findsWidgets);
+    expect(find.text('WAITLIST'), findsWidgets);
+    expect(find.text('GUEST'), findsOneWidget);
+    expect(find.text('STATUS'), findsOneWidget);
+    expect(find.text('HOST ACTION'), findsOneWidget);
     expect(
       find.text('Signed-up participants will appear here when they book.'),
       findsNothing,
     );
-    expect(find.text('Live now'), findsOneWidget);
+    expect(find.text('LIVE NOW'), findsOneWidget);
     expect(find.text('Sign in required'), findsNothing);
   });
 
@@ -362,7 +363,7 @@ void _pressCatchButton(WidgetTester tester, Finder finder) {
 Finder _selectChip(String label, {bool? active}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is SelectChip &&
+        widget is CatchSelectChip &&
         widget.label == label &&
         (active == null || widget.active == active),
   );

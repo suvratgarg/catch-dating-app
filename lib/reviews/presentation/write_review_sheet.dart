@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/review_keys.dart';
@@ -11,6 +11,7 @@ import 'package:catch_dating_app/reviews/presentation/star_rating.dart';
 import 'package:catch_dating_app/reviews/presentation/write_review_controller.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Shows a bottom sheet for creating or editing a review.
@@ -101,7 +102,7 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
             );
       });
     } catch (_) {
-      // Inline ErrorBanner owns user-facing error display.
+      // Inline CatchErrorBanner owns user-facing error display.
     }
   }
 
@@ -122,7 +123,7 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
         await tx.get(writeReviewControllerProvider.notifier).delete(review.id);
       });
     } catch (_) {
-      // Inline ErrorBanner owns user-facing error display.
+      // Inline CatchErrorBanner owns user-facing error display.
     }
   }
 
@@ -193,14 +194,17 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
             maxLines: 3,
             hintText: 'Share your experience',
             textCapitalization: TextCapitalization.sentences,
+            // Mirror the backend review-comment maxLength so the user can't type
+            // past the limit and hit a server rejection on submit.
+            inputFormatters: [LengthLimitingTextInputFormatter(1000)],
           ),
           if (mutation.hasError) ...[
             gapH12,
-            ErrorBanner(message: mutationErrorMessage(mutation)),
+            CatchErrorBanner(message: mutationErrorMessage(mutation)),
           ],
           if (deleteMutation.hasError) ...[
             gapH12,
-            ErrorBanner(message: mutationErrorMessage(deleteMutation)),
+            CatchErrorBanner(message: mutationErrorMessage(deleteMutation)),
           ],
         ],
       ),

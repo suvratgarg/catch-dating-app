@@ -157,14 +157,20 @@ class PaymentRepository {
         'theme': {'color': '#16140F'},
       });
 
-      // Step 3: Wait for the Razorpay callback with a timeout so a hung
-      // sheet doesn't permanently block future payments.
+      // Step 3: Wait for the Razorpay callback. Interactive checkout (card + bank
+      // OTP, or switching to a UPI app to enter a PIN) routinely takes minutes,
+      // so the guard is long enough not to abandon a real attempt. On timeout we
+      // dismiss the native sheet (clear + recreate) so a late success cannot
+      // charge the user after we have already surfaced a failure — there is no
+      // server-side webhook reconciliation yet (see backlog: payment webhook).
       return await completer.future.timeout(
-        const Duration(seconds: 60),
+        const Duration(minutes: 10),
         onTimeout: () {
           if (identical(_completer, completer)) {
             _completer = null;
           }
+          _razorpay?.clear();
+          _razorpay = null;
           throw const PaymentFailedException(
             'The payment took too long. Please try again.',
           );

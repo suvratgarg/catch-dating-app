@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/core/app_error_context.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -23,10 +25,26 @@ class GeolocatorEventCheckInLocationService
   const GeolocatorEventCheckInLocationService();
 
   @override
-  Future<EventCheckInLocation> getCurrentLocation() async {
+  Future<EventCheckInLocation> getCurrentLocation() {
+    // Plugin op-context so raw geolocator/platform failures (timeout, location
+    // unavailable, plugin errors) normalize into typed app exceptions instead
+    // of leaking raw platform errors. The permission/service guards below throw
+    // typed PermissionExceptions directly so their user-facing copy survives
+    // and they are reported as warnings, not crashes.
+    return withAppErrorContext(
+      _readCurrentLocation,
+      context: const AppErrorContext(
+        operation: AppOperation.plugin,
+        action: 'read your location to check in',
+        resource: 'geolocator',
+      ),
+    );
+  }
+
+  Future<EventCheckInLocation> _readCurrentLocation() async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      throw StateError(
+      throw const PermissionException(
         'Turn on location services to check in at the event. '
         'You can still ask the host to mark attendance.',
       );
@@ -37,13 +55,13 @@ class GeolocatorEventCheckInLocationService
       permission = await Geolocator.requestPermission();
     }
     if (permission == LocationPermission.denied) {
-      throw StateError(
+      throw const PermissionException(
         'Allow location access to check in. '
         'You can still ask the host to mark attendance.',
       );
     }
     if (permission == LocationPermission.deniedForever) {
-      throw StateError(
+      throw const PermissionException(
         'Location access is blocked. Enable it in Settings or ask the host '
         'to mark attendance.',
       );

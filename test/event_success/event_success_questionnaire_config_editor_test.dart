@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('selects questionnaire template choices with SelectChip', (
+  testWidgets('selects questionnaire template choices with CatchSelectChip', (
     tester,
   ) async {
     var value = const EventSuccessQuestionnaireConfig.defaultTemplate();
@@ -52,7 +52,7 @@ void main() {
 Finder _selectChip(String label, {bool? active}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is SelectChip &&
+        widget is CatchSelectChip &&
         widget.label == label &&
         (active == null || widget.active == active),
   );

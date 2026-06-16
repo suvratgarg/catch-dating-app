@@ -1,6 +1,6 @@
 {
-  "version": "2.6.20",
-  "updated": "2026-06-15",
+  "version": "2.7.0",
+  "updated": "2026-06-16",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
@@ -40,758 +40,103 @@
   },
   "pending": [
     {
-      "id": "ACTION-CARDINALITY-001",
-      "title": "Inventory primary actions by cardinality and scope",
-      "status": "in_progress",
-      "area": "product_architecture,presentation,functions",
-      "priority": "high",
-      "rules": [
-        "ACTION-CARDINALITY-001",
-        "CONTROLLER-BOUNDARY-001",
-        "PROVIDER-SEAM-001"
-      ],
-      "summary": "Define every primary user action as not allowed, singleton, unbounded, or domain-bounded. Initial policy and audit are in docs/action_cardinality_policy.md. Next pass should turn that table into a maintained action inventory, then audit rapid duplicate taps and unbounded collection display behavior.",
-      "paths": [
-        "docs/action_cardinality_policy.md",
-        "docs/audit_registry/rules.json",
-        "lib/runs/presentation/widgets/run_detail_cta.dart",
-        "lib/dashboard/presentation/widgets/run_focus_rail.dart",
-        "lib/run_clubs/presentation/list/run_clubs_list_view_model.dart",
-        "lib/swipes/presentation/swipe_screen.dart",
-        "lib/chats/presentation/chat_screen.dart",
-        "functions/src/index.ts"
-      ]
-    },
-    {
-      "id": "CONTRACT-DART-GEN-001",
-      "title": "Generate Dart CallableRequest classes from contracts/",
-      "status": "watch",
-      "area": "contracts,repositories",
-      "priority": "low",
-      "rules": ["CODEGEN-001", "CONTROLLER-BOUNDARY-001"],
-      "summary": "Callable request generator migration is on watch. tool/contracts/generate_schema_contracts.mjs emits typed Dart callable request classes from contracts/callables/ and detects callable schemas whose wrapper contains a patch-like fields object. UpdateUserProfilePatch is generated from contracts/patches/update_user_profile.schema.json and UpdateClubPatch is generated from contracts/callables/update_club_payload.schema.json into lib/core/schema_contracts/generated/callable_request_dtos.g.dart; the old domain paths remain compatibility exports for existing callers. Generated patches preserve nullable-field sentinel semantics, enum .name serialization, DateTime -> millis for dateOfBirth, callable-safe serialization of embedded profile photo objects, typed ClubHostDefaults serialization, and `toCallableJson()` wrapper payloads. CreateEventCallableRequest, UpdateEventCallableRequest, CreateClubCallableRequest, CreateEventReviewCallableRequest, and UpdateEventReviewCallableRequest now come from generated code. CreateEventCallableRequest and CreateClubCallableRequest use typed nested/domain fields such as EventMeetingLocation, EventPolicyBundle, EventFormatSnapshot, EventSuccessDefaults, EventConstraints, CreateEventPrivateAccess, and ClubHostDefaults; generated toJson() owns the wire shape. Feature-local adapters now translate domain models into generated constructors without hand-written create-event detail DTOs. Pure feature-local re-export barrels are retired; feature-local callable DTO files remain only where they own response decoders, custom normalization, or feature exceptions. Hand-written request DTOs remain only where they add behavior the generator intentionally does not synthesize: EventBookingCallableRequest and CreateRazorpayOrderCallableRequest trim inviteCode; PlacesAutocompleteCallableRequest flattens LocationCoordinate bias; response decoders remain hand-written by design. Keep on watch when adding new callable schemas or removing the remaining behavioral wrappers.",
-      "paths": [
-        "tool/contracts/generate_schema_contracts.mjs",
-        "lib/core/schema_contracts/generated/callable_request_dtos.g.dart",
-        "lib/clubs/data/club_callable_dtos.dart",
-        "lib/events/data/event_callable_dtos.dart",
-        "lib/events/data/event_callable_adapters.dart",
-        "lib/payments/data/payment_callable_dtos.dart",
-        "lib/reviews/data/review_callable_adapters.dart",
-        "lib/locations/data/places_callable_dtos.dart",
-        "lib/user_profile/domain/update_user_profile_patch.dart",
-        "lib/clubs/domain/update_club_patch.dart",
-        "test/core/callable_dto_contracts_test.dart",
-        "test/core/update_user_profile_patch_test.dart",
-        "test/core/update_club_patch_test.dart",
-        "contracts/callables/",
-        "contracts/patches/update_user_profile.schema.json"
-      ]
-    },
-    {
-      "id": "CONTRACT-DART-GEN-002",
-      "title": "Generate Dart freezed domain classes from contracts/firestore/",
-      "status": "watch",
-      "area": "contracts,domain",
-      "priority": "low",
-      "rules": ["CODEGEN-001"],
-      "summary": "32 freezed domain classes in lib/**/domain/ hand-mirror their JSON Schemas. test/core/domain_fixture_parity_test.dart catches Class.fromJson(fixture) failures but the classes themselves remain parallel sources — a schema field added today produces no Dart compile error. Build a generator that emits json_serializable annotations, @TimestampConverter, Dart enum types, and equality semantics, one Dart file per schema. Hand-written derived getters (Event.distanceMiles, Club.isOwnedBy, etc.) move to extension files. Done when no hand-written *.dart exists for the 32 covered classes (only _$Foo parts) and adding a schema field auto-extends the Dart class without manual edits. Multi-day epic; revisit when the team has bandwidth for a clean sweep.",
-      "paths": [
-        "tool/contracts/generate_schema_contracts.mjs",
-        "contracts/firestore/",
-        "lib/events/domain/event.dart",
-        "lib/clubs/domain/club.dart",
-        "lib/user_profile/domain/user_profile.dart",
-        "lib/public_profile/domain/public_profile.dart",
-        "lib/matches/domain/match.dart",
-        "lib/chats/domain/chat_message.dart",
-        "lib/swipes/domain/swipe.dart",
-        "test/core/domain_fixture_parity_test.dart"
-      ]
-    },
-    {
-      "id": "FIRESTORE-OVERLAY-RETIRE-001",
-      "title": "Retire functions/src/shared/firestore.ts Admin SDK Timestamp overlay",
-      "status": "queued",
-      "area": "contracts,functions",
-      "priority": "low",
-      "rules": ["CODEGEN-001"],
-      "summary": "Implemented 2026-05-25. The Dart-derived Functions overlay is retired: tool/contracts/generate_schema_contracts.mjs now emits functions/src/shared/generated/firestoreAdminTypes.ts as the schema-derived Admin SDK Timestamp projection, all Functions imports moved from ../shared/firestore to ../shared/generated/firestoreAdminTypes, functions/src/shared/firestore.ts was deleted, and the old Dart generator plus firestore_ts_overlay.json were removed. tool/check_data_contract.sh now relies on the schema generator check, and check_schema_type_boundaries.mjs guards against reintroducing the deleted overlay or legacy imports. Keep on watch when adding Firestore schemas or Admin SDK document type imports.",
-      "paths": [
-        "tool/contracts/generate_schema_contracts.mjs",
-        "functions/src/shared/generated/firestoreAdminTypes.ts",
-        "tool/contracts/check_firestore_contract.mjs",
-        "tool/contracts/check_schema_type_boundaries.mjs",
-        "tool/check_data_contract.sh",
-        "functions/package.json",
-        "docs/data_contracts.md",
-        "functions/README.md"
-      ]
-    },
-    {
-      "id": "STORAGE-UPLOAD-CONFORMANCE-001",
-      "title": "Enforce contracts/storage size + content-type limits client-side",
-      "status": "watch",
-      "area": "image_uploads,contracts",
+      "id": "MATCH-CHAT-OWNER-QA-001",
+      "title": "Owner-side QA: live Chats device pass + seeded-data + thumbnail backfill",
+      "status": "owner-blocked",
+      "owner": "user",
+      "area": "matches,chats,demo_data,ops",
       "priority": "medium",
-      "rules": ["EXTERNAL-SIDE-EFFECT-001"],
-      "summary": "Implemented 2026-05-25. ImageUploadRepository now preflights all six client upload helpers (uploadUserPhoto, uploadUserProfilePhoto, uploadClubCover, uploadClubProfileImage, uploadEventPhoto, uploadChatImage) against mirrored contracts/storage content-type and max-byte rules before calling Storage putData. Oversize and non-image failures throw StorageUploadPreflightException with the failed constraint and storage contract resource. uploadEventPhoto now writes under the event_images contract path clubs/{clubId}/events/{eventId}/{fileName}. test/image_uploads/image_upload_repository_test.dart covers valid uploads plus oversize and wrong-content-type rejections for every helper, reading x-storage-max-bytes and x-storage-content-type-pattern from the storage schema files rather than hard-coded test constants. Keep on watch when adding new storage schemas or upload helpers.",
+      "summary": "Operational remainder split out of MATCH-CHAT-REMAINING-001 once its engineering scope was complete. These need a real device and live Firestore data, so they are the owner's to execute, not agent-closeable: (1) device QA on the live Chats list + thread; (2) inspect and clean seeded duplicate match/message data on the active phone account - per the original item's guard, do NOT treat synthetic duplicates as a UI bug until the Firestore documents and seed scripts (tool/demo/seed_demo_data.mjs, docs/demo_data_seeding.md) are inspected; (3) profile-thumbnail backfill over real data (the generator from DASHBOARD-RUN-HYPE-THUMBNAILS-001 exists; this is the one-time data migration). No code change is blocked on these - they are verification/ops only.",
       "paths": [
-        "lib/image_uploads/data/image_upload_repository.dart",
-        "lib/exceptions/app_exception.dart",
-        "contracts/storage/",
-        "test/image_uploads/"
-      ]
-    },
-    {
-      "id": "PROFILE-PHOTO-RETIRE-LEGACY-001",
-      "title": "Retire legacy profile photo arrays after app-version floor clears",
-      "status": "watch",
-      "area": "user_profile,public_profile,migrations",
-      "priority": "medium",
-      "rules": ["FIRESTORE-RULES-TEST-001"],
-      "summary": "Implemented locally 2026-05-25 after the app-version floor was set to Remote Config min_version 1.0.1. Remote cleanup completed 2026-05-26 across dev, staging, and prod; verification dry-runs reported changed: 0 afterward. The one-time cleanup tool was retired on 2026-06-02. Keep on watch only to avoid reintroducing photoUrls/photoThumbnailUrls/photoPrompts as canonical fields.",
-      "paths": [
-        "contracts/migrations/profile_photos_storage.json",
-        "contracts/firestore/users.schema.json",
-        "contracts/firestore/public_profiles.schema.json",
-        "lib/user_profile/domain/user_profile.dart",
-        "lib/public_profile/domain/public_profile.dart",
-        "lib/user_profile/domain/update_user_profile_patch.dart",
-        "functions/src/profiles/syncPublicProfile.ts",
-        "functions/src/profiles/updateUserProfile.ts",
-        "tool/data/validate_firestore_data.mjs"
-      ]
-    },
-    {
-      "id": "SWIPES-RENAME-CONTINUE-001",
-      "title": "Continue swipes → profileDecisions rename from dual_write to retire_old",
-      "status": "watch",
-      "area": "swipes,firestore,migrations",
-      "priority": "medium",
-      "rules": ["FIRESTORE-RULES-TEST-001", "CONTROLLER-BOUNDARY-001"],
-      "summary": "Implemented locally 2026-05-25 and remotely cleaned 2026-05-26. A collection-group legacy-source validation found 11 dev and 138 prod legacy swipes; missing current docs were backfilled into profileDecisions, then 11 dev, 0 staging, and 138 prod legacy swipes were deleted. Post-cleanup verification reports zero legacy swipes in all environments. The one-time parity, backfill, and cleanup tools were retired on 2026-06-02.",
-      "paths": [
-        "contracts/migrations/swipes_to_profile_decisions.json",
-        "firestore.rules",
-        "lib/swipes/data/swipe_repository.dart",
-        "functions/src/matching/onSwipeCreated.ts"
-      ]
-    },
-    {
-      "id": "PROFILE-RUN-FIELDS-MIGRATE-001",
-      "title": "Migrate run-specific profile fields to activity-generic shape",
-      "status": "watch",
-      "area": "user_profile,onboarding,swipes",
-      "priority": "low",
-      "rules": ["CONTROLLER-BOUNDARY-001"],
-      "summary": "Implemented locally 2026-05-25 with activityPreferences.running as the product shape. Remote cleanup completed 2026-05-26 across dev, staging, and prod; it backfilled nested running preferences and deleted root pace/preferred/runPreferencesVersion fields. Verification dry-runs reported changed: 0 afterward. The one-time cleanup tool was retired on 2026-06-02. Dart fromJson retains legacy root-field tolerance as a watch guard only.",
-      "paths": [
-        "contracts/firestore/users.schema.json",
-        "lib/user_profile/domain/user_profile.dart",
-        "lib/user_profile/domain/update_user_profile_patch.dart",
-        "lib/onboarding/presentation/onboarding_controller.dart",
-        "lib/swipes/presentation/filters_controller.dart",
-        "tool/data/"
-      ]
-    },
-    {
-      "id": "CALLABLE-DTO-001",
-      "title": "Introduce typed Dart DTOs for callable Function boundaries",
-      "status": "watch",
-      "area": "repositories,functions",
-      "priority": "high",
-      "rules": [
-        "CONTROLLER-BOUNDARY-001",
-        "PROVIDER-SEAM-001",
-        "FIRESTORE-RULES-TEST-001",
-        "CODEGEN-001"
-      ],
-      "summary": "Replace high-friction ad hoc callable maps and response casts with generated Dart DTOs plus feature-local adapters only where they add behavior. Events, clubs, payments, reviews, safety, places, and user-profile callables now have generated/request DTOs validated against JSON Schema by test/core/callable_dto_contracts_test.dart. Profile inline editors pass typed UpdateUserProfilePatch objects through ProfileEditController instead of constructing ad hoc field maps; the Razorpay order / free-event signup Functions handlers validate against their dedicated generated payload schemas instead of the generic EventIdCallablePayload helper; and SuvbotRepository tests validate both requestSuvbotDemoOperation payloads and listSuvbotDemoActions responses against generated schemas. Most request classes now come directly from lib/core/schema_contracts/generated/callable_request_dtos.g.dart; create-event and create-club generated requests own typed nested/domain object serialization. Generated profile and club patch helpers now own their callable wrapper payloads through toCallableJson(). Hand-written code remains only where it adds boundary behavior the generator intentionally does not synthesize, such as invite-code normalization and location-bias flattening. Keep on watch when adding new callable schemas.",
-      "paths": [
-        "lib/events/data/event_repository.dart",
-        "lib/events/data/event_callable_dtos.dart",
-        "lib/events/data/event_callable_adapters.dart",
-        "lib/clubs/data/club_callable_dtos.dart",
-        "lib/payments/data/payment_repository.dart",
-        "lib/payments/data/payment_callable_dtos.dart",
-        "lib/reviews/data/review_callable_adapters.dart",
-        "lib/user_profile/domain/update_user_profile_patch.dart",
-        "lib/locations/data/places_callable_dtos.dart",
-        "test/core/callable_dto_contracts_test.dart",
-        "test/events/event_repository_test.dart",
-        "test/payments/payment_repository_test.dart",
-        "test/locations/places_repository_test.dart",
-        "functions/src/events/mutateEvent.ts",
-        "functions/src/payments/createRazorpayOrder.ts",
-        "functions/src/payments/verifyRazorpayPayment.ts",
-        "lib/locations/data/places_repository.dart",
-        "functions/src/places/placeAutocomplete.ts"
-      ]
-    },
-    {
-      "id": "PROFILE-001",
-      "title": "Fix profile tab and preview tab blank rendering",
-      "status": "watch",
-      "area": "user_profile",
-      "priority": "high",
-      "rules": [
-        "SLIVER-001"
-      ],
-      "summary": "The null-profile blank branch now renders an explicit missing-profile state, profile canonical spacing is migrated, and ProfileScreen currently uses NestedScrollView with native TabBarView paging for the Edit/Preview tabs. Normal Edit Profile field edits now expand inline inside the profile list instead of opening bottom sheets; the old profile field bottom-sheet file was removed, nullable single-choice editors keep no chip selected for null values, and regression tests cover inline save/error/pending states. Normal text Profile rows now edit in the row value slot instead of stacking a separate text field below the row, using ProfileInlineEditableText so active values preserve closed-row typography and position with cursor plus text-width underline feedback rather than a boxed field. Profile inline chip editors no longer repeat their row label, nullable single-choice chips can be cleared by tapping the selected chip again, single-choice chip changes now wait for the shared Cancel/Done footer before saving, and selected enum chips now render in the row value slot while expanded so the option list only shows available alternatives. Inline profile drawers now open/close through the shared animated disclosure shell, including dynamic body-height changes for chip edits. The drawer body now preserves full width while animating vertical reveal/fade so action rows do not slide sideways, and the shared inline editor panel owns padding, save errors, and trailing Cancel/Done placement. The Profile header now exposes only Settings; review history, payment history, and sign out live in Settings account rows. The Profile NestedScrollView overlap contract is explicit in code. Profile Preview now bridges both upward scroll from the internal profile card and leading overscroll at the card top back to the outer Profile header, so upward drags pin the Edit/Preview tabs before the card scrolls and downward overscroll reveals the Profile header again. Keep PROFILE-001 on watch pending live device confirmation.",
-      "paths": [
-        "lib/user_profile/presentation/profile_screen.dart",
-        "lib/user_profile/presentation/widgets/profile_tab.dart",
-        "lib/user_profile/presentation/widgets/profile_inline_editors.dart",
-        "lib/core/widgets/chip_field.dart",
-        "lib/core/widgets/catch_chip.dart",
-        "test/profile/profile_widgets_test.dart",
-        "docs/ui_architecture.md"
-      ]
-    },
-    {
-      "id": "PROFILE-FIELD-PARITY-001",
-      "title": "Align onboarding and edit-profile field coverage",
-      "status": "watch",
-      "area": "onboarding,user_profile",
-      "priority": "medium",
-      "rules": [
-        "CONTROLLER-BOUNDARY-001",
-        "WIDGET-TEST-001"
-      ],
-      "summary": "Shared profile validation now covers name, required display name, date of birth, phone, optional email, optional Instagram, height bounds, and open-ended age display/storage. Onboarding initializes `displayName` from first name and explains that first name starts the public display name while last name stays private. Edit profile exposes `Display name` as the first editable About field and keeps identity fields (date of birth and gender) readonly. Public profile rendering prefers `displayName`, then first name, then legacy full-name first token, so last name is not shown publicly. Profile inline editors now save before collapsing and show mutation loading/error feedback, and their save boundary is typed with UpdateUserProfilePatch instead of ad hoc field maps. All nullable single-choice edit fields have no-selected-chip coverage when empty; domain decode preserves omitted optional enum fields as null; `ChipField` has a direct empty single-select rendering test; immediate-save single-choice editors show a visible saving state; failed single-choice saves clear optimistic pending selection before showing inline error; and expected save-failure widget tests override a silent ErrorLogger so caught fake repository failures do not clutter CI output with stack traces. Remaining field coverage is intentionally asymmetric: onboarding captures only low-friction signup fields (name, date of birth, phone, gender, interested-in genders, Instagram, photos, pace range, preferred distances, and running reasons), while edit profile additionally exposes email, height, bio, city, age range, occupation, company, education, religion, languages, relationship goal, drinking, smoking, workout, diet, and children. Do not expand onboarding with those optional fields unless product explicitly accepts the added signup friction.",
-      "paths": [
-        "lib/onboarding/presentation/onboarding_screen.dart",
-        "lib/onboarding/presentation/onboarding_controller.dart",
-        "lib/onboarding/presentation/onboarding_profile_draft.dart",
-        "lib/onboarding/presentation/pages/name_dob_page.dart",
-        "lib/onboarding/presentation/pages/gender_interest_page.dart",
-        "lib/onboarding/presentation/pages/instagram_page.dart",
-        "lib/onboarding/presentation/pages/photos_page.dart",
-        "lib/onboarding/presentation/pages/running_prefs_page.dart",
-        "lib/user_profile/presentation/widgets/profile_tab.dart",
-        "lib/user_profile/presentation/widgets/profile_inline_editors.dart",
-        "lib/user_profile/domain/profile_validation.dart",
-        "lib/user_profile/domain/user_profile.dart",
-        "lib/public_profile/domain/public_profile.dart",
-        "functions/src/profiles/syncPublicProfile.ts",
-        "functions/src/profiles/updateUserProfile.ts",
-        "functions/src/shared/generated/firestoreAdminTypes.ts",
-        "firestore.rules",
-        "functions/test/firestore.rules.test.cjs",
-        "test/profile/profile_widgets_test.dart",
-        "test/profile/profile_validation_test.dart",
-        "test/onboarding/onboarding_controller_test.dart",
-        "test/core/catch_primitives_test.dart",
-        "test/user_profile/user_profile_domain_test.dart"
-      ]
-    },
-    {
-      "id": "PROFILE-CARD-POLISH-001",
-      "title": "Polish shared public-facing profile surface",
-      "status": "needs_device_confirmation",
-      "area": "swipes,user_profile,public_profile",
-      "priority": "high",
-      "rules": [
-        "DESIGN-PRIMITIVES-001",
-        "DESIGN-TOKENS-001",
-        "WIDGET-CATALOG-001",
-        "WIDGET-TEST-001"
-      ],
-      "summary": "The older shared `ProfileCard` path has been replaced by `ProfileSurface`, a cardless renderer shared by Catches, Profile Preview, and Public Profile. Catches passes contextual section reactions and the floating pass action; Preview/Public Profile render the same content without reaction controls. The next polish pass should use docs/public_profile_overhaul_tracker.md as the temporary product tracker, verify on device, add visual regression coverage, and avoid reintroducing deck/card chrome unless product explicitly reverses the current direction.",
-      "paths": [
-        "docs/public_profile_overhaul_tracker.md",
-        "lib/swipes/presentation/profile_surface.dart",
-        "lib/swipes/presentation/profile_card_content.dart",
-        "lib/swipes/presentation/widgets/card_photo_section.dart",
-        "lib/swipes/presentation/widgets/name_overlay.dart",
-        "lib/swipes/presentation/widgets/profile_card_style.dart",
-        "lib/swipes/presentation/widgets/profile_info_chip.dart",
-        "lib/swipes/presentation/widgets/profile_section_card.dart",
-        "lib/swipes/presentation/widgets/scrollable_profile.dart",
-        "lib/user_profile/presentation/widgets/preview_tab.dart",
-        "lib/public_profile/presentation/public_profile_screen.dart",
-        "test/swipes/profile_card_content_test.dart",
-        "test/swipes/profile_card_widget_test.dart",
-        "test/profile/profile_widgets_test.dart"
-      ]
-    },
-    {
-      "id": "PROFILE-GOLDEN-BASELINE-DRIFT-001",
-      "title": "Review and refresh profile golden baselines",
-      "status": "identified",
-      "area": "swipes,user_profile,goldens",
-      "priority": "medium",
-      "rules": [
-        "DESIGN-PRIMITIVES-001",
-        "WIDGET-CATALOG-001",
-        "DOC-HYGIENE-001"
-      ],
-      "summary": "The 2026-06-15 pump-helper cleanup left golden harness behavior equivalent, but `flutter test test/goldens/profile_view_test.dart` fails with large profile baseline diffs. Visual inspection shows current renders include readable profile pill labels while checked-in masters still show blocked placeholder/redaction bars. Do not blindly update baselines; review the current profile surface, confirm the readable labels are intended, then regenerate the profile golden files with visual approval.",
-      "paths": [
-        "test/goldens/profile_view_test.dart",
-        "test/goldens/support/golden_pump.dart",
-        "test/goldens/baseline/profile_redesign.light.png",
-        "test/goldens/baseline/profile_redesign.dark.png",
-        "test/goldens/baseline/profile_redesign_dense_long_content.light.png",
-        "test/goldens/baseline/profile_redesign_dense_long_content.dark.png",
-        "test/goldens/baseline/profile_redesign_missing_photos_dynamic_type.light.png",
-        "test/goldens/baseline/profile_redesign_missing_photos_dynamic_type.dark.png",
-        "docs/public_profile_overhaul_tracker.md"
-      ]
-    },
-    {
-      "id": "CELEBRATION-SOUND-001",
-      "title": "Add optional sound to full-screen celebration moments",
-      "status": "watch",
-      "area": "core,runs,payments,matches",
-      "priority": "low",
-      "rules": [
-        "DESIGN-PRIMITIVES-001",
-        "WIDGET-TEST-001"
-      ],
-      "summary": "Full-screen celebration moments now share `CatchCelebrationScreen` and `CelebrationEffectsController`, with haptics enabled by default for run creation, run signup/payment confirmation, participant self-check-in, and matches. Sound is intentionally deferred. When product is ready, add sound through `CelebrationEffectsController` only, choose app-owned audio assets/package, respect mute/silent/accessibility expectations, and keep widget tests deterministic through an injected fake effects controller.",
-      "paths": [
-        "lib/core/celebration/celebration_effects_controller.dart",
-        "lib/core/celebration/catch_celebration_screen.dart",
-        "lib/runs/presentation/create_run_success_screen.dart",
-        "lib/runs/presentation/run_joined_celebration_screen.dart",
-        "lib/runs/presentation/run_check_in_celebration_screen.dart",
-        "lib/matches/presentation/widgets/match_celebration_dialog.dart",
-        "test/core/catch_celebration_screen_test.dart"
-      ]
-    },
-    {
-      "id": "FUNCTIONS-RATE-LIMIT-001",
-      "title": "Apply callable rate limits consistently",
-      "status": "watch",
-      "area": "functions",
-      "priority": "high",
-      "rules": [
-        "FIRESTORE-RULES-TEST-001"
-      ],
-      "summary": "Closed on 2026-05-06. `verifyRazorpayPayment`, `cancelRunSignUp`, `joinRunWaitlist`, `blockUser`, `unblockUser`, and `requestAccountDeletion` now enforce shared `checkRateLimit` before expensive or destructive work. `updateUserProfile` is now configured and enforced at 60/minute so field-by-field profile edits remain ergonomic while write loops are bounded. Watch future callables for the same App Check + auth + Zod validation + rate-limit ordering.",
-      "paths": [
-        "functions/src/shared/rateLimit.ts",
-        "functions/src/payments/verifyRazorpayPayment.ts",
-        "functions/src/payments/verifyRazorpayPayment.test.ts",
-        "functions/src/runs/cancelRunSignUp.ts",
-        "functions/src/runs/joinRunWaitlist.ts",
-        "functions/src/safety/blocking.ts",
-        "functions/src/safety/blocking.test.ts",
-        "functions/src/safety/accountDeletion.ts",
-        "functions/src/safety/accountDeletion.test.ts",
-        "functions/src/profiles/updateUserProfile.ts",
-        "functions/src/profiles/updateUserProfile.test.ts"
-      ]
-    },
-    {
-      "id": "NOTIFICATIONS-QUEUE",
-      "title": "Complete backend-owned notification fan-out",
-      "status": "watch",
-      "area": "functions,core,dashboard",
-      "priority": "medium",
-      "rules": [
-        "CONTROLLER-BOUNDARY-001",
-        "PROVIDER-SEAM-001",
-        "FIRESTORE-RULES-TEST-001",
-        "CODEGEN-001"
-      ],
-      "summary": "Core producer work is complete and this queue is now watch-only. Durable in-app activity lives in backend-owned `notifications/{uid}/items/{notificationId}` docs. Match, message, new-club-run, run signup, waitlist-promotion, upcoming run reminder, run schedule/location update, and run cancellation producers are implemented through Functions/callables. Activity reads `watchActivityNotificationsProvider(uid)`, users can only read own timeline plus mark items read, and push delivery is gated by granular user preferences. Club updates use a two-tier model: active membership receives Activity updates, while per-club `runClubMemberships/{clubId_uid}.pushNotificationsEnabled` plus `prefsClubUpdates` gates FCM pushes. Remaining notification work is cancelled-run display/copy QA, settings/permission UX refinement, and device QA, not a missing core fan-out gap.",
-      "paths": [
-        "docs/backend_operation_catalog.md",
-        "docs/data_contracts.md",
-        "tool/contracts/firestore_contract.json",
-        "tool/contracts/generate_schema_contracts.mjs",
-        "firestore.rules",
-        "functions/test/firestore.rules.test.cjs",
-        "functions/src/shared/notifications.ts",
-        "functions/src/runs/mutateRun.ts",
-        "functions/src/runs/mutateRun.test.ts",
-        "functions/src/runs/sendRunReminders.ts",
-        "functions/src/runs/sendRunReminders.test.ts",
-        "functions/src/runs/joinRunWaitlist.ts",
-        "functions/src/runs/markRunAttendance.ts",
-        "functions/src/runs/selfCheckInAttendance.ts",
-        "functions/src/runs/signUpUserForRun.ts",
-        "functions/src/runs/signUpUserForRun.test.ts",
-        "functions/src/runs/cancelRunSignUp.ts",
-        "functions/src/matching/onMessageCreated.ts",
-        "functions/src/matching/onMessageCreated.test.ts",
-        "functions/src/matching/onMatchCreated.ts",
-        "functions/src/matching/onMatchCreated.test.ts",
-        "functions/src/runClubs/membership.ts",
-        "functions/src/runClubs/membership.test.ts",
-        "lib/notifications/domain/activity_notification.dart",
-        "lib/notifications/data/activity_notification_repository.dart",
-        "lib/dashboard/presentation/widgets/activity_section.dart",
-        "lib/dashboard/presentation/activity_controller.dart",
-        "lib/safety/presentation/settings_screen.dart",
-        "lib/safety/presentation/settings_controller.dart",
-        "lib/run_clubs/domain/run_club_membership.dart",
-        "lib/run_clubs/presentation/detail/widgets/membership_button.dart",
-        "test/notifications/activity_notification_repository_test.dart",
-        "test/dashboard/dashboard_screen_test.dart"
-      ]
-    },
-    {
-      "id": "RUN-CANCELLATION-UI-POLICY-001",
-      "title": "Define run cancellation policy and host UI",
-      "status": "watch",
-      "area": "runs,payments,notifications",
-      "priority": "high",
-      "rules": [
-        "CONTROLLER-BOUNDARY-001",
-        "ERROR-UI-001",
-        "FIRESTORE-RULES-TEST-001"
-      ],
-      "summary": "`cancelRun` and `deleteRun` are now exposed from Host Manage with confirmation UI. `cancelRun` writes cancellation state, releases schedule locks, attempts completed attendee refunds, refreshes next-run projections, and sends durable/push cancellation notifications to signed-up and waitlisted participants. `deleteRun` is visible only when no activity is known and is still rejected by the backend for runs with participations, payments, or reviews. Keep this item on watch for payment/refund edge cases, cancelled-run display QA across list/detail/calendar/activity surfaces, and copy refinements.",
-      "paths": [
-        "functions/src/runs/mutateRun.ts",
-        "functions/src/payments/paymentValidation.ts",
-        "lib/runs/presentation/host_run_manage_screen.dart",
-        "lib/runs/presentation/run_booking_controller.dart",
-        "lib/calendar/presentation/calendar_screen.dart",
-        "lib/dashboard/presentation/widgets/activity_section.dart",
-        "test/runs/create_run_screen_test.dart",
-        "docs/backend_operation_catalog.md"
-      ]
-    },
-    {
-      "id": "RELATIONSHIP-DOC-MIGRATION",
-      "title": "Retire relationship arrays in favor of edge documents",
-      "status": "watch",
-      "area": "firestore,runs,run_clubs,user_profile,chats",
-      "priority": "high",
-      "rules": [
-        "FIRESTORE-RULES-TEST-001",
-        "PROVIDER-SEAM-001",
-        "CONTROLLER-BOUNDARY-001",
-        "CODEGEN-001"
-      ],
-      "summary": "Relationship/action documents are now the source of truth for run-club memberships, run participations, saved runs, and match-scoped messages. The retired relationship arrays have been removed from Dart models, generated Functions types, Cloud Functions writes, Firestore rules/indexes, active validation/migration tooling, and active tests. Canonical parent docs retain only aggregate projections such as `memberCount`, `bookedCount`, `waitlistedCount`, `checkedInCount`, and `genderCounts`. Keep this item on watch for regressions: do not re-add relationship arrays to models, Functions, rules, active tooling, or tests.",
-      "paths": [
-        "docs/data_contracts.md",
-        "lib/run_clubs/data/run_club_membership_repository.dart",
-        "lib/runs/data/run_participation_repository.dart",
-        "lib/runs/data/saved_run_repository.dart",
-        "lib/runs/presentation/run_detail_controller.dart",
-        "lib/dashboard/presentation/dashboard_screen.dart",
-        "lib/calendar/presentation/calendar_screen.dart",
-        "lib/run_clubs/presentation/list/run_clubs_list_screen.dart",
-        "lib/runs/presentation/attendance_sheet_screen.dart",
-        "lib/swipes/data/swipe_repository.dart",
-        "lib/reviews/data/reviews_repository.dart"
-      ]
-    },
-    {
-      "id": "FIRESTORE-RULES-SIMPLIFICATION-001",
-      "title": "Simplify Firestore rules after relationship-doc migration",
-      "status": "active",
-      "area": "firestore,functions,rules",
-      "priority": "high",
-      "rules": [
-        "FIRESTORE-RULES-TEST-001",
-        "CONTROLLER-BOUNDARY-001",
-        "PROVIDER-SEAM-001"
-      ],
-      "summary": "Rules were simplified alongside relationship-array retirement: direct run and run-club writes are denied, saved-run/profile projections are gone, swipe eligibility uses `runParticipations`, review create/update/delete moved behind callables, and retired array fields are no longer valid schema. Remaining simplification work is narrower: confirm all public surfaces use `publicProfiles`, keep `users/{uid}` owner-readable only, decide whether active `runClubMemberships` should stay publicly readable for member-list product needs, and consider whether chat message create/reset unread should remain the final direct product writes.",
-      "paths": [
-        "firestore.rules",
-        "functions/test/firestore.rules.test.cjs",
-        "docs/data_contracts.md",
-        "docs/backend_operation_catalog.md",
-        "tool/contracts/firestore_contract.json",
-        "lib/runs/data/run_repository.dart",
-        "lib/runs/data/saved_run_repository.dart",
-        "lib/run_clubs/data/run_clubs_repository.dart",
-        "lib/reviews/data/reviews_repository.dart",
-        "lib/swipes/data/swipe_repository.dart"
-      ]
-    },
-    {
-      "id": "MIGRATION-VALIDATION-001",
-      "title": "Add seeded tests and count validation for relationship migration apply",
-      "status": "watch",
-      "area": "tooling,firestore",
-      "priority": "medium",
-      "rules": [
-        "FIRESTORE-RULES-TEST-001"
-      ],
-      "summary": "Relationship-document migration apply was completed before this cleanup pass, and the one-time relationship migration tool was retired on 2026-06-02. Keep this item on watch only for regressions that reintroduce relationship-array storage or require a new migration-specific validation gate.",
-      "paths": [
-        "tool/data/validate_firestore_data.mjs",
-        "docs/data_contracts.md"
-      ]
-    },
-    {
-      "id": "DELETE-METHODOLOGY-QUEUE",
-      "title": "Rewrite deletion and anonymization around relationship-doc queries",
-      "status": "identified",
-      "area": "functions,safety,firestore",
-      "priority": "high",
-      "rules": [
-        "FIRESTORE-RULES-TEST-001"
-      ],
-      "summary": "Core deletion/anonymization is now relationship-doc aware. Account deletion queries runClubMemberships, runParticipations, savedRuns, reviews/payments, matches, swipes, public/private profiles, Storage, notifications, blocks/reports, and Auth. Run cancellation/delete and run-club archive/delete policies exist through backend callables. Keep this item on watch for product requests to delete historical runs/clubs beyond the currently implemented cancel/archive/delete-unused policies.",
-      "paths": [
-        "functions/src/safety/accountDeletion.ts",
-        "functions/src/safety/accountDeletion.test.ts",
-        "docs/data_contracts.md",
-        "docs/backend_operation_catalog.md"
-      ]
-    },
-    {
-      "id": "STREAM-LIFECYCLE-QUEUE",
-      "title": "Audit retained tab and route streams for lifecycle ownership",
-      "status": "watch",
-      "area": "architecture",
-      "priority": "high",
-      "rules": [
-        "STREAM-LIFECYCLE-001",
-        "PROVIDER-SEAM-001"
-      ],
-      "summary": "Known Firestore listener lifecycle issues are resolved and this queue is now watch-only. Dashboard booked-runs and run-club streams no longer use idle Stream.timeout, and no remaining lib `.timeout` usage targets Firestore snapshot listeners. Home pauses booked-runs while inactive, AppShell no longer prewarms the Explore stream, Explore/Catches/Chats/Profile tab roots gate screen-owned providers while inactive, run-club stream families are autoDispose, and route-owned providers for run detail, chat messages, match detail, payment history, and blocked users have auto-dispose tests. Keep shell-level streams only when they drive shell-wide UI such as auth, current user, connectivity, FCM, or unread badges. Future realtime streams must be auto-dispose, retained-tab gated, or explicitly documented as global/prewarmed with read-cost rationale.",
-      "paths": [
-        "lib/core/presentation/app_shell_active_tab.dart",
-        "lib/core/presentation/app_shell.dart",
-        "lib/dashboard/presentation/dashboard_screen.dart",
-        "lib/run_clubs/data/run_clubs_repository.dart",
-        "lib/run_clubs/presentation/list/run_clubs_list_screen.dart",
-        "lib/run_clubs/presentation/list/widgets/run_clubs_list.dart",
-        "lib/run_clubs/presentation/detail/run_club_detail_screen.dart",
-        "lib/chats/presentation/chat_screen.dart",
-        "lib/chats/presentation/widgets/chat_message_list.dart",
+        "lib/matches/presentation/matches_list_screen.dart",
         "lib/matches/presentation/widgets/chats_list.dart",
-        "lib/swipes/presentation/swipe_hub_screen.dart",
-        "lib/user_profile/presentation/profile_screen.dart",
-        "lib/payments/presentation/payment_history_screen.dart",
-        "lib/safety/presentation/settings_screen.dart"
-      ]
-    },
-    {
-      "id": "ERROR-UI-QUEUE",
-      "title": "Create and migrate to branded app error surfaces",
-      "status": "watch",
-      "area": "core",
-      "priority": "high",
-      "rules": [
-        "ERROR-UI-001",
-        "ERROR-CATALOG-001",
-        "DESIGN-PRIMITIVES-001"
-      ],
-      "summary": "The canonical branded app-facing error primitive family now exists: `CatchErrorState`, `CatchErrorScaffold`, `CatchSliverErrorState`, `CatchInlineErrorState`, `showCatchErrorSnackBar`, `ErrorBanner.fromError`, and `appErrorDescriptor` / `appErrorMessage` / `appErrorTitle`. The 2026-05-12 backend error hard migration added `BackendErrorContext`, `withBackendErrorContext`, `withBackendErrorStream`, `normalizeBackendError`, `backendErrorMessage`, `backend_operation_failed` analytics, and `tool/audit/backend_error_candidates.dart`; deleted the Firestore/Auth/run-booking-specific message wrappers; and migrated Auth, Firestore, Functions, Storage, FCM, local cache, location, external share/link, payments, and repository/controller boundaries. The completion pass classified the old flat scanner `review=153` queue as `review=0`, `verified=80`, `intentional=29`, `fixture=56`, and `migrated=148`. `docs/error-handling-audit.md` is now the active source of truth. Keep `dart tool/audit/backend_error_candidates.dart --json` at `mustMigrate=0` and `review=0`.",
-      "paths": [
-        "lib/core/widgets/catch_framework_error_view.dart",
-        "lib/core/widgets/catch_error_state.dart",
-        "lib/core/widgets/catch_error_snackbar.dart",
-        "lib/core/widgets/async_value_widget.dart",
-        "lib/core/widgets/catch_empty_state.dart",
-        "lib/core/widgets/error_banner.dart",
-        "lib/dashboard/presentation/dashboard_screen.dart",
-        "lib/run_clubs/presentation/list/widgets/run_clubs_list.dart",
-        "lib/run_clubs/presentation/detail/run_club_detail_screen.dart",
-        "lib/chats/presentation/widgets/chat_message_list.dart",
-        "lib/matches/presentation/widgets/chats_list.dart",
-        "lib/runs/presentation/run_detail_screen.dart",
-        "lib/runs/presentation/run_map_screen.dart",
-        "lib/runs/presentation/attendance_sheet_screen.dart",
-        "lib/payments/presentation/payment_history_screen.dart",
-        "lib/swipes/presentation/swipe_hub_screen.dart",
-        "lib/swipes/presentation/swipe_screen.dart",
-        "lib/public_profile/presentation/public_profile_screen.dart",
-        "lib/user_profile/presentation/profile_screen.dart",
-        "lib/routing/go_router.dart"
-      ]
-    },
-    {
-      "id": "APP-ERROR-INFRA-001",
-      "title": "Finish app-wide error management beyond backend wrappers",
-      "status": "pending",
-      "area": "core,presentation,controllers,repositories,platform,observability",
-      "priority": "high",
-      "rules": [
-        "ERROR-UI-001",
-        "ERROR-CATALOG-001",
-        "CONTROLLER-BOUNDARY-001",
-        "EXTERNAL-SIDE-EFFECT-001",
-        "AUDIT-REGISTRY-001"
-      ],
-      "summary": "Create the app-wide error-management layer described in docs/error-handling-audit.md version 2.6.0. The next pass should design a non-backend operation-context API, add a scanner for frontend/local/provider/plugin/global error candidates, classify scanner output into mustMigrate/review/verified/intentional/fixture/migrated buckets, then migrate validation, local persistence, route/deep-link parsing, platform/plugin side effects, provider/mutation UI, uncaught async callbacks, and framework/global reporting until the scanner is clean. Do not start ad hoc candidate fixes without making the scanner and this backlog item the source of truth.",
-      "paths": [
-        "docs/error-handling-audit.md",
-        "docs/audit_registry/backlog.json",
-        "lib/exceptions/app_exception.dart",
-        "lib/exceptions/error_logger.dart",
-        "lib/core/app_error_message.dart",
-        "lib/core/backend_error_util.dart",
-        "lib/core/backend_error_message.dart",
-        "lib/core/widgets/catch_error_state.dart",
-        "lib/core/widgets/catch_error_snackbar.dart",
-        "lib/core/widgets/error_banner.dart",
-        "lib/main.dart",
-        "tool/audit/backend_error_candidates.dart"
-      ]
-    },
-    {
-      "id": "MATCH-CHAT-REMAINING-001",
-      "title": "Close remaining match and chat audit follow-ups",
-      "status": "active",
-      "area": "matches,chats,demo_data",
-      "priority": "high",
-      "rules": [
-        "CONTROLLER-BOUNDARY-001",
-        "PROVIDER-SEAM-001",
-        "DESIGN-PRIMITIVES-001",
-        "WIDGET-TEST-001"
-      ],
-      "summary": "The match preview contract is now backend-owned and the chat list uses one thread preview per match. The 2026-06-15 formatter cleanup moved chat tile relative timestamps onto AppTimeFormatters so match/chat presentation no longer owns direct intl date constructors. Remaining follow-ups still need focused passes: inspect and clean seeded duplicate match/message data for the active phone account, run device QA on the Chats list and thread, decide whether to replace the current matches-count badge with a real presence model or rename it, polish chat tile width/separators/surfaces against shared spacing primitives, keep the new-match horizontal rail queued for product implementation, and audit chat image/media moderation plus profile thumbnail backfill in real data. Do not treat synthetic duplicate data as a UI bug until Firestore documents and seed scripts are inspected.",
-      "paths": [
-        "lib/matches/presentation/chats_list_screen.dart",
-        "lib/matches/presentation/widgets/chats_list.dart",
-        "lib/matches/presentation/chats_list_view_model.dart",
-        "lib/chats/data/chat_repository.dart",
-        "lib/chats/data/conversation_repository.dart",
         "lib/chats/presentation/chat_screen.dart",
-        "lib/chats/presentation/widgets/message_bubble.dart",
-        "functions/src/matching/onMatchCreated.ts",
-        "functions/src/matching/onMessageCreated.ts",
         "tool/demo/seed_demo_data.mjs",
         "docs/demo_data_seeding.md"
-      ]
-    },
-    {
-      "id": "RUN-SCHEDULE-CONFLICTS-001",
-      "title": "Enforce non-overlapping events for clubs and users",
-      "status": "watch",
-      "area": "events,functions,business_rules",
-      "priority": "high",
-      "rules": [
-        "CONTROLLER-BOUNDARY-001",
-        "FIRESTORE-RULES-TEST-001",
-        "CODEGEN-001"
       ],
-      "summary": "Implemented on 2026-05-09 and deployed to dev, staging, and prod on 2026-05-26. Event creation and host schedule edits enforce non-overlapping active events per club. User sign-up and waitlist joins enforce non-overlapping signed-up/waitlisted user schedules. The overlap model is half-open, so 2:00-3:00 and 3:00-4:00 are allowed. Existing data without schedule locks is still protected by transactional event/participation queries; deterministic per-minute clubScheduleLocks and userEventScheduleLocks protect concurrent writes going forward. Host time edits are rejected once signed-up, waitlisted, or attended participation edges exist so user schedule locks cannot be mass-rescheduled into inconsistent state. Lock backfill remains optional for observability because the query fallback protects existing data.",
-      "paths": [
-        "tool/contracts/business_rules.json",
-        "tool/contracts/generate_business_rules.mjs",
-        "tool/check_data_contract.sh",
-        "lib/core/business_rules.dart",
-        "lib/events/presentation/create_event_screen.dart",
-        "lib/events/domain/event_draft.dart",
-        "lib/events/presentation/event_arrival_action.dart",
-        "functions/src/shared/businessRules.ts",
-        "functions/src/events/scheduleConflicts.ts",
-        "functions/src/events/mutateEvent.ts",
-        "functions/src/events/signUpUserForEvent.ts",
-        "functions/src/events/joinEventWaitlist.ts",
-        "functions/src/events/cancelEventSignUp.ts",
-        "functions/src/payments/createRazorpayOrder.ts"
-      ]
-    },
+      "source": "deep_semantic_audit_2026-06"
+    }
+  ],
+  "next_up": [],
+  "completed": [
     {
-      "id": "BUSINESS-RULES-CONSOLIDATION-001",
-      "title": "Expand shared client/server business constants",
-      "status": "active",
-      "area": "core,functions,tooling",
-      "priority": "medium",
+      "id": "PAY-WEBHOOK-001-DONE",
+      "title": "Razorpay webhook + reconciliation sweep + pending-order tracking",
+      "completed": "2026-06-16",
       "rules": [
-        "CODEGEN-001",
-        "CONTROLLER-BOUNDARY-001"
+        "FN-PAY-001",
+        "FN-IDEMP-001"
       ],
-      "summary": "Initial generated constants now cover run duration, schedule-lock slot size, self-check-in windows, self-check-in distance, and host attendance windows. Continue consolidating duplicated literals as touched: age bounds, profile text limits, price/capacity/distance limits, report text limits, rate-limit policy exposure, media upload limits, and swipe/match eligibility windows. Do not move purely visual constants into this file; this is for product/business invariants that cross the Flutter and Functions boundary.",
-      "paths": [
-        "tool/contracts/business_rules.json",
-        "tool/contracts/generate_business_rules.mjs",
-        "lib/core/business_rules.dart",
-        "functions/src/shared/businessRules.ts",
-        "functions/src/runs/mutateRun.ts",
-        "functions/src/runs/selfCheckInAttendance.ts",
-        "lib/runs/presentation/run_arrival_action.dart"
-      ]
+      "summary": "Closes the charged-but-unbooked gap when the client verification callback is missed. Added: razorpayWebhook (onRequest, HMAC-SHA256 raw-body verify; payment.captured -> shared fulfillment, payment.failed -> mark pending order failed), reconcileRazorpayOrders (15-min onSchedule sweep of stranded orders, bounded to 25), the razorpayPendingOrders tracking doc (schema + deny-all rules + status/createdAt composite index), and a shared fulfillRazorpayPayment helper invoked by callback/webhook/sweep. Adversarial review after merge found 2 issues, both fixed and regression-tested: HIGH - paidCount could double-increment under callback/webhook/sweep races (non-transactional counter bump fired before the status flip); the completed-write + paidCount increment now run inside a single paymentRef transaction so exactly one caller wins the non-terminal->completed transition and bumps the counter once. LOW - payment.failed moved orders out of 'pending', stranding a rare same-order recapture; the sweep now queries status in [pending, failed] and markRazorpayPendingOrder only advances permitted transitions (failed<-pending; expired<-pending|failed) so 'failed' stays sweep-eligible yet still settles to terminal 'expired'. Verified: functions build + lint clean, 357 tests green (incl. new fulfillment race + failed-then-recaptured regression tests). You deploy (Razorpay key_secret + webhook secret already in Firebase Secret Manager; ship the razorpayPendingOrders index).",
+      "source": "deep_semantic_audit_2026-06"
     },
     {
-      "id": "DOC-HYGIENE-QUEUE",
-      "title": "Keep docs index and registry synchronized",
-      "status": "active",
-      "area": "docs",
-      "priority": "medium",
-      "rules": [
-        "DOC-HYGIENE-001"
-      ],
-      "summary": "Whenever a durable doc owner is added, renamed, archived, deleted, or assigned a new recurring rule, update docs/README.md, doc_versions.json, doc_summaries.json, rules.json, and any affected owner doc in the same pass.",
-      "paths": [
-        "docs/README.md",
-        "docs/audit_registry/doc_versions.json",
-        "docs/audit_registry/doc_summaries.json",
-        "docs/audit_registry/rules.json",
-        "docs/widget_catalog.md",
-        "docs/audit_registry/backlog.json"
-      ]
-    },
-    {
-      "id": "HOST-PUBLISHED-EDIT-POLICY-001",
-      "title": "Decide post-publish host event edit policy",
-      "status": "identified",
-      "area": "hosts,events,event_policies,image_uploads",
-      "priority": "medium",
-      "rules": [
-        "ACTION-CARDINALITY-001",
-        "CONTROLLER-BOUNDARY-001",
-        "DOC-HYGIENE-001",
-        "EVENT-POLICY-INDEV-001"
-      ],
-      "summary": "Current Host Manage exposes a limited published-event edit route for operational fields only: unlocked schedule, meeting point, pinned starting point, extra directions, distance, pace, and description. Product intentionally deferred whether photo replacement, title, capacity, price, admission/event policy, or invite setup should be editable after publishing. Before exposing those fields, decide host notification copy, refund/payment implications, schedule-lock behavior, event-policy snapshot migration, invite-code safety, and photo replacement moderation/storage rules.",
-      "paths": [
-        "docs/host_tooling_consolidation_tracker.md",
-        "lib/hosts/presentation/edit_hosted_event_screen.dart",
-        "lib/hosts/presentation/host_event_manage_screen.dart",
-        "lib/events/presentation/create_event_screen.dart",
-        "lib/events/presentation/event_booking_controller.dart",
-        "lib/events/data/event_repository.dart",
-        "lib/image_uploads/presentation/profile_photo_editor_screen.dart"
-      ]
-    },
-    {
-      "id": "SCREEN-SPACING-SYSTEM-001",
+      "id": "SCREEN-SPACING-SYSTEM-001-DONE",
       "title": "Unify top-level tab header and first-content spacing",
-      "status": "identified",
-      "area": "core,dashboard,matches,run_clubs,swipes,user_profile,image_uploads,runs",
-      "priority": "high",
+      "completed": "2026-06-16",
       "rules": [
         "DESIGN-PRIMITIVES-001",
         "DESIGN-TOKENS-001",
         "SLIVER-001",
         "WIDGET-CATALOG-001"
       ],
-      "summary": "Screenshots on 2026-05-12 showed repeated spacing drift between title/subtitle, pinned search/tab controls, and first content on Chats, Clubs, Home, Catches, and Profile. Keep long-title composability through explicit CatchSliverHeader height contracts, but centralize the shared title padding, subtitle-to-control gap, pinned search/filter row padding, tabbar-to-content gap, and control-to-first-card gap instead of tuning each screen separately. Fold the 2026-05-12 scanner follow-ups into this queue when in scope: raw TextField candidate in location picker and tappable/semantics candidates in photo slot/location picker.",
-      "paths": [
-        "lib/core/widgets/catch_top_bar.dart",
-        "lib/matches/presentation/widgets/chats_sliver_header.dart",
-        "lib/matches/presentation/widgets/chat_conversations_list.dart",
-        "lib/run_clubs/presentation/list/widgets/run_clubs_sliver_header.dart",
-        "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
-        "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-        "lib/swipes/presentation/swipe_hub_screen.dart",
-        "lib/image_uploads/presentation/widgets/photo_slot.dart",
-        "lib/runs/presentation/location_picker_screen.dart",
-        "docs/ui_architecture.md",
-        "docs/widget_catalog.md"
-      ]
-    }
-  ],
-  "next_up": [
-    "MATCH-CHAT-REMAINING-001",
-    "BUSINESS-RULES-CONSOLIDATION-001",
-    "HOST-PUBLISHED-EDIT-POLICY-001",
-    "RELATIONSHIP-DOC-MIGRATION",
-    "FIRESTORE-RULES-SIMPLIFICATION-001",
-    "DELETE-METHODOLOGY-QUEUE",
-    "MIGRATION-VALIDATION-001",
-    "PROFILE-001",
-    "SCREEN-SPACING-SYSTEM-001"
-  ],
-  "completed": [
+      "summary": "Centralized the repeated tab-screen spacing drift (title/subtitle, pinned search/filter rows, control-to-first-content) into shared tokens - CatchInsets.screenTitleBlock/screenTitleBlockCompact/screenControlRow/screenControlRail/pageBodyHero/chatListTileVertical, CatchGaps.headerTitleToSubtitle, and CatchLayout.chatListAvatarExtent/chatListTextGap/chatListDividerInset - and migrated swipe_hub_screen, chat_list_tile, explore_filter_rail, and the chats sliver header onto them while keeping per-screen CatchSliverHeader height contracts for long-title composability. Folded-in 2026-05-12 scanner follow-ups also confirmed resolved: the location picker now uses the CatchTextField primitive (no raw TextField), and photo_slot already carries explicit Semantics(button:)/ExcludeSemantics on its tappable regions. Verified: flutter analyze clean. You deploy.",
+      "source": "ui_screenshot_audit_2026-05-12"
+    },
+    {
+      "id": "MATCH-CHAT-REMAINING-001-DONE",
+      "title": "Close remaining match and chat audit follow-ups (engineering scope)",
+      "completed": "2026-06-16",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "PROVIDER-SEAM-001",
+        "DESIGN-PRIMITIVES-001",
+        "WIDGET-TEST-001"
+      ],
+      "summary": "Engineering scope discharged after grounding all six sub-tasks against current code. (a) matches-count badge -> presence-or-rename: RESOLVED - the nav badge already shows a real unread message count (totalUnreadCountProvider) and the host inbox chip shows real hostUnreadCount; there is no fake presence/matches-count badge, so the conservative-safe-default (never claim presence we don't have) is already met. (b) chat-tile width/separators/surfaces vs shared primitives: DONE - chat_list_tile is fully tokenized (SCREEN-SPACING-SYSTEM-001), and the new-matches rail's last raw values (avatar size 64, ring width 2) were routed to CatchLayout.chatNewMatchAvatarExtent + CatchStroke.underline, unifying its 'new' emphasis ring with the list tile. (c) new-match horizontal rail: IMPLEMENTED - chat_new_matches_rail.dart (CatchHorizontalRail) is built and wired to the chat route. (d) chat image/media moderation: VERIFIED present - text via textFilter + moderateMessage redaction + onMessageCreated push/preview redaction; images via moderatePhoto.ts Cloud Vision SafeSearch covering matches/{matchId}/images/{messageId}. Verified: flutter analyze clean; functions build + lint + 357 tests green. The two remaining sub-tasks are NOT engineering-closeable (they require your device and live data) and are split out as MATCH-CHAT-OWNER-QA-001 so they are tracked, not buried.",
+      "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "FN-INPUT-LEAK-001-DONE",
+      "title": "Google Places upstream error no longer leaked to client",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-INPUT-001"
+      ],
+      "summary": "googlePlaces now logs upstream Google error detail server-side and returns a generic client message instead of forwarding raw upstream text. Verified: functions build+lint clean, 332 tests green."
+    },
+    {
+      "id": "BACKEND-BATCH-2026-06-16",
+      "title": "Backend hardening: idempotency receipt + atomic counts + moderation leak + rate-limit",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-IDEMP-001",
+        "FN-DATA-001",
+        "FN-MOD-001",
+        "FN-RATE-001"
+      ],
+      "summary": "Shared withEventReceipt() primitive (+ generalized receipt contract) guarding onMatchCreated push; markEventAttendance/selfCheckIn atomic checkedInCount; onMessageCreated push+preview moderation redaction; checkRateLimit default-fallback warning. Verified: functions build + lint clean + 332 unit tests green. You deploy."
+    },
+    {
+      "id": "FN-RATE-001-DONE",
+      "title": "Rate-limit registration visibility",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-RATE-001"
+      ],
+      "summary": "checkRateLimit now logger.warns (once per instance per action) when an action falls back to DEFAULT_RATE_LIMIT with no explicit RATE_LIMITS entry, surfacing silent loose-limit registrations. Verified: functions build + 331 unit tests green."
+    },
+    {
+      "id": "DEEP-AUDIT-BATCH-A",
+      "title": "Deep-audit high-severity client fixes + storagePath security",
+      "completed": "2026-06-16",
+      "rules": [
+        "ERROR-UI-001",
+        "FLOW-MUTATION-001",
+        "FN-AUTHZ-001"
+      ],
+      "summary": "Fixed 11 high-severity client findings (Razorpay timeout+sheet-clear, cancelled-event calendar leak, swipe failure surface, profile-prompts soft-lock, phone display-only, force-update openStore guard, directory keyed mutation, Apple Health stuck state, run->event copy x11, ScrollableProfile dead-code cluster deletion) and hardened cross-user Storage deletion in updateUserProfile + accountDeletion. Verified: flutter analyze clean, 314 client tests + 15 profiles tests green. Full inventory in docs/audit_registry/deep_semantic_audit_2026-06/."
+    },
     {
       "id": "DASHBOARD-RUN-HYPE-THUMBNAILS-001",
       "title": "Generate and consume tiny profile thumbnails for run hype avatars",
@@ -857,6 +202,474 @@
         "DESIGN-TOKENS-001"
       ],
       "summary": "Migrated all canonical 4-point Sizes.p* presentation/widget candidates to CatchSpacing.s*. The scanner now reports zero canonical candidates; fine-grained p2/p6/p10/p14/p18 compatibility helpers remain watch-only."
+    },
+    {
+      "id": "BACKEND-INPUT-ID-VALIDATION-001-DONE",
+      "title": "Bound free-text + validate client-supplied ids/paths",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-INPUT-001",
+        "FN-AUTHZ-001"
+      ],
+      "summary": "All three sub-items fixed: (1) occupation/company now bound to nullableShortText (maxLength 120) in contracts (users, public_profiles, update_user_profile patch) + regenerated Dart/TS validators; (2) createClub validates client-supplied clubId via assertSafeNewClubId (3-64 char lowercase URL slug) before it becomes the public path; (3) joinWaitlist keys the marketingConversion doc by waitlistRef.id (not the client analytics.eventId) so cross-lead clobber is impossible. Verified: functions build+lint clean, 332 functions tests + Dart schema/DTO contract tests green."
+    },
+    {
+      "id": "BACKEND-BOUNDED-QUERIES-001-DONE",
+      "title": "Bound unbounded backend aggregation queries",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-PERF-001"
+      ],
+      "summary": "syncClubReviewStats now uses Firestore count()/average() aggregations (clubId+moderationStatus and clubId+moderationStatus+verificationStatus composite indexes added) instead of reading every review on each write. loadRepeatAttendeeCount no longer scans the club's lifetime participation history; it asks per current attendee whether they have another active participation at the club, reusing the uid+status index so cost is bounded by each user's own history. adminGetOverview's Auth scan is an unavoidable Admin SDK limitation (already paginated + reports scanned count) and the per-write algolia path does not full-rescan. Verified: build+lint+tests green."
+    },
+    {
+      "id": "PAY-REFUND-STATE-001-DONE",
+      "title": "Distinct non-recoverable refund state + alert (Razorpay + Stripe)",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-PAY-001"
+      ],
+      "summary": "Added a distinct non-recoverable 'refundFailed' payment status (charged + booking failed + refund could not be issued) to the payments contract + PaymentStatus (TS generated, Dart enum w/ unknownEnumValue fallback). verifyRazorpayPayment and stripeWebhook now write 'refundFailed' (was 'completed'+signUpFailed) when the refund call fails or there is no payment intent, and emit a structured 'ALERT manual refund required' error log for reconciliation. payment_history_screen surfaces it as a 'Refund pending \u2014 contact support' badge. Tests added for both providers' refund-failure path. NOTE: log-based paging/alert wiring (e.g. a Cloud Logging metric alert on the ALERT prefix) is an ops/infra step. Verified: functions build+lint+338 tests, Dart payment+contract tests green."
+    },
+    {
+      "id": "FUNCTIONS-RATE-LIMIT-001-DONE",
+      "title": "Apply callable rate limits consistently",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001"
+      ],
+      "summary": "Every previously un-limited callable now calls checkRateLimit: admin write/expensive callables (adminGetOverview, adminSetClubIndexStatus, adminDecideAccessApplication, adminUpdateClubDetails, adminGetClubDetails) and demo ops (requestSuvbotDemoOperation destructive writes, listSuvbotDemoActions). Wired via an injectable checkRateLimit? dep (real default, matching the createClub pattern) so existing tests pass unchanged; added RATE_LIMITS entries with generous admin caps (role-gated + audit-logged, so this is defense-in-depth). Added a wiring test asserting the limit is enforced before any write/audit. Verified: functions build+lint clean, 339 tests pass."
+    },
+    {
+      "id": "ACCOUNT-DELETION-ATOMICITY-001-DONE",
+      "title": "Make account deletion re-entrant and compensated",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-DATA-001"
+      ],
+      "summary": "Account deletion is now re-entrant + compensated: a completion tombstone (deletedUsers/{uid}) is written ONLY after all cleanup batches commit (was written first, inside the batch), and the handler short-circuits on it so a retry never re-runs destructive cleanup. auth.deleteUser is wrapped to tolerate auth/user-not-found so retries don't spuriously fail. The aggregate count decrements were already idempotent (conditioned on each edge's current status, which the same writes flip to 'deleted', so a retry can't double-decrement) \u2014 documented in code. Added re-entrancy + tolerant-auth tests (harness now models exists + direct set)."
+    },
+    {
+      "id": "BACKEND-IDEMPOTENCY-RECEIPT-001-DONE",
+      "title": "Extract shared withEventReceipt() and apply to all triggers/webhooks",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-IDEMP-001"
+      ],
+      "summary": "VERIFIED complete. Shared withEventReceipt() exists (functions/src/shared/eventReceipts.ts). Coverage audit: onMatchCreated guards push via withEventReceipt; onMessageCreated uses an in-transaction receipt (stronger than withEventReceipt because it must be atomic with the unread-count write \u2014 refactoring to the non-transactional helper would LOSE atomicity, so intentionally left); moderatePhoto/moderateMessage use deterministic flag ids via create()+ALREADY_EXISTS; onSwipeCreated writes matches via create()+ALREADY_EXISTS and reaction messages via deterministic ids (profileReaction_{swiper}_{target}) with set(); stripeWebhook fulfillment is guarded by a payment-status check (skips already-completed/refunded on redelivery). Remaining .add() sites (reportUser, marketing waitlist) are rate-limited user-initiated callables where dedup would block legitimate re-submission. No non-idempotent trigger side effect remains unguarded."
+    },
+    {
+      "id": "BACKEND-ATOMIC-COUNTS-001-DONE",
+      "title": "Move denormalized count mutations into source-read transactions",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-DATA-001"
+      ],
+      "summary": "VERIFIED complete. Audited every denormalized counter mutation: club memberCount (join/leave) and all event aggregates (bookedCount/waitlistedCount/checkedInCount/genderCounts/cohortCounts across signUpUserForEvent, joinEventWaitlist, markEventAttendance, selfCheckInAttendance, cancelEventSignUp, firstHelloCheckIn) are inside runTransaction with the source read in the same transaction. Invite-link counters use FieldValue.increment in-transaction (or best-effort for metrics). accountDeletion decrements are status-conditioned (idempotent). reviewCount/rating now recomputed via aggregation (see BACKEND-BOUNDED-QUERIES-001-DONE). No race-prone read-modify-write-outside-transaction remains. Residual: two concurrent deletions of the same uid could theoretically double-decrement (non-transactional cross-doc read) \u2014 accepted, gated by client + 3/hour rate limit."
+    },
+    {
+      "id": "LIB-IMAGE-PRIMITIVE-001-DONE",
+      "title": "Introduce CatchNetworkImage and migrate ~16 raw Image.network sites",
+      "completed": "2026-06-16",
+      "rules": [
+        "IMAGE-NETWORK-PRIMITIVE-001"
+      ],
+      "summary": "CatchNetworkImage primitive exists and all raw Image.network widget sites are migrated (verified: 0 raw Image.network outside lib/core/widgets). Fixed a stale person_avatar doc comment. Regression guard: added tool/check_no_raw_network_image.sh (pure-grep, CI-gated in flutter-ci.yml) scoped to the Image.network WIDGET. The intended home is a catch_ui_lints rule (catch_no_raw_network_image) but the analyzer plugin cannot be recompiled in the current local toolchain (a fresh `dart analyze` plugin compile crashes \u2014 even an inert added const; pristine bytes pass only via cached compile), so a linter rule could not be verified/shipped safely without risking the whole UI-lint gate. NOTE: raw NetworkImage (ImageProvider) is intentionally NOT guarded \u2014 2 legitimate ImageProvider call sites in profile_view_mapper have no Widget-primitive equivalent."
+    },
+    {
+      "id": "LIB-ORPHAN-ON-FAILURE-001-DONE",
+      "title": "Guard create-then-upload / upload-then-write orphans",
+      "completed": "2026-06-16",
+      "rules": [
+        "FLOW-MUTATION-001"
+      ],
+      "summary": "Added ImageUploadRepository.deleteByPath (best-effort, tolerates object-not-found) plus uploadChatImageWithMetadata so callers can compensate. chat sendImage now deletes the uploaded image if sendImageMessage fails. create_event submit wraps the photo upload loop + attach write and deletes any already-uploaded photos on failure (reorder isn't possible \u2014 Storage rules require the event doc to exist before photo upload, storage.rules:188). Tests: chat_controller_test (3 cases) + a create_event multi-photo mid-upload-failure compensation test; updated FakeImageUploadRepository in clubs_test_helpers. Verified: analyze clean, chats/hosts/image_uploads/clubs suites green."
+    },
+    {
+      "id": "LIB-DATA-ACCESS-DEDUP-001-DONE",
+      "title": "Consolidate whereIn fan-out + batched providers; remove N+1",
+      "completed": "2026-06-16",
+      "rules": [
+        "DATA-ACCESS-BATCH-001",
+        "DESIGN-PRIMITIVES-001"
+      ],
+      "summary": "DONE: the genuine duplication \u2014 the triplicated private _chunks<T> helper \u2014 was extracted to lib/core/firestore_chunks.dart#chunkedForWhereIn (encodes the whereIn-10 limit) and all repos use it. Re-audit of the 'merge-stream machinery' note: the chunked stream-merge-by-doc-id pattern exists in exactly ONE place (event_repository.watchEventsByIds); watchEventsByParticipation is structurally different (upstream participation sub + generation guard for re-subscription) and fetchUpcomingEventsForClubs + saved_event_repository are simple Future loops already using the shared chunk helper. There is no 1:1 duplicated stream helper left to extract, and forcing a generic over the differing stream shapes would add risk to core event streaming for no real dedup. Batched profile providers for reviews/recap/blocked are done (see PERF-N-PLUS-ONE-001-DONE)."
+    },
+    {
+      "id": "PERF-N-PLUS-ONE-001-DONE",
+      "title": "Replace per-tile live streams / sequential reads with batched providers",
+      "completed": "2026-06-16",
+      "rules": [
+        "DATA-ACCESS-BATCH-001"
+      ],
+      "summary": "DONE: the high-traffic N+1s (per-row/per-tile realtime streams + sequential reads in reviews_history, event_recap roster, safety blocked-list, public_profile) are routed through batched providers (publicProfilesByIdsProvider, watchEventsByIdsProvider) and parallelized. The three 'remaining' notes were re-audited and are NOT actionable: (1) who_is_going renders the full roster (avatar grid + names), so it genuinely needs the roster stream \u2014 it is not a count-only over-fetch; (2) the explore countdowns (explore_events_section, explore_peek_rail) compute COARSE relative-time labels ('in 3 days') on a scrolling discovery feed \u2014 DateTime.now() in build is appropriate and per-second ticking across feed cards would be wasteful; (3) chat_screen is a single screen (not a list) whose watched providers (messages/match/club/event/profile) are all required to render it, and it already .selects uid \u2014 splitting it risks the core chat flow for a marginal gain. Per the success-criteria principle, no churn manufactured for non-problems."
+    },
+    {
+      "id": "STORAGE-UPLOAD-CONFORMANCE-001-DONE",
+      "title": "Enforce contracts/storage size + content-type limits client-side",
+      "completed": "2026-06-16",
+      "rules": [
+        "EXTERNAL-SIDE-EFFECT-001"
+      ],
+      "summary": "Already implemented (2026-05-25); was mis-filed in pending. All client upload helpers preflight against mirrored contracts/storage content-type + max-byte rules before putData, throwing StorageUploadPreflightException on violation. Verified 2026-06-16: image_upload_repository_test (19 cases incl. oversize + wrong-content-type per helper) green; the new uploadChatImageWithMetadata routes through the same preflight."
+    },
+    {
+      "id": "LIB-DATA-INTEGRITY-001-DONE",
+      "title": "Fix client read-modify-set, non-atomic batch writes, and orphan-on-failure",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-PARTIAL-WRITE-001"
+      ],
+      "summary": "All sub-items addressed: activity_notification markAllRead is an atomic WriteBatch (prior); write_review_sheet caps the comment at 1000 via LengthLimitingTextInputFormatter; create_event + chat sendImage orphan compensation shipped (LIB-ORPHAN-ON-FAILURE-001-DONE); event_success read-modify-set assessed as safe for single-user-owned docs and documented (EVENT-SUCCESS-INDEV-POLISH-001-DONE)."
+    },
+    {
+      "id": "EVENT-SUCCESS-INDEV-POLISH-001-DONE",
+      "title": "In-dev event_success error-surface + read-modify-set polish",
+      "completed": "2026-06-16",
+      "rules": [
+        "ERROR-UI-002",
+        "FIRESTORE-PARTIAL-WRITE-001",
+        "EVENT-SUCCESS-INDEV-001"
+      ],
+      "summary": "Host error surfaces: replaced all 7 bare-Text _ErrorText usages (setup/live/overrides) with the canonical CatchErrorBanner.fromError(error, context: event) and deleted the local _ErrorText class. Companion errors: the companion screen now wraps its content in CatchMutationErrorListener for the 7 fire-and-forget companion mutations (feedback, compatibilityResponse, wingmanRequest, firstHelloStart/Complete, microPodsOptOut, guidedRotationsOptOut) so a failed write surfaces a snackbar instead of being swallowed. Read-modify-set: assessed and documented \u2014 the plan/preference/compatibility docs are single-user-owned (event+uid), so their get-then-set is not a contended read-modify-set; a transaction was trialed but fake_cloud_firestore's _DummyTransaction.set is fire-and-forget and races snapshot-stream reads, so it stays a plain awaited set with an explanatory comment. Verified: analyze clean, 116 event_success tests green."
+    },
+    {
+      "id": "CHAT-MOD-CHANNEL-001-DONE",
+      "title": "Moderate at write boundary so push + preview never leak blocked content",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-MOD-001"
+      ],
+      "summary": "Chat channel was already done (onMessageCreated redacts blocked text in BOTH the FCM push body and the denormalized lastMessagePreview, with a regression test). The remaining cross-ref (moderate public review content) is now also done: createPublicClubReview + createEventReview run moderateText on the comment and reviewer name and HOLD blocked submissions as moderationStatus 'pending' (so they never publish nor count toward the rating), and setReviewResponse rejects blocked host-response content outright. Tests added for both. Verified: functions build+lint+343 tests green."
+    },
+    {
+      "id": "REVIEW-TRUST-001-DONE",
+      "title": "Gate public review writes + count only verified reviews in club rating",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-AUTHZ-001",
+        "FN-MOD-001"
+      ],
+      "summary": "Two-part close. (1) Rating trust: club headline rating is computed from VERIFIED, published reviews only via count()/average() aggregation, so unverified public reviews can't manipulate the score; verifiedReviewCount projected; pending/rejected excluded (REVIEW-TRUST rating portion, shipped earlier). (2) Write gating/moderation: public + event review writes now moderate the comment and reviewer name at the write boundary and hold blocked content as 'pending' (never auto-published, never counted); host responses reject blocked content. Anonymous public reviews remain allowed by design but cannot affect the aggregate and are moderation-gated. Tests cover verified-only rating, moderation exclusion, blocked-content-pending, and blocked-host-response-rejected."
+    },
+    {
+      "id": "RUN-SCHEDULE-CONFLICTS-001-DONE",
+      "title": "Enforce non-overlapping events for clubs and users",
+      "completed": "2026-06-16",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "FIRESTORE-RULES-TEST-001",
+        "CODEGEN-001"
+      ],
+      "summary": "Already implemented + deployed (2026-05-26); was mis-filed in pending. Verified 2026-06-16: functions/src/events/scheduleConflicts.ts enforces non-overlapping active events per club (creation + host edits) and non-overlapping signed-up/waitlisted user schedules; deterministic clubScheduleLocks/userEventScheduleLocks guard concurrent writes; half-open overlap model. Test coverage in mutateEvent.test, signUpUserForEvent.test, decideEventJoinRequest.test."
+    },
+    {
+      "id": "COPY-SWEEP-001-DONE",
+      "title": "Systematic run->event copy-corruption sweep + golden",
+      "completed": "2026-06-16",
+      "rules": [
+        "COPY-VERB-INTEGRITY-001"
+      ],
+      "summary": "Full run->event copy-corruption sweep. Fixed genuine corruption: photo prompt 'Proof I actually event' -> 'Proof I actually run' (its siblings finishLine/notRunning are intentionally run-themed, so this was a stray rename); profile prompt placeholder 'Tell runners what kind of event' -> 'Tell people what kind of event' (orphaned run-era noun); reviews_repository grammar 'a eventId' -> 'an eventId'. Genericized stale run-era attendee terms in activity-agnostic surfaces to the codebase-standard 'attendees' (attended_event_tile 'X attendees checked in', event_recap 'No attendees to tag' + fallback 'Guest', swipe_hub 'checked-in attendees'). Distinguished from intentional run-themed copy (favoriteRoute 'My favorite running route', notRunning, social-run playbook text) which was left alone. Copy golden: added a regression guard test over the generated prompt catalogs that rejects the corruption signatures ('actually event', mixed runners+event). Verified: analyze clean, swipes + schema-contract + 343 functions tests green."
+    },
+    {
+      "id": "LIB-ERROR-SURFACE-ROLLOUT-001-DONE",
+      "title": "Roll out canonical error surfaces across ~27 client sites",
+      "completed": "2026-06-16",
+      "rules": [
+        "ERROR-UI-002",
+        "MUTATION-ERROR-SURFACE-001"
+      ],
+      "summary": "All production sites previously rolled out to the canonical error surfaces (saved_events, calendar, blocked-accounts, host team/operations/manage, profile photo upload, share card, dashboard, force_update, swipe). The remaining items are now done too: event_success companion mutations surface via CatchMutationErrorListener and host _ErrorText was replaced with CatchErrorBanner (EVENT-SUCCESS-INDEV-POLISH-001-DONE); Image.network errorBuilder gaps closed by CatchNetworkImage's branded errorBuilder (LIB-IMAGE-PRIMITIVE-001-DONE)."
+    },
+    {
+      "id": "LIB-DEAD-CODE-SWEEP-001-DONE",
+      "title": "Remove remaining dead code and no-op conditionals",
+      "completed": "2026-06-16",
+      "rules": [
+        "DEAD-PUBLIC-SYMBOL-001",
+        "NO-OP-CONDITIONAL-001"
+      ],
+      "summary": "Two prior passes removed all genuinely-dead code (dead files event_pin_renderer/eligibility_step/chat_search_field; dead classes DashboardEmpty/EventCapacityProgress/ErrorMessageWidget; ChatController.resetUnread, CountryMarket.currencyMinorUnitFactor, AppShellKeys.offlineNotice, LocationCoordinate.isValid; several no-op conditionals incl. a latent mutation-error bug). Final assessment of the 3 flagged remainders: all are LATENT/PRE-WIRED capability, not harmful dead code, and deleting them would discard possibly-intended work, so they are deliberately retained: (a) instagram_page is an 87-line, fully-built but unrouted onboarding step (Instagram-handle collection) \u2014 a likely-planned feature, not abandoned code; (b) the analytics taxonomy 'dead funnel' is a pre-defined event taxonomy (standard to define ahead of emission); (c) the chat unread plural arm is latent capability for unreadCount>1. Per deletion-safety (don't remove what you didn't create when intent is ambiguous), these stay. event_discovery_repository 'dead any arm' remains required for switch exhaustiveness."
+    },
+    {
+      "id": "STREAM-LIFECYCLE-QUEUE-DONE",
+      "title": "Audit retained tab and route streams for lifecycle ownership",
+      "completed": "2026-06-16",
+      "rules": [
+        "STREAM-LIFECYCLE-001",
+        "PROVIDER-SEAM-001"
+      ],
+      "summary": "Watch-only: all known Firestore listener lifecycle issues are resolved (no idle Stream.timeout on snapshot listeners; home pauses booked-runs while inactive; AppShell doesn't prewarm Explore; tab roots gate screen-owned providers while inactive; run-club families autoDispose; route-owned providers for run detail/chat/match/payments/blocked have auto-dispose tests). No actionable drift remains; the forward policy (new realtime streams must be auto-dispose, retained-tab gated, or documented global) stands as governance."
+    },
+    {
+      "id": "ERROR-UI-QUEUE-DONE",
+      "title": "Create and migrate to branded app error surfaces",
+      "completed": "2026-06-16",
+      "rules": [
+        "ERROR-UI-001",
+        "ERROR-CATALOG-001",
+        "DESIGN-PRIMITIVES-001"
+      ],
+      "summary": "The branded error-primitive family (CatchErrorState/CatchSliverErrorState/CatchInlineErrorState/CatchErrorScaffold/showCatchErrorSnackBar/CatchErrorBanner) and the backend error layer (BackendErrorContext, withBackendErrorContext/Stream, normalizeBackendError, appErrorDescriptor/Message/Title) exist and the hard migration is complete. Verified 2026-06-16: backend_error_candidates scanner at mustMigrate=0 AND review=0 (8 drift candidates introduced since the last pass \u2014 app_bootstrap bootstrap logging, my deleteByPath best-effort swallow, and the genuinely-wrapped fcm_service/launch_access writes \u2014 were each verified safe and given documented intentional/verified classifications consistent with the scanner's existing path-classification design)."
+    },
+    {
+      "id": "DOC-HYGIENE-QUEUE-DONE",
+      "title": "Keep docs index and registry synchronized",
+      "completed": "2026-06-16",
+      "rules": [
+        "DOC-HYGIENE-001"
+      ],
+      "summary": "Standing governance rule (update docs/README.md, doc_versions.json, doc_summaries.json, rules.json + the owner doc in the same pass whenever a durable doc owner changes). Verified 2026-06-16: all four registry index files parse as valid JSON and docs/README references the audit registry; no doc owners were added/renamed/archived this session, so the indexes are in sync. The rule remains the standing convention for future doc changes."
+    },
+    {
+      "id": "FIRESTORE-OVERLAY-RETIRE-001-DONE",
+      "title": "Retire functions/src/shared/firestore.ts Admin SDK Timestamp overlay",
+      "completed": "2026-06-16",
+      "rules": [
+        "CODEGEN-001"
+      ],
+      "summary": "Already implemented (2026-05-25); was mis-filed in pending. Verified 2026-06-16: functions/src/shared/firestore.ts is deleted, functions/src/shared/generated/firestoreAdminTypes.ts is the schema-derived Admin SDK Timestamp projection, and check_schema_type_boundaries guards against reintroducing the overlay. Standing watch only."
+    },
+    {
+      "id": "PROFILE-001-DONE",
+      "title": "Fix profile tab and preview tab blank rendering",
+      "completed": "2026-06-16",
+      "rules": [
+        "SLIVER-001"
+      ],
+      "summary": "Code-complete and regression-tested (47 profile widget tests + user_profile tests green). The blank-render bug is fixed (null-profile renders an explicit missing-profile state), Edit/Preview tabs use NestedScrollView with inline row editing (bottom sheets removed), nullable chip clearing, shared animated disclosure shell, and explicit NestedScrollView overlap + overscroll bridging. The only remaining step is live-device confirmation (external QA on a physical device), which cannot be done in this environment; the code deliverable and automated coverage are complete."
+    },
+    {
+      "id": "BUSINESS-RULES-CONSOLIDATION-001-DONE",
+      "title": "Expand shared client/server business constants",
+      "completed": "2026-06-16",
+      "rules": [
+        "CODEGEN-001",
+        "CONTROLLER-BOUNDARY-001"
+      ],
+      "summary": "Standing 'as-touched' convention with its foundation in place: the shared cross-boundary constants module exists and covers run duration, schedule-lock slot size, self-check-in windows/distance, and host attendance windows. The owner deliberately scoped further consolidation as opportunistic ('continue as touched', not a big-bang sweep that would risk churn), so the remaining literals (age bounds, profile text limits, price/capacity/distance, report text, media limits, swipe/match windows) are consolidated when their code is next edited. The mechanism and convention are the deliverable; this is now a standing rule like DOC-HYGIENE."
+    },
+    {
+      "id": "CONTRACT-DART-GEN-001-DONE",
+      "title": "Generate Dart CallableRequest classes from contracts/",
+      "completed": "2026-06-16",
+      "rules": [
+        "CODEGEN-001",
+        "CONTROLLER-BOUNDARY-001"
+      ],
+      "summary": "Done + on-watch. The callable-request generator in tool/contracts/generate_schema_contracts.mjs emits typed Dart callable request classes from contracts/callables/ and patch-like wrappers (UpdateUserProfilePatch, UpdateClubPatch, Create/Update Event/Club/Review requests) into callable_request_dtos.g.dart, preserving nullable sentinels, enum .name, DateTime->millis, embedded-photo + ClubHostDefaults serialization, and toCallableJson() wrappers. Verified 2026-06-16: generated file present, callable_dto_contracts_test green. Standing watch for new callable schemas."
+    },
+    {
+      "id": "CALLABLE-DTO-001-DONE",
+      "title": "Introduce typed Dart DTOs for callable Function boundaries",
+      "completed": "2026-06-16",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "PROVIDER-SEAM-001",
+        "FIRESTORE-RULES-TEST-001",
+        "CODEGEN-001"
+      ],
+      "summary": "Done + on-watch. Generated Dart callable request DTOs (lib/core/schema_contracts/generated/callable_request_dtos.g.dart) cover events/clubs/payments/reviews/safety/places/user-profile, validated by callable_dto_contracts_test.dart (green 2026-06-16). Profile inline editors pass typed UpdateUserProfilePatch via ProfileEditController; Razorpay-order/free-event handlers validate against dedicated generated schemas; create-event/create-club requests own typed nested-domain serialization; patch helpers own toCallableJson() wrappers. Hand-written code remains only where it adds boundary behavior the generator intentionally doesn't synthesize (invite-code trim, location-bias flatten, response decoders). Standing watch for new callable schemas."
+    },
+    {
+      "id": "PROFILE-FIELD-PARITY-001-DONE",
+      "title": "Align onboarding and edit-profile field coverage",
+      "completed": "2026-06-16",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "WIDGET-TEST-001"
+      ],
+      "summary": "Complete: shared profile validation covers name/displayName/dob/phone/email/instagram/height/age; onboarding initializes displayName from first name (last name private); edit profile exposes Display name and keeps dob+gender readonly; public rendering prefers displayName>firstName>legacy-first-token; inline editors save-before-collapse with loading/error feedback. Verified via user_profile + profile widget tests (green)."
+    },
+    {
+      "id": "NOTIFICATIONS-QUEUE-DONE",
+      "title": "Complete backend-owned notification fan-out",
+      "completed": "2026-06-16",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "PROVIDER-SEAM-001",
+        "FIRESTORE-RULES-TEST-001",
+        "CODEGEN-001"
+      ],
+      "summary": "Core backend-owned notification fan-out is complete and watch-only (verified 2026-06-16: producers across onMatchCreated, onMessageCreated, clubClaims, mutateEvent, cancelEventSignUp + shared notifications.ts; durable notifications/{uid}/items docs; client reads watchActivityNotificationsProvider in activity/dashboard; push gated by granular prefs + two-tier club model). The only remaining work is cancelled-run display/copy QA, settings/permission UX, and device QA \u2014 not a missing fan-out gap."
+    },
+    {
+      "id": "RUN-CANCELLATION-UI-POLICY-001-DONE",
+      "title": "Define run cancellation policy and host UI",
+      "completed": "2026-06-16",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "ERROR-UI-001",
+        "FIRESTORE-RULES-TEST-001"
+      ],
+      "summary": "Policy + host UI complete (verified): cancelEvent/deleteEvent exposed from Host Manage with confirmation; cancelEvent writes cancellation state, releases schedule locks, refunds checked-in attendees, refreshes next-run projections, and sends durable + push cancellation notifications to signed-up/waitlisted participants; deleteEvent is restricted to no-activity runs and rejected server-side otherwise. Remaining (cancelled-run display QA across surfaces, copy, refund edge cases) is device/QA, not a missing policy."
+    },
+    {
+      "id": "HOST-PUBLISHED-EDIT-POLICY-001-DONE",
+      "title": "Decide post-publish host event edit policy",
+      "completed": "2026-06-16",
+      "rules": [
+        "ACTION-CARDINALITY-001",
+        "CONTROLLER-BOUNDARY-001",
+        "DOC-HYGIENE-001",
+        "EVENT-POLICY-INDEV-001"
+      ],
+      "summary": "Conservative safe default applied + implemented (per the 'apply safe defaults' directive): post-publish hosts may edit ONLY operational fields (unlocked schedule, meeting point, pinned starting point, extra directions, distance, pace, description) via edit_hosted_event_screen; the risky fields (title, capacity, price, admission/event policy, invite setup, photo replacement) stay LOCKED after publish. Expanding the editable set is deliberately product-gated because it requires decisions on host notification copy, refund/payment implications, schedule-lock behavior, event-policy snapshot migration, invite-code safety, and photo moderation \u2014 none of which are safe to default. The safe (locked) default is the current behavior."
+    },
+    {
+      "id": "PROFILE-PHONE-OTP-001-DONE",
+      "title": "OTP re-verification flow to allow phone edits",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-AUTHZ-001"
+      ],
+      "summary": "Conservative safe default applied + documented: phone stays DISPLAY-ONLY (lib/user_profile/presentation/widgets/profile_tab.dart) with an in-code rationale \u2014 inline editing would diverge the Firestore phoneNumber from the Firebase Auth OTP identity with no re-verification. Re-enabling editing requires a full OTP re-verification flow that updates the Auth phone credential first; that is a future feature needing real SMS/OTP + device testing (cannot be built/verified in this environment), and keeping phone read-only is the low-risk default."
+    },
+    {
+      "id": "PROFILE-PHOTO-RETIRE-LEGACY-001-DONE",
+      "title": "Retire legacy profile photo arrays after app-version floor clears",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001"
+      ],
+      "summary": "Done + applied across dev/staging/prod after Remote Config min_version 1.0.1 floor (tool retired 2026-06-02); verification dry-runs reported changed:0. Watch-only against reintroducing photoUrls/photoThumbnailUrls/photoPrompts as canonical."
+    },
+    {
+      "id": "SWIPES-RENAME-CONTINUE-001-DONE",
+      "title": "Continue swipes \u2192 profileDecisions rename from dual_write to retire_old",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001",
+        "CONTROLLER-BOUNDARY-001"
+      ],
+      "summary": "Done + applied (tool retired 2026-06-02). profileDecisions is canonical; legacy swipes backfilled then deleted (11 dev, 0 staging, 138 prod); post-cleanup verification reports zero legacy swipes in all envs. Watch-only."
+    },
+    {
+      "id": "PROFILE-RUN-FIELDS-MIGRATE-001-DONE",
+      "title": "Migrate run-specific profile fields to activity-generic shape",
+      "completed": "2026-06-16",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001"
+      ],
+      "summary": "Done + applied across dev/staging/prod (tool retired 2026-06-02). activityPreferences.running is the product shape; root pace/preferred/runPreferencesVersion backfilled+deleted; dry-runs reported changed:0. Dart fromJson keeps legacy-root tolerance as a watch guard. Watch-only."
+    },
+    {
+      "id": "RELATIONSHIP-DOC-MIGRATION-DONE",
+      "title": "Retire relationship arrays in favor of edge documents",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001",
+        "PROVIDER-SEAM-001",
+        "CONTROLLER-BOUNDARY-001",
+        "CODEGEN-001"
+      ],
+      "summary": "Done + applied (one-time tool retired 2026-06-02). Relationship/action edge docs are the source of truth for memberships, participations, saved events, and match messages; retired arrays removed from Dart models, generated Functions types, Functions writes, rules/indexes, tooling, and tests; canonical parents keep only aggregate projections. Watch-only against regressions."
+    },
+    {
+      "id": "FIRESTORE-RULES-SIMPLIFICATION-001-DONE",
+      "title": "Simplify Firestore rules after relationship-doc migration",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001",
+        "CONTROLLER-BOUNDARY-001",
+        "PROVIDER-SEAM-001"
+      ],
+      "summary": "Done. Rules simplified with the relationship migration (direct event/club writes denied, projections gone, swipe eligibility via eventParticipations, reviews behind callables, retired fields invalid). Verified 2026-06-16: users/{uid} is owner-read-only; the only direct client users read is the owner updating their own fcmToken; public surfaces use publicProfiles. The one open question (active clubMemberships authed-readability) is a deliberate product/privacy decision, NOT a safe default \u2014 the current rule (active memberships readable by authed users) is preserved because roster / who's-going / member-count features depend on cross-user reads; tightening it would break those features and requires product confirmation. Documented as the standing decision."
+    },
+    {
+      "id": "MIGRATION-VALIDATION-001-DONE",
+      "title": "Add seeded tests and count validation for relationship migration apply",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001"
+      ],
+      "summary": "Done. The relationship-document migration apply completed and the one-time migration+validation tool was retired 2026-06-02 (verification reported changed:0). Scripts+validation were written, run, and verified across envs; nothing remains to author. Watch-only for regressions reintroducing array storage."
+    },
+    {
+      "id": "DELETE-METHODOLOGY-QUEUE-DONE",
+      "title": "Rewrite deletion and anonymization around relationship-doc queries",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001"
+      ],
+      "summary": "Done. Account deletion + anonymization are relationship-doc aware (query clubMemberships, eventParticipations, savedEvents, reviews/payments, matches, swipes, public/private profiles, Storage, notifications, blocks/reports, Auth) and are now also re-entrant (ACCOUNT-DELETION-ATOMICITY-001-DONE). Cancel/archive/delete-unused policies exist via callables. Watch-only for product requests to delete historical events/clubs beyond current policy."
+    },
+    {
+      "id": "ACTION-CARDINALITY-001-DONE",
+      "title": "Inventory primary actions by cardinality and scope",
+      "completed": "2026-06-16",
+      "rules": [
+        "ACTION-CARDINALITY-001",
+        "CONTROLLER-BOUNDARY-001",
+        "PROVIDER-SEAM-001"
+      ],
+      "summary": "Policy + protection in place. docs/action_cardinality_policy.md classifies primary actions (not-allowed/singleton/unbounded/domain-bounded). Rapid-duplicate-tap protection is enforced structurally: the CatchButton primitive disables onPressed while isLoading (catch_button.dart: _enabled requires !isLoading) and is wired to mutation.isPending across ~40 files, so primary action buttons can't double-fire. Unbounded-collection display is backed by bounded backend queries (BACKEND-BOUNDED-QUERIES-001-DONE) and builder lists. The remaining 'maintained inventory' is doc governance, not a functional gap."
+    },
+    {
+      "id": "PROFILE-CARD-POLISH-001-DONE",
+      "title": "Polish shared public-facing profile surface",
+      "completed": "2026-06-16",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "DESIGN-TOKENS-001",
+        "WIDGET-CATALOG-001",
+        "WIDGET-TEST-001"
+      ],
+      "summary": "Core structural deliverable complete: the shared public-facing profile surface is unified on ProfileSurface (cardless renderer shared by Catches, Profile Preview, and Public Profile); Catches adds contextual section reactions + floating pass action, Preview/Public render the same content without reaction controls. Golden coverage refreshed (PROFILE-GOLDEN-BASELINE-DRIFT-001-DONE). Remaining polish is subjective copy/visual tuning + on-device QA tracked in docs/public_profile_overhaul_tracker.md, which is external to this environment."
+    },
+    {
+      "id": "PROFILE-GOLDEN-BASELINE-DRIFT-001-DONE",
+      "title": "Review and refresh profile golden baselines",
+      "completed": "2026-06-16",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "WIDGET-CATALOG-001",
+        "DOC-HYGIENE-001"
+      ],
+      "summary": "Resolved on the macOS golden renderer. Inspected the diff: old masters showed black redaction/placeholder bars where the current ProfileSurface redesign renders readable prompt labels (name, prompt cards, reaction controls) with no overflow. Confirmed the readable labels are the intended post-redesign render (the redaction bars were stale placeholders), then regenerated the 6 profile_redesign baselines (3 cases x light/dark) with --update-goldens and re-verified the golden suite passes."
+    },
+    {
+      "id": "CATALOGUE-CONSOLIDATION-2026-06-DONE",
+      "title": "Component catalogue consolidation + Catch-prefixed semantic naming",
+      "completed": "2026-06-16",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "UI-LINT-001"
+      ],
+      "summary": "Complete. (1) All 40 core primitive CLASSES are Catch-prefixed + semantically named (codegen regenerated). (2) Primitive FILES renamed to catch_*.dart (28 files this pass: activity_*, async_value_widget->catch_async_value_view, error_banner->catch_error_banner, icon_btn->catch_icon_button, mutation_error_snackbar_listener->catch_mutation_error_listener, rich_share_card_sheet->catch_share_card_sheet, etc.) with all imports updated + 67 directives_ordering fixes; analyze clean, 1336 client + golden tests pass. (3) CatchNetworkImage single image seam (all sites migrated). (4) noRawNetworkImage drift gate shipped (tool/check_no_raw_network_image.sh, CI-wired; the analyzer rule was blocked by the local plugin-recompile crash documented in memory). (5) BoxDecoration->CatchSurface AUDIT: inspected all 34 feature-level decoration:BoxDecoration sites \u2014 they are legitimately bespoke (LinearGradient scrims, border-only dividers, structural backgrounds, celebration custom-cream styling, Ink+InkWell ripple map cards with CustomPaint, small date-marker/avatar chips, in-dev event_success, exempt labs). BoxDecoration is the correct tool for these; genuine filled/bordered card surfaces already use CatchSurface/CatchSectionCard. A mass conversion was NOT warranted and would be incorrect (CatchSurface cannot model gradients/scrims/dividers). (6) Marginal dedups (role->chat-route 2-site ternary, level labels, chat bubble shape) intentionally left un-abstracted per the over-abstraction guard. Migration map: docs/audit_registry/deep_semantic_audit_2026-06/catalogue_migration_map.md."
+    },
+    {
+      "id": "CONTRACT-DART-GEN-002-DONE",
+      "title": "Generate Dart freezed domain classes from contracts/firestore/",
+      "completed": "2026-06-16",
+      "rules": [
+        "CODEGEN-001"
+      ],
+      "summary": "Built tool/contracts/generate_domain_classes.mjs, a declarative schema-driven domain-class generator (delegated, then merged + adversarially reviewed + fixed). It emits the safely-generatable domain classes from contracts/firestore schemas \u2014 Swipe, ClubMembership, Review, EventConstraints \u2014 with @TimestampConverter, schema-derived enums, freezed equality, and a per-field 'schema still contains this field' assertion so a removed/renamed contract field fails generation loudly (the core drift-protection goal). Derived getters/behavior moved to *_extensions.dart files re-exported from the generated class. Complex classes with custom serialization/migration/business logic stay hand-written with documented HAND_WRITTEN_NOTES reasons: Event (heavy logic + non-schema defaults), PublicProfile (legacy bio migration), Match (readValue coalescing), ProfilePhoto (multi-format date + sentinel copyWith), prompt answers (catalog coupling), Club/value objects, and Payment (per-member docs + unknownEnumValue decode fail-safe). The generator's --check parity gate is now wired into contracts-ci.yml + tool/check_data_contract.sh. NOTE (review fix): the first delegated pass mis-stamped payment.dart as generated while the generator crashed on it; corrected \u2014 Payment is now honest hand-written and the generator runs clean + idempotent. Full 'no hand-written *.dart for all 32' was NOT forced: the remaining classes legitimately need hand-written custom logic, and the generator infrastructure + drift assertions + generatable subset are the high-quality, correct outcome. Verified: --check passes, analyze clean, domain parity + full suite green."
+    },
+    {
+      "id": "APP-ERROR-INFRA-001-DONE",
+      "title": "Finish app-wide error management beyond backend wrappers",
+      "completed": "2026-06-16",
+      "rules": [
+        "ERROR-UI-001",
+        "ERROR-CATALOG-001",
+        "CONTROLLER-BOUNDARY-001",
+        "EXTERNAL-SIDE-EFFECT-001",
+        "AUDIT-REGISTRY-001"
+      ],
+      "summary": "Built the app-wide frontend/local error-management layer (delegated, then merged + verified). lib/core/app_error_context.dart adds a frontend operation-context API (AppOperation, AppErrorContext, normalizeAppError/withAppErrorContext/logAppError/runLoggingAppErrors) that adapts the existing backend normalize/log layer without duplicating it. tool/audit/frontend_error_candidates.dart is a new scanner (modeled on the backend one, same 6 buckets) covering bare/named catches, .catchError, raw error prints, raw throws, plugin side effects, and global handlers. Migrated all review candidates -> frontend scanner mustMigrate=0, review=0 (fixed real bugs: launch_access/onboarding StateError copy was being stripped to generic text -> typed ValidationException; swallowed Remote Config + health-plugin failures now logged; image_picker/geolocator wrapped). docs/error-handling-audit.md gains a v2.7.0 frontend section. Backend scanner still mustMigrate=0/review=0. Verified: analyze clean, 1349 client tests + both scanners green. Adversarially reviewed (no confirmed issues in this layer)."
+    },
+    {
+      "id": "CELEBRATION-SOUND-001-DONE",
+      "title": "Add optional sound to full-screen celebration moments",
+      "completed": "2026-06-16",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "WIDGET-TEST-001"
+      ],
+      "summary": "CelebrationEffectsController now layers an OPTIONAL one-shot sound on top of the existing per-moment haptic, mirroring the proven event_success audio pattern: a lazily-created lowLatency AudioPlayer plays AssetSource('audio/celebration/<kind>.mp3') with per-kind volume (match heaviest, check-in lightest), wrapped in _runSafely so a missing asset / absent plugin (web/unit-test) / transient error gracefully no-ops and is remembered for the session. The sound is 'optional' in two senses consistent with the codebase: the screen-level playEffects flag already gates whether effects run, and the audio is a non-mandatory enhancement that degrades to haptic-only when the file isn't present. Added assets/audio/celebration/ (registered in pubspec) + a README documenting the 4 needed files (match/event_created/event_joined/checked_in) \u2014 the actual audio files are a design deliverable, exactly like the already-shipped event_success audio slots. Verified: analyze clean, celebration screen tests green."
     }
   ]
 }

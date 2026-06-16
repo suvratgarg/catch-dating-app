@@ -13,17 +13,18 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
+import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/graded_image.dart';
-import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -371,22 +372,20 @@ class _ExploreHero extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final event = item.event;
-    const source = 'featured';
-    return CatchEventSpotlightCard(
-      title: item.event.title,
-      supportingLabel: _supportingLabel(item),
-      timeLabel: EventFormatters.time(event.startTime),
-      countdownLabel: _heroCountdownLabel(event.startTime),
-      priceLabel: item.priceLabel,
-      capacityLabel: _capacityLabel(item),
+    final synthetic = _isSyntheticExploreItem(item);
+    // The DS cover is CTA-driven: the labelled "View event" button is the single
+    // accessible action (no whole-card gesture region). It opens a dark
+    // (spotlightDark) detail via the page transition — no shared-element morph.
+    return CatchCoverStory(
       activityKind: event.activityKind,
       kicker: _spotlightKickerFor(item),
-      heroTag: _isSyntheticExploreItem(item)
-          ? null
-          : eventSpotlightHeroTag(event.id, source),
-      onTap: _isSyntheticExploreItem(item)
-          ? null
-          : () => _openEvent(context, ref, item, source),
+      title: event.title,
+      body: _supportingLabel(item),
+      cta: synthetic ? null : 'View event',
+      onCta: synthetic ? null : () => _openCoverStoryEvent(context, ref, item),
+      data: '${EventFormatters.time(event.startTime)} · ${item.priceLabel}',
+      data2: _capacityLabel(item),
+      radius: CatchRadius.lg,
     );
   }
 }
@@ -440,7 +439,7 @@ class _ThisWeekRecommendationsSection extends StatelessWidget {
           color: CatchTokens.of(context).ink3,
         ),
         gapH2,
-        SectionHeader(
+        CatchSectionHeader(
           title: 'This week',
           padding: EdgeInsets.zero,
           titleStyle: CatchTextStyles.clubDisplay(
@@ -590,10 +589,9 @@ class _ExploreClubCover extends StatelessWidget {
     if (url == null || url.isEmpty) {
       return ClubPolaroidArtwork(club: club, compact: compact);
     }
-    return GradedImage(
-      child: Image.network(
+    return CatchGradedImage(
+      child: CatchNetworkImage(
         url,
-        fit: BoxFit.cover,
         errorBuilder: (_, _, _) =>
             ClubPolaroidArtwork(club: club, compact: compact),
       ),
@@ -1237,27 +1235,6 @@ String _capacityLabel(ExploreEventItem item) {
   ).goingAvailabilityLabel(availabilityLabel: item.availabilityLabel);
 }
 
-String _heroCountdownLabel(DateTime startTime) {
-  final now = DateTime.now();
-  final today = DateTime(now.year, now.month, now.day);
-  final eventDay = DateTime(startTime.year, startTime.month, startTime.day);
-  final diffDays = eventDay.difference(today).inDays;
-  return switch (diffDays) {
-    0 => _relativeCountdownLabel(startTime) ?? 'Tonight',
-    1 => 'Tomorrow',
-    _ => EventFormatters.shortWeekday(startTime),
-  };
-}
-
-String? _relativeCountdownLabel(DateTime startTime) {
-  final delta = startTime.difference(DateTime.now());
-  if (delta.inMinutes <= 0 || delta.inHours >= 6) return null;
-  if (delta.inHours < 1) return 'In ${delta.inMinutes}m';
-  final minutes = delta.inMinutes.remainder(60);
-  if (minutes == 0) return 'In ${delta.inHours}h';
-  return 'In ${delta.inHours}h ${minutes}m';
-}
-
 String? _cardStatusLabel(ExploreEventItem item) {
   return switch (item.status) {
     EventTileStatus.open => _availabilityStatusLabel(item),
@@ -1289,21 +1266,33 @@ void _openEvent(
   String source,
 ) {
   _logExploreEventOpened(ref, item, source);
-  final isSpotlight = source == 'featured';
   context.pushNamed(
     Routes.eventDetailScreen.name,
     pathParameters: {'clubId': item.event.clubId, 'eventId': item.event.id},
     extra: EventDetailRouteExtra(
       initialEvent: item.event,
-      transition: isSpotlight
-          ? EventDetailRouteTransition.spotlightCard
-          : EventDetailRouteTransition.ticketCard,
-      presentationMode: isSpotlight
-          ? EventDetailPresentationMode.spotlightDark
-          : EventDetailPresentationMode.ticket,
-      heroTag: isSpotlight
-          ? eventSpotlightHeroTag(item.event.id, source)
-          : eventTicketHeroTag(item.event.id, source),
+      transition: EventDetailRouteTransition.ticketCard,
+      presentationMode: EventDetailPresentationMode.ticket,
+      heroTag: eventTicketHeroTag(item.event.id, source),
+    ),
+  );
+}
+
+/// Opens the featured event from the [CatchCoverStory] cover: a dark
+/// (`spotlightDark`) detail via the standard page transition — the DS cover
+/// navigates through its CTA, not a shared-element card morph.
+void _openCoverStoryEvent(
+  BuildContext context,
+  WidgetRef ref,
+  ExploreEventItem item,
+) {
+  _logExploreEventOpened(ref, item, 'featured');
+  context.pushNamed(
+    Routes.eventDetailScreen.name,
+    pathParameters: {'clubId': item.event.clubId, 'eventId': item.event.id},
+    extra: EventDetailRouteExtra(
+      initialEvent: item.event,
+      presentationMode: EventDetailPresentationMode.spotlightDark,
     ),
   );
 }

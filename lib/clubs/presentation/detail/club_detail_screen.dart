@@ -5,13 +5,14 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/catch_club_dock.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
+import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -47,13 +48,13 @@ class ClubDetailScreen extends ConsumerWidget {
     );
     final vm = vmAsync.asData?.value;
 
-    Widget wrapMutationListeners(Widget child) => MutationErrorSnackbarListener(
+    Widget wrapMutationListeners(Widget child) => CatchMutationErrorListener(
       mutation: ClubMembershipController.joinMutation,
-      child: MutationErrorSnackbarListener(
+      child: CatchMutationErrorListener(
         mutation: ClubMembershipController.leaveMutation,
-        child: MutationErrorSnackbarListener(
+        child: CatchMutationErrorListener(
           mutation: ClubMembershipController.pushNotificationsMutation,
-          child: MutationErrorSnackbarListener(
+          child: CatchMutationErrorListener(
             mutation: ClubHostContactController.startConversationMutation,
             child: child,
           ),
@@ -77,6 +78,15 @@ class ClubDetailScreen extends ConsumerWidget {
                 currentMembership?.pushNotificationsEnabled ?? false,
             isClubPushMutating: pushMutation.isPending,
             isAuthenticated: vm.isAuthenticated,
+          ),
+          bottomNavigationBar: _buildDock(
+            club: vm.club,
+            isMember: vm.isMember,
+            isAuthenticated: vm.isAuthenticated,
+            isMutating: joinMutation.isPending || leaveMutation.isPending,
+            clubPushNotificationsEnabled:
+                currentMembership?.pushNotificationsEnabled ?? false,
+            isClubPushMutating: pushMutation.isPending,
           ),
         ),
       );
@@ -104,6 +114,17 @@ class ClubDetailScreen extends ConsumerWidget {
                 currentMembership?.pushNotificationsEnabled ?? false,
             isClubPushMutating: pushMutation.isPending,
             isAuthenticated: placeholderAuth,
+          ),
+          bottomNavigationBar: _buildDock(
+            club: initialClub!,
+            isMember:
+                placeholderAuth &&
+                currentMembership?.status == ClubMembershipStatus.active,
+            isAuthenticated: placeholderAuth,
+            isMutating: joinMutation.isPending || leaveMutation.isPending,
+            clubPushNotificationsEnabled:
+                currentMembership?.pushNotificationsEnabled ?? false,
+            isClubPushMutating: pushMutation.isPending,
           ),
         ),
       );
@@ -151,6 +172,26 @@ class ClubDetailScreen extends ConsumerWidget {
       clubPushNotificationsEnabled: clubPushNotificationsEnabled,
       isClubPushMutating: isClubPushMutating,
       isAuthenticated: isAuthenticated,
+    );
+  }
+
+  Widget? _buildDock({
+    required Club club,
+    required bool isMember,
+    required bool isAuthenticated,
+    required bool isMutating,
+    required bool clubPushNotificationsEnabled,
+    required bool isClubPushMutating,
+  }) {
+    // Host app uses its own club chrome; the membership dock is consumer-only.
+    if (AppConfig.appRole.isHost) return null;
+    return ClubMembershipDock(
+      club: club,
+      isMember: isMember,
+      isAuthenticated: isAuthenticated,
+      isMutating: isMutating,
+      pushNotificationsEnabled: clubPushNotificationsEnabled,
+      isPushMutating: isClubPushMutating,
     );
   }
 }

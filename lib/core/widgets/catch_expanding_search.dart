@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
 
 /// Handoff `ExpandingSearch`: an app-bar magnifier that grows into the shared
@@ -75,7 +75,7 @@ class CatchExpandingSearch extends StatelessWidget {
                   child: Semantics(
                     button: true,
                     label: semanticLabel ?? tooltip,
-                    child: IconBtn(
+                    child: CatchIconButton(
                       size: collapsedExtent,
                       onTap: onOpenSearch,
                       background: t.raised,

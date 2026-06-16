@@ -7,10 +7,10 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
-import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -63,7 +63,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
             );
       });
     } catch (_) {
-      // MutationErrorSnackbarListener owns user-facing error display.
+      // CatchMutationErrorListener owns user-facing error display.
     }
   }
 
@@ -87,7 +87,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
       }
     });
 
-    return MutationErrorSnackbarListener(
+    return CatchMutationErrorListener(
       mutation: FiltersController.saveFiltersMutation,
       child: Scaffold(
         backgroundColor: t.bg,
@@ -164,7 +164,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                           runSpacing: CatchSpacing.s2,
                           children: [
                             for (final gender in Gender.values)
-                              SelectChip(
+                              CatchSelectChip(
                                 key: SwipeKeys.genderFilterChip(gender.name),
                                 label: gender.label,
                                 active: interestedIn.contains(gender),

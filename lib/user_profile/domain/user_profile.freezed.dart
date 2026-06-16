@@ -372,7 +372,7 @@ as RunningPreferences,
 @override
 @pragma('vm:prefer-inline')
 $RunningPreferencesCopyWith<$Res> get running {
-
+  
   return $RunningPreferencesCopyWith<$Res>(_self.running, (value) {
     return _then(_self.copyWith(running: value));
   });
@@ -581,7 +581,7 @@ as RunningPreferences,
 @override
 @pragma('vm:prefer-inline')
 $RunningPreferencesCopyWith<$Res> get running {
-
+  
   return $RunningPreferencesCopyWith<$Res>(_self.running, (value) {
     return _then(_self.copyWith(running: value));
   });
@@ -692,7 +692,7 @@ as bool,
 @override
 @pragma('vm:prefer-inline')
 $ActivityPreferencesCopyWith<$Res> get activityPreferences {
-
+  
   return $ActivityPreferencesCopyWith<$Res>(_self.activityPreferences, (value) {
     return _then(_self.copyWith(activityPreferences: value));
   });
@@ -1003,7 +1003,7 @@ as bool,
 @override
 @pragma('vm:prefer-inline')
 $ActivityPreferencesCopyWith<$Res> get activityPreferences {
-
+  
   return $ActivityPreferencesCopyWith<$Res>(_self.activityPreferences, (value) {
     return _then(_self.copyWith(activityPreferences: value));
   });

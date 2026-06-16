@@ -16,6 +16,9 @@ node tool/contracts/generate_schema_contracts.mjs --check
 node --check tool/contracts/generated/schema_contract_validators.mjs
 node tool/contracts/check_schema_type_boundaries.mjs
 
+echo "==> Checking generated domain classes are current"
+node tool/contracts/generate_domain_classes.mjs --check
+
 echo "==> Checking schema path literals"
 node tool/contracts/check_schema_path_literals.mjs
 

@@ -4,10 +4,10 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/chip_field.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
@@ -86,19 +86,6 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
         size: CatchButtonSize.lg,
       ),
       children: [
-        OnboardingStepHeader(
-          title: widget.profileCompletionOnly
-              ? 'Finish your Catches profile'
-              : widget.runPreferencesOnly
-              ? 'Set your run preferences'
-              : 'Your running style',
-          subtitle: widget.profileCompletionOnly
-              ? 'These are optional, but they help us rank compatible people in Catches.'
-              : widget.runPreferencesOnly
-              ? 'We only ask for these before run events so hosts can plan pace groups and distances.'
-              : 'Help us find compatible running partners.',
-        ),
-        gapH20,
 
         // ── Pace ──────────────────────────────────────────────────────────
         Text(
@@ -171,7 +158,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
         gapH20,
 
         // ── Distances ─────────────────────────────────────────────────────
-        ChipField<PreferredDistance>(
+        CatchChipField<PreferredDistance>(
           label: 'FAVOURITE DISTANCES',
           isOptional: true,
           values: PreferredDistance.values,
@@ -189,7 +176,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
         gapH20,
 
         // ── Event reasons ───────────────────────────────────────────────────
-        ChipField<RunReason>(
+        CatchChipField<RunReason>(
           label: widget.runPreferencesOnly
               ? 'Why do you run?'
               : 'WHY DO YOU RUN?',
@@ -209,7 +196,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
         gapH20,
 
         // ── Time of day ───────────────────────────────────────────────────
-        ChipField<PreferredRunTime>(
+        CatchChipField<PreferredRunTime>(
           label: widget.runPreferencesOnly
               ? 'FAVOURITE RUN TIMES'
               : 'FAVOURITE EVENT TIMES',
@@ -229,7 +216,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
 
         if (mutation.hasError) ...[
           gapH16,
-          ErrorBanner(message: mutationErrorMessage(mutation)),
+          CatchErrorBanner(message: mutationErrorMessage(mutation)),
         ],
       ],
     );

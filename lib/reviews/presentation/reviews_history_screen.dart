@@ -73,32 +73,55 @@ class _ReviewsHistoryList extends ConsumerWidget {
           );
         }
 
+        // Batch-resolve the events for the date labels in one query instead of
+        // opening a live event-doc stream per review row.
+        final eventIds = <String>{
+          for (final review in reviews)
+            if (review.eventId != null) review.eventId!,
+        };
+        final eventsAsync = eventIds.isEmpty
+            ? const AsyncData<List<Event>>([])
+            : ref.watch(watchEventsByIdsProvider(EventsByIdQuery(eventIds)));
+        final eventsById = <String, Event>{
+          for (final event in eventsAsync.asData?.value ?? const <Event>[])
+            event.id: event,
+        };
+
         return ListView.separated(
           padding: CatchInsets.pageBodyRelaxed,
           itemCount: reviews.length,
           separatorBuilder: (_, _) => gapH14,
-          itemBuilder: (context, index) =>
-              _ReviewHistoryItem(review: reviews[index], user: user),
+          itemBuilder: (context, index) {
+            final review = reviews[index];
+            return _ReviewHistoryItem(
+              review: review,
+              user: user,
+              event: review.eventId == null
+                  ? null
+                  : eventsById[review.eventId],
+            );
+          },
         );
       },
     );
   }
 }
 
-class _ReviewHistoryItem extends ConsumerWidget {
-  const _ReviewHistoryItem({required this.review, required this.user});
+class _ReviewHistoryItem extends StatelessWidget {
+  const _ReviewHistoryItem({
+    required this.review,
+    required this.user,
+    required this.event,
+  });
 
   final Review review;
   final UserProfile user;
+  final Event? event;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final eventId = review.eventId;
-    final eventAsync = eventId == null
-        ? null
-        : ref.watch(watchEventProvider(eventId));
-    final event = eventAsync?.asData?.value;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

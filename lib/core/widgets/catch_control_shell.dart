@@ -36,7 +36,8 @@ abstract final class CatchControlMetrics {
   );
 
   static double radius(CatchControlShape shape) => switch (shape) {
-    CatchControlShape.rounded => CatchRadius.sm,
+    // Boxed inputs use the design-system interactive-tile radius (12), not sm.
+    CatchControlShape.rounded => CatchRadius.interactiveTile,
     CatchControlShape.pill => CatchRadius.pill,
   };
 

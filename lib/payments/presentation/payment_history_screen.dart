@@ -8,11 +8,11 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_detail_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/detail_row.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
@@ -239,19 +239,19 @@ class _PaymentTile extends ConsumerWidget {
                   gapH20,
                   Divider(color: t.line, height: 1),
                   gapH20,
-                  DetailRow(label: 'Payment ID', value: payment.paymentId),
+                  CatchDetailRow(label: 'Payment ID', value: payment.paymentId),
                   gapH12,
-                  DetailRow(label: 'Order ID', value: payment.orderId),
+                  CatchDetailRow(label: 'Order ID', value: payment.orderId),
                   gapH12,
-                  DetailRow(label: 'Event ID', value: payment.eventId),
+                  CatchDetailRow(label: 'Event ID', value: payment.eventId),
                   gapH12,
-                  DetailRow(
+                  CatchDetailRow(
                     label: 'Date',
                     value: AppTimeFormatters.dateTime(payment.createdAt),
                   ),
                   if (statusPresentation.detail case final detail?) ...[
                     gapH12,
-                    DetailRow(label: 'Status', value: detail),
+                    CatchDetailRow(label: 'Status', value: detail),
                   ],
                   if (payment.signUpFailed) ...[
                     gapH20,
@@ -304,6 +304,13 @@ class _PaymentTile extends ConsumerWidget {
           tone: CatchBadgeTone.brand,
           detail: 'Booking failed, but your payment was refunded.',
         ),
+        PaymentStatus.refundFailed => (
+          label: 'Refund pending',
+          tone: CatchBadgeTone.danger,
+          detail:
+              'No spot was reserved and the refund needs attention. '
+              'Please contact support.',
+        ),
         _ => (
           label: 'Booking failed',
           tone: CatchBadgeTone.warning,
@@ -327,6 +334,11 @@ class _PaymentTile extends ConsumerWidget {
         label: 'Failed',
         tone: CatchBadgeTone.danger,
         detail: null,
+      ),
+      PaymentStatus.refundFailed => (
+        label: 'Refund pending',
+        tone: CatchBadgeTone.danger,
+        detail: 'Your refund needs attention. Please contact support.',
       ),
       PaymentStatus.pending => (
         label: 'Pending',

@@ -22,6 +22,11 @@ class FakeRunImageUploadRepository extends Fake
   XFile? uploadedImage;
   final uploadedPositions = <int>[];
   final uploadedImages = <XFile>[];
+  final deletedPaths = <String>[];
+
+  /// When set, the upload at this position throws to simulate a mid-upload
+  /// failure so the controller's compensation can be exercised.
+  int? failOnPosition;
 
   @override
   Future<UploadedImage> uploadEventPhotoWithMetadata({
@@ -29,17 +34,30 @@ class FakeRunImageUploadRepository extends Fake
     required int position,
     required XFile image,
   }) async {
+    if (failOnPosition == position) {
+      throw Exception('upload failed at $position');
+    }
     uploadedEventId = eventId;
     uploadedPosition = position;
     uploadedImage = image;
     uploadedPositions.add(position);
     uploadedImages.add(image);
-    return UploadedImage(url: uploadResult, storagePath: uploadedStoragePath);
+    return UploadedImage(
+      url: uploadResult,
+      storagePath: _storagePathFor(eventId, position),
+    );
   }
 
+  @override
+  Future<void> deleteByPath(String storagePath) async {
+    deletedPaths.add(storagePath);
+  }
+
+  String _storagePathFor(String eventId, int position) =>
+      'events/$eventId/photos/${position}_123.jpg';
+
   String get uploadedStoragePath =>
-      'events/${uploadedEventId ?? 'generated-7'}/photos/'
-      '${uploadedPosition ?? 0}_123.jpg';
+      _storagePathFor(uploadedEventId ?? 'generated-7', uploadedPosition ?? 0);
 }
 
 void main() {
@@ -188,6 +206,56 @@ void main() {
         'events/generated-9/photos/1_123.jpg',
       ]);
       expect(submittedEvent.photoUrl, submittedEvent.eventPhotos.first.url);
+    });
+
+    test('deletes already-uploaded photos when a later upload fails', () async {
+      final fakeEventRepository = FakeEventRepository()
+        ..generatedId = 'generated-9';
+      final fakeImageUploadRepository = FakeRunImageUploadRepository()
+        ..failOnPosition = 1;
+      final photos = [XFile('event-a.jpg'), XFile('event-b.jpg')];
+      final container = ProviderContainer(
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+          imageUploadRepositoryProvider.overrideWith(
+            (ref) => fakeImageUploadRepository,
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      await expectLater(
+        container.read(createEventControllerProvider.notifier).submit(
+          clubId: 'club-7',
+          startTime: DateTime(2025, 3, 1, 6),
+          endTime: DateTime(2025, 3, 1, 7),
+          meetingLocation: _meetingLocation(),
+          eventFormat: const EventFormatSnapshot.socialRun(),
+          distanceKm: 5,
+          pace: PaceLevel.easy,
+          description: 'Morning run',
+          currency: defaultCurrencyCode,
+          constraints: const EventConstraints(),
+          eventPolicy: _eventPolicy(),
+          photoImages: photos,
+        ),
+        throwsA(isA<Exception>()),
+      );
+
+      // The first photo uploaded before the failure must be cleaned up so it
+      // doesn't orphan in Storage; the event doc was never attached photos.
+      expect(fakeImageUploadRepository.deletedPaths, [
+        'events/generated-9/photos/0_123.jpg',
+      ]);
+      expect(fakeEventRepository.updatedEvent, isNull);
     });
 
     test('sends enabled event-success defaults through createEvent', () async {

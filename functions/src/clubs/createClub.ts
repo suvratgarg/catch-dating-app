@@ -40,6 +40,22 @@ const defaultDeps: CreateClubDeps = {
 };
 
 /**
+ * A client may choose the new club's id (it becomes the public slug/path), so
+ * constrain it to a safe URL slug rather than any 180-char documentId string.
+ * @param {string} clubId Client-supplied club id.
+ * @return {string} The validated club id.
+ */
+function assertSafeNewClubId(clubId: string): string {
+  if (!/^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])?$/.test(clubId)) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Club id must be 3-64 lowercase letters, numbers, or hyphens."
+    );
+  }
+  return clubId;
+}
+
+/**
  * Creates a club and host membership edge.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {CreateClubDeps} deps Injectable dependencies for tests.
@@ -58,7 +74,7 @@ export async function createClubHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, hostUserId, "createClub");
   const clubRef = data.clubId ?
-    db.collection("clubs").doc(data.clubId) :
+    db.collection("clubs").doc(assertSafeNewClubId(data.clubId)) :
     db.collection("clubs").doc();
   const hostClaimRef = db.collection("clubHostClaims").doc(hostUserId);
   const membershipRef = db

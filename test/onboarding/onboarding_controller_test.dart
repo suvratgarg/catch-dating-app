@@ -388,7 +388,10 @@ void main() {
           interestedInGenders: const [],
         );
 
-      await expectLater(notifier.saveProfile(), throwsA(isA<StateError>()));
+      await expectLater(
+        notifier.saveProfile(),
+        throwsA(isA<ValidationException>()),
+      );
 
       expect(userProfileRepository.lastSavedUser, isNull);
     });

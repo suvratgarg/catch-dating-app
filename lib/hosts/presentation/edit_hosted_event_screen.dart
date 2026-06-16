@@ -16,14 +16,14 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
-import 'package:catch_dating_app/core/widgets/select_chip.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -310,7 +310,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               ),
               if (mutation.hasError) ...[
                 gapH12,
-                ErrorBanner.fromError(
+                CatchErrorBanner.fromError(
                   (mutation as MutationError).error,
                   context: AppErrorContext.event,
                 ),
@@ -428,7 +428,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   runSpacing: CatchSpacing.s2,
                   children: PaceLevel.values
                       .map(
-                        (pace) => SelectChip(
+                        (pace) => CatchSelectChip(
                           label: pace.label,
                           active: _selectedPace == pace,
                           enabled: _canEdit,
@@ -890,7 +890,7 @@ class _EditablePolicyCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final preset in EventAdmissionPreset.values)
-                SelectChip(
+                CatchSelectChip(
                   label: preset.label,
                   active: admissionPreset == preset,
                   semanticsLabel: preset.title,
@@ -1093,7 +1093,7 @@ class _EditablePolicyCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final policyId in EventCancellationPolicyId.values)
-                SelectChip(
+                CatchSelectChip(
                   label: _policyFor(policyId).title.toUpperCase(),
                   active: cancellationPolicyId == policyId,
                   semanticsLabel: _policyFor(policyId).title,

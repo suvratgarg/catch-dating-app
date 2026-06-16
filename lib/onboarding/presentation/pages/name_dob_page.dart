@@ -122,11 +122,6 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
           size: CatchButtonSize.lg,
         ),
         children: [
-          const OnboardingStepHeader(
-            title: 'What\'s your name?',
-            subtitle: 'Last name stays private until you catch.',
-          ),
-          gapH20,
           CatchTextField(
             label: 'FIRST NAME',
             controller: _firstNameController,

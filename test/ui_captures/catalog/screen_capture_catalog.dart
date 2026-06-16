@@ -15,7 +15,6 @@ import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.da
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/device_motion.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
@@ -320,13 +319,6 @@ final _memberDiscoveryItems = [
 class _CaptureDeviceLocation extends DeviceLocation {
   @override
   Future<LocationCoordinate?> build() async => null;
-}
-
-class _SilentDeviceMotionSource implements DeviceMotionSource {
-  const _SilentDeviceMotionSource();
-
-  @override
-  Stream<DeviceMotionSample> watchMotion() => const Stream.empty();
 }
 
 class _CaptureMatchRepository implements MatchRepository {
@@ -1293,9 +1285,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: [
       cityListProvider.overrideWith((ref) async => _memberDiscoveryCities),
       deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
-      deviceMotionSourceProvider.overrideWithValue(
-        const _SilentDeviceMotionSource(),
-      ),
       uidProvider.overrideWith((ref) => Stream.value(null)),
       watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
       exploreSourceClubsProvider.overrideWithValue(

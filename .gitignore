@@ -115,3 +115,6 @@ catch-dating-app/
 
 # Node modules
 **/node_modules/
+
+# Deep semantic audit scratch artifacts
+.audit_work/

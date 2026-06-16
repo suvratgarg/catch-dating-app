@@ -135,6 +135,10 @@
     "nullableString": {
       "type": ["string", "null"]
     },
+    "nullableShortText": {
+      "type": ["string", "null"],
+      "maxLength": 120
+    },
     "url": {
       "type": "string",
       "format": "uri",

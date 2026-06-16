@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/widgets/person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -43,7 +43,7 @@ class EventHypeAvatarQuery {
 }
 
 @riverpod
-Future<List<PersonAvatarItem>> eventHypeAvatars(
+Future<List<CatchPersonAvatarItem>> eventHypeAvatars(
   Ref ref,
   EventHypeAvatarQuery query,
 ) async {
@@ -66,14 +66,14 @@ Future<List<PersonAvatarItem>> eventHypeAvatars(
       );
   final profilesByUid = {for (final profile in profiles) profile.uid: profile};
 
-  final items = <PersonAvatarItem>[];
+  final items = <CatchPersonAvatarItem>[];
   for (final participation in visibleParticipations) {
     final profile = profilesByUid[participation.uid];
     if (profile == null) {
-      items.add(PersonAvatarItem(name: participation.uid));
+      items.add(CatchPersonAvatarItem(name: participation.uid));
     } else {
       items.add(
-        PersonAvatarItem(
+        CatchPersonAvatarItem(
           name: profile.name,
           imageUrl: profile.primaryPhotoThumbnailUrl,
         ),
@@ -111,7 +111,7 @@ class EventHypeAvatarStack extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (totalCount <= 0) return const SizedBox.shrink();
     if (obscured) {
-      return PersonAvatarStack(
+      return CatchPersonAvatarStack(
         items: const [],
         totalCount: totalCount,
         size: size,
@@ -136,7 +136,7 @@ class EventHypeAvatarStack extends ConsumerWidget {
         ? _fallbackItems(eventId, totalCount, limit)
         : items;
 
-    return PersonAvatarStack(
+    return CatchPersonAvatarStack(
       items: avatarItems,
       totalCount: totalCount,
       size: size,
@@ -171,7 +171,7 @@ int _compareRecentSignupFirst(EventParticipation a, EventParticipation b) {
   return a.uid.compareTo(b.uid);
 }
 
-List<PersonAvatarItem> _fallbackItems(
+List<CatchPersonAvatarItem> _fallbackItems(
   String eventId,
   int totalCount,
   int limit,
@@ -179,7 +179,7 @@ List<PersonAvatarItem> _fallbackItems(
   final count = totalCount.clamp(0, limit);
   return [
     for (var i = 0; i < count; i++)
-      PersonAvatarItem(name: '$eventId-hype-avatar-$i'),
+      CatchPersonAvatarItem(name: '$eventId-hype-avatar-$i'),
   ];
 }
 

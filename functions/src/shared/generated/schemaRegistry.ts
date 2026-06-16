@@ -1248,6 +1248,7 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "string",
         "null"
       ],
+      "maxLength": 120,
       "x-catch-ownership": "client-writable"
     },
     "company": {
@@ -1255,6 +1256,7 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "string",
         "null"
       ],
+      "maxLength": 120,
       "x-catch-ownership": "client-writable"
     },
     "education": {
@@ -1900,6 +1902,7 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "string",
         "null"
       ],
+      "maxLength": 120,
       "x-catch-ownership": "trigger-owned"
     },
     "company": {
@@ -1907,6 +1910,7 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "string",
         "null"
       ],
+      "maxLength": 120,
       "x-catch-ownership": "trigger-owned"
     },
     "education": {
@@ -2761,6 +2765,12 @@ export const clubDocumentSchema: Record<string, unknown> = {
     "reviewCount": {
       "type": "integer",
       "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "verifiedReviewCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Published reviews that are verified (attended a Catch event). Only these back the headline rating; unverified public reviews cannot move the score.",
       "x-catch-ownership": "trigger-owned"
     },
     "nextEventAt": {
@@ -9354,8 +9364,10 @@ export const paymentDocumentSchema: Record<string, unknown> = {
         "pending",
         "completed",
         "failed",
-        "refunded"
+        "refunded",
+        "refundFailed"
       ],
+      "description": "refundFailed marks a booking that failed AND whose automatic refund could not be issued, so the charge is stuck and needs manual reconciliation.",
       "x-catch-ownership": "callable-owned"
     },
     "providerPaymentId": {
@@ -9599,6 +9611,120 @@ export const hostPaymentAccountDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+} as const;
+
+export const razorpayPendingOrderDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/razorpay_pending_orders.schema.json",
+  "title": "RazorpayPendingOrderDocument",
+  "description": "Server-owned tracking record for a created-but-not-yet-fulfilled Razorpay order, stored at razorpayPendingOrders/{orderId}. Lets the webhook and reconciliation sweep recover bookings when the client verification callback never lands. Deleted once the matching payments/{paymentId} completed record exists.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "razorpayPendingOrders",
+  "x-firestore-path": "razorpayPendingOrders/{orderId}",
+  "x-document-id-field": "orderId",
+  "x-owner": "payments callables and razorpayWebhook",
+  "required": [
+    "provider",
+    "orderId",
+    "userId",
+    "eventId",
+    "amountInPaise",
+    "currency",
+    "status",
+    "createdAt"
+  ],
+  "properties": {
+    "provider": {
+      "type": "string",
+      "enum": [
+        "razorpay"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "orderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "userId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "amountInPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "currency": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "failed",
+        "expired"
+      ],
+      "description": "pending until fulfilled (then the doc is deleted); failed when Razorpay reported payment.failed; expired when the reconciliation sweep found no captured payment after the grace window.",
       "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
@@ -11063,16 +11189,15 @@ export const functionEventReceiptDocumentSchema: Record<string, unknown> = {
   "x-owner": "idempotent Firestore trigger handlers",
   "required": [
     "handler",
-    "eventId",
-    "matchId",
-    "messageId",
     "createdAt"
   ],
   "properties": {
     "handler": {
       "type": "string",
       "enum": [
-        "onMessageCreated"
+        "onMessageCreated",
+        "onMatchCreated",
+        "moderatePhotoOnUpload"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -11562,13 +11687,15 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
           "type": [
             "string",
             "null"
-          ]
+          ],
+          "maxLength": 120
         },
         "company": {
           "type": [
             "string",
             "null"
-          ]
+          ],
+          "maxLength": 120
         },
         "education": {
           "type": [
@@ -18076,7 +18203,7 @@ export const profilePromptCatalog = {
     {
       "id": "perfectRun",
       "title": "A perfect event with me looks like...",
-      "placeholder": "Tell runners what kind of event feels like you."
+      "placeholder": "Tell people what kind of event feels like you."
     },
     {
       "id": "afterEvent",
@@ -18113,7 +18240,7 @@ export const photoPromptCatalog = {
   "prompts": [
     {
       "id": "proofIRun",
-      "title": "Proof I actually event",
+      "title": "Proof I actually run",
       "placeholder": "Choose this when the photo is the proof."
     },
     {

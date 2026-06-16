@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/core/widgets/stat_strip.dart';
+import 'package:catch_dating_app/core/widgets/catch_stat_strip.dart';
 import 'package:flutter/material.dart';
 
 class StatsStrip extends StatelessWidget {
@@ -14,11 +14,11 @@ class StatsStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StatStrip(
+    return CatchStatStrip(
       items: [
-        StatStripItem(value: '${club.memberCount}', label: 'Members'),
-        StatStripItem(value: '$upcomingCount', label: 'Upcoming'),
-        StatStripItem(
+        CatchStatStripItem(value: '${club.memberCount}', label: 'Members'),
+        CatchStatStripItem(value: '$upcomingCount', label: 'Upcoming'),
+        CatchStatStripItem(
           value: club.rating > 0 ? club.rating.toStringAsFixed(1) : '—',
           label: 'Rating',
         ),

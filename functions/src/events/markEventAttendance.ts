@@ -128,41 +128,49 @@ export async function markEventAttendanceHandler(
   const participationRef = db
     .collection("eventParticipations")
     .doc(eventParticipationId(eventId, userId));
-  const participationSnap = await participationRef.get();
-  const existingParticipation = participationSnap.exists ?
-    participationSnap.data() as {
-      status?: string;
-      inviteLinkId?: string | null;
-    } :
-    null;
-  if (
-    existingParticipation?.status !== "signedUp" &&
-    existingParticipation?.status !== "attended"
-  ) {
-    throw new HttpsError(
-      "failed-precondition",
-      "This runner is not booked for this event."
-    );
-  }
-  const alreadyAttended = existingParticipation.status === "attended";
 
-  const batch = db.batch();
-  batch.update(eventRef, {
-    checkedInCount: deps.increment(alreadyAttended ? -1 : 1),
+  // Read the participation edge and apply the checkedInCount delta inside one
+  // transaction, conditioned on the in-transaction status, so concurrent or
+  // retried check-ins cannot double-count or lose updates.
+  const checkIn = await db.runTransaction(async (tx) => {
+    const participationSnap = await tx.get(participationRef);
+    const existingParticipation = participationSnap.exists ?
+      participationSnap.data() as {
+        status?: string;
+        inviteLinkId?: string | null;
+      } :
+      null;
+    if (
+      existingParticipation?.status !== "signedUp" &&
+      existingParticipation?.status !== "attended"
+    ) {
+      throw new HttpsError(
+        "failed-precondition",
+        "This runner is not booked for this event."
+      );
+    }
+    const alreadyAttended = existingParticipation.status === "attended";
+    tx.update(eventRef, {
+      checkedInCount: deps.increment(alreadyAttended ? -1 : 1),
+    });
+    tx.set(participationRef, eventParticipationPatch({
+      exists: participationSnap.exists,
+      eventId,
+      clubId: event.clubId,
+      uid: userId,
+      status: alreadyAttended ? "signedUp" : "attended",
+    }), {merge: true});
+    return {
+      alreadyAttended,
+      inviteLinkId: existingParticipation.inviteLinkId,
+    };
   });
-  batch.set(participationRef, eventParticipationPatch({
-    exists: participationSnap.exists,
-    eventId,
-    clubId: event.clubId,
-    uid: userId,
-    status: alreadyAttended ? "signedUp" : "attended",
-  }), {merge: true});
-  await batch.commit();
+  const {alreadyAttended, inviteLinkId} = checkIn;
 
   const attended = !alreadyAttended;
   await incrementInviteLinkCounterBestEffort({
     db,
-    inviteLinkId: existingParticipation?.inviteLinkId,
+    inviteLinkId,
     field: "checkedInCount",
     delta: attended ? 1 : -1,
   });

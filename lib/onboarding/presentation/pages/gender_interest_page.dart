@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/chip_field.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
@@ -61,9 +61,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
           size: CatchButtonSize.lg,
         ),
         children: [
-          const OnboardingStepHeader(title: 'How do you identify?'),
-          gapH28,
-          ChipField<Gender>(
+          CatchChipField<Gender>(
             label: 'I AM A',
             values: Gender.values,
             selected: _gender != null ? {_gender!} : {},
@@ -77,7 +75,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
             },
           ),
           gapH28,
-          ChipField<Gender>(
+          CatchChipField<Gender>(
             label: 'SHOW ME',
             values: Gender.values,
             selected: _interestedIn,
@@ -93,7 +91,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
           ),
           if (mutation.hasError) ...[
             gapH16,
-            ErrorBanner(message: mutationErrorMessage(mutation)),
+            CatchErrorBanner(message: mutationErrorMessage(mutation)),
           ],
         ],
       ),

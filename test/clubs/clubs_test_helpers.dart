@@ -19,8 +19,8 @@ Club buildClub({
   String description = 'Morning runners who like easy city loops.',
   String location = 'mumbai',
   String area = 'Bandra',
-  String hostUserId = 'host-1',
-  String hostName = 'Host',
+  String? hostUserId = 'host-1',
+  String? hostName = 'Host',
   String? hostAvatarUrl,
   String? ownerUserId,
   List<String>? hostUserIds,
@@ -565,12 +565,34 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     required String matchId,
     required String messageId,
     required XFile image,
+  }) async =>
+      (await uploadChatImageWithMetadata(
+        matchId: matchId,
+        messageId: messageId,
+        image: image,
+      )).url;
+
+  @override
+  Future<UploadedImage> uploadChatImageWithMetadata({
+    required String matchId,
+    required String messageId,
+    required XFile image,
   }) async {
     if (uploadError != null) {
       throw uploadError!;
     }
     lastUploadedImage = image;
-    return uploadResult;
+    return UploadedImage(
+      url: uploadResult,
+      storagePath: 'matches/$matchId/images/${messageId}_test.jpg',
+    );
+  }
+
+  final deletedStoragePaths = <String>[];
+
+  @override
+  Future<void> deleteByPath(String storagePath) async {
+    deletedStoragePaths.add(storagePath);
   }
 }
 

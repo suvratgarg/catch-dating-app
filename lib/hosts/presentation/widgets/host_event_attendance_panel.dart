@@ -7,14 +7,12 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
-import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
@@ -24,6 +22,7 @@ import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/hosts/domain/host_report_export.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_action_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -249,7 +248,7 @@ class _ParticipantsListState extends ConsumerState<_ParticipantsList> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (errorMutation.hasError)
-          ErrorBanner(message: mutationErrorMessage(errorMutation)),
+          CatchErrorBanner(message: mutationErrorMessage(errorMutation)),
         if (widget.scrollable) Expanded(child: rows) else rows,
       ],
     );
@@ -398,8 +397,9 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
         onChanged: onSearchChanged,
       ),
       gapH14,
-      _RosterTableShell(
+      CatchRosterTable(
         columns: const ['Guest', 'Signal', 'Host action'],
+        showEmpty: rowIds.isEmpty,
         emptyTitle: hasSearch
             ? 'No matches'
             : activeFilter == _RosterFilter.slots
@@ -412,17 +412,13 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
             : mode.emptyMessage,
         rows: [
           for (final uid in rowIds)
-            _SetupReviewRow(
-              uid: uid,
-              name: _nameFor(uid),
-              photoUrl: _photoFor(uid),
-              participation: viewModel.participationFor(uid),
+            _setupRow(
+              context,
+              ref,
+              uid,
               usesRequestApproval: usesRequestApproval,
               requestActionPending: requestActionPending,
               offerActionPending: offerActionPending,
-              onApprove: () => _approveJoinRequest(ref, uid),
-              onDecline: () => _declineJoinRequest(ref, uid),
-              onOffer: () => _createWaitlistOffer(ref, uid),
             ),
         ],
       ),
@@ -522,8 +518,9 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
         onChanged: onSearchChanged,
       ),
       gapH14,
-      _RosterTableShell(
+      CatchRosterTable(
         columns: const ['Guest', 'Status', 'Host action'],
+        showEmpty: rowIds.isEmpty,
         emptyTitle: hasSearch
             ? 'No matches'
             : _liveEmptyTitle(activeFilter, hasRoster),
@@ -532,16 +529,12 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
             : _liveEmptyMessage(activeFilter, hasRoster),
         rows: [
           for (final uid in rowIds)
-            _LiveRosterRow(
-              uid: uid,
-              name: _nameFor(uid),
-              photoUrl: _photoFor(uid),
-              participation: viewModel.participationFor(uid),
-              attended: viewModel.attendedIds.contains(uid),
+            _liveRow(
+              context,
+              ref,
+              uid,
               usesRequestApproval: usesRequestApproval,
               offerActionPending: offerActionPending,
-              onToggle: () => _toggleAttendance(ref, uid),
-              onOffer: () => _createWaitlistOffer(ref, uid),
             ),
         ],
       ),
@@ -618,22 +611,14 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
         onChanged: onSearchChanged,
       ),
       gapH14,
-      _RosterTableShell(
+      CatchRosterTable(
         columns: const ['Name', 'Attendance', 'Payment'],
+        showEmpty: rowIds.isEmpty,
         emptyTitle: hasSearch ? 'No matches' : _reportEmptyTitle(activeFilter),
         emptyMessage: hasSearch
             ? 'No report rows match this search.'
             : _reportEmptyMessage(activeFilter),
-        rows: [
-          for (final uid in rowIds)
-            _ReportRow(
-              name: _nameFor(uid),
-              participation: viewModel.participationFor(uid),
-              attended: viewModel.attendedIds.contains(uid),
-              priceInPaise: viewModel.event.priceInPaise,
-              currencyCode: viewModel.event.currency,
-            ),
-        ],
+        rows: [for (final uid in rowIds) _reportRow(uid)],
       ),
       gapH12,
       CatchSurface(
@@ -666,6 +651,153 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
         ],
       ),
     ];
+  }
+
+  CatchRosterRow _setupRow(
+    BuildContext context,
+    WidgetRef ref,
+    String uid, {
+    required bool usesRequestApproval,
+    required bool requestActionPending,
+    required bool offerActionPending,
+  }) {
+    final participation = viewModel.participationFor(uid);
+    final signal = _setupSignal(participation, usesRequestApproval);
+    final isRequest =
+        usesRequestApproval &&
+        participation?.status == EventParticipationStatus.waitlisted;
+    final CatchRosterAction action;
+    if (isRequest) {
+      action = CatchRosterDecideAction(
+        onProfile: () => _openPublicProfile(context, uid),
+        onApprove: requestActionPending
+            ? null
+            : () => _approveJoinRequest(ref, uid),
+        onDecline: requestActionPending
+            ? null
+            : () => _declineJoinRequest(ref, uid),
+      );
+    } else if (participation?.status ==
+        EventParticipationStatus.waitlisted) {
+      action = _waitlistOfferAction(
+        ref,
+        uid,
+        participation,
+        offerActionPending: offerActionPending,
+      );
+    } else {
+      action = _profileAction(context, uid);
+    }
+    return CatchRosterRow(
+      person: _nameFor(uid),
+      imageUrl: _photoFor(uid),
+      meta: _setupMeta(participation, usesRequestApproval),
+      signal: signal.label,
+      tone: signal.tone,
+      action: action,
+    );
+  }
+
+  CatchRosterRow _liveRow(
+    BuildContext context,
+    WidgetRef ref,
+    String uid, {
+    required bool usesRequestApproval,
+    required bool offerActionPending,
+  }) {
+    final participation = viewModel.participationFor(uid);
+    final attended = viewModel.attendedIds.contains(uid);
+    final status = participation?.status;
+    final signal = _liveSignal(participation, attended, usesRequestApproval);
+    final meta = attended
+        ? participation?.attendedAt == null
+              ? 'Checked in'
+              : EventFormatters.time(participation!.attendedAt!)
+        : _reportMeta(participation);
+    final canToggle =
+        status == EventParticipationStatus.signedUp ||
+        status == EventParticipationStatus.attended;
+    final CatchRosterAction action;
+    if (canToggle) {
+      action = CatchRosterButtonAction(
+        buttonKey: HostEventActionKeys.attendeeCheckInButton(uid),
+        label: attended ? 'Undo' : 'Check in',
+        primary: !attended,
+        onPressed: () => _toggleAttendance(ref, uid),
+      );
+    } else if (status == EventParticipationStatus.waitlisted &&
+        !usesRequestApproval) {
+      action = _waitlistOfferAction(
+        ref,
+        uid,
+        participation,
+        offerActionPending: offerActionPending,
+      );
+    } else {
+      action = _profileAction(context, uid);
+    }
+    return CatchRosterRow(
+      person: _nameFor(uid),
+      imageUrl: _photoFor(uid),
+      meta: meta,
+      signal: signal.label,
+      tone: signal.tone,
+      action: action,
+    );
+  }
+
+  CatchRosterRow _reportRow(String uid) {
+    final participation = viewModel.participationFor(uid);
+    final attended = viewModel.attendedIds.contains(uid);
+    final status = participation?.status;
+    final attendance = _reportAttendance(participation, attended);
+    final payment = status == EventParticipationStatus.waitlisted
+        ? '-'
+        : viewModel.event.priceInPaise == 0
+        ? 'Free'
+        : EventFormatters.priceInPaise(
+            viewModel.event.priceInPaise,
+            currencyCode: viewModel.event.currency,
+          );
+    return CatchRosterRow(
+      person: _nameFor(uid),
+      imageUrl: _photoFor(uid),
+      meta: _reportMeta(participation),
+      signal: attendance.label,
+      tone: attendance.tone,
+      action: CatchRosterTextAction(payment),
+    );
+  }
+
+  /// Shared waitlist action — a settled offer reads as an outcome [CatchBadge],
+  /// otherwise an "Offer" button (disabled while a send is in flight).
+  CatchRosterAction _waitlistOfferAction(
+    WidgetRef ref,
+    String uid,
+    EventParticipation? participation, {
+    required bool offerActionPending,
+  }) {
+    final offerStatus = participation?.waitlistOfferStatus;
+    if (offerStatus == EventWaitlistOfferStatus.active ||
+        offerStatus == EventWaitlistOfferStatus.accepted) {
+      final accepted = offerStatus == EventWaitlistOfferStatus.accepted;
+      return CatchRosterBadgeAction(
+        label: accepted ? 'Accepted' : 'Offered',
+        tone: accepted ? CatchBadgeTone.success : CatchBadgeTone.brand,
+      );
+    }
+    return CatchRosterButtonAction(
+      label: 'Offer',
+      onPressed: offerActionPending ? null : () => _createWaitlistOffer(ref, uid),
+      disabled: offerActionPending,
+    );
+  }
+
+  CatchRosterAction _profileAction(BuildContext context, String uid) {
+    return CatchRosterButtonAction(
+      label: 'Profile',
+      onPressed: () => _openPublicProfile(context, uid),
+    );
   }
 
   String _nameFor(String uid) => profiles[uid]?.$1 ?? 'Runner';
@@ -932,106 +1064,20 @@ class _RosterFilterHeader extends StatelessWidget {
           ],
           gapH12,
         ],
-        Row(
-          children: [
-            for (final indexed in filters.indexed) ...[
-              if (indexed.$1 > 0) gapW6,
-              Expanded(
-                child: _RosterFilterTile(
-                  spec: indexed.$2,
-                  selected: indexed.$2.filter == selectedFilter,
-                  onTap: () => onFilterChanged(indexed.$2.filter),
-                ),
+        CatchRosterTiles(
+          items: [
+            for (final spec in filters)
+              CatchRosterTile(
+                id: spec.filter.name,
+                value: '${spec.value}',
+                label: spec.label,
+                tone: spec.tone,
               ),
-            ],
           ],
+          selected: selectedFilter.name,
+          onSelect: (id) => onFilterChanged(_RosterFilter.values.byName(id)),
         ),
       ],
-    );
-  }
-}
-
-class _RosterFilterTile extends StatelessWidget {
-  const _RosterFilterTile({
-    required this.spec,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final _RosterFilterSpec spec;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final foreground = selected ? t.surface : _filterForeground(spec.tone, t);
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: '${spec.label}: ${spec.value}',
-      child: Material(
-        color: selected
-            ? t.ink
-            : _filterBackground(
-                spec.tone,
-                t,
-              ).withValues(alpha: CatchOpacity.rosterFilterFill),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(CatchRadius.md),
-          side: BorderSide(
-            color: selected
-                ? Colors.transparent
-                : _filterForeground(
-                    spec.tone,
-                    t,
-                  ).withValues(alpha: CatchOpacity.rosterFilterBorder),
-          ),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: CatchLayout.rosterFilterTileMinHeight,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: CatchSpacing.s2,
-                vertical: CatchSpacing.s2,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '${spec.value}',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.sectionTitle(
-                      context,
-                      color: foreground,
-                    ),
-                  ),
-                  gapH2,
-                  Text(
-                    spec.label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.labelL(
-                      context,
-                      color: selected
-                          ? t.surface.withValues(
-                              alpha: CatchOpacity.rosterFilterSelectedLabel,
-                            )
-                          : t.ink2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
@@ -1104,41 +1150,6 @@ class _WaitlistBulkOfferAction extends StatelessWidget {
   }
 }
 
-Color _filterBackground(CatchBadgeTone tone, CatchTokens t) {
-  return switch (tone) {
-    CatchBadgeTone.success => t.success.withValues(
-      alpha: CatchOpacity.photoScrimLight,
-    ),
-    CatchBadgeTone.warning => t.gold.withValues(
-      alpha: CatchOpacity.warningFill,
-    ),
-    CatchBadgeTone.brand => t.primary.withValues(
-      alpha: CatchOpacity.photoScrimLight,
-    ),
-    CatchBadgeTone.danger => t.danger.withValues(
-      alpha: CatchOpacity.controlOverlayPressed,
-    ),
-    CatchBadgeTone.gold => t.gold.withValues(alpha: CatchOpacity.subtleFill),
-    CatchBadgeTone.solid => t.surface,
-    CatchBadgeTone.live => t.primarySoft.withValues(
-      alpha: CatchOpacity.eventSuccessBouncyGlow,
-    ),
-    CatchBadgeTone.neutral => t.raised,
-  };
-}
-
-Color _filterForeground(CatchBadgeTone tone, CatchTokens t) {
-  return switch (tone) {
-    CatchBadgeTone.success => t.success,
-    CatchBadgeTone.warning => t.gold,
-    CatchBadgeTone.gold => t.gold,
-    CatchBadgeTone.brand || CatchBadgeTone.live => t.primary,
-    CatchBadgeTone.danger => t.danger,
-    CatchBadgeTone.solid => t.ink,
-    CatchBadgeTone.neutral => t.ink2,
-  };
-}
-
 int _bulkOfferCount(List<String> offerableIds, int remainingSlots) {
   if (offerableIds.isEmpty || remainingSlots <= 0) return 0;
   return offerableIds.length < remainingSlots
@@ -1157,187 +1168,57 @@ bool _canCreateWaitlistOffer(EventParticipation? participation) {
 
 String _personNoun(int count) => count == 1 ? 'person' : 'people';
 
-class _RosterTableShell extends StatelessWidget {
-  const _RosterTableShell({
-    required this.columns,
-    required this.rows,
-    required this.emptyTitle,
-    required this.emptyMessage,
-  });
-
-  final List<String> columns;
-  final List<Widget> rows;
-  final String emptyTitle;
-  final String emptyMessage;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      borderColor: t.line,
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s3,
-              CatchSpacing.s3,
-              CatchSpacing.s3,
-              CatchSpacing.s2,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 5,
-                  child: Text(
-                    columns[0],
-                    style: CatchTextStyles.labelS(context, color: t.ink3),
-                  ),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: Text(
-                    columns[1],
-                    style: CatchTextStyles.labelS(context, color: t.ink3),
-                  ),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      columns[2],
-                      style: CatchTextStyles.labelS(context, color: t.ink3),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const _RosterDivider(),
-          if (rows.isEmpty)
-            Padding(
-              padding: CatchInsets.content,
-              child: _TableEmptyState(title: emptyTitle, message: emptyMessage),
-            )
-          else
-            for (var i = 0; i < rows.length; i++) ...[
-              rows[i],
-              if (i < rows.length - 1) const _RosterDivider(),
-            ],
-        ],
-      ),
-    );
-  }
+({String label, CatchBadgeTone tone}) _liveSignal(
+  EventParticipation? participation,
+  bool attended,
+  bool usesRequestApproval,
+) {
+  final status = participation?.status;
+  return switch (status) {
+    EventParticipationStatus.waitlisted
+        when participation?.waitlistOfferStatus ==
+            EventWaitlistOfferStatus.active =>
+      (label: 'Offered', tone: CatchBadgeTone.brand),
+    EventParticipationStatus.waitlisted
+        when participation?.waitlistOfferStatus ==
+            EventWaitlistOfferStatus.accepted =>
+      (label: 'Accepted', tone: CatchBadgeTone.success),
+    EventParticipationStatus.waitlisted when usesRequestApproval => (
+      label: 'Request',
+      tone: CatchBadgeTone.brand,
+    ),
+    EventParticipationStatus.waitlisted => (
+      label: 'Wait',
+      tone: CatchBadgeTone.warning,
+    ),
+    _ when attended => (label: 'In', tone: CatchBadgeTone.success),
+    _ => (label: 'Due', tone: CatchBadgeTone.neutral),
+  };
 }
 
-class _TableEmptyState extends StatelessWidget {
-  const _TableEmptyState({required this.title, required this.message});
-
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(CatchIcons.groupOutlined, color: t.ink3, size: CatchIcon.row),
-        gapW10,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(title, style: CatchTextStyles.labelM(context)),
-              gapH4,
-              Text(
-                message,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _SetupReviewRow extends StatelessWidget {
-  const _SetupReviewRow({
-    required this.uid,
-    required this.name,
-    required this.photoUrl,
-    required this.participation,
-    required this.usesRequestApproval,
-    required this.requestActionPending,
-    required this.offerActionPending,
-    required this.onApprove,
-    required this.onDecline,
-    required this.onOffer,
-  });
-
-  final String uid;
-  final String name;
-  final String? photoUrl;
-  final EventParticipation? participation;
-  final bool usesRequestApproval;
-  final bool requestActionPending;
-  final bool offerActionPending;
-  final VoidCallback onApprove;
-  final VoidCallback onDecline;
-  final VoidCallback onOffer;
-
-  @override
-  Widget build(BuildContext context) {
-    final isRequest =
-        usesRequestApproval &&
-        participation?.status == EventParticipationStatus.waitlisted;
-    final signal = _setupSignal(participation, usesRequestApproval);
-    return Padding(
-      padding: CatchInsets.compactControlContent,
-      child: Row(
-        children: [
-          Expanded(
-            flex: 5,
-            child: _CompactPersonIdentity(
-              name: name,
-              photoUrl: photoUrl,
-              meta: _setupMeta(participation, usesRequestApproval),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: CatchBadge(label: signal.label, tone: signal.tone),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: isRequest
-                  ? _DecisionControls(
-                      uid: uid,
-                      isPending: requestActionPending,
-                      onApprove: onApprove,
-                      onDecline: onDecline,
-                    )
-                  : participation?.status == EventParticipationStatus.waitlisted
-                  ? _WaitlistOfferButton(
-                      participation: participation,
-                      isPending: offerActionPending,
-                      onOffer: onOffer,
-                    )
-                  : _ProfileButton(uid: uid),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+({String label, CatchBadgeTone tone}) _reportAttendance(
+  EventParticipation? participation,
+  bool attended,
+) {
+  final status = participation?.status;
+  final offerStatus = participation?.waitlistOfferStatus;
+  return switch (status) {
+    EventParticipationStatus.waitlisted
+        when offerStatus == EventWaitlistOfferStatus.active =>
+      (label: 'Offered', tone: CatchBadgeTone.brand),
+    EventParticipationStatus.waitlisted
+        when offerStatus == EventWaitlistOfferStatus.accepted =>
+      (label: 'Accepted', tone: CatchBadgeTone.success),
+    EventParticipationStatus.waitlisted
+        when offerStatus == EventWaitlistOfferStatus.expired =>
+      (label: 'Expired', tone: CatchBadgeTone.neutral),
+    EventParticipationStatus.waitlisted => (
+      label: 'Wait',
+      tone: CatchBadgeTone.warning,
+    ),
+    _ when attended => (label: 'Attended', tone: CatchBadgeTone.success),
+    _ => (label: 'No-show', tone: CatchBadgeTone.neutral),
+  };
 }
 
 ({String label, CatchBadgeTone tone}) _setupSignal(
@@ -1392,299 +1273,6 @@ String _setupMeta(EventParticipation? participation, bool usesRequestApproval) {
     EventParticipationStatus.waitlisted => 'Waitlisted',
     _ => 'Profile ready',
   };
-}
-
-class _DecisionControls extends StatelessWidget {
-  const _DecisionControls({
-    required this.uid,
-    required this.isPending,
-    required this.onApprove,
-    required this.onDecline,
-  });
-
-  final String uid;
-  final bool isPending;
-  final VoidCallback onApprove;
-  final VoidCallback onDecline;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _DecisionIconAction(
-          tooltip: 'Open profile',
-          icon: CatchIcons.personSearchOutlined,
-          color: t.ink2,
-          onPressed: () => _openPublicProfile(context, uid),
-        ),
-        gapW4,
-        _DecisionIconAction(
-          tooltip: 'Approve request',
-          icon: CatchIcons.checkCircleOutlineRounded,
-          color: t.success,
-          onPressed: isPending ? null : onApprove,
-        ),
-        gapW4,
-        _DecisionIconAction(
-          tooltip: 'Decline request',
-          icon: CatchIcons.cancelOutlined,
-          color: t.danger,
-          onPressed: isPending ? null : onDecline,
-        ),
-      ],
-    );
-  }
-}
-
-class _DecisionIconAction extends StatelessWidget {
-  const _DecisionIconAction({
-    required this.tooltip,
-    required this.icon,
-    required this.color,
-    required this.onPressed,
-  });
-
-  final String tooltip;
-  final IconData icon;
-  final Color color;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip,
-      child: IconBtn(
-        onTap: onPressed,
-        child: Icon(icon, size: CatchIcon.md, color: color),
-      ),
-    );
-  }
-}
-
-class _ProfileButton extends StatelessWidget {
-  const _ProfileButton({required this.uid});
-
-  final String uid;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchButton(
-      label: 'Profile',
-      size: CatchButtonSize.sm,
-      variant: CatchButtonVariant.secondary,
-      onPressed: () => _openPublicProfile(context, uid),
-    );
-  }
-}
-
-class _WaitlistOfferButton extends StatelessWidget {
-  const _WaitlistOfferButton({
-    required this.participation,
-    required this.isPending,
-    required this.onOffer,
-  });
-
-  final EventParticipation? participation;
-  final bool isPending;
-  final VoidCallback onOffer;
-
-  @override
-  Widget build(BuildContext context) {
-    final offerStatus = participation?.waitlistOfferStatus;
-    if (offerStatus == EventWaitlistOfferStatus.active ||
-        offerStatus == EventWaitlistOfferStatus.accepted) {
-      return CatchBadge(
-        label: offerStatus == EventWaitlistOfferStatus.accepted
-            ? 'Accepted'
-            : 'Offered',
-        tone: offerStatus == EventWaitlistOfferStatus.accepted
-            ? CatchBadgeTone.success
-            : CatchBadgeTone.brand,
-      );
-    }
-    return CatchButton(
-      label: 'Offer',
-      size: CatchButtonSize.sm,
-      variant: CatchButtonVariant.secondary,
-      onPressed: isPending ? null : onOffer,
-    );
-  }
-}
-
-class _LiveRosterRow extends StatelessWidget {
-  const _LiveRosterRow({
-    required this.uid,
-    required this.name,
-    required this.photoUrl,
-    required this.participation,
-    required this.attended,
-    required this.usesRequestApproval,
-    required this.offerActionPending,
-    required this.onToggle,
-    required this.onOffer,
-  });
-
-  final String uid;
-  final String name;
-  final String? photoUrl;
-  final EventParticipation? participation;
-  final bool attended;
-  final bool usesRequestApproval;
-  final bool offerActionPending;
-  final VoidCallback onToggle;
-  final VoidCallback onOffer;
-
-  @override
-  Widget build(BuildContext context) {
-    final status = participation?.status;
-    final signal = switch (status) {
-      EventParticipationStatus.waitlisted
-          when participation?.waitlistOfferStatus ==
-              EventWaitlistOfferStatus.active =>
-        (label: 'Offered', tone: CatchBadgeTone.brand),
-      EventParticipationStatus.waitlisted
-          when participation?.waitlistOfferStatus ==
-              EventWaitlistOfferStatus.accepted =>
-        (label: 'Accepted', tone: CatchBadgeTone.success),
-      EventParticipationStatus.waitlisted when usesRequestApproval => (
-        label: 'Request',
-        tone: CatchBadgeTone.brand,
-      ),
-      EventParticipationStatus.waitlisted => (
-        label: 'Wait',
-        tone: CatchBadgeTone.warning,
-      ),
-      _ when attended => (label: 'In', tone: CatchBadgeTone.success),
-      _ => (label: 'Due', tone: CatchBadgeTone.neutral),
-    };
-    final meta = attended
-        ? participation?.attendedAt == null
-              ? 'Checked in'
-              : EventFormatters.time(participation!.attendedAt!)
-        : _reportMeta(participation);
-    final canToggle =
-        status == EventParticipationStatus.signedUp ||
-        status == EventParticipationStatus.attended;
-
-    return CatchSurface(
-      borderWidth: 0,
-      radius: CatchRadius.sm,
-      backgroundColor: Colors.transparent,
-      padding: CatchInsets.compactControlContent,
-      child: Row(
-        children: [
-          Expanded(
-            flex: 5,
-            child: _CompactPersonIdentity(
-              name: name,
-              photoUrl: photoUrl,
-              meta: meta,
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: CatchBadge(label: signal.label, tone: signal.tone),
-          ),
-          Expanded(
-            flex: 3,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: canToggle
-                  ? CatchButton(
-                      key: HostEventActionKeys.attendeeCheckInButton(uid),
-                      label: attended ? 'Undo' : 'Check in',
-                      size: CatchButtonSize.sm,
-                      variant: attended
-                          ? CatchButtonVariant.secondary
-                          : CatchButtonVariant.primary,
-                      onPressed: onToggle,
-                    )
-                  : status == EventParticipationStatus.waitlisted &&
-                        !usesRequestApproval
-                  ? _WaitlistOfferButton(
-                      participation: participation,
-                      isPending: offerActionPending,
-                      onOffer: onOffer,
-                    )
-                  : _ProfileButton(uid: uid),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ReportRow extends StatelessWidget {
-  const _ReportRow({
-    required this.name,
-    required this.participation,
-    required this.attended,
-    required this.priceInPaise,
-    required this.currencyCode,
-  });
-
-  final String name;
-  final EventParticipation? participation;
-  final bool attended;
-  final int priceInPaise;
-  final String currencyCode;
-
-  @override
-  Widget build(BuildContext context) {
-    final status = participation?.status;
-    final offerStatus = participation?.waitlistOfferStatus;
-    final attendance = switch (status) {
-      EventParticipationStatus.waitlisted
-          when offerStatus == EventWaitlistOfferStatus.active =>
-        (label: 'Offered', tone: CatchBadgeTone.brand),
-      EventParticipationStatus.waitlisted
-          when offerStatus == EventWaitlistOfferStatus.accepted =>
-        (label: 'Accepted', tone: CatchBadgeTone.success),
-      EventParticipationStatus.waitlisted
-          when offerStatus == EventWaitlistOfferStatus.expired =>
-        (label: 'Expired', tone: CatchBadgeTone.neutral),
-      EventParticipationStatus.waitlisted => (
-        label: 'Wait',
-        tone: CatchBadgeTone.warning,
-      ),
-      _ when attended => (label: 'Attended', tone: CatchBadgeTone.success),
-      _ => (label: 'No-show', tone: CatchBadgeTone.neutral),
-    };
-    final payment = status == EventParticipationStatus.waitlisted
-        ? '-'
-        : priceInPaise == 0
-        ? 'Free'
-        : EventFormatters.priceInPaise(
-            priceInPaise,
-            currencyCode: currencyCode,
-          );
-
-    return Padding(
-      padding: CatchInsets.compactControlContent,
-      child: Row(
-        children: [
-          Expanded(
-            flex: 5,
-            child: _NameMeta(name: name, meta: _reportMeta(participation)),
-          ),
-          Expanded(
-            flex: 3,
-            child: CatchBadge(label: attendance.label, tone: attendance.tone),
-          ),
-          Expanded(
-            flex: 3,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Text(payment, style: CatchTextStyles.labelL(context)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 String _reportMeta(EventParticipation? participation) {
@@ -1764,74 +1352,6 @@ class _ExportReportButtonState extends State<_ExportReportButton> {
         setState(() => _isExporting = false);
       }
     }
-  }
-}
-
-class _CompactPersonIdentity extends StatelessWidget {
-  const _CompactPersonIdentity({
-    required this.name,
-    required this.photoUrl,
-    required this.meta,
-  });
-
-  final String name;
-  final String? photoUrl;
-  final String meta;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        PersonAvatar(size: 34, name: name, imageUrl: photoUrl),
-        gapW10,
-        Expanded(
-          child: _NameMeta(name: name, meta: meta),
-        ),
-      ],
-    );
-  }
-}
-
-class _NameMeta extends StatelessWidget {
-  const _NameMeta({required this.name, required this.meta});
-
-  final String name;
-  final String meta;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          name,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.sectionTitle(context),
-        ),
-        Text(
-          meta,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
-        ),
-      ],
-    );
-  }
-}
-
-class _RosterDivider extends StatelessWidget {
-  const _RosterDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    return Divider(
-      height: 1,
-      thickness: 1,
-      color: CatchTokens.of(context).line,
-    );
   }
 }
 

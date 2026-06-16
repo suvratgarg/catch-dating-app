@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
 
 class CatchActionMenuItem<T> {
@@ -95,7 +95,7 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
       builder: (context, controller, child) {
         return Tooltip(
           message: widget.tooltip,
-          child: IconBtn(
+          child: CatchIconButton(
             onTap: _canOpen
                 ? () =>
                       controller.isOpen ? controller.close() : controller.open()

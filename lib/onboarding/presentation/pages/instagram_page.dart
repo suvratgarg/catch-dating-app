@@ -67,12 +67,6 @@ class _InstagramPageState extends ConsumerState<InstagramPage> {
         ],
       ),
       children: [
-        const OnboardingStepHeader(
-          title: 'Your Instagram',
-          subtitle:
-              'Helps us verify you for early access. Your handle is never shown to other users.',
-        ),
-        gapH28,
         CatchTextField(
           controller: _controller,
           label: 'HANDLE',

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/app_error_context.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/location_service.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -8,6 +9,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/force_update_diagnostics.dart';
@@ -154,8 +156,20 @@ Future<void> _refreshForceUpdateGate(
 }) async {
   try {
     await ref.read(firebaseRemoteConfigProvider).fetchAndActivate();
-  } catch (error) {
-    debugPrint('Remote Config refresh failed: $error');
+  } catch (error, stackTrace) {
+    // Best-effort refresh: the force-update gate keeps serving the last
+    // activated values, but the failure is normalized and logged (not silently
+    // swallowed) so a real Remote Config misconfig stays observable.
+    logAppError(
+      error,
+      stackTrace: stackTrace,
+      context: const AppErrorContext(
+        operation: AppOperation.runtime,
+        action: 'refresh the force-update gate',
+        resource: 'remote_config',
+      ),
+      logError: ref.read(errorLoggerProvider),
+    );
   }
 
   if (shouldInvalidate?.call() == false) return;

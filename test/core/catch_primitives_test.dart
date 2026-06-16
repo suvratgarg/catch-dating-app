@@ -6,20 +6,23 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/activity_art.dart';
-import 'package:catch_dating_app/core/widgets/activity_avatar.dart';
-import 'package:catch_dating_app/core/widgets/activity_chip.dart';
-import 'package:catch_dating_app/core/widgets/activity_map_pin.dart';
-import 'package:catch_dating_app/core/widgets/async_value_widget.dart';
-import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
-import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
+import 'package:catch_dating_app/core/widgets/catch_activity_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_cta.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
+import 'package:catch_dating_app/core/widgets/catch_detail_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
 import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
@@ -27,6 +30,10 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_expanding_search.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
+import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_info_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_info_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
@@ -35,13 +42,17 @@ import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_panel.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_settings_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
+import 'package:catch_dating_app/core/widgets/catch_stat_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
@@ -50,17 +61,6 @@ import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_viewport_curve_frame.dart';
-import 'package:catch_dating_app/core/widgets/chip_field.dart';
-import 'package:catch_dating_app/core/widgets/detail_row.dart';
-import 'package:catch_dating_app/core/widgets/distance_ring.dart';
-import 'package:catch_dating_app/core/widgets/graded_image.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
-import 'package:catch_dating_app/core/widgets/info_group.dart';
-import 'package:catch_dating_app/core/widgets/info_row.dart';
-import 'package:catch_dating_app/core/widgets/person_avatar.dart';
-import 'package:catch_dating_app/core/widgets/settings_row.dart';
-import 'package:catch_dating_app/core/widgets/stat_column.dart';
-import 'package:catch_dating_app/core/widgets/stat_strip.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -230,14 +230,14 @@ void main() {
     expect(buttonLabel.style?.color, CatchTokens.editorialLight);
   });
 
-  testWidgets('BottomCTA forwards activity accent to the primary button', (
+  testWidgets('CatchBottomCta forwards activity accent to the primary button', (
     tester,
   ) async {
     const accent = Color(0xFF116466);
 
     await tester.pumpWidget(
       _wrap(
-        BottomCTA(
+        CatchBottomCta(
           label: 'Join event',
           onPressed: () {},
           buttonAccentColor: accent,
@@ -251,7 +251,7 @@ void main() {
     expect(button.accentColor, accent);
   });
 
-  testWidgets('IconBtn renders handoff icon button variants', (tester) async {
+  testWidgets('CatchIconButton renders handoff icon button variants', (tester) async {
     var taps = 0;
 
     await tester.pumpWidget(
@@ -259,28 +259,28 @@ void main() {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconBtn.icon(
+            CatchIconButton.icon(
               key: const ValueKey('bordered-icon-button'),
               icon: CatchIcons.search,
               onTap: () => taps++,
             ),
-            IconBtn.icon(
+            CatchIconButton.icon(
               key: const ValueKey('active-icon-button'),
               icon: CatchIcons.favoriteRounded,
               active: true,
               accent: CatchTokens.sunsetLight.danger,
               onTap: () {},
             ),
-            IconBtn.icon(
+            CatchIconButton.icon(
               key: const ValueKey('float-icon-button'),
               icon: CatchIcons.close,
-              variant: IconBtnVariant.float,
+              variant: CatchIconButtonVariant.float,
               onTap: () {},
             ),
-            IconBtn.icon(
+            CatchIconButton.icon(
               key: const ValueKey('plain-icon-button'),
               icon: CatchIcons.more,
-              variant: IconBtnVariant.plain,
+              variant: CatchIconButtonVariant.plain,
               disabled: true,
               onTap: () => taps++,
             ),
@@ -522,14 +522,14 @@ void main() {
     expect(label.style?.color, CatchTokens.sunsetLight.primary);
   });
 
-  testWidgets('SettingsRow value occupies a right-aligned value lane', (
+  testWidgets('CatchSettingsRow value occupies a right-aligned value lane', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
         SizedBox(
           width: 360,
-          child: SettingsRow(
+          child: CatchSettingsRow(
             label: 'Help & support',
             value: 'Contact us',
             icon: CatchIcons.helpOutline,
@@ -873,7 +873,7 @@ void main() {
     expect(selected, 'live');
   });
 
-  testWidgets('ChipField single select keeps a selected chip selected', (
+  testWidgets('CatchChipField single select keeps a selected chip selected', (
     tester,
   ) async {
     Set<CityOption> selected = {cityOptionByName('indore')!};
@@ -881,7 +881,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => ChipField<CityOption>(
+          builder: (context, setState) => CatchChipField<CityOption>(
             label: 'City',
             values: defaultCityOptions,
             selected: selected,
@@ -899,14 +899,14 @@ void main() {
   });
 
   testWidgets(
-    'ChipField optional single select clears a selected chip when enabled',
+    'CatchChipField optional single select clears a selected chip when enabled',
     (tester) async {
       Set<CityOption> selected = {cityOptionByName('indore')!};
 
       await tester.pumpWidget(
         _wrap(
           StatefulBuilder(
-            builder: (context, setState) => ChipField<CityOption>(
+            builder: (context, setState) => CatchChipField<CityOption>(
               label: 'City',
               values: defaultCityOptions,
               selected: selected,
@@ -927,11 +927,11 @@ void main() {
   );
 
   testWidgets(
-    'ChipField single select keeps chips inactive when selected is empty',
+    'CatchChipField single select keeps chips inactive when selected is empty',
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          ChipField<CityOption>(
+          CatchChipField<CityOption>(
             label: 'City',
             values: defaultCityOptions,
             selected: const {},
@@ -952,12 +952,12 @@ void main() {
     },
   );
 
-  testWidgets('ChipField multi select marks selected chips with a check', (
+  testWidgets('CatchChipField multi select marks selected chips with a check', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        ChipField<CityOption>(
+        CatchChipField<CityOption>(
           label: 'Cities',
           values: defaultCityOptions.take(2).toList(),
           selected: {cityOptionByName('mumbai')!},
@@ -985,7 +985,7 @@ void main() {
     expect(find.byIcon(CatchIcons.checkRounded), findsOneWidget);
   });
 
-  testWidgets('ChipField required multi select keeps the last chip selected', (
+  testWidgets('CatchChipField required multi select keeps the last chip selected', (
     tester,
   ) async {
     Set<CityOption> selected = {cityOptionByName('mumbai')!};
@@ -993,7 +993,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => ChipField<CityOption>(
+          builder: (context, setState) => CatchChipField<CityOption>(
             label: 'Cities',
             values: defaultCityOptions.take(2).toList(),
             selected: selected,
@@ -1052,7 +1052,7 @@ void main() {
     expect(find.byIcon(CatchIcons.checkRounded), findsOneWidget);
   });
 
-  testWidgets('ActivityChip renders soft and primary activity registers', (
+  testWidgets('CatchActivityChip renders soft and primary activity registers', (
     tester,
   ) async {
     var taps = 0;
@@ -1061,8 +1061,8 @@ void main() {
       _wrap(
         Wrap(
           children: [
-            const ActivityChip(activityKind: ActivityKind.socialRun),
-            ActivityChip(
+            const CatchActivityChip(activityKind: ActivityKind.socialRun),
+            CatchActivityChip(
               activityKind: ActivityKind.pickleball,
               primary: true,
               label: 'Primary court',
@@ -1083,18 +1083,18 @@ void main() {
   });
 
   testWidgets(
-    'ActivityAvatar renders activity initials, ring, and dim states',
+    'CatchActivityAvatar renders activity initials, ring, and dim states',
     (tester) async {
       await tester.pumpWidget(
         _wrap(
           const Wrap(
             children: [
-              ActivityAvatar(
+              CatchActivityAvatar(
                 activityKind: ActivityKind.socialRun,
                 initials: 'SR',
                 ring: true,
               ),
-              ActivityAvatar(
+              CatchActivityAvatar(
                 activityKind: ActivityKind.pickleball,
                 initials: 'PB',
                 size: 44,
@@ -1107,17 +1107,17 @@ void main() {
 
       expect(find.text('SR'), findsOneWidget);
       expect(find.text('PB'), findsOneWidget);
-      expect(ActivityAvatar.initialsOf('Social run'), 'SR');
+      expect(CatchActivityAvatar.initialsOf('Social run'), 'SR');
     },
   );
 
-  testWidgets('PersonAvatarStack renders initials, veils, and overflow', (
+  testWidgets('CatchPersonAvatarStack renders initials, veils, and overflow', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const PersonAvatarStack(
-          items: [PersonAvatarItem(name: 'Asha Shah')],
+        const CatchPersonAvatarStack(
+          items: [CatchPersonAvatarItem(name: 'Asha Shah')],
           totalCount: 4,
           size: 42,
           limit: 3,
@@ -1132,12 +1132,12 @@ void main() {
     expect(find.text('+1'), findsOneWidget);
   });
 
-  testWidgets('ActivityMapPin renders selected flag and activity pigment pin', (
+  testWidgets('CatchActivityMapPin renders selected flag and activity pigment pin', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const ActivityMapPin(
+        const CatchActivityMapPin(
           activityKind: ActivityKind.socialRun,
           selected: true,
           label: 'SOCIAL RUN · 6:30 AM',
@@ -1149,11 +1149,11 @@ void main() {
     expect(find.byIcon(CatchIcons.pin), findsOneWidget);
   });
 
-  testWidgets('DistanceRing renders tappable map radius label', (tester) async {
+  testWidgets('CatchDistanceRing renders tappable map radius label', (tester) async {
     var taps = 0;
 
     await tester.pumpWidget(
-      _wrap(DistanceRing(label: 'WITHIN 3 KM', onTap: () => taps++)),
+      _wrap(CatchDistanceRing(label: 'WITHIN 3 KM', onTap: () => taps++)),
     );
 
     expect(find.text('WITHIN 3 KM'), findsOneWidget);
@@ -1164,14 +1164,14 @@ void main() {
     expect(taps, 1);
   });
 
-  testWidgets('ActivityArt renders generated activity backdrop with child', (
+  testWidgets('CatchActivityArt renders generated activity backdrop with child', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
         const SizedBox(
           width: 220,
-          child: ActivityArt(
+          child: CatchActivityArt(
             activityKind: ActivityKind.yoga,
             dim: true,
             child: Center(child: Text('Ticket meta')),
@@ -1183,16 +1183,16 @@ void main() {
     expect(find.text('Ticket meta'), findsOneWidget);
   });
 
-  testWidgets('StatStrip renders uppercase labeled data pairs', (tester) async {
+  testWidgets('CatchStatStrip renders uppercase labeled data pairs', (tester) async {
     await tester.pumpWidget(
       _wrap(
         const SizedBox(
           width: 320,
-          child: StatStrip(
+          child: CatchStatStrip(
             items: [
-              StatStripItem(value: '124', label: 'Members'),
-              StatStripItem(value: '3', label: 'Upcoming'),
-              StatStripItem(value: '4.7', label: 'Rating'),
+              CatchStatStripItem(value: '124', label: 'Members'),
+              CatchStatStripItem(value: '3', label: 'Upcoming'),
+              CatchStatStripItem(value: '4.7', label: 'Rating'),
             ],
           ),
         ),
@@ -1205,7 +1205,7 @@ void main() {
     expect(find.text('RATING'), findsOneWidget);
   });
 
-  testWidgets('InfoGroup injects InfoRow dividers and row variants', (
+  testWidgets('CatchInfoGroup injects CatchInfoRow dividers and row variants', (
     tester,
   ) async {
     var toggleValue = false;
@@ -1213,25 +1213,25 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => InfoGroup(
+          builder: (context, setState) => CatchInfoGroup(
             title: 'Account',
             first: true,
             rows: [
-              InfoRow(
+              CatchInfoRow(
                 icon: CatchIcons.personOutlineRounded,
                 caption: 'Name',
                 label: 'Aanya',
-                trailing: InfoRowTrailing.chevron,
+                trailing: CatchInfoRowTrailing.chevron,
                 onTap: () {},
               ),
-              const InfoRow(label: 'Add bio', add: true),
-              InfoRow(
+              const CatchInfoRow(label: 'Add bio', add: true),
+              CatchInfoRow(
                 label: 'Visible',
-                trailing: InfoRowTrailing.toggle,
+                trailing: CatchInfoRowTrailing.toggle,
                 toggleValue: toggleValue,
                 onToggleChanged: (value) => setState(() => toggleValue = value),
               ),
-              InfoRow(
+              CatchInfoRow(
                 icon: CatchIcons.deleteOutline,
                 label: 'Delete account',
                 danger: true,
@@ -1444,11 +1444,11 @@ void main() {
                 trailing: const CatchMetaEntry(label: '2.3 km'),
               ),
               gapH12,
-              const DetailRow(label: 'Payment ID', value: 'pay_123'),
+              const CatchDetailRow(label: 'Payment ID', value: 'pay_123'),
               gapH12,
-              const StatColumn(value: '24', label: 'members', center: true),
+              const CatchStatColumn(value: '24', label: 'members', center: true),
               gapH12,
-              const GradedImage(
+              const CatchGradedImage(
                 enabled: false,
                 child: SizedBox.square(
                   dimension: 12,
@@ -1631,7 +1631,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(BottomSheetGrabber), findsOneWidget);
+    expect(find.byType(CatchBottomSheetGrabber), findsOneWidget);
     expect(find.text('Filters'), findsOneWidget);
     expect(find.text('Tune what shows up first.'), findsOneWidget);
     expect(find.widgetWithText(CatchBadge, '2'), findsOneWidget);
@@ -1655,7 +1655,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(BottomSheetGrabber), findsNothing);
+    expect(find.byType(CatchBottomSheetGrabber), findsNothing);
     final glyph = tester.widget<Icon>(find.byIcon(CatchIcons.hostBadge));
     expect(glyph.size, CatchLayout.sheetGlyphIconSize);
     expect(glyph.color, CatchTokens.sunsetLight.primaryInk);
@@ -1810,12 +1810,12 @@ void main() {
     expect(find.text('Unable to load messages.'), findsOneWidget);
   });
 
-  testWidgets('AsyncValueWidget uses branded default error state', (
+  testWidgets('CatchAsyncValueView uses branded default error state', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        AsyncValueWidget<int>(
+        CatchAsyncValueView<int>(
           value: AsyncError<int>(StateError('load failed'), StackTrace.empty),
           data: (value) => Text('$value'),
         ),

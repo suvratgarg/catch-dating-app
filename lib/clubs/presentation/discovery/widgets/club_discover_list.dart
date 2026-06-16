@@ -2,7 +2,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/section_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:flutter/material.dart';
 
 /// Returns the slivers for the club directory section. Returns multiple
@@ -16,7 +16,7 @@ List<Widget> buildClubDirectorySlivers({
 }) {
   return [
     SliverToBoxAdapter(
-      child: SectionHeader(
+      child: CatchSectionHeader(
         title: 'Club directory',
         titleStyle: CatchTextStyles.titleL(context),
         padding: CatchInsets.sectionHeader,

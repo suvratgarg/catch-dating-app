@@ -7,6 +7,10 @@ admin.initializeApp();
 
 export {createRazorpayOrder} from "./payments/createRazorpayOrder";
 export {verifyRazorpayPayment} from "./payments/verifyRazorpayPayment";
+export {razorpayWebhook} from "./payments/razorpayWebhook";
+export {
+  reconcileRazorpayOrders,
+} from "./payments/reconcileRazorpayOrders";
 export {createStripeCheckoutSession} from
   "./payments/createStripeCheckoutSession";
 export {

@@ -218,6 +218,23 @@
       "collectionGroup": "reviews",
       "queryScope": "COLLECTION",
       "fields": [
+        {"fieldPath": "clubId", "mode": "ASCENDING"},
+        {"fieldPath": "moderationStatus", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "reviews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "clubId", "mode": "ASCENDING"},
+        {"fieldPath": "moderationStatus", "mode": "ASCENDING"},
+        {"fieldPath": "verificationStatus", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "reviews",
+      "queryScope": "COLLECTION",
+      "fields": [
         {"fieldPath": "eventId", "mode": "ASCENDING"},
         {"fieldPath": "createdAt", "mode": "DESCENDING"}
       ]
@@ -346,6 +363,14 @@
       "fields": [
         {"fieldPath": "blockerUserId", "mode": "ASCENDING"},
         {"fieldPath": "createdAt", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "razorpayPendingOrders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "createdAt", "mode": "ASCENDING"}
       ]
     }
   ],

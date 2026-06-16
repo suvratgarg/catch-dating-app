@@ -10,12 +10,13 @@ import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
-import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -53,10 +54,10 @@ class HostTeamManagementSection extends ConsumerWidget {
         children: [
           Row(
             children: [
-              const Expanded(child: SectionHeader(title: 'Host team')),
+              const Expanded(child: CatchSectionHeader(title: 'Host team')),
               Tooltip(
                 message: 'Add host',
-                child: IconBtn(
+                child: CatchIconButton(
                   onTap: actionPending
                       ? null
                       : () => unawaited(_showAddHostSheet(context)),
@@ -115,12 +116,17 @@ class HostTeamManagementSection extends ConsumerWidget {
     );
     if (confirmed != true) return;
 
-    await HostTeamManagementController.removeHostMutation.run(
-      ref,
-      (tx) => tx
-          .get(hostTeamManagementControllerProvider.notifier)
-          .removeHost(clubId: club.id, uid: host.uid),
-    );
+    try {
+      await HostTeamManagementController.removeHostMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostTeamManagementControllerProvider.notifier)
+            .removeHost(clubId: club.id, uid: host.uid),
+      );
+    } catch (error) {
+      if (context.mounted) showCatchErrorSnackBar(context, error);
+      return;
+    }
     if (!context.mounted) return;
     ScaffoldMessenger.of(
       context,
@@ -144,12 +150,17 @@ class HostTeamManagementSection extends ConsumerWidget {
     );
     if (confirmed != true) return;
 
-    await HostTeamManagementController.transferOwnershipMutation.run(
-      ref,
-      (tx) => tx
-          .get(hostTeamManagementControllerProvider.notifier)
-          .transferOwnership(clubId: club.id, uid: host.uid),
-    );
+    try {
+      await HostTeamManagementController.transferOwnershipMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostTeamManagementControllerProvider.notifier)
+            .transferOwnership(clubId: club.id, uid: host.uid),
+      );
+    } catch (error) {
+      if (context.mounted) showCatchErrorSnackBar(context, error);
+      return;
+    }
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Ownership transferred to ${host.displayName}.')),
@@ -281,7 +292,7 @@ class _AddHostSheetState extends ConsumerState<_AddHostSheet> {
           ),
           if (mutation.hasError) ...[
             gapH12,
-            ErrorBanner(message: mutationErrorMessage(mutation)),
+            CatchErrorBanner(message: mutationErrorMessage(mutation)),
           ],
         ],
       ),

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Payment {
 
-@JsonKey(includeToJson: false) String get id; String get userId; String get orderId; String get paymentId; String get eventId; int get amount; String get currency; PaymentStatus get status; bool get signUpFailed;@TimestampConverter() DateTime get createdAt;
+@JsonKey(includeToJson: false) String get id; String get userId; String get orderId; String get paymentId; String get eventId; int get amount; String get currency;@JsonKey(unknownEnumValue: PaymentStatus.failed) PaymentStatus get status; bool get signUpFailed;@TimestampConverter() DateTime get createdAt;
 /// Create a copy of Payment
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $PaymentCopyWith<$Res>  {
   factory $PaymentCopyWith(Payment value, $Res Function(Payment) _then) = _$PaymentCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String userId, String orderId, String paymentId, String eventId, int amount, String currency, PaymentStatus status, bool signUpFailed,@TimestampConverter() DateTime createdAt
+@JsonKey(includeToJson: false) String id, String userId, String orderId, String paymentId, String eventId, int amount, String currency,@JsonKey(unknownEnumValue: PaymentStatus.failed) PaymentStatus status, bool signUpFailed,@TimestampConverter() DateTime createdAt
 });
 
 
@@ -162,7 +162,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String userId,  String orderId,  String paymentId,  String eventId,  int amount,  String currency,  PaymentStatus status,  bool signUpFailed, @TimestampConverter()  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String userId,  String orderId,  String paymentId,  String eventId,  int amount,  String currency, @JsonKey(unknownEnumValue: PaymentStatus.failed)  PaymentStatus status,  bool signUpFailed, @TimestampConverter()  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Payment() when $default != null:
 return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.eventId,_that.amount,_that.currency,_that.status,_that.signUpFailed,_that.createdAt);case _:
@@ -183,7 +183,7 @@ return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.eventI
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String userId,  String orderId,  String paymentId,  String eventId,  int amount,  String currency,  PaymentStatus status,  bool signUpFailed, @TimestampConverter()  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String userId,  String orderId,  String paymentId,  String eventId,  int amount,  String currency, @JsonKey(unknownEnumValue: PaymentStatus.failed)  PaymentStatus status,  bool signUpFailed, @TimestampConverter()  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _Payment():
 return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.eventId,_that.amount,_that.currency,_that.status,_that.signUpFailed,_that.createdAt);case _:
@@ -203,7 +203,7 @@ return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.eventI
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String userId,  String orderId,  String paymentId,  String eventId,  int amount,  String currency,  PaymentStatus status,  bool signUpFailed, @TimestampConverter()  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String userId,  String orderId,  String paymentId,  String eventId,  int amount,  String currency, @JsonKey(unknownEnumValue: PaymentStatus.failed)  PaymentStatus status,  bool signUpFailed, @TimestampConverter()  DateTime createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Payment() when $default != null:
 return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.eventId,_that.amount,_that.currency,_that.status,_that.signUpFailed,_that.createdAt);case _:
@@ -218,7 +218,7 @@ return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.eventI
 @JsonSerializable()
 
 class _Payment implements Payment {
-  const _Payment({@JsonKey(includeToJson: false) required this.id, required this.userId, required this.orderId, required this.paymentId, required this.eventId, required this.amount, this.currency = defaultCurrencyCode, required this.status, this.signUpFailed = false, @TimestampConverter() required this.createdAt});
+  const _Payment({@JsonKey(includeToJson: false) required this.id, required this.userId, required this.orderId, required this.paymentId, required this.eventId, required this.amount, this.currency = defaultCurrencyCode, @JsonKey(unknownEnumValue: PaymentStatus.failed) required this.status, this.signUpFailed = false, @TimestampConverter() required this.createdAt});
   factory _Payment.fromJson(Map<String, dynamic> json) => _$PaymentFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -228,7 +228,7 @@ class _Payment implements Payment {
 @override final  String eventId;
 @override final  int amount;
 @override@JsonKey() final  String currency;
-@override final  PaymentStatus status;
+@override@JsonKey(unknownEnumValue: PaymentStatus.failed) final  PaymentStatus status;
 @override@JsonKey() final  bool signUpFailed;
 @override@TimestampConverter() final  DateTime createdAt;
 
@@ -265,7 +265,7 @@ abstract mixin class _$PaymentCopyWith<$Res> implements $PaymentCopyWith<$Res> {
   factory _$PaymentCopyWith(_Payment value, $Res Function(_Payment) _then) = __$PaymentCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String userId, String orderId, String paymentId, String eventId, int amount, String currency, PaymentStatus status, bool signUpFailed,@TimestampConverter() DateTime createdAt
+@JsonKey(includeToJson: false) String id, String userId, String orderId, String paymentId, String eventId, int amount, String currency,@JsonKey(unknownEnumValue: PaymentStatus.failed) PaymentStatus status, bool signUpFailed,@TimestampConverter() DateTime createdAt
 });
 
 

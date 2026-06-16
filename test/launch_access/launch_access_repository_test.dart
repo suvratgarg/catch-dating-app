@@ -87,7 +87,7 @@ void main() {
             uid: 'runner-1',
             draft: buildLaunchAccessDraft(city: 'pune'),
           ),
-          throwsA(isA<BackendOperationException>()),
+          throwsA(isA<ValidationException>()),
         );
 
         final application = await repository.fetchApplication(uid: 'runner-1');

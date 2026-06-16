@@ -166,6 +166,11 @@
       "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
       "x-catch-ownership": "trigger-owned"
     },
+    "verifiedReviewCount": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "description": "Published reviews that are verified (attended a Catch event). Only these back the headline rating; unverified public reviews cannot move the score.",
+      "x-catch-ownership": "trigger-owned"
+    },
     "nextEventAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
       "x-catch-ownership": "trigger-owned"

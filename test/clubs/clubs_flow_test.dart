@@ -254,13 +254,15 @@ void main() {
         await _pumpClubFlow(tester);
 
         expect(find.text('Join club'), findsOneWidget);
-        expect(find.text('Leave club'), findsNothing);
+        expect(find.text('Joined'), findsNothing);
 
         membershipController.add(_membership(clubId: club.id, uid: 'runner-2'));
         await _pumpClubFlow(tester);
 
         expect(find.text('Join club'), findsNothing);
-        expect(find.text('Leave club'), findsOneWidget);
+        // The member dock renders the quiet "Joined" control (DS ClubDock),
+        // not a loud "Leave club" button.
+        expect(find.text('Joined'), findsOneWidget);
       },
     );
   });

@@ -107,7 +107,7 @@ as EventSuccessDefaults,
 @override
 @pragma('vm:prefer-inline')
 $EventSuccessDefaultsCopyWith<$Res> get eventSuccessDefaults {
-
+  
   return $EventSuccessDefaultsCopyWith<$Res>(_self.eventSuccessDefaults, (value) {
     return _then(_self.copyWith(eventSuccessDefaults: value));
   });
@@ -378,7 +378,7 @@ as EventSuccessDefaults,
 @override
 @pragma('vm:prefer-inline')
 $EventSuccessDefaultsCopyWith<$Res> get eventSuccessDefaults {
-
+  
   return $EventSuccessDefaultsCopyWith<$Res>(_self.eventSuccessDefaults, (value) {
     return _then(_self.copyWith(eventSuccessDefaults: value));
   });

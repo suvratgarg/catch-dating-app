@@ -2,7 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
 import 'package:flutter/material.dart';
 
@@ -37,30 +37,30 @@ class ChatListTile extends StatelessWidget {
               if (divider)
                 Positioned(
                   top: 0,
-                  left: CatchSpacing.s11 + CatchSpacing.s3,
+                  left: CatchLayout.chatListDividerInset,
                   right: 0,
                   child: ColoredBox(
                     color: t.line.withValues(
-                      alpha: CatchOpacity.profileInfoDivider,
+                      alpha: CatchOpacity.infoRowDivider,
                     ),
                     child: const SizedBox(height: CatchStroke.hairline),
                   ),
                 ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+                padding: CatchInsets.chatListTileVertical,
                 child: Row(
                   children: [
-                    PersonAvatar(
-                      size: 44,
+                    CatchPersonAvatar(
+                      size: CatchLayout.chatListAvatarExtent,
                       name: preview.displayName,
                       imageUrl: preview.photoUrl,
                       borderWidth: emphasized ? CatchStroke.underline : 0,
                       borderColor: emphasized ? t.primary : null,
                       shape: preview.match.isClubHostInquiry
-                          ? PersonAvatarShape.square
-                          : PersonAvatarShape.circle,
+                          ? CatchPersonAvatarShape.square
+                          : CatchPersonAvatarShape.circle,
                     ),
-                    const SizedBox(width: CatchSpacing.s3),
+                    const SizedBox(width: CatchLayout.chatListTextGap),
                     Expanded(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -92,7 +92,7 @@ class ChatListTile extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(width: CatchSpacing.s3),
+                    const SizedBox(width: CatchLayout.chatListTextGap),
                     _ChatListTrailing(
                       time: AppTimeFormatters.chatTimestamp(preview.timestamp),
                       unreadCount: unreadCount,
@@ -134,7 +134,7 @@ class _ChatListTrailing extends StatelessWidget {
       children: [
         Text(
           time,
-          style: CatchTextStyles.statusLabel(
+          style: CatchTextStyles.meta(
             context,
             color: emphasized ? t.primary : t.ink3,
           ),

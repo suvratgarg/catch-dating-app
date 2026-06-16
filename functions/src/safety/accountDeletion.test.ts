@@ -288,6 +288,74 @@ test("requestAccountDeletionHandler rate limits before destructive work",
   }
 );
 
+test("requestAccountDeletionHandler short-circuits when already deleted",
+  async () => {
+    const harness = createAccountDeletionHarness({
+      seed: {
+        "deletedUsers/runner-1": {
+          uid: "runner-1",
+          retainedFor: ["safety", "payments", "fraud"],
+        },
+        "users/runner-1": {deleted: true},
+        // A stale active membership must NOT be re-cleaned / re-decremented.
+        "clubMemberships/club-1_runner-1": {
+          clubId: "club-1",
+          uid: "runner-1",
+          status: "active",
+        },
+      },
+      now: {kind: "serverTimestamp"},
+    });
+
+    const result = await requestAccountDeletionHandler(
+      {auth: {uid: "runner-1"}} as Parameters<
+        typeof requestAccountDeletionHandler
+      >[0],
+      harness.deps
+    );
+
+    assert.deepEqual(result, {deleted: true});
+    // No cleanup re-ran: no batch commit, no membership/count rewrites.
+    assert.equal(harness.commits, 0);
+    assert.deepEqual(harness.setWrites, []);
+    assert.deepEqual(harness.updateWrites, []);
+    assert.deepEqual(harness.deletedPublicDocs, []);
+    // The Auth user is still ensured-gone on the retry.
+    assert.deepEqual(harness.deletedAuthUsers, ["runner-1"]);
+  }
+);
+
+test("requestAccountDeletionHandler tolerates an already-removed Auth user",
+  async () => {
+    const harness = createAccountDeletionHarness({
+      seed: {"users/runner-1": {}},
+      now: {kind: "serverTimestamp"},
+    });
+
+    const result = await requestAccountDeletionHandler(
+      {auth: {uid: "runner-1"}} as Parameters<
+        typeof requestAccountDeletionHandler
+      >[0],
+      {
+        ...harness.deps,
+        auth: () => ({
+          deleteUser: async () => {
+            throw Object.assign(new Error("no user"), {
+              code: "auth/user-not-found",
+            });
+          },
+        }) as unknown as admin.auth.Auth,
+      }
+    );
+
+    assert.deepEqual(result, {deleted: true});
+    // The tombstone is still written so a later retry short-circuits.
+    assert.ok(
+      harness.setWrites.some((write) => write.path === "deletedUsers/runner-1")
+    );
+  }
+);
+
 type FakeDocumentData = Record<string, unknown>;
 
 interface FakeDocumentReference {
@@ -296,7 +364,11 @@ interface FakeDocumentReference {
   docId: string;
   ref: FakeDocumentReference;
   data: () => FakeDocumentData | undefined;
-  get: () => Promise<{data: () => FakeDocumentData | undefined}>;
+  get: () => Promise<{
+    exists: boolean;
+    data: () => FakeDocumentData | undefined;
+  }>;
+  set: (data: FakeDocumentData, options?: {merge: boolean}) => Promise<void>;
 }
 
 interface SetWrite {
@@ -326,14 +398,20 @@ function createAccountDeletionHarness(params: {
     collectionPath: string,
     docId: string
   ): FakeDocumentReference => {
+    const path = `${collectionPath}/${docId}`;
     const ref = {
-      path: `${collectionPath}/${docId}`,
+      path,
       collectionPath,
       docId,
-      data: () => seed[`${collectionPath}/${docId}`],
+      data: () => seed[path],
       get: async () => ({
-        data: () => seed[`${collectionPath}/${docId}`],
+        exists: seed[path] !== undefined,
+        data: () => seed[path],
       }),
+      set: async (data: FakeDocumentData, options?: {merge: boolean}) => {
+        setWrites.push({path, data, options});
+        seed[path] = options?.merge ? {...seed[path], ...data} : data;
+      },
     } as FakeDocumentReference;
     ref.ref = ref;
     return ref;

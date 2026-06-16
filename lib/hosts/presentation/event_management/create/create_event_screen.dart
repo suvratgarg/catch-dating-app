@@ -12,8 +12,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
-import 'package:catch_dating_app/core/widgets/form_step_flow.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
@@ -84,12 +84,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _whenFormKey = GlobalKey<FormState>();
   final _eventPolicyFormKey = GlobalKey<FormState>();
 
-  List<FormStepSpec> get _stepSpecs => [
-    FormStepSpec(title: 'Event basics', formKey: _eventDetailsFormKey),
-    FormStepSpec(title: 'Meeting location', formKey: _whereFormKey),
-    FormStepSpec(title: 'When is the event?', formKey: _whenFormKey),
-    FormStepSpec(title: 'Event policy', formKey: _eventPolicyFormKey),
-    const FormStepSpec(title: 'Live event guide'),
+  List<CatchFormStepSpec> get _stepSpecs => [
+    CatchFormStepSpec(title: 'Event basics', formKey: _eventDetailsFormKey),
+    CatchFormStepSpec(title: 'Meeting location', formKey: _whereFormKey),
+    CatchFormStepSpec(title: 'When is the event?', formKey: _whenFormKey),
+    CatchFormStepSpec(title: 'Event policy', formKey: _eventPolicyFormKey),
+    const CatchFormStepSpec(title: 'Live event guide'),
   ];
 
   // Step 2 — When
@@ -1058,7 +1058,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
               ),
             ),
             if (submitMutation.hasError)
-              ErrorBanner(
+              CatchErrorBanner(
                 message: mutationErrorMessage(
                   submitMutation,
                   context: AppErrorContext.event,

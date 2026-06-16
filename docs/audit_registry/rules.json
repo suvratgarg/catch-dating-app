@@ -454,6 +454,316 @@
       "sunset_when": [
         "Sliver screens have dedicated regression tests and no known blank/overflow regressions"
       ]
+    },
+    "ERROR-UI-002": {
+      "title": "Data-load error branches must use a Catch error primitive with retry, never an empty-state or bespoke card",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/core/widgets/**"
+      ],
+      "instruction": "AsyncValue/stream error branches must render CatchErrorState/CatchSliverErrorState/CatchInlineErrorState.fromError (mapped copy + onRetry that invalidates the failing provider). Reserve CatchEmptyState for genuinely-empty success states; never route an error into an empty-state or a hand-rolled card that discards the error object.",
+      "sunset_when": [
+        "A catch_ui_lints diagnostic flags CatchEmptyState/bespoke cards inside error branches",
+        "No feature error branch renders raw/empty surfaces for three passes"
+      ]
+    },
+    "MUTATION-ERROR-SURFACE-001": {
+      "title": "A watched Mutation consumed for isPending must also surface hasError",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**"
+      ],
+      "instruction": "Any UI that watches a Mutation to drive a spinner (isPending) must also handle hasError \u2014 via an inline ErrorBanner.fromError, a screen-level MutationErrorSnackbarListener, or try/catch + showCatchErrorSnackBar around .run(). Silent failure (spinner clears, no feedback) is forbidden, especially for destructive/security actions.",
+      "sunset_when": [
+        "A scanner flags isPending watches with no matching hasError handling",
+        "Mutation failure paths have controller/widget tests for three passes"
+      ]
+    },
+    "FIRESTORE-PARTIAL-WRITE-001": {
+      "title": "Mutating writes use partial update()/FieldValue of changed keys, not full-document set() of a client snapshot",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "lib/**/data/**",
+        "functions/src/**"
+      ],
+      "instruction": "Client and callable mutating writes must update only changed keys via update()/set(merge:true)/FieldValue ops. Full-document set() of a client-held snapshot is forbidden outside a transaction-guarded create; it loses Timestamp precision, trips rules diff(), and causes last-write-wins races between independent fields.",
+      "sunset_when": [
+        "read-modify-set is gone from event_success and other repositories",
+        "A scanner flags set() of a full fetched snapshot for three passes"
+      ]
+    },
+    "DATA-ACCESS-BATCH-001": {
+      "title": "List/roster surfaces resolve display-only data via one batched provider, not per-tile streams or sequential reads",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "lib/**/data/**",
+        "lib/**/presentation/**"
+      ],
+      "instruction": "Display-only profile/event/club data for lists and rosters must be resolved through a single batched (whereIn/getAll) provider, never one realtime snapshot listener per tile or sequential per-id awaits. Share one whereIn fan-out + chunk helper across repositories.",
+      "sunset_when": [
+        "Per-tile snapshot listeners and sequential per-id reads are removed from list surfaces",
+        "A shared batched-read helper is the single fan-out implementation"
+      ]
+    },
+    "INJECTED-CLOCK-001": {
+      "title": "Time-dependent domain getters take an injected clock, not DateTime.now()",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "lib/**/domain/**",
+        "lib/**/data/**"
+      ],
+      "instruction": "Domain getters/predicates with time semantics must accept an injected DateTime/referenceNow when any caller threads one, instead of calling DateTime.now() internally \u2014 otherwise adjacent branches disagree and tests cannot pin time.",
+      "sunset_when": [
+        "No domain time predicate calls DateTime.now() internally where a referenceNow is threaded"
+      ]
+    },
+    "NO-OP-CONDITIONAL-001": {
+      "title": "Ternary and switch/if arms must not be structurally identical",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "lib/**",
+        "functions/src/**"
+      ],
+      "instruction": "A conditional whose branches return/produce identical values is dead logic; remove the condition or fix the divergent branch. Often a symptom of an incomplete rename or a forgotten variant.",
+      "sunset_when": [
+        "A lint flags identical-branch conditionals (dart analyzer / catch_ui_lints) and the codebase is clean for three passes"
+      ]
+    },
+    "DEAD-PUBLIC-SYMBOL-001": {
+      "title": "Public widgets/getters/enum values in non-labs lib/ must have a production reference",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "lib/**"
+      ],
+      "instruction": "Public symbols (widgets, getters, enum values) outside lib/labs and intentional in-dev features must have at least one production reference. Test-only references do not count as live; orphaned symbols left by superseded migrations must be deleted with their dead tests.",
+      "sunset_when": [
+        "A dead-public-symbol scan is clean (minus the documented in-dev carve-out) for three passes"
+      ]
+    },
+    "COPY-VERB-INTEGRITY-001": {
+      "title": "User-facing copy is golden-tested and survives automated renames",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "lib/**",
+        "contracts/catalogs/**"
+      ],
+      "instruction": "User-facing strings must pass a snapshot/golden test. Automated find-replace renames (e.g. run->event) must re-run the golden before merge so verb corruptions ('You both event to make friends', 'Long-event person', 'Runs for headspace' regressions) cannot ship. Catalog copy in contracts/ is in scope.",
+      "sunset_when": [
+        "A copy golden covers the high-traffic user-facing string surfaces",
+        "Two consecutive renames pass the golden with no manual copy fixes"
+      ]
+    },
+    "IMAGE-NETWORK-PRIMITIVE-001": {
+      "title": "Network images go through a shared caching/decode-sized primitive",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/core/widgets/**"
+      ],
+      "instruction": "Remote images must render through a shared CatchNetworkImage primitive providing caching, cacheWidth/cacheHeight decode sizing, a branded errorBuilder, and a loading placeholder. Raw Image.network in feature code is forbidden.",
+      "sunset_when": [
+        "catch_ui_lints flags raw Image.network outside the primitive",
+        "All feature image sites route through CatchNetworkImage for three passes"
+      ]
+    },
+    "FN-IDEMP-001": {
+      "title": "At-least-once triggers/webhooks guard non-idempotent side effects with an event receipt",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "functions/src/**"
+      ],
+      "instruction": "Every onDocument*/onObject* trigger and payment webhook must guard non-idempotent side effects (push, auto-id flag writes, counter increments) with a deterministic functionEventReceipts receipt (tx.create, no-op on already-exists). Extract and reuse a shared withEventReceipt() helper; id-deterministic durable writes need no guard.",
+      "sunset_when": [
+        "A shared withEventReceipt primitive wraps every at-least-once handler's side effects",
+        "Redelivery regression tests exist for each trigger/webhook"
+      ]
+    },
+    "FN-DATA-001": {
+      "title": "Backend-owned denormalized counts are mutated inside the source-read transaction",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "functions/src/**"
+      ],
+      "instruction": "Denormalized aggregates (event check-in/booked/gender counts, club memberCount, invite paidCount, match unread) must be read and mutated inside the same db.runTransaction, with the +/-1 conditioned on the observed in-transaction state transition. Non-transactional read-modify-write and batch.set overwrites of shared counts are forbidden.",
+      "sunset_when": [
+        "No non-transactional count mutation remains",
+        "A projection/count drift check runs in CI or a data-audit job"
+      ]
+    },
+    "FN-PAY-001": {
+      "title": "Every capturable payment has a server webhook + reconciliation sweep and a distinct non-recoverable refund state",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "functions/src/payments/**",
+        "functions/src/events/**"
+      ],
+      "instruction": "Each payment provider must have a server-side webhook (signature-verified) plus a scheduled reconciliation sweep; a 'pending' payment doc must be written at order creation keyed by orderId; a failed refund must be recorded with a distinct terminal status (needs_manual_refund) and a structured alert/metric, never silently as 'completed'.",
+      "sunset_when": [
+        "A Razorpay webhook + reconciliation sweep exist mirroring Stripe",
+        "refund_failed is a distinct, alerted terminal state"
+      ]
+    },
+    "FN-RATE-001": {
+      "title": "Every checkRateLimit action has an explicit RATE_LIMITS entry; missing entries warn",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "functions/src/**"
+      ],
+      "instruction": "Every action string passed to checkRateLimit must have an explicit RATE_LIMITS entry. checkRateLimit must logger.warn when it falls back to DEFAULT_RATE_LIMIT without an explicit config so silent loose limits are visible. demoOps and other privileged fan-out callables must declare dedicated limits.",
+      "sunset_when": [
+        "checkRateLimit warns on default fallback",
+        "All callables have explicit limits for three passes"
+      ]
+    },
+    "FN-AUTHZ-001": {
+      "title": "Client-supplied ids and storage paths are ownership/format-validated before use as keys or action targets",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "functions/src/**"
+      ],
+      "instruction": "Client-supplied identifiers and storage paths must be ownership- and format-validated before being used as document ids, canonical URLs/slugs, or admin-SDK action targets (e.g. profile photo storagePath must be under users/{uid}/). Never trust a client id as a deletion target or public path.",
+      "sunset_when": [
+        "A scan flags client-id/path use as keys/targets without validation",
+        "Storage-path and doc-id validation cover all sinks for three passes"
+      ]
+    },
+    "FN-MOD-001": {
+      "title": "Content moderation runs at the write boundary and covers every delivery channel and public surface",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "functions/src/**"
+      ],
+      "instruction": "Moderation must apply at the write boundary so the stored doc, the denormalized preview (lastMessagePreview), and every delivery channel (FCM push) never carry blocked content. Public-rendered free text (reviews, reviewer names, host responses) must be moderated; no surface may bypass it.",
+      "sunset_when": [
+        "Blocked content cannot reach push/preview/public surfaces",
+        "Moderation coverage has tests for each channel"
+      ]
+    },
+    "FN-PERF-001": {
+      "title": "Aggregation triggers use a before/after diff guard and bound their queries",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "functions/src/**"
+      ],
+      "instruction": "Triggers that recompute aggregates must early-return when the relevant fields are unchanged (before/after diff) and must bound their queries (count() aggregations, limits, or incremental deltas) instead of scanning entire collections/lifetime history on every write.",
+      "sunset_when": [
+        "Hot aggregation triggers diff-guard and bound queries",
+        "No unbounded full-collection scan on a per-write hot path"
+      ]
+    },
+    "FN-INPUT-001": {
+      "title": "User free-text inputs are length-bounded and outputs never leak PII or raw upstream detail",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "functions/src/**"
+      ],
+      "instruction": "All user free-text inputs (reviews, occupation/company, names) must be length-bounded server-side; logs and client errors must not leak PII or raw upstream provider error bodies (e.g. Google Places error.message forwarded verbatim).",
+      "sunset_when": [
+        "All free-text inputs have server-side max lengths",
+        "No raw upstream/PII detail reaches clients or logs"
+      ]
+    },
+    "FN-DOC-001": {
+      "title": "functions/README.md inventory is CI-diffed against src/index.ts exports",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "functions/README.md",
+        "functions/src/index.ts"
+      ],
+      "instruction": "The canonical functions/README.md function inventory must stay in sync with the actual exports in src/index.ts (currently omits the Stripe surface and ~30 exports). Add a CI check that diffs the documented inventory against exports.",
+      "sunset_when": [
+        "A CI check diffs README inventory vs index.ts exports",
+        "Inventory stays current for three passes"
+      ]
+    },
+    "FN-DUP-001": {
+      "title": "Shared authorization/eligibility/state-machine logic lives in one module",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "deep_semantic_audit_2026_06",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "functions/src/**"
+      ],
+      "instruction": "Authorization, eligibility, attendance, and state-machine logic must live in one shared module, not be copy-pasted across sibling feature modules where copies can diverge into bugs.",
+      "sunset_when": [
+        "Duplicated authz/eligibility logic is consolidated",
+        "A duplication scan stays clean for three passes"
+      ]
     }
   }
 }

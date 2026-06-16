@@ -19,8 +19,8 @@ abstract class Club with _$Club {
     required String description,
     required String location,
     required String area,
-    required String hostUserId,
-    required String hostName,
+    String? hostUserId,
+    String? hostName,
     String? hostAvatarUrl,
     String? ownerUserId,
     @Default([]) List<String> hostUserIds,
@@ -48,7 +48,15 @@ abstract class Club with _$Club {
 
   factory Club.fromJson(Map<String, dynamic> json) => _$ClubFromJson(json);
 
-  String get ownerOrPrimaryHostUserId => ownerUserId ?? hostUserId;
+  String? get ownerOrPrimaryHostUserId => ownerUserId ?? hostUserId;
+
+  String get displayHostName {
+    final trimmedHostName = hostName?.trim();
+    if (trimmedHostName != null && trimmedHostName.isNotEmpty) {
+      return trimmedHostName;
+    }
+    return name;
+  }
 
   bool isOwnedBy(String? uid) => uid != null && uid == ownerOrPrimaryHostUserId;
 
@@ -62,10 +70,12 @@ abstract class Club with _$Club {
 
   List<ClubHostProfile> get displayHostProfiles {
     if (hostProfiles.isNotEmpty) return hostProfiles;
+    final primaryHostUserId = hostUserId;
+    if (primaryHostUserId == null) return const [];
     return [
       ClubHostProfile(
-        uid: hostUserId,
-        displayName: hostName,
+        uid: primaryHostUserId,
+        displayName: displayHostName,
         avatarUrl: hostAvatarUrl,
         role: ClubHostRole.owner,
       ),

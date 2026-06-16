@@ -33,7 +33,7 @@ class _ProfileTitle extends StatelessWidget {
     return Material(
       color: t.bg,
       child: Padding(
-        padding: CatchInsets.pageHeaderBody,
+        padding: CatchInsets.screenTitleBlock,
         child: Row(
           children: [
             Expanded(
@@ -67,7 +67,7 @@ class _ProfileTabBar extends StatelessWidget {
           border: Border(bottom: BorderSide(color: t.line)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
+          padding: CatchInsets.screenControlRow,
           child: AnimatedBuilder(
             animation: controller,
             builder: (context, _) {

@@ -7,9 +7,9 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/stat_column.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_preview.dart';
 import 'package:flutter/material.dart';
@@ -196,7 +196,7 @@ class _MetricTile extends StatelessWidget {
     return CatchSurface(
       padding: CatchInsets.contentDense,
       borderColor: t.line,
-      child: StatColumn(
+      child: CatchStatColumn(
         icon: icon,
         value: value,
         label: label,

@@ -78,15 +78,6 @@ class PhotosPage extends ConsumerWidget {
         ],
       ),
       children: [
-        OnboardingStepHeader(
-          title: profileCompletionOnly
-              ? 'Complete your profile for Catches'
-              : 'Show yourself',
-          subtitle: profileCompletionOnly
-              ? 'Catches need photos so people can decide who they want to meet. You can still book events with your current details.'
-              : 'Add at least 2 photos so others can find you.',
-        ),
-        gapH20,
         PhotoGrid(
           profilePhotos: profilePhotos,
           loadingIndices: uploadState.loadingIndices,

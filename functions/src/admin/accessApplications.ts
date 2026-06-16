@@ -4,6 +4,7 @@ import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAdminRole} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 
 const accessReviewRoles = ["admin", "adminOwner", "support"] as const;
 const editableStatuses = ["pending", "waitlisted", "notSelectedYet"];
@@ -26,11 +27,17 @@ export interface AdminDecideAccessApplicationResponse {
 interface AccessApplicationDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
+  checkRateLimit?: (
+    db: FirebaseFirestore.Firestore,
+    uid: string,
+    action: string
+  ) => Promise<void>;
 }
 
 const defaultDeps: AccessApplicationDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  checkRateLimit: defaultCheckRateLimit,
 };
 
 /**
@@ -46,6 +53,11 @@ export async function adminDecideAccessApplicationHandler(
   const adminContext = requireAdminRole(request, accessReviewRoles);
   const payload = normalizeDecisionPayload(request.data);
   const db = deps.firestore();
+  await deps.checkRateLimit?.(
+    db,
+    adminContext.uid,
+    "adminDecideAccessApplication"
+  );
   const applicationPath = `accessApplications/${payload.applicationUid}`;
   const applicationRef = db
     .collection("accessApplications")

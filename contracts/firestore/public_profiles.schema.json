@@ -90,11 +90,11 @@
       "x-catch-ownership": "trigger-owned"
     },
     "occupation": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/nullableString",
+      "$ref": "../shared/profile_common.schema.json#/definitions/nullableShortText",
       "x-catch-ownership": "trigger-owned"
     },
     "company": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/nullableString",
+      "$ref": "../shared/profile_common.schema.json#/definitions/nullableShortText",
       "x-catch-ownership": "trigger-owned"
     },
     "education": {

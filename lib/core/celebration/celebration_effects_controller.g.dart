@@ -56,4 +56,4 @@ final class CelebrationEffectsControllerProvider
 }
 
 String _$celebrationEffectsControllerHash() =>
-    r'5978f5cd6da21166e81e83fb5efaaa59fe78ca38';
+    r'a1abc9d0141f4e25e2b2dcf8e44f3872f70e4626';

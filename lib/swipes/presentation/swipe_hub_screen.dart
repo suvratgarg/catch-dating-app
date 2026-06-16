@@ -8,9 +8,9 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -80,12 +80,7 @@ class _CatchesHubContent extends StatelessWidget {
 
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s2,
-          CatchSpacing.s5,
-          CatchSpacing.s6,
-        ),
+        padding: CatchInsets.pageBodyHero,
         children: [
           Center(
             child: ConstrainedBox(
@@ -148,7 +143,7 @@ class _CatchesHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SectionHeader(title: 'Catches', heavy: true),
+              const CatchSectionHeader(title: 'Catches', heavy: true),
               gapH2,
               Text('After the event', style: CatchTextStyles.headline(context)),
             ],
@@ -213,7 +208,7 @@ class _CatchesIntroCard extends StatelessWidget {
               ),
               gapH10,
               Text(
-                'Only checked-in runners from ${event.title} are here.',
+                'Only checked-in attendees from ${event.title} are here.',
                 style: CatchTextStyles.proseM(
                   context,
                   color: t.ink.withValues(
@@ -305,12 +300,7 @@ class _CatchesEmptyState extends StatelessWidget {
 
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s2,
-          CatchSpacing.s5,
-          CatchSpacing.s6,
-        ),
+        padding: CatchInsets.pageBodyHero,
         children: [
           Center(
             child: ConstrainedBox(
@@ -349,7 +339,7 @@ class _CatchesEmptyState extends StatelessWidget {
                         gapW10,
                         Expanded(
                           child: Text(
-                            'Dating stays locked until you actually event together. No cold stranger browsing.',
+                            'Dating stays locked until you actually run together. No cold stranger browsing.',
                             style: CatchTextStyles.proseM(
                               context,
                               color: t.ink2,

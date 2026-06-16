@@ -17,7 +17,6 @@ class ChatController extends _$ChatController {
   static final sendImageMutation = Mutation<void>();
   static final blockUserMutation = Mutation<void>();
   static final reportUserMutation = Mutation<void>();
-  static final resetUnreadMutation = Mutation<void>();
 
   @override
   void build() {}
@@ -49,17 +48,24 @@ class ChatController extends _$ChatController {
     final messageId = conversationRepository.createMessageId(
       conversationId: matchId,
     );
-    final imageUrl = await imageUploadRepository.uploadChatImage(
+    final uploaded = await imageUploadRepository.uploadChatImageWithMetadata(
       matchId: matchId,
       messageId: messageId,
       image: image,
     );
-    await conversationRepository.sendImageMessage(
-      conversationId: matchId,
-      senderId: senderId,
-      messageId: messageId,
-      imageUrl: imageUrl,
-    );
+    try {
+      await conversationRepository.sendImageMessage(
+        conversationId: matchId,
+        senderId: senderId,
+        messageId: messageId,
+        imageUrl: uploaded.url,
+      );
+    } catch (_) {
+      // The message write failed, so the uploaded image would orphan in
+      // Storage. Compensate by deleting it before surfacing the error.
+      await imageUploadRepository.deleteByPath(uploaded.storagePath);
+      rethrow;
+    }
   }
 
   Future<void> blockUser({required String targetUserId}) async {
@@ -80,14 +86,5 @@ class ChatController extends _$ChatController {
           contextId: matchId,
           reasonCode: 'chat_safety_concern',
         );
-  }
-
-  Future<void> resetUnread({
-    required String matchId,
-    required String uid,
-  }) async {
-    await ref
-        .read(conversationRepositoryProvider)
-        .markRead(conversationId: matchId, uid: uid);
   }
 }

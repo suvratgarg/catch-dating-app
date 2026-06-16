@@ -365,6 +365,43 @@ test("updateUserProfileHandler rejects unsafe account states", async () => {
   );
 });
 
+test("updateUserProfileHandler rejects profile photos owned by another user",
+  async () => {
+    const h = harness({
+      "users/runner-1": {name: "Runner One", profileComplete: false},
+    });
+
+    await assert.rejects(
+      updateUserProfileHandler(
+        request("runner-1", {
+          fields: {
+            profilePhotos: [{
+              id: "photo-1",
+              url: "https://example.test/profile.jpg",
+              thumbnailUrl: "https://example.test/profile-thumb.jpg",
+              // Foreign storagePath — must be rejected so it cannot later be
+              // used as a cross-user admin-SDK deletion target.
+              storagePath: "users/victim-2/photos/photo-1.jpg",
+              thumbnailStoragePath:
+                "users/runner-1/photoThumbnails/photo-1.jpg",
+              position: 0,
+              createdAt: 0,
+              updatedAt: 0,
+            }],
+          },
+        }),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "invalid-argument")
+    );
+
+    // The poisoned write must not have been applied.
+    assert.deepEqual(h.firestore.get("users/runner-1"), {
+      name: "Runner One",
+      profileComplete: false,
+    });
+  });
+
 test("updateUserProfileHandler enforces the completed profile photo floor",
   async () => {
     const h = harness({

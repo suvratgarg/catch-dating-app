@@ -68,8 +68,11 @@ mixin _EventSuccessPreferenceRepository on _EventSuccessRepositoryCore {
   }) async {
     final ref = _preferenceDoc(eventId: event.id, uid: uid);
     final now = DateTime.now();
-    final snapshot = await ref.get();
-    final existing = snapshot.data();
+    // This doc is owned by a single user (event+uid), so the only writer is
+    // that user; a get-then-set is safe here. (The one theoretical lost-update
+    // — the same user toggling the two different flags from two sessions at the
+    // same instant — is not a real scenario and isn't worth a transaction.)
+    final existing = (await ref.get()).data();
     final preference = EventSuccessPreference(
       id: eventSuccessPreferenceId(eventId: event.id, uid: uid),
       eventId: event.id,

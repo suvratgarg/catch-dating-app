@@ -1270,6 +1270,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Server-owned tracking docs for created-but-unfulfilled Razorpay orders.
+    // Written by createRazorpayOrder/razorpayWebhook and the reconciliation
+    // sweep only; clients never touch them.
+    match /razorpayPendingOrders/{orderId} {
+      allow read, write: if false;
+    }
+
     // Server-owned Stripe Connect account state for club owners. Hosts can read
     // their own onboarding/payout readiness but all mutations stay callable- or
     // webhook-owned.

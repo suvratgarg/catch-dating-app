@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,12 +37,7 @@ class ExploreFilterRail extends ConsumerWidget {
     return ColoredBox(
       color: backgroundColor ?? t.bg,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s4,
-          CatchSpacing.s5,
-          0,
-        ),
+        padding: CatchInsets.screenControlRail,
         child: CatchOptionGroup<ExploreTimeFilter>(
           options: _timeOptions,
           selected: filters.timeFilter,
@@ -116,7 +111,7 @@ class _ExploreFilterSheet extends ConsumerWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final distanceFilter in _distanceFilters)
-                SelectChip(
+                CatchSelectChip(
                   label: _distanceFilterLabel(distanceFilter),
                   active: filters.distanceFilter == distanceFilter,
                   onTap: () => controller.setDistanceFilter(distanceFilter),
@@ -126,7 +121,7 @@ class _ExploreFilterSheet extends ConsumerWidget {
           gapH20,
           Text('CLUBS', style: CatchTextStyles.kicker(context, color: t.ink2)),
           gapH12,
-          SelectChip(
+          CatchSelectChip(
             label: 'Joined clubs',
             active: filters.joinedOnly,
             onTap: controller.toggleJoinedOnly,

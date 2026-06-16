@@ -23,7 +23,9 @@ class StarRating extends StatelessWidget {
               ? CatchIcons.starRounded
               : CatchIcons.starOutlineRounded,
           size: size,
-          color: t.gold,
+          // Ratings are ink data — pigment never touches stars: filled ink,
+          // empty line2.
+          color: i < clampedRating ? t.ink : t.line2,
         ),
       ),
     );
@@ -70,7 +72,7 @@ class StarRatingPicker extends StatelessWidget {
                       ? CatchIcons.starRounded
                       : CatchIcons.starOutlineRounded,
                   size: size,
-                  color: t.gold,
+                  color: i < clampedRating ? t.ink : t.line2,
                 ),
               ),
             ),

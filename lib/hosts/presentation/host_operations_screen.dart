@@ -9,7 +9,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/activity_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -17,10 +17,10 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_settings_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/settings_row.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -143,7 +143,7 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
               label: 'Profile',
               first: true,
               children: [
-                SettingsRow(
+                CatchSettingsRow(
                   label: 'Display name',
                   value: 'Create host profile',
                   icon: CatchIcons.businessOutlined,
@@ -158,7 +158,7 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
               label: 'Profile',
               first: true,
               children: [
-                SettingsRow(
+                CatchSettingsRow(
                   label: 'Display name',
                   value: profile.displayName,
                   icon: CatchIcons.personOutlineRounded,
@@ -167,7 +167,7 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
                       : null,
                   showChevron: isEditMode,
                 ),
-                SettingsRow(
+                CatchSettingsRow(
                   label: 'Role title',
                   value: profile.roleTitle?.trim().isNotEmpty == true
                       ? profile.roleTitle!.trim()
@@ -179,7 +179,7 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
                       : null,
                   showChevron: isEditMode,
                 ),
-                SettingsRow(
+                CatchSettingsRow(
                   label: 'Status',
                   value: _hostProfileStatusLabel(profile.status),
                   icon: CatchIcons.checkCircleOutlineRounded,
@@ -191,7 +191,7 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
             _HostAccountSection(
               label: 'Bio',
               children: [
-                SettingsRow(
+                CatchSettingsRow(
                   label: 'About you as a host',
                   value: profile.bio?.trim().isNotEmpty == true
                       ? profile.bio!.trim()
@@ -362,7 +362,7 @@ class _HostAccountClubsSection extends ConsumerWidget {
           )
         else
           for (final club in clubs) ...[
-            SettingsRow(
+            CatchSettingsRow(
               label: club.isOwnedBy(uid) ? 'Owner' : 'Host team',
               value: club.name,
               icon: CatchIcons.groupOutlined,
@@ -684,11 +684,18 @@ class _HostProfileMissingState extends ConsumerWidget {
               CatchButton(
                 label: 'Create host profile',
                 icon: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
-                onPressed: () => unawaited(
-                  ref
-                      .read(hostProfileRepositoryProvider)
-                      .ensureHostProfile(uid: uid, displayName: 'Catch Host'),
-                ),
+                onPressed: () async {
+                  try {
+                    await ref
+                        .read(hostProfileRepositoryProvider)
+                        .ensureHostProfile(
+                          uid: uid,
+                          displayName: 'Catch Host',
+                        );
+                  } catch (error) {
+                    if (context.mounted) showCatchErrorSnackBar(context, error);
+                  }
+                },
               ),
             ],
           ),
@@ -996,7 +1003,7 @@ class _HostEventsClubCard extends ConsumerWidget {
               event: event,
               divider: event != upcoming.first,
             ),
-          SettingsRow(
+          CatchSettingsRow(
             label: 'Add event',
             icon: CatchIcons.addRounded,
             divider: upcoming.isNotEmpty,
@@ -1054,7 +1061,7 @@ class _HostMetaRow extends StatelessWidget {
           tone: owner ? CatchBadgeTone.solid : CatchBadgeTone.neutral,
           uppercase: true,
         ),
-        ActivityChip(
+        CatchActivityChip(
           activityKind: club.hostDefaults.primaryActivityKind,
           primary: true,
         ),
@@ -1091,27 +1098,27 @@ class _HostClubProfileCard extends StatelessWidget {
           label: 'Identity',
           first: true,
           children: [
-            SettingsRow(
+            CatchSettingsRow(
               label: 'Club name',
               value: club.name,
               icon: CatchIcons.groups3Outlined,
               onTap: isOwner ? () => _openClubEditor(context) : null,
             ),
-            SettingsRow(
+            CatchSettingsRow(
               label: 'City',
               value: _valueOrDash(club.location),
               icon: CatchIcons.locationCityOutlined,
               divider: true,
               onTap: isOwner ? () => _openClubEditor(context) : null,
             ),
-            SettingsRow(
+            CatchSettingsRow(
               label: 'Area / neighbourhood',
               value: _valueOrDash(club.area),
               icon: CatchIcons.locationOnOutlined,
               divider: true,
               onTap: isOwner ? () => _openClubEditor(context) : null,
             ),
-            SettingsRow(
+            CatchSettingsRow(
               label: 'Description',
               value: _valueOrDash(club.description),
               icon: CatchIcons.descriptionOutlined,
@@ -1124,20 +1131,20 @@ class _HostClubProfileCard extends StatelessWidget {
         _HostAccountSection(
           label: 'Contact',
           children: [
-            SettingsRow(
+            CatchSettingsRow(
               label: 'Instagram',
               value: _valueOrDash(club.instagramHandle),
               icon: CatchIcons.alternateEmailRounded,
               onTap: isOwner ? () => _openClubEditor(context) : null,
             ),
-            SettingsRow(
+            CatchSettingsRow(
               label: 'Phone',
               value: _valueOrDash(club.phoneNumber),
               icon: CatchIcons.phoneOutlined,
               divider: true,
               onTap: isOwner ? () => _openClubEditor(context) : null,
             ),
-            SettingsRow(
+            CatchSettingsRow(
               label: 'Email',
               value: _valueOrDash(club.email),
               icon: CatchIcons.emailOutlined,
@@ -1149,27 +1156,27 @@ class _HostClubProfileCard extends StatelessWidget {
         _HostAccountSection(
           label: 'Event defaults',
           children: [
-            SettingsRow(
+            CatchSettingsRow(
               label: 'Default activity',
               value: club.hostDefaults.primaryActivityKind.label,
               icon: CatchIcons.eventOutlined,
               onTap: isOwner ? () => _openClubEditor(context) : null,
             ),
-            SettingsRow(
+            CatchSettingsRow(
               label: 'Admission',
               value: _admissionDefaultLabel(policy.admissionPreset),
               icon: CatchIcons.eventSeatOutlined,
               divider: true,
               onTap: isOwner ? () => _openClubEditor(context) : null,
             ),
-            SettingsRow(
+            CatchSettingsRow(
               label: 'Age range',
               value: '${policy.minAge}–${policy.maxAge}',
               icon: CatchIcons.cakeOutlined,
               divider: true,
               onTap: isOwner ? () => _openClubEditor(context) : null,
             ),
-            SettingsRow(
+            CatchSettingsRow(
               label: 'Cancellation policy',
               value: policy.cancellationPolicy.title,
               icon: CatchIcons.eventBusyOutlined,
@@ -1181,7 +1188,7 @@ class _HostClubProfileCard extends StatelessWidget {
         _HostAccountSection(
           label: 'Public profile',
           children: [
-            SettingsRow(
+            CatchSettingsRow(
               label: 'Preview club page',
               value: 'Preview',
               icon: CatchIcons.visibilityOutlined,
@@ -1235,7 +1242,7 @@ class _HostClubPreviewPane extends StatelessWidget {
           style: CatchTextStyles.bodyLead(context, color: t.ink),
         ),
         gapH18,
-        SettingsRow(
+        CatchSettingsRow(
           label: 'Open public preview',
           value: 'Preview',
           icon: CatchIcons.visibilityOutlined,
@@ -1285,7 +1292,7 @@ class _HostEventRow extends StatelessWidget {
       );
     }
 
-    return SettingsRow(
+    return CatchSettingsRow(
       label: event.title,
       value: event.timeRangeLabel,
       icon: CatchIcons.calendarTodayOutlined,

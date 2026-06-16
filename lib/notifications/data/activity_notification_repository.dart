@@ -52,16 +52,20 @@ class ActivityNotificationRepository {
     required Iterable<ActivityNotification> notifications,
   }) => withBackendErrorContext(
     () async {
-      final unread = notifications.where(
-        (notification) => notification.isUnread,
-      );
-      await Future.wait(
-        unread.map(
-          (notification) => _itemsRef(uid).doc(notification.id).update({
-            'readAt': FieldValue.serverTimestamp(),
-          }),
-        ),
-      );
+      final unread = notifications
+          .where((notification) => notification.isUnread)
+          .toList(growable: false);
+      if (unread.isEmpty) return;
+      // Mark every unread item read in one atomic batch instead of N
+      // independent best-effort updates that can partially fail.
+      final batch = _db.batch();
+      final items = _itemsRef(uid);
+      for (final notification in unread) {
+        batch.update(items.doc(notification.id), {
+          'readAt': FieldValue.serverTimestamp(),
+        });
+      }
+      await batch.commit();
     },
     context: const BackendErrorContext(
       service: BackendService.firestore,

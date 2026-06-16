@@ -508,7 +508,7 @@ AsyncValue<ExploreViewModel> exploreViewModel(Ref ref) {
 bool matchesExploreClubSearchQuery(Club club, String normalizedQuery) {
   return club.name.toLowerCase().contains(normalizedQuery) ||
       club.area.toLowerCase().contains(normalizedQuery) ||
-      club.hostName.toLowerCase().contains(normalizedQuery) ||
+      club.displayHostName.toLowerCase().contains(normalizedQuery) ||
       club.tags.any((tag) => tag.toLowerCase().contains(normalizedQuery));
 }
 

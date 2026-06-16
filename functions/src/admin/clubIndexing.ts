@@ -9,17 +9,24 @@ import {AdminSetClubIndexStatusCallablePayload} from
 import {validateAdminSetClubIndexStatusCallablePayload} from
   "../shared/generated/schemaValidators";
 import {validateCallableWithAjv} from "../shared/validation";
+import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 
 const indexReviewRoles = ["admin", "adminOwner", "support"] as const;
 
 interface ClubIndexingDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
+  checkRateLimit?: (
+    db: FirebaseFirestore.Firestore,
+    uid: string,
+    action: string
+  ) => Promise<void>;
 }
 
 const defaultDeps: ClubIndexingDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  checkRateLimit: defaultCheckRateLimit,
 };
 
 export interface AdminSetClubIndexStatusResponse {
@@ -52,6 +59,7 @@ export async function adminSetClubIndexStatusHandler(
   assertChecklistForIndexableStatus(data.indexStatus, data.checklist);
 
   const db = deps.firestore();
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminSetClubIndexStatus");
   const clubRef = db.collection("clubs").doc(data.clubId);
   const timestamp = deps.serverTimestamp();
   const publishStatus = data.indexStatus === "noindex" ? "qa" : "published";

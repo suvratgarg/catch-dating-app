@@ -24,6 +24,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_route_transiti
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
+import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
@@ -74,6 +75,7 @@ enum Routes {
   // Explore branch (index 1). The root path remains `/clubs` because club
   // detail and event detail deep links still live under that URL namespace.
   exploreScreen('/clubs'),
+  exploreMapScreen('/clubs/map'),
   clubDetailScreen('/clubs/:clubId'),
   eventDetailScreen('/clubs/:clubId/events/:eventId'),
   eventSuccessCompanionScreen('/clubs/:clubId/events/:eventId/companion'),
@@ -460,6 +462,12 @@ GoRouter goRouter(Ref ref) {
                   name: Routes.exploreScreen.name,
                   builder: (context, state) => const ExploreScreen(),
                   routes: [
+                    GoRoute(
+                      path: 'map',
+                      name: Routes.exploreMapScreen.name,
+                      parentNavigatorKey: _rootNavigatorKey,
+                      builder: (context, state) => const ExploreMapScreen(),
+                    ),
                     GoRoute(
                       path: ':clubId',
                       name: Routes.clubDetailScreen.name,

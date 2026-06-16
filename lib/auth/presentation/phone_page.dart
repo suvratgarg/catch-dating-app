@@ -11,9 +11,9 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
@@ -127,7 +127,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
           ),
           if (mutation.hasError) ...[
             gapH16,
-            ErrorBanner(
+            CatchErrorBanner(
               message: appErrorMessage(
                 (mutation as MutationError).error,
                 context: AppErrorContext.auth,

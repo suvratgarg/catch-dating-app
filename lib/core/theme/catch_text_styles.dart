@@ -10,8 +10,9 @@ import 'package:flutter/material.dart';
 /// **Fidelity rules** (the locked specimen, `docs/visual_references/catch_typography.html`):
 /// - Display voice is **Archivo w600 with zero tracking** — bold but still
 ///   restrained.
-/// - Mono kickers/labels are uppercase with zero tracking. Render the text
-///   already upper-cased; the style only sets weight/size/leading.
+/// - Mono kickers/labels are uppercase with tracked caps (the `.t-*` spec sets
+///   0.16em on kicker, 0.18em on kicker-lg, 0.13em on mono-label, 0.08em on
+///   badge). Render the text already upper-cased; the style sets the tracking.
 /// - Body serif (`proseL`/`proseM`) uses generous leading (~1.55).
 ///
 /// **Scale discipline:** dramatic jumps in the display tier (no near-duplicate
@@ -30,6 +31,7 @@ abstract final class CatchTextStyles {
     size: 44,
     weight: FontWeight.w600,
     height: 0.98,
+    letterSpacing: -0.7,
     color: color,
   );
 
@@ -39,6 +41,7 @@ abstract final class CatchTextStyles {
     size: 32,
     weight: FontWeight.w600,
     height: 1.04,
+    letterSpacing: -0.35,
     color: color,
   );
 
@@ -48,6 +51,7 @@ abstract final class CatchTextStyles {
     size: 26,
     weight: FontWeight.w600,
     height: 1.10,
+    letterSpacing: -0.16,
     color: color,
   );
 
@@ -57,6 +61,7 @@ abstract final class CatchTextStyles {
     size: 20,
     weight: FontWeight.w600,
     height: 1.16,
+    letterSpacing: -0.1,
     color: color,
   );
 
@@ -132,6 +137,7 @@ abstract final class CatchTextStyles {
         fontSize: 36,
         width: 90,
         height: 1,
+        letterSpacing: -1.0,
         color: color ?? CatchTokens.of(context).ink,
       );
 
@@ -142,6 +148,7 @@ abstract final class CatchTextStyles {
         fontWeight: FontWeight.w800,
         width: 90,
         height: 1.15,
+        letterSpacing: -0.2,
         color: color ?? CatchTokens.of(context).ink,
       );
 
@@ -152,6 +159,7 @@ abstract final class CatchTextStyles {
         fontWeight: FontWeight.w600,
         width: 94,
         height: 1.25,
+        letterSpacing: -0.2,
         color: color ?? CatchTokens.of(context).ink,
       );
 
@@ -160,6 +168,7 @@ abstract final class CatchTextStyles {
       CatchFonts.head(
         fontSize: 15,
         height: 1.2,
+        letterSpacing: -0.1,
         color: color ?? CatchTokens.of(context).ink,
       );
 
@@ -185,7 +194,7 @@ abstract final class CatchTextStyles {
     color: color,
   );
 
-  /// InfoRow primary text (`.t-title-s` in the design handoff).
+  /// CatchInfoRow primary text (`.t-title-s` in the design handoff).
   static TextStyle infoRowTitle(BuildContext context, {Color? color}) => _sans(
     context,
     size: 14,
@@ -400,6 +409,7 @@ abstract final class CatchTextStyles {
     size: 11,
     weight: FontWeight.w700,
     height: 1.15,
+    letterSpacing: 1.76, // .t-kicker 0.16em × 11
     color: color ?? CatchTokens.of(context).ink2,
   );
 
@@ -409,6 +419,7 @@ abstract final class CatchTextStyles {
     size: 12,
     weight: FontWeight.w700,
     height: 1.1,
+    letterSpacing: 2.16, // .t-kicker-lg 0.18em × 12
     color: color ?? CatchTokens.of(context).ink,
   );
 
@@ -418,6 +429,7 @@ abstract final class CatchTextStyles {
     size: 11,
     weight: FontWeight.w600,
     height: 1.15,
+    letterSpacing: 1.43, // .t-mono-label 0.13em × 11
     color: color ?? CatchTokens.of(context).ink2,
   );
 
@@ -427,6 +439,7 @@ abstract final class CatchTextStyles {
     size: 10,
     weight: FontWeight.w700,
     height: 1.15,
+    letterSpacing: 1.30, // mono-label cut, 0.13em × 10
     color: color ?? CatchTokens.of(context).ink2,
   );
 
@@ -471,6 +484,7 @@ abstract final class CatchTextStyles {
         fontSize: 9,
         fontWeight: FontWeight.w700,
         height: 1.1,
+        letterSpacing: 0.72, // .t-badge 0.08em × 9
         color: color ?? CatchTokens.of(context).ink,
       );
 

@@ -5,8 +5,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/graded_image.dart';
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_redesign/profile_view.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_controls.dart';
@@ -198,10 +198,10 @@ class _HeroScrim extends StatelessWidget {
             end: Alignment.bottomCenter,
             stops: const [0.0, 0.45, 0.78, 1.0],
             colors: [
-              base.withValues(alpha: CatchOpacity.subtleBorder),
+              base.withValues(alpha: CatchOpacity.profileHeroScrimTop),
               base.withValues(alpha: CatchOpacity.none),
-              base.withValues(alpha: CatchOpacity.gradientBand),
-              base.withValues(alpha: CatchOpacity.profileHeroBaseScrim),
+              base.withValues(alpha: CatchOpacity.profileHeroScrimMid),
+              base.withValues(alpha: CatchOpacity.profileHeroScrimBottom),
             ],
           ),
         ),
@@ -232,7 +232,7 @@ class _Photo extends StatelessWidget {
         patternOpacity: CatchOpacity.profileFallbackArtworkPattern,
       );
     }
-    return GradedImage(
+    return CatchGradedImage(
       child: Image(image: photo, fit: BoxFit.cover),
     );
   }

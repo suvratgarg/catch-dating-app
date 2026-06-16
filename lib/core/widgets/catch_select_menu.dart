@@ -174,7 +174,7 @@ class _CatchSelectMenuState<T> extends State<CatchSelectMenu<T>> {
                             ? CatchIcons.expandLessRounded
                             : CatchIcons.expandMoreRounded,
                         size: CatchIcon.md,
-                        color: widget.enabled ? t.ink3 : t.ink3,
+                        color: t.ink3,
                       ),
                     ],
                   ),

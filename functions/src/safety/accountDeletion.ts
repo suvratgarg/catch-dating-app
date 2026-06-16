@@ -46,21 +46,29 @@ export async function requestAccountDeletionHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "requestAccountDeletion");
 
+  const deletedUserRef = db.collection("deletedUsers").doc(uid);
+
+  // Re-entrancy guard. The tombstone is written only AFTER all cleanup has
+  // committed (see below), so its presence means this account was already
+  // fully deleted. A retry — e.g. the previous call died right after the
+  // tombstone but before removing the Auth user — just ensures the Auth user
+  // is gone and returns, instead of re-running the destructive cleanup.
+  const existingTombstone = await deletedUserRef.get();
+  if (existingTombstone.exists) {
+    await deleteAuthUserIfPresent(deps.auth(), uid);
+    return {deleted: true};
+  }
+
   const now = deps.serverTimestamp();
   const userSnap = await db.collection("users").doc(uid).get();
   const userData = userSnap.data() ?? {};
 
   await deleteStoragePaths(
-    profilePhotoDeletionStoragePaths(userData),
+    profilePhotoDeletionStoragePaths(uid, userData),
     deps.storageBucket()
   );
 
   const writer = new BatchQueue(db);
-  writer.set(db.collection("deletedUsers").doc(uid), {
-    uid,
-    deletedAt: now,
-    retainedFor: ["safety", "payments", "fraud"],
-  });
   writer.delete(db.collection("publicProfiles").doc(uid));
 
   await queueRelationshipCleanup({
@@ -120,9 +128,41 @@ export async function requestAccountDeletionHandler(
   }, {merge: true});
 
   await writer.commit();
-  await deps.auth().deleteUser(uid);
+
+  // Write the tombstone only after every cleanup batch has committed, so it is
+  // a reliable "fully deleted" marker for the re-entrancy guard above. The
+  // count decrements in the cleanup are conditioned on each edge's current
+  // status (which the same writes flip to "deleted"), so a retry that reaches
+  // here again cannot double-decrement.
+  await deletedUserRef.set({
+    uid,
+    deletedAt: now,
+    retainedFor: ["safety", "payments", "fraud"],
+  });
+  await deleteAuthUserIfPresent(deps.auth(), uid);
 
   return {deleted: true};
+}
+
+/**
+ * Deletes the Auth user, treating an already-removed user as success so the
+ * deletion flow is safe to retry.
+ * @param {admin.auth.Auth} auth Firebase Auth instance.
+ * @param {string} uid User id to remove.
+ * @return {Promise<void>}
+ */
+async function deleteAuthUserIfPresent(
+  auth: admin.auth.Auth,
+  uid: string
+): Promise<void> {
+  try {
+    await auth.deleteUser(uid);
+  } catch (error) {
+    if ((error as {code?: string}).code === "auth/user-not-found") {
+      return;
+    }
+    throw error;
+  }
 }
 
 /**
@@ -477,13 +517,18 @@ class BatchQueue {
  * @return {string[]} Storage object paths to delete.
  */
 function profilePhotoDeletionStoragePaths(
+  uid: string,
   user: FirebaseFirestore.DocumentData
 ): string[] {
   const paths = new Set<string>();
+  // storagePath/url are client-supplied (via updateUserProfile), so only delete
+  // objects the account actually owns — never a path targeting another user.
+  const ownsPath = (value: string): boolean =>
+    value.startsWith(`users/${uid}/`);
   const addPath = (value: unknown) => {
     if (typeof value !== "string") return;
     const trimmed = value.trim();
-    if (trimmed.length > 0) paths.add(trimmed);
+    if (trimmed.length > 0 && ownsPath(trimmed)) paths.add(trimmed);
   };
   const addUrl = (value: unknown) => {
     if (typeof value !== "string") return;

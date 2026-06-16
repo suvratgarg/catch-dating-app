@@ -321,6 +321,11 @@ abstract final class CatchGaps {
   /// Tight icon/label or metadata pair spacing.
   static const double inline = CatchSpacing.s2;
 
+  /// Gap between a screen-header title and the kicker/subtitle paired with it
+  /// (browse-header title→subtitle, Home dashboard eyebrow→title). Centralises
+  /// the subtitle-to-title relationship of the shared tab-screen header rhythm.
+  static const double headerTitleToSubtitle = CatchSpacing.s1;
+
   /// Distance between closely related rows inside the same content cluster.
   static const double related = CatchSpacing.s3;
 
@@ -389,6 +394,16 @@ abstract final class CatchInsets {
     CatchSpacing.s4,
   );
 
+  /// Compact-top scroll body for tab screens that own their title block inline
+  /// (no pinned header) and need section-sized scroll-end breathing room — the
+  /// Catches hub feed and its empty state share this single contract.
+  static const EdgeInsets pageBodyHero = EdgeInsets.fromLTRB(
+    CatchSpacing.screenPx,
+    CatchSpacing.s2,
+    CatchSpacing.screenPx,
+    CatchSpacing.s6,
+  );
+
   /// Horizontal page/list gutters when vertical padding is owned elsewhere.
   static const EdgeInsets pageHorizontal = EdgeInsets.symmetric(
     horizontal: CatchSpacing.screenPx,
@@ -421,6 +436,38 @@ abstract final class CatchInsets {
     CatchSpacing.s2,
     CatchSpacing.s5,
     CatchSpacing.s3,
+  );
+
+  // ── Shared tab-screen header rhythm ─────────────────────────────────────────
+  //
+  // The five top-level tab screens (Home, Clubs, Catches, Chats, Profile) share
+  // one spacing contract for the band between their title block, any pinned
+  // search/filter/tab control, and the first content row. These role tokens
+  // centralise that rhythm so screens stop tuning their own raw EdgeInsets.
+  // The horizontal page gutter stays [CatchSpacing.screenPx] (s5) everywhere.
+
+  /// (1) Title block padding for tab screens whose header pairs a title with a
+  /// subtitle (Chats, Clubs browse headers). Canonical = [pageHeaderBody].
+  static const EdgeInsets screenTitleBlock = pageHeaderBody;
+
+  /// (1) Title block padding for tab screens whose header is a compact
+  /// eyebrow/title or title-only row (Home dashboard, Profile-style headers).
+  /// Canonical = [pageHeaderCompact].
+  static const EdgeInsets screenTitleBlockCompact = pageHeaderCompact;
+
+  /// (3) Horizontal gutters for a pinned search/filter/tab control row when its
+  /// vertical rhythm is owned by the control's own height slot (Profile tab
+  /// bar, Chats host-filter row). Canonical = [pageHorizontal].
+  static const EdgeInsets screenControlRow = pageHorizontal;
+
+  /// (3) Padding for a pinned filter/scope rail that sits flush above the first
+  /// content row, owning its top separation but deferring the bottom gap to the
+  /// content below (Clubs/Explore filter rail).
+  static const EdgeInsets screenControlRail = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s4,
+    CatchSpacing.s5,
+    CatchSpacing.s0,
   );
 
   /// Section header padding above compact horizontal rails or lists.
@@ -617,6 +664,17 @@ abstract final class CatchInsets {
     bottom: CatchSpacing.micro6,
   );
 
+  /// Horizontal gutters for the Chats conversation list. Matches the section
+  /// kicker gutter so the list tiles, header label, and dividers all align.
+  static const EdgeInsets chatListGutter = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s4,
+  );
+
+  /// Vertical padding for a single chat conversation row.
+  static const EdgeInsets chatListTileVertical = EdgeInsets.symmetric(
+    vertical: CatchSpacing.s3,
+  );
+
   /// Bottom gap between compact inline rows in detail screens.
   static const EdgeInsets detailInlineRowBottomGap = EdgeInsets.only(
     bottom: CatchSpacing.micro10,
@@ -778,6 +836,19 @@ abstract final class CatchOpacity {
   /// pills).
   static const double subtleFill = 0.12;
 
+  /// Tone wash behind a tinted Callout (design-system color-mix 7%).
+  static const double calloutFill = 0.07;
+
+  // CoverStory (design-system components/explore/CoverStory) — the dark wow cover.
+  static const double coverStoryGlow = 0.58;
+  static const double coverStoryGhostGlyph = 0.07;
+  static const double coverStoryScrim = 0.035;
+  static const double coverStoryBody = 0.76;
+  static const double coverStoryData = 0.70;
+  static const double coverStoryLocation = 0.65;
+  static const double coverStorySearchBorder = 0.28;
+  static const double coverStoryKickerMix = 0.55;
+
   /// Soft warning-state fill.
   static const double warningFill = 0.14;
 
@@ -857,7 +928,7 @@ abstract final class CatchOpacity {
   static const double mapDistanceRingFill = 0.08;
   static const double mapUserLocationStroke = 0.92;
   static const double eventSuccessQrErrorFill = 0.84;
-  static const double strideTodayBar = 0.50;
+  static const double strideInactiveBar = 0.55;
   static const double emptyHeroArtStroke = 0.25;
   static const double appShellNavigationBarFill = 0.96;
   static const double suvbotDestructiveFill = 0.24;
@@ -889,6 +960,10 @@ abstract final class CatchOpacity {
   static const double mapOverlayChromeFill = 0.92;
   static const double photoDragGhost = 0.35;
   static const double profileInfoDivider = 0.62;
+
+  /// Inset hairline divider between on-surface rows (InfoRow / settings / chat
+  /// inbox) — design-system color-mix(line 38%, transparent).
+  static const double infoRowDivider = 0.38;
   static const double profileProgressTrack = 0.70;
   static const double profileShadowDark = 0.34;
   static const double profileShadowLight = 0.10;
@@ -1133,8 +1208,12 @@ abstract final class CatchOpacity {
   /// Event recap roster-tile name scrim.
   static const double eventRecapTileScrim = 0.74;
 
-  /// Strong base scrim for profile hero name/meta legibility.
-  static const double profileHeroBaseScrim = 0.95;
+  /// Flagship profile hero scrim stops (design-system ProfileHero, at
+  /// 0/45/78/100% → 0.14 / 0 / 0.34 / 0.74). Legible name/meta without crushing
+  /// the portrait.
+  static const double profileHeroScrimTop = 0.14;
+  static const double profileHeroScrimMid = 0.34;
+  static const double profileHeroScrimBottom = 0.74;
 
   /// Activity-art fallback icon opacity on the flagship profile hero.
   static const double profileFallbackArtworkIcon = 0.18;
@@ -1388,6 +1467,8 @@ abstract final class CatchLayout {
   static const double eventDetailTicketTitleCompactSize = 30.0;
   static const double eventDetailTicketTitleExpandedSize = 42.0;
   static const double eventDetailTicketTitleLineHeight = 0.92;
+  // Standard (photo) hero title — condensed poster cut, design-system EventHero.
+  static const double eventDetailHeroStandardTitleSize = 32.0;
 
   static const double catchesProfileBottomPadding = 112.0;
   static const double catchesHubBackgroundIconSize = 156.0;
@@ -1488,6 +1569,18 @@ abstract final class CatchLayout {
   static const double eventSuccessLabStepMarkerExtent = 34.0;
   static const double eventPolicyLabScenarioCardWidth = 220.0;
   static const double rosterFilterTileMinHeight = 56.0;
+  // Shared roster board (design-system components/hosting/RosterBoard).
+  static const double rosterRowAvatarExtent = 32.0;
+  static const double rosterDecideTargetExtent = 32.0;
+  static const double rosterHeaderIdentityInset = 42.0;
+  static const double chatListAvatarExtent = CatchSpacing.s11;
+  static const double chatListTextGap = CatchSpacing.s3;
+
+  /// Left inset for the chat-row hairline divider so it starts past the avatar
+  /// and aligns with the text column. Kept in terms of the avatar extent + the
+  /// avatar→text gap so the divider can't drift from the row layout.
+  static const double chatListDividerInset =
+      chatListAvatarExtent + chatListTextGap;
   static const double browseHeaderHeight = 88.0;
   static const double browseHeaderContentHeight = 60.0;
   static const double browseHeaderSearchExtent = 52.0;
@@ -1516,6 +1609,29 @@ abstract final class CatchLayout {
   static const double eventDetailItineraryTimeColumnWidth = 50.0;
   static const double eventDetailItineraryRailColumnWidth = 20.0;
   static const double eventDetailItineraryDotExtent = 9.0;
+  // JourneySteps (design-system components/events/JourneySteps) — numbered
+  // node-rail sequence shared by the first-run dashboard and onboarding.
+  static const double journeyStepsIndexColumnWidth = 30.0;
+  static const double journeyStepsRailColumnWidth = 20.0;
+  static const double journeyStepsNodeExtent = 11.0;
+  // CrossPathsCard (design-system components/explore/CrossPathsCard).
+  static const double crossPathsPolaroidWidth = 76.0;
+  static const double crossPathsPolaroidHeight = 92.0;
+  static const double crossPathsRailColumnWidth = 104.0;
+  static const double crossPathsPhotoVariantWidth = 122.0;
+  static const double crossPathsHeartExtent = 34.0;
+  static const double crossPathsPolaroidTilt = 0.0349; // 2° in radians
+  // CoverStory (design-system components/explore/CoverStory).
+  static const double coverStoryGhostGlyphSize = 210.0;
+  static const double coverStorySearchExtent = 38.0;
+  static const double coverStoryGhostRightInset = 34.0;
+  static const double coverStoryGhostBottomInset = 14.0;
+  // "Your hosts" HostCard (design-system components/events/HostCard).
+  static const double eventDetailHostAvatarExtent = 46.0;
+  static const double eventDetailHostSealSize = 15.0;
+  static const double eventDetailHostNameSize = 16.0;
+  static const double eventDetailHostStatValueSize = 17.0;
+  static const double eventDetailHostStatLabelSize = 9.0;
   static const double eventDetailConflictMedallionExtent = 52.0;
   static const double eventDetailConflictEventGlyphExtent = 38.0;
   static const double paymentCheckoutBackdropHeight = 230.0;
@@ -1624,7 +1740,7 @@ abstract final class CatchLayout {
   static const double calendarMonthGridGapTotal = 30.0;
   static const double welcomeBrandMarkExtent = 52.0;
   static const double eventInfoTileExtent = 44.0;
-  static const double strideChartHeight = 58.0;
+  static const double strideChartHeight = 84.0;
   static const double calendarStatDividerHeight = 44.0;
   static const double calendarStatDividerHorizontalMargin = 10.0;
   static const double calendarEmptyIconSize = 44.0;
@@ -1668,6 +1784,7 @@ abstract final class CatchLayout {
   static const double skeletonTextShortWidth = 64.0;
   static const double skeletonTextTitleWidth = 132.0;
   static const double chatNewMatchTileWidth = 64.0;
+  static const double chatNewMatchAvatarExtent = 64.0;
   static const double clubFilterDividerHeight = 22.0;
   static const double profileTagPillHorizontalPadding = 11.0;
   static const double profileTagPillVerticalPadding = 7.0;

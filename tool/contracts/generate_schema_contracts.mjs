@@ -190,6 +190,12 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/hostPaymentAccountDocument.ts",
   },
   {
+    name: "RazorpayPendingOrderDocument",
+    source: "firestore/razorpay_pending_orders.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/razorpayPendingOrderDocument.ts",
+  },
+  {
     name: "SwipeDocument",
     source: "firestore/swipes.schema.json",
     typeOutput: "functions/src/shared/generated/swipeDocument.ts",

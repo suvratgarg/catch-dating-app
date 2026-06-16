@@ -9,16 +9,17 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
-import 'package:catch_dating_app/core/widgets/person_row.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
@@ -45,11 +46,11 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-part 'host_parts/event_success_host_shared.dart';
-part 'host_parts/event_success_host_setup.dart';
 part 'host_parts/event_success_host_live.dart';
-part 'host_parts/event_success_host_report.dart';
 part 'host_parts/event_success_host_overrides.dart';
+part 'host_parts/event_success_host_report.dart';
+part 'host_parts/event_success_host_setup.dart';
+part 'host_parts/event_success_host_shared.dart';
 
 const EdgeInsets _hostTabPickerPadding = EdgeInsets.fromLTRB(
   CatchSpacing.s5,

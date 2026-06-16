@@ -66,9 +66,6 @@ class AuthInput {
     if (phoneNumber.isEmpty) {
       return 'your number';
     }
-    if (phoneNumber.length < 5) {
-      return '$countryCode $phoneNumber';
-    }
     return '$countryCode $phoneNumber';
   }
 

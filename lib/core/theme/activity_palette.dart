@@ -107,12 +107,18 @@ class ActivityPalette extends ThemeExtension<ActivityPalette> {
 
   static const Map<ActivityKind, IconData> glyphs = <ActivityKind, IconData>{
     ActivityKind.socialRun: PhosphorIconsRegular.sneakerMove,
-    ActivityKind.running: PhosphorIconsRegular.sneakerMove,
+    // Registry (components/activity/kinds.js): running='person-simple-run'.
+    // sneaker-move is reserved for socialRun only.
+    ActivityKind.running: PhosphorIconsRegular.personSimpleRun,
     ActivityKind.walking: PhosphorIconsRegular.personSimpleWalk,
-    ActivityKind.pickleball: PhosphorIconsRegular.tennisBall,
+    // Registry: pickleball='ping-pong', padel/tennis='tennis-ball'.
+    ActivityKind.pickleball: PhosphorIconsRegular.pingPong,
     ActivityKind.padel: PhosphorIconsRegular.tennisBall,
     ActivityKind.tennis: PhosphorIconsRegular.tennisBall,
-    ActivityKind.badminton: PhosphorIconsRegular.pingPong,
+    // Registry: badminton='shuttlecock'; phosphor 2.1.0 ships no shuttlecock,
+    // so `feather` is the nearest shuttlecock-evoking glyph (and distinct from
+    // the tennis-ball racquet cluster). Swap to a bespoke emblem when added.
+    ActivityKind.badminton: PhosphorIconsRegular.feather,
     ActivityKind.cycling: PhosphorIconsRegular.bicycle,
     ActivityKind.spinClass: PhosphorIconsRegular.bicycle,
     ActivityKind.yoga: PhosphorIconsRegular.flowerLotus,
