@@ -40,27 +40,6 @@
   },
   "pending": [
     {
-      "id": "CELEBRATION-SOUND-001",
-      "title": "Add optional sound to full-screen celebration moments",
-      "status": "watch",
-      "area": "core,runs,payments,matches",
-      "priority": "low",
-      "rules": [
-        "DESIGN-PRIMITIVES-001",
-        "WIDGET-TEST-001"
-      ],
-      "summary": "Full-screen celebration moments now share `CatchCelebrationScreen` and `CelebrationEffectsController`, with haptics enabled by default for run creation, run signup/payment confirmation, participant self-check-in, and matches. Sound is intentionally deferred. When product is ready, add sound through `CelebrationEffectsController` only, choose app-owned audio assets/package, respect mute/silent/accessibility expectations, and keep widget tests deterministic through an injected fake effects controller.",
-      "paths": [
-        "lib/core/celebration/celebration_effects_controller.dart",
-        "lib/core/celebration/catch_celebration_screen.dart",
-        "lib/runs/presentation/create_run_success_screen.dart",
-        "lib/runs/presentation/run_joined_celebration_screen.dart",
-        "lib/runs/presentation/run_check_in_celebration_screen.dart",
-        "lib/matches/presentation/widgets/match_celebration_dialog.dart",
-        "test/core/catch_celebration_screen_test.dart"
-      ]
-    },
-    {
       "id": "MATCH-CHAT-REMAINING-001",
       "title": "Close remaining match and chat audit follow-ups",
       "status": "active",
@@ -695,6 +674,16 @@
         "AUDIT-REGISTRY-001"
       ],
       "summary": "Built the app-wide frontend/local error-management layer (delegated, then merged + verified). lib/core/app_error_context.dart adds a frontend operation-context API (AppOperation, AppErrorContext, normalizeAppError/withAppErrorContext/logAppError/runLoggingAppErrors) that adapts the existing backend normalize/log layer without duplicating it. tool/audit/frontend_error_candidates.dart is a new scanner (modeled on the backend one, same 6 buckets) covering bare/named catches, .catchError, raw error prints, raw throws, plugin side effects, and global handlers. Migrated all review candidates -> frontend scanner mustMigrate=0, review=0 (fixed real bugs: launch_access/onboarding StateError copy was being stripped to generic text -> typed ValidationException; swallowed Remote Config + health-plugin failures now logged; image_picker/geolocator wrapped). docs/error-handling-audit.md gains a v2.7.0 frontend section. Backend scanner still mustMigrate=0/review=0. Verified: analyze clean, 1349 client tests + both scanners green. Adversarially reviewed (no confirmed issues in this layer)."
+    },
+    {
+      "id": "CELEBRATION-SOUND-001-DONE",
+      "title": "Add optional sound to full-screen celebration moments",
+      "completed": "2026-06-16",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "WIDGET-TEST-001"
+      ],
+      "summary": "CelebrationEffectsController now layers an OPTIONAL one-shot sound on top of the existing per-moment haptic, mirroring the proven event_success audio pattern: a lazily-created lowLatency AudioPlayer plays AssetSource('audio/celebration/<kind>.mp3') with per-kind volume (match heaviest, check-in lightest), wrapped in _runSafely so a missing asset / absent plugin (web/unit-test) / transient error gracefully no-ops and is remembered for the session. The sound is 'optional' in two senses consistent with the codebase: the screen-level playEffects flag already gates whether effects run, and the audio is a non-mandatory enhancement that degrades to haptic-only when the file isn't present. Added assets/audio/celebration/ (registered in pubspec) + a README documenting the 4 needed files (match/event_created/event_joined/checked_in) \u2014 the actual audio files are a design deliverable, exactly like the already-shipped event_success audio slots. Verified: analyze clean, celebration screen tests green."
     }
   ]
 }
