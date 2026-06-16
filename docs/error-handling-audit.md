@@ -1,7 +1,7 @@
 ---
 doc_id: error_handling_audit
-version: 2.6.2
-updated: 2026-05-22
+version: 2.7.0
+updated: 2026-06-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,11 +16,92 @@ status: active
 
 Use this as the app-wide error-management source of truth, migration checklist,
 error catalogue, and remediation map. Re-run
-`dart tool/audit/backend_error_candidates.dart` before backend error work. Before the
-next migration pass, add an app-wide scanner for frontend/local/provider error
-surfaces and keep its to-do list in the audit registry rather than copying
-findings into new trackers. Stamp files reviewed against this doc in the audit
-registry.
+`dart tool/audit/backend_error_candidates.dart` before backend error work and
+`dart tool/audit/frontend_error_candidates.dart` before frontend/local/plugin
+error work. Both must stay at `mustMigrate=0` and `review=0`. Keep their to-do
+lists in the audit registry rather than copying findings into new trackers.
+Stamp files reviewed against this doc in the audit registry.
+
+## Current State of Truth
+
+### 2026-06-16: Frontend / Local Error-Management Layer (APP-ERROR-INFRA-001)
+
+The non-backend half of the error system is now in place. The backend layer
+(`withBackendErrorContext` / `withBackendErrorStream`) remains the seam for
+Firebase service calls; the new frontend layer is the seam for everything the
+app does *locally or through a platform plugin*.
+
+#### App operation-context API
+
+**File:** `lib/core/app_error_context.dart`
+
+This is the non-backend parallel to `BackendErrorContext` /
+`withBackendErrorContext`. It deliberately reuses `BackendService` and
+`BackendErrorContext` under the hood (via `toBackendContext()`) so the whole app
+keeps ONE log/analytics context shape and ONE normalizer
+(`normalizeBackendError`) — it does not duplicate the backend layer.
+
+| Symbol | Shape | Use for |
+|---|---|---|
+| `AppOperation` | enum: `validation`, `localPersistence`, `navigation`, `plugin`, `ui`, `runtime` | Tags the failure category. `plugin` logs under `BackendService.external`; the rest under `BackendService.local`. The category is written to the `operation` log key. |
+| `AppErrorContext` | `{operation, action, resource?, metadata}` → `toBackendContext()` | Non-PII frontend operation context. `resource`/`action` stay low-cardinality (e.g. `image_picker`, `pick a photo`). |
+| `normalizeAppError(error, context, mapper?)` | `AppException` | Normalizes any local/plugin error to a typed exception, reusing the backend normalizer. Pass a `mapper` (or throw an `AppException`) to promote user-correctable input into `ValidationException`. |
+| `withAppErrorContext(op, context, mapper?)` | `Future<T>` | Wrap plugin/local async work so thrown errors become typed app exceptions. Mirrors `withBackendErrorContext`. |
+| `runLoggingAppErrors(op, context, logError, mapper?)` | `Future<bool>` | Best-effort fire-and-forget local work: runs `op`, on failure normalizes + logs via `ErrorLogger` and returns `false` instead of rethrowing. The explicit, observable replacement for bare `catch (_) {}` / `.catchError((_) {})`. |
+| `logAppError(error, context, logError, mapper?)` | `void` | In a `catch` where the op legitimately continues (cleanup / UI fallback): normalize + record without rethrowing. |
+
+Privacy rules are identical to the backend context: never put user IDs, phone
+numbers, file names, message text, bios, photo URLs, exact coordinates, or
+payment ids into `action`/`resource`/`metadata`.
+
+#### Frontend candidate scanner
+
+**File:** `tool/audit/frontend_error_candidates.dart` (run with `--json` /
+`--markdown`). Modeled on the backend scanner with the same buckets. It scans
+`lib` + `test` for: bare `catch (_)` / `catch (e)` swallows, `.catchError`
+callbacks, raw `print`/`debugPrint` of errors, raw `throw '...'` /
+`Exception` / `StateError` / `ArgumentError` (validation vs. programmer guard),
+plugin side effects (picker / `launchUrl` / share / geolocation / permissions /
+`SharedPreferences`), the global framework handlers
+(`FlutterError.onError` / `PlatformDispatcher.onError` / `ErrorWidget.builder`),
+and usage of the new op-context API.
+
+Disposition rules (conservatism is intentional — the goal is real coverage, not
+churn):
+
+- **verified** — a caught error is normalized/logged, rethrown (or rethrown as a
+  typed exception), forwarded to a completer / `FlutterError.reportError`,
+  surfaced to the user (snackbar / banner / error UI state), owned by a
+  Riverpod mutation's error state, scoped by `.catchError(test:)`, or a plugin
+  call sits inside an op-context wrapper / a file that routes its failures
+  through the logger + normalizer.
+- **intentional** — bootstrap-owned global handlers and pre-logger diagnostics,
+  core error-infra files, sealed/exhaustiveness `StateError` guards,
+  `ArgumentError` programmer-guard preconditions, internal-invariant
+  `StateError`s, user-facing `StateError`s caught locally for inline
+  field-error control flow, and documented best-effort swallows / defensive
+  fallbacks.
+- **fixture** — test/fake/mock code.
+- **migrated** — call sites already using the op-context API.
+- **mustMigrate / review** — must stay at 0.
+
+Latest result: `mustMigrate=0`, `review=0`, `verified=71`, `intentional=90`,
+`fixture=29`, `migrated=28`.
+
+#### Migrated in this pass
+
+| Area | File | Change |
+|---|---|---|
+| Image picker seam | `lib/image_uploads/data/image_upload_repository.dart` | `pickImage` / `pickImages` now run inside `withAppErrorContext` (plugin), so every picker call site (chat, photo upload, create-event, create-club) inherits a normalizing seam. |
+| Event check-in location | `lib/events/presentation/event_check_in_location_service.dart` | Geolocator calls wrapped in `withAppErrorContext` (plugin); the user-facing service/permission guidance now throws `PermissionException` (kept user copy, reported as warnings, not crashes). |
+| Onboarding validation | `lib/onboarding/presentation/onboarding_controller.dart` | Five user-correctable submit guards converted from `StateError` to `ValidationException` so they stop polluting Crashlytics as unexpected errors while keeping their copy in the gender-interest banner. |
+| Launch-access validation | `lib/launch_access/data/launch_access_repository.dart` | Two user-facing `StateError`s converted to `ValidationException`; previously the surrounding `withBackendErrorContext` rewrote them to generic "unable to…" copy, so the helpful message was being lost. |
+| Force-update refresh | `lib/app.dart` | Best-effort Remote Config refresh now `logAppError`s (normalized + recorded) instead of `debugPrint`-and-swallow. |
+| Health activity | `lib/health_activity/data/health_activity_repository.dart` | The weekly-activity fetch fallback now `logAppError`s the swallowed plugin failure before returning the connect-CTA snapshot. |
+
+`StateError`s that are caught locally for inline field validation (e.g.
+`lib/auth/presentation/auth_input.dart`) were intentionally left as-is: they
+never reach crash reporting, so converting them would be churn.
 
 ## Current State of Truth
 
@@ -1028,13 +1109,15 @@ These locations catch and discard errors without any logging. They represent inv
 | Concern | File |
 |---------|------|
 | Exception types | `lib/exceptions/app_exception.dart` |
-| Error wrapping utility | `lib/core/backend_error_util.dart` |
+| Backend error wrapping utility | `lib/core/backend_error_util.dart` |
+| Frontend/local op-context API | `lib/core/app_error_context.dart` |
 | User-facing backend messages | `lib/core/backend_error_message.dart` |
 | UI-facing title/message facade | `lib/core/app_error_message.dart` |
 | Central error logger | `lib/exceptions/error_logger.dart` |
 | Provider error observer | `lib/exceptions/error_logger.dart:150` (AsyncErrorLogger) |
 | Analytics error events | `lib/analytics/app_analytics.dart` (`logBackendOperationFailed`) |
-| Migration scanner | `tool/audit/backend_error_candidates.dart` |
+| Backend migration scanner | `tool/audit/backend_error_candidates.dart` |
+| Frontend migration scanner | `tool/audit/frontend_error_candidates.dart` |
 | Branded error surfaces | `lib/core/widgets/catch_error_state.dart` |
 | Branded error snackbar | `lib/core/widgets/catch_error_snackbar.dart` |
 | Error banner widget | `lib/core/widgets/error_banner.dart` |
