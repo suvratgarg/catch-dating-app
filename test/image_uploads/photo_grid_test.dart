@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/graded_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid_keys.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';

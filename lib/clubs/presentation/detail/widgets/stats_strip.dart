@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/core/widgets/stat_strip.dart';
+import 'package:catch_dating_app/core/widgets/catch_stat_strip.dart';
 import 'package:flutter/material.dart';
 
 class StatsStrip extends StatelessWidget {

@@ -2,7 +2,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/rich_share_card_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

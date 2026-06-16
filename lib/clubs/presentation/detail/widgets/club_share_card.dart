@@ -8,8 +8,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
+import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/rich_share_card_sheet.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:flutter/material.dart';
 

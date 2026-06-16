@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_info_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
-import 'package:catch_dating_app/core/widgets/info_row.dart';
 import 'package:flutter/material.dart';
 
 /// Handoff `CatchInfoGroup`: kicker plus full-strength group separator.
