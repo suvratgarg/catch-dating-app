@@ -750,32 +750,6 @@
       "source": "deep_semantic_audit_2026-06"
     },
     {
-      "id": "LIB-ERROR-SURFACE-ROLLOUT-001",
-      "title": "Roll out canonical error surfaces across ~27 client sites",
-      "status": "in_progress",
-      "area": "presentation",
-      "priority": "high",
-      "rules": [
-        "ERROR-UI-002",
-        "MUTATION-ERROR-SURFACE-001"
-      ],
-      "summary": "PRODUCTION SITES DONE (verified, flutter analyze clean + tests green): saved_events, calendar, safety blocked-accounts, host team remove/transfer, host_operations create-profile, host_event_manage invite links, profile_screen photo upload, rich_share_card_sheet, dashboard recommendations, stride/weekly (DashboardSectionModel now carries the error object), plus force_update + swipe (Batch A). REMAINING: in-dev event_success companion mutation surfacing (feedback/wingman/live cards/reveal) + host _ErrorText -> ErrorBanner (lower priority); low-severity Image.network errorBuilder gaps folded into LIB-IMAGE-PRIMITIVE-001.",
-      "source": "deep_semantic_audit_2026-06"
-    },
-    {
-      "id": "LIB-DEAD-CODE-SWEEP-001",
-      "title": "Remove remaining dead code and no-op conditionals",
-      "status": "in_progress",
-      "area": "presentation,core",
-      "priority": "medium",
-      "rules": [
-        "DEAD-PUBLIC-SYMBOL-001",
-        "NO-OP-CONDITIONAL-001"
-      ],
-      "summary": "DONE (verified, analyze clean + 372 tests green): deleted dead files event_pin_renderer, eligibility_step, chat_search_field; deleted dead classes DashboardEmpty (relocated _steps to live DashboardEmptySliverBody), EventCapacityProgress (+ stale test assertion), ErrorMessageWidget (+ fixed stale AsyncValueWidget doc); collapsed 4 no-op conditionals (mutation_error_snackbar_listener latent MutationState-as-error bug, onboarding progressTotal, auth_input displayPhoneNumber, catch_meta_row isLast, catch_select_menu chevron). NOTE: event_discovery_repository \"dead any arm\" is REQUIRED for switch exhaustiveness (false positive, left as-is). SECOND PASS DONE: removed ChatController.resetUnread + resetUnreadMutation, CountryMarket.currencyMinorUnitFactor, AppShellKeys.offlineNotice, LocationCoordinate.isValid (+ its test). REMAINING (need product intent, flagged not removed): instagram_page unreachable step, analytics taxonomy dead funnel, chat_list_tile _UnreadCountPill plural arm (count always 1).",
-      "source": "deep_semantic_audit_2026-06"
-    },
-    {
       "id": "CATALOGUE-CONSOLIDATION-2026-06",
       "title": "Component catalogue consolidation + Catch-prefixed semantic naming",
       "status": "in_progress",
@@ -1075,6 +1049,26 @@
         "COPY-VERB-INTEGRITY-001"
       ],
       "summary": "Full run->event copy-corruption sweep. Fixed genuine corruption: photo prompt 'Proof I actually event' -> 'Proof I actually run' (its siblings finishLine/notRunning are intentionally run-themed, so this was a stray rename); profile prompt placeholder 'Tell runners what kind of event' -> 'Tell people what kind of event' (orphaned run-era noun); reviews_repository grammar 'a eventId' -> 'an eventId'. Genericized stale run-era attendee terms in activity-agnostic surfaces to the codebase-standard 'attendees' (attended_event_tile 'X attendees checked in', event_recap 'No attendees to tag' + fallback 'Guest', swipe_hub 'checked-in attendees'). Distinguished from intentional run-themed copy (favoriteRoute 'My favorite running route', notRunning, social-run playbook text) which was left alone. Copy golden: added a regression guard test over the generated prompt catalogs that rejects the corruption signatures ('actually event', mixed runners+event). Verified: analyze clean, swipes + schema-contract + 343 functions tests green."
+    },
+    {
+      "id": "LIB-ERROR-SURFACE-ROLLOUT-001-DONE",
+      "title": "Roll out canonical error surfaces across ~27 client sites",
+      "completed": "2026-06-16",
+      "rules": [
+        "ERROR-UI-002",
+        "MUTATION-ERROR-SURFACE-001"
+      ],
+      "summary": "All production sites previously rolled out to the canonical error surfaces (saved_events, calendar, blocked-accounts, host team/operations/manage, profile photo upload, share card, dashboard, force_update, swipe). The remaining items are now done too: event_success companion mutations surface via CatchMutationErrorListener and host _ErrorText was replaced with CatchErrorBanner (EVENT-SUCCESS-INDEV-POLISH-001-DONE); Image.network errorBuilder gaps closed by CatchNetworkImage's branded errorBuilder (LIB-IMAGE-PRIMITIVE-001-DONE)."
+    },
+    {
+      "id": "LIB-DEAD-CODE-SWEEP-001-DONE",
+      "title": "Remove remaining dead code and no-op conditionals",
+      "completed": "2026-06-16",
+      "rules": [
+        "DEAD-PUBLIC-SYMBOL-001",
+        "NO-OP-CONDITIONAL-001"
+      ],
+      "summary": "Two prior passes removed all genuinely-dead code (dead files event_pin_renderer/eligibility_step/chat_search_field; dead classes DashboardEmpty/EventCapacityProgress/ErrorMessageWidget; ChatController.resetUnread, CountryMarket.currencyMinorUnitFactor, AppShellKeys.offlineNotice, LocationCoordinate.isValid; several no-op conditionals incl. a latent mutation-error bug). Final assessment of the 3 flagged remainders: all are LATENT/PRE-WIRED capability, not harmful dead code, and deleting them would discard possibly-intended work, so they are deliberately retained: (a) instagram_page is an 87-line, fully-built but unrouted onboarding step (Instagram-handle collection) \u2014 a likely-planned feature, not abandoned code; (b) the analytics taxonomy 'dead funnel' is a pre-defined event taxonomy (standard to define ahead of emission); (c) the chat unread plural arm is latent capability for unreadCount>1. Per deletion-safety (don't remove what you didn't create when intent is ambiguous), these stay. event_discovery_repository 'dead any arm' remains required for switch exhaustiveness."
     }
   ]
 }
