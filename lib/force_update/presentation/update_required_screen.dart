@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_controller.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_keys.dart';
@@ -60,9 +61,7 @@ class UpdateRequiredScreen extends ConsumerWidget {
                         config: config,
                       );
                   if (!opened && context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Could not open store')),
-                    );
+                    showCatchWarningSnackBar(context, 'Could not open store');
                   }
                 },
                 icon: Icon(CatchIcons.openInNew),

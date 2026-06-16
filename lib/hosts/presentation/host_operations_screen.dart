@@ -314,9 +314,7 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
             bio: _bioController.text,
           );
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Host profile saved.')));
+      showCatchSuccessSnackBar(context, 'Host profile saved.');
     } catch (error) {
       if (!mounted) return;
       showCatchErrorSnackBar(context, error);
@@ -471,9 +469,7 @@ class _HostProfilePanel extends ConsumerWidget {
         .read(hostProfileRepositoryProvider)
         .ensureHostProfile(uid: uid, displayName: 'Catch Host');
     if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Host profile created.')));
+    showCatchSuccessSnackBar(context, 'Host profile created.');
   }
 }
 

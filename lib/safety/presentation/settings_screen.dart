@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -141,10 +142,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
 
     ref.listen(SettingsController.unblockUserMutation, (previous, current) {
-      if (previous?.isPending == true && current.isSuccess) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Account unblocked.')));
+      if (previous?.isPending == true && current.isSuccess && context.mounted) {
+        showCatchSuccessSnackBar(context, 'Account unblocked.');
       }
     });
 

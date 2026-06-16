@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
@@ -85,9 +86,7 @@ class HostTeamManagementSection extends ConsumerWidget {
       builder: (_) => _AddHostSheet(clubId: club.id),
     );
     if (added == true && context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Host added.')));
+      showCatchSuccessSnackBar(context, 'Host added.');
     }
   }
 
@@ -115,9 +114,7 @@ class HostTeamManagementSection extends ConsumerWidget {
           .removeHost(clubId: club.id, uid: host.uid),
     );
     if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('${host.displayName} removed.')));
+    showCatchSuccessSnackBar(context, '${host.displayName} removed.');
   }
 
   Future<void> _confirmTransfer(
@@ -144,8 +141,9 @@ class HostTeamManagementSection extends ConsumerWidget {
           .transferOwnership(clubId: club.id, uid: host.uid),
     );
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Ownership transferred to ${host.displayName}.')),
+    showCatchSuccessSnackBar(
+      context,
+      'Ownership transferred to ${host.displayName}.',
     );
   }
 }

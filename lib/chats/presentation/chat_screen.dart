@@ -17,6 +17,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -255,9 +256,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
       return;
     }
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Report submitted for $targetName.')),
-    );
+    showCatchSuccessSnackBar(context, 'Report submitted for $targetName.');
   }
 
   void _showShareCard({
@@ -268,9 +267,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
   }) {
     if (uid == null) return;
     if (!hasShareableChatMessages(messages)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Send a message before sharing a card.')),
-      );
+      showCatchInfoSnackBar(context, 'Send a message before sharing a card.');
       return;
     }
 
