@@ -177,19 +177,6 @@
       ],
       "summary": "FLAGGED INFRA (needs deploy). No Razorpay webhook exists, so a payment captured after the client times out is never reconciled (charged-but-unbooked). Add a signature-verified onRequest webhook (payment.captured/order.paid) mirroring stripeWebhook, write a 'pending' payments doc at order creation keyed by orderId, and a scheduled sweep for captured-but-unverified orders. Client mitigation (10-min timeout + sheet clear) already shipped in lib/payments/data/payment_repository.dart.",
       "source": "deep_semantic_audit_2026-06"
-    },
-    {
-      "id": "CATALOGUE-CONSOLIDATION-2026-06",
-      "title": "Component catalogue consolidation + Catch-prefixed semantic naming",
-      "status": "in_progress",
-      "area": "core,presentation",
-      "priority": "high",
-      "rules": [
-        "DESIGN-PRIMITIVES-001",
-        "UI-LINT-001"
-      ],
-      "source": "goal-2026-06-16",
-      "summary": "DONE: (1) all 40 non-Catch core primitives renamed to Catch-prefixed semantic names (codegen regenerated, 839 tests green); (2) CatchNetworkImage single image seam (16 sites); (3) app-shell FCM/observability dedup; (4) shared chunkedForWhereIn helper (3 repos). Migration map at docs/audit_registry/deep_semantic_audit_2026-06/catalogue_migration_map.md (96 primitives + blast radius, 29 ad-hoc surfaces, 678 feature widgets by area). REMAINING (coordinate with the in-flight component redesign \u2014 doing these before the new components land risks rework): route the 29 ad-hoc BoxDecoration surfaces -> CatchSurface (some are legitimately bespoke gradients/scrims); rename primitive FILES to catch_*.dart for file/class consistency; add a noRawNetworkImage catch_ui_lints rule (drift ratchet); marginal dedups left intentionally un-abstracted (role->chat-route 2-site ternary, level labels, chat bubble shape) per the over-abstraction guard."
     }
   ],
   "next_up": [
@@ -728,6 +715,16 @@
         "DOC-HYGIENE-001"
       ],
       "summary": "Resolved on the macOS golden renderer. Inspected the diff: old masters showed black redaction/placeholder bars where the current ProfileSurface redesign renders readable prompt labels (name, prompt cards, reaction controls) with no overflow. Confirmed the readable labels are the intended post-redesign render (the redaction bars were stale placeholders), then regenerated the 6 profile_redesign baselines (3 cases x light/dark) with --update-goldens and re-verified the golden suite passes."
+    },
+    {
+      "id": "CATALOGUE-CONSOLIDATION-2026-06-DONE",
+      "title": "Component catalogue consolidation + Catch-prefixed semantic naming",
+      "completed": "2026-06-16",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "UI-LINT-001"
+      ],
+      "summary": "Complete. (1) All 40 core primitive CLASSES are Catch-prefixed + semantically named (codegen regenerated). (2) Primitive FILES renamed to catch_*.dart (28 files this pass: activity_*, async_value_widget->catch_async_value_view, error_banner->catch_error_banner, icon_btn->catch_icon_button, mutation_error_snackbar_listener->catch_mutation_error_listener, rich_share_card_sheet->catch_share_card_sheet, etc.) with all imports updated + 67 directives_ordering fixes; analyze clean, 1336 client + golden tests pass. (3) CatchNetworkImage single image seam (all sites migrated). (4) noRawNetworkImage drift gate shipped (tool/check_no_raw_network_image.sh, CI-wired; the analyzer rule was blocked by the local plugin-recompile crash documented in memory). (5) BoxDecoration->CatchSurface AUDIT: inspected all 34 feature-level decoration:BoxDecoration sites \u2014 they are legitimately bespoke (LinearGradient scrims, border-only dividers, structural backgrounds, celebration custom-cream styling, Ink+InkWell ripple map cards with CustomPaint, small date-marker/avatar chips, in-dev event_success, exempt labs). BoxDecoration is the correct tool for these; genuine filled/bordered card surfaces already use CatchSurface/CatchSectionCard. A mass conversion was NOT warranted and would be incorrect (CatchSurface cannot model gradients/scrims/dividers). (6) Marginal dedups (role->chat-route 2-site ternary, level labels, chat bubble shape) intentionally left un-abstracted per the over-abstraction guard. Migration map: docs/audit_registry/deep_semantic_audit_2026-06/catalogue_migration_map.md."
     }
   ]
 }
