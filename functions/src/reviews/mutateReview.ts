@@ -3,6 +3,7 @@ import {onCall, CallableRequest, HttpsError} from
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
+import {moderateText} from "../moderation/textFilter";
 import {
   ReviewDocument,
   EventDocument,
@@ -45,6 +46,24 @@ import {
   publicDisplayName,
 } from "../shared/profileProjection";
 import {clubHostProfiles, isClubHost} from "../shared/clubHosts";
+
+/**
+ * Moderation status for a freshly written review. If the comment or the
+ * reviewer-supplied name trips the block filter, the review is held as
+ * "pending" instead of "published" so it never renders on the public listing
+ * nor counts toward the club rating until a human clears it.
+ * @param {string} comment Review comment text.
+ * @param {string} reviewerName Display name attached to the review.
+ * @return {"published" | "pending"} Moderation status to store.
+ */
+function reviewModerationStatus(
+  comment: string,
+  reviewerName: string
+): "published" | "pending" {
+  const blocked = moderateText(comment).action === "block" ||
+    moderateText(reviewerName).action === "block";
+  return blocked ? "pending" : "published";
+}
 
 interface ReviewMutationDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -152,7 +171,10 @@ export async function createEventReviewHandler(
       comment: data.comment,
       verificationStatus: "verified",
       source: "catchEvent",
-      moderationStatus: "published",
+      moderationStatus: reviewModerationStatus(
+        data.comment,
+        publicDisplayName(user)
+      ),
       isAnonymous: false,
       submittedFromPath: null,
       createdAt: deps.serverTimestamp?.() ??
@@ -212,7 +234,7 @@ export async function createPublicClubReviewHandler(
       comment: data.comment,
       verificationStatus: "unverified",
       source: "publicListing",
-      moderationStatus: "published",
+      moderationStatus: reviewModerationStatus(data.comment, reviewerName),
       isAnonymous: data.isAnonymous,
       submittedFromPath: data.submittedFromPath ?? null,
       createdAt: deps.serverTimestamp?.() ??
@@ -323,6 +345,14 @@ export async function setReviewResponseHandler(
     validateSetReviewResponseCallablePayload,
     normalizeSetReviewResponsePayload
   );
+  // The host response is published immediately, so reject blocked content
+  // outright (the host can edit and resubmit) rather than holding it.
+  if (moderateText(data.message).action === "block") {
+    throw new HttpsError(
+      "invalid-argument",
+      "This response can't be posted. Please revise the wording."
+    );
+  }
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, hostUserId, "setReviewResponse");
 

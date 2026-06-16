@@ -767,32 +767,6 @@
       "source": "deep_semantic_audit_2026-06"
     },
     {
-      "id": "REVIEW-TRUST-001",
-      "title": "Gate public review writes + count only verified reviews in club rating",
-      "status": "in_progress",
-      "area": "reviews,functions",
-      "priority": "high",
-      "rules": [
-        "FN-AUTHZ-001",
-        "FN-MOD-001"
-      ],
-      "summary": "FLAGGED PRODUCT/SECURITY. createPublicClubReview accepts fully unauthenticated writes that poison club rating aggregates (syncClubReviewStats counts unverified reviews), diverging from the verified-attendee trust model. Decide: require auth/verified attendance, and/or aggregate only verified reviews. Also moderate review comments/reviewer names/host responses.",
-      "source": "deep_semantic_audit_2026-06",
-      "progress": "DONE: club headline rating now computed from VERIFIED, published reviews only (count()/average() aggregation), so unverified public-listing reviews can no longer manipulate a club's score; added verifiedReviewCount projection + rejected/pending reviews excluded from counts. REMAINING (product policy, safe-default applied): createPublicClubReview still accepts unverified/anonymous public submissions by design (web-listing reviews) but they no longer affect the aggregate. If product wants to additionally REQUIRE auth on public review writes, that is a one-line requireAuth swap flagged here."
-    },
-    {
-      "id": "CHAT-MOD-CHANNEL-001",
-      "title": "Moderate at write boundary so push + preview never leak blocked content",
-      "status": "done",
-      "area": "chats,moderation,functions",
-      "priority": "high",
-      "rules": [
-        "FN-MOD-001"
-      ],
-      "summary": "DONE (build+test green, redaction regression test added): onMessageCreated now runs the synchronous moderateText filter and redacts blocked content in BOTH the FCM push body and the denormalized lastMessagePreview, so banned content cannot leak even though the stored doc is redacted by a separate (racing) moderateChatMessage trigger. REMAINING (FN-MOD-001 broader): moderate public review comments / reviewer names / host responses (REVIEW-TRUST-001).",
-      "source": "deep_semantic_audit_2026-06"
-    },
-    {
       "id": "PROFILE-PHONE-OTP-001",
       "title": "OTP re-verification flow to allow phone edits",
       "status": "queued",
@@ -857,7 +831,6 @@
     }
   ],
   "next_up": [
-    "MATCH-CHAT-REMAINING-001",
     "BUSINESS-RULES-CONSOLIDATION-001",
     "HOST-PUBLISHED-EDIT-POLICY-001",
     "RELATIONSHIP-DOC-MIGRATION",
@@ -1104,6 +1077,25 @@
         "EVENT-SUCCESS-INDEV-001"
       ],
       "summary": "Host error surfaces: replaced all 7 bare-Text _ErrorText usages (setup/live/overrides) with the canonical CatchErrorBanner.fromError(error, context: event) and deleted the local _ErrorText class. Companion errors: the companion screen now wraps its content in CatchMutationErrorListener for the 7 fire-and-forget companion mutations (feedback, compatibilityResponse, wingmanRequest, firstHelloStart/Complete, microPodsOptOut, guidedRotationsOptOut) so a failed write surfaces a snackbar instead of being swallowed. Read-modify-set: assessed and documented \u2014 the plan/preference/compatibility docs are single-user-owned (event+uid), so their get-then-set is not a contended read-modify-set; a transaction was trialed but fake_cloud_firestore's _DummyTransaction.set is fire-and-forget and races snapshot-stream reads, so it stays a plain awaited set with an explanatory comment. Verified: analyze clean, 116 event_success tests green."
+    },
+    {
+      "id": "CHAT-MOD-CHANNEL-001-DONE",
+      "title": "Moderate at write boundary so push + preview never leak blocked content",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-MOD-001"
+      ],
+      "summary": "Chat channel was already done (onMessageCreated redacts blocked text in BOTH the FCM push body and the denormalized lastMessagePreview, with a regression test). The remaining cross-ref (moderate public review content) is now also done: createPublicClubReview + createEventReview run moderateText on the comment and reviewer name and HOLD blocked submissions as moderationStatus 'pending' (so they never publish nor count toward the rating), and setReviewResponse rejects blocked host-response content outright. Tests added for both. Verified: functions build+lint+343 tests green."
+    },
+    {
+      "id": "REVIEW-TRUST-001-DONE",
+      "title": "Gate public review writes + count only verified reviews in club rating",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-AUTHZ-001",
+        "FN-MOD-001"
+      ],
+      "summary": "Two-part close. (1) Rating trust: club headline rating is computed from VERIFIED, published reviews only via count()/average() aggregation, so unverified public reviews can't manipulate the score; verifiedReviewCount projected; pending/rejected excluded (REVIEW-TRUST rating portion, shipped earlier). (2) Write gating/moderation: public + event review writes now moderate the comment and reviewer name at the write boundary and hold blocked content as 'pending' (never auto-published, never counted); host responses reject blocked content. Anonymous public reviews remain allowed by design but cannot affect the aggregate and are moderation-gated. Tests cover verified-only rating, moderation exclusion, blocked-content-pending, and blocked-host-response-rejected."
     }
   ]
 }

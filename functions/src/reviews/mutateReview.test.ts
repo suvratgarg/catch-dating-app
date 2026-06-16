@@ -343,6 +343,27 @@ test("createPublicClubReviewHandler writes anonymous unverified review",
     );
   });
 
+test("createPublicClubReviewHandler holds blocked content as pending",
+  async () => {
+    const h = harness(baseDocs());
+
+    await createPublicClubReviewHandler(
+      request(null, {
+        clubId: "club-1",
+        rating: 1,
+        comment: "just kill yourself please",
+        reviewerName: "",
+        isAnonymous: true,
+      }, {ip: "203.0.113.7"}),
+      h.deps
+    );
+
+    // Blocked content must not auto-publish (so it never shows publicly nor
+    // counts toward the club rating) until a human clears it.
+    const review = h.firestore.get("reviews/auto-1");
+    assert.equal(review?.moderationStatus, "pending");
+  });
+
 test("createPublicClubReviewHandler requires name when not anonymous",
   async () => {
     const h = harness(baseDocs());
@@ -581,6 +602,43 @@ test("setReviewResponseHandler lets hosts respond", async () => {
     createdAt: {kind: "serverTimestamp"},
     updatedAt: {kind: "serverTimestamp"},
   });
+});
+
+test("setReviewResponseHandler rejects blocked response content", async () => {
+  const h = harness(baseDocs({
+    "users/host-1": {displayName: "Host One"},
+    "clubs/club-1": {
+      name: "Club One",
+      hostUserId: "host-1",
+      ownerUserId: "host-1",
+      hostUserIds: ["host-1"],
+      hostProfiles: [{uid: "host-1", displayName: "Club Host", role: "owner"}],
+    },
+    "reviews/event-1~runner-1": {
+      clubId: "club-1",
+      eventId: "event-1",
+      reviewerUserId: "runner-1",
+      reviewerName: "Runner",
+      rating: 3,
+      comment: "Old.",
+      createdAt: {kind: "createdAt"},
+    },
+  }));
+
+  await assert.rejects(
+    () => setReviewResponseHandler(
+      request("host-1", {
+        reviewId: "event-1~runner-1",
+        message: "you are a chink",
+      }),
+      h.deps
+    ),
+    (error) => (error as {code?: string}).code === "invalid-argument"
+  );
+
+  // The response must not be written when blocked.
+  const review = h.firestore.get("reviews/event-1~runner-1");
+  assert.equal(review?.ownerResponse, undefined);
 });
 
 test("setReviewResponseHandler preserves response createdAt on edits",
