@@ -63,35 +63,6 @@
       ]
     },
     {
-      "id": "CONTRACT-DART-GEN-001",
-      "title": "Generate Dart CallableRequest classes from contracts/",
-      "status": "watch",
-      "area": "contracts,repositories",
-      "priority": "low",
-      "rules": [
-        "CODEGEN-001",
-        "CONTROLLER-BOUNDARY-001"
-      ],
-      "summary": "Callable request generator migration is on watch. tool/contracts/generate_schema_contracts.mjs emits typed Dart callable request classes from contracts/callables/ and detects callable schemas whose wrapper contains a patch-like fields object. UpdateUserProfilePatch is generated from contracts/patches/update_user_profile.schema.json and UpdateClubPatch is generated from contracts/callables/update_club_payload.schema.json into lib/core/schema_contracts/generated/callable_request_dtos.g.dart; the old domain paths remain compatibility exports for existing callers. Generated patches preserve nullable-field sentinel semantics, enum .name serialization, DateTime -> millis for dateOfBirth, callable-safe serialization of embedded profile photo objects, typed ClubHostDefaults serialization, and `toCallableJson()` wrapper payloads. CreateEventCallableRequest, UpdateEventCallableRequest, CreateClubCallableRequest, CreateEventReviewCallableRequest, and UpdateEventReviewCallableRequest now come from generated code. CreateEventCallableRequest and CreateClubCallableRequest use typed nested/domain fields such as EventMeetingLocation, EventPolicyBundle, EventFormatSnapshot, EventSuccessDefaults, EventConstraints, CreateEventPrivateAccess, and ClubHostDefaults; generated toJson() owns the wire shape. Feature-local adapters now translate domain models into generated constructors without hand-written create-event detail DTOs. Pure feature-local re-export barrels are retired; feature-local callable DTO files remain only where they own response decoders, custom normalization, or feature exceptions. Hand-written request DTOs remain only where they add behavior the generator intentionally does not synthesize: EventBookingCallableRequest and CreateRazorpayOrderCallableRequest trim inviteCode; PlacesAutocompleteCallableRequest flattens LocationCoordinate bias; response decoders remain hand-written by design. Keep on watch when adding new callable schemas or removing the remaining behavioral wrappers.",
-      "paths": [
-        "tool/contracts/generate_schema_contracts.mjs",
-        "lib/core/schema_contracts/generated/callable_request_dtos.g.dart",
-        "lib/clubs/data/club_callable_dtos.dart",
-        "lib/events/data/event_callable_dtos.dart",
-        "lib/events/data/event_callable_adapters.dart",
-        "lib/payments/data/payment_callable_dtos.dart",
-        "lib/reviews/data/review_callable_adapters.dart",
-        "lib/locations/data/places_callable_dtos.dart",
-        "lib/user_profile/domain/update_user_profile_patch.dart",
-        "lib/clubs/domain/update_club_patch.dart",
-        "test/core/callable_dto_contracts_test.dart",
-        "test/core/update_user_profile_patch_test.dart",
-        "test/core/update_club_patch_test.dart",
-        "contracts/callables/",
-        "contracts/patches/update_user_profile.schema.json"
-      ]
-    },
-    {
       "id": "CONTRACT-DART-GEN-002",
       "title": "Generate Dart freezed domain classes from contracts/firestore/",
       "status": "watch",
@@ -171,40 +142,6 @@
         "lib/onboarding/presentation/onboarding_controller.dart",
         "lib/swipes/presentation/filters_controller.dart",
         "tool/data/"
-      ]
-    },
-    {
-      "id": "CALLABLE-DTO-001",
-      "title": "Introduce typed Dart DTOs for callable Function boundaries",
-      "status": "watch",
-      "area": "repositories,functions",
-      "priority": "high",
-      "rules": [
-        "CONTROLLER-BOUNDARY-001",
-        "PROVIDER-SEAM-001",
-        "FIRESTORE-RULES-TEST-001",
-        "CODEGEN-001"
-      ],
-      "summary": "Replace high-friction ad hoc callable maps and response casts with generated Dart DTOs plus feature-local adapters only where they add behavior. Events, clubs, payments, reviews, safety, places, and user-profile callables now have generated/request DTOs validated against JSON Schema by test/core/callable_dto_contracts_test.dart. Profile inline editors pass typed UpdateUserProfilePatch objects through ProfileEditController instead of constructing ad hoc field maps; the Razorpay order / free-event signup Functions handlers validate against their dedicated generated payload schemas instead of the generic EventIdCallablePayload helper; and SuvbotRepository tests validate both requestSuvbotDemoOperation payloads and listSuvbotDemoActions responses against generated schemas. Most request classes now come directly from lib/core/schema_contracts/generated/callable_request_dtos.g.dart; create-event and create-club generated requests own typed nested/domain object serialization. Generated profile and club patch helpers now own their callable wrapper payloads through toCallableJson(). Hand-written code remains only where it adds boundary behavior the generator intentionally does not synthesize, such as invite-code normalization and location-bias flattening. Keep on watch when adding new callable schemas.",
-      "paths": [
-        "lib/events/data/event_repository.dart",
-        "lib/events/data/event_callable_dtos.dart",
-        "lib/events/data/event_callable_adapters.dart",
-        "lib/clubs/data/club_callable_dtos.dart",
-        "lib/payments/data/payment_repository.dart",
-        "lib/payments/data/payment_callable_dtos.dart",
-        "lib/reviews/data/review_callable_adapters.dart",
-        "lib/user_profile/domain/update_user_profile_patch.dart",
-        "lib/locations/data/places_callable_dtos.dart",
-        "test/core/callable_dto_contracts_test.dart",
-        "test/events/event_repository_test.dart",
-        "test/payments/payment_repository_test.dart",
-        "test/locations/places_repository_test.dart",
-        "functions/src/events/mutateEvent.ts",
-        "functions/src/payments/createRazorpayOrder.ts",
-        "functions/src/payments/verifyRazorpayPayment.ts",
-        "lib/locations/data/places_repository.dart",
-        "functions/src/places/placeAutocomplete.ts"
       ]
     },
     {
@@ -981,6 +918,28 @@
         "CONTROLLER-BOUNDARY-001"
       ],
       "summary": "Standing 'as-touched' convention with its foundation in place: the shared cross-boundary constants module exists and covers run duration, schedule-lock slot size, self-check-in windows/distance, and host attendance windows. The owner deliberately scoped further consolidation as opportunistic ('continue as touched', not a big-bang sweep that would risk churn), so the remaining literals (age bounds, profile text limits, price/capacity/distance, report text, media limits, swipe/match windows) are consolidated when their code is next edited. The mechanism and convention are the deliverable; this is now a standing rule like DOC-HYGIENE."
+    },
+    {
+      "id": "CONTRACT-DART-GEN-001-DONE",
+      "title": "Generate Dart CallableRequest classes from contracts/",
+      "completed": "2026-06-16",
+      "rules": [
+        "CODEGEN-001",
+        "CONTROLLER-BOUNDARY-001"
+      ],
+      "summary": "Done + on-watch. The callable-request generator in tool/contracts/generate_schema_contracts.mjs emits typed Dart callable request classes from contracts/callables/ and patch-like wrappers (UpdateUserProfilePatch, UpdateClubPatch, Create/Update Event/Club/Review requests) into callable_request_dtos.g.dart, preserving nullable sentinels, enum .name, DateTime->millis, embedded-photo + ClubHostDefaults serialization, and toCallableJson() wrappers. Verified 2026-06-16: generated file present, callable_dto_contracts_test green. Standing watch for new callable schemas."
+    },
+    {
+      "id": "CALLABLE-DTO-001-DONE",
+      "title": "Introduce typed Dart DTOs for callable Function boundaries",
+      "completed": "2026-06-16",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "PROVIDER-SEAM-001",
+        "FIRESTORE-RULES-TEST-001",
+        "CODEGEN-001"
+      ],
+      "summary": "Done + on-watch. Generated Dart callable request DTOs (lib/core/schema_contracts/generated/callable_request_dtos.g.dart) cover events/clubs/payments/reviews/safety/places/user-profile, validated by callable_dto_contracts_test.dart (green 2026-06-16). Profile inline editors pass typed UpdateUserProfilePatch via ProfileEditController; Razorpay-order/free-event handlers validate against dedicated generated schemas; create-event/create-club requests own typed nested-domain serialization; patch helpers own toCallableJson() wrappers. Hand-written code remains only where it adds boundary behavior the generator intentionally doesn't synthesize (invite-code trim, location-bias flatten, response decoders). Standing watch for new callable schemas."
     }
   ]
 }
