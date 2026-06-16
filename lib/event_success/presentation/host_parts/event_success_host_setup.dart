@@ -145,7 +145,10 @@ class _SetupTabState extends State<_SetupTab> {
               gapH16,
             ],
             if (errorMutation.hasError) ...[
-              _ErrorText(error: (errorMutation as MutationError).error),
+              CatchErrorBanner.fromError(
+                (errorMutation as MutationError).error,
+                context: AppErrorContext.event,
+              ),
               gapH16,
             ],
             CatchSurface(
@@ -442,23 +445,6 @@ class _NoticeCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ErrorText extends StatelessWidget {
-  const _ErrorText({required this.error});
-
-  final Object error;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      appErrorMessage(error, context: AppErrorContext.event),
-      style: CatchTextStyles.supporting(
-        context,
-        color: CatchTokens.of(context).danger,
       ),
     );
   }

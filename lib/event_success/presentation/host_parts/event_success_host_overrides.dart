@@ -91,7 +91,10 @@ class _MicroPodsHostCard extends ConsumerWidget {
           ],
           if (mutation.hasError) ...[
             gapH8,
-            _ErrorText(error: (mutation as MutationError).error),
+            CatchErrorBanner.fromError(
+              (mutation as MutationError).error,
+              context: AppErrorContext.event,
+            ),
           ],
           gapH12,
           if (activeAssignments.isEmpty)
@@ -224,7 +227,10 @@ class _GroupOverrideSheetState extends ConsumerState<_GroupOverrideSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (mutation.hasError) ...[
-            _ErrorText(error: (mutation as MutationError).error),
+            CatchErrorBanner.fromError(
+              (mutation as MutationError).error,
+              context: AppErrorContext.event,
+            ),
             gapH8,
           ],
           if (validationError != null) ...[
@@ -679,7 +685,10 @@ class _RotationsHostCard extends ConsumerWidget {
           ],
           if (mutation.hasError) ...[
             gapH8,
-            _ErrorText(error: (mutation as MutationError).error),
+            CatchErrorBanner.fromError(
+              (mutation as MutationError).error,
+              context: AppErrorContext.event,
+            ),
           ],
           gapH12,
           if (activeAssignments.isEmpty)
@@ -816,7 +825,10 @@ class _RotationOverrideSheetState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (mutation.hasError) ...[
-            _ErrorText(error: (mutation as MutationError).error),
+            CatchErrorBanner.fromError(
+              (mutation as MutationError).error,
+              context: AppErrorContext.event,
+            ),
             gapH8,
           ],
           if (validationError != null) ...[

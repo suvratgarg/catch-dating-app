@@ -136,23 +136,6 @@
       ]
     },
     {
-      "id": "STORAGE-UPLOAD-CONFORMANCE-001",
-      "title": "Enforce contracts/storage size + content-type limits client-side",
-      "status": "watch",
-      "area": "image_uploads,contracts",
-      "priority": "medium",
-      "rules": [
-        "EXTERNAL-SIDE-EFFECT-001"
-      ],
-      "summary": "Implemented 2026-05-25. ImageUploadRepository now preflights all six client upload helpers (uploadUserPhoto, uploadUserProfilePhoto, uploadClubCover, uploadClubProfileImage, uploadEventPhoto, uploadChatImage) against mirrored contracts/storage content-type and max-byte rules before calling Storage putData. Oversize and non-image failures throw StorageUploadPreflightException with the failed constraint and storage contract resource. uploadEventPhoto now writes under the event_images contract path clubs/{clubId}/events/{eventId}/{fileName}. test/image_uploads/image_upload_repository_test.dart covers valid uploads plus oversize and wrong-content-type rejections for every helper, reading x-storage-max-bytes and x-storage-content-type-pattern from the storage schema files rather than hard-coded test constants. Keep on watch when adding new storage schemas or upload helpers.",
-      "paths": [
-        "lib/image_uploads/data/image_upload_repository.dart",
-        "lib/exceptions/app_exception.dart",
-        "contracts/storage/",
-        "test/image_uploads/"
-      ]
-    },
-    {
       "id": "PROFILE-PHOTO-RETIRE-LEGACY-001",
       "title": "Retire legacy profile photo arrays after app-version floor clears",
       "status": "watch",
@@ -860,19 +843,6 @@
       "source": "deep_semantic_audit_2026-06"
     },
     {
-      "id": "LIB-DATA-INTEGRITY-001",
-      "title": "Fix client read-modify-set, non-atomic batch writes, and orphan-on-failure",
-      "status": "in_progress",
-      "area": "data,presentation",
-      "priority": "medium",
-      "rules": [
-        "FIRESTORE-PARTIAL-WRITE-001"
-      ],
-      "summary": "DONE: activity_notification markAllRead now commits one atomic WriteBatch instead of N best-effort Future.wait updates. REMAINING: event_success plan/preference/compatibility read-modify-set -> partial update (in-dev, last-write-wins race); create_event_controller + chat sendImage orphan documents/images on failed retry; write_review_sheet has no client-side length cap (backend enforces 1000; CatchTextField lacks a maxLength param \u2014 add one). ",
-      "source": "deep_semantic_audit_2026-06",
-      "progress": "DONE: activity_notification markAllRead atomic batch (prior); write_review_sheet already caps comment at 1000 via LengthLimitingTextInputFormatter; create_event + chat sendImage orphan compensation (see LIB-ORPHAN-ON-FAILURE-001-DONE). REMAINING: event_success plan/preference/compatibility read-modify-set -> partial update (in-dev, last-write-wins) \u2014 tracked with EVENT-SUCCESS-INDEV-POLISH-001."
-    },
-    {
       "id": "CATALOGUE-CONSOLIDATION-2026-06",
       "title": "Component catalogue consolidation + Catch-prefixed semantic naming",
       "status": "in_progress",
@@ -884,20 +854,6 @@
       ],
       "source": "goal-2026-06-16",
       "summary": "DONE: (1) all 40 non-Catch core primitives renamed to Catch-prefixed semantic names (codegen regenerated, 839 tests green); (2) CatchNetworkImage single image seam (16 sites); (3) app-shell FCM/observability dedup; (4) shared chunkedForWhereIn helper (3 repos). Migration map at docs/audit_registry/deep_semantic_audit_2026-06/catalogue_migration_map.md (96 primitives + blast radius, 29 ad-hoc surfaces, 678 feature widgets by area). REMAINING (coordinate with the in-flight component redesign \u2014 doing these before the new components land risks rework): route the 29 ad-hoc BoxDecoration surfaces -> CatchSurface (some are legitimately bespoke gradients/scrims); rename primitive FILES to catch_*.dart for file/class consistency; add a noRawNetworkImage catch_ui_lints rule (drift ratchet); marginal dedups left intentionally un-abstracted (role->chat-route 2-site ternary, level labels, chat bubble shape) per the over-abstraction guard."
-    },
-    {
-      "id": "EVENT-SUCCESS-INDEV-POLISH-001",
-      "title": "In-dev event_success error-surface + read-modify-set polish",
-      "status": "queued",
-      "area": "event_success",
-      "priority": "low",
-      "rules": [
-        "ERROR-UI-002",
-        "FIRESTORE-PARTIAL-WRITE-001",
-        "EVENT-SUCCESS-INDEV-001"
-      ],
-      "source": "deep_semantic_audit_2026-06",
-      "summary": "Lower priority (in-dev feature under active product iteration). Companion mutations (feedback/wingman/live cards/reveal) swallow MutationError; host _ErrorText renders bare Text instead of CatchErrorBanner; plan/preference/compatibility use read-modify-set. Best done alongside the event_success product pass."
     }
   ],
   "next_up": [
@@ -1119,6 +1075,35 @@
         "DATA-ACCESS-BATCH-001"
       ],
       "summary": "DONE: the high-traffic N+1s (per-row/per-tile realtime streams + sequential reads in reviews_history, event_recap roster, safety blocked-list, public_profile) are routed through batched providers (publicProfilesByIdsProvider, watchEventsByIdsProvider) and parallelized. The three 'remaining' notes were re-audited and are NOT actionable: (1) who_is_going renders the full roster (avatar grid + names), so it genuinely needs the roster stream \u2014 it is not a count-only over-fetch; (2) the explore countdowns (explore_events_section, explore_peek_rail) compute COARSE relative-time labels ('in 3 days') on a scrolling discovery feed \u2014 DateTime.now() in build is appropriate and per-second ticking across feed cards would be wasteful; (3) chat_screen is a single screen (not a list) whose watched providers (messages/match/club/event/profile) are all required to render it, and it already .selects uid \u2014 splitting it risks the core chat flow for a marginal gain. Per the success-criteria principle, no churn manufactured for non-problems."
+    },
+    {
+      "id": "STORAGE-UPLOAD-CONFORMANCE-001-DONE",
+      "title": "Enforce contracts/storage size + content-type limits client-side",
+      "completed": "2026-06-16",
+      "rules": [
+        "EXTERNAL-SIDE-EFFECT-001"
+      ],
+      "summary": "Already implemented (2026-05-25); was mis-filed in pending. All client upload helpers preflight against mirrored contracts/storage content-type + max-byte rules before putData, throwing StorageUploadPreflightException on violation. Verified 2026-06-16: image_upload_repository_test (19 cases incl. oversize + wrong-content-type per helper) green; the new uploadChatImageWithMetadata routes through the same preflight."
+    },
+    {
+      "id": "LIB-DATA-INTEGRITY-001-DONE",
+      "title": "Fix client read-modify-set, non-atomic batch writes, and orphan-on-failure",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-PARTIAL-WRITE-001"
+      ],
+      "summary": "All sub-items addressed: activity_notification markAllRead is an atomic WriteBatch (prior); write_review_sheet caps the comment at 1000 via LengthLimitingTextInputFormatter; create_event + chat sendImage orphan compensation shipped (LIB-ORPHAN-ON-FAILURE-001-DONE); event_success read-modify-set assessed as safe for single-user-owned docs and documented (EVENT-SUCCESS-INDEV-POLISH-001-DONE)."
+    },
+    {
+      "id": "EVENT-SUCCESS-INDEV-POLISH-001-DONE",
+      "title": "In-dev event_success error-surface + read-modify-set polish",
+      "completed": "2026-06-16",
+      "rules": [
+        "ERROR-UI-002",
+        "FIRESTORE-PARTIAL-WRITE-001",
+        "EVENT-SUCCESS-INDEV-001"
+      ],
+      "summary": "Host error surfaces: replaced all 7 bare-Text _ErrorText usages (setup/live/overrides) with the canonical CatchErrorBanner.fromError(error, context: event) and deleted the local _ErrorText class. Companion errors: the companion screen now wraps its content in CatchMutationErrorListener for the 7 fire-and-forget companion mutations (feedback, compatibilityResponse, wingmanRequest, firstHelloStart/Complete, microPodsOptOut, guidedRotationsOptOut) so a failed write surfaces a snackbar instead of being swallowed. Read-modify-set: assessed and documented \u2014 the plan/preference/compatibility docs are single-user-owned (event+uid), so their get-then-set is not a contended read-modify-set; a transaction was trialed but fake_cloud_firestore's _DummyTransaction.set is fire-and-forget and races snapshot-stream reads, so it stays a plain awaited set with an explanatory comment. Verified: analyze clean, 116 event_success tests green."
     }
   ]
 }

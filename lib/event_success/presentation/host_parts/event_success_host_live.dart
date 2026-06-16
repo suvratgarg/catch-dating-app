@@ -242,11 +242,17 @@ class _LiveTab extends ConsumerWidget {
       padding: padding,
       children: [
         if (mutation.hasError) ...[
-          _ErrorText(error: (mutation as MutationError).error),
+          CatchErrorBanner.fromError(
+            (mutation as MutationError).error,
+            context: AppErrorContext.event,
+          ),
           gapH16,
         ],
         if (completeMutation.hasError) ...[
-          _ErrorText(error: (completeMutation as MutationError).error),
+          CatchErrorBanner.fromError(
+            (completeMutation as MutationError).error,
+            context: AppErrorContext.event,
+          ),
           gapH16,
         ],
         _LiveNowConsole(
