@@ -23,7 +23,7 @@ Core product loop:
 This is India-focused today:
 
 - Onboarding phone auth assumes `+91`.
-- Cities are hardcoded Indian cities in [`lib/core/indian_city.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/indian_city.dart).
+- Cities are hardcoded Indian cities in [`lib/core/indian_city.dart`](lib/core/indian_city.dart).
 - Payments are in INR via Razorpay.
 
 ## 2. Tech stack
@@ -36,7 +36,7 @@ Client:
 - Freezed + json_serializable
 - Firebase Auth / Firestore / Storage / Functions / Messaging
 - Razorpay (`razorpay_flutter`)
-- `flutter_map` + OpenStreetMap tiles
+- `google_maps_flutter` (in-app maps; see §10)
 - `google_fonts`
 
 Backend:
@@ -48,10 +48,10 @@ Backend:
 
 Design system:
 
-- Theme tokens in [`lib/core/theme/catch_tokens.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/theme/catch_tokens.dart)
-- Spacing helpers in [`lib/core/theme/catch_spacing.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/theme/catch_spacing.dart)
-- Typography helpers in [`lib/core/theme/catch_text_styles.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/theme/catch_text_styles.dart)
-- App theme in [`lib/core/theme/app_theme.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/theme/app_theme.dart)
+- Theme tokens in [`lib/core/theme/catch_tokens.dart`](lib/core/theme/catch_tokens.dart)
+- Spacing helpers in [`lib/core/theme/catch_spacing.dart`](lib/core/theme/catch_spacing.dart)
+- Typography helpers in [`lib/core/theme/catch_text_styles.dart`](lib/core/theme/catch_text_styles.dart)
+- App theme in [`lib/core/theme/app_theme.dart`](lib/core/theme/app_theme.dart)
 
 ## 3. High-level architecture
 
@@ -73,29 +73,29 @@ Important cross-cutting patterns:
 - Mutations use `flutter_riverpod/experimental/mutation.dart`.
   Use `mutationErrorMessage()` from `lib/core/widgets/mutation_error_util.dart`
   for all mutation error display — never show raw `error.toString()`.
-- Navigation is centralized in [`lib/routing/go_router.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/routing/go_router.dart).
+- Navigation is centralized in [`lib/routing/go_router.dart`](lib/routing/go_router.dart).
 - The authenticated app uses a 5-tab `StatefulShellRoute`.
 - Models are serialized with Freezed + JSON; generated files live next to source files.
 
 Entry points:
 
-- App bootstrap: [`lib/main.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/main.dart)
-- App widget: [`lib/app.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/app.dart)
-- Router: [`lib/routing/go_router.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/routing/go_router.dart)
-- Bottom-tab shell: [`lib/core/presentation/app_shell.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/presentation/app_shell.dart)
+- App bootstrap: [`lib/main.dart`](lib/main.dart)
+- App widget: [`lib/app.dart`](lib/app.dart)
+- Router: [`lib/routing/go_router.dart`](lib/routing/go_router.dart)
+- Bottom-tab shell: [`lib/core/presentation/app_shell.dart`](lib/core/presentation/app_shell.dart)
 
 Error handling:
 
-- [`lib/core/firestore_error_message.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/firestore_error_message.dart) — translates Firebase error codes to user messages
-- [`lib/core/firestore_error_util.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/firestore_error_util.dart) — structured error-context wrapper for repository methods
-- [`lib/core/widgets/mutation_error_util.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/widgets/mutation_error_util.dart) — unified mutation error display helper
-- [`lib/exceptions/app_exception.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/exceptions/app_exception.dart) — typed `FirestoreWriteException` and `DocumentNotFoundException`
+- [`lib/core/firestore_error_message.dart`](lib/core/firestore_error_message.dart) — translates Firebase error codes to user messages
+- [`lib/core/firestore_error_util.dart`](lib/core/firestore_error_util.dart) — structured error-context wrapper for repository methods
+- [`lib/core/widgets/mutation_error_util.dart`](lib/core/widgets/mutation_error_util.dart) — unified mutation error display helper
+- [`lib/exceptions/app_exception.dart`](lib/exceptions/app_exception.dart) — typed `FirestoreWriteException` and `DocumentNotFoundException`
 
 ## 4. Runtime behavior
 
 ### 4.1 App startup
 
-Startup flow in [`lib/main.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/main.dart):
+Startup flow in [`lib/main.dart`](lib/main.dart):
 
 - Resolves the app environment from `APP_ENV` (`dev`, `staging`, or `prod`).
 - Initializes Firebase from the matching `lib/firebase_options_<env>.dart` file.
@@ -113,13 +113,13 @@ flag in `web/index.html` for localhost/loopback origins only.
 
 Auth repository:
 
-- [`lib/auth/auth_repository.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/auth/auth_repository.dart)
+- [`lib/auth/auth_repository.dart`](lib/auth/auth_repository.dart)
 
 Auth UI:
 
 - Phone entry and OTP verification live inside onboarding:
-  - [`lib/onboarding/presentation/pages/phone_page.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/onboarding/presentation/pages/phone_page.dart)
-  - [`lib/onboarding/presentation/pages/otp_page.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/onboarding/presentation/pages/otp_page.dart)
+  - [`lib/onboarding/presentation/pages/phone_page.dart`](lib/onboarding/presentation/pages/phone_page.dart)
+  - [`lib/onboarding/presentation/pages/otp_page.dart`](lib/onboarding/presentation/pages/otp_page.dart)
 
 Router rules:
 
@@ -131,7 +131,7 @@ Router rules:
 
 ## 5. Route map
 
-Defined in [`lib/routing/go_router.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/routing/go_router.dart).
+Defined in [`lib/routing/go_router.dart`](lib/routing/go_router.dart).
 
 Standalone routes:
 
@@ -185,8 +185,8 @@ Tabbed shell routes:
 
 Files:
 
-- Screen: [`lib/onboarding/presentation/onboarding_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/onboarding/presentation/onboarding_screen.dart)
-- Controller: [`lib/onboarding/presentation/onboarding_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/onboarding/presentation/onboarding_controller.dart)
+- Screen: [`lib/onboarding/presentation/onboarding_screen.dart`](lib/onboarding/presentation/onboarding_screen.dart)
+- Controller: [`lib/onboarding/presentation/onboarding_controller.dart`](lib/onboarding/presentation/onboarding_controller.dart)
 
 Steps:
 
@@ -208,9 +208,9 @@ Behavior:
 
 Files:
 
-- Screen: [`lib/dashboard/presentation/dashboard_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/dashboard/presentation/dashboard_screen.dart)
-- Empty state: [`lib/dashboard/presentation/widgets/dashboard_empty.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/dashboard/presentation/widgets/dashboard_empty.dart)
-- Full state: [`lib/dashboard/presentation/widgets/dashboard_full.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/dashboard/presentation/widgets/dashboard_full.dart)
+- Screen: [`lib/dashboard/presentation/dashboard_screen.dart`](lib/dashboard/presentation/dashboard_screen.dart)
+- Empty state: [`lib/dashboard/presentation/widgets/dashboard_empty.dart`](lib/dashboard/presentation/widgets/dashboard_empty.dart)
+- Full state: [`lib/dashboard/presentation/widgets/dashboard_full.dart`](lib/dashboard/presentation/widgets/dashboard_full.dart)
 
 Behavior:
 
@@ -229,8 +229,8 @@ Dashboard sections:
 
 Files:
 
-- Screen: [`lib/clubs/presentation/clubs_list_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/presentation/clubs_list_screen.dart)
-- State/view model: [`lib/clubs/presentation/clubs_list_state.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/presentation/clubs_list_state.dart)
+- Screen: [`lib/clubs/presentation/clubs_list_screen.dart`](lib/clubs/presentation/clubs_list_screen.dart)
+- State/view model: [`lib/clubs/presentation/clubs_list_state.dart`](lib/clubs/presentation/clubs_list_state.dart)
 
 Behavior:
 
@@ -245,9 +245,9 @@ Behavior:
 
 Files:
 
-- Screen: [`lib/clubs/presentation/club_detail_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/presentation/club_detail_screen.dart)
-- Controller/view model: [`lib/clubs/presentation/club_detail_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/presentation/club_detail_controller.dart)
-- UI body: [`lib/clubs/presentation/widgets/club_detail_body.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/presentation/widgets/club_detail_body.dart)
+- Screen: [`lib/clubs/presentation/club_detail_screen.dart`](lib/clubs/presentation/club_detail_screen.dart)
+- Controller/view model: [`lib/clubs/presentation/club_detail_controller.dart`](lib/clubs/presentation/club_detail_controller.dart)
+- UI body: [`lib/clubs/presentation/widgets/club_detail_body.dart`](lib/clubs/presentation/widgets/club_detail_body.dart)
 
 Behavior:
 
@@ -262,11 +262,11 @@ Behavior:
 
 Files:
 
-- Create event screen: [`lib/events/presentation/create_event_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/create_event_screen.dart)
-- Create event controller: [`lib/events/presentation/create_event_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/create_event_controller.dart)
-- Event detail screen: [`lib/events/presentation/event_detail_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/event_detail_screen.dart)
-- Event detail CTA logic: [`lib/events/presentation/widgets/event_detail_cta.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/widgets/event_detail_cta.dart)
-- Booking controller: [`lib/events/presentation/run_booking_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/run_booking_controller.dart)
+- Create event screen: [`lib/events/presentation/create_event_screen.dart`](lib/events/presentation/create_event_screen.dart)
+- Create event controller: [`lib/events/presentation/create_event_controller.dart`](lib/events/presentation/create_event_controller.dart)
+- Event detail screen: [`lib/events/presentation/event_detail_screen.dart`](lib/events/presentation/event_detail_screen.dart)
+- Event detail CTA logic: [`lib/events/presentation/widgets/event_detail_cta.dart`](lib/events/presentation/widgets/event_detail_cta.dart)
+- Booking controller: [`lib/events/presentation/run_booking_controller.dart`](lib/events/presentation/run_booking_controller.dart)
 
 Event creation:
 
@@ -307,7 +307,7 @@ Event policy:
   The lab remains read-only/static; production testing should use the normal
   create-event flow.
 - The feature owner doc is
-  [`lib/event_policies/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/event_policies/README.md).
+  [`lib/event_policies/README.md`](lib/event_policies/README.md).
 
 Parallel event-success work:
 
@@ -333,7 +333,7 @@ Parallel event-success work:
   no persistence and exists only so host setup, live mode, attendee companion,
   and post-event report ideas can be reviewed against real events.
 - The current event-success architecture, QA, metrics, and guardrails live in
-  [`docs/event_success.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/event_success.md).
+  [`docs/event_success.md`](docs/event_success.md).
 
 Event detail CTA states are derived from `event.statusFor(userProfile)`:
 
@@ -349,10 +349,10 @@ Event detail CTA states are derived from `event.statusFor(userProfile)`:
 
 Swipe files:
 
-- Hub: [`lib/swipes/presentation/swipe_hub_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/swipes/presentation/swipe_hub_screen.dart)
-- Deck: [`lib/swipes/presentation/swipe_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/swipes/presentation/swipe_screen.dart)
-- Queue: [`lib/swipes/presentation/swipe_queue_notifier.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/swipes/presentation/swipe_queue_notifier.dart)
-- Candidate selection: [`lib/swipes/data/swipe_candidate_repository.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/swipes/data/swipe_candidate_repository.dart)
+- Hub: [`lib/swipes/presentation/swipe_hub_screen.dart`](lib/swipes/presentation/swipe_hub_screen.dart)
+- Deck: [`lib/swipes/presentation/swipe_screen.dart`](lib/swipes/presentation/swipe_screen.dart)
+- Queue: [`lib/swipes/presentation/swipe_queue_notifier.dart`](lib/swipes/presentation/swipe_queue_notifier.dart)
+- Candidate selection: [`lib/swipes/data/swipe_candidate_repository.dart`](lib/swipes/data/swipe_candidate_repository.dart)
 
 Swipe candidate rules:
 
@@ -369,10 +369,10 @@ kept consistent with event aggregate counts.
 
 Matching files:
 
-- Match repo: [`lib/matches/data/match_repository.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/matches/data/match_repository.dart)
-- Matches list: [`lib/chats/presentation/matches_list_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/chats/presentation/matches_list_screen.dart)
-- Chat repo: [`lib/chats/data/chat_repository.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/chats/data/chat_repository.dart)
-- Chat screen: [`lib/chats/presentation/chat_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/chats/presentation/chat_screen.dart)
+- Match repo: [`lib/matches/data/match_repository.dart`](lib/matches/data/match_repository.dart)
+- Matches list: [`lib/chats/presentation/matches_list_screen.dart`](lib/chats/presentation/matches_list_screen.dart)
+- Chat repo: [`lib/chats/data/chat_repository.dart`](lib/chats/data/chat_repository.dart)
+- Chat screen: [`lib/chats/presentation/chat_screen.dart`](lib/chats/presentation/chat_screen.dart)
 
 Behavior:
 
@@ -385,9 +385,9 @@ Behavior:
 
 Files:
 
-- Repo: [`lib/reviews/data/reviews_repository.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/reviews/data/reviews_repository.dart)
-- UI: [`lib/reviews/presentation/reviews_section.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/reviews/presentation/reviews_section.dart)
-- Controller: [`lib/reviews/presentation/write_review_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/reviews/presentation/write_review_controller.dart)
+- Repo: [`lib/reviews/data/reviews_repository.dart`](lib/reviews/data/reviews_repository.dart)
+- UI: [`lib/reviews/presentation/reviews_section.dart`](lib/reviews/presentation/reviews_section.dart)
+- Controller: [`lib/reviews/presentation/write_review_controller.dart`](lib/reviews/presentation/write_review_controller.dart)
 
 Behavior:
 
@@ -402,10 +402,10 @@ Behavior:
 
 Files:
 
-- Profile screen: [`lib/user_profile/presentation/profile_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/user_profile/presentation/profile_screen.dart)
-- Edit controller: [`lib/user_profile/presentation/profile_edit_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/user_profile/presentation/profile_edit_controller.dart)
-- Upload controller: [`lib/image_uploads/presentation/photo_upload_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/image_uploads/presentation/photo_upload_controller.dart)
-- Upload repo: [`lib/image_uploads/data/image_upload_repository.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/image_uploads/data/image_upload_repository.dart)
+- Profile screen: [`lib/user_profile/presentation/profile_screen.dart`](lib/user_profile/presentation/profile_screen.dart)
+- Edit controller: [`lib/user_profile/presentation/profile_edit_controller.dart`](lib/user_profile/presentation/profile_edit_controller.dart)
+- Upload controller: [`lib/image_uploads/presentation/photo_upload_controller.dart`](lib/image_uploads/presentation/photo_upload_controller.dart)
+- Upload repo: [`lib/image_uploads/data/image_upload_repository.dart`](lib/image_uploads/data/image_upload_repository.dart)
 
 Behavior:
 
@@ -421,9 +421,9 @@ Behavior:
 
 Payments:
 
-- Payment repo: [`lib/payments/data/payment_repository.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/payments/data/payment_repository.dart)
-- History repo: [`lib/payments/data/payment_history_repository.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/payments/data/payment_history_repository.dart)
-- History screen: [`lib/payments/presentation/payment_history_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/payments/presentation/payment_history_screen.dart)
+- Payment repo: [`lib/payments/data/payment_repository.dart`](lib/payments/data/payment_repository.dart)
+- History repo: [`lib/payments/data/payment_history_repository.dart`](lib/payments/data/payment_history_repository.dart)
+- History screen: [`lib/payments/presentation/payment_history_screen.dart`](lib/payments/presentation/payment_history_screen.dart)
 
 Behavior:
 
@@ -433,10 +433,10 @@ Behavior:
 
 Force update:
 
-- Config provider: [`lib/force_update/data/app_version_config_provider.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/force_update/data/app_version_config_provider.dart)
-- Decision provider: [`lib/force_update/data/force_update_provider.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/force_update/data/force_update_provider.dart)
-- Diagnostics: [`lib/force_update/presentation/force_update_diagnostics.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/force_update/presentation/force_update_diagnostics.dart)
-- Platform resolver: [`lib/force_update/domain/platform_build_resolver.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/force_update/domain/platform_build_resolver.dart)
+- Config provider: [`lib/force_update/data/app_version_config_provider.dart`](lib/force_update/data/app_version_config_provider.dart)
+- Decision provider: [`lib/force_update/data/force_update_provider.dart`](lib/force_update/data/force_update_provider.dart)
+- Diagnostics: [`lib/force_update/presentation/force_update_diagnostics.dart`](lib/force_update/presentation/force_update_diagnostics.dart)
+- Platform resolver: [`lib/force_update/domain/platform_build_resolver.dart`](lib/force_update/domain/platform_build_resolver.dart)
 
 Behavior:
 
@@ -456,7 +456,7 @@ Behavior:
 
 Files:
 
-- FCM service: [`lib/core/fcm_service.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/fcm_service.dart)
+- FCM service: [`lib/core/fcm_service.dart`](lib/core/fcm_service.dart)
 
 Behavior:
 
@@ -490,11 +490,12 @@ Events:
 
 - `events/{eventId}`
   - schedule, location, price, constraints
-  - booking arrays:
-    - `signedUpUserIds`
-    - `attendedUserIds`
-    - `waitlistUserIds`
-  - `genderCounts` is a denormalized map maintained by sign-up/cancel flows
+  - per-user booking state lives in `eventParticipations` edges, not in
+    unbounded arrays on the event doc
+  - denormalized booking counts maintained server-side by the sign-up/cancel
+    transactions: `bookedCount`, `checkedInCount`, `waitlistedCount`
+  - `genderCounts`/`cohortCounts` are denormalized maps maintained by the same
+    booking transactions
 
 Payments:
 
@@ -523,8 +524,8 @@ Reviews:
 
 Generated TypeScript Firestore types are:
 
-- Serialized schema document types under [`functions/src/shared/generated/`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/generated/)
-- Admin SDK Timestamp types: [`functions/src/shared/generated/firestoreAdminTypes.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/generated/firestoreAdminTypes.ts)
+- Serialized schema document types under [`functions/src/shared/generated/`](functions/src/shared/generated/)
+- Admin SDK Timestamp types: [`functions/src/shared/generated/firestoreAdminTypes.ts`](functions/src/shared/generated/firestoreAdminTypes.ts)
 
 If you change a Firestore schema that a Cloud Function reads or writes, run
 `node tool/contracts/generate_schema_contracts.mjs` and commit the generated TS output.
@@ -533,7 +534,7 @@ If you change a Firestore schema that a Cloud Function reads or writes, run
 
 Cloud Functions entrypoint:
 
-- [`functions/src/index.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/index.ts)
+- [`functions/src/index.ts`](functions/src/index.ts)
 
 Callable functions:
 
@@ -614,12 +615,12 @@ Firestore triggers:
 
 Files:
 
-- Firestore rules: [`firestore.rules`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firestore.rules)
-- Storage rules: [`storage.rules`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/storage.rules)
+- Firestore rules: [`firestore.rules`](firestore.rules)
+- Storage rules: [`storage.rules`](storage.rules)
 - Firestore ownership contract:
-  [`tool/contracts/firestore_contract.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/contracts/firestore_contract.json)
+  [`tool/contracts/firestore_contract.json`](tool/contracts/firestore_contract.json)
 - Repeatable data-contract check:
-  [`tool/check_data_contract.sh`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/check_data_contract.sh)
+  [`tool/check_data_contract.sh`](tool/check_data_contract.sh)
 
 Summary:
 
@@ -642,24 +643,24 @@ Summary:
 
 GPS / device location:
 
-- [`lib/core/device_location.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/device_location.dart) — `DeviceLocation` provider, the single source of truth for device GPS. Uses `geolocator` with low accuracy + 10 s timeout. Returns `LocationCoordinate?` (null on permission denial or error). Cached per session via `keepAlive: true`.
-- [`lib/core/location_service.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/location_service.dart) — `LocationInitializer` provider, collects GPS once and writes `latitude`/`longitude` (and nearest `IndianCity` if not set) to the user's Firestore doc. Watched from `app.dart` so it fires on every app launch.
-- [`lib/core/indian_city.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/indian_city.dart) — `IndianCity` enum carries lat/lng coordinates per city plus a deprecated `nearestCity(LocationCoordinate)` static method. New code should prefer the runtime `CityRepository` path.
+- [`lib/core/device_location.dart`](lib/core/device_location.dart) — `DeviceLocation` provider, the single source of truth for device GPS. Uses `geolocator` with low accuracy + 10 s timeout. Returns `LocationCoordinate?` (null on permission denial or error). Cached per session via `keepAlive: true`.
+- [`lib/core/location_service.dart`](lib/core/location_service.dart) — `LocationInitializer` provider, collects GPS once and writes `latitude`/`longitude` (and nearest `IndianCity` if not set) to the user's Firestore doc. Watched from `app.dart` so it fires on every app launch.
+- [`lib/core/indian_city.dart`](lib/core/indian_city.dart) — `IndianCity` enum carries lat/lng coordinates per city plus a deprecated `nearestCity(LocationCoordinate)` static method. New code should prefer the runtime `CityRepository` path.
 
 City auto-select:
 
-- `SelectedClubCity` in [`lib/clubs/presentation/list/clubs_list_view_model.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/presentation/list/clubs_list_view_model.dart) has an `autoSelectCity()` method that sets the city from GPS but never overrides a manual user pick (tracked with an internal `_userSelected` flag).
+- `SelectedClubCity` in [`lib/clubs/presentation/list/clubs_list_view_model.dart`](lib/clubs/presentation/list/clubs_list_view_model.dart) has an `autoSelectCity()` method that sets the city from GPS but never overrides a manual user pick (tracked with an internal `_userSelected` flag).
 - The clubs header watches `DeviceLocation` and calls `autoSelectCity` when GPS resolves (or via post-frame callback for already-resolved GPS).
 
 Distance on profile cards:
 
-- [`lib/swipes/presentation/profile_card_content.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/swipes/presentation/profile_card_content.dart) — `ProfileCardContent.fromProfile()` intentionally does not expose exact distance on public swipe cards because public profiles no longer carry exact user coordinates.
-- [`lib/swipes/presentation/widgets/scrollable_profile.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/swipes/presentation/widgets/scrollable_profile.dart) — renders public profile content without requesting device location.
+- [`lib/swipes/presentation/profile_card_content.dart`](lib/swipes/presentation/profile_card_content.dart) — `ProfileCardContent.fromProfile()` intentionally does not expose exact distance on public swipe cards because public profiles no longer carry exact user coordinates.
+- [`lib/swipes/presentation/widgets/scrollable_profile.dart`](lib/swipes/presentation/widgets/scrollable_profile.dart) — renders public profile content without requesting device location.
 
 Map center fallback:
 
-- [`lib/events/presentation/location_picker_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/location_picker_screen.dart) — `_pickLocation()` in `CreateEventScreen` uses device GPS as the initial map center when no prior pin exists.
-- [`lib/events/presentation/event_map_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/event_map_screen.dart) — `_EventsMap` falls back to device GPS center when no events with coordinates are available.
+- [`lib/events/presentation/location_picker_screen.dart`](lib/events/presentation/location_picker_screen.dart) — `_pickLocation()` in `CreateEventScreen` uses device GPS as the initial map center when no prior pin exists.
+- [`lib/events/presentation/event_map_screen.dart`](lib/events/presentation/event_map_screen.dart) — `_EventsMap` falls back to device GPS center when no events with coordinates are available.
 
 All map UIs use:
 
@@ -742,13 +743,13 @@ Firebase deploys by alias:
 
 Useful local docs:
 
-- Repo readme: [`README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/README.md)
-- Feature code map: [`lib/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/README.md)
-- Test plan: [`TESTS.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/TESTS.md)
-- Firebase environments: [`firebase/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firebase/README.md)
-- Functions runbook: [`functions/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/README.md)
-- Docs index: [`docs/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/README.md)
-- Audit registry: [`docs/audit_registry/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/audit_registry/README.md)
+- Repo readme: [`README.md`](README.md)
+- Feature code map: [`lib/README.md`](lib/README.md)
+- Test plan: [`TESTS.md`](TESTS.md)
+- Firebase environments: [`firebase/README.md`](firebase/README.md)
+- Functions runbook: [`functions/README.md`](functions/README.md)
+- Docs index: [`docs/README.md`](docs/README.md)
+- Audit registry: [`docs/audit_registry/README.md`](docs/audit_registry/README.md)
 
 ## 12. Generated files and codegen rules
 
@@ -828,12 +829,12 @@ such as:
 
 Files involved:
 
-- Dart model: [`lib/clubs/domain/club.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/domain/club.dart)
-- Rules: [`firestore.rules`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firestore.rules)
-- TS types: [`functions/src/shared/generated/firestoreAdminTypes.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/generated/firestoreAdminTypes.ts)
-- Ownership contract: [`tool/contracts/firestore_contract.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/contracts/firestore_contract.json)
-- Rules tests: [`functions/test/firestore.rules.test.cjs`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/test/firestore.rules.test.cjs)
-- Combined checker: [`tool/check_data_contract.sh`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/check_data_contract.sh)
+- Dart model: [`lib/clubs/domain/club.dart`](lib/clubs/domain/club.dart)
+- Rules: [`firestore.rules`](firestore.rules)
+- TS types: [`functions/src/shared/generated/firestoreAdminTypes.ts`](functions/src/shared/generated/firestoreAdminTypes.ts)
+- Ownership contract: [`tool/contracts/firestore_contract.json`](tool/contracts/firestore_contract.json)
+- Rules tests: [`functions/test/firestore.rules.test.cjs`](functions/test/firestore.rules.test.cjs)
+- Combined checker: [`tool/check_data_contract.sh`](tool/check_data_contract.sh)
 
 Impact:
 
@@ -873,7 +874,7 @@ Impact:
 
 ### 14.6 Firestore indexes are repo-managed
 
-[`firestore.indexes.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firestore.indexes.json) contains the app's known composite indexes and should be deployed with the rules/storage runbook.
+[`firestore.indexes.json`](firestore.indexes.json) contains the app's known composite indexes and should be deployed with the rules/storage runbook.
 
 Impact:
 
@@ -889,8 +890,8 @@ Current status:
 
 Files:
 
-- [`lib/events/presentation/widgets/event_detail_body.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/widgets/event_detail_body.dart)
-- [`lib/dashboard/presentation/widgets/quick_actions.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/dashboard/presentation/widgets/quick_actions.dart)
+- [`lib/events/presentation/widgets/event_detail_body.dart`](lib/events/presentation/widgets/event_detail_body.dart)
+- [`lib/dashboard/presentation/widgets/quick_actions.dart`](lib/dashboard/presentation/widgets/quick_actions.dart)
 
 ### 14.8 Firebase environments are real, but root config files are mutable
 
@@ -910,16 +911,16 @@ all three projects; dev and staging were updated on 2026-05-01.
 
 Files involved:
 
-- [`lib/core/app_config.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/app_config.dart)
-- [`tool/env/dart_defines/dev.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/env/dart_defines/dev.json)
-- [`tool/env/dart_defines/staging.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/env/dart_defines/staging.json)
-- [`tool/env/dart_defines/prod.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/env/dart_defines/prod.json)
-- [`lib/firebase_options_dev.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options_dev.dart)
-- [`lib/firebase_options_staging.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options_staging.dart)
-- [`lib/firebase_options_prod.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options_prod.dart)
-- [`firebase/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firebase/README.md)
-- [`tool/use_firebase_environment.sh`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/use_firebase_environment.sh)
-- [`tool/validate_firebase_environment.sh`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/validate_firebase_environment.sh)
+- [`lib/core/app_config.dart`](lib/core/app_config.dart)
+- [`tool/env/dart_defines/dev.json`](tool/env/dart_defines/dev.json)
+- [`tool/env/dart_defines/staging.json`](tool/env/dart_defines/staging.json)
+- [`tool/env/dart_defines/prod.json`](tool/env/dart_defines/prod.json)
+- [`lib/firebase_options_dev.dart`](lib/firebase_options_dev.dart)
+- [`lib/firebase_options_staging.dart`](lib/firebase_options_staging.dart)
+- [`lib/firebase_options_prod.dart`](lib/firebase_options_prod.dart)
+- [`firebase/README.md`](firebase/README.md)
+- [`tool/use_firebase_environment.sh`](tool/use_firebase_environment.sh)
+- [`tool/validate_firebase_environment.sh`](tool/validate_firebase_environment.sh)
 
 Impact:
 
@@ -934,7 +935,7 @@ Impact:
 
 ## 15. Testing status
 
-- [`TESTS.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/TESTS.md) now tracks the current test-suite inventory instead of the old aspirational checklist.
+- [`TESTS.md`](TESTS.md) now tracks the current test-suite inventory instead of the old aspirational checklist.
 - Recent broad verification included `flutter analyze`, `flutter test --concurrency=1`, Functions lint/tests, Firestore rules tests, live Functions deploy/list checks, and Firebase environment validation.
 - Default fully parallel `flutter test` has previously exposed a `two_dimensional_scrollables`/TableView isolation issue in an clubs widget test; use the documented serialized command for broad verification until that is resolved.
 
@@ -951,7 +952,7 @@ When working in this repo:
 5. Run `build_runner` after annotation/model changes.
 6. Prefer updating repository/controller layers instead of pushing Firebase calls directly into widgets.
 7. Before committing or opening a PR, follow the branch hygiene rule in
-   [`docs/release_operations.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/release_operations.md):
+   [`docs/release_operations.md`](docs/release_operations.md):
    fetch `origin/main`, verify the current branch is not behind it, and do not
    reuse a PR branch after it has been merged.
 8. Treat the sharp edges above as real until verified in code or in the deployed Firebase project.
@@ -975,13 +976,13 @@ rejections gracefully so users (and developers) aren't left guessing.
   propagate to the UI layer. The `AsyncErrorLogger` ProviderObserver catches
   unhandled errors and reports them to Crashlytics automatically.
 - **Use `firestoreErrorMessage()` for user-facing messages.** Located in
-  [`lib/core/firestore_error_message.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/firestore_error_message.dart).
+  [`lib/core/firestore_error_message.dart`](lib/core/firestore_error_message.dart).
   It translates `FirebaseException` codes (`permission-denied`, `unavailable`,
   `deadline-exceeded`, etc.) to human-readable messages. In debug mode it
   appends the Firebase error code so developers can diagnose issues without
   recompiling.
 - **Use `withFirestoreErrorContext()` for structured logging.** Located in
-  [`lib/core/firestore_error_util.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/firestore_error_util.dart).
+  [`lib/core/firestore_error_util.dart`](lib/core/firestore_error_util.dart).
   Wrap Firestore write operations to catch `FirebaseException` and rethrow
   as `FirestoreWriteException` with collection/action context.
 - **Use `FieldValue` operations instead of full-document `set()` for partial
