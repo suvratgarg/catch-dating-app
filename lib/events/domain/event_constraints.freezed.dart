@@ -211,8 +211,8 @@ return $default(_that.minAge,_that.maxAge,_that.maxMen,_that.maxWomen);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _EventConstraints extends EventConstraints {
-  const _EventConstraints({this.minAge = 0, this.maxAge = 99, this.maxMen, this.maxWomen}): super._();
+class _EventConstraints implements EventConstraints {
+  const _EventConstraints({this.minAge = 0, this.maxAge = 99, this.maxMen, this.maxWomen});
   factory _EventConstraints.fromJson(Map<String, dynamic> json) => _$EventConstraintsFromJson(json);
 
 @override@JsonKey() final  int minAge;
