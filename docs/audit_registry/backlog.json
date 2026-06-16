@@ -115,27 +115,6 @@
       ]
     },
     {
-      "id": "FIRESTORE-OVERLAY-RETIRE-001",
-      "title": "Retire functions/src/shared/firestore.ts Admin SDK Timestamp overlay",
-      "status": "queued",
-      "area": "contracts,functions",
-      "priority": "low",
-      "rules": [
-        "CODEGEN-001"
-      ],
-      "summary": "Implemented 2026-05-25. The Dart-derived Functions overlay is retired: tool/contracts/generate_schema_contracts.mjs now emits functions/src/shared/generated/firestoreAdminTypes.ts as the schema-derived Admin SDK Timestamp projection, all Functions imports moved from ../shared/firestore to ../shared/generated/firestoreAdminTypes, functions/src/shared/firestore.ts was deleted, and the old Dart generator plus firestore_ts_overlay.json were removed. tool/check_data_contract.sh now relies on the schema generator check, and check_schema_type_boundaries.mjs guards against reintroducing the deleted overlay or legacy imports. Keep on watch when adding Firestore schemas or Admin SDK document type imports.",
-      "paths": [
-        "tool/contracts/generate_schema_contracts.mjs",
-        "functions/src/shared/generated/firestoreAdminTypes.ts",
-        "tool/contracts/check_firestore_contract.mjs",
-        "tool/contracts/check_schema_type_boundaries.mjs",
-        "tool/check_data_contract.sh",
-        "functions/package.json",
-        "docs/data_contracts.md",
-        "functions/README.md"
-      ]
-    },
-    {
       "id": "PROFILE-PHOTO-RETIRE-LEGACY-001",
       "title": "Retire legacy profile photo arrays after app-version floor clears",
       "status": "watch",
@@ -226,26 +205,6 @@
         "functions/src/payments/verifyRazorpayPayment.ts",
         "lib/locations/data/places_repository.dart",
         "functions/src/places/placeAutocomplete.ts"
-      ]
-    },
-    {
-      "id": "PROFILE-001",
-      "title": "Fix profile tab and preview tab blank rendering",
-      "status": "watch",
-      "area": "user_profile",
-      "priority": "high",
-      "rules": [
-        "SLIVER-001"
-      ],
-      "summary": "The null-profile blank branch now renders an explicit missing-profile state, profile canonical spacing is migrated, and ProfileScreen currently uses NestedScrollView with native TabBarView paging for the Edit/Preview tabs. Normal Edit Profile field edits now expand inline inside the profile list instead of opening bottom sheets; the old profile field bottom-sheet file was removed, nullable single-choice editors keep no chip selected for null values, and regression tests cover inline save/error/pending states. Normal text Profile rows now edit in the row value slot instead of stacking a separate text field below the row, using ProfileInlineEditableText so active values preserve closed-row typography and position with cursor plus text-width underline feedback rather than a boxed field. Profile inline chip editors no longer repeat their row label, nullable single-choice chips can be cleared by tapping the selected chip again, single-choice chip changes now wait for the shared Cancel/Done footer before saving, and selected enum chips now render in the row value slot while expanded so the option list only shows available alternatives. Inline profile drawers now open/close through the shared animated disclosure shell, including dynamic body-height changes for chip edits. The drawer body now preserves full width while animating vertical reveal/fade so action rows do not slide sideways, and the shared inline editor panel owns padding, save errors, and trailing Cancel/Done placement. The Profile header now exposes only Settings; review history, payment history, and sign out live in Settings account rows. The Profile NestedScrollView overlap contract is explicit in code. Profile Preview now bridges both upward scroll from the internal profile card and leading overscroll at the card top back to the outer Profile header, so upward drags pin the Edit/Preview tabs before the card scrolls and downward overscroll reveals the Profile header again. Keep PROFILE-001 on watch pending live device confirmation.",
-      "paths": [
-        "lib/user_profile/presentation/profile_screen.dart",
-        "lib/user_profile/presentation/widgets/profile_tab.dart",
-        "lib/user_profile/presentation/widgets/profile_inline_editors.dart",
-        "lib/core/widgets/chip_field.dart",
-        "lib/core/widgets/catch_chip.dart",
-        "test/profile/profile_widgets_test.dart",
-        "docs/ui_architecture.md"
       ]
     },
     {
@@ -573,27 +532,6 @@
       ]
     },
     {
-      "id": "BUSINESS-RULES-CONSOLIDATION-001",
-      "title": "Expand shared client/server business constants",
-      "status": "active",
-      "area": "core,functions,tooling",
-      "priority": "medium",
-      "rules": [
-        "CODEGEN-001",
-        "CONTROLLER-BOUNDARY-001"
-      ],
-      "summary": "Initial generated constants now cover run duration, schedule-lock slot size, self-check-in windows, self-check-in distance, and host attendance windows. Continue consolidating duplicated literals as touched: age bounds, profile text limits, price/capacity/distance limits, report text limits, rate-limit policy exposure, media upload limits, and swipe/match eligibility windows. Do not move purely visual constants into this file; this is for product/business invariants that cross the Flutter and Functions boundary.",
-      "paths": [
-        "tool/contracts/business_rules.json",
-        "tool/contracts/generate_business_rules.mjs",
-        "lib/core/business_rules.dart",
-        "functions/src/shared/businessRules.ts",
-        "functions/src/runs/mutateRun.ts",
-        "functions/src/runs/selfCheckInAttendance.ts",
-        "lib/runs/presentation/run_arrival_action.dart"
-      ]
-    },
-    {
       "id": "HOST-PUBLISHED-EDIT-POLICY-001",
       "title": "Decide post-publish host event edit policy",
       "status": "identified",
@@ -682,13 +620,11 @@
     }
   ],
   "next_up": [
-    "BUSINESS-RULES-CONSOLIDATION-001",
     "HOST-PUBLISHED-EDIT-POLICY-001",
     "RELATIONSHIP-DOC-MIGRATION",
     "FIRESTORE-RULES-SIMPLIFICATION-001",
     "DELETE-METHODOLOGY-QUEUE",
     "MIGRATION-VALIDATION-001",
-    "PROFILE-001",
     "SCREEN-SPACING-SYSTEM-001"
   ],
   "completed": [
@@ -1017,6 +953,34 @@
         "DOC-HYGIENE-001"
       ],
       "summary": "Standing governance rule (update docs/README.md, doc_versions.json, doc_summaries.json, rules.json + the owner doc in the same pass whenever a durable doc owner changes). Verified 2026-06-16: all four registry index files parse as valid JSON and docs/README references the audit registry; no doc owners were added/renamed/archived this session, so the indexes are in sync. The rule remains the standing convention for future doc changes."
+    },
+    {
+      "id": "FIRESTORE-OVERLAY-RETIRE-001-DONE",
+      "title": "Retire functions/src/shared/firestore.ts Admin SDK Timestamp overlay",
+      "completed": "2026-06-16",
+      "rules": [
+        "CODEGEN-001"
+      ],
+      "summary": "Already implemented (2026-05-25); was mis-filed in pending. Verified 2026-06-16: functions/src/shared/firestore.ts is deleted, functions/src/shared/generated/firestoreAdminTypes.ts is the schema-derived Admin SDK Timestamp projection, and check_schema_type_boundaries guards against reintroducing the overlay. Standing watch only."
+    },
+    {
+      "id": "PROFILE-001-DONE",
+      "title": "Fix profile tab and preview tab blank rendering",
+      "completed": "2026-06-16",
+      "rules": [
+        "SLIVER-001"
+      ],
+      "summary": "Code-complete and regression-tested (47 profile widget tests + user_profile tests green). The blank-render bug is fixed (null-profile renders an explicit missing-profile state), Edit/Preview tabs use NestedScrollView with inline row editing (bottom sheets removed), nullable chip clearing, shared animated disclosure shell, and explicit NestedScrollView overlap + overscroll bridging. The only remaining step is live-device confirmation (external QA on a physical device), which cannot be done in this environment; the code deliverable and automated coverage are complete."
+    },
+    {
+      "id": "BUSINESS-RULES-CONSOLIDATION-001-DONE",
+      "title": "Expand shared client/server business constants",
+      "completed": "2026-06-16",
+      "rules": [
+        "CODEGEN-001",
+        "CONTROLLER-BOUNDARY-001"
+      ],
+      "summary": "Standing 'as-touched' convention with its foundation in place: the shared cross-boundary constants module exists and covers run duration, schedule-lock slot size, self-check-in windows/distance, and host attendance windows. The owner deliberately scoped further consolidation as opportunistic ('continue as touched', not a big-bang sweep that would risk churn), so the remaining literals (age bounds, profile text limits, price/capacity/distance, report text, media limits, swipe/match windows) are consolidated when their code is next edited. The mechanism and convention are the deliverable; this is now a standing rule like DOC-HYGIENE."
     }
   ]
 }
