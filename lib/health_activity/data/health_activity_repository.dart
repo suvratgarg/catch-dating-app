@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/core/app_error_context.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_client.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_client_factory.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
@@ -7,12 +9,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 part 'health_activity_repository.g.dart';
 
 class HealthActivityRepository {
-  HealthActivityRepository(this._client);
+  HealthActivityRepository(this._client, {ErrorLogger? errorLogger})
+    : _errorLogger = errorLogger ?? ErrorLogger();
 
   static const _activityPermissionRequestedKey =
       'health_activity.activity_permission_requested';
 
   final HealthActivityClient _client;
+  final ErrorLogger _errorLogger;
   SharedPreferences? _prefsInstance;
 
   Future<WeeklyActivitySnapshot> fetchWeeklyActivity({
@@ -67,7 +71,21 @@ class HealthActivityRepository {
         activities: activities,
         refreshedAt: refreshedAt,
       );
-    } catch (_) {
+    } catch (error, stackTrace) {
+      // A fetch failure most often means the user has not actually granted
+      // READ access, so we fall back to the connect CTA. Normalize and log the
+      // error first so a genuine plugin/platform failure stays observable
+      // instead of being silently swallowed.
+      logAppError(
+        error,
+        stackTrace: stackTrace,
+        context: const AppErrorContext(
+          operation: AppOperation.plugin,
+          action: 'read weekly activity',
+          resource: 'health_activity',
+        ),
+        logError: _errorLogger,
+      );
       return WeeklyActivitySnapshot.permissionRequired(
         referenceDate: now,
         platformLabel: capabilities.platformLabel,
@@ -111,7 +129,10 @@ class HealthActivityRepository {
 
 @riverpod
 HealthActivityRepository healthActivityRepository(Ref ref) {
-  return HealthActivityRepository(createHealthActivityClient());
+  return HealthActivityRepository(
+    createHealthActivityClient(),
+    errorLogger: ref.watch(errorLoggerProvider),
+  );
 }
 
 @riverpod

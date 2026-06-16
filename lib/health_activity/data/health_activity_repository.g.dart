@@ -55,7 +55,7 @@ final class HealthActivityRepositoryProvider
 }
 
 String _$healthActivityRepositoryHash() =>
-    r'43618d3b17dd71c0ebc74924f62e79411be00522';
+    r'6cd2567e5be103c8311de684aaea0e42e7d7eaaf';
 
 @ProviderFor(weeklyActivity)
 final weeklyActivityProvider = WeeklyActivityProvider._();

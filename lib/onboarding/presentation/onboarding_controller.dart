@@ -382,27 +382,38 @@ class OnboardingController extends _$OnboardingController {
         validateRequiredProfileName(draft.lastName, label: 'Last name') !=
             null ||
         validateRequiredDateOfBirth(dateOfBirth) != null) {
-      throw StateError(
+      throw const ValidationException(
         'Please complete your basic profile details before continuing.',
+        code: 'onboarding-incomplete-profile',
       );
     }
 
     if (gender == null) {
-      throw StateError(
+      throw const ValidationException(
         'Please choose your dating preferences before continuing.',
+        code: 'onboarding-missing-gender',
       );
     }
 
     if (draft.interestedInGenders.isEmpty) {
-      throw StateError('Please choose who you want to see before continuing.');
+      throw const ValidationException(
+        'Please choose who you want to see before continuing.',
+        code: 'onboarding-missing-interest',
+      );
     }
 
     if (validateRequiredPhoneNumber(draft.phoneNumber) != null) {
-      throw StateError('Please add a valid phone number before continuing.');
+      throw const ValidationException(
+        'Please add a valid phone number before continuing.',
+        code: 'onboarding-invalid-phone',
+      );
     }
 
     if (!state.phoneVerified) {
-      throw StateError('Please verify your phone number before continuing.');
+      throw const ValidationException(
+        'Please verify your phone number before continuing.',
+        code: 'onboarding-phone-unverified',
+      );
     }
 
     return draft;
@@ -413,12 +424,18 @@ class OnboardingController extends _$OnboardingController {
 
   String _requireVerifiedAuthPhoneNumber() {
     if (!state.phoneVerified) {
-      throw StateError('Please verify your phone number before continuing.');
+      throw const ValidationException(
+        'Please verify your phone number before continuing.',
+        code: 'onboarding-phone-unverified',
+      );
     }
 
     final phoneNumber = _authPhoneNumber.trim();
     if (phoneNumber.isEmpty) {
-      throw StateError('Please verify your phone number before continuing.');
+      throw const ValidationException(
+        'Please verify your phone number before continuing.',
+        code: 'onboarding-phone-unverified',
+      );
     }
     return phoneNumber;
   }
