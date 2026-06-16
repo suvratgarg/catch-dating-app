@@ -1012,6 +1012,147 @@ class _RevealSlotRow extends StatelessWidget {
   }
 }
 
+enum _RevealRoundState { done, now, hidden }
+
+/// Design-system `RotationCard` round list, dark-adapted for the reveal stage:
+/// a config mono line over one row per round — `R{n}`, the pairings (or
+/// "Hidden until reveal" while masked), and a Done / Now / Hidden state badge.
+/// Pairings only render for rounds the host has already released.
+class _RevealRoundList extends StatelessWidget {
+  const _RevealRoundList({
+    required this.config,
+    required this.roundCount,
+    required this.revealedThrough,
+    required this.assignments,
+    required this.profilesByUid,
+  });
+
+  final String config;
+  final int roundCount;
+  final int revealedThrough;
+  final List<EventSuccessAssignment> assignments;
+  final Map<String, PublicProfile> profilesByUid;
+
+  @override
+  Widget build(BuildContext context) {
+    final fg = CatchTokens.of(context).surface;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (config.isNotEmpty) ...[
+          Text(
+            config.toUpperCase(),
+            style: CatchTextStyles.monoLabel(
+              context,
+              color: fg.withValues(alpha: CatchOpacity.revealMutedForeground),
+            ),
+          ),
+          gapH8,
+        ],
+        for (var index = 0; index < roundCount; index++)
+          _RevealRoundRow(
+            index: index,
+            state: index < revealedThrough
+                ? _RevealRoundState.done
+                : index == revealedThrough
+                ? _RevealRoundState.now
+                : _RevealRoundState.hidden,
+            pairs: index <= revealedThrough
+                ? _revealRoundPairsLabel(assignments, index, profilesByUid)
+                : null,
+            foreground: fg,
+            showDivider: index > 0,
+          ),
+      ],
+    );
+  }
+}
+
+class _RevealRoundRow extends StatelessWidget {
+  const _RevealRoundRow({
+    required this.index,
+    required this.state,
+    required this.pairs,
+    required this.foreground,
+    required this.showDivider,
+  });
+
+  final int index;
+  final _RevealRoundState state;
+  final String? pairs;
+  final Color foreground;
+  final bool showDivider;
+
+  @override
+  Widget build(BuildContext context) {
+    final hidden = state == _RevealRoundState.hidden;
+    final label =
+        pairs ?? (hidden ? 'Hidden until reveal' : 'Round ${index + 1}');
+    final (badgeLabel, tone) = switch (state) {
+      _RevealRoundState.done => ('Done', CatchBadgeTone.success),
+      _RevealRoundState.now => ('Now', CatchBadgeTone.solid),
+      _RevealRoundState.hidden => ('Hidden', CatchBadgeTone.neutral),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
+      decoration: showDivider
+          ? BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: foreground.withValues(alpha: CatchOpacity.warningFill),
+                ),
+              ),
+            )
+          : null,
+      child: Row(
+        children: [
+          Text(
+            'R${index + 1}',
+            style: CatchTextStyles.monoLabel(
+              context,
+              color: foreground.withValues(
+                alpha: CatchOpacity.revealMutedForeground,
+              ),
+            ),
+          ),
+          gapW10,
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style:
+                  CatchTextStyles.bodyS(
+                    context,
+                    color: hidden
+                        ? foreground.withValues(
+                            alpha: CatchOpacity.revealMutedForeground,
+                          )
+                        : foreground,
+                  ).copyWith(
+                    fontStyle: hidden ? FontStyle.italic : FontStyle.normal,
+                  ),
+            ),
+          ),
+          gapW8,
+          CatchBadge(
+            label: badgeLabel,
+            tone: tone,
+            size: CatchBadgeSize.action,
+            backgroundColor: foreground.withValues(
+              alpha: state == _RevealRoundState.now
+                  ? CatchOpacity.revealSurfaceBorder
+                  : CatchOpacity.revealBeatFillInactive,
+            ),
+            foregroundColor: foreground,
+            borderColor: foreground.withValues(alpha: CatchOpacity.warningFill),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _RevealRoundRail extends StatelessWidget {
   const _RevealRoundRail({
     required this.roundCount,

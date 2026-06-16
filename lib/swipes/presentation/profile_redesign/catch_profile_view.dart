@@ -198,10 +198,10 @@ class _HeroScrim extends StatelessWidget {
             end: Alignment.bottomCenter,
             stops: const [0.0, 0.45, 0.78, 1.0],
             colors: [
-              base.withValues(alpha: CatchOpacity.subtleBorder),
+              base.withValues(alpha: CatchOpacity.profileHeroScrimTop),
               base.withValues(alpha: CatchOpacity.none),
-              base.withValues(alpha: CatchOpacity.gradientBand),
-              base.withValues(alpha: CatchOpacity.profileHeroBaseScrim),
+              base.withValues(alpha: CatchOpacity.profileHeroScrimMid),
+              base.withValues(alpha: CatchOpacity.profileHeroScrimBottom),
             ],
           ),
         ),

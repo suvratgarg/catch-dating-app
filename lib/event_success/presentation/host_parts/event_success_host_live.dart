@@ -186,6 +186,10 @@ class _LiveTab extends ConsumerWidget {
       podAssignments: assignments,
       rotationAssignments: rotationAssignments,
       preferences: preferences,
+      participantProfiles: [
+        ...rotationParticipantProfiles,
+        ...assignmentParticipantProfiles,
+      ],
       onStartCountdown: fixtureActions?.onStartRevealCountdown,
       onRevealRound: fixtureActions?.onRevealRound,
       onResetReveal: fixtureActions?.onResetReveal,
@@ -376,8 +380,12 @@ class _LiveNowConsole extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const stage = CatchTokens.sunsetDark;
-    final stageForeground = stage.ink;
+    final t = CatchTokens.of(context);
+    final fg = t.primaryInk;
+    final total = plan.steps.length;
+    final stepLine = total > 0
+        ? 'Step ${plan.activeStepIndex + 1}/$total · ${plan.activeStep.stage.label}'
+        : plan.activeStep.stage.label;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -387,89 +395,63 @@ class _LiveNowConsole extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              stage.bg,
-              Color.lerp(stage.bg, stage.raised, 0.52)!,
-              Color.lerp(stage.raised, stage.gold, 0.18)!,
-            ],
+            colors: [t.ink, Color.lerp(t.ink, t.gold, 0.2)!],
           ),
           padding: CatchInsets.content,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Wrap(
-                spacing: CatchSpacing.s2,
-                runSpacing: CatchSpacing.s2,
+              Row(
                 children: [
-                  CatchBadge(
-                    label: 'Live now',
-                    tone: CatchBadgeTone.live,
-                    icon: CatchIcons.autoAwesomeRounded,
-                    backgroundColor: stageForeground.withValues(
-                      alpha: CatchOpacity.warningFill,
-                    ),
-                    foregroundColor: stageForeground,
-                    borderColor: stageForeground.withValues(
-                      alpha: CatchOpacity.eventSuccessSubtleBorder,
-                    ),
-                  ),
-                  CatchBadge(
-                    label:
-                        'Step ${plan.activeStepIndex + 1}/${plan.steps.length}',
-                    backgroundColor: stageForeground.withValues(
-                      alpha: CatchOpacity.subtleFill,
-                    ),
-                    foregroundColor: stageForeground.withValues(
-                      alpha: CatchOpacity.eventSuccessPanelFill,
-                    ),
-                    borderColor: stageForeground.withValues(
-                      alpha: CatchOpacity.photoScrimMedium,
-                    ),
-                  ),
-                  CatchBadge(
-                    label: plan.activeStep.stage.label,
-                    backgroundColor: stageForeground.withValues(
-                      alpha: CatchOpacity.subtleFill,
-                    ),
-                    foregroundColor: stageForeground.withValues(
-                      alpha: CatchOpacity.eventSuccessPanelFill,
-                    ),
-                    borderColor: stageForeground.withValues(
-                      alpha: CatchOpacity.photoScrimMedium,
+                  _LiveNowPill(foreground: fg, accent: t.gold),
+                  gapW8,
+                  Expanded(
+                    child: Text(
+                      stepLine,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.monoLabel(
+                        context,
+                        color: fg.withValues(alpha: CatchOpacity.onFillMuted),
+                      ),
                     ),
                   ),
                 ],
               ),
               gapH14,
-              _LiveNowProgressMeter(
-                label: 'Run of show',
-                detail: '${plan.activeStepIndex + 1}/${plan.steps.length}',
-                value: plan.runOfShowProgress,
+              ClipRRect(
+                borderRadius: BorderRadius.circular(CatchRadius.pill),
+                child: LinearProgressIndicator(
+                  value: plan.runOfShowProgress.clamp(0, 1).toDouble(),
+                  minHeight: 5,
+                  backgroundColor: fg.withValues(
+                    alpha: CatchOpacity.subtleBorder,
+                  ),
+                  valueColor: AlwaysStoppedAnimation<Color>(fg),
+                ),
               ),
               gapH16,
               Text(
                 plan.activeStep.title,
-                style: CatchTextStyles.titleL(context, color: stageForeground),
+                style: CatchTextStyles.consoleTitle(context, color: fg),
               ),
               gapH6,
               Text(
                 plan.activeStep.hostInstruction,
-                style: CatchTextStyles.proseM(
+                style: CatchTextStyles.bodyS(
                   context,
-                  color: stageForeground.withValues(
-                    alpha: CatchOpacity.eventSuccessChrome,
+                  color: fg.withValues(
+                    alpha: CatchOpacity.eventSuccessProminent,
                   ),
                 ),
               ),
               gapH12,
               CatchSurface(
                 padding: CatchInsets.contentDense,
-                backgroundColor: stageForeground.withValues(
+                backgroundColor: fg.withValues(
                   alpha: CatchOpacity.photoScrimLight,
                 ),
-                borderColor: stageForeground.withValues(
-                  alpha: CatchOpacity.warningFill,
-                ),
+                borderColor: fg.withValues(alpha: CatchOpacity.subtleBorder),
                 radius: CatchRadius.sm,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -477,7 +459,7 @@ class _LiveNowConsole extends StatelessWidget {
                     Icon(
                       CatchIcons.phoneIphoneRounded,
                       size: CatchIcon.md,
-                      color: stageForeground.withValues(
+                      color: fg.withValues(
                         alpha: CatchOpacity.eventSuccessProminent,
                       ),
                     ),
@@ -485,9 +467,9 @@ class _LiveNowConsole extends StatelessWidget {
                     Expanded(
                       child: Text(
                         'Attendees at ${event.locationName} see: ${plan.activeStep.attendeeExperience}',
-                        style: CatchTextStyles.supporting(
+                        style: CatchTextStyles.bodyS(
                           context,
-                          color: stageForeground.withValues(
+                          color: fg.withValues(
                             alpha: CatchOpacity.eventSuccessProminent,
                           ),
                         ),
@@ -563,50 +545,41 @@ class _LiveCheckInQrCard extends StatelessWidget {
   }
 }
 
-class _LiveNowProgressMeter extends StatelessWidget {
-  const _LiveNowProgressMeter({
-    required this.label,
-    required this.detail,
-    required this.value,
-  });
+/// The "LIVE NOW" status pill of the live console — a gold dot on a dim-fill
+/// pill, per the design-system `LiveConsole` header.
+class _LiveNowPill extends StatelessWidget {
+  const _LiveNowPill({required this.foreground, required this.accent});
 
-  final String label;
-  final String detail;
-  final double value;
+  final Color foreground;
+  final Color accent;
 
   @override
   Widget build(BuildContext context) {
-    final foreground = CatchTokens.sunsetDark.ink;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: foreground.withValues(alpha: CatchOpacity.photoScrimMedium),
+        borderRadius: BorderRadius.circular(CatchRadius.pill),
+        border: Border.all(
+          color: foreground.withValues(alpha: CatchOpacity.subtleBorder),
+        ),
+      ),
+      child: Padding(
+        padding: CatchInsets.compactLabelContent,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: Text(
-                label,
-                style: CatchTextStyles.sectionTitle(context, color: foreground),
-              ),
+            DecoratedBox(
+              decoration: BoxDecoration(shape: BoxShape.circle, color: accent),
+              child: const SizedBox.square(dimension: CatchSpacing.micro6),
             ),
+            gapW6,
             Text(
-              detail,
-              style: CatchTextStyles.labelL(context, color: foreground),
+              'Live now'.toUpperCase(),
+              style: CatchTextStyles.badge(context, color: foreground),
             ),
           ],
         ),
-        gapH6,
-        ClipRRect(
-          borderRadius: BorderRadius.circular(CatchRadius.pill),
-          child: LinearProgressIndicator(
-            value: value.clamp(0, 1).toDouble(),
-            minHeight: 8,
-            backgroundColor: foreground.withValues(
-              alpha: CatchOpacity.warningFill,
-            ),
-            valueColor: AlwaysStoppedAnimation<Color>(foreground),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -630,7 +603,7 @@ class _LiveStepNavigation extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          flex: 3,
+          flex: 2,
           child: CatchButton(
             key: const ValueKey('eventSuccessPreviousStepButton'),
             label: 'Previous',
@@ -642,7 +615,7 @@ class _LiveStepNavigation extends StatelessWidget {
         ),
         gapW10,
         Expanded(
-          flex: 5,
+          flex: 3,
           child: CatchButton(
             key: const ValueKey('eventSuccessNextStepButton'),
             label: nextLabel,

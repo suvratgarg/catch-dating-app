@@ -312,7 +312,7 @@ class _ClubHostActionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClubHostIdentityLine(
-      hostName: club.hostName,
+      hostName: club.displayHostName,
       hostAvatarUrl: club.hostAvatarUrl,
       trailing: _MembershipButton(clubId: club.id, isJoined: isJoined),
     );

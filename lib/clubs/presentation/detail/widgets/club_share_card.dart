@@ -114,7 +114,7 @@ class ClubShareCard extends StatelessWidget {
                       ),
                       const Spacer(),
                       Text(
-                        'Hosted by ${club.hostName}',
+                        'Hosted by ${club.displayHostName}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: CatchTextStyles.labelS(context, color: t.ink2),

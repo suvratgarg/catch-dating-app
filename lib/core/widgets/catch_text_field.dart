@@ -52,6 +52,7 @@ class CatchTextField extends StatefulWidget {
     this.suffixText,
     this.trailing,
     this.showClearButton = false,
+    this.floatingLabel = true,
   });
 
   static const double compactControlHeight =
@@ -101,6 +102,11 @@ class CatchTextField extends StatefulWidget {
   /// [onChanged] with an empty string.
   final bool showClearButton;
 
+  /// Render [label] as a Material-style floating caption inside the field
+  /// (design-system Field) instead of a static label above it. Gated by
+  /// [showLabel]; on by default so forms adopt the DS treatment with no churn.
+  final bool floatingLabel;
+
   @override
   State<CatchTextField> createState() => _CatchTextFieldState();
 }
@@ -111,7 +117,7 @@ enum CatchTextFieldShape { rounded, pill }
 
 enum CatchTextFieldTone { surface, raised }
 
-enum CatchTextFieldVariant { box, underline }
+enum CatchTextFieldVariant { box, underline, bare }
 
 enum CatchTextFieldSupportTone { neutral, brand, success }
 
@@ -231,6 +237,23 @@ class _CatchTextFieldState extends State<CatchTextField> {
             errorBorder: InputBorder.none,
             focusedErrorBorder: InputBorder.none,
             contentPadding: _contentPadding,
+            labelText: _useFloatingLabel ? widget.label : null,
+            labelStyle: _useFloatingLabel
+                ? CatchTextStyles.bodyL(context, color: t.ink3)
+                : null,
+            floatingLabelStyle: _useFloatingLabel
+                ? CatchTextStyles.fieldLabel(
+                    context,
+                    color: hasError
+                        ? t.danger
+                        : effectiveFocused
+                        ? t.ink
+                        : t.ink3,
+                  )
+                : null,
+            floatingLabelBehavior: _useFloatingLabel
+                ? FloatingLabelBehavior.auto
+                : FloatingLabelBehavior.never,
             hintText: widget.hintText,
             hintStyle: _textStyle(context, color: t.ink3),
             prefixText: widget.prefixText,
@@ -275,7 +298,7 @@ class _CatchTextFieldState extends State<CatchTextField> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (widget.showLabel) ...[
+            if (widget.showLabel && !_useFloatingLabel) ...[
               CatchFormFieldLabel(
                 label: widget.label,
                 isOptional: widget.isOptional,
@@ -320,6 +343,11 @@ class _CatchTextFieldState extends State<CatchTextField> {
     required bool focused,
     required Widget child,
   }) {
+    // Bare: no border or shell — for embedding inside a CatchField row that owns
+    // its own chrome (floating label + FieldGroup dividers).
+    if (widget.variant == CatchTextFieldVariant.bare) {
+      return child;
+    }
     if (widget.variant == CatchTextFieldVariant.box) {
       return CatchControlShell(
         size: _controlSize,
@@ -414,7 +442,16 @@ class _CatchTextFieldState extends State<CatchTextField> {
     );
   }
 
+  bool get _useFloatingLabel =>
+      widget.floatingLabel &&
+      widget.showLabel &&
+      // Optional fields keep the explicit static label + "(optional)" badge,
+      // which the inline floating caption can't carry.
+      !widget.isOptional &&
+      widget.variant != CatchTextFieldVariant.bare;
+
   EdgeInsets get _contentPadding {
+    if (widget.variant == CatchTextFieldVariant.bare) return EdgeInsets.zero;
     if (widget.variant == CatchTextFieldVariant.underline) {
       final multiline = widget.maxLines != 1 || widget.minLines != null;
       return EdgeInsets.only(bottom: multiline ? CatchSpacing.s1 : 0);

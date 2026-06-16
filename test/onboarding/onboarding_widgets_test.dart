@@ -64,7 +64,7 @@ void main() {
             .goToStep(OnboardingStep.genderInterest);
         await pumpOnboardingUi(tester);
 
-        expect(find.text('Gender'), findsOneWidget);
+        expect(find.text('How do you identify?'), findsOneWidget);
         expect(find.text('STEP 2 OF 2'), findsOneWidget);
         await tester.tap(find.byTooltip('Back'));
         await pumpOnboardingUi(tester);
@@ -73,7 +73,7 @@ void main() {
           container.read(onboardingControllerProvider).step,
           OnboardingStep.nameDob,
         );
-        expect(find.text('Your name'), findsOneWidget);
+        expect(find.text("What's your name?"), findsOneWidget);
         expect(find.text('STEP 1 OF 2'), findsOneWidget);
       },
     );
@@ -280,7 +280,6 @@ void main() {
         child: const PhotosPage(profileCompletionOnly: true),
       );
 
-      expect(find.text('Complete your profile for Catches'), findsOneWidget);
       expect(
         find.text('This only gates Catches. Event booking stays available.'),
         findsOneWidget,
@@ -301,13 +300,14 @@ void main() {
         child: const ProfilePromptsPage(profileCompletionOnly: true),
       );
 
-      expect(find.text('Add prompts to start catching'), findsOneWidget);
+      // The mode-specific copy now lives in the flow header (see
+      // onboarding_step_test `headerCopy`); the page renders its prompt
+      // selectors and Continue affordance in completion mode.
       expect(
-        find.text(
-          'Prompts give people something real to respond to before you match.',
-        ),
-        findsOneWidget,
+        find.byType(CatchSelectMenu<String>),
+        findsNWidgets(maxProfilePromptAnswers),
       );
+      expect(find.text('Continue'), findsOneWidget);
     });
 
     testWidgets('prompt pickers hide prompts selected in other slots', (
@@ -374,7 +374,6 @@ void main() {
         child: const RunningPrefsPage(runPreferencesOnly: true),
       );
 
-      expect(find.text('Set your run preferences'), findsOneWidget);
       expect(find.text('Why do you run?'), findsOneWidget);
       expect(find.text('Continue booking'), findsOneWidget);
     });

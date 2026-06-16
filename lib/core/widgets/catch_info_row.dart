@@ -67,10 +67,10 @@ class CatchInfoRow extends StatelessWidget {
         if (divider)
           Positioned(
             top: 0,
-            left: icon != null ? CatchIcon.row + CatchSpacing.s3 : 0,
+            left: icon != null ? CatchIcon.control + CatchSpacing.s3 : 0,
             right: 0,
             child: ColoredBox(
-              color: t.line.withValues(alpha: CatchOpacity.profileInfoDivider),
+              color: t.line.withValues(alpha: CatchOpacity.infoRowDivider),
               child: const SizedBox(height: CatchStroke.hairline),
             ),
           ),
@@ -90,7 +90,7 @@ class CatchInfoRow extends StatelessWidget {
                   ),
                   child: Icon(
                     icon,
-                    size: CatchIcon.row,
+                    size: CatchIcon.control,
                     color: danger ? t.danger : t.ink2,
                   ),
                 ),

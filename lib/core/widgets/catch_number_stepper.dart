@@ -71,7 +71,8 @@ class CatchNumberStepper extends StatelessWidget {
             child: Center(
               child: Text(
                 formatValue(value),
-                style: CatchTextStyles.mono(context),
+                // Stepper value is the focal datum — `.t-numeric-l` (16/w700).
+                style: CatchTextStyles.numericLarge(context),
               ),
             ),
           ),

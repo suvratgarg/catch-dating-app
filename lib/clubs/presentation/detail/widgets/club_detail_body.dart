@@ -4,7 +4,6 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/membership_button.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/stats_strip.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/app_config.dart';
@@ -13,7 +12,6 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
@@ -63,7 +61,6 @@ class ClubDetailBody extends StatelessWidget {
     final eventDetailRouteName = isHostApp
         ? Routes.hostAppEventDetailScreen.name
         : Routes.eventDetailScreen.name;
-    final showMembershipControls = isAuthenticated && !isHost && !isHostApp;
     const sectionGap = SizedBox(height: CatchLayout.detailScreenSectionGap);
     final tags = visibleClubTags(club, limit: 6);
     final hasContact =
@@ -124,23 +121,6 @@ class ClubDetailBody extends StatelessWidget {
                           club: club,
                           showTitle: false,
                         ),
-                      ),
-                    if (showMembershipControls)
-                      CatchDesignSection(
-                        kicker: 'Membership',
-                        child: MembershipButton(
-                          clubId: club.id,
-                          isMember: isMember,
-                          isMutating: isMutating,
-                          pushNotificationsEnabled:
-                              clubPushNotificationsEnabled,
-                          isPushMutating: isClubPushMutating,
-                        ),
-                      ),
-                    if (!isAuthenticated)
-                      CatchDesignSection(
-                        kicker: 'Join Catch',
-                        child: _GuestPrompt(club: club),
                       ),
                   ],
                 ),
@@ -271,12 +251,17 @@ class _ClubHostRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
+    final isOwner = host.role == ClubHostRole.owner;
+    final meta =
+        '${isOwner ? 'OWNER' : 'HOST'} · '
+        '${showChevron ? 'VIEW PROFILE' : 'PUBLIC PROFILE'}';
+
     return Row(
       children: [
         ClubHostAvatar(
           name: host.displayName,
           imageUrl: host.avatarUrl,
-          size: 54,
+          size: CatchSpacing.s10,
           borderWidth: 2,
           borderColor: borderColor,
         ),
@@ -286,26 +271,32 @@ class _ClubHostRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Hosted by ${host.displayName}',
-                style: CatchTextStyles.sectionTitle(context),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              gapH6,
               Row(
                 children: [
-                  ClubHostRoleBadge(role: host.role),
-                  gapW8,
-                  Expanded(
+                  Flexible(
                     child: Text(
-                      showChevron ? 'View profile' : 'Public profile',
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                      host.displayName,
+                      style: CatchTextStyles.name(context),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  if (isOwner) ...[
+                    const SizedBox(width: CatchSpacing.micro6),
+                    Icon(
+                      CatchIcons.sealCheck,
+                      size: CatchIcon.sm,
+                      color: t.primary,
+                    ),
+                  ],
                 ],
+              ),
+              const SizedBox(height: CatchSpacing.s1),
+              Text(
+                meta,
+                style: CatchTextStyles.monoLabel(context),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -419,16 +410,18 @@ class _ContactRow extends StatelessWidget {
             padding: CatchInsets.controlVerticalTight,
             child: Row(
               children: [
-                Icon(icon, size: CatchIcon.md, color: t.primary),
+                // Contact info stays ink — it never takes the action/activity
+                // color (design-system ContactRow).
+                Icon(icon, size: CatchIcon.md, color: t.ink),
                 gapW10,
                 Expanded(
                   child: Text(
                     label,
-                    style: CatchTextStyles.bodyLead(context, color: t.ink),
+                    style: CatchTextStyles.infoRowTitle(context, color: t.ink),
                   ),
                 ),
                 Icon(
-                  CatchIcons.openInNewRounded,
+                  CatchIcons.arrowUpRight,
                   size: CatchIcon.sm,
                   color: t.ink3,
                 ),
@@ -498,38 +491,3 @@ class _ClubPhotoStrip extends StatelessWidget {
   }
 }
 
-class _GuestPrompt extends StatelessWidget {
-  const _GuestPrompt({required this.club});
-
-  final Club club;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.tileContentCompact,
-      child: Column(
-        children: [
-          Text(
-            'Sign in to join this club, see member reviews, and connect with the community.',
-            style: CatchTextStyles.bodyLead(context, color: t.ink2),
-            textAlign: TextAlign.center,
-          ),
-          gapH12,
-          CatchButton(
-            label: 'Sign in to join',
-            onPressed: () => context.go(
-              Uri(
-                path: Routes.authScreen.path,
-                queryParameters: {'from': '/clubs/${club.id}'},
-              ).toString(),
-            ),
-            fullWidth: true,
-          ),
-        ],
-      ),
-    );
-  }
-}

@@ -33,6 +33,19 @@ class CatchRangeSlider extends StatelessWidget {
     final t = CatchTokens.of(context);
     final slider = SliderTheme(
       data: SliderTheme.of(context).copyWith(
+        // Design-system RangeSlider: 4px line2 track, ink active fill, a 24px
+        // surface knob lifted off the track (no M3 seed tones).
+        trackHeight: CatchSpacing.s1,
+        activeTrackColor: t.primary,
+        inactiveTrackColor: t.line2,
+        thumbColor: t.surface,
+        rangeThumbShape: const RoundRangeSliderThumbShape(
+          enabledThumbRadius: CatchSpacing.s3,
+          elevation: CatchElevation.physicalControl,
+        ),
+        overlayColor: t.primary.withValues(
+          alpha: CatchOpacity.controlOverlayPressed,
+        ),
         activeTickMarkColor: Colors.transparent,
         inactiveTickMarkColor: Colors.transparent,
         disabledActiveTickMarkColor: Colors.transparent,

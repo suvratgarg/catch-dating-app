@@ -12,8 +12,8 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
   description: json['description'] as String,
   location: json['location'] as String,
   area: json['area'] as String,
-  hostUserId: json['hostUserId'] as String,
-  hostName: json['hostName'] as String,
+  hostUserId: json['hostUserId'] as String?,
+  hostName: json['hostName'] as String?,
   hostAvatarUrl: json['hostAvatarUrl'] as String?,
   ownerUserId: json['ownerUserId'] as String?,
   hostUserIds:

@@ -11,9 +11,11 @@ import 'package:flutter/material.dart';
 /// family. The grade is fully tunable here — dial the whole app in one place.
 ///
 /// The look has three composable parts:
-/// 1. **Desaturate + matte tone curve** — pull saturation down, lower contrast,
-///    and lift the black point so shadows are never pure black (faded-film matte).
-///    All linear, so it folds into a single [ColorFilter.matrix].
+/// 1. **Desaturate + tone curve** — pull saturation down, then a mid-gray
+///    contrast pivot and a global brightness multiply. Matches the design
+///    system `.catch-grade` (`saturate(.78) contrast(1.04) brightness(.97)`):
+///    contrast is added (>1), not rolled off. All linear, so it folds into a
+///    single [ColorFilter.matrix].
 /// 2. **Warm split-tone** — a warm *multiply* (lands in the shadows) plus a warm
 ///    *screen* (lands in the highlights); together a cohesive warm wash that
 ///    matches the activity pigments.
@@ -24,7 +26,7 @@ class CatchGrade {
   const CatchGrade({
     required this.saturation,
     required this.contrast,
-    required this.blackLift,
+    required this.brightness,
     required this.warmShadow,
     required this.warmHighlight,
     this.grainOpacity = 0,
@@ -33,12 +35,13 @@ class CatchGrade {
   /// <1 desaturates. The "warm-desaturate" of the reference grade.
   final double saturation;
 
-  /// <1 rolls off contrast for the matte look.
+  /// Mid-gray contrast pivot. >1 adds contrast — the DS `.catch-grade` uses
+  /// 1.04 (a gentle contrast lift, not a roll-off).
   final double contrast;
 
-  /// 0..1 normalized floor lift — how far shadows are raised off pure black.
-  /// Keep `contrast + blackLift <= 1` so highlights don't clip.
-  final double blackLift;
+  /// Global brightness multiply applied after contrast. <1 gently darkens —
+  /// the DS `.catch-grade` uses 0.97.
+  final double brightness;
 
   /// Low-alpha warm tint multiplied in — warms (and deepens) the shadows.
   final Color warmShadow;
@@ -51,18 +54,20 @@ class CatchGrade {
 
   /// Light register — browse/forms photography.
   static const CatchGrade light = CatchGrade(
-    saturation: 0.84,
-    contrast: 0.94,
-    blackLift: 0.03,
+    saturation: 0.78,
+    contrast: 1.04,
+    brightness: 0.97,
     warmShadow: CatchPhotoGradeColors.lightWarmShadow,
     warmHighlight: CatchPhotoGradeColors.lightWarmHighlight,
   );
 
   /// Dark "wow" surfaces (event spotlight, profile hero) — deeper, moodier.
+  /// Same DS tone model as [light], pushed slightly: a touch less saturation,
+  /// a hair more contrast, and a deeper brightness multiply.
   static const CatchGrade dark = CatchGrade(
-    saturation: 0.80,
-    contrast: 0.90,
-    blackLift: 0.05,
+    saturation: 0.76,
+    contrast: 1.05,
+    brightness: 0.94,
     warmShadow: CatchPhotoGradeColors.darkWarmShadow,
     warmHighlight: CatchPhotoGradeColors.darkWarmHighlight,
   );
@@ -71,15 +76,18 @@ class CatchGrade {
   static CatchGrade of(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark ? dark : light;
 
-  /// 4x5 color matrix: saturation, then a contrast/black-lift tone curve.
-  /// (Luma weights 0.2126/0.7152/0.0722; offset column is on the 0–255 scale.)
+  /// 4x5 color matrix: saturation, then a mid-gray contrast pivot, then a
+  /// global brightness multiply — composed in CSS `.catch-grade` order
+  /// (`saturate → contrast → brightness`). Luma weights 0.2126/0.7152/0.0722;
+  /// the offset column is on the 0–255 scale.
   List<double> toMatrix() {
     const lr = 0.2126, lg = 0.7152, lb = 0.0722;
-    final s = saturation, c = contrast;
-    final o = blackLift * 255.0;
-    // saturation row entry, then scaled by contrast.
+    final s = saturation, c = contrast, b = brightness;
+    // contrast pivots around mid-gray (127.5); brightness scales the result.
+    final scale = b * c;
+    final o = b * 127.5 * (1 - c);
     double e(double luma, {required bool onDiagonal}) =>
-        (onDiagonal ? luma * (1 - s) + s : luma * (1 - s)) * c;
+        (onDiagonal ? luma * (1 - s) + s : luma * (1 - s)) * scale;
     return <double>[
       e(lr, onDiagonal: true),
       e(lg, onDiagonal: false),

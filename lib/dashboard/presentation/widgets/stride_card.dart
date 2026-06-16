@@ -253,9 +253,10 @@ class StrideBarColumn extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: fraction > 0
                       ? t.primary.withValues(
+                          // Today reads fullest; other days sit back at ~55%.
                           alpha: isToday
-                              ? CatchOpacity.strideTodayBar
-                              : CatchOpacity.visible,
+                              ? CatchOpacity.visible
+                              : CatchOpacity.strideInactiveBar,
                         )
                       : t.line2,
                   borderRadius: BorderRadius.circular(CatchRadius.xs),

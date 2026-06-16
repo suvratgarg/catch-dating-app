@@ -41,7 +41,7 @@ class ChatListTile extends StatelessWidget {
                   right: 0,
                   child: ColoredBox(
                     color: t.line.withValues(
-                      alpha: CatchOpacity.profileInfoDivider,
+                      alpha: CatchOpacity.infoRowDivider,
                     ),
                     child: const SizedBox(height: CatchStroke.hairline),
                   ),
@@ -134,7 +134,7 @@ class _ChatListTrailing extends StatelessWidget {
       children: [
         Text(
           time,
-          style: CatchTextStyles.statusLabel(
+          style: CatchTextStyles.meta(
             context,
             color: emphasized ? t.primary : t.ink3,
           ),

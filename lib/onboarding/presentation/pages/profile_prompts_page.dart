@@ -126,15 +126,6 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
         ],
       ),
       children: [
-        OnboardingStepHeader(
-          title: widget.profileCompletionOnly
-              ? 'Add prompts to start catching'
-              : 'Show your personality',
-          subtitle: widget.profileCompletionOnly
-              ? 'Prompts give people something real to respond to before you match.'
-              : 'Answer 3 prompts to complete your profile.',
-        ),
-        gapH20,
         for (var index = 0; index < maxProfilePromptAnswers; index += 1) ...[
           _PromptField(
             definition: profilePromptDefinition(_selectedPromptIds[index]),

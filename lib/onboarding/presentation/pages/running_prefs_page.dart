@@ -86,19 +86,6 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
         size: CatchButtonSize.lg,
       ),
       children: [
-        OnboardingStepHeader(
-          title: widget.profileCompletionOnly
-              ? 'Finish your Catches profile'
-              : widget.runPreferencesOnly
-              ? 'Set your run preferences'
-              : 'Your running style',
-          subtitle: widget.profileCompletionOnly
-              ? 'These are optional, but they help us rank compatible people in Catches.'
-              : widget.runPreferencesOnly
-              ? 'We only ask for these before run events so hosts can plan pace groups and distances.'
-              : 'Help us find compatible running partners.',
-        ),
-        gapH20,
 
         // ── Pace ──────────────────────────────────────────────────────────
         Text(

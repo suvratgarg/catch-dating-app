@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -400,9 +401,11 @@ class _EventFocusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final actions = [item.primaryAction, ...item.secondaryActions];
+    final activity = ActivityPalette.resolve(context, item.event.activityKind);
 
     return EventActionCard(
       event: item.event,
+      topAccentColors: [activity.accent, activity.deep],
       subtitle: item.clubName,
       urgent: item.isUrgent,
       indexLabel: cardCount > 1 ? '${cardIndex + 1}/$cardCount' : null,
@@ -461,6 +464,7 @@ class _EventFocusCard extends StatelessWidget {
             variant: index == 0
                 ? CatchButtonVariant.primary
                 : CatchButtonVariant.secondary,
+            accentColor: index == 0 ? activity.accent : null,
             isLoading:
                 index == 0 &&
                 item.primaryAction == _EventFocusAction.checkIn &&

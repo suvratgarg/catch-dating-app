@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
+import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -125,8 +126,11 @@ class CatchPersonAvatar extends StatelessWidget {
         child: _obscureIfNeeded(
           child: CatchNetworkImage(
             imageUrl!,
-            errorBuilder: (_, _, _) =>
-                _GradientPlaceholder(name: name, size: innerSize),
+            errorBuilder: (_, _, _) => _InitialsPlaceholder(
+              name: name,
+              initials: initials,
+              size: innerSize,
+            ),
           ),
         ),
       );
@@ -355,20 +359,24 @@ class _InitialsPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     final label = initials ?? _initialsOf(name);
 
+    // People are paper & ink, never activity pigment: a warm primary-soft tint
+    // with mono ink initials (design-system PersonAvatar fallback).
     return Stack(
       fit: StackFit.expand,
       children: [
-        _GradientPlaceholder(name: name, size: size),
+        ColoredBox(color: t.primarySoft),
         if (label.isNotEmpty)
           Center(
             child: Text(
               label,
-              style: CatchTextStyles.avatarCount(
-                context,
-                size: size * 0.29,
-                color: CatchTokens.editorialLight,
+              style: CatchFonts.mono(
+                fontSize: size * 0.34,
+                height: 1,
+                fontWeight: FontWeight.w700,
+                color: t.ink2,
               ),
             ),
           ),
@@ -393,70 +401,4 @@ String _initialsOf(String value) {
       .map((part) => part.characters.first)
       .join()
       .toUpperCase();
-}
-
-// ── Gradient placeholder ──────────────────────────────────────────────────────
-
-/// Deterministic gradient placeholder derived from [name] — matches the
-/// `avatarGrad()` logic in primitives.jsx.
-class _GradientPlaceholder extends StatelessWidget {
-  const _GradientPlaceholder({required this.name, required this.size});
-
-  final String name;
-  final double size;
-
-  static final _palettes = () {
-    final kinds = ActivityKind.values;
-    final palette = ActivityPalette.light;
-    return List.generate(12, (i) {
-      final a = palette.forKind(kinds[i % kinds.length]);
-      final b = palette.forKind(kinds[(i + 5) % kinds.length]);
-      return [a.accent, b.accent];
-    });
-  }();
-
-  int _hash() {
-    int h = 0;
-    for (final c in name.codeUnits) {
-      h = (h * 31 + c) & 0xFFFFFFFF;
-    }
-    return h;
-  }
-
-  // Gradient begin/end pairs, one per palette entry for variety.
-  static const _begins = [
-    Alignment.topLeft,
-    Alignment.topCenter,
-    Alignment.topRight,
-    Alignment.centerLeft,
-    Alignment.topLeft,
-    Alignment.bottomLeft,
-    Alignment.topRight,
-    Alignment.topLeft,
-    Alignment.topCenter,
-    Alignment.topLeft,
-    Alignment.topRight,
-    Alignment.centerLeft,
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final h = _hash();
-    final idx = h % _palettes.length;
-    final pair = _palettes[idx];
-    final begin = _begins[idx];
-    final end = begin == Alignment.topLeft
-        ? Alignment.bottomRight
-        : begin == Alignment.topRight
-        ? Alignment.bottomLeft
-        : Alignment.bottomCenter;
-
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(begin: begin, end: end, colors: pair),
-      ),
-    );
-  }
 }

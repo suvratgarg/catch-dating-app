@@ -122,7 +122,7 @@ void main() {
 
     await tester.tap(find.text('Live'));
     await pumpFeatureUi(tester);
-    expect(find.text('Live now'), findsOneWidget);
+    expect(find.text('LIVE NOW'), findsOneWidget);
     expect(find.text('Conversation cues'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('eventSuccessNextStepButton')),
@@ -930,7 +930,7 @@ void main() {
 
     expect(find.text('Synchronized partner reveal'), findsOneWidget);
     expect(find.text('Rotation reveal'), findsOneWidget);
-    expect(find.text('Live now'), findsOneWidget);
+    expect(find.text('LIVE NOW'), findsOneWidget);
     expect(find.text('Controls for this step'), findsOneWidget);
     expect(find.textContaining('Attendees at'), findsOneWidget);
     expect(find.text('Create the next room-wide beat'), findsOneWidget);

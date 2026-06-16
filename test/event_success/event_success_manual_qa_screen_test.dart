@@ -39,13 +39,13 @@ void main() {
     expect(find.text('HOST MANAGE'), findsOneWidget);
     await _scrollHostManageUntilVisible(tester, 'Participation');
     expect(find.text('Participation'), findsOneWidget);
-    expect(find.text('Guest'), findsOneWidget);
+    expect(find.text('GUEST'), findsOneWidget);
     expect(find.text('Attendee experience'), findsOneWidget);
     expect(find.text('Event companion'), findsOneWidget);
     expect(find.text('Fixture data'), findsOneWidget);
 
     await _tapHostSection(tester, 'Live');
-    expect(find.text('Live now'), findsOneWidget);
+    expect(find.text('LIVE NOW'), findsOneWidget);
     expect(find.text('Sign in required'), findsNothing);
 
     await _tapHostSection(tester, 'Report');
@@ -67,7 +67,7 @@ void main() {
 
     await _tapHostSection(tester, 'Live');
 
-    expect(find.text('Live now'), findsOneWidget);
+    expect(find.text('LIVE NOW'), findsOneWidget);
     expect(
       find.textContaining('Step 1/4: Check in and skill confirm'),
       findsWidgets,
@@ -174,20 +174,20 @@ void main() {
     await _pumpManualQaReady(tester);
 
     await _tapHostSection(tester, 'Live');
-    await _scrollHostManageUntilVisible(tester, 'Guest');
+    await _scrollHostManageUntilVisible(tester, 'GUEST');
 
-    expect(find.text('All'), findsWidgets);
-    expect(find.text('Due'), findsWidgets);
-    expect(find.text('In'), findsWidgets);
-    expect(find.text('Waitlist'), findsWidgets);
-    expect(find.text('Guest'), findsOneWidget);
-    expect(find.text('Status'), findsOneWidget);
-    expect(find.text('Host action'), findsOneWidget);
+    expect(find.text('ALL'), findsWidgets);
+    expect(find.text('DUE'), findsWidgets);
+    expect(find.text('IN'), findsWidgets);
+    expect(find.text('WAITLIST'), findsWidgets);
+    expect(find.text('GUEST'), findsOneWidget);
+    expect(find.text('STATUS'), findsOneWidget);
+    expect(find.text('HOST ACTION'), findsOneWidget);
     expect(
       find.text('Signed-up participants will appear here when they book.'),
       findsNothing,
     );
-    expect(find.text('Live now'), findsOneWidget);
+    expect(find.text('LIVE NOW'), findsOneWidget);
     expect(find.text('Sign in required'), findsNothing);
   });
 

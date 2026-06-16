@@ -33,4 +33,51 @@ void main() {
       );
     });
   });
+
+  group('OnboardingStepX.headerCopy', () {
+    ({String title, String? subtitle}) copy(
+      OnboardingStep step, {
+      bool profileCompletionOnly = false,
+      bool runPreferencesOnly = false,
+    }) => step.headerCopy(
+      profileCompletionOnly: profileCompletionOnly,
+      runPreferencesOnly: runPreferencesOnly,
+    );
+
+    test('surfaces the question and supporting line per step', () {
+      expect(copy(OnboardingStep.nameDob).title, "What's your name?");
+      expect(
+        copy(OnboardingStep.nameDob).subtitle,
+        'Last name stays private until you catch.',
+      );
+      expect(copy(OnboardingStep.genderInterest).title, 'How do you identify?');
+      expect(copy(OnboardingStep.genderInterest).subtitle, isNull);
+      expect(copy(OnboardingStep.instagram).title, 'Your Instagram');
+    });
+
+    test('photos/prompts switch copy in profile-completion mode', () {
+      expect(copy(OnboardingStep.photos).title, 'Show yourself');
+      expect(
+        copy(OnboardingStep.photos, profileCompletionOnly: true).title,
+        'Complete your profile for Catches',
+      );
+      expect(copy(OnboardingStep.prompts).title, 'Show your personality');
+      expect(
+        copy(OnboardingStep.prompts, profileCompletionOnly: true).title,
+        'Add prompts to start catching',
+      );
+    });
+
+    test('running prefs distinguishes completion vs run-only entry', () {
+      expect(copy(OnboardingStep.runningPrefs).title, 'Your running style');
+      expect(
+        copy(OnboardingStep.runningPrefs, profileCompletionOnly: true).title,
+        'Finish your Catches profile',
+      );
+      expect(
+        copy(OnboardingStep.runningPrefs, runPreferencesOnly: true).title,
+        'Set your run preferences',
+      );
+    });
+  });
 }

@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -80,13 +80,23 @@ class CatchActivityAvatar extends StatelessWidget {
               CustomPaint(painter: _ActivityAvatarTexturePainter()),
               if (displayInitials.isNotEmpty)
                 Center(
-                  child: Text(
-                    displayInitials,
-                    style: CatchTextStyles.avatarCount(
-                      context,
-                      size: size * CatchLayout.activityAvatarInitialsScale,
-                      color: Colors.white,
-                    ),
+                  child: Builder(
+                    builder: (context) {
+                      final initialsSize =
+                          size * CatchLayout.activityAvatarInitialsScale;
+                      // Activity-register initials live in the DATA voice (mono,
+                      // w700, 0.02em) over the pigment gradient.
+                      return Text(
+                        displayInitials,
+                        style: CatchFonts.mono(
+                          fontSize: initialsSize,
+                          height: 1,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: initialsSize * 0.02,
+                          color: Colors.white,
+                        ),
+                      );
+                    },
                   ),
                 ),
               if (dim)

@@ -800,13 +800,13 @@ void main() {
       await _pumpHostActionFrame(tester);
       await _pumpTestAnimation(tester);
 
-      expect(find.text('Live now'), findsOneWidget);
+      expect(find.text('LIVE NOW'), findsOneWidget);
       expect(find.text('Editable roster'), findsOneWidget);
-      expect(find.text('Guest'), findsOneWidget);
-      expect(find.text('Status'), findsOneWidget);
-      expect(find.text('Host action'), findsOneWidget);
-      expect(find.text('Due'), findsWidgets);
-      expect(find.text('In'), findsWidgets);
+      expect(find.text('GUEST'), findsOneWidget);
+      expect(find.text('STATUS'), findsOneWidget);
+      expect(find.text('HOST ACTION'), findsOneWidget);
+      expect(find.text('DUE'), findsWidgets);
+      expect(find.text('IN'), findsWidgets);
       expect(find.text('Harsh'), findsOneWidget);
       expect(find.text('Manan'), findsOneWidget);
       expect(find.text('Host check-in QR'), findsOneWidget);

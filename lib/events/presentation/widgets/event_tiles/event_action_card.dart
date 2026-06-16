@@ -23,6 +23,7 @@ class EventActionCard extends StatelessWidget {
     this.backgroundColor,
     this.borderColor,
     this.gradientColors,
+    this.topAccentColors,
     this.radius = CatchRadius.lg,
   });
 
@@ -38,6 +39,11 @@ class EventActionCard extends StatelessWidget {
   final Color? backgroundColor;
   final Color? borderColor;
   final List<Color>? gradientColors;
+
+  /// Optional activity-pigment top accent bar (design-system DashboardEventCard,
+  /// `linear-gradient(accent, deep)`). When set, a 6px bar reads the event's
+  /// activity at the card's top edge.
+  final List<Color>? topAccentColors;
   final double radius;
 
   @override
@@ -69,42 +75,57 @@ class EventActionCard extends StatelessWidget {
         colors: effectiveGradientColors,
       ),
       clipBehavior: Clip.antiAlias,
-      child: Padding(
-        padding: CatchInsets.tileContent,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _EventActionCardHeader(badges: badges, indexLabel: indexLabel),
-            if (headerAccessory != null) ...[gapH10, headerAccessory!],
-            gapH12,
-            Text(
-              title ?? event.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.headlineS(context),
-            ),
-            if (subtitle != null && subtitle!.trim().isNotEmpty) ...[
-              gapH4,
-              Text(
-                subtitle!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (topAccentColors != null && topAccentColors!.isNotEmpty)
+            SizedBox(
+              height: CatchSpacing.micro6,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: topAccentColors!),
+                ),
               ),
-            ],
-            if (metaRows.isNotEmpty) ...[
-              gapH12,
-              for (var index = 0; index < metaRows.length; index += 1) ...[
-                if (index > 0) gapH6,
-                CatchMetaDotRow(entries: metaRows[index]),
+            ),
+          Padding(
+            padding: CatchInsets.tileContent,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _EventActionCardHeader(badges: badges, indexLabel: indexLabel),
+                if (headerAccessory != null) ...[gapH10, headerAccessory!],
+                gapH12,
+                Text(
+                  title ?? event.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.headlineS(context),
+                ),
+                if (subtitle != null && subtitle!.trim().isNotEmpty) ...[
+                  gapH4,
+                  Text(
+                    subtitle!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                  ),
+                ],
+                if (metaRows.isNotEmpty) ...[
+                  gapH12,
+                  for (var index = 0; index < metaRows.length; index += 1) ...[
+                    if (index > 0) gapH6,
+                    CatchMetaDotRow(entries: metaRows[index]),
+                  ],
+                ],
+                if (actions.isNotEmpty) ...[
+                  gapH16,
+                  _EventActionCardActions(actions: actions),
+                ],
               ],
-            ],
-            if (actions.isNotEmpty) ...[
-              gapH16,
-              _EventActionCardActions(actions: actions),
-            ],
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -131,6 +152,7 @@ class EventActionCardAction {
     this.variant = CatchButtonVariant.secondary,
     this.isLoading = false,
     this.semanticsLabel,
+    this.accentColor,
   });
 
   final Key? key;
@@ -140,6 +162,9 @@ class EventActionCardAction {
   final CatchButtonVariant variant;
   final bool isLoading;
   final String? semanticsLabel;
+
+  /// Activity pigment for a primary action (design-system DashboardEventCard).
+  final Color? accentColor;
 }
 
 class _EventActionCardHeader extends StatelessWidget {
@@ -197,6 +222,7 @@ class _EventActionCardActions extends StatelessWidget {
             label: actions[index].label,
             icon: Icon(actions[index].icon, size: CatchIcon.md),
             variant: actions[index].variant,
+            accentColor: actions[index].accentColor,
             fullWidth: true,
             isLoading: actions[index].isLoading,
             semanticsLabel: actions[index].semanticsLabel,

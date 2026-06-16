@@ -64,7 +64,7 @@ Keep entries small and self-describing — one line is fine.
 
 ## Sheet & motion
 
-- [x] **Wrist-lift map reveal** — Explore wraps `sensors_plus` behind `DeviceMotionSource`, runs a conservative pitch/acceleration recognizer only while the full sheet is active, and uses a distinct light-impact, overshoot-and-settle animation for the physical reveal.
+- [~] **Wrist-lift map reveal** — **REMOVED (2026-06, `codex/deep-semantic-audit-2026-06`).** Retired with the Explore map-as-canvas → feed-primary rewrite: `sensors_plus`, `DeviceMotionSource`, and `ExploreMapMotionRevealRecognizer` were deleted. The map now opens only via the bottom-left Map pill → `ExploreMapScreen` route. (Formerly: Explore wrapped `sensors_plus` behind `DeviceMotionSource`, ran a conservative pitch/acceleration recognizer only while the full sheet was active, with a light-impact overshoot-and-settle reveal.)
 - [x] **Sticky day-section headers** — the primary Explore sheet now spreads flat slivers and uses `SliverPersistentHeader(pinned: true)` with `CatchDaySectionHeaderDelegate`. The legacy single-widget `ExploreEventsSection` compatibility wrapper keeps inline headers to avoid the `SliverMainAxisGroup` assertion path.
 - [x] **Spring-curve sheet snap** — `_snapTo` uses `CatchMotion.springCurve`. ([explore_screen.dart](../lib/explore/presentation/explore_screen.dart))
 - [x] **Haptic light-tap on pin tap + sheet snap** — `_showMap`, `_showList`, `_selectMapEvent` all fire `HapticFeedback.selectionClick()`. ([explore_screen.dart](../lib/explore/presentation/explore_screen.dart))

@@ -61,8 +61,6 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
           size: CatchButtonSize.lg,
         ),
         children: [
-          const OnboardingStepHeader(title: 'How do you identify?'),
-          gapH28,
           CatchChipField<Gender>(
             label: 'I AM A',
             values: Gender.values,

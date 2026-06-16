@@ -597,7 +597,7 @@ bool _matchesSearch(
     event.pace.label,
     club.name,
     club.area,
-    club.hostName,
+    club.displayHostName,
     ...club.tags,
   ].join(' ').toLowerCase();
   return searchable.contains(normalizedQuery);

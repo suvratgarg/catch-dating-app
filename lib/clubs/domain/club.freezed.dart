@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Club {
 
-@JsonKey(includeToJson: false) String get id; String get name; String get description; String get location; String get area; String get hostUserId; String get hostName; String? get hostAvatarUrl; String? get ownerUserId; List<String> get hostUserIds; List<ClubHostProfile> get hostProfiles;@TimestampConverter() DateTime get createdAt; String? get imageUrl; String? get profileImageUrl; List<UploadedPhoto> get clubPhotos; UploadedPhoto? get logoPhoto; List<String> get tags; int get memberCount; double get rating; int get reviewCount;@TimestampConverter() DateTime? get nextEventAt; String? get nextEventLabel; String? get instagramHandle; String? get phoneNumber; String? get email; ClubLifecycleStatus get status; bool get archived;@TimestampConverter() DateTime? get archivedAt; String? get archiveReason; ClubHostDefaults get hostDefaults;
+@JsonKey(includeToJson: false) String get id; String get name; String get description; String get location; String get area; String? get hostUserId; String? get hostName; String? get hostAvatarUrl; String? get ownerUserId; List<String> get hostUserIds; List<ClubHostProfile> get hostProfiles;@TimestampConverter() DateTime get createdAt; String? get imageUrl; String? get profileImageUrl; List<UploadedPhoto> get clubPhotos; UploadedPhoto? get logoPhoto; List<String> get tags; int get memberCount; double get rating; int get reviewCount;@TimestampConverter() DateTime? get nextEventAt; String? get nextEventLabel; String? get instagramHandle; String? get phoneNumber; String? get email; ClubLifecycleStatus get status; bool get archived;@TimestampConverter() DateTime? get archivedAt; String? get archiveReason; ClubHostDefaults get hostDefaults;
 /// Create a copy of Club
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $ClubCopyWith<$Res>  {
   factory $ClubCopyWith(Club value, $Res Function(Club) _then) = _$ClubCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String name, String description, String location, String area, String hostUserId, String hostName, String? hostAvatarUrl, String? ownerUserId, List<String> hostUserIds, List<ClubHostProfile> hostProfiles,@TimestampConverter() DateTime createdAt, String? imageUrl, String? profileImageUrl, List<UploadedPhoto> clubPhotos, UploadedPhoto? logoPhoto, List<String> tags, int memberCount, double rating, int reviewCount,@TimestampConverter() DateTime? nextEventAt, String? nextEventLabel, String? instagramHandle, String? phoneNumber, String? email, ClubLifecycleStatus status, bool archived,@TimestampConverter() DateTime? archivedAt, String? archiveReason, ClubHostDefaults hostDefaults
+@JsonKey(includeToJson: false) String id, String name, String description, String location, String area, String? hostUserId, String? hostName, String? hostAvatarUrl, String? ownerUserId, List<String> hostUserIds, List<ClubHostProfile> hostProfiles,@TimestampConverter() DateTime createdAt, String? imageUrl, String? profileImageUrl, List<UploadedPhoto> clubPhotos, UploadedPhoto? logoPhoto, List<String> tags, int memberCount, double rating, int reviewCount,@TimestampConverter() DateTime? nextEventAt, String? nextEventLabel, String? instagramHandle, String? phoneNumber, String? email, ClubLifecycleStatus status, bool archived,@TimestampConverter() DateTime? archivedAt, String? archiveReason, ClubHostDefaults hostDefaults
 });
 
 
@@ -65,16 +65,16 @@ class _$ClubCopyWithImpl<$Res>
 
 /// Create a copy of Club
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? description = null,Object? location = null,Object? area = null,Object? hostUserId = null,Object? hostName = null,Object? hostAvatarUrl = freezed,Object? ownerUserId = freezed,Object? hostUserIds = null,Object? hostProfiles = null,Object? createdAt = null,Object? imageUrl = freezed,Object? profileImageUrl = freezed,Object? clubPhotos = null,Object? logoPhoto = freezed,Object? tags = null,Object? memberCount = null,Object? rating = null,Object? reviewCount = null,Object? nextEventAt = freezed,Object? nextEventLabel = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? status = null,Object? archived = null,Object? archivedAt = freezed,Object? archiveReason = freezed,Object? hostDefaults = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? description = null,Object? location = null,Object? area = null,Object? hostUserId = freezed,Object? hostName = freezed,Object? hostAvatarUrl = freezed,Object? ownerUserId = freezed,Object? hostUserIds = null,Object? hostProfiles = null,Object? createdAt = null,Object? imageUrl = freezed,Object? profileImageUrl = freezed,Object? clubPhotos = null,Object? logoPhoto = freezed,Object? tags = null,Object? memberCount = null,Object? rating = null,Object? reviewCount = null,Object? nextEventAt = freezed,Object? nextEventLabel = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? status = null,Object? archived = null,Object? archivedAt = freezed,Object? archiveReason = freezed,Object? hostDefaults = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,location: null == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
 as String,area: null == area ? _self.area : area // ignore: cast_nullable_to_non_nullable
-as String,hostUserId: null == hostUserId ? _self.hostUserId : hostUserId // ignore: cast_nullable_to_non_nullable
-as String,hostName: null == hostName ? _self.hostName : hostName // ignore: cast_nullable_to_non_nullable
-as String,hostAvatarUrl: freezed == hostAvatarUrl ? _self.hostAvatarUrl : hostAvatarUrl // ignore: cast_nullable_to_non_nullable
+as String,hostUserId: freezed == hostUserId ? _self.hostUserId : hostUserId // ignore: cast_nullable_to_non_nullable
+as String?,hostName: freezed == hostName ? _self.hostName : hostName // ignore: cast_nullable_to_non_nullable
+as String?,hostAvatarUrl: freezed == hostAvatarUrl ? _self.hostAvatarUrl : hostAvatarUrl // ignore: cast_nullable_to_non_nullable
 as String?,ownerUserId: freezed == ownerUserId ? _self.ownerUserId : ownerUserId // ignore: cast_nullable_to_non_nullable
 as String?,hostUserIds: null == hostUserIds ? _self.hostUserIds : hostUserIds // ignore: cast_nullable_to_non_nullable
 as List<String>,hostProfiles: null == hostProfiles ? _self.hostProfiles : hostProfiles // ignore: cast_nullable_to_non_nullable
@@ -191,7 +191,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl,  String? ownerUserId,  List<String> hostUserIds,  List<ClubHostProfile> hostProfiles, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  String? profileImageUrl,  List<UploadedPhoto> clubPhotos,  UploadedPhoto? logoPhoto,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextEventAt,  String? nextEventLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason,  ClubHostDefaults hostDefaults)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String? hostUserId,  String? hostName,  String? hostAvatarUrl,  String? ownerUserId,  List<String> hostUserIds,  List<ClubHostProfile> hostProfiles, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  String? profileImageUrl,  List<UploadedPhoto> clubPhotos,  UploadedPhoto? logoPhoto,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextEventAt,  String? nextEventLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason,  ClubHostDefaults hostDefaults)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Club() when $default != null:
 return $default(_that.id,_that.name,_that.description,_that.location,_that.area,_that.hostUserId,_that.hostName,_that.hostAvatarUrl,_that.ownerUserId,_that.hostUserIds,_that.hostProfiles,_that.createdAt,_that.imageUrl,_that.profileImageUrl,_that.clubPhotos,_that.logoPhoto,_that.tags,_that.memberCount,_that.rating,_that.reviewCount,_that.nextEventAt,_that.nextEventLabel,_that.instagramHandle,_that.phoneNumber,_that.email,_that.status,_that.archived,_that.archivedAt,_that.archiveReason,_that.hostDefaults);case _:
@@ -212,7 +212,7 @@ return $default(_that.id,_that.name,_that.description,_that.location,_that.area,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl,  String? ownerUserId,  List<String> hostUserIds,  List<ClubHostProfile> hostProfiles, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  String? profileImageUrl,  List<UploadedPhoto> clubPhotos,  UploadedPhoto? logoPhoto,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextEventAt,  String? nextEventLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason,  ClubHostDefaults hostDefaults)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String? hostUserId,  String? hostName,  String? hostAvatarUrl,  String? ownerUserId,  List<String> hostUserIds,  List<ClubHostProfile> hostProfiles, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  String? profileImageUrl,  List<UploadedPhoto> clubPhotos,  UploadedPhoto? logoPhoto,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextEventAt,  String? nextEventLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason,  ClubHostDefaults hostDefaults)  $default,) {final _that = this;
 switch (_that) {
 case _Club():
 return $default(_that.id,_that.name,_that.description,_that.location,_that.area,_that.hostUserId,_that.hostName,_that.hostAvatarUrl,_that.ownerUserId,_that.hostUserIds,_that.hostProfiles,_that.createdAt,_that.imageUrl,_that.profileImageUrl,_that.clubPhotos,_that.logoPhoto,_that.tags,_that.memberCount,_that.rating,_that.reviewCount,_that.nextEventAt,_that.nextEventLabel,_that.instagramHandle,_that.phoneNumber,_that.email,_that.status,_that.archived,_that.archivedAt,_that.archiveReason,_that.hostDefaults);case _:
@@ -232,7 +232,7 @@ return $default(_that.id,_that.name,_that.description,_that.location,_that.area,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl,  String? ownerUserId,  List<String> hostUserIds,  List<ClubHostProfile> hostProfiles, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  String? profileImageUrl,  List<UploadedPhoto> clubPhotos,  UploadedPhoto? logoPhoto,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextEventAt,  String? nextEventLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason,  ClubHostDefaults hostDefaults)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String? hostUserId,  String? hostName,  String? hostAvatarUrl,  String? ownerUserId,  List<String> hostUserIds,  List<ClubHostProfile> hostProfiles, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  String? profileImageUrl,  List<UploadedPhoto> clubPhotos,  UploadedPhoto? logoPhoto,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextEventAt,  String? nextEventLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason,  ClubHostDefaults hostDefaults)?  $default,) {final _that = this;
 switch (_that) {
 case _Club() when $default != null:
 return $default(_that.id,_that.name,_that.description,_that.location,_that.area,_that.hostUserId,_that.hostName,_that.hostAvatarUrl,_that.ownerUserId,_that.hostUserIds,_that.hostProfiles,_that.createdAt,_that.imageUrl,_that.profileImageUrl,_that.clubPhotos,_that.logoPhoto,_that.tags,_that.memberCount,_that.rating,_that.reviewCount,_that.nextEventAt,_that.nextEventLabel,_that.instagramHandle,_that.phoneNumber,_that.email,_that.status,_that.archived,_that.archivedAt,_that.archiveReason,_that.hostDefaults);case _:
@@ -247,7 +247,7 @@ return $default(_that.id,_that.name,_that.description,_that.location,_that.area,
 @JsonSerializable()
 
 class _Club extends Club {
-  const _Club({@JsonKey(includeToJson: false) required this.id, required this.name, required this.description, required this.location, required this.area, required this.hostUserId, required this.hostName, this.hostAvatarUrl, this.ownerUserId, final  List<String> hostUserIds = const [], final  List<ClubHostProfile> hostProfiles = const [], @TimestampConverter() required this.createdAt, this.imageUrl, this.profileImageUrl, final  List<UploadedPhoto> clubPhotos = const [], this.logoPhoto, final  List<String> tags = const [], this.memberCount = 0, this.rating = 0.0, this.reviewCount = 0, @TimestampConverter() this.nextEventAt, this.nextEventLabel, this.instagramHandle, this.phoneNumber, this.email, this.status = ClubLifecycleStatus.active, this.archived = false, @TimestampConverter() this.archivedAt, this.archiveReason, this.hostDefaults = const ClubHostDefaults()}): _hostUserIds = hostUserIds,_hostProfiles = hostProfiles,_clubPhotos = clubPhotos,_tags = tags,super._();
+  const _Club({@JsonKey(includeToJson: false) required this.id, required this.name, required this.description, required this.location, required this.area, this.hostUserId, this.hostName, this.hostAvatarUrl, this.ownerUserId, final  List<String> hostUserIds = const [], final  List<ClubHostProfile> hostProfiles = const [], @TimestampConverter() required this.createdAt, this.imageUrl, this.profileImageUrl, final  List<UploadedPhoto> clubPhotos = const [], this.logoPhoto, final  List<String> tags = const [], this.memberCount = 0, this.rating = 0.0, this.reviewCount = 0, @TimestampConverter() this.nextEventAt, this.nextEventLabel, this.instagramHandle, this.phoneNumber, this.email, this.status = ClubLifecycleStatus.active, this.archived = false, @TimestampConverter() this.archivedAt, this.archiveReason, this.hostDefaults = const ClubHostDefaults()}): _hostUserIds = hostUserIds,_hostProfiles = hostProfiles,_clubPhotos = clubPhotos,_tags = tags,super._();
   factory _Club.fromJson(Map<String, dynamic> json) => _$ClubFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -255,8 +255,8 @@ class _Club extends Club {
 @override final  String description;
 @override final  String location;
 @override final  String area;
-@override final  String hostUserId;
-@override final  String hostName;
+@override final  String? hostUserId;
+@override final  String? hostName;
 @override final  String? hostAvatarUrl;
 @override final  String? ownerUserId;
  final  List<String> _hostUserIds;
@@ -338,7 +338,7 @@ abstract mixin class _$ClubCopyWith<$Res> implements $ClubCopyWith<$Res> {
   factory _$ClubCopyWith(_Club value, $Res Function(_Club) _then) = __$ClubCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String name, String description, String location, String area, String hostUserId, String hostName, String? hostAvatarUrl, String? ownerUserId, List<String> hostUserIds, List<ClubHostProfile> hostProfiles,@TimestampConverter() DateTime createdAt, String? imageUrl, String? profileImageUrl, List<UploadedPhoto> clubPhotos, UploadedPhoto? logoPhoto, List<String> tags, int memberCount, double rating, int reviewCount,@TimestampConverter() DateTime? nextEventAt, String? nextEventLabel, String? instagramHandle, String? phoneNumber, String? email, ClubLifecycleStatus status, bool archived,@TimestampConverter() DateTime? archivedAt, String? archiveReason, ClubHostDefaults hostDefaults
+@JsonKey(includeToJson: false) String id, String name, String description, String location, String area, String? hostUserId, String? hostName, String? hostAvatarUrl, String? ownerUserId, List<String> hostUserIds, List<ClubHostProfile> hostProfiles,@TimestampConverter() DateTime createdAt, String? imageUrl, String? profileImageUrl, List<UploadedPhoto> clubPhotos, UploadedPhoto? logoPhoto, List<String> tags, int memberCount, double rating, int reviewCount,@TimestampConverter() DateTime? nextEventAt, String? nextEventLabel, String? instagramHandle, String? phoneNumber, String? email, ClubLifecycleStatus status, bool archived,@TimestampConverter() DateTime? archivedAt, String? archiveReason, ClubHostDefaults hostDefaults
 });
 
 
@@ -355,16 +355,16 @@ class __$ClubCopyWithImpl<$Res>
 
 /// Create a copy of Club
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? description = null,Object? location = null,Object? area = null,Object? hostUserId = null,Object? hostName = null,Object? hostAvatarUrl = freezed,Object? ownerUserId = freezed,Object? hostUserIds = null,Object? hostProfiles = null,Object? createdAt = null,Object? imageUrl = freezed,Object? profileImageUrl = freezed,Object? clubPhotos = null,Object? logoPhoto = freezed,Object? tags = null,Object? memberCount = null,Object? rating = null,Object? reviewCount = null,Object? nextEventAt = freezed,Object? nextEventLabel = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? status = null,Object? archived = null,Object? archivedAt = freezed,Object? archiveReason = freezed,Object? hostDefaults = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? description = null,Object? location = null,Object? area = null,Object? hostUserId = freezed,Object? hostName = freezed,Object? hostAvatarUrl = freezed,Object? ownerUserId = freezed,Object? hostUserIds = null,Object? hostProfiles = null,Object? createdAt = null,Object? imageUrl = freezed,Object? profileImageUrl = freezed,Object? clubPhotos = null,Object? logoPhoto = freezed,Object? tags = null,Object? memberCount = null,Object? rating = null,Object? reviewCount = null,Object? nextEventAt = freezed,Object? nextEventLabel = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? status = null,Object? archived = null,Object? archivedAt = freezed,Object? archiveReason = freezed,Object? hostDefaults = null,}) {
   return _then(_Club(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,location: null == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
 as String,area: null == area ? _self.area : area // ignore: cast_nullable_to_non_nullable
-as String,hostUserId: null == hostUserId ? _self.hostUserId : hostUserId // ignore: cast_nullable_to_non_nullable
-as String,hostName: null == hostName ? _self.hostName : hostName // ignore: cast_nullable_to_non_nullable
-as String,hostAvatarUrl: freezed == hostAvatarUrl ? _self.hostAvatarUrl : hostAvatarUrl // ignore: cast_nullable_to_non_nullable
+as String,hostUserId: freezed == hostUserId ? _self.hostUserId : hostUserId // ignore: cast_nullable_to_non_nullable
+as String?,hostName: freezed == hostName ? _self.hostName : hostName // ignore: cast_nullable_to_non_nullable
+as String?,hostAvatarUrl: freezed == hostAvatarUrl ? _self.hostAvatarUrl : hostAvatarUrl // ignore: cast_nullable_to_non_nullable
 as String?,ownerUserId: freezed == ownerUserId ? _self.ownerUserId : ownerUserId // ignore: cast_nullable_to_non_nullable
 as String?,hostUserIds: null == hostUserIds ? _self._hostUserIds : hostUserIds // ignore: cast_nullable_to_non_nullable
 as List<String>,hostProfiles: null == hostProfiles ? _self._hostProfiles : hostProfiles // ignore: cast_nullable_to_non_nullable

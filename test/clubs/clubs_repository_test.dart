@@ -84,6 +84,23 @@ void main() {
       },
     );
 
+    test('converter accepts unclaimed organizer host fields', () async {
+      final club = buildClub(
+        id: 'unclaimed-club',
+        name: 'Open Organizer',
+        hostUserId: null,
+        hostName: null,
+      );
+
+      await _seedClub(firestore, club);
+
+      final decoded = await repository.fetchClub(club.id);
+      expect(decoded?.hostUserId, isNull);
+      expect(decoded?.hostName, isNull);
+      expect(decoded?.displayHostName, 'Open Organizer');
+      expect(decoded?.displayHostProfiles, isEmpty);
+    });
+
     test('watchClub emits the decoded club when the document exists', () async {
       final club = buildClub();
       await _seedClub(firestore, club);
@@ -352,7 +369,7 @@ void main() {
         fireImmediately: true,
       );
       final hostedSubscription = container.listen(
-        watchClubsHostedByProvider(club.hostUserId),
+        watchClubsHostedByProvider('host-1'),
         (_, _) {},
         fireImmediately: true,
       );

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
@@ -6,6 +8,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -918,4 +922,255 @@ String _admissionSummary(EventAdmissionPolicy policy) {
     EventAdmissionFormat.membersOnly =>
       'Only active club members can book this event.',
   };
+}
+
+/// One value/label data pair in an [EventDetailHostCard] stat strip
+/// (design-system `HostStat`). [value] and [label] are pre-formatted; [label]
+/// is rendered uppercased mono.
+@immutable
+class EventDetailHostStat {
+  const EventDetailHostStat({required this.value, required this.label});
+
+  /// Mono figure, e.g. `"23"` or `"92%"`.
+  final String value;
+
+  /// Mono label, e.g. `"RUNS"` (rendered uppercased).
+  final String label;
+}
+
+/// Design-system "your hosts" card (`components/events/HostCard`): a graded
+/// avatar on the activity gradient, the condensed host name with a pigment
+/// verified seal, a mono meta line, an optional three-up stat strip, and two
+/// hairline secondary actions (Message host / View club).
+class EventDetailHostCard extends StatelessWidget {
+  const EventDetailHostCard({
+    super.key,
+    required this.activityKind,
+    required this.hostName,
+    this.photoUrl,
+    this.meta,
+    this.verified = true,
+    this.stats = const <EventDetailHostStat>[],
+    this.messageLabel = 'Message host',
+    this.clubLabel = 'View club',
+    this.onMessage,
+    this.onViewClub,
+    this.surfaceColor,
+    this.borderColor,
+    this.nameColor,
+    this.metaColor,
+    this.statValueColor,
+    this.statLabelColor,
+    this.dividerColor,
+  });
+
+  /// Colors the verified seal and the avatar gradient fallback.
+  final ActivityKind activityKind;
+  final String hostName;
+
+  /// Graded avatar photo; omit for the pigment-gradient fallback.
+  final String? photoUrl;
+
+  /// Mono meta line, already uppercased (e.g. `HOSTING SINCE FEB 2026`).
+  final String? meta;
+  final bool verified;
+  final List<EventDetailHostStat> stats;
+  final String messageLabel;
+  final String clubLabel;
+  final VoidCallback? onMessage;
+  final VoidCallback? onViewClub;
+
+  /// Optional surface-style overrides so the card can sit on the dark spotlight
+  /// detail surface; each falls back to the light token when null.
+  final Color? surfaceColor;
+  final Color? borderColor;
+  final Color? nameColor;
+  final Color? metaColor;
+  final Color? statValueColor;
+  final Color? statLabelColor;
+  final Color? dividerColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final activity = ActivityPalette.resolve(context, activityKind);
+    final hasActions = onMessage != null || onViewClub != null;
+
+    return CatchSurface(
+      backgroundColor: surfaceColor,
+      borderColor: borderColor ?? t.line2,
+      radius: CatchRadius.md,
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _HostAvatar(activity: activity, photoUrl: photoUrl),
+              const SizedBox(width: CatchSpacing.s3),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            hostName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style:
+                                CatchTextStyles.name(
+                                  context,
+                                  color: nameColor,
+                                ).copyWith(
+                                  fontSize: CatchLayout.eventDetailHostNameSize,
+                                  letterSpacing: -0.2,
+                                ),
+                          ),
+                        ),
+                        if (verified) ...[
+                          const SizedBox(width: CatchSpacing.micro6),
+                          Icon(
+                            CatchIcons.sealCheck,
+                            size: CatchLayout.eventDetailHostSealSize,
+                            color: activity.accent,
+                          ),
+                        ],
+                      ],
+                    ),
+                    if (meta != null && meta!.isNotEmpty) ...[
+                      const SizedBox(height: CatchSpacing.s1),
+                      Text(
+                        meta!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: CatchTextStyles.monoLabelS(
+                          context,
+                          color: metaColor,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (stats.isNotEmpty) ...[
+            const SizedBox(height: CatchSpacing.s3),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border(top: BorderSide(color: dividerColor ?? t.line)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(top: CatchSpacing.s3),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final stat in stats)
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              stat.value,
+                              style:
+                                  CatchTextStyles.numericLarge(
+                                    context,
+                                    color: statValueColor,
+                                  ).copyWith(
+                                    fontSize:
+                                        CatchLayout.eventDetailHostStatValueSize,
+                                  ),
+                            ),
+                            const SizedBox(height: CatchSpacing.s1),
+                            Text(
+                              stat.label.toUpperCase(),
+                              style:
+                                  CatchTextStyles.monoLabel(
+                                    context,
+                                    color: statLabelColor ?? t.ink3,
+                                  ).copyWith(
+                                    fontSize:
+                                        CatchLayout.eventDetailHostStatLabelSize,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          if (hasActions) ...[
+            const SizedBox(height: CatchSpacing.s3),
+            Row(
+              children: [
+                if (onMessage != null)
+                  Expanded(
+                    child: CatchButton(
+                      label: messageLabel,
+                      onPressed: onMessage,
+                      variant: CatchButtonVariant.secondary,
+                      size: CatchButtonSize.sm,
+                      fullWidth: true,
+                      icon: Icon(CatchIcons.chatCircle),
+                    ),
+                  ),
+                if (onMessage != null && onViewClub != null)
+                  const SizedBox(width: CatchSpacing.s2),
+                if (onViewClub != null)
+                  Expanded(
+                    child: CatchButton(
+                      label: clubLabel,
+                      onPressed: onViewClub,
+                      variant: CatchButtonVariant.secondary,
+                      size: CatchButtonSize.sm,
+                      fullWidth: true,
+                      icon: Icon(CatchIcons.arrowUpRight),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// The 46px host avatar — a graded photo over the activity-pigment gradient,
+/// or the bare gradient when no photo is supplied.
+class _HostAvatar extends StatelessWidget {
+  const _HostAvatar({required this.activity, this.photoUrl});
+
+  final CatchActivity activity;
+  final String? photoUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final url = photoUrl;
+    return SizedBox.square(
+      dimension: CatchLayout.eventDetailHostAvatarExtent,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            transform: const GradientRotation(150 * math.pi / 180),
+            colors: [activity.accent, activity.deep],
+          ),
+        ),
+        child: url == null || url.isEmpty
+            ? null
+            : ClipOval(
+                child: CatchGradedImage(
+                  child: CatchNetworkImage(url),
+                ),
+              ),
+      ),
+    );
+  }
 }

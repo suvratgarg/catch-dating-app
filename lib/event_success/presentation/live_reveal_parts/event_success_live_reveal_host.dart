@@ -8,6 +8,7 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
     required this.podAssignments,
     required this.rotationAssignments,
     required this.preferences,
+    this.participantProfiles = const [],
     this.now,
     this.onStartCountdown,
     this.onRevealRound,
@@ -19,6 +20,10 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
   final List<EventSuccessAssignment> podAssignments;
   final List<EventSuccessAssignment> rotationAssignments;
   final List<EventSuccessPreference> preferences;
+
+  /// Names for the rotation run-of-show list (reveal-gated). Pairings stay
+  /// masked as "Hidden until reveal" until the host releases each round.
+  final List<PublicProfile> participantProfiles;
   final DateTime? now;
   final void Function(int roundIndex, int countdownSeconds)? onStartCountdown;
   final ValueChanged<int>? onRevealRound;
@@ -196,11 +201,23 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
           _RevealProgressBar(progress: plan.revealProgress(referenceNow)),
           if (roundCount > 0) ...[
             gapH14,
-            _RevealRoundRail(
-              roundCount: roundCount,
-              activeRoundIndex: targetRound,
-              revealedThrough: plan.revealedThroughRoundIndex(referenceNow),
-            ),
+            if (revealSet.kind == EventSuccessRevealAssignmentKind.rotations)
+              _RevealRoundList(
+                config: _rotationConfigLine(plan.structureConfig),
+                roundCount: roundCount,
+                revealedThrough: plan.revealedThroughRoundIndex(referenceNow),
+                assignments: assignments,
+                profilesByUid: {
+                  for (final profile in participantProfiles)
+                    profile.uid: profile,
+                },
+              )
+            else
+              _RevealRoundRail(
+                roundCount: roundCount,
+                activeRoundIndex: targetRound,
+                revealedThrough: plan.revealedThroughRoundIndex(referenceNow),
+              ),
           ],
           if (errorMutation != null) ...[
             gapH10,

@@ -86,6 +86,8 @@ class EventDetailCta extends ConsumerWidget {
         .supportsPaidBookingsForCurrency(event.currency);
     final quotedPriceInPaise = event.priceInPaiseFor(userProfile);
     final isFreeForViewer = quotedPriceInPaise == 0;
+    final spotsRemaining = EventCapacityPresenter(event).spotsRemaining;
+    final isScarce = spotsRemaining > 0 && spotsRemaining <= 3;
     final needsRunPreferences =
         event.requiresRunPreferences && !userProfile.hasCurrentRunPreferences;
 
@@ -298,6 +300,8 @@ class EventDetailCta extends ConsumerWidget {
               buttonAccentColor: bookingAccent,
               backgroundColor: ctaBackground,
               dividerColor: ctaDivider,
+              catchLine: 'Matching opens for everyone who goes',
+              catchLineAccent: bookingAccent,
               leadingContent: isFreeForViewer
                   ? null
                   : PriceLeading(
@@ -305,6 +309,8 @@ class EventDetailCta extends ConsumerWidget {
                         quotedPriceInPaise,
                         currencyCode: event.currency,
                       ),
+                      note: isScarce ? '$spotsRemaining spots left' : null,
+                      warn: isScarce,
                     ),
             ),
             EventSignUpStatus.signedUp => (() {
@@ -462,24 +468,37 @@ EventSignUpStatus _statusForEligibility(EventEligibility eligibility) {
 }
 
 class PriceLeading extends StatelessWidget {
-  const PriceLeading({super.key, required this.price});
+  const PriceLeading({
+    super.key,
+    required this.price,
+    this.note,
+    this.warn = false,
+  });
 
   final String price;
 
+  /// Secondary line under the price. Defaults to "per person"; when [warn] is
+  /// true it renders as a warning-toned tracked-mono scarcity note.
+  final String? note;
+  final bool warn;
+
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(price, style: CatchTextStyles.titleL(context)),
-        Text(
-          'per person',
-          style: CatchTextStyles.supporting(
-            context,
-            color: CatchTokens.of(context).ink2,
-          ),
-        ),
+        Text(price, style: CatchTextStyles.numericLarge(context)),
+        warn
+            ? Text(
+                (note ?? '').toUpperCase(),
+                style: CatchTextStyles.monoLabel(context, color: t.warning),
+              )
+            : Text(
+                note ?? 'per person',
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
       ],
     );
   }
