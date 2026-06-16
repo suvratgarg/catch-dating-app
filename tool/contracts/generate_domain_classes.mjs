@@ -91,46 +91,6 @@ const IMPORT_LABELLED =
 
 const SPECS = [
   {
-    className: "Payment",
-    schema: "firestore/payments.schema.json",
-    output: "lib/payments/domain/payment.dart",
-    imports: [IMPORT_CURRENCY, IMPORT_CONVERTERS, IMPORT_LABELLED],
-    enums: [
-      {
-        name: "PaymentStatus",
-        labelled: true,
-        // Enum members are derived from the schema's status enum; `labels`
-        // supplies the human-facing Labelled text (not carried in the schema).
-        schemaPointer: "/properties/status",
-        labels: {
-          pending: "Pending",
-          completed: "Completed",
-          failed: "Failed",
-          refunded: "Refunded",
-        },
-      },
-    ],
-    classes: [
-      {
-        name: "Payment",
-        fields: [
-          {name: "id", dartType: "String", synthetic: true,
-            forceRequired: true, jsonKey: {includeToJson: false}},
-          {name: "userId", dartType: "String"},
-          {name: "orderId", dartType: "String"},
-          {name: "paymentId", dartType: "String"},
-          {name: "eventId", dartType: "String"},
-          {name: "amount", dartType: "int"},
-          {name: "currency", dartType: "String",
-            default: "defaultCurrencyCode"},
-          {name: "status", enumType: "PaymentStatus"},
-          {name: "signUpFailed", dartType: "bool", default: "false"},
-          {name: "createdAt", timestamp: "required"},
-        ],
-      },
-    ],
-  },
-  {
     className: "Swipe",
     schema: "firestore/swipes.schema.json",
     output: "lib/swipes/domain/swipe.dart",
@@ -660,6 +620,13 @@ main();
 // ── HAND_WRITTEN_NOTES ──────────────────────────────────────────────────────
 // Covered domain classes intentionally NOT generated, and why. These stay
 // hand-written; do not try to force them through this generator.
+//
+//   Payment (lib/payments/domain/payment.dart)
+//     PaymentStatus carries per-member doc comments and a deliberate decode
+//     fail-safe (@JsonKey(unknownEnumValue: PaymentStatus.failed)) so a stale
+//     client tolerates a newer server status (e.g. refundFailed) instead of
+//     throwing. The generator emits neither member docs nor unknownEnumValue,
+//     and forcing it would silently drop that fail-safe — keep hand-written.
 //
 //   Event (lib/events/domain/event.dart)
 //     Heavy business logic and non-schema defaults: @Default(
