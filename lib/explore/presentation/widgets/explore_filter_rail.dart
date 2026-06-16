@@ -37,12 +37,7 @@ class ExploreFilterRail extends ConsumerWidget {
     return ColoredBox(
       color: backgroundColor ?? t.bg,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s4,
-          CatchSpacing.s5,
-          0,
-        ),
+        padding: CatchInsets.screenControlRail,
         child: CatchOptionGroup<ExploreTimeFilter>(
           options: _timeOptions,
           selected: filters.timeFilter,

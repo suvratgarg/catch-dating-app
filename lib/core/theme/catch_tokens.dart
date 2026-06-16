@@ -321,6 +321,11 @@ abstract final class CatchGaps {
   /// Tight icon/label or metadata pair spacing.
   static const double inline = CatchSpacing.s2;
 
+  /// Gap between a screen-header title and the kicker/subtitle paired with it
+  /// (browse-header title→subtitle, Home dashboard eyebrow→title). Centralises
+  /// the subtitle-to-title relationship of the shared tab-screen header rhythm.
+  static const double headerTitleToSubtitle = CatchSpacing.s1;
+
   /// Distance between closely related rows inside the same content cluster.
   static const double related = CatchSpacing.s3;
 
@@ -389,6 +394,16 @@ abstract final class CatchInsets {
     CatchSpacing.s4,
   );
 
+  /// Compact-top scroll body for tab screens that own their title block inline
+  /// (no pinned header) and need section-sized scroll-end breathing room — the
+  /// Catches hub feed and its empty state share this single contract.
+  static const EdgeInsets pageBodyHero = EdgeInsets.fromLTRB(
+    CatchSpacing.screenPx,
+    CatchSpacing.s2,
+    CatchSpacing.screenPx,
+    CatchSpacing.s6,
+  );
+
   /// Horizontal page/list gutters when vertical padding is owned elsewhere.
   static const EdgeInsets pageHorizontal = EdgeInsets.symmetric(
     horizontal: CatchSpacing.screenPx,
@@ -421,6 +436,38 @@ abstract final class CatchInsets {
     CatchSpacing.s2,
     CatchSpacing.s5,
     CatchSpacing.s3,
+  );
+
+  // ── Shared tab-screen header rhythm ─────────────────────────────────────────
+  //
+  // The five top-level tab screens (Home, Clubs, Catches, Chats, Profile) share
+  // one spacing contract for the band between their title block, any pinned
+  // search/filter/tab control, and the first content row. These role tokens
+  // centralise that rhythm so screens stop tuning their own raw EdgeInsets.
+  // The horizontal page gutter stays [CatchSpacing.screenPx] (s5) everywhere.
+
+  /// (1) Title block padding for tab screens whose header pairs a title with a
+  /// subtitle (Chats, Clubs browse headers). Canonical = [pageHeaderBody].
+  static const EdgeInsets screenTitleBlock = pageHeaderBody;
+
+  /// (1) Title block padding for tab screens whose header is a compact
+  /// eyebrow/title or title-only row (Home dashboard, Profile-style headers).
+  /// Canonical = [pageHeaderCompact].
+  static const EdgeInsets screenTitleBlockCompact = pageHeaderCompact;
+
+  /// (3) Horizontal gutters for a pinned search/filter/tab control row when its
+  /// vertical rhythm is owned by the control's own height slot (Profile tab
+  /// bar, Chats host-filter row). Canonical = [pageHorizontal].
+  static const EdgeInsets screenControlRow = pageHorizontal;
+
+  /// (3) Padding for a pinned filter/scope rail that sits flush above the first
+  /// content row, owning its top separation but deferring the bottom gap to the
+  /// content below (Clubs/Explore filter rail).
+  static const EdgeInsets screenControlRail = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s4,
+    CatchSpacing.s5,
+    CatchSpacing.s0,
   );
 
   /// Section header padding above compact horizontal rails or lists.
@@ -615,6 +662,17 @@ abstract final class CatchInsets {
   /// Gap between a media attachment and the caption/timestamp in a bubble.
   static const EdgeInsets chatMediaAttachmentBottom = EdgeInsets.only(
     bottom: CatchSpacing.micro6,
+  );
+
+  /// Horizontal gutters for the Chats conversation list. Matches the section
+  /// kicker gutter so the list tiles, header label, and dividers all align.
+  static const EdgeInsets chatListGutter = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s4,
+  );
+
+  /// Vertical padding for a single chat conversation row.
+  static const EdgeInsets chatListTileVertical = EdgeInsets.symmetric(
+    vertical: CatchSpacing.s3,
   );
 
   /// Bottom gap between compact inline rows in detail screens.
@@ -1488,6 +1546,14 @@ abstract final class CatchLayout {
   static const double eventSuccessLabStepMarkerExtent = 34.0;
   static const double eventPolicyLabScenarioCardWidth = 220.0;
   static const double rosterFilterTileMinHeight = 56.0;
+  static const double chatListAvatarExtent = CatchSpacing.s11;
+  static const double chatListTextGap = CatchSpacing.s3;
+
+  /// Left inset for the chat-row hairline divider so it starts past the avatar
+  /// and aligns with the text column. Kept in terms of the avatar extent + the
+  /// avatar→text gap so the divider can't drift from the row layout.
+  static const double chatListDividerInset =
+      chatListAvatarExtent + chatListTextGap;
   static const double browseHeaderHeight = 88.0;
   static const double browseHeaderContentHeight = 60.0;
   static const double browseHeaderSearchExtent = 52.0;

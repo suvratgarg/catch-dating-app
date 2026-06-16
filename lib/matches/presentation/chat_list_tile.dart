@@ -37,7 +37,7 @@ class ChatListTile extends StatelessWidget {
               if (divider)
                 Positioned(
                   top: 0,
-                  left: CatchSpacing.s11 + CatchSpacing.s3,
+                  left: CatchLayout.chatListDividerInset,
                   right: 0,
                   child: ColoredBox(
                     color: t.line.withValues(
@@ -47,11 +47,11 @@ class ChatListTile extends StatelessWidget {
                   ),
                 ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+                padding: CatchInsets.chatListTileVertical,
                 child: Row(
                   children: [
                     CatchPersonAvatar(
-                      size: 44,
+                      size: CatchLayout.chatListAvatarExtent,
                       name: preview.displayName,
                       imageUrl: preview.photoUrl,
                       borderWidth: emphasized ? CatchStroke.underline : 0,
@@ -60,7 +60,7 @@ class ChatListTile extends StatelessWidget {
                           ? CatchPersonAvatarShape.square
                           : CatchPersonAvatarShape.circle,
                     ),
-                    const SizedBox(width: CatchSpacing.s3),
+                    const SizedBox(width: CatchLayout.chatListTextGap),
                     Expanded(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -92,7 +92,7 @@ class ChatListTile extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(width: CatchSpacing.s3),
+                    const SizedBox(width: CatchLayout.chatListTextGap),
                     _ChatListTrailing(
                       time: AppTimeFormatters.chatTimestamp(preview.timestamp),
                       unreadCount: unreadCount,

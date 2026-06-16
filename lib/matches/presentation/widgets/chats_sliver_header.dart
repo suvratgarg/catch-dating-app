@@ -83,7 +83,7 @@ class _ChatsBrowseHeaderState extends ConsumerState<_ChatsBrowseHeader> {
           SizedBox(
             height: _hostInboxFilterHeight,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
+              padding: CatchInsets.screenControlRow,
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: CatchOptionGroup<HostInboxFilter>(

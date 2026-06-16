@@ -80,12 +80,7 @@ class _CatchesHubContent extends StatelessWidget {
 
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s2,
-          CatchSpacing.s5,
-          CatchSpacing.s6,
-        ),
+        padding: CatchInsets.pageBodyHero,
         children: [
           Center(
             child: ConstrainedBox(
@@ -305,12 +300,7 @@ class _CatchesEmptyState extends StatelessWidget {
 
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s2,
-          CatchSpacing.s5,
-          CatchSpacing.s6,
-        ),
+        padding: CatchInsets.pageBodyHero,
         children: [
           Center(
             child: ConstrainedBox(

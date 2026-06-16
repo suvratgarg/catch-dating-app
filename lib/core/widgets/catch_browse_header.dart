@@ -26,12 +26,7 @@ class CatchBrowseHeader extends StatelessWidget {
     this.searchTooltip = 'Search',
     this.searchSemanticLabel,
     this.backgroundColor,
-    this.padding = const EdgeInsets.fromLTRB(
-      CatchSpacing.s5,
-      CatchSpacing.s4,
-      CatchSpacing.s5,
-      CatchSpacing.s3,
-    ),
+    this.padding = CatchInsets.screenTitleBlock,
   });
 
   final String title;
@@ -160,7 +155,7 @@ class _TitleLayout extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.headline(context),
               ),
-              gapH4,
+              const SizedBox(height: CatchGaps.headerTitleToSubtitle),
               Text(
                 subtitle,
                 maxLines: 1,

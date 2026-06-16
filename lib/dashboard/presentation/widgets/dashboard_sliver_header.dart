@@ -36,12 +36,7 @@ class _DashboardHeaderContent extends StatelessWidget {
     return Material(
       color: t.bg,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s2,
-          CatchSpacing.s5,
-          CatchSpacing.s2,
-        ),
+        padding: CatchInsets.screenTitleBlockCompact,
         child: Row(
           children: [
             Expanded(
