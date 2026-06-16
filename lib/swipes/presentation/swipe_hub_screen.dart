@@ -213,7 +213,7 @@ class _CatchesIntroCard extends StatelessWidget {
               ),
               gapH10,
               Text(
-                'Only checked-in runners from ${event.title} are here.',
+                'Only checked-in attendees from ${event.title} are here.',
                 style: CatchTextStyles.proseM(
                   context,
                   color: t.ink.withValues(

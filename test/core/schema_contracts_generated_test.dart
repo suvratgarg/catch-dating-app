@@ -29,6 +29,31 @@ void main() {
     ]);
   });
 
+  test('prompt catalog copy is free of run->event rename corruption', () {
+    // Regression guard for COPY-SWEEP-001: the automated run->event rename
+    // produced broken copy like "Proof I actually event" and placeholders that
+    // mixed "runners" with "event". Run-themed prompts (finishLine, notRunning,
+    // running route) are intentional and allowed; only the corruption signature
+    // is rejected.
+    final copy = <String>[
+      for (final p in schemaProfilePromptCatalog) ...[p.title, p.placeholder],
+      for (final p in schemaPhotoPromptCatalog) ...[p.title, p.placeholder],
+    ];
+    for (final text in copy) {
+      final lower = text.toLowerCase();
+      expect(
+        lower.contains('actually event'),
+        isFalse,
+        reason: 'Corrupted run->event copy: "$text"',
+      );
+      expect(
+        lower.contains('runners') && lower.contains('event'),
+        isFalse,
+        reason: 'Mixed runner/event copy from a half-applied rename: "$text"',
+      );
+    }
+  });
+
   test('generated Dart schemas validate prompt payloads', () {
     final profilePromptSchema = JsonSchema.create(
       schemaProfilePromptAnswerSchema,
@@ -56,7 +81,7 @@ void main() {
       photoPromptSchema.validate({
         'photoIndex': 0,
         'promptId': 'proofIRun',
-        'prompt': 'Proof I actually event',
+        'prompt': 'Proof I actually run',
         'caption': 'Finish line.',
       }).isValid,
       isTrue,

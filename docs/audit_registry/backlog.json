@@ -636,35 +636,6 @@
       ]
     },
     {
-      "id": "RUN-SCHEDULE-CONFLICTS-001",
-      "title": "Enforce non-overlapping events for clubs and users",
-      "status": "watch",
-      "area": "events,functions,business_rules",
-      "priority": "high",
-      "rules": [
-        "CONTROLLER-BOUNDARY-001",
-        "FIRESTORE-RULES-TEST-001",
-        "CODEGEN-001"
-      ],
-      "summary": "Implemented on 2026-05-09 and deployed to dev, staging, and prod on 2026-05-26. Event creation and host schedule edits enforce non-overlapping active events per club. User sign-up and waitlist joins enforce non-overlapping signed-up/waitlisted user schedules. The overlap model is half-open, so 2:00-3:00 and 3:00-4:00 are allowed. Existing data without schedule locks is still protected by transactional event/participation queries; deterministic per-minute clubScheduleLocks and userEventScheduleLocks protect concurrent writes going forward. Host time edits are rejected once signed-up, waitlisted, or attended participation edges exist so user schedule locks cannot be mass-rescheduled into inconsistent state. Lock backfill remains optional for observability because the query fallback protects existing data.",
-      "paths": [
-        "tool/contracts/business_rules.json",
-        "tool/contracts/generate_business_rules.mjs",
-        "tool/check_data_contract.sh",
-        "lib/core/business_rules.dart",
-        "lib/events/presentation/create_event_screen.dart",
-        "lib/events/domain/event_draft.dart",
-        "lib/events/presentation/event_arrival_action.dart",
-        "functions/src/shared/businessRules.ts",
-        "functions/src/events/scheduleConflicts.ts",
-        "functions/src/events/mutateEvent.ts",
-        "functions/src/events/signUpUserForEvent.ts",
-        "functions/src/events/joinEventWaitlist.ts",
-        "functions/src/events/cancelEventSignUp.ts",
-        "functions/src/payments/createRazorpayOrder.ts"
-      ]
-    },
-    {
       "id": "BUSINESS-RULES-CONSOLIDATION-001",
       "title": "Expand shared client/server business constants",
       "status": "active",
@@ -789,18 +760,6 @@
         "MUTATION-ERROR-SURFACE-001"
       ],
       "summary": "PRODUCTION SITES DONE (verified, flutter analyze clean + tests green): saved_events, calendar, safety blocked-accounts, host team remove/transfer, host_operations create-profile, host_event_manage invite links, profile_screen photo upload, rich_share_card_sheet, dashboard recommendations, stride/weekly (DashboardSectionModel now carries the error object), plus force_update + swipe (Batch A). REMAINING: in-dev event_success companion mutation surfacing (feedback/wingman/live cards/reveal) + host _ErrorText -> ErrorBanner (lower priority); low-severity Image.network errorBuilder gaps folded into LIB-IMAGE-PRIMITIVE-001.",
-      "source": "deep_semantic_audit_2026-06"
-    },
-    {
-      "id": "COPY-SWEEP-001",
-      "title": "Systematic run->event copy-corruption sweep + golden",
-      "status": "queued",
-      "area": "presentation,public_profile,contracts",
-      "priority": "medium",
-      "rules": [
-        "COPY-VERB-INTEGRITY-001"
-      ],
-      "summary": "The automated run->event rename corrupted user-facing copy beyond the cited sites (fixed: compatibility.dart, run_tags.dart x2, swipe_hub). Do a full sweep distinguishing corruption from intentional product renames (e.g. contracts/catalogs/profile_prompts.json 'A perfect event with me looks like...' / 'Tell runners what kind of event' is a half-applied rename to decide on), and add a copy golden.",
       "source": "deep_semantic_audit_2026-06"
     },
     {
@@ -1096,6 +1055,26 @@
         "FN-MOD-001"
       ],
       "summary": "Two-part close. (1) Rating trust: club headline rating is computed from VERIFIED, published reviews only via count()/average() aggregation, so unverified public reviews can't manipulate the score; verifiedReviewCount projected; pending/rejected excluded (REVIEW-TRUST rating portion, shipped earlier). (2) Write gating/moderation: public + event review writes now moderate the comment and reviewer name at the write boundary and hold blocked content as 'pending' (never auto-published, never counted); host responses reject blocked content. Anonymous public reviews remain allowed by design but cannot affect the aggregate and are moderation-gated. Tests cover verified-only rating, moderation exclusion, blocked-content-pending, and blocked-host-response-rejected."
+    },
+    {
+      "id": "RUN-SCHEDULE-CONFLICTS-001-DONE",
+      "title": "Enforce non-overlapping events for clubs and users",
+      "completed": "2026-06-16",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "FIRESTORE-RULES-TEST-001",
+        "CODEGEN-001"
+      ],
+      "summary": "Already implemented + deployed (2026-05-26); was mis-filed in pending. Verified 2026-06-16: functions/src/events/scheduleConflicts.ts enforces non-overlapping active events per club (creation + host edits) and non-overlapping signed-up/waitlisted user schedules; deterministic clubScheduleLocks/userEventScheduleLocks guard concurrent writes; half-open overlap model. Test coverage in mutateEvent.test, signUpUserForEvent.test, decideEventJoinRequest.test."
+    },
+    {
+      "id": "COPY-SWEEP-001-DONE",
+      "title": "Systematic run->event copy-corruption sweep + golden",
+      "completed": "2026-06-16",
+      "rules": [
+        "COPY-VERB-INTEGRITY-001"
+      ],
+      "summary": "Full run->event copy-corruption sweep. Fixed genuine corruption: photo prompt 'Proof I actually event' -> 'Proof I actually run' (its siblings finishLine/notRunning are intentionally run-themed, so this was a stray rename); profile prompt placeholder 'Tell runners what kind of event' -> 'Tell people what kind of event' (orphaned run-era noun); reviews_repository grammar 'a eventId' -> 'an eventId'. Genericized stale run-era attendee terms in activity-agnostic surfaces to the codebase-standard 'attendees' (attended_event_tile 'X attendees checked in', event_recap 'No attendees to tag' + fallback 'Guest', swipe_hub 'checked-in attendees'). Distinguished from intentional run-themed copy (favoriteRoute 'My favorite running route', notRunning, social-run playbook text) which was left alone. Copy golden: added a regression guard test over the generated prompt catalogs that rejects the corruption signatures ('actually event', mixed runners+event). Verified: analyze clean, swipes + schema-contract + 343 functions tests green."
     }
   ]
 }

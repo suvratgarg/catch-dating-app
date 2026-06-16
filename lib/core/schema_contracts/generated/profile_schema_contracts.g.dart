@@ -66,7 +66,7 @@ const schemaDefaultProfilePromptIds = <String>[
 ];
 
 const schemaProfilePromptCatalog = <SchemaProfilePromptDefinition>[
-  SchemaProfilePromptDefinition(id: 'perfectRun', title: 'A perfect event with me looks like...', placeholder: 'Tell runners what kind of event feels like you.',),
+  SchemaProfilePromptDefinition(id: 'perfectRun', title: 'A perfect event with me looks like...', placeholder: 'Tell people what kind of event feels like you.',),
   SchemaProfilePromptDefinition(id: 'afterEvent', title: 'After an event, you can usually find me...', placeholder: 'Coffee, dosa, stretching, playlists...',),
   SchemaProfilePromptDefinition(id: 'greenFlag', title: 'My green flag is...', placeholder: 'Share something specific and easy to respond to.',),
   SchemaProfilePromptDefinition(id: 'getAlongIf', title: 'We\'ll get along if...', placeholder: 'Name the energy, habits, or humor you like.',),
@@ -74,7 +74,7 @@ const schemaProfilePromptCatalog = <SchemaProfilePromptDefinition>[
 ];
 
 const schemaPhotoPromptCatalog = <SchemaPhotoPromptDefinition>[
-  SchemaPhotoPromptDefinition(id: 'proofIRun', title: 'Proof I actually event', placeholder: 'Choose this when the photo is the proof.',),
+  SchemaPhotoPromptDefinition(id: 'proofIRun', title: 'Proof I actually run', placeholder: 'Choose this when the photo is the proof.',),
   SchemaPhotoPromptDefinition(id: 'finishLine', title: 'After the finish line', placeholder: 'What was happening in this moment?',),
   SchemaPhotoPromptDefinition(id: 'notRunning', title: 'When I\'m not running', placeholder: 'Show another side of your life.',),
   SchemaPhotoPromptDefinition(id: 'favoritePeople', title: 'My favorite people know me as', placeholder: 'A small detail friends would recognize.',),

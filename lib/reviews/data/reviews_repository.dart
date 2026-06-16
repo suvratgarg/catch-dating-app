@@ -97,7 +97,7 @@ class ReviewsRepository {
       throw ArgumentError.value(
         eventId,
         'review.eventId',
-        'Event reviews require a eventId.',
+        'Event reviews require an eventId.',
       );
     }
 

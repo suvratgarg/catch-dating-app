@@ -59,7 +59,7 @@ class AttendedEventTile extends StatelessWidget {
                 ),
                 gapH4,
                 Text(
-                  '$dateStr · ${event.attendedCount} runners checked in',
+                  '$dateStr · ${event.attendedCount} attendees checked in',
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

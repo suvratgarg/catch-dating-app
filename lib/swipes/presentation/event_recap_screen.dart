@@ -282,14 +282,14 @@ class _VibeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    final name = profile?.name ?? 'runner';
+    final name = profile?.name ?? 'guest';
 
     return Tooltip(
       message: selected ? 'Remove $name' : 'Remember $name',
       child: Semantics(
         button: true,
         selected: selected,
-        label: profile?.name ?? 'Runner',
+        label: profile?.name ?? 'Guest',
         child: CatchSurface(
           onTap: onTap,
           backgroundColor: t.surface,
@@ -324,7 +324,7 @@ class _VibeTile extends StatelessWidget {
                 right: CatchSpacing.s2,
                 bottom: CatchSpacing.s2,
                 child: Text(
-                  profile?.name ?? 'Runner',
+                  profile?.name ?? 'Guest',
                   style: CatchTextStyles.labelM(
                     context,
                     color: CatchTokens.editorialLight,
@@ -381,8 +381,8 @@ class _EmptyRoster extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchEmptyState(
       icon: CatchIcons.groupOffRounded,
-      title: 'No runners to tag',
-      message: 'No other checked-in runners are attached to this event yet.',
+      title: 'No attendees to tag',
+      message: 'No other checked-in attendees are attached to this event yet.',
     );
   }
 }

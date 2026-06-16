@@ -18088,7 +18088,7 @@ export const profilePromptCatalog = {
     {
       "id": "perfectRun",
       "title": "A perfect event with me looks like...",
-      "placeholder": "Tell runners what kind of event feels like you."
+      "placeholder": "Tell people what kind of event feels like you."
     },
     {
       "id": "afterEvent",
@@ -18125,7 +18125,7 @@ export const photoPromptCatalog = {
   "prompts": [
     {
       "id": "proofIRun",
-      "title": "Proof I actually event",
+      "title": "Proof I actually run",
       "placeholder": "Choose this when the photo is the proof."
     },
     {
