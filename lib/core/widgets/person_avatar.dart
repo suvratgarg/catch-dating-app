@@ -23,8 +23,9 @@ enum CatchPersonAvatarShape { circle, square }
 /// Circular avatar used across roster lists, chat threads, swipe cards, and
 /// the match modal.
 ///
-/// **Photo state**: if [imageUrl] is supplied it is loaded via [Image.network];
-/// otherwise a deterministic gradient placeholder is rendered from [name].
+/// **Photo state**: if [imageUrl] is supplied it is loaded via
+/// [CatchNetworkImage]; otherwise a deterministic gradient placeholder is
+/// rendered from [name].
 ///
 /// **Border ring**: set [borderWidth] > 0 and [borderColor] to render a
 /// coloured ring — white (2 px) for stacked rows, orange for match state.

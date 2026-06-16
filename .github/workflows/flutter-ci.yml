@@ -33,6 +33,9 @@ jobs:
       - name: UI local-constant wrappers check
         run: bash tool/check_ui_local_constant_wrappers.sh
 
+      - name: Raw network image guard
+        run: bash tool/check_no_raw_network_image.sh
+
       - name: Unit & widget tests
         # Exact PNG goldens are generated against the local desktop renderer and
         # are intentionally tagged out of Ubuntu CI to avoid cross-platform font

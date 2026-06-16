@@ -847,18 +847,6 @@
       "source": "deep_semantic_audit_2026-06"
     },
     {
-      "id": "LIB-IMAGE-PRIMITIVE-001",
-      "title": "Introduce CatchNetworkImage and migrate ~16 raw Image.network sites",
-      "status": "done",
-      "area": "presentation,core",
-      "priority": "medium",
-      "rules": [
-        "IMAGE-NETWORK-PRIMITIVE-001"
-      ],
-      "summary": "DONE (analyze clean + tests green): added lib/core/widgets/catch_network_image.dart (CatchNetworkImage) as the single network-image seam \u2014 drop-in for Image.network with decode-sizing (cacheWidth/cacheHeight via explicit size or screen-width cap, ResizeImage), a default branded errorBuilder, and semanticLabel/loadingBuilder pass-through. Migrated all 16 raw Image.network sites; the 2 that lacked an errorBuilder (event_recap thumbnail, profile_photo_editor preview) now fail gracefully. When the redesigned image component lands it swaps in at this one seam.",
-      "source": "deep_semantic_audit_2026-06"
-    },
-    {
       "id": "LIB-DATA-ACCESS-DEDUP-001",
       "title": "Consolidate whereIn fan-out + batched providers; remove N+1",
       "status": "in_progress",
@@ -1130,6 +1118,15 @@
         "FN-DATA-001"
       ],
       "summary": "VERIFIED complete. Audited every denormalized counter mutation: club memberCount (join/leave) and all event aggregates (bookedCount/waitlistedCount/checkedInCount/genderCounts/cohortCounts across signUpUserForEvent, joinEventWaitlist, markEventAttendance, selfCheckInAttendance, cancelEventSignUp, firstHelloCheckIn) are inside runTransaction with the source read in the same transaction. Invite-link counters use FieldValue.increment in-transaction (or best-effort for metrics). accountDeletion decrements are status-conditioned (idempotent). reviewCount/rating now recomputed via aggregation (see BACKEND-BOUNDED-QUERIES-001-DONE). No race-prone read-modify-write-outside-transaction remains. Residual: two concurrent deletions of the same uid could theoretically double-decrement (non-transactional cross-doc read) \u2014 accepted, gated by client + 3/hour rate limit."
+    },
+    {
+      "id": "LIB-IMAGE-PRIMITIVE-001-DONE",
+      "title": "Introduce CatchNetworkImage and migrate ~16 raw Image.network sites",
+      "completed": "2026-06-16",
+      "rules": [
+        "IMAGE-NETWORK-PRIMITIVE-001"
+      ],
+      "summary": "CatchNetworkImage primitive exists and all raw Image.network widget sites are migrated (verified: 0 raw Image.network outside lib/core/widgets). Fixed a stale person_avatar doc comment. Regression guard: added tool/check_no_raw_network_image.sh (pure-grep, CI-gated in flutter-ci.yml) scoped to the Image.network WIDGET. The intended home is a catch_ui_lints rule (catch_no_raw_network_image) but the analyzer plugin cannot be recompiled in the current local toolchain (a fresh `dart analyze` plugin compile crashes \u2014 even an inert added const; pristine bytes pass only via cached compile), so a linter rule could not be verified/shipped safely without risking the whole UI-lint gate. NOTE: raw NetworkImage (ImageProvider) is intentionally NOT guarded \u2014 2 legitimate ImageProvider call sites in profile_view_mapper have no Widget-primitive equivalent."
     }
   ]
 }
