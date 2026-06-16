@@ -281,8 +281,8 @@ class _SectionView extends StatelessWidget {
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle(this.label, {this.color});
+class _ProfileSectionLabel extends StatelessWidget {
+  const _ProfileSectionLabel(this.label, {this.color});
 
   final String label;
   final Color? color;
@@ -312,7 +312,7 @@ class _Compatibility extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(section.title, color: accent),
+        _ProfileSectionLabel(section.title, color: accent),
         gapH10,
         for (final reason in section.reasons)
           Padding(
@@ -364,7 +364,7 @@ class _Prompt extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(section.question),
+        _ProfileSectionLabel(section.question),
         gapH8,
         Text(
           section.answer,
@@ -388,7 +388,7 @@ class _Running extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle('Running rhythm'),
+        const _ProfileSectionLabel('Running rhythm'),
         gapH10,
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -458,7 +458,7 @@ class _Facts extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(section.title),
+        _ProfileSectionLabel(section.title),
         gapH10,
         for (final fact in section.facts)
           Padding(

@@ -221,7 +221,7 @@ class _ScenarioPicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(
+        _LabSectionTitle(
           icon: CatchIcons.tuneRounded,
           title: 'Host configuration',
           trailing: Text(
@@ -324,7 +324,7 @@ class _PolicySummary extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(icon: CatchIcons.ruleRounded, title: 'Policy shape'),
+        _LabSectionTitle(icon: CatchIcons.ruleRounded, title: 'Policy shape'),
         gapH10,
         CatchSurface(
           padding: CatchInsets.content,
@@ -452,7 +452,7 @@ class _ResultRows extends StatelessWidget {
       key: EventPolicyLabKeys.resultList,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(
+        _LabSectionTitle(
           icon: CatchIcons.tableRowsOutlined,
           title: 'Preview outcomes',
           trailing: Text(
@@ -561,7 +561,7 @@ class _CancellationRows extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(
+        _LabSectionTitle(
           icon: CatchIcons.assignmentReturnOutlined,
           title: 'Cancellation outcomes',
           trailing: Text(
@@ -676,7 +676,7 @@ class _DebugOutput extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(icon: CatchIcons.dataObjectRounded, title: 'Debug map'),
+        _LabSectionTitle(icon: CatchIcons.dataObjectRounded, title: 'Debug map'),
         gapH10,
         CatchSurface(
           padding: CatchInsets.content,
@@ -696,8 +696,8 @@ class _DebugOutput extends StatelessWidget {
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle({required this.icon, required this.title, this.trailing});
+class _LabSectionTitle extends StatelessWidget {
+  const _LabSectionTitle({required this.icon, required this.title, this.trailing});
 
   final IconData icon;
   final String title;

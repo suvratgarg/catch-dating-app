@@ -1217,7 +1217,14 @@ class _RosterTableShell extends StatelessWidget {
           if (rows.isEmpty)
             Padding(
               padding: CatchInsets.content,
-              child: _TableEmptyState(title: emptyTitle, message: emptyMessage),
+              child: CatchEmptyState(
+                icon: CatchIcons.groupOutlined,
+                title: emptyTitle,
+                message: emptyMessage,
+                layout: CatchEmptyStateLayout.inline,
+                iconStyle: CatchEmptyStateIconStyle.plain,
+                surface: false,
+              ),
             )
           else
             for (var i = 0; i < rows.length; i++) ...[
@@ -1226,39 +1233,6 @@ class _RosterTableShell extends StatelessWidget {
             ],
         ],
       ),
-    );
-  }
-}
-
-class _TableEmptyState extends StatelessWidget {
-  const _TableEmptyState({required this.title, required this.message});
-
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(CatchIcons.groupOutlined, color: t.ink3, size: CatchIcon.row),
-        gapW10,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(title, style: CatchTextStyles.labelM(context)),
-              gapH4,
-              Text(
-                message,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
