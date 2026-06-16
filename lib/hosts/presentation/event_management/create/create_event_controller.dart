@@ -172,29 +172,38 @@ class CreateEventController extends _$CreateEventController {
     if (selectedPhotoImages.isEmpty) return event;
 
     requireSignedInUid(ref, action: 'upload event photos');
+    // The event doc already exists (Storage rules require it before photo
+    // uploads). If any upload or the attach write fails, delete whatever was
+    // already uploaded so it doesn't orphan in Storage, then surface the error.
+    final imageUploadRepository = ref.read(imageUploadRepositoryProvider);
     final uploadedPhotos = <UploadedPhoto>[];
-    for (final indexedImage in selectedPhotoImages.indexed) {
-      final upload = await ref
-          .read(imageUploadRepositoryProvider)
-          .uploadEventPhotoWithMetadata(
-            eventId: eventId,
-            position: indexedImage.$1,
-            image: indexedImage.$2,
-          );
-      uploadedPhotos.add(
-        UploadedPhoto.fromUpload(
-          url: upload.url,
-          storagePath: upload.storagePath,
+    try {
+      for (final indexedImage in selectedPhotoImages.indexed) {
+        final upload = await imageUploadRepository.uploadEventPhotoWithMetadata(
+          eventId: eventId,
           position: indexedImage.$1,
-        ),
+          image: indexedImage.$2,
+        );
+        uploadedPhotos.add(
+          UploadedPhoto.fromUpload(
+            url: upload.url,
+            storagePath: upload.storagePath,
+            position: indexedImage.$1,
+          ),
+        );
+      }
+      final updatedEvent = event.copyWith(
+        photoUrl: uploadedPhotos.first.url,
+        eventPhotos: uploadedPhotos,
       );
+      await eventRepo.updateEventDetails(event: updatedEvent);
+      return updatedEvent;
+    } catch (_) {
+      for (final photo in uploadedPhotos) {
+        await imageUploadRepository.deleteByPath(photo.storagePath);
+      }
+      rethrow;
     }
-    final updatedEvent = event.copyWith(
-      photoUrl: uploadedPhotos.first.url,
-      eventPhotos: uploadedPhotos,
-    );
-    await eventRepo.updateEventDetails(event: updatedEvent);
-    return updatedEvent;
   }
 }
 

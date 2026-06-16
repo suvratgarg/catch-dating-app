@@ -48,17 +48,24 @@ class ChatController extends _$ChatController {
     final messageId = conversationRepository.createMessageId(
       conversationId: matchId,
     );
-    final imageUrl = await imageUploadRepository.uploadChatImage(
+    final uploaded = await imageUploadRepository.uploadChatImageWithMetadata(
       matchId: matchId,
       messageId: messageId,
       image: image,
     );
-    await conversationRepository.sendImageMessage(
-      conversationId: matchId,
-      senderId: senderId,
-      messageId: messageId,
-      imageUrl: imageUrl,
-    );
+    try {
+      await conversationRepository.sendImageMessage(
+        conversationId: matchId,
+        senderId: senderId,
+        messageId: messageId,
+        imageUrl: uploaded.url,
+      );
+    } catch (_) {
+      // The message write failed, so the uploaded image would orphan in
+      // Storage. Compensate by deleting it before surfacing the error.
+      await imageUploadRepository.deleteByPath(uploaded.storagePath);
+      rethrow;
+    }
   }
 
   Future<void> blockUser({required String targetUserId}) async {

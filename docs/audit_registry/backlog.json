@@ -882,7 +882,8 @@
         "FIRESTORE-PARTIAL-WRITE-001"
       ],
       "summary": "DONE: activity_notification markAllRead now commits one atomic WriteBatch instead of N best-effort Future.wait updates. REMAINING: event_success plan/preference/compatibility read-modify-set -> partial update (in-dev, last-write-wins race); create_event_controller + chat sendImage orphan documents/images on failed retry; write_review_sheet has no client-side length cap (backend enforces 1000; CatchTextField lacks a maxLength param \u2014 add one). ",
-      "source": "deep_semantic_audit_2026-06"
+      "source": "deep_semantic_audit_2026-06",
+      "progress": "DONE: activity_notification markAllRead atomic batch (prior); write_review_sheet already caps comment at 1000 via LengthLimitingTextInputFormatter; create_event + chat sendImage orphan compensation (see LIB-ORPHAN-ON-FAILURE-001-DONE). REMAINING: event_success plan/preference/compatibility read-modify-set -> partial update (in-dev, last-write-wins) \u2014 tracked with EVENT-SUCCESS-INDEV-POLISH-001."
     },
     {
       "id": "CATALOGUE-CONSOLIDATION-2026-06",
@@ -908,18 +909,6 @@
       ],
       "source": "deep_semantic_audit_2026-06",
       "summary": "DONE: added reusable publicProfilesByIdsProvider (autoDispose, batched per-doc fetch) and routed reviews_history (event lookups), event_recap roster grid, and safety blocked-list through batched providers instead of a realtime stream per row/tile; public_profile_repository parallelized; clubNameLookupProvider autoDispose. REMAINING (lower traffic): who_is_going opens a roster stream just to read a count; chat_screen whole-screen rebuild; explore countdown DateTime.now() in build."
-    },
-    {
-      "id": "LIB-ORPHAN-ON-FAILURE-001",
-      "title": "Guard create-then-upload / upload-then-write orphans",
-      "status": "queued",
-      "area": "presentation,chats,hosts",
-      "priority": "low",
-      "rules": [
-        "FLOW-MUTATION-001"
-      ],
-      "source": "deep_semantic_audit_2026-06",
-      "summary": "chat sendImage orphans the uploaded Storage image if the Firestore message write fails; create_event_controller creates the event/club doc before photo uploads so a failed retry leaves photoless or duplicate docs. Add compensation (delete-on-failure) or reorder. Needs a delete-by-path on image_upload_repository."
     },
     {
       "id": "EVENT-SUCCESS-INDEV-POLISH-001",
@@ -1127,6 +1116,15 @@
         "IMAGE-NETWORK-PRIMITIVE-001"
       ],
       "summary": "CatchNetworkImage primitive exists and all raw Image.network widget sites are migrated (verified: 0 raw Image.network outside lib/core/widgets). Fixed a stale person_avatar doc comment. Regression guard: added tool/check_no_raw_network_image.sh (pure-grep, CI-gated in flutter-ci.yml) scoped to the Image.network WIDGET. The intended home is a catch_ui_lints rule (catch_no_raw_network_image) but the analyzer plugin cannot be recompiled in the current local toolchain (a fresh `dart analyze` plugin compile crashes \u2014 even an inert added const; pristine bytes pass only via cached compile), so a linter rule could not be verified/shipped safely without risking the whole UI-lint gate. NOTE: raw NetworkImage (ImageProvider) is intentionally NOT guarded \u2014 2 legitimate ImageProvider call sites in profile_view_mapper have no Widget-primitive equivalent."
+    },
+    {
+      "id": "LIB-ORPHAN-ON-FAILURE-001-DONE",
+      "title": "Guard create-then-upload / upload-then-write orphans",
+      "completed": "2026-06-16",
+      "rules": [
+        "FLOW-MUTATION-001"
+      ],
+      "summary": "Added ImageUploadRepository.deleteByPath (best-effort, tolerates object-not-found) plus uploadChatImageWithMetadata so callers can compensate. chat sendImage now deletes the uploaded image if sendImageMessage fails. create_event submit wraps the photo upload loop + attach write and deletes any already-uploaded photos on failure (reorder isn't possible \u2014 Storage rules require the event doc to exist before photo upload, storage.rules:188). Tests: chat_controller_test (3 cases) + a create_event multi-photo mid-upload-failure compensation test; updated FakeImageUploadRepository in clubs_test_helpers. Verified: analyze clean, chats/hosts/image_uploads/clubs suites green."
     }
   ]
 }
