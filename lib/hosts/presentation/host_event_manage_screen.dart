@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
@@ -515,9 +516,7 @@ class _PrivateAccessBody extends ConsumerWidget {
           );
     } catch (_) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open share sheet.')),
-      );
+      showCatchWarningSnackBar(context, 'Could not open share sheet.');
     }
   }
 }
@@ -611,14 +610,10 @@ class _HostInviteLinksList extends ConsumerWidget {
       );
       await Clipboard.setData(ClipboardData(text: url));
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${response.label} copied.')));
+      showCatchSuccessSnackBar(context, '${response.label} copied.');
     } catch (_) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not create invite link.')),
-      );
+      showCatchWarningSnackBar(context, 'Could not create invite link.');
     }
   }
 }
@@ -718,9 +713,7 @@ class _HostInviteLinkRow extends ConsumerWidget {
   Future<void> _copyInviteLink(BuildContext context, String url) async {
     await Clipboard.setData(ClipboardData(text: url));
     if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('${link.label} copied.')));
+    showCatchSuccessSnackBar(context, '${link.label} copied.');
   }
 
   Future<void> _disableInviteLink(BuildContext context, WidgetRef ref) async {
@@ -740,14 +733,10 @@ class _HostInviteLinkRow extends ConsumerWidget {
           .read(eventRepositoryProvider)
           .disableInviteLink(eventId: event.id, inviteLinkId: link.id);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${link.label} disabled.')));
+      showCatchSuccessSnackBar(context, '${link.label} disabled.');
     } catch (_) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not disable invite link.')),
-      );
+      showCatchWarningSnackBar(context, 'Could not disable invite link.');
     }
   }
 }

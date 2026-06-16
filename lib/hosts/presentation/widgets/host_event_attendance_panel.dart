@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -1709,14 +1710,10 @@ class _ExportReportButtonState extends State<_ExportReportButton> {
     try {
       await widget.onExport();
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${widget.label} ready.')));
+      showCatchSuccessSnackBar(context, '${widget.label} ready.');
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not export ${widget.label}.')),
-      );
+      showCatchWarningSnackBar(context, 'Could not export ${widget.label}.');
     } finally {
       if (mounted) {
         setState(() => _isExporting = false);

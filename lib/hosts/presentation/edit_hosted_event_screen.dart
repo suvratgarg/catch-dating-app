@@ -15,6 +15,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -608,9 +609,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   void _saveChanges() {
     if (!_formKey.currentState!.validate()) return;
     if (_startingPoint == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pin a starting point before saving.')),
-      );
+      showCatchWarningSnackBar(context, 'Pin a starting point before saving.');
       return;
     }
     if (!_scheduleLocked &&
