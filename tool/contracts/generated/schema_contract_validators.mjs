@@ -35,6 +35,7 @@ import {
   savedEventDocumentSchema,
   paymentDocumentSchema,
   hostPaymentAccountDocumentSchema,
+  razorpayPendingOrderDocumentSchema,
   swipeDocumentSchema,
   matchDocumentSchema,
   chatMessageDocumentSchema,
@@ -158,6 +159,7 @@ export const validateUserEventScheduleLockDocument = ajv.compile(userEventSchedu
 export const validateSavedEventDocument = ajv.compile(savedEventDocumentSchema);
 export const validatePaymentDocument = ajv.compile(paymentDocumentSchema);
 export const validateHostPaymentAccountDocument = ajv.compile(hostPaymentAccountDocumentSchema);
+export const validateRazorpayPendingOrderDocument = ajv.compile(razorpayPendingOrderDocumentSchema);
 export const validateSwipeDocument = ajv.compile(swipeDocumentSchema);
 export const validateMatchDocument = ajv.compile(matchDocumentSchema);
 export const validateChatMessageDocument = ajv.compile(chatMessageDocumentSchema);

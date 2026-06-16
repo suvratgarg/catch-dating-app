@@ -364,6 +364,14 @@
         {"fieldPath": "blockerUserId", "mode": "ASCENDING"},
         {"fieldPath": "createdAt", "mode": "DESCENDING"}
       ]
+    },
+    {
+      "collectionGroup": "razorpayPendingOrders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "createdAt", "mode": "ASCENDING"}
+      ]
     }
   ],
   "fieldOverrides": [

@@ -4,14 +4,17 @@ import {
   onCall,
 } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import * as logger from "firebase-functions/logger";
 import Razorpay from "razorpay";
 import {
   EventDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {buildOrderCreatePayload} from "./paymentValidation";
+import {writeRazorpayPendingOrder} from "./razorpayFulfillment";
 import {
   createRazorpayClient,
+  razorpayCurrency,
   razorpayKeyId,
   razorpayKeySecret,
 } from "./razorpay";
@@ -45,12 +48,14 @@ interface CreateRazorpayOrderDeps {
   createClient: () => Razorpay;
   firestore: () => FirebaseFirestore.Firestore;
   now: () => number;
+  serverTimestamp: () => unknown;
 }
 
 const defaultDeps: CreateRazorpayOrderDeps = {
   createClient: createRazorpayClient,
   firestore: () => admin.firestore(),
   now: () => Date.now(),
+  serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
 };
 
 /**
@@ -197,6 +202,28 @@ export async function createRazorpayOrderHandler(
       inviteSource: inviteAttribution?.inviteSource,
     })
   );
+
+  // Track the order so reconciliation can recover the booking if both the
+  // client verification callback and the webhook are missed. Best effort: the
+  // order already exists in Razorpay, so a tracking-doc write failure must not
+  // fail the user's checkout.
+  try {
+    await writeRazorpayPendingOrder({
+      db,
+      orderId: order.id,
+      userId: uid,
+      eventId,
+      amountInPaise,
+      currency: order.currency ?? event.currency ?? razorpayCurrency,
+      serverTimestamp: deps.serverTimestamp,
+    });
+  } catch (error) {
+    logger.warn(
+      "Failed to write Razorpay pending order tracking doc",
+      {orderId: order.id, eventId, userId: uid},
+      error
+    );
+  }
 
   return {
     orderId: order.id,

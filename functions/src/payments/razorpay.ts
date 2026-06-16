@@ -4,6 +4,7 @@ import Razorpay from "razorpay";
 
 export const razorpayKeyId = defineSecret("RAZORPAY_KEY_ID");
 export const razorpayKeySecret = defineSecret("RAZORPAY_KEY_SECRET");
+export const razorpayWebhookSecret = defineSecret("RAZORPAY_WEBHOOK_SECRET");
 
 export const razorpayCurrency = "INR";
 
@@ -74,6 +75,36 @@ export function verifyPaymentSignatureWithSecret({
   if (!/^[a-f0-9]+$/i.test(signature)) {
     return false;
   }
+  const expected = Buffer.from(expectedSignature, "hex");
+  const actual = Buffer.from(signature, "hex");
+  return expected.length === actual.length &&
+    crypto.timingSafeEqual(expected, actual);
+}
+
+/**
+ * Verifies a Razorpay webhook signature.
+ *
+ * Razorpay signs webhook deliveries with HMAC-SHA256 of the exact raw request
+ * body keyed by the webhook secret, hex-encoded, and sends it in the
+ * `x-razorpay-signature` header. We compare against the raw body (never the
+ * re-serialized JSON) using a timing-safe equality check.
+ * @param {Buffer|string} rawBody Exact raw request body bytes.
+ * @param {string|undefined} signature Value of the x-razorpay-signature header.
+ * @param {string} secret Razorpay webhook secret.
+ * @return {boolean} Whether the signature is valid.
+ */
+export function verifyRazorpayWebhookSignature(
+  rawBody: Buffer | string,
+  signature: string | undefined,
+  secret: string
+): boolean {
+  if (typeof signature !== "string" || !/^[a-f0-9]+$/i.test(signature)) {
+    return false;
+  }
+  const expectedSignature = crypto
+    .createHmac("sha256", secret)
+    .update(rawBody)
+    .digest("hex");
   const expected = Buffer.from(expectedSignature, "hex");
   const actual = Buffer.from(signature, "hex");
   return expected.length === actual.length &&

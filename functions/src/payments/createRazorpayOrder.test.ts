@@ -41,13 +41,18 @@ function buildEventDoc(overrides: Partial<EventDocument> = {}): EventDocument {
 
 test("createRazorpayOrderHandler uses trusted order data", async () => {
   let capturedPayload: Record<string, unknown> | undefined;
+  const pendingOrderWrites: Array<{
+    docId: string;
+    data: Record<string, unknown>;
+  }> = [];
   const order = await createRazorpayOrderHandler(
     buildRequest({
       data: {eventId: "event-1"},
       auth: {uid: "runner-1"},
     }),
     {
-      firestore: () => createEventFirestore(buildEventDoc()),
+      firestore: () =>
+        createEventFirestore(buildEventDoc(), [], {}, pendingOrderWrites),
       createClient: () => ({
         orders: {
           create: async (payload: Record<string, unknown>) => {
@@ -61,6 +66,7 @@ test("createRazorpayOrderHandler uses trusted order data", async () => {
         },
       }) as unknown as Razorpay,
       now: () => 123,
+      serverTimestamp: () => "server-now",
     }
   );
 
@@ -80,6 +86,21 @@ test("createRazorpayOrderHandler uses trusted order data", async () => {
     amount: 25000,
     currency: "INR",
   });
+  // A pending-order tracking doc is written so reconciliation can recover the
+  // booking if both the client callback and the webhook are missed.
+  assert.deepEqual(pendingOrderWrites, [{
+    docId: "order_123",
+    data: {
+      provider: "razorpay",
+      orderId: "order_123",
+      userId: "runner-1",
+      eventId: "event-1",
+      amountInPaise: 25000,
+      currency: "INR",
+      status: "pending",
+      createdAt: "server-now",
+    },
+  }]);
 });
 
 test(
@@ -98,6 +119,7 @@ test(
             ]),
           createClient: failOnClientUse,
           now: () => 0,
+          serverTimestamp: () => "server-now",
         }
       ),
       isHttpsError("already-exists", "You are already booked for this event.")
@@ -119,6 +141,7 @@ test(
             ),
           createClient: failOnClientUse,
           now: () => 0,
+          serverTimestamp: () => "server-now",
         }
       ),
       isHttpsError(
@@ -162,6 +185,7 @@ test("createRazorpayOrderHandler includes waitlisted demand in quoted price",
           },
         }) as unknown as Razorpay,
         now: () => 456,
+        serverTimestamp: () => "server-now",
       }
     );
 
@@ -200,6 +224,7 @@ test("createRazorpayOrderHandler enforces invite-only paid access",
           ),
           createClient: failOnClientUse,
           now: () => 0,
+          serverTimestamp: () => "server-now",
         }
       ),
       isHttpsError(
@@ -233,6 +258,7 @@ test("createRazorpayOrderHandler enforces invite-only paid access",
           },
         }) as unknown as Razorpay,
         now: () => 789,
+        serverTimestamp: () => "server-now",
       }
     );
 
@@ -264,6 +290,7 @@ test("createRazorpayOrderHandler honors approved request access", async () => {
         ),
         createClient: failOnClientUse,
         now: () => 0,
+        serverTimestamp: () => "server-now",
       }
     ),
     isHttpsError(
@@ -300,6 +327,7 @@ test("createRazorpayOrderHandler honors approved request access", async () => {
         },
       }) as unknown as Razorpay,
       now: () => 321,
+      serverTimestamp: () => "server-now",
     }
   );
 
@@ -360,6 +388,7 @@ test(
             })),
           createClient: failOnClientUse,
           now: () => 0,
+          serverTimestamp: () => "server-now",
         }
       ),
       isHttpsError(
@@ -394,10 +423,20 @@ function createEventFirestore(
     status: string;
     hostApprovalStatus?: string;
   }> = [],
-  eventPrivateAccess: Record<string, Record<string, unknown>> = {}
+  eventPrivateAccess: Record<string, Record<string, unknown>> = {},
+  pendingOrderWrites: Array<{docId: string; data: Record<string, unknown>}> = []
 ): FirebaseFirestore.Firestore {
   return {
     collection: (collectionName: string) => {
+      if (collectionName === "razorpayPendingOrders") {
+        return {
+          doc: (docId: string) => ({
+            set: async (data: Record<string, unknown>) => {
+              pendingOrderWrites.push({docId, data});
+            },
+          }),
+        };
+      }
       if (collectionName === "events") {
         return {
           doc: () => ({

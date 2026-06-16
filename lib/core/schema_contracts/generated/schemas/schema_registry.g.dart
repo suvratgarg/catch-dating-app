@@ -177,6 +177,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaHostPaymentAccountDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'RazorpayPendingOrderDocument',
+    source: 'firestore/razorpay_pending_orders.schema.json',
+    schema: schemaRazorpayPendingOrderDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'SwipeDocument',
     source: 'firestore/swipes.schema.json',
     schema: schemaSwipeDocumentSchema,
@@ -611,6 +616,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'SavedEventDocument': schemaSavedEventDocumentSchema,
   'PaymentDocument': schemaPaymentDocumentSchema,
   'HostPaymentAccountDocument': schemaHostPaymentAccountDocumentSchema,
+  'RazorpayPendingOrderDocument': schemaRazorpayPendingOrderDocumentSchema,
   'SwipeDocument': schemaSwipeDocumentSchema,
   'MatchDocument': schemaMatchDocumentSchema,
   'ChatMessageDocument': schemaChatMessageDocumentSchema,
@@ -726,6 +732,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/saved_events.schema.json': schemaSavedEventDocumentSchema,
   'firestore/payments.schema.json': schemaPaymentDocumentSchema,
   'firestore/host_payment_accounts.schema.json': schemaHostPaymentAccountDocumentSchema,
+  'firestore/razorpay_pending_orders.schema.json': schemaRazorpayPendingOrderDocumentSchema,
   'firestore/swipes.schema.json': schemaSwipeDocumentSchema,
   'firestore/matches.schema.json': schemaMatchDocumentSchema,
   'firestore/chat_messages.schema.json': schemaChatMessageDocumentSchema,

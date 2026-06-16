@@ -178,7 +178,7 @@ test(
 );
 
 test(
-  "verifyRazorpayPaymentHandler records refundFailed when refund throws",
+  "verifyRazorpayPaymentHandler records refundFailed when the refund throws",
   async () => {
     const paymentDoc = createPaymentDocRecorder();
 
@@ -239,6 +239,69 @@ test(
     assert.equal(paymentDoc.setCalls.length, 1);
     assert.equal(paymentDoc.setCalls[0].status, "refundFailed");
     assert.equal(paymentDoc.setCalls[0].signUpFailed, true);
+  }
+);
+
+test(
+  "verifyRazorpayPaymentHandler is a no-op for an already-completed payment",
+  async () => {
+    const paymentDoc = createPaymentDocRecorder({
+      existing: {status: "completed"},
+    });
+    let signUpCalled = false;
+
+    const result = await verifyRazorpayPaymentHandler(
+      buildRequest({
+        auth: {uid: "runner-1"},
+        data: {
+          paymentId: "pay_123",
+          orderId: "order_123",
+          signature: "sig_123",
+        },
+      }),
+      {
+        firestore: () => createPaymentsFirestore(paymentDoc),
+        createClient: () =>
+        ({
+          orders: {
+            fetch: async () => ({
+              id: "order_123",
+              amount: 25000,
+              currency: "INR",
+              amount_paid: 25000,
+              amount_due: 0,
+              notes: {
+                eventId: "trusted-event",
+                userId: "runner-1",
+              },
+            }),
+          },
+          payments: {
+            fetch: async () => ({
+              id: "pay_123",
+              order_id: "order_123",
+              amount: 25000,
+              currency: "INR",
+              status: "captured",
+              refund_status: "null",
+            }),
+            refund: async () => {
+              throw new Error("Refund should not be called when idempotent.");
+            },
+          },
+        }) as unknown as Razorpay,
+        serverTimestamp: () => "server-now",
+        signUpForEvent: async () => {
+          signUpCalled = true;
+        },
+        verifySignature: () => true,
+      }
+    );
+
+    // No re-sign-up and no payment writes for an already-finalized payment.
+    assert.equal(signUpCalled, false);
+    assert.deepEqual(paymentDoc.setCalls, []);
+    assert.deepEqual(result, {verified: true, eventId: "trusted-event"});
   }
 );
 
@@ -335,7 +398,9 @@ function buildRequest({
   };
 }
 
-function createPaymentDocRecorder() {
+function createPaymentDocRecorder(
+  options: {existing?: Record<string, unknown>} = {}
+) {
   const setCalls: Array<Record<string, unknown>> = [];
   const inviteLinkSetCalls: Array<{
     docId: string;
@@ -346,8 +411,8 @@ function createPaymentDocRecorder() {
     inviteLinkSetCalls,
     ref: {
       get: async () => ({
-        exists: false,
-        data: () => undefined,
+        exists: options.existing !== undefined,
+        data: () => options.existing,
       }),
       set: async (data: Record<string, unknown>) => {
         setCalls.push(data);
@@ -382,6 +447,9 @@ function createPaymentsFirestore(paymentDoc: {
             exists: false,
             data: () => undefined,
           }),
+          // The shared fulfillment helper best-effort deletes the pending-order
+          // tracking doc; a no-op keeps these focused tests quiet.
+          delete: async () => undefined,
         };
       },
     }),

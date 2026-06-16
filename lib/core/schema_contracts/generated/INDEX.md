@@ -44,6 +44,7 @@ Do not edit it by hand.
 | SavedEventDocument | `firestore/saved_events.schema.json` | `functions/src/shared/generated/savedEventDocument.ts` |
 | PaymentDocument | `firestore/payments.schema.json` | `functions/src/shared/generated/paymentDocument.ts` |
 | HostPaymentAccountDocument | `firestore/host_payment_accounts.schema.json` | `functions/src/shared/generated/hostPaymentAccountDocument.ts` |
+| RazorpayPendingOrderDocument | `firestore/razorpay_pending_orders.schema.json` | `functions/src/shared/generated/razorpayPendingOrderDocument.ts` |
 | SwipeDocument | `firestore/swipes.schema.json` | `functions/src/shared/generated/swipeDocument.ts` |
 | MatchDocument | `firestore/matches.schema.json` | `functions/src/shared/generated/matchDocument.ts` |
 | ChatMessageDocument | `firestore/chat_messages.schema.json` | `functions/src/shared/generated/chatMessageDocument.ts` |
@@ -161,6 +162,7 @@ Do not edit it by hand.
 | `schemaSavedEventDocumentSchema` | SavedEventDocument | `firestore/saved_events.schema.json` | `lib/core/schema_contracts/generated/schemas/saved_event_document.g.dart` |
 | `schemaPaymentDocumentSchema` | PaymentDocument | `firestore/payments.schema.json` | `lib/core/schema_contracts/generated/schemas/payment_document.g.dart` |
 | `schemaHostPaymentAccountDocumentSchema` | HostPaymentAccountDocument | `firestore/host_payment_accounts.schema.json` | `lib/core/schema_contracts/generated/schemas/host_payment_account_document.g.dart` |
+| `schemaRazorpayPendingOrderDocumentSchema` | RazorpayPendingOrderDocument | `firestore/razorpay_pending_orders.schema.json` | `lib/core/schema_contracts/generated/schemas/razorpay_pending_order_document.g.dart` |
 | `schemaSwipeDocumentSchema` | SwipeDocument | `firestore/swipes.schema.json` | `lib/core/schema_contracts/generated/schemas/swipe_document.g.dart` |
 | `schemaMatchDocumentSchema` | MatchDocument | `firestore/matches.schema.json` | `lib/core/schema_contracts/generated/schemas/match_document.g.dart` |
 | `schemaChatMessageDocumentSchema` | ChatMessageDocument | `firestore/chat_messages.schema.json` | `lib/core/schema_contracts/generated/schemas/chat_message_document.g.dart` |

@@ -86,6 +86,7 @@ export 'profile_prompt_answer.g.dart';
 export 'public_profile_document.g.dart';
 export 'rate_limit_document.g.dart';
 export 'razorpay_order_callable_response.g.dart';
+export 'razorpay_pending_order_document.g.dart';
 export 'record_event_invite_link_open_callable_payload.g.dart';
 export 'refresh_stripe_host_payment_account_callable_payload.g.dart';
 export 'remove_club_host_callable_payload.g.dart';
