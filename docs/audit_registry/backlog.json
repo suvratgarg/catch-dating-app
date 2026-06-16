@@ -86,65 +86,6 @@
       ]
     },
     {
-      "id": "PROFILE-PHOTO-RETIRE-LEGACY-001",
-      "title": "Retire legacy profile photo arrays after app-version floor clears",
-      "status": "watch",
-      "area": "user_profile,public_profile,migrations",
-      "priority": "medium",
-      "rules": [
-        "FIRESTORE-RULES-TEST-001"
-      ],
-      "summary": "Implemented locally 2026-05-25 after the app-version floor was set to Remote Config min_version 1.0.1. Remote cleanup completed 2026-05-26 across dev, staging, and prod; verification dry-runs reported changed: 0 afterward. The one-time cleanup tool was retired on 2026-06-02. Keep on watch only to avoid reintroducing photoUrls/photoThumbnailUrls/photoPrompts as canonical fields.",
-      "paths": [
-        "contracts/migrations/profile_photos_storage.json",
-        "contracts/firestore/users.schema.json",
-        "contracts/firestore/public_profiles.schema.json",
-        "lib/user_profile/domain/user_profile.dart",
-        "lib/public_profile/domain/public_profile.dart",
-        "lib/user_profile/domain/update_user_profile_patch.dart",
-        "functions/src/profiles/syncPublicProfile.ts",
-        "functions/src/profiles/updateUserProfile.ts",
-        "tool/data/validate_firestore_data.mjs"
-      ]
-    },
-    {
-      "id": "SWIPES-RENAME-CONTINUE-001",
-      "title": "Continue swipes \u2192 profileDecisions rename from dual_write to retire_old",
-      "status": "watch",
-      "area": "swipes,firestore,migrations",
-      "priority": "medium",
-      "rules": [
-        "FIRESTORE-RULES-TEST-001",
-        "CONTROLLER-BOUNDARY-001"
-      ],
-      "summary": "Implemented locally 2026-05-25 and remotely cleaned 2026-05-26. A collection-group legacy-source validation found 11 dev and 138 prod legacy swipes; missing current docs were backfilled into profileDecisions, then 11 dev, 0 staging, and 138 prod legacy swipes were deleted. Post-cleanup verification reports zero legacy swipes in all environments. The one-time parity, backfill, and cleanup tools were retired on 2026-06-02.",
-      "paths": [
-        "contracts/migrations/swipes_to_profile_decisions.json",
-        "firestore.rules",
-        "lib/swipes/data/swipe_repository.dart",
-        "functions/src/matching/onSwipeCreated.ts"
-      ]
-    },
-    {
-      "id": "PROFILE-RUN-FIELDS-MIGRATE-001",
-      "title": "Migrate run-specific profile fields to activity-generic shape",
-      "status": "watch",
-      "area": "user_profile,onboarding,swipes",
-      "priority": "low",
-      "rules": [
-        "CONTROLLER-BOUNDARY-001"
-      ],
-      "summary": "Implemented locally 2026-05-25 with activityPreferences.running as the product shape. Remote cleanup completed 2026-05-26 across dev, staging, and prod; it backfilled nested running preferences and deleted root pace/preferred/runPreferencesVersion fields. Verification dry-runs reported changed: 0 afterward. The one-time cleanup tool was retired on 2026-06-02. Dart fromJson retains legacy root-field tolerance as a watch guard only.",
-      "paths": [
-        "contracts/firestore/users.schema.json",
-        "lib/user_profile/domain/user_profile.dart",
-        "lib/user_profile/domain/update_user_profile_patch.dart",
-        "lib/onboarding/presentation/onboarding_controller.dart",
-        "lib/swipes/presentation/filters_controller.dart",
-        "tool/data/"
-      ]
-    },
-    {
       "id": "PROFILE-CARD-POLISH-001",
       "title": "Polish shared public-facing profile surface",
       "status": "needs_device_confirmation",
@@ -217,90 +158,6 @@
         "lib/runs/presentation/run_check_in_celebration_screen.dart",
         "lib/matches/presentation/widgets/match_celebration_dialog.dart",
         "test/core/catch_celebration_screen_test.dart"
-      ]
-    },
-    {
-      "id": "RELATIONSHIP-DOC-MIGRATION",
-      "title": "Retire relationship arrays in favor of edge documents",
-      "status": "watch",
-      "area": "firestore,runs,run_clubs,user_profile,chats",
-      "priority": "high",
-      "rules": [
-        "FIRESTORE-RULES-TEST-001",
-        "PROVIDER-SEAM-001",
-        "CONTROLLER-BOUNDARY-001",
-        "CODEGEN-001"
-      ],
-      "summary": "Relationship/action documents are now the source of truth for run-club memberships, run participations, saved runs, and match-scoped messages. The retired relationship arrays have been removed from Dart models, generated Functions types, Cloud Functions writes, Firestore rules/indexes, active validation/migration tooling, and active tests. Canonical parent docs retain only aggregate projections such as `memberCount`, `bookedCount`, `waitlistedCount`, `checkedInCount`, and `genderCounts`. Keep this item on watch for regressions: do not re-add relationship arrays to models, Functions, rules, active tooling, or tests.",
-      "paths": [
-        "docs/data_contracts.md",
-        "lib/run_clubs/data/run_club_membership_repository.dart",
-        "lib/runs/data/run_participation_repository.dart",
-        "lib/runs/data/saved_run_repository.dart",
-        "lib/runs/presentation/run_detail_controller.dart",
-        "lib/dashboard/presentation/dashboard_screen.dart",
-        "lib/calendar/presentation/calendar_screen.dart",
-        "lib/run_clubs/presentation/list/run_clubs_list_screen.dart",
-        "lib/runs/presentation/attendance_sheet_screen.dart",
-        "lib/swipes/data/swipe_repository.dart",
-        "lib/reviews/data/reviews_repository.dart"
-      ]
-    },
-    {
-      "id": "FIRESTORE-RULES-SIMPLIFICATION-001",
-      "title": "Simplify Firestore rules after relationship-doc migration",
-      "status": "active",
-      "area": "firestore,functions,rules",
-      "priority": "high",
-      "rules": [
-        "FIRESTORE-RULES-TEST-001",
-        "CONTROLLER-BOUNDARY-001",
-        "PROVIDER-SEAM-001"
-      ],
-      "summary": "Rules were simplified alongside relationship-array retirement: direct run and run-club writes are denied, saved-run/profile projections are gone, swipe eligibility uses `runParticipations`, review create/update/delete moved behind callables, and retired array fields are no longer valid schema. Remaining simplification work is narrower: confirm all public surfaces use `publicProfiles`, keep `users/{uid}` owner-readable only, decide whether active `runClubMemberships` should stay publicly readable for member-list product needs, and consider whether chat message create/reset unread should remain the final direct product writes.",
-      "paths": [
-        "firestore.rules",
-        "functions/test/firestore.rules.test.cjs",
-        "docs/data_contracts.md",
-        "docs/backend_operation_catalog.md",
-        "tool/contracts/firestore_contract.json",
-        "lib/runs/data/run_repository.dart",
-        "lib/runs/data/saved_run_repository.dart",
-        "lib/run_clubs/data/run_clubs_repository.dart",
-        "lib/reviews/data/reviews_repository.dart",
-        "lib/swipes/data/swipe_repository.dart"
-      ]
-    },
-    {
-      "id": "MIGRATION-VALIDATION-001",
-      "title": "Add seeded tests and count validation for relationship migration apply",
-      "status": "watch",
-      "area": "tooling,firestore",
-      "priority": "medium",
-      "rules": [
-        "FIRESTORE-RULES-TEST-001"
-      ],
-      "summary": "Relationship-document migration apply was completed before this cleanup pass, and the one-time relationship migration tool was retired on 2026-06-02. Keep this item on watch only for regressions that reintroduce relationship-array storage or require a new migration-specific validation gate.",
-      "paths": [
-        "tool/data/validate_firestore_data.mjs",
-        "docs/data_contracts.md"
-      ]
-    },
-    {
-      "id": "DELETE-METHODOLOGY-QUEUE",
-      "title": "Rewrite deletion and anonymization around relationship-doc queries",
-      "status": "identified",
-      "area": "functions,safety,firestore",
-      "priority": "high",
-      "rules": [
-        "FIRESTORE-RULES-TEST-001"
-      ],
-      "summary": "Core deletion/anonymization is now relationship-doc aware. Account deletion queries runClubMemberships, runParticipations, savedRuns, reviews/payments, matches, swipes, public/private profiles, Storage, notifications, blocks/reports, and Auth. Run cancellation/delete and run-club archive/delete policies exist through backend callables. Keep this item on watch for product requests to delete historical runs/clubs beyond the currently implemented cancel/archive/delete-unused policies.",
-      "paths": [
-        "functions/src/safety/accountDeletion.ts",
-        "functions/src/safety/accountDeletion.test.ts",
-        "docs/data_contracts.md",
-        "docs/backend_operation_catalog.md"
       ]
     },
     {
@@ -413,10 +270,6 @@
     }
   ],
   "next_up": [
-    "RELATIONSHIP-DOC-MIGRATION",
-    "FIRESTORE-RULES-SIMPLIFICATION-001",
-    "DELETE-METHODOLOGY-QUEUE",
-    "MIGRATION-VALIDATION-001",
     "SCREEN-SPACING-SYSTEM-001"
   ],
   "completed": [
@@ -849,6 +702,75 @@
         "FN-AUTHZ-001"
       ],
       "summary": "Conservative safe default applied + documented: phone stays DISPLAY-ONLY (lib/user_profile/presentation/widgets/profile_tab.dart) with an in-code rationale \u2014 inline editing would diverge the Firestore phoneNumber from the Firebase Auth OTP identity with no re-verification. Re-enabling editing requires a full OTP re-verification flow that updates the Auth phone credential first; that is a future feature needing real SMS/OTP + device testing (cannot be built/verified in this environment), and keeping phone read-only is the low-risk default."
+    },
+    {
+      "id": "PROFILE-PHOTO-RETIRE-LEGACY-001-DONE",
+      "title": "Retire legacy profile photo arrays after app-version floor clears",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001"
+      ],
+      "summary": "Done + applied across dev/staging/prod after Remote Config min_version 1.0.1 floor (tool retired 2026-06-02); verification dry-runs reported changed:0. Watch-only against reintroducing photoUrls/photoThumbnailUrls/photoPrompts as canonical."
+    },
+    {
+      "id": "SWIPES-RENAME-CONTINUE-001-DONE",
+      "title": "Continue swipes \u2192 profileDecisions rename from dual_write to retire_old",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001",
+        "CONTROLLER-BOUNDARY-001"
+      ],
+      "summary": "Done + applied (tool retired 2026-06-02). profileDecisions is canonical; legacy swipes backfilled then deleted (11 dev, 0 staging, 138 prod); post-cleanup verification reports zero legacy swipes in all envs. Watch-only."
+    },
+    {
+      "id": "PROFILE-RUN-FIELDS-MIGRATE-001-DONE",
+      "title": "Migrate run-specific profile fields to activity-generic shape",
+      "completed": "2026-06-16",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001"
+      ],
+      "summary": "Done + applied across dev/staging/prod (tool retired 2026-06-02). activityPreferences.running is the product shape; root pace/preferred/runPreferencesVersion backfilled+deleted; dry-runs reported changed:0. Dart fromJson keeps legacy-root tolerance as a watch guard. Watch-only."
+    },
+    {
+      "id": "RELATIONSHIP-DOC-MIGRATION-DONE",
+      "title": "Retire relationship arrays in favor of edge documents",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001",
+        "PROVIDER-SEAM-001",
+        "CONTROLLER-BOUNDARY-001",
+        "CODEGEN-001"
+      ],
+      "summary": "Done + applied (one-time tool retired 2026-06-02). Relationship/action edge docs are the source of truth for memberships, participations, saved events, and match messages; retired arrays removed from Dart models, generated Functions types, Functions writes, rules/indexes, tooling, and tests; canonical parents keep only aggregate projections. Watch-only against regressions."
+    },
+    {
+      "id": "FIRESTORE-RULES-SIMPLIFICATION-001-DONE",
+      "title": "Simplify Firestore rules after relationship-doc migration",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001",
+        "CONTROLLER-BOUNDARY-001",
+        "PROVIDER-SEAM-001"
+      ],
+      "summary": "Done. Rules simplified with the relationship migration (direct event/club writes denied, projections gone, swipe eligibility via eventParticipations, reviews behind callables, retired fields invalid). Verified 2026-06-16: users/{uid} is owner-read-only; the only direct client users read is the owner updating their own fcmToken; public surfaces use publicProfiles. The one open question (active clubMemberships authed-readability) is a deliberate product/privacy decision, NOT a safe default \u2014 the current rule (active memberships readable by authed users) is preserved because roster / who's-going / member-count features depend on cross-user reads; tightening it would break those features and requires product confirmation. Documented as the standing decision."
+    },
+    {
+      "id": "MIGRATION-VALIDATION-001-DONE",
+      "title": "Add seeded tests and count validation for relationship migration apply",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001"
+      ],
+      "summary": "Done. The relationship-document migration apply completed and the one-time migration+validation tool was retired 2026-06-02 (verification reported changed:0). Scripts+validation were written, run, and verified across envs; nothing remains to author. Watch-only for regressions reintroducing array storage."
+    },
+    {
+      "id": "DELETE-METHODOLOGY-QUEUE-DONE",
+      "title": "Rewrite deletion and anonymization around relationship-doc queries",
+      "completed": "2026-06-16",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001"
+      ],
+      "summary": "Done. Account deletion + anonymization are relationship-doc aware (query clubMemberships, eventParticipations, savedEvents, reviews/payments, matches, swipes, public/private profiles, Storage, notifications, blocks/reports, Auth) and are now also re-entrant (ACCOUNT-DELETION-ATOMICITY-001-DONE). Cancel/archive/delete-unused policies exist via callables. Watch-only for product requests to delete historical events/clubs beyond current policy."
     }
   ]
 }
