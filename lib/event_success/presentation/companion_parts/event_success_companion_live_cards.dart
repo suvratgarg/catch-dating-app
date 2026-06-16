@@ -807,18 +807,11 @@ class _StageCueLine extends StatelessWidget {
   ) async {
     await Clipboard.setData(ClipboardData(text: cue.body));
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          cue.moment == EventSuccessConversationCueMoment.postEvent
-              ? 'Opener copied.'
-              : 'Cue copied.',
-          style: CatchTextStyles.labelL(
-            context,
-            color: CatchTokens.of(context).bg,
-          ),
-        ),
-      ),
+    showCatchSuccessSnackBar(
+      context,
+      cue.moment == EventSuccessConversationCueMoment.postEvent
+          ? 'Opener copied.'
+          : 'Cue copied.',
     );
   }
 }

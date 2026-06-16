@@ -2,9 +2,9 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
@@ -81,15 +81,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     final uploadState = ref.watch(photoUploadControllerProvider);
 
     ref.listen(photoUploadControllerProvider, (_, state) {
-      if (state.uploadError != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Upload failed. Please try again.',
-              style: CatchTextStyles.labelL(context, color: t.bg),
-            ),
-          ),
-        );
+      if (state.uploadError != null && context.mounted) {
+        showCatchWarningSnackBar(context, 'Upload failed. Please try again.');
       }
     });
 

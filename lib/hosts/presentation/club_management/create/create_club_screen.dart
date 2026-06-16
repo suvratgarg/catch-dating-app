@@ -7,8 +7,8 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/form_step_flow.dart';
@@ -141,9 +141,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       _restoredDraft = true;
     });
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Restored your club draft')));
+    showCatchInfoSnackBar(context, 'Restored your club draft');
   }
 
   void _restoreFromDraft(ClubDraft draft) {
@@ -271,17 +269,10 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     );
     if (!mounted || savedDraft == null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _restoredDraft ? 'Draft updated' : 'Draft saved',
-          style: CatchTextStyles.labelL(
-            context,
-            color: CatchTokens.of(context).bg,
-          ),
-        ),
-        duration: CatchMotion.snackbar,
-      ),
+    showCatchSuccessSnackBar(
+      context,
+      _restoredDraft ? 'Draft updated' : 'Draft saved',
+      duration: CatchMotion.snackbar,
     );
     _restoredDraft = true;
   }

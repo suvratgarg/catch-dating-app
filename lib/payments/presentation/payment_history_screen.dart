@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -267,16 +268,9 @@ class _PaymentTile extends ConsumerWidget {
                         label: 'Get help with this booking',
                         onPressed: () {
                           Navigator.of(sheetContext).pop();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Please contact Catch support for assistance with this booking.',
-                                style: CatchTextStyles.labelL(
-                                  context,
-                                  color: CatchTokens.of(context).bg,
-                                ),
-                              ),
-                            ),
+                          showCatchInfoSnackBar(
+                            context,
+                            'Please contact Catch support for assistance with this booking.',
                           );
                         },
                         icon: Icon(CatchIcons.helpOutlineRounded),

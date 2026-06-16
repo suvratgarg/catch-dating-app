@@ -40,6 +40,7 @@ void showCatchSnackBar(
   CatchSnackBarTone tone = CatchSnackBarTone.info,
   String? actionLabel,
   VoidCallback? onAction,
+  Duration? duration,
 }) {
   final t = CatchTokens.of(context);
   final (IconData icon, Color iconColor) = switch (tone) {
@@ -49,6 +50,7 @@ void showCatchSnackBar(
   };
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
+      duration: duration ?? const Duration(seconds: 4),
       content: Row(
         children: [
           Icon(icon, color: iconColor, size: 20),
@@ -74,12 +76,14 @@ void showCatchSuccessSnackBar(
   String message, {
   String? actionLabel,
   VoidCallback? onAction,
+  Duration? duration,
 }) => showCatchSnackBar(
   context,
   message,
   tone: CatchSnackBarTone.success,
   actionLabel: actionLabel,
   onAction: onAction,
+  duration: duration,
 );
 
 /// Convenience wrapper for an informational snackbar.
@@ -88,12 +92,14 @@ void showCatchInfoSnackBar(
   String message, {
   String? actionLabel,
   VoidCallback? onAction,
+  Duration? duration,
 }) => showCatchSnackBar(
   context,
   message,
   tone: CatchSnackBarTone.info,
   actionLabel: actionLabel,
   onAction: onAction,
+  duration: duration,
 );
 
 /// Convenience wrapper for a warning-toned snackbar.
@@ -102,10 +108,12 @@ void showCatchWarningSnackBar(
   String message, {
   String? actionLabel,
   VoidCallback? onAction,
+  Duration? duration,
 }) => showCatchSnackBar(
   context,
   message,
   tone: CatchSnackBarTone.warning,
   actionLabel: actionLabel,
   onAction: onAction,
+  duration: duration,
 );

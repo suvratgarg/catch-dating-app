@@ -7,11 +7,11 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
@@ -704,17 +704,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _lastSavedDraftSignature = _currentDraftContentSignature;
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          wasUpdate ? 'Draft updated' : 'Draft saved',
-          style: CatchTextStyles.labelL(
-            context,
-            color: CatchTokens.of(context).bg,
-          ),
-        ),
-        duration: CatchMotion.snackbar,
-      ),
+    showCatchSuccessSnackBar(
+      context,
+      wasUpdate ? 'Draft updated' : 'Draft saved',
+      duration: CatchMotion.snackbar,
     );
   }
 

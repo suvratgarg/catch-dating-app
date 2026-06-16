@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
@@ -106,30 +107,16 @@ class PublicProfileScreen extends ConsumerWidget {
 
     ref.listen(PublicProfileController.blockUserMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
-        if (profile != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '${profile.name} has been blocked.',
-                style: CatchTextStyles.labelL(context, color: t.bg),
-              ),
-            ),
-          );
+        if (profile != null && context.mounted) {
+          showCatchInfoSnackBar(context, '${profile.name} has been blocked.');
         }
         Navigator.of(context).maybePop();
       }
     });
 
     ref.listen(PublicProfileController.reportUserMutation, (previous, current) {
-      if (previous?.isPending == true && current.isSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Report submitted.',
-              style: CatchTextStyles.labelL(context, color: t.bg),
-            ),
-          ),
-        );
+      if (previous?.isPending == true && current.isSuccess && context.mounted) {
+        showCatchInfoSnackBar(context, 'Report submitted.');
       }
     });
 
