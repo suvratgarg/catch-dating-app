@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-06-11",
+  "updated": "2026-06-18",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -100,6 +100,12 @@
       "priority": "P1",
       "captureIds": ["member_event_discovery"],
       "reason": "Event discovery and club browse review surface."
+    },
+    {
+      "routeId": "exploreMapScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Distinct Explore map-mode route; needs a deterministic map fixture before marking it captured."
     },
     {
       "routeId": "clubDetailScreen",

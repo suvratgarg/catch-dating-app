@@ -1,7 +1,7 @@
 ---
 doc_id: design_context_pack_plan
-version: 0.4.0
-updated: 2026-06-01
+version: 0.5.0
+updated: 2026-06-17
 owner: ui_elevation_initiative
 status: remaining_work
 ---
@@ -26,6 +26,9 @@ only.
 - The extractor executes Flutter code rather than scraping text, so derived activity
   palettes and resolved typography are exported.
 - The typography registry has a drift guard against new `CatchTextStyles` methods.
+- The component contract registry lives at `design/components/catch.components.json`,
+  is validated by `node tool/design/check_component_contracts.mjs`, and is exported
+  into the pack as `design_system/components.json`.
 - The UI capture DPR bug is fixed: `captureCatchWidget` threads `pixelRatio` into
   `RenderRepaintBoundary.toImage`.
 - `tool/ui_capture/run_captures.mjs --profile design-gallery` exists and uses
@@ -54,7 +57,8 @@ only.
 3. **Document the operational workflow once the pack policy is settled.**
    - Keep the current `.txt`/`.html`/`.json`/`.png` upload format decision.
    - Add the exact update/check commands to the owner doc or `tool/README.md` after the
-     generated-vs-committed gallery decision is final.
+     generated-vs-committed gallery decision is final. The component registry side
+     is now documented in `docs/ui_architecture.md` and `design/components/README.md`.
 
 ## Parked / Not Worth Right Now
 

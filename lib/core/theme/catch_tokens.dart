@@ -733,6 +733,15 @@ abstract final class CatchElevation {
     ),
   ];
 
+  /// Toggle knob shadow from the handoff control primitive.
+  static const List<BoxShadow> toggleKnob = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(0, 0, 0, 0.25),
+      blurRadius: 3,
+      offset: Offset(0, 1),
+    ),
+  ];
+
   /// Physical lift for the primary pass control over media.
   static const double physicalPassControl = 5.0;
 
@@ -1509,6 +1518,8 @@ abstract final class CatchLayout {
   static const double statStripVerticalPadding = 13.0;
   static const double statStripLabelFontSize = 9.0;
   static const double infoRowVerticalPadding = 13.0;
+  static const double infoRowDividerIconInset =
+      CatchIcon.control + CatchSpacing.s3;
   static const double infoGroupTopMargin = 8.0;
   static const double infoGroupTopPadding = 18.0;
   static const double infoGroupTitleGap = 10.0;
@@ -1519,6 +1530,7 @@ abstract final class CatchLayout {
   static const double toggleTrackWidth = 46.0;
   static const double toggleTrackHeight = 28.0;
   static const double toggleKnobExtent = 22.0;
+  static const double toggleTrackPadding = CatchSpacing.micro3;
   static const double menuRowVerticalPadding = 13.0;
   static const double menuRowGap = 10.0;
   static const double menuRowIconSize = 17.0;
@@ -1533,8 +1545,14 @@ abstract final class CatchLayout {
   static const double noticeTitleMessageGap = CatchSpacing.micro2;
   static const double personUnreadBadgeHorizontalPadding =
       CatchSpacing.micro6 + CatchStroke.hairline;
+  static const double countPillIconSize = CatchIcon.sm + CatchSpacing.micro2;
+  static const double countPillLabelVerticalPadding =
+      CatchSpacing.micro10 + CatchStroke.hairline;
   static const double settingsRowVerticalPadding =
       CatchSpacing.s3 + CatchStroke.hairline;
+  static const double settingsRowDividerIconInset =
+      CatchIcon.row + CatchSpacing.s3;
+  static const double settingsRowChevronIconSize = CatchIcon.xs;
   static const double clubProfileImagePickerExtent = 120.0;
   static const double clubCoverThumbnailExtent = 64.0;
   static const double clubPolaroidRadius = CatchSpacing.micro6;

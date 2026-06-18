@@ -18,6 +18,7 @@ import 'package:catch_dating_app/events/domain/saved_event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/search/data/explore_search_repository.dart';
@@ -260,6 +261,108 @@ void main() {
       );
 
       expect(filtered.map((club) => club.id), ['weekend-club']);
+    });
+
+    test('applyExploreFilters ignores a distance-only selection on clubs', () {
+      final now = DateTime(2026, 1, 1, 8);
+      // Well outside the default "this week" window: if a distance-only
+      // selection wrongly triggered club time-filtering, this club would vanish.
+      final club = buildClub(
+        id: 'club-distance-only',
+        nextEventAt: now.add(const Duration(days: 30)),
+      );
+      const filters = ExploreFilterSelection(
+        distanceFilter: ExploreDistanceFilter.fiveKm,
+      );
+
+      // Distance is an active filter globally (it narrows the events feed)...
+      expect(filters.hasActiveFilters, isTrue);
+      // ...but not for the club list, which has no coordinates to filter on.
+      expect(filters.hasActiveClubFilters, isFalse);
+
+      final filtered = applyExploreFilters(
+        clubs: [club],
+        filters: filters,
+        joinedClubIds: const {},
+        now: now,
+      );
+
+      expect(filtered.map((club) => club.id), ['club-distance-only']);
+    });
+
+    test('clubMatchesScopeFilters short-circuits the tag check for events', () {
+      // Default tags are ['social'] — the club does not carry 'running'.
+      final club = buildClub(id: 'club-social');
+      const filters = ExploreFilterSelection(activityTag: 'running');
+
+      // The events query already filtered by ActivityKind, so the club need not
+      // also carry the tag as free text.
+      expect(
+        clubMatchesScopeFilters(
+          club: club,
+          filters: filters,
+          joinedClubIds: const {},
+          activityHandledByEventFilter: true,
+        ),
+        isTrue,
+      );
+      // The club list has no event filter behind it, so the tag must match.
+      expect(
+        clubMatchesScopeFilters(
+          club: club,
+          filters: filters,
+          joinedClubIds: const {},
+        ),
+        isFalse,
+      );
+    });
+
+    test('debouncedExploreSearchQuery debounces and trims the server key', () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      container.read(exploreSearchQueryProvider.notifier).setQuery('asha ');
+
+      // Keep the autoDispose provider mounted while it debounces, the way the
+      // view models do by watching it (otherwise the pending timer is disposed).
+      final subscription = container.listen(
+        debouncedExploreSearchQueryProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(subscription.close);
+
+      // The live query is available immediately, but the debounced server key
+      // lags until the typing pause elapses — so a keystroke can't fire a call.
+      expect(container.read(exploreSearchQueryProvider), 'asha ');
+      expect(subscription.read().isLoading, isTrue);
+
+      // After the debounce window it settles to the trimmed query, so a trailing
+      // space no longer mints a distinct search key.
+      expect(
+        await container.read(debouncedExploreSearchQueryProvider.future),
+        'asha',
+      );
+    });
+
+    test('debouncedExploreSearchQuery settles immediately for short queries', () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      container.read(exploreSearchQueryProvider.notifier).setQuery('a');
+
+      final subscription = container.listen(
+        debouncedExploreSearchQueryProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(subscription.close);
+
+      // Clears and single characters bypass the debounce: nothing to search.
+      expect(
+        await container.read(debouncedExploreSearchQueryProvider.future),
+        'a',
+      );
     });
 
     test(

@@ -1,0 +1,886 @@
+{
+  "generatedFrom": {
+    "adminReviewQueue": "tool/organizer_intake/generated/admin_review_queue.json",
+    "canonicalEvidenceIndex": "tool/organizer_intake/generated/canonical_evidence_index.json",
+    "canonicalHostEntities": "tool/organizer_intake/generated/canonical_host_entities.json",
+    "claimTargetPlan": "tool/organizer_intake/generated/organizer_claim_targets.json",
+    "projectionPlan": "tool/organizer_intake/generated/public_projection_plan.json"
+  },
+  "guardrails": [
+    "Publication review packets are decision support only; they do not publish pages, index pages, sync claim targets, or write Firestore.",
+    "Manual admin approval remains required even when all data gates are satisfied.",
+    "App discoverability, claim sync, crawl approval, and event import approval remain separate gates from website publication.",
+    "Manual reports without artifacts should be reviewed as prompts, not treated as resolved source evidence."
+  ],
+  "packets": [
+    {
+      "adminDecision": {
+        "allowedDecisions": [
+          "approve_public",
+          "hold",
+          "suppress"
+        ],
+        "command": "node tool/organizer_intake/review_decision.mjs draft afterfly --decision approve_public --app-visibility hidden --reviewer REVIEWER --date YYYY-MM-DD --note \"Manual publication QA complete.\" --confirm-publication-checklist --confirm-manual-reports-reviewed",
+        "currentDecision": {
+          "appVisibility": "hidden",
+          "decidedAt": "2026-06-18",
+          "decision": "approve_public",
+          "decisionBatchId": "2026-06-18-afterfly-approve-public",
+          "reviewer": "suvrat",
+          "sourceFile": "tool/organizer_intake/review_decisions/2026-06-18-afterfly-approve-public.json"
+        },
+        "defaultAppVisibility": "hidden"
+      },
+      "approvalChecklist": {
+        "crawlDisabledReviewed": true,
+        "identityReviewed": true,
+        "marketScopeReviewed": true,
+        "mediaRightsReviewed": true,
+        "ownerSafeCopyReviewed": true,
+        "surfaceInventoryReviewed": true
+      },
+      "blockers": [],
+      "canonicalHostId": "afterfly",
+      "curation": {
+        "attachedSurfaces": [],
+        "mergedFrom": [],
+        "mergedInto": null,
+        "splitSurfaces": [],
+        "suppressed": null,
+        "surfaceDecisions": [
+          {
+            "decision": "reject_wrong_entity",
+            "reason": "User-reported first-party-looking Afterfly website appears to belong to a different entity.",
+            "surfaceId": "afterfly-wrong-website-reported"
+          }
+        ]
+      },
+      "dataBlockers": [],
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "evidenceBlockers": [],
+      "evidenceRecordIds": [
+        "evidence-afterfly-afterfly-instagram-primary-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-json",
+        "evidence-afterfly-afterfly-instagram-probed-runclub-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-json",
+        "evidence-afterfly-afterfly-luma-takeoff-run-rave-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-json",
+        "evidence-afterfly-afterfly-luma-takeoff-run-rave-seedclub-tool-host-discovery-seed-clubs-afterfly-run-club-indore-json",
+        "evidence-afterfly-afterfly-sortmyscene-reported-userreportedsearchresult-missing-1",
+        "evidence-afterfly-afterfly-wrong-website-reported-userreportedsearchresult-missing-1"
+      ],
+      "evidenceReview": {
+        "artifactBackedRecords": 4,
+        "externalUrlRefs": 0,
+        "manualReportsWithoutArtifacts": 2,
+        "missingSurfaceEvidence": 0,
+        "rawProviderArtifactRefs": 0,
+        "records": [
+          {
+            "artifact": {
+              "artifactId": "tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-2139cd51dc7b",
+              "artifactKind": "referenced_evidence_file",
+              "containsRawProviderPayload": false,
+              "firestoreMode": "not_applicable_local_source_reference",
+              "path": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+              "retentionStatus": "repo_reviewed",
+              "sha256": "2139cd51dc7bc12e8aa01c57b10140cbddbb7ce00fdaabb9cc5964179861d36c",
+              "sizeBytes": 3575,
+              "storageAction": "not_required",
+              "storageClass": "reviewed_source_reference"
+            },
+            "correlatedCandidates": {
+              "externalEventCandidateIds": [],
+              "searchCandidateIds": []
+            },
+            "evidence": {
+              "description": "Embedded Luma data listed instagram_handle afterfly.in.",
+              "ref": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+              "status": "resolved_artifact",
+              "type": "hostDiscoveryRun"
+            },
+            "evidenceId": "evidence-afterfly-afterfly-instagram-primary-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-json",
+            "nextAction": "evidence_available_for_admin_review",
+            "reviewerUse": {
+              "artifactAvailable": true,
+              "manualReportWithoutArtifact": false,
+              "missingSurfaceEvidence": false,
+              "sourceUrlAvailable": true,
+              "unresolvedLocalReference": false
+            },
+            "riskFlags": [],
+            "surface": {
+              "normalizedKey": "instagram:afterfly.in",
+              "platform": "instagram",
+              "role": "primary",
+              "status": "active",
+              "supportsEventExtraction": false,
+              "surfaceId": "afterfly-instagram-primary",
+              "surfaceKind": "socialProfile",
+              "url": "https://www.instagram.com/afterfly.in/"
+            }
+          },
+          {
+            "artifact": {
+              "artifactId": "tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-2139cd51dc7b",
+              "artifactKind": "referenced_evidence_file",
+              "containsRawProviderPayload": false,
+              "firestoreMode": "not_applicable_local_source_reference",
+              "path": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+              "retentionStatus": "repo_reviewed",
+              "sha256": "2139cd51dc7bc12e8aa01c57b10140cbddbb7ce00fdaabb9cc5964179861d36c",
+              "sizeBytes": 3575,
+              "storageAction": "not_required",
+              "storageClass": "reviewed_source_reference"
+            },
+            "correlatedCandidates": {
+              "externalEventCandidateIds": [],
+              "searchCandidateIds": []
+            },
+            "evidence": {
+              "description": "Probe returned generic Instagram HTML and was not identity proof.",
+              "ref": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+              "status": "resolved_artifact",
+              "type": "hostDiscoveryRun"
+            },
+            "evidenceId": "evidence-afterfly-afterfly-instagram-probed-runclub-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-json",
+            "nextAction": "curate_surface_state_before_using_for_public_or_crawl_outputs",
+            "reviewerUse": {
+              "artifactAvailable": true,
+              "manualReportWithoutArtifact": false,
+              "missingSurfaceEvidence": false,
+              "sourceUrlAvailable": true,
+              "unresolvedLocalReference": false
+            },
+            "riskFlags": [
+              "surface_ambiguous"
+            ],
+            "surface": {
+              "normalizedKey": "instagram:afterflyrunclub",
+              "platform": "instagram",
+              "role": "ambiguous",
+              "status": "ambiguous",
+              "supportsEventExtraction": false,
+              "surfaceId": "afterfly-instagram-probed-runclub",
+              "surfaceKind": "socialProfile",
+              "url": "https://www.instagram.com/afterflyrunclub/"
+            }
+          },
+          {
+            "artifact": {
+              "artifactId": "tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-2139cd51dc7b",
+              "artifactKind": "referenced_evidence_file",
+              "containsRawProviderPayload": false,
+              "firestoreMode": "not_applicable_local_source_reference",
+              "path": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+              "retentionStatus": "repo_reviewed",
+              "sha256": "2139cd51dc7bc12e8aa01c57b10140cbddbb7ce00fdaabb9cc5964179861d36c",
+              "sizeBytes": 3575,
+              "storageAction": "not_required",
+              "storageClass": "reviewed_source_reference"
+            },
+            "correlatedCandidates": {
+              "externalEventCandidateIds": [],
+              "searchCandidateIds": []
+            },
+            "evidence": {
+              "description": "Public event page captured in the legacy host discovery run.",
+              "ref": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+              "status": "resolved_artifact",
+              "type": "hostDiscoveryRun"
+            },
+            "evidenceId": "evidence-afterfly-afterfly-luma-takeoff-run-rave-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-json",
+            "nextAction": "evidence_available_for_admin_review",
+            "reviewerUse": {
+              "artifactAvailable": true,
+              "manualReportWithoutArtifact": false,
+              "missingSurfaceEvidence": false,
+              "sourceUrlAvailable": true,
+              "unresolvedLocalReference": false
+            },
+            "riskFlags": [],
+            "surface": {
+              "normalizedKey": "luma:event:pxgmph3b",
+              "platform": "luma",
+              "role": "primary",
+              "status": "active",
+              "supportsEventExtraction": true,
+              "surfaceId": "afterfly-luma-takeoff-run-rave",
+              "surfaceKind": "eventListing",
+              "url": "https://luma.com/pxgmph3b"
+            }
+          },
+          {
+            "artifact": {
+              "artifactId": "tool-host-discovery-seed-clubs-afterfly-run-club-indore-28e62c026bab",
+              "artifactKind": "referenced_evidence_file",
+              "containsRawProviderPayload": false,
+              "firestoreMode": "not_applicable_local_source_reference",
+              "path": "tool/host_discovery/seed_clubs/afterfly-run-club-indore.json",
+              "retentionStatus": "repo_reviewed",
+              "sha256": "28e62c026babbf91bb72ebd4f92ada61a8932aefa7a1012ac558321a9ba66ed7",
+              "sizeBytes": 8033,
+              "storageAction": "not_required",
+              "storageClass": "reviewed_source_reference"
+            },
+            "correlatedCandidates": {
+              "externalEventCandidateIds": [],
+              "searchCandidateIds": []
+            },
+            "evidence": {
+              "description": "Legacy seed club projection derived from the Luma evidence.",
+              "ref": "tool/host_discovery/seed_clubs/afterfly-run-club-indore.json",
+              "status": "resolved_artifact",
+              "type": "seedClub"
+            },
+            "evidenceId": "evidence-afterfly-afterfly-luma-takeoff-run-rave-seedclub-tool-host-discovery-seed-clubs-afterfly-run-club-indore-json",
+            "nextAction": "evidence_available_for_admin_review",
+            "reviewerUse": {
+              "artifactAvailable": true,
+              "manualReportWithoutArtifact": false,
+              "missingSurfaceEvidence": false,
+              "sourceUrlAvailable": true,
+              "unresolvedLocalReference": false
+            },
+            "riskFlags": [],
+            "surface": {
+              "normalizedKey": "luma:event:pxgmph3b",
+              "platform": "luma",
+              "role": "primary",
+              "status": "active",
+              "supportsEventExtraction": true,
+              "surfaceId": "afterfly-luma-takeoff-run-rave",
+              "surfaceKind": "eventListing",
+              "url": "https://luma.com/pxgmph3b"
+            }
+          },
+          {
+            "artifact": null,
+            "correlatedCandidates": {
+              "externalEventCandidateIds": [],
+              "searchCandidateIds": []
+            },
+            "evidence": {
+              "description": "User reported a first-party-looking Afterfly website that appears to be a different entity.",
+              "ref": null,
+              "status": "manual_report_without_artifact",
+              "type": "userReportedSearchResult"
+            },
+            "evidenceId": "evidence-afterfly-afterfly-wrong-website-reported-userreportedsearchresult-missing-1",
+            "nextAction": "capture_or_attach_reviewed_artifact_for_manual_report",
+            "reviewerUse": {
+              "artifactAvailable": false,
+              "manualReportWithoutArtifact": true,
+              "missingSurfaceEvidence": false,
+              "sourceUrlAvailable": false,
+              "unresolvedLocalReference": false
+            },
+            "riskFlags": [
+              "manual_report_without_artifact",
+              "surface_rejected",
+              "surface_url_missing",
+              "user_reported_evidence"
+            ],
+            "surface": {
+              "normalizedKey": null,
+              "platform": "officialWebsite",
+              "role": "rejected",
+              "status": "rejected",
+              "supportsEventExtraction": false,
+              "surfaceId": "afterfly-wrong-website-reported",
+              "surfaceKind": "wrongEntity",
+              "url": null
+            }
+          },
+          {
+            "artifact": null,
+            "correlatedCandidates": {
+              "externalEventCandidateIds": [],
+              "searchCandidateIds": []
+            },
+            "evidence": {
+              "description": "User reported seeing a Sort My Scene listing in Google results; exact URL is not captured yet.",
+              "ref": null,
+              "status": "manual_report_without_artifact",
+              "type": "userReportedSearchResult"
+            },
+            "evidenceId": "evidence-afterfly-afterfly-sortmyscene-reported-userreportedsearchresult-missing-1",
+            "nextAction": "capture_or_attach_reviewed_artifact_for_manual_report",
+            "reviewerUse": {
+              "artifactAvailable": false,
+              "manualReportWithoutArtifact": true,
+              "missingSurfaceEvidence": false,
+              "sourceUrlAvailable": false,
+              "unresolvedLocalReference": false
+            },
+            "riskFlags": [
+              "manual_report_without_artifact",
+              "surface_candidate",
+              "surface_url_missing",
+              "user_reported_evidence"
+            ],
+            "surface": {
+              "normalizedKey": null,
+              "platform": "sortMyScene",
+              "role": "ambiguous",
+              "status": "candidate",
+              "supportsEventExtraction": true,
+              "surfaceId": "afterfly-sortmyscene-reported",
+              "surfaceKind": "organizerProfile",
+              "url": null
+            }
+          }
+        ],
+        "shownRecords": 6,
+        "totalRecords": 6,
+        "truncated": false,
+        "unresolvedLocalRefs": 0
+      },
+      "evidenceSummary": {
+        "byStatus": {
+          "manual_report_without_artifact": 2,
+          "resolved_artifact": 4
+        },
+        "byType": {
+          "hostDiscoveryRun": 3,
+          "seedClub": 1,
+          "userReportedSearchResult": 2
+        },
+        "firestoreForbiddenArtifactRefs": 0,
+        "manualReportsWithoutArtifacts": 2,
+        "missingSurfaceEvidence": 0,
+        "rawProviderArtifactRefs": 0,
+        "records": 6,
+        "resolvedArtifactRefs": 4,
+        "riskFlags": [
+          "manual_report_without_artifact",
+          "surface_ambiguous",
+          "surface_candidate",
+          "surface_rejected",
+          "surface_url_missing",
+          "user_reported_evidence"
+        ],
+        "unresolvedLocalRefs": 0
+      },
+      "gates": [
+        {
+          "description": "Every public promotion requires an explicit admin decision.",
+          "id": "manual_admin_review_required",
+          "passed": true
+        },
+        {
+          "description": "At least one active public surface supports organizer identity.",
+          "id": "identity_surface_present",
+          "passed": true
+        },
+        {
+          "description": "Entity has one canonical profile with market filters, not duplicate city identities.",
+          "id": "market_model_present",
+          "passed": true
+        },
+        {
+          "description": "Draft has original, owner-safe public copy.",
+          "id": "owner_safe_public_draft",
+          "passed": true
+        },
+        {
+          "description": "No strong identifier is shared by multiple organizer entities.",
+          "id": "no_strong_dedupe_conflicts",
+          "passed": true
+        },
+        {
+          "description": "Surface inventory is explicit enough for admin QA.",
+          "id": "surface_inventory_reviewable",
+          "passed": true
+        },
+        {
+          "description": "Unclaimed public listings remain hidden from the native app by default.",
+          "id": "app_visibility_separate_from_publication",
+          "passed": true
+        },
+        {
+          "description": "Future event extraction is modeled but not scheduled.",
+          "id": "crawl_disabled_by_default",
+          "passed": true
+        }
+      ],
+      "identity": {
+        "activity": {
+          "confidence": "medium",
+          "derivedFromSurfaceIds": [
+            "afterfly-luma-takeoff-run-rave"
+          ],
+          "primaryActivityKind": "socialRun",
+          "supportedActivityKinds": [
+            "openActivity",
+            "socialRun"
+          ]
+        },
+        "aliases": [
+          "AFTERFLY",
+          "Afterfly",
+          "Afterfly Run Club"
+        ],
+        "entityKind": "eventOrganizer",
+        "geography": {
+          "countryCodes": [
+            "IN"
+          ],
+          "markets": [
+            {
+              "countryCode": "IN",
+              "displayName": "Indore",
+              "eventFilter": {
+                "citySlug": "indore",
+                "mode": "eventCity"
+              },
+              "marketSlug": "indore"
+            }
+          ],
+          "primaryMarketSlug": "indore",
+          "scopeKind": "city"
+        }
+      },
+      "nextActions": [
+        "keep_app_hidden_until_claim_or_explicit_app_approval",
+        "keep_crawls_and_event_imports_disabled",
+        "review_ambiguous_or_rejected_surfaces"
+      ],
+      "packetId": "publication-review-afterfly",
+      "priority": "p0",
+      "publicDraft": {
+        "formats": [
+          "Fitness/wellness community",
+          "Music social",
+          "Run-and-rave",
+          "Social runs"
+        ],
+        "headline": "AFTER FLY organizer profile",
+        "missingEvidence": [
+          "Current event cadence after March 2025",
+          "Logo or media permission",
+          "Manual admin approval for public publication",
+          "Owner or preferred business contact",
+          "Whether every discovered Afterfly surface belongs to this organizer"
+        ],
+        "sourceSummary": "A public Luma event page connects AFTER FLY to an Indore run-and-rave event in March 2025 and embedded event data lists Instagram handle afterfly.in.",
+        "summary": "AFTER FLY is an Indore organizer candidate discovered through public event evidence. The current draft should remain website-only until an admin reviews identity, surfaces, cadence, and owner-safe copy."
+      },
+      "publicPresence": {
+        "appVisibility": "hidden",
+        "canonicalPath": "/organizers/afterfly/",
+        "claimTargetPath": "clubs/afterfly",
+        "indexStatus": "indexed",
+        "legacyPaths": [
+          "/organizers/indore/afterfly-run-club/"
+        ],
+        "projectionStatus": "ready",
+        "publishStatus": "published"
+      },
+      "recommendedAction": "Already published; keep monitoring claim and source freshness.",
+      "status": "published",
+      "surfaceSummary": {
+        "active": 2,
+        "ambiguous": 2,
+        "eventSourceSurfaceIds": [
+          "afterfly-luma-takeoff-run-rave",
+          "afterfly-sortmyscene-reported"
+        ],
+        "historical": 0,
+        "normalizedKeys": [
+          "instagram:afterfly.in",
+          "instagram:afterflyrunclub",
+          "luma:event:pxgmph3b"
+        ],
+        "platforms": {
+          "instagram": 2,
+          "luma": 1,
+          "officialWebsite": 1,
+          "sortMyScene": 1
+        },
+        "primarySurfaceIds": [
+          "afterfly-instagram-primary",
+          "afterfly-luma-takeoff-run-rave"
+        ],
+        "rejected": 1,
+        "socialProfileSurfaceIds": [
+          "afterfly-instagram-primary",
+          "afterfly-instagram-probed-runclub"
+        ],
+        "surfaces": 5
+      },
+      "taskType": "promotion_review"
+    },
+    {
+      "adminDecision": {
+        "allowedDecisions": [
+          "approve_public",
+          "hold",
+          "suppress"
+        ],
+        "command": "node tool/organizer_intake/review_decision.mjs draft bhag --decision approve_public --app-visibility hidden --reviewer REVIEWER --date YYYY-MM-DD --note \"Manual publication QA complete.\" --confirm-publication-checklist",
+        "currentDecision": {
+          "appVisibility": "hidden",
+          "decidedAt": "2026-06-18",
+          "decision": "approve_public",
+          "decisionBatchId": "2026-06-18-bhag-approve-public",
+          "reviewer": "suvrat",
+          "sourceFile": "tool/organizer_intake/review_decisions/2026-06-18-bhag-approve-public.json"
+        },
+        "defaultAppVisibility": "hidden"
+      },
+      "approvalChecklist": {
+        "crawlDisabledReviewed": true,
+        "identityReviewed": true,
+        "marketScopeReviewed": true,
+        "mediaRightsReviewed": true,
+        "ownerSafeCopyReviewed": true,
+        "surfaceInventoryReviewed": true
+      },
+      "blockers": [],
+      "canonicalHostId": "bhag",
+      "curation": {
+        "attachedSurfaces": [],
+        "mergedFrom": [],
+        "mergedInto": null,
+        "splitSurfaces": [],
+        "suppressed": null,
+        "surfaceDecisions": []
+      },
+      "dataBlockers": [],
+      "displayName": "Bhag Club",
+      "entityId": "bhag",
+      "evidenceBlockers": [],
+      "evidenceRecordIds": [
+        "evidence-bhag-bhag-instagram-primary-seedclub-tool-host-discovery-seed-clubs-bhag-run-club-delhi-json",
+        "evidence-bhag-bhag-luma-runs-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-bhag-run-club-delhi-json",
+        "evidence-bhag-bhag-official-site-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-bhag-run-club-delhi-json"
+      ],
+      "evidenceReview": {
+        "artifactBackedRecords": 3,
+        "externalUrlRefs": 0,
+        "manualReportsWithoutArtifacts": 0,
+        "missingSurfaceEvidence": 0,
+        "rawProviderArtifactRefs": 0,
+        "records": [
+          {
+            "artifact": {
+              "artifactId": "tool-host-discovery-seed-clubs-bhag-run-club-delhi-6e2582438db6",
+              "artifactKind": "referenced_evidence_file",
+              "containsRawProviderPayload": false,
+              "firestoreMode": "not_applicable_local_source_reference",
+              "path": "tool/host_discovery/seed_clubs/bhag-run-club-delhi.json",
+              "retentionStatus": "repo_reviewed",
+              "sha256": "6e2582438db627d62c60710cb774acf6ec4de696f6eabd77631a3fc6b6c4d896",
+              "sizeBytes": 8523,
+              "storageAction": "not_required",
+              "storageClass": "reviewed_source_reference"
+            },
+            "correlatedCandidates": {
+              "externalEventCandidateIds": [],
+              "searchCandidateIds": []
+            },
+            "evidence": {
+              "description": "Legacy seed profile stores bhagclub as the Instagram handle.",
+              "ref": "tool/host_discovery/seed_clubs/bhag-run-club-delhi.json",
+              "status": "resolved_artifact",
+              "type": "seedClub"
+            },
+            "evidenceId": "evidence-bhag-bhag-instagram-primary-seedclub-tool-host-discovery-seed-clubs-bhag-run-club-delhi-json",
+            "nextAction": "evidence_available_for_admin_review",
+            "reviewerUse": {
+              "artifactAvailable": true,
+              "manualReportWithoutArtifact": false,
+              "missingSurfaceEvidence": false,
+              "sourceUrlAvailable": true,
+              "unresolvedLocalReference": false
+            },
+            "riskFlags": [],
+            "surface": {
+              "normalizedKey": "instagram:bhagclub",
+              "platform": "instagram",
+              "role": "primary",
+              "status": "active",
+              "supportsEventExtraction": false,
+              "surfaceId": "bhag-instagram-primary",
+              "surfaceKind": "socialProfile",
+              "url": "https://www.instagram.com/bhagclub/"
+            }
+          },
+          {
+            "artifact": {
+              "artifactId": "tool-host-discovery-runs-2026-06-10-bhag-run-club-delhi-d6c9e6d7d342",
+              "artifactKind": "referenced_evidence_file",
+              "containsRawProviderPayload": false,
+              "firestoreMode": "not_applicable_local_source_reference",
+              "path": "tool/host_discovery/runs/2026-06-10-bhag-run-club-delhi.json",
+              "retentionStatus": "repo_reviewed",
+              "sha256": "d6c9e6d7d34267097459d208de103086a39dfe99c94f49e089b36ba566e159b9",
+              "sizeBytes": 3864,
+              "storageAction": "not_required",
+              "storageClass": "reviewed_source_reference"
+            },
+            "correlatedCandidates": {
+              "externalEventCandidateIds": [],
+              "searchCandidateIds": []
+            },
+            "evidence": {
+              "description": "Legacy run captured Bhag Luma event evidence with Delhi NCR ambiguity.",
+              "ref": "tool/host_discovery/runs/2026-06-10-bhag-run-club-delhi.json",
+              "status": "resolved_artifact",
+              "type": "hostDiscoveryRun"
+            },
+            "evidenceId": "evidence-bhag-bhag-luma-runs-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-bhag-run-club-delhi-json",
+            "nextAction": "evidence_available_for_admin_review",
+            "reviewerUse": {
+              "artifactAvailable": true,
+              "manualReportWithoutArtifact": false,
+              "missingSurfaceEvidence": false,
+              "sourceUrlAvailable": true,
+              "unresolvedLocalReference": false
+            },
+            "riskFlags": [],
+            "surface": {
+              "normalizedKey": "luma:event:ixj7uqiu",
+              "platform": "luma",
+              "role": "secondary",
+              "status": "active",
+              "supportsEventExtraction": true,
+              "surfaceId": "bhag-luma-runs",
+              "surfaceKind": "eventListing",
+              "url": "https://luma.com/ixj7uqiu"
+            }
+          },
+          {
+            "artifact": {
+              "artifactId": "tool-host-discovery-runs-2026-06-10-bhag-run-club-delhi-d6c9e6d7d342",
+              "artifactKind": "referenced_evidence_file",
+              "containsRawProviderPayload": false,
+              "firestoreMode": "not_applicable_local_source_reference",
+              "path": "tool/host_discovery/runs/2026-06-10-bhag-run-club-delhi.json",
+              "retentionStatus": "repo_reviewed",
+              "sha256": "d6c9e6d7d34267097459d208de103086a39dfe99c94f49e089b36ba566e159b9",
+              "sizeBytes": 3864,
+              "storageAction": "not_required",
+              "storageClass": "reviewed_source_reference"
+            },
+            "correlatedCandidates": {
+              "externalEventCandidateIds": [],
+              "searchCandidateIds": []
+            },
+            "evidence": {
+              "description": "Legacy host discovery captured official site evidence.",
+              "ref": "tool/host_discovery/runs/2026-06-10-bhag-run-club-delhi.json",
+              "status": "resolved_artifact",
+              "type": "hostDiscoveryRun"
+            },
+            "evidenceId": "evidence-bhag-bhag-official-site-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-bhag-run-club-delhi-json",
+            "nextAction": "evidence_available_for_admin_review",
+            "reviewerUse": {
+              "artifactAvailable": true,
+              "manualReportWithoutArtifact": false,
+              "missingSurfaceEvidence": false,
+              "sourceUrlAvailable": true,
+              "unresolvedLocalReference": false
+            },
+            "riskFlags": [],
+            "surface": {
+              "normalizedKey": "domain:thebhag.in",
+              "platform": "officialWebsite",
+              "role": "primary",
+              "status": "active",
+              "supportsEventExtraction": false,
+              "surfaceId": "bhag-official-site",
+              "surfaceKind": "website",
+              "url": "https://thebhag.in/"
+            }
+          }
+        ],
+        "shownRecords": 3,
+        "totalRecords": 3,
+        "truncated": false,
+        "unresolvedLocalRefs": 0
+      },
+      "evidenceSummary": {
+        "byStatus": {
+          "resolved_artifact": 3
+        },
+        "byType": {
+          "hostDiscoveryRun": 2,
+          "seedClub": 1
+        },
+        "firestoreForbiddenArtifactRefs": 0,
+        "manualReportsWithoutArtifacts": 0,
+        "missingSurfaceEvidence": 0,
+        "rawProviderArtifactRefs": 0,
+        "records": 3,
+        "resolvedArtifactRefs": 3,
+        "riskFlags": [],
+        "unresolvedLocalRefs": 0
+      },
+      "gates": [
+        {
+          "description": "Every public promotion requires an explicit admin decision.",
+          "id": "manual_admin_review_required",
+          "passed": true
+        },
+        {
+          "description": "At least one active public surface supports organizer identity.",
+          "id": "identity_surface_present",
+          "passed": true
+        },
+        {
+          "description": "Entity has one canonical profile with market filters, not duplicate city identities.",
+          "id": "market_model_present",
+          "passed": true
+        },
+        {
+          "description": "Draft has original, owner-safe public copy.",
+          "id": "owner_safe_public_draft",
+          "passed": true
+        },
+        {
+          "description": "No strong identifier is shared by multiple organizer entities.",
+          "id": "no_strong_dedupe_conflicts",
+          "passed": true
+        },
+        {
+          "description": "Surface inventory is explicit enough for admin QA.",
+          "id": "surface_inventory_reviewable",
+          "passed": true
+        },
+        {
+          "description": "Unclaimed public listings remain hidden from the native app by default.",
+          "id": "app_visibility_separate_from_publication",
+          "passed": true
+        },
+        {
+          "description": "Future event extraction is modeled but not scheduled.",
+          "id": "crawl_disabled_by_default",
+          "passed": true
+        }
+      ],
+      "identity": {
+        "activity": {
+          "confidence": "medium",
+          "derivedFromSurfaceIds": [
+            "bhag-luma-runs",
+            "bhag-official-site"
+          ],
+          "primaryActivityKind": "running",
+          "supportedActivityKinds": [
+            "openActivity",
+            "running",
+            "socialRun"
+          ]
+        },
+        "aliases": [
+          "BHAG RUNS",
+          "Bhag Run Club",
+          "The Bhag"
+        ],
+        "entityKind": "brand",
+        "geography": {
+          "countryCodes": [
+            "IN"
+          ],
+          "markets": [
+            {
+              "countryCode": "IN",
+              "displayName": "Delhi NCR",
+              "eventFilter": {
+                "citySlug": "delhi-ncr",
+                "mode": "eventCity"
+              },
+              "marketSlug": "delhi-ncr"
+            }
+          ],
+          "primaryMarketSlug": "delhi-ncr",
+          "scopeKind": "national"
+        }
+      },
+      "nextActions": [
+        "keep_app_hidden_until_claim_or_explicit_app_approval",
+        "keep_crawls_and_event_imports_disabled"
+      ],
+      "packetId": "publication-review-bhag",
+      "priority": "p0",
+      "publicDraft": {
+        "formats": [
+          "Running community",
+          "Social runs",
+          "Training programs"
+        ],
+        "headline": "Bhag Club organizer profile",
+        "missingEvidence": [
+          "Current city-specific event cadence",
+          "Logo or media permission",
+          "Manual admin approval for public publication",
+          "Owner or preferred business contact",
+          "Whether Delhi NCR should be the primary market or only one market"
+        ],
+        "sourceSummary": "The official Bhag site and a Luma event page provide evidence for running programming, but the city-specific public listing still needs admin review.",
+        "summary": "Bhag Club appears to be a running community and brand with public web and event-platform evidence. The entity should be represented once, with city-filtered events, rather than duplicated into separate city logins."
+      },
+      "publicPresence": {
+        "appVisibility": "hidden",
+        "canonicalPath": "/organizers/bhag/",
+        "claimTargetPath": "clubs/bhag",
+        "indexStatus": "indexed",
+        "legacyPaths": [
+          "/organizers/delhi/bhag-run-club/"
+        ],
+        "projectionStatus": "ready",
+        "publishStatus": "published"
+      },
+      "recommendedAction": "Already published; keep monitoring claim and source freshness.",
+      "status": "published",
+      "surfaceSummary": {
+        "active": 3,
+        "ambiguous": 0,
+        "eventSourceSurfaceIds": [
+          "bhag-luma-runs"
+        ],
+        "historical": 0,
+        "normalizedKeys": [
+          "domain:thebhag.in",
+          "instagram:bhagclub",
+          "luma:event:ixj7uqiu"
+        ],
+        "platforms": {
+          "instagram": 1,
+          "luma": 1,
+          "officialWebsite": 1
+        },
+        "primarySurfaceIds": [
+          "bhag-instagram-primary",
+          "bhag-official-site"
+        ],
+        "rejected": 0,
+        "socialProfileSurfaceIds": [
+          "bhag-instagram-primary"
+        ],
+        "surfaces": 3
+      },
+      "taskType": "evidence_review"
+    }
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "blockedByData": 0,
+    "evidenceRecords": 9,
+    "held": 0,
+    "manualReportsWithoutArtifacts": 2,
+    "missingSurfaceEvidence": 0,
+    "packets": 2,
+    "packetsByStatus": {
+      "published": 2
+    },
+    "packetsByTaskType": {
+      "evidence_review": 1,
+      "promotion_review": 1
+    },
+    "published": 2,
+    "readyForManualPublicationReview": 0,
+    "suppressed": 0,
+    "unresolvedEvidenceRefs": 0
+  }
+}

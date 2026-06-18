@@ -1,0 +1,20 @@
+{
+  "decidedAt": "2026-06-18",
+  "decisions": [
+    {
+      "decision": "accept",
+      "gapId": "external_event_import_write_policy",
+      "note": "User accepted a constrained external event import policy on 2026-06-18: imported external events may be read-only Catch event records with one or more outbound booking links to external platforms; Catch must not provide in-app booking, payments, reservations, or waitlist functionality for events not hosted on Catch. Every imported event must come from reviewed external candidates. If the same event appears on multiple platforms, keep one canonical read-only event and attach multiple outbound source/booking links instead of creating duplicate events. Corrections, takedowns, and bad imports remain admin-owned rollback actions.",
+      "requiredInputsReviewed": [
+        "write authority model and service identity",
+        "final admin approval threshold before import",
+        "duplicate event conflict policy",
+        "host notification policy for imported events",
+        "rollback, correction, and takedown workflow"
+      ]
+    }
+  ],
+  "policyGapDecisionBatchId": "2026-06-18-external-event-import-write-policy-policy-accept",
+  "reviewer": "suvrat",
+  "schemaVersion": 1
+}

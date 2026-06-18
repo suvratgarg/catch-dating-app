@@ -1,0 +1,323 @@
+{
+  "generatedFrom": {
+    "canonicalEvidenceIndex": "tool/organizer_intake/generated/canonical_evidence_index.json",
+    "canonicalHostEntities": "tool/organizer_intake/generated/canonical_host_entities.json",
+    "claimTargetSyncPreview": "tool/organizer_intake/generated/organizer_claim_target_sync_preview.json",
+    "eventCrawlPlan": "tool/organizer_intake/generated/event_crawl_plan.json",
+    "eventCrawlRunPlan": "tool/organizer_intake/generated/event_crawl_run_plan.json",
+    "externalEventCandidateQueue": "tool/organizer_intake/generated/external_event_candidate_queue.json",
+    "externalEventImportExecutionPlan": "tool/organizer_intake/generated/external_event_import_execution_plan.json",
+    "externalEventImportPlan": "tool/organizer_intake/generated/external_event_import_plan.json",
+    "externalEventLocationResolutionQueue": "tool/organizer_intake/generated/external_event_location_resolution_queue.json",
+    "operatorActionQueue": "tool/organizer_intake/generated/organizer_operator_action_queue.json",
+    "policyDecisionPackets": "tool/organizer_intake/generated/organizer_policy_decision_packets.json",
+    "policyGapRegister": "tool/organizer_intake/generated/organizer_policy_gap_register.json",
+    "publicationDecisionImpactPreview": "tool/organizer_intake/generated/publication_decision_impact_preview.json",
+    "publicationReviewPackets": "tool/organizer_intake/generated/publication_review_packets.json",
+    "rawArtifactStorageManifest": "tool/organizer_intake/generated/raw_artifact_storage_manifest.json",
+    "searchResultCandidateQueue": "tool/organizer_intake/generated/search_result_candidate_queue.json",
+    "workflowReadiness": "tool/organizer_intake/generated/organizer_workflow_readiness.json"
+  },
+  "guardrails": [
+    "Operational health is a read-only rollup; it never approves publication, writes Firestore, imports events, uploads artifacts, or enables crawls.",
+    "Action-required workstreams must still be resolved through their owning admin decision, policy decision, or planner.",
+    "Policy-blocked workstreams remain disabled until the specific owning policy/config is changed after review.",
+    "Firestore remains reserved for low-volume decisions and promoted records; raw/search/provider payloads stay out of Firestore."
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "actionRequiredWorkstreams": 3,
+    "adminDecisionsRequired": 0,
+    "blockedWorkstreams": 2,
+    "healthStatus": "p0_action_required",
+    "highestPriority": "p0",
+    "idleWorkstreams": 2,
+    "operatorActions": 3,
+    "policyBlockedWorkstreams": 2,
+    "policyInputsRequired": 3,
+    "readyWorkstreams": 2,
+    "waitingActions": 0,
+    "waitingWorkstreams": 0,
+    "workflowBlocked": 0,
+    "workflowPolicyNeeded": 4,
+    "workflowReady": 14,
+    "workflowWaiting": 0,
+    "workstreams": 9,
+    "workstreamsByPriority": {
+      "p0": 1,
+      "p1": 5,
+      "p2": 1,
+      "p3": 2
+    },
+    "workstreamsByStatus": {
+      "blocked_by_policy": 1,
+      "clear": 1,
+      "disabled_by_policy": 1,
+      "dry_run_review_required": 1,
+      "idle": 2,
+      "ready": 1,
+      "requires_policy_input": 1,
+      "review_needed": 1
+    }
+  },
+  "workstreams": [
+    {
+      "blockers": [
+        "tool/organizer_intake/generated/event_crawl_plan.json",
+        "tool/organizer_intake/generated/external_event_import_plan.json",
+        "tool/organizer_intake/generated/external_event_location_resolution_queue.json"
+      ],
+      "commands": [
+        "node tool/organizer_intake/policy_gap_decision.mjs draft recurring_event_crawl_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
+        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_defaults_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
+        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_location_provider_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+      ],
+      "id": "policy_decisions",
+      "label": "Policy Decisions",
+      "metrics": {
+        "accepted": 2,
+        "decisionRequired": 5,
+        "gaps": 5,
+        "held": 3,
+        "packets": 5,
+        "questions": 25,
+        "rejected": 0,
+        "unansweredQuestions": 15
+      },
+      "nextActions": [
+        "Choose platform order, frequency, budget cap, and owner-safety rules before enabling scheduled crawls.",
+        "Choose default capacity, admission, pricing, and activity-field policy before enabling imports.",
+        "Keep manual resolution as the default until provider, confidence, retention, and spend caps are approved."
+      ],
+      "priority": "p0",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/organizer_policy_gap_register.json",
+        "tool/organizer_intake/generated/organizer_policy_decision_packets.json"
+      ],
+      "status": "requires_policy_input"
+    },
+    {
+      "blockers": [
+        "ready"
+      ],
+      "commands": [
+        "node tool/organizer_intake/sync_claim_targets_to_firestore.mjs --fixture tool/organizer_intake/fixtures/existing_club_docs.empty.json",
+        "node tool/organizer_intake/sync_claim_targets_to_firestore.mjs --env dev"
+      ],
+      "id": "claim_target_sync",
+      "label": "Claim Target Sync",
+      "metrics": {
+        "creates": 2,
+        "refreshes": 0,
+        "remoteWrites": 0,
+        "skippedOwnerBound": 0,
+        "targets": 2,
+        "writesNeeded": 2
+      },
+      "nextActions": [
+        "Review the generated claim-target sync preview, then run a Firestore dry run before any write."
+      ],
+      "priority": "p1",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/organizer_claim_target_sync_preview.json",
+        "tool/organizer_intake/generated/organizer_claim_targets.json"
+      ],
+      "status": "dry_run_review_required"
+    },
+    {
+      "blockers": [],
+      "commands": [
+        "node tool/organizer_intake/organizer_intake.mjs --check"
+      ],
+      "id": "evidence_quality",
+      "label": "Evidence Quality",
+      "metrics": {
+        "firestoreForbiddenArtifactRefs": 0,
+        "manualReportsWithoutArtifacts": 2,
+        "rawProviderArtifacts": 2,
+        "records": 9,
+        "resolvedArtifactRefs": 7,
+        "surfaces": 8,
+        "surfacesWithoutEvidence": 0
+      },
+      "nextActions": [
+        "Admin publication approvals must acknowledge manual reports without artifacts."
+      ],
+      "priority": "p1",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/canonical_evidence_index.json"
+      ],
+      "status": "review_needed"
+    },
+    {
+      "blockers": [
+        "global_recurring_crawl_disabled",
+        "organizer_not_public_approved",
+        "surface_crawl_policy_not_api_preferred",
+        "surface_crawl_status_not_approved",
+        "surface_not_active",
+        "surface_url_missing",
+        "crawl_run_request_cap_missing",
+        "network_disabled",
+        "platform_not_allowlisted",
+        "scheduler_disabled"
+      ],
+      "commands": [
+        "node tool/organizer_intake/plan_event_crawl_runs.mjs --check"
+      ],
+      "id": "crawl_execution",
+      "label": "Crawl Execution",
+      "metrics": {
+        "approvedSurfaces": 0,
+        "blocked": 3,
+        "blockedSurfaces": 3,
+        "crawlCapableSurfaces": 3,
+        "networkEnabled": false,
+        "runIntents": 3,
+        "schedulerEnabled": false,
+        "wouldFetch": 0
+      },
+      "nextActions": [
+        "Record crawl policy and budget decision before enabling any provider fetch."
+      ],
+      "priority": "p1",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/event_crawl_plan.json",
+        "tool/organizer_intake/generated/event_crawl_run_plan.json"
+      ],
+      "status": "disabled_by_policy"
+    },
+    {
+      "blockers": [
+        "object_storage_bucket_missing",
+        "remote_object_storage_disabled",
+        "retention_policy_missing"
+      ],
+      "commands": [
+        "node tool/organizer_intake/plan_raw_artifact_storage.mjs --check"
+      ],
+      "id": "raw_artifact_storage",
+      "label": "Raw Artifact Storage",
+      "metrics": {
+        "artifacts": 30,
+        "firestoreRawStorageAllowed": false,
+        "rawProviderPayloads": 2,
+        "remoteUploadBlocked": 2,
+        "remoteUploadReady": 0,
+        "retentionDecisionRequired": 2,
+        "totalBytes": 71465
+      },
+      "nextActions": [
+        "Approve object storage bucket, retention, deletion, and crawl-cost policy before uploading raw payloads."
+      ],
+      "priority": "p1",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/raw_artifact_storage_manifest.json"
+      ],
+      "status": "blocked_by_policy"
+    },
+    {
+      "blockers": [],
+      "commands": [],
+      "id": "publication_review",
+      "label": "Publication Review",
+      "metrics": {
+        "blockedByData": 0,
+        "manualReportsWithoutArtifacts": 2,
+        "packets": 2,
+        "readyForManualReview": 0,
+        "wouldCreateClaimTargets": 0,
+        "wouldIndex": 0,
+        "wouldPublish": 0
+      },
+      "nextActions": [],
+      "priority": "p1",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/publication_review_packets.json",
+        "tool/organizer_intake/generated/publication_decision_impact_preview.json"
+      ],
+      "status": "clear"
+    },
+    {
+      "blockers": [
+        "ready"
+      ],
+      "commands": [
+        "node tool/organizer_intake/run_promotion_pipeline.mjs"
+      ],
+      "id": "promotion_pipeline",
+      "label": "Promotion Pipeline",
+      "metrics": {
+        "claimTargetWrites": 2,
+        "impactWouldPublish": 0,
+        "indexed": 2,
+        "localPromotionPipelineReady": true,
+        "publicProjectionReady": true,
+        "publicPublished": 2
+      },
+      "nextActions": [
+        "Export admin review decisions, regenerate intake artifacts, regenerate website listings, then run the promotion bridge check."
+      ],
+      "priority": "p2",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/organizer_workflow_readiness.json",
+        "tool/organizer_intake/generated/public_projection_plan.json"
+      ],
+      "status": "ready"
+    },
+    {
+      "blockers": [],
+      "commands": [
+        "node tool/organizer_intake/ingest_event_sources.mjs --check",
+        "node tool/organizer_intake/plan_external_event_imports.mjs --check",
+        "node tool/organizer_intake/preflight_external_event_imports.mjs --check"
+      ],
+      "id": "external_event_imports",
+      "label": "External Event Imports",
+      "metrics": {
+        "approvedForImport": 0,
+        "candidates": 0,
+        "executionBlocked": 0,
+        "executionWouldCreate": 0,
+        "executionWouldPublishReadOnly": 0,
+        "importBlocked": 0,
+        "locationTasks": 0,
+        "payloadInvalid": 0,
+        "projectionInvalid": 0,
+        "proposedCreates": 0,
+        "proposedReadOnlyEvents": 0,
+        "reviewed": 0,
+        "schemaInvalid": 0
+      },
+      "nextActions": [],
+      "priority": "p3",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/external_event_candidate_queue.json",
+        "tool/organizer_intake/generated/external_event_import_plan.json",
+        "tool/organizer_intake/generated/external_event_import_execution_plan.json"
+      ],
+      "status": "idle"
+    },
+    {
+      "blockers": [],
+      "commands": [
+        "node tool/organizer_intake/ingest_search_results.mjs --check"
+      ],
+      "id": "search_intake",
+      "label": "Search Intake",
+      "metrics": {
+        "batches": 0,
+        "candidates": 0,
+        "duplicateNormalizedKeys": 0,
+        "matchedExistingEntities": 0,
+        "results": 0
+      },
+      "nextActions": [],
+      "priority": "p3",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/search_result_candidate_queue.json"
+      ],
+      "status": "idle"
+    }
+  ]
+}

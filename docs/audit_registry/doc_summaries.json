@@ -1,6 +1,6 @@
 {
-  "version": "4.1.8",
-  "updated": "2026-06-05",
+  "version": "4.1.9",
+  "updated": "2026-06-17",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -49,11 +49,11 @@
       ]
     },
     "docs/widget_catalog.md": {
-      "purpose": "Widget inventory and feature ownership map.",
+      "purpose": "Widget inventory, feature ownership map, and component-contract registry changelog.",
       "read_when": [
         "Auditing a specific feature's widget surface",
         "Checking whether a primitive already exists",
-        "Updating widget APIs, screen ownership models, sliver/tab structures, or reusable design-system roles"
+        "Updating widget APIs, screen ownership models, sliver/tab structures, reusable design-system roles, or component contract coverage"
       ],
       "skip_when": [
         "Only process rules are needed; use rules.json instead"
@@ -99,11 +99,12 @@
       ]
     },
     "docs/ui_architecture.md": {
-      "purpose": "Unified layout architecture guide for spacing, scroll ownership, slivers, NestedScrollView tab bodies, sticky headers, semantic UI lint policy, token tiers, and scroll-heavy widget tests.",
+      "purpose": "Unified layout architecture guide for spacing, scroll ownership, slivers, NestedScrollView tab bodies, sticky headers, semantic UI lint policy, token tiers, design-tool workflow, component contracts, and scroll-heavy widget tests.",
       "read_when": [
         "Changing shared screen padding, tab body insets, or sliver body gaps",
         "Adding layout constants intended to be reused across sibling widgets",
         "Adding or escalating Catch UI analyzer lints or design-token categories",
+        "Changing Style Dictionary adoption policy or component contract registry workflow",
         "Changing CustomScrollView, SliverList, SliverPersistentHeader, or NestedScrollView surfaces",
         "Debugging inconsistent spacing, blank scroll states, or overflow scroll bugs"
       ],

@@ -1,0 +1,20 @@
+{
+  "decidedAt": "2026-06-18",
+  "decisions": [
+    {
+      "decision": "accept",
+      "gapId": "organizer_host_naming_migration_policy",
+      "note": "User accepted the naming migration policy on 2026-06-18: public pages should standardize on Host as the user-facing entity, keep OrganizerEntity internally during the migration, and preserve Club compatibility until downstream app/backend surfaces are migrated deliberately.",
+      "requiredInputsReviewed": [
+        "canonical public entity label",
+        "operator/account role label",
+        "legacy Club migration scope",
+        "URL and SEO naming transition policy",
+        "admin/app copy migration order"
+      ]
+    }
+  ],
+  "policyGapDecisionBatchId": "2026-06-18-organizer-host-naming-migration-policy-policy-accept",
+  "reviewer": "suvrat",
+  "schemaVersion": 1
+}

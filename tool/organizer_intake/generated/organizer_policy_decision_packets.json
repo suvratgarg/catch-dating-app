@@ -1,0 +1,465 @@
+{
+  "generatedFrom": {
+    "policyGapDecisionBatches": "tool/organizer_intake/policy_gap_decisions/*.json",
+    "policyGapRegister": "tool/organizer_intake/generated/organizer_policy_gap_register.json"
+  },
+  "guardrails": [
+    "Decision packets ask for policy input only; they never enable crawls, provider lookups, uploads, imports, or naming migrations.",
+    "Accepting a policy gap is not sufficient; the implementation gate must be encoded in repo-backed config and pass checks.",
+    "The safe default for every unresolved packet is to keep the related behavior disabled."
+  ],
+  "packets": [
+    {
+      "area": "crawl",
+      "blockedArtifacts": [
+        "tool/organizer_intake/generated/event_crawl_plan.json"
+      ],
+      "currentState": "3 crawl-capable surface(s); scheduler disabled.",
+      "decisionOwner": "product_ops",
+      "decisionPrompt": "Should recurring provider crawls be enabled for any organizer surface?",
+      "decisionStatus": "held",
+      "gapId": "recurring_event_crawl_policy",
+      "implementationGate": "scheduler, platform allowlist, budget caps, and takedown policy encoded",
+      "nextAction": "Choose platform order, frequency, budget cap, and owner-safety rules before enabling scheduled crawls.",
+      "packetId": "policy-packet-recurring_event_crawl_policy",
+      "questions": [
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_scheduler_disabled",
+          "input": "platform allowlist and fallback order",
+          "prompt": "platform allowlist and fallback order for crawl.",
+          "questionId": "recurring_event_crawl_policy:platform-allowlist-and-fallback-order",
+          "recommendedSafeDefault": "keep_scheduler_disabled",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_scheduler_disabled",
+          "input": "crawl frequency by platform and organizer tier",
+          "prompt": "crawl frequency by platform and organizer tier for crawl.",
+          "questionId": "recurring_event_crawl_policy:crawl-frequency-by-platform-and-organizer-tier",
+          "recommendedSafeDefault": "keep_scheduler_disabled",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_scheduler_disabled",
+          "input": "monthly spend cap and per-run rate limits",
+          "prompt": "monthly spend cap and per-run rate limits for crawl.",
+          "questionId": "recurring_event_crawl_policy:monthly-spend-cap-and-per-run-rate-limits",
+          "recommendedSafeDefault": "keep_scheduler_disabled",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_scheduler_disabled",
+          "input": "API-first vs scrape fallback policy",
+          "prompt": "API-first vs scrape fallback policy for crawl.",
+          "questionId": "recurring_event_crawl_policy:api-first-vs-scrape-fallback-policy",
+          "recommendedSafeDefault": "keep_scheduler_disabled",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_scheduler_disabled",
+          "input": "owner-safety and takedown policy",
+          "prompt": "owner-safety and takedown policy for crawl.",
+          "questionId": "recurring_event_crawl_policy:owner-safety-and-takedown-policy",
+          "recommendedSafeDefault": "keep_scheduler_disabled",
+          "requiredForAcceptance": true
+        }
+      ],
+      "reviewDecision": {
+        "decidedAt": "2026-06-18",
+        "decision": "hold",
+        "missingRequiredInputs": [
+          "platform allowlist and fallback order",
+          "crawl frequency by platform and organizer tier",
+          "monthly spend cap and per-run rate limits",
+          "API-first vs scrape fallback policy",
+          "owner-safety and takedown policy"
+        ],
+        "note": "Safe default hold retained because no product approval was provided for this policy on 2026-06-18.",
+        "policyGapDecisionBatchId": "2026-06-18-recurring-event-crawl-policy-policy-hold",
+        "requiredInputsReviewed": [],
+        "reviewer": "suvrat",
+        "unknownRequiredInputs": []
+      },
+      "safeDefaultAction": "keep_scheduler_disabled",
+      "severity": "high",
+      "status": "decision_required",
+      "unblockCriteria": [
+        "event crawl plan policy.schedulerEnabled is true",
+        "approved surfaces use crawl.policy apiPreferred",
+        "remote ops manifest names budget and rate-limit guardrails"
+      ]
+    },
+    {
+      "area": "event_import",
+      "blockedArtifacts": [
+        "tool/organizer_intake/generated/external_event_import_plan.json",
+        "tool/organizer_intake/generated/external_event_import_execution_plan.json"
+      ],
+      "currentState": "0 approved candidate(s), 0 proposed read-only event(s); writes disabled.",
+      "decisionOwner": "product_ops",
+      "decisionPrompt": "When may reviewed external event candidates become live app events?",
+      "decisionStatus": "accepted",
+      "gapId": "external_event_import_write_policy",
+      "implementationGate": "import service authority, approval threshold, conflict policy, and rollback encoded",
+      "nextAction": "Encode import authority, host notification, duplicate handling, and rollback gates before writing read-only external events.",
+      "packetId": "policy-packet-external_event_import_write_policy",
+      "questions": [
+        {
+          "answerState": "reviewed",
+          "currentDefault": "keep_event_import_writes_disabled",
+          "input": "write authority model and service identity",
+          "prompt": "write authority model and service identity for event import.",
+          "questionId": "external_event_import_write_policy:write-authority-model-and-service-identity",
+          "recommendedSafeDefault": "keep_event_import_writes_disabled",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "reviewed",
+          "currentDefault": "keep_event_import_writes_disabled",
+          "input": "final admin approval threshold before import",
+          "prompt": "final admin approval threshold before import for event import.",
+          "questionId": "external_event_import_write_policy:final-admin-approval-threshold-before-import",
+          "recommendedSafeDefault": "keep_event_import_writes_disabled",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "reviewed",
+          "currentDefault": "keep_event_import_writes_disabled",
+          "input": "duplicate event conflict policy",
+          "prompt": "duplicate event conflict policy for event import.",
+          "questionId": "external_event_import_write_policy:duplicate-event-conflict-policy",
+          "recommendedSafeDefault": "keep_event_import_writes_disabled",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "reviewed",
+          "currentDefault": "keep_event_import_writes_disabled",
+          "input": "host notification policy for imported events",
+          "prompt": "host notification policy for imported events for event import.",
+          "questionId": "external_event_import_write_policy:host-notification-policy-for-imported-events",
+          "recommendedSafeDefault": "keep_event_import_writes_disabled",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "reviewed",
+          "currentDefault": "keep_event_import_writes_disabled",
+          "input": "rollback, correction, and takedown workflow",
+          "prompt": "rollback, correction, and takedown workflow for event import.",
+          "questionId": "external_event_import_write_policy:rollback-correction-and-takedown-workflow",
+          "recommendedSafeDefault": "keep_event_import_writes_disabled",
+          "requiredForAcceptance": true
+        }
+      ],
+      "reviewDecision": {
+        "decidedAt": "2026-06-18",
+        "decision": "accept",
+        "missingRequiredInputs": [],
+        "note": "User accepted a constrained external event import policy on 2026-06-18: imported external events may be read-only Catch event records with one or more outbound booking links to external platforms; Catch must not provide in-app booking, payments, reservations, or waitlist functionality for events not hosted on Catch. Every imported event must come from reviewed external candidates. If the same event appears on multiple platforms, keep one canonical read-only event and attach multiple outbound source/booking links instead of creating duplicate events. Corrections, takedowns, and bad imports remain admin-owned rollback actions.",
+        "policyGapDecisionBatchId": "2026-06-18-external-event-import-write-policy-policy-accept",
+        "requiredInputsReviewed": [
+          "duplicate event conflict policy",
+          "final admin approval threshold before import",
+          "host notification policy for imported events",
+          "rollback, correction, and takedown workflow",
+          "write authority model and service identity"
+        ],
+        "reviewer": "suvrat",
+        "unknownRequiredInputs": []
+      },
+      "safeDefaultAction": "keep_event_import_writes_disabled",
+      "severity": "high",
+      "status": "decision_required",
+      "unblockCriteria": [
+        "import plan policy.writeEnabled is true",
+        "execution preflight policy.writeEnabled is true",
+        "execution authorityModel is admin_import_service",
+        "all write-ready actions pass read-only external event projection validation"
+      ]
+    },
+    {
+      "area": "event_import",
+      "blockedArtifacts": [
+        "tool/organizer_intake/generated/external_event_import_plan.json"
+      ],
+      "currentState": "No current action is blocked by defaults, but imported-event defaults are not yet approved.",
+      "decisionOwner": "product_ops",
+      "decisionPrompt": "What default event fields should imported external events receive?",
+      "decisionStatus": "held",
+      "gapId": "external_event_defaults_policy",
+      "implementationGate": "capacity, admission, pricing, cancellation, and activity defaults encoded",
+      "nextAction": "Choose default capacity, admission, pricing, and activity-field policy before enabling imports.",
+      "packetId": "policy-packet-external_event_defaults_policy",
+      "questions": [
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_imports_blocked_without_event_defaults",
+          "input": "default capacity by activity and source platform",
+          "prompt": "default capacity by activity and source platform for event import.",
+          "questionId": "external_event_defaults_policy:default-capacity-by-activity-and-source-platform",
+          "recommendedSafeDefault": "keep_imports_blocked_without_event_defaults",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_imports_blocked_without_event_defaults",
+          "input": "admission mode for imported events",
+          "prompt": "admission mode for imported events for event import.",
+          "questionId": "external_event_defaults_policy:admission-mode-for-imported-events",
+          "recommendedSafeDefault": "keep_imports_blocked_without_event_defaults",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_imports_blocked_without_event_defaults",
+          "input": "pricing display and payment handling for externally ticketed events",
+          "prompt": "pricing display and payment handling for externally ticketed events for event import.",
+          "questionId": "external_event_defaults_policy:pricing-display-and-payment-handling-for-externally-ticketed-events",
+          "recommendedSafeDefault": "keep_imports_blocked_without_event_defaults",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_imports_blocked_without_event_defaults",
+          "input": "default cancellation and settlement behavior",
+          "prompt": "default cancellation and settlement behavior for event import.",
+          "questionId": "external_event_defaults_policy:default-cancellation-and-settlement-behavior",
+          "recommendedSafeDefault": "keep_imports_blocked_without_event_defaults",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_imports_blocked_without_event_defaults",
+          "input": "activity-specific required fields such as distance, pace, or venue",
+          "prompt": "activity-specific required fields such as distance, pace, or venue for event import.",
+          "questionId": "external_event_defaults_policy:activity-specific-required-fields-such-as-distance-pace-or-venue",
+          "recommendedSafeDefault": "keep_imports_blocked_without_event_defaults",
+          "requiredForAcceptance": true
+        }
+      ],
+      "reviewDecision": {
+        "decidedAt": "2026-06-18",
+        "decision": "hold",
+        "missingRequiredInputs": [
+          "default capacity by activity and source platform",
+          "admission mode for imported events",
+          "pricing display and payment handling for externally ticketed events",
+          "default cancellation and settlement behavior",
+          "activity-specific required fields such as distance, pace, or venue"
+        ],
+        "note": "Safe default hold retained because no product approval was provided for this policy on 2026-06-18.",
+        "policyGapDecisionBatchId": "2026-06-18-external-event-defaults-policy-policy-hold",
+        "requiredInputsReviewed": [],
+        "reviewer": "suvrat",
+        "unknownRequiredInputs": []
+      },
+      "safeDefaultAction": "keep_imports_blocked_without_event_defaults",
+      "severity": "medium",
+      "status": "decision_required",
+      "unblockCriteria": [
+        "import actions no longer include requires_event_defaults_policy",
+        "read-only event projection preflight validates for every would-publish action"
+      ]
+    },
+    {
+      "area": "location_resolution",
+      "blockedArtifacts": [
+        "tool/organizer_intake/generated/external_event_location_resolution_queue.json"
+      ],
+      "currentState": "0 unresolved location task(s); provider lookup disabled.",
+      "decisionOwner": "product_ops",
+      "decisionPrompt": "Should provider-backed location lookup be allowed for external events?",
+      "decisionStatus": "held",
+      "gapId": "external_event_location_provider_policy",
+      "implementationGate": "provider, confidence thresholds, spend caps, and retention encoded",
+      "nextAction": "Keep manual resolution as the default until provider, confidence, retention, and spend caps are approved.",
+      "packetId": "policy-packet-external_event_location_provider_policy",
+      "questions": [
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_manual_location_resolution",
+          "input": "provider selection and fallback order",
+          "prompt": "provider selection and fallback order for location resolution.",
+          "questionId": "external_event_location_provider_policy:provider-selection-and-fallback-order",
+          "recommendedSafeDefault": "keep_manual_location_resolution",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_manual_location_resolution",
+          "input": "per-run lookup cap and monthly spend cap",
+          "prompt": "per-run lookup cap and monthly spend cap for location resolution.",
+          "questionId": "external_event_location_provider_policy:per-run-lookup-cap-and-monthly-spend-cap",
+          "recommendedSafeDefault": "keep_manual_location_resolution",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_manual_location_resolution",
+          "input": "minimum confidence threshold for auto-resolution",
+          "prompt": "minimum confidence threshold for auto-resolution for location resolution.",
+          "questionId": "external_event_location_provider_policy:minimum-confidence-threshold-for-auto-resolution",
+          "recommendedSafeDefault": "keep_manual_location_resolution",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_manual_location_resolution",
+          "input": "admin review threshold for provider-suggested coordinates",
+          "prompt": "admin review threshold for provider-suggested coordinates for location resolution.",
+          "questionId": "external_event_location_provider_policy:admin-review-threshold-for-provider-suggested-coordinates",
+          "recommendedSafeDefault": "keep_manual_location_resolution",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "keep_manual_location_resolution",
+          "input": "raw provider response retention policy",
+          "prompt": "raw provider response retention policy for location resolution.",
+          "questionId": "external_event_location_provider_policy:raw-provider-response-retention-policy",
+          "recommendedSafeDefault": "keep_manual_location_resolution",
+          "requiredForAcceptance": true
+        }
+      ],
+      "reviewDecision": {
+        "decidedAt": "2026-06-18",
+        "decision": "hold",
+        "missingRequiredInputs": [
+          "provider selection and fallback order",
+          "per-run lookup cap and monthly spend cap",
+          "minimum confidence threshold for auto-resolution",
+          "admin review threshold for provider-suggested coordinates",
+          "raw provider response retention policy"
+        ],
+        "note": "Safe default hold retained because no product approval was provided for this policy on 2026-06-18.",
+        "policyGapDecisionBatchId": "2026-06-18-external-event-location-provider-policy-policy-hold",
+        "requiredInputsReviewed": [],
+        "reviewer": "suvrat",
+        "unknownRequiredInputs": []
+      },
+      "safeDefaultAction": "keep_manual_location_resolution",
+      "severity": "medium",
+      "status": "decision_required",
+      "unblockCriteria": [
+        "location resolution policy.providerLookupEnabled is true",
+        "cost caps and provider names are encoded in repo config",
+        "provider results still write reviewed location resolution batches before import planning"
+      ]
+    },
+    {
+      "area": "naming",
+      "blockedArtifacts": [
+        "admin/src/App.tsx",
+        "website/src/App.tsx",
+        "lib/clubs/domain/club.dart"
+      ],
+      "currentState": "Organizer is canonical in intake; Club remains the app/backend compatibility projection; Host remains the human/operator role.",
+      "decisionOwner": "product",
+      "decisionPrompt": "What public entity and operator role labels should Catch standardize on?",
+      "decisionStatus": "accepted",
+      "gapId": "organizer_host_naming_migration_policy",
+      "implementationGate": "naming terms, migration order, URL policy, and compatibility plan encoded",
+      "nextAction": "Confirm Organizer as the entity and Host as the operator role before broad UI/schema renames.",
+      "packetId": "policy-packet-organizer_host_naming_migration_policy",
+      "questions": [
+        {
+          "answerState": "reviewed",
+          "currentDefault": "keep_organizer_entity_with_club_compatibility",
+          "input": "canonical public entity label",
+          "prompt": "canonical public entity label for naming.",
+          "questionId": "organizer_host_naming_migration_policy:canonical-public-entity-label",
+          "recommendedSafeDefault": "keep_organizer_entity_with_club_compatibility",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "reviewed",
+          "currentDefault": "keep_organizer_entity_with_club_compatibility",
+          "input": "operator/account role label",
+          "prompt": "operator/account role label for naming.",
+          "questionId": "organizer_host_naming_migration_policy:operator-account-role-label",
+          "recommendedSafeDefault": "keep_organizer_entity_with_club_compatibility",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "reviewed",
+          "currentDefault": "keep_organizer_entity_with_club_compatibility",
+          "input": "legacy Club migration scope",
+          "prompt": "legacy Club migration scope for naming.",
+          "questionId": "organizer_host_naming_migration_policy:legacy-club-migration-scope",
+          "recommendedSafeDefault": "keep_organizer_entity_with_club_compatibility",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "reviewed",
+          "currentDefault": "keep_organizer_entity_with_club_compatibility",
+          "input": "URL and SEO naming transition policy",
+          "prompt": "URL and SEO naming transition policy for naming.",
+          "questionId": "organizer_host_naming_migration_policy:url-and-seo-naming-transition-policy",
+          "recommendedSafeDefault": "keep_organizer_entity_with_club_compatibility",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "reviewed",
+          "currentDefault": "keep_organizer_entity_with_club_compatibility",
+          "input": "admin/app copy migration order",
+          "prompt": "admin/app copy migration order for naming.",
+          "questionId": "organizer_host_naming_migration_policy:admin-app-copy-migration-order",
+          "recommendedSafeDefault": "keep_organizer_entity_with_club_compatibility",
+          "requiredForAcceptance": true
+        }
+      ],
+      "reviewDecision": {
+        "decidedAt": "2026-06-18",
+        "decision": "accept",
+        "missingRequiredInputs": [],
+        "note": "User accepted the naming migration policy on 2026-06-18: public pages should standardize on Host as the user-facing entity, keep OrganizerEntity internally during the migration, and preserve Club compatibility until downstream app/backend surfaces are migrated deliberately.",
+        "policyGapDecisionBatchId": "2026-06-18-organizer-host-naming-migration-policy-policy-accept",
+        "requiredInputsReviewed": [
+          "URL and SEO naming transition policy",
+          "admin/app copy migration order",
+          "canonical public entity label",
+          "legacy Club migration scope",
+          "operator/account role label"
+        ],
+        "reviewer": "suvrat",
+        "unknownRequiredInputs": []
+      },
+      "safeDefaultAction": "keep_organizer_entity_with_club_compatibility",
+      "severity": "medium",
+      "status": "decision_required",
+      "unblockCriteria": [
+        "canonical entity and role terms are approved",
+        "schema/backfill plan exists for legacy Club compatibility",
+        "public website, admin, Flutter app, and backend copy migration is sequenced"
+      ]
+    }
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "accepted": 2,
+    "decisionRequired": 5,
+    "held": 3,
+    "invalid": 0,
+    "notReviewed": 0,
+    "packets": 5,
+    "questions": 25,
+    "questionsByAnswerState": {
+      "needs_input": 15,
+      "reviewed": 10
+    },
+    "questionsByArea": {
+      "crawl": 1,
+      "event_import": 2,
+      "location_resolution": 1,
+      "naming": 1
+    },
+    "ready": 0,
+    "rejected": 0,
+    "requiredQuestions": 25,
+    "unansweredQuestions": 15
+  }
+}

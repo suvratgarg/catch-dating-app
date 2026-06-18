@@ -5,20 +5,75 @@ import {fileURLToPath} from "node:url";
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const websiteRoot = path.resolve(dirname, "..");
 const repoRoot = path.resolve(websiteRoot, "..");
-const seedRoot = path.join(repoRoot, "tool", "host_discovery", "seed_clubs");
-const demoScenarioRoot = path.join(repoRoot, "tool", "demo", "demo_seed", "scenarios");
-const generatedDir = path.join(websiteRoot, "src", "generated");
-const generatedPath = path.join(generatedDir, "hostListings.json");
+const args = parseArgs(process.argv.slice(2));
+if (args.help) {
+  printHelp();
+  process.exit(0);
+}
+
+const seedRoot = path.resolve(
+  args.seedRoot ?? path.join(repoRoot, "tool", "host_discovery", "seed_clubs")
+);
+const intakeProjectionPath = path.resolve(args.projectionPlan ?? path.join(
+  repoRoot,
+  "tool",
+  "organizer_intake",
+  "generated",
+  "public_projection_plan.json"
+));
+const demoScenarioRoot = path.resolve(
+  args.demoScenarioRoot ??
+    path.join(repoRoot, "tool", "demo", "demo_seed", "scenarios")
+);
+const generatedPath = path.resolve(
+  args.output ??
+    path.join(websiteRoot, "src", "generated", "hostListings.json")
+);
+const checkOnly = args.check;
+const approvedIntakeProjections = organizerIntakeProjectionEntries();
+const suppressedLegacyPaths = new Set(
+  approvedIntakeProjections.flatMap((entry) => [
+    entry.publicListing?.path,
+    ...(entry.legacyPaths ?? []),
+  ]).filter(Boolean)
+);
 
 const listings = [
-  ...scrapedSeedListings(),
-  ...appCreatedDemoListings(),
+  ...approvedIntakeProjections.map(listingFromOrganizerIntakeProjection),
+  ...(args.noSeeds ? [] : scrapedSeedListings(suppressedLegacyPaths)),
+  ...(args.noDemo ? [] : appCreatedDemoListings()),
 ].sort((a, b) => a.name.localeCompare(b.name));
+const renderedListings = `${JSON.stringify(listings, null, 2)}\n`;
 
-fs.mkdirSync(generatedDir, {recursive: true});
-fs.writeFileSync(generatedPath, `${JSON.stringify(listings, null, 2)}\n`);
+if (checkOnly) {
+  if (!fs.existsSync(generatedPath)) {
+    console.error(`Missing generated organizer listings: ${generatedPath}`);
+    process.exit(1);
+  }
+  const currentListings = fs.readFileSync(generatedPath, "utf8");
+  if (currentListings !== renderedListings) {
+    console.error("website/src/generated/hostListings.json is stale.");
+    console.error("Run: npm --workspace catch-marketing run generate:organizer-listings");
+    process.exit(1);
+  }
+} else {
+  fs.mkdirSync(path.dirname(generatedPath), {recursive: true});
+  fs.writeFileSync(generatedPath, renderedListings);
+}
 
-function scrapedSeedListings() {
+function organizerIntakeProjectionEntries() {
+  if (!fs.existsSync(intakeProjectionPath)) return [];
+  const projectionPlan = JSON.parse(fs.readFileSync(intakeProjectionPath, "utf8"));
+  return (projectionPlan.entries ?? [])
+    .filter((entry) =>
+      entry?.projectionStatus === "ready" &&
+      entry?.publicListing &&
+      entry?.publishStatus === "published"
+    )
+    .sort((a, b) => a.entityId.localeCompare(b.entityId));
+}
+
+function scrapedSeedListings(suppressedPaths) {
   return fs
     .readdirSync(seedRoot)
     .filter((file) => file.endsWith(".json"))
@@ -27,6 +82,9 @@ function scrapedSeedListings() {
       const wrapper = JSON.parse(
         fs.readFileSync(path.join(seedRoot, file), "utf8")
       );
+      if (suppressedPaths.has(wrapper?.data?.publicPage?.canonicalPath)) {
+        return null;
+      }
       return listingFromClubSeed(wrapper);
     })
     .filter(Boolean);
@@ -70,6 +128,7 @@ function listingFromClubSeed(wrapper) {
     region: club.regionName ?? "",
     country: club.countryName ?? "",
     path: club.publicPage.canonicalPath,
+    legacyPaths: [],
     category: club.displayCategory ?? "Organizer",
     status: claimState,
     indexing: club.publicPage.robots ?? "noindex, follow",
@@ -102,6 +161,80 @@ function listingFromClubSeed(wrapper) {
       club.instagramHandle,
       ...(club.tags ?? []),
       ...(publicProfile.formats ?? []),
+    ]),
+  };
+}
+
+function listingFromOrganizerIntakeProjection(entry) {
+  const projection = entry.publicListing;
+  const markets = projection.markets ?? [];
+  const primaryMarket = markets[0] ?? null;
+  const allMarketNames = markets.map((market) => market.displayName).filter(Boolean);
+  const city = allMarketNames.length > 1 ?
+    "Multiple cities" :
+    primaryMarket?.displayName ?? "Unknown";
+  const citySlug = primaryMarket?.marketSlug ?? "multi-city";
+  const country = countryNameForCode(primaryMarket?.countryCode);
+  const sources = publicSourcesForOrganizerIntake(projection.sources ?? []);
+
+  return {
+    id: projection.id,
+    listingVariant: "unclaimedScraped",
+    dataOrigin: "organizerIntake",
+    name: projection.name,
+    slug: projection.slug,
+    city,
+    citySlug,
+    region: "",
+    country,
+    path: projection.path,
+    legacyPaths: entry.legacyPaths ?? [],
+    category: projection.category,
+    status: projection.status,
+    indexing: projection.indexing,
+    sourceConfidence: highestSourceConfidence(sources),
+    headline: projection.headline ?? `${projection.name} organizer profile`,
+    description: projection.description,
+    sourceSummary: projection.sourceSummary,
+    logo: {
+      mode: "monogram",
+      text: initialsForName(projection.name),
+      status: "not_verified",
+    },
+    formats: projection.formats ?? [],
+    facts: [
+      ...(allMarketNames.length ? [{
+        label: allMarketNames.length > 1 ? "Markets" : "Market",
+        value: allMarketNames.join(", "),
+      }] : []),
+      {label: "Organizer type", value: projection.category},
+      {label: "Claim state", value: titleCaseText(projection.status)},
+      {label: "Indexing", value: projection.indexing},
+      {label: "App visibility", value: entry.appVisibility ?? "hidden"},
+      {label: "Source surfaces", value: String(sources.length)},
+    ],
+    eventEvidence: [],
+    reviews: [],
+    fitNotes: [
+      "This profile was promoted from organizer intake after manual admin review.",
+      "Events remain market-filtered under one canonical organizer identity.",
+      "Claiming unlocks owner-managed copy, official media, Catch events, and verified reviews.",
+    ],
+    missingEvidence: projection.missingEvidence ?? [],
+    sources,
+    claim: {
+      href: `${projection.path}#claim`,
+      label: "Claim this listing",
+    },
+    lastVerifiedAt: dateLabel(entry.reviewDecision?.decidedAt),
+    searchText: searchText([
+      projection.name,
+      projection.category,
+      city,
+      citySlug,
+      ...(projection.formats ?? []),
+      ...allMarketNames,
+      ...sources.flatMap((source) => [source.label, source.detail]),
     ]),
   };
 }
@@ -255,6 +388,23 @@ function publicSourcesForListing(sources) {
   });
 }
 
+function publicSourcesForOrganizerIntake(sources) {
+  return sources.map((source) => {
+    const label = source.label ?? source.type ?? "Public source";
+    const confidence = source.confidence ?? "medium";
+    const listingSource = {
+      type: source.type ?? "organizer_intake_surface",
+      label,
+      detail:
+        source.detail ??
+        `${label} was reviewed as an organizer-intake surface with ${confidence} confidence.`,
+      confidence,
+    };
+    if (source.href) listingSource.href = source.href;
+    return listingSource;
+  });
+}
+
 function salesDemoEvents(demo) {
   const now = new Date(demo.referenceNow);
   return (demo.events ?? []).map((event) => {
@@ -378,6 +528,26 @@ function searchText(values) {
     .toLowerCase();
 }
 
+function highestSourceConfidence(sources) {
+  if (sources.some((source) => source.confidence === "high")) return "high";
+  if (sources.some((source) => source.confidence === "medium")) return "medium";
+  return "low";
+}
+
+function countryNameForCode(countryCode) {
+  if (countryCode === "IN") return "India";
+  if (countryCode === "US") return "United States";
+  return countryCode ?? "";
+}
+
+function titleCaseText(value) {
+  return String(value)
+    .split(/[\s_-]+/)
+    .filter(Boolean)
+    .map((word) => `${word[0]?.toUpperCase() ?? ""}${word.slice(1)}`)
+    .join(" ");
+}
+
 function initialsForName(name) {
   return String(name)
     .split(/\s+/)
@@ -395,8 +565,70 @@ function slugForName(name) {
 }
 
 function dateLabel(timestamp) {
+  if (typeof timestamp === "string" && !Number.isNaN(Date.parse(timestamp))) {
+    return new Date(timestamp).toISOString().slice(0, 10);
+  }
   if (!timestamp || typeof timestamp._seconds !== "number") {
     return "Unverified";
   }
   return new Date(timestamp._seconds * 1000).toISOString().slice(0, 10);
+}
+
+function parseArgs(argv) {
+  const parsed = {
+    check: false,
+    demoScenarioRoot: null,
+    help: false,
+    noDemo: false,
+    noSeeds: false,
+    output: null,
+    projectionPlan: null,
+    seedRoot: null,
+  };
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+    if (arg === "--check") parsed.check = true;
+    else if (arg === "--help" || arg === "-h") parsed.help = true;
+    else if (arg === "--no-demo") parsed.noDemo = true;
+    else if (arg === "--no-seeds") parsed.noSeeds = true;
+    else if (arg === "--demo-scenario-root") {
+      parsed.demoScenarioRoot = requiredValue(argv, ++index, arg);
+    } else if (arg === "--output") {
+      parsed.output = requiredValue(argv, ++index, arg);
+    } else if (arg === "--projection-plan") {
+      parsed.projectionPlan = requiredValue(argv, ++index, arg);
+    } else if (arg === "--seed-root") {
+      parsed.seedRoot = requiredValue(argv, ++index, arg);
+    } else {
+      fail(`Unknown argument: ${arg}`);
+    }
+  }
+
+  return parsed;
+}
+
+function requiredValue(argv, index, flag) {
+  const value = argv[index];
+  if (!value || value.startsWith("--")) fail(`${flag} requires a value.`);
+  return value;
+}
+
+function printHelp() {
+  console.log(`Usage: node website/scripts/generateOrganizerListings.mjs [options]
+
+Options:
+  --check                         Check generated hostListings.json drift.
+  --projection-plan <path>         Read a specific organizer public projection plan.
+  --seed-root <path>               Read legacy scraped seed listings from a specific folder.
+  --demo-scenario-root <path>      Read demo scenario configs from a specific folder.
+  --output <path>                  Write or check a specific output file.
+  --no-seeds                      Exclude legacy scraped seed listings.
+  --no-demo                       Exclude app-created demo listings.
+`);
+}
+
+function fail(message) {
+  console.error(message);
+  process.exit(1);
 }

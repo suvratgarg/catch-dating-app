@@ -1,0 +1,22 @@
+{
+  "entries": [],
+  "generatedFrom": {
+    "answerPacketsRoot": "tool/organizer_intake/answer_packets",
+    "generatedAnswerPacket": "tool/organizer_intake/generated/organizer_pending_decision_answer_packet.json"
+  },
+  "guardrails": [
+    "This register is read-only; it never records decisions, writes Firestore, publishes pages, or applies answer packets.",
+    "Ready packets must be source-fresh, complete, and pass the same dry-run/write command planning checks used by apply_pending_decision_answers.mjs.",
+    "Stale reviewed packets should be recreated from the latest generated answer packet unless an operator explicitly overrides freshness after manual comparison."
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "awaitingAnswers": 0,
+    "invalid": 0,
+    "packets": 0,
+    "readyToApply": 0,
+    "sourceFresh": 0,
+    "stale": 0,
+    "status": "no_reviewed_packets"
+  }
+}

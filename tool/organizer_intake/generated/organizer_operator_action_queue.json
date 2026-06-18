@@ -1,0 +1,140 @@
+{
+  "actions": [
+    {
+      "actionId": "policy-decision:recurring_event_crawl_policy",
+      "actionType": "policy_decision",
+      "blockers": [
+        "tool/organizer_intake/generated/event_crawl_plan.json"
+      ],
+      "commands": [
+        "node tool/organizer_intake/policy_gap_decision.mjs draft recurring_event_crawl_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+      ],
+      "decisionOptions": [
+        "accept",
+        "hold",
+        "reject"
+      ],
+      "detail": "Should recurring provider crawls be enabled for any organizer surface?",
+      "nextAction": "Choose platform order, frequency, budget cap, and owner-safety rules before enabling scheduled crawls.",
+      "priority": "p0",
+      "requiredInputs": [
+        "recurring_event_crawl_policy:api-first-vs-scrape-fallback-policy",
+        "recurring_event_crawl_policy:crawl-frequency-by-platform-and-organizer-tier",
+        "recurring_event_crawl_policy:monthly-spend-cap-and-per-run-rate-limits",
+        "recurring_event_crawl_policy:owner-safety-and-takedown-policy",
+        "recurring_event_crawl_policy:platform-allowlist-and-fallback-order"
+      ],
+      "safeDefaultAction": "keep_scheduler_disabled",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/organizer_policy_decision_packets.json",
+        "tool/organizer_intake/generated/organizer_policy_gap_register.json"
+      ],
+      "status": "requires_policy_input",
+      "subjectId": "recurring_event_crawl_policy",
+      "subjectName": "crawl",
+      "taskType": "crawl"
+    },
+    {
+      "actionId": "policy-decision:external_event_defaults_policy",
+      "actionType": "policy_decision",
+      "blockers": [
+        "tool/organizer_intake/generated/external_event_import_plan.json"
+      ],
+      "commands": [
+        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_defaults_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+      ],
+      "decisionOptions": [
+        "accept",
+        "hold",
+        "reject"
+      ],
+      "detail": "What default event fields should imported external events receive?",
+      "nextAction": "Choose default capacity, admission, pricing, and activity-field policy before enabling imports.",
+      "priority": "p1",
+      "requiredInputs": [
+        "external_event_defaults_policy:activity-specific-required-fields-such-as-distance-pace-or-venue",
+        "external_event_defaults_policy:admission-mode-for-imported-events",
+        "external_event_defaults_policy:default-cancellation-and-settlement-behavior",
+        "external_event_defaults_policy:default-capacity-by-activity-and-source-platform",
+        "external_event_defaults_policy:pricing-display-and-payment-handling-for-externally-ticketed-events"
+      ],
+      "safeDefaultAction": "keep_imports_blocked_without_event_defaults",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/organizer_policy_decision_packets.json",
+        "tool/organizer_intake/generated/organizer_policy_gap_register.json"
+      ],
+      "status": "requires_policy_input",
+      "subjectId": "external_event_defaults_policy",
+      "subjectName": "event_import",
+      "taskType": "event_import"
+    },
+    {
+      "actionId": "policy-decision:external_event_location_provider_policy",
+      "actionType": "policy_decision",
+      "blockers": [
+        "tool/organizer_intake/generated/external_event_location_resolution_queue.json"
+      ],
+      "commands": [
+        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_location_provider_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+      ],
+      "decisionOptions": [
+        "accept",
+        "hold",
+        "reject"
+      ],
+      "detail": "Should provider-backed location lookup be allowed for external events?",
+      "nextAction": "Keep manual resolution as the default until provider, confidence, retention, and spend caps are approved.",
+      "priority": "p1",
+      "requiredInputs": [
+        "external_event_location_provider_policy:admin-review-threshold-for-provider-suggested-coordinates",
+        "external_event_location_provider_policy:minimum-confidence-threshold-for-auto-resolution",
+        "external_event_location_provider_policy:per-run-lookup-cap-and-monthly-spend-cap",
+        "external_event_location_provider_policy:provider-selection-and-fallback-order",
+        "external_event_location_provider_policy:raw-provider-response-retention-policy"
+      ],
+      "safeDefaultAction": "keep_manual_location_resolution",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/organizer_policy_decision_packets.json",
+        "tool/organizer_intake/generated/organizer_policy_gap_register.json"
+      ],
+      "status": "requires_policy_input",
+      "subjectId": "external_event_location_provider_policy",
+      "subjectName": "location_resolution",
+      "taskType": "location_resolution"
+    }
+  ],
+  "generatedFrom": {
+    "claimTargetSyncPreview": "tool/organizer_intake/generated/organizer_claim_target_sync_preview.json",
+    "policyDecisionPackets": "tool/organizer_intake/generated/organizer_policy_decision_packets.json",
+    "publicationDecisionImpactPreview": "tool/organizer_intake/generated/publication_decision_impact_preview.json",
+    "publicationReviewPackets": "tool/organizer_intake/generated/publication_review_packets.json",
+    "workflowReadiness": "tool/organizer_intake/generated/organizer_workflow_readiness.json"
+  },
+  "guardrails": [
+    "Operator actions are a review queue only; they never approve publication, enable crawls, import events, sync claim targets, or write Firestore.",
+    "Publication actions must be resolved through admin review decisions before website projection or claim-target sync can proceed.",
+    "Policy actions record product or operations decisions only; accepting a policy packet does not enable behavior until the owning planner/config is changed.",
+    "Waiting workflow actions should clear only after their upstream admin or policy action is reviewed and the promotion pipeline is regenerated."
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "actions": 3,
+    "actionsByPriority": {
+      "p0": 1,
+      "p1": 2
+    },
+    "actionsByStatus": {
+      "requires_policy_input": 3
+    },
+    "actionsByType": {
+      "policy_decision": 3
+    },
+    "adminDecisionsRequired": 0,
+    "highestPriority": "p0",
+    "policyDecisionActions": 3,
+    "policyInputsRequired": 3,
+    "publicationReviewActions": 0,
+    "waitingActions": 0,
+    "workflowGateActions": 0
+  }
+}

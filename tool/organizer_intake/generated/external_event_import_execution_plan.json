@@ -1,0 +1,47 @@
+{
+  "actions": [],
+  "commands": {
+    "plan": "node tool/organizer_intake/plan_external_event_imports.mjs",
+    "preflight": "node tool/organizer_intake/preflight_external_event_imports.mjs",
+    "write": "not available: approve ownership, defaults, and import policy first"
+  },
+  "generatedFrom": {
+    "externalEventImportPlan": "tool/organizer_intake/generated/external_event_import_plan.json",
+    "importPlanGeneratedFrom": {
+      "batches": [],
+      "externalEventCandidateQueue": "tool/organizer_intake/generated/external_event_candidate_queue.json",
+      "locationResolutionBatches": [],
+      "reviewDecisionBatches": []
+    }
+  },
+  "guardrails": [
+    "execution_preflight_never_writes_firestore",
+    "create_event_callable_is_not_used_for_external_read_only_imports",
+    "read_only_projection_requires_outbound_external_link",
+    "catch_booking_payments_reservations_and_waitlists_must_be_false",
+    "write_enabled_requires_explicit_authority_policy"
+  ],
+  "policy": {
+    "authorityModel": "undecided",
+    "reason": "External event import execution is preflight-only for read-only external event projections. No createEvent callable invocation, Catch booking, payment, reservation, waitlist, notification, or schedule lock is enabled.",
+    "status": "disabled",
+    "writeEnabled": false
+  },
+  "schemaVersion": 1,
+  "summary": {
+    "actionsByStatus": {},
+    "blocked": 0,
+    "createActions": 0,
+    "importActions": 0,
+    "payloadInvalid": 0,
+    "payloadValid": 0,
+    "projectionInvalid": 0,
+    "projectionInvalidCount": 0,
+    "projectionValid": 0,
+    "readOnlyActions": 0,
+    "schemaInvalid": 0,
+    "skipped": 0,
+    "wouldCreate": 0,
+    "wouldPublishReadOnly": 0
+  }
+}

@@ -344,6 +344,7 @@ test("adminDecideClubClaimHandler approves pending claims",
     const club = h.firestore.get("clubs/afterfly-run-club-indore");
     assert.equal(club?.ownerUserId, "owner-1");
     assert.equal(club?.hostUserId, "owner-1");
+    assert.equal(club?.appVisibility, "discoverable");
     assert.deepEqual(club?.claim, {
       state: "claimed",
       claimHref: null,

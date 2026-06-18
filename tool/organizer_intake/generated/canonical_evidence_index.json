@@ -1,0 +1,1087 @@
+{
+  "artifactCoverage": [
+    {
+      "artifactId": "tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-2139cd51dc7b",
+      "artifactKind": "referenced_evidence_file",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_source_reference",
+      "path": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+      "referencedByEvidenceIds": [
+        "evidence-afterfly-afterfly-instagram-primary-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-json",
+        "evidence-afterfly-afterfly-instagram-probed-runclub-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-json",
+        "evidence-afterfly-afterfly-luma-takeoff-run-rave-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-json"
+      ],
+      "remoteObjectKey": null,
+      "retentionStatus": "repo_reviewed",
+      "sha256": "2139cd51dc7bc12e8aa01c57b10140cbddbb7ce00fdaabb9cc5964179861d36c",
+      "sizeBytes": 3575,
+      "source": "evidence_ref_file",
+      "storageAction": "not_required",
+      "storageClass": "reviewed_source_reference"
+    },
+    {
+      "artifactId": "tool-host-discovery-runs-2026-06-10-bhag-run-club-delhi-d6c9e6d7d342",
+      "artifactKind": "referenced_evidence_file",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_source_reference",
+      "path": "tool/host_discovery/runs/2026-06-10-bhag-run-club-delhi.json",
+      "referencedByEvidenceIds": [
+        "evidence-bhag-bhag-luma-runs-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-bhag-run-club-delhi-json",
+        "evidence-bhag-bhag-official-site-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-bhag-run-club-delhi-json"
+      ],
+      "remoteObjectKey": null,
+      "retentionStatus": "repo_reviewed",
+      "sha256": "d6c9e6d7d34267097459d208de103086a39dfe99c94f49e089b36ba566e159b9",
+      "sizeBytes": 3864,
+      "source": "evidence_ref_file",
+      "storageAction": "not_required",
+      "storageClass": "reviewed_source_reference"
+    },
+    {
+      "artifactId": "tool-host-discovery-seed-clubs-afterfly-run-club-indore-28e62c026bab",
+      "artifactKind": "referenced_evidence_file",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_source_reference",
+      "path": "tool/host_discovery/seed_clubs/afterfly-run-club-indore.json",
+      "referencedByEvidenceIds": [
+        "evidence-afterfly-afterfly-luma-takeoff-run-rave-seedclub-tool-host-discovery-seed-clubs-afterfly-run-club-indore-json"
+      ],
+      "remoteObjectKey": null,
+      "retentionStatus": "repo_reviewed",
+      "sha256": "28e62c026babbf91bb72ebd4f92ada61a8932aefa7a1012ac558321a9ba66ed7",
+      "sizeBytes": 8033,
+      "source": "evidence_ref_file",
+      "storageAction": "not_required",
+      "storageClass": "reviewed_source_reference"
+    },
+    {
+      "artifactId": "tool-host-discovery-seed-clubs-bhag-run-club-delhi-6e2582438db6",
+      "artifactKind": "referenced_evidence_file",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_source_reference",
+      "path": "tool/host_discovery/seed_clubs/bhag-run-club-delhi.json",
+      "referencedByEvidenceIds": [
+        "evidence-bhag-bhag-instagram-primary-seedclub-tool-host-discovery-seed-clubs-bhag-run-club-delhi-json"
+      ],
+      "remoteObjectKey": null,
+      "retentionStatus": "repo_reviewed",
+      "sha256": "6e2582438db627d62c60710cb774acf6ec4de696f6eabd77631a3fc6b6c4d896",
+      "sizeBytes": 8523,
+      "source": "evidence_ref_file",
+      "storageAction": "not_required",
+      "storageClass": "reviewed_source_reference"
+    },
+    {
+      "artifactId": "batches-2026-06-17-foundation-4b89241100f6",
+      "artifactKind": "seed_intake_batch",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/batches/2026-06-17-foundation.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/seed-intake-state/4b89241100f6d06f-2026-06-17-foundation.json",
+      "retentionStatus": "repo_reviewed",
+      "sha256": "4b89241100f6d06f7422fc3ffbe544041ed58e07035d294e76dc67ed997a7a58",
+      "sizeBytes": 13995,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "seed_intake_state"
+    },
+    {
+      "artifactId": "curation-decisions-2026-06-17-afterfly-wrong-website-a9ae9d9e89ac",
+      "artifactKind": "review_decision_batch",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "allowed_low_volume_review_state_only",
+      "path": "tool/organizer_intake/curation_decisions/2026-06-17-afterfly-wrong-website.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/review-decision-state/a9ae9d9e89ac6ef7-2026-06-17-afterfly-wrong-website.json",
+      "retentionStatus": "repo_reviewed",
+      "sha256": "a9ae9d9e89ac6ef7abdfb1ceb41c7384ec874f34c8582b4025fc67e508a1676a",
+      "sizeBytes": 439,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "review_decision_state"
+    },
+    {
+      "artifactId": "fixtures-existing-club-docs-empty-ca3d163bab05",
+      "artifactKind": "fixture_support",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/existing_club_docs.empty.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/ca3d163bab055381-existing_club_docs.empty.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "sizeBytes": 3,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-external-event-candidates-expected-4d5bb18ad5a3",
+      "artifactKind": "fixture_expected_output",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/external_event_candidates.expected.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/4d5bb18ad5a3c693-external_event_candidates.expected.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "4d5bb18ad5a3c6933e33e89b35ef375718f1eea192ac85fcd3ba8d8dc1295901",
+      "sizeBytes": 2962,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-external-event-import-execution-plan-expected-98af6774a3aa",
+      "artifactKind": "fixture_expected_output",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/external_event_import_execution_plan.expected.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/98af6774a3aa7fe6-external_event_import_execution_plan.expected.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "98af6774a3aa7fe6c543616340c10ad53cd4e52b8e60a56b2a42c14899d2f3cd",
+      "sizeBytes": 9222,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-external-event-import-plan-expected-428d051c1071",
+      "artifactKind": "fixture_expected_output",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/external_event_import_plan.expected.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/428d051c10711f35-external_event_import_plan.expected.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "428d051c10711f35ce735777305071086e509ec4669d591487eec7fd7add6929",
+      "sizeBytes": 9084,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-external-event-location-resolution-queue-expected-3d2e8f903744",
+      "artifactKind": "fixture_expected_output",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/external_event_location_resolution_queue.expected.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/3d2e8f903744d217-external_event_location_resolution_queue.expected.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "3d2e8f903744d217ec7afcca543e43e92ceb4cf99f6fbbf440844525b9d22367",
+      "sizeBytes": 2627,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-firestore-curation-decisions-export-expected-9790d6c7312b",
+      "artifactKind": "fixture_expected_output",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/firestore_curation_decisions_export.expected.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/9790d6c7312be86b-firestore_curation_decisions_export.expected.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "9790d6c7312be86b23468c3089072018c3694bb354a78452c1abac326986ecab",
+      "sizeBytes": 1252,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-firestore-curation-decisions-sample-aef74cd46ae8",
+      "artifactKind": "fixture_sample_input",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/firestore_curation_decisions.sample.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/aef74cd46ae8702a-firestore_curation_decisions.sample.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "aef74cd46ae8702acee6468f62ba61bd479fdd73a13f438774fd0694ab4aec73",
+      "sizeBytes": 2920,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-firestore-event-location-resolutions-export-expected-544c6a20129e",
+      "artifactKind": "fixture_expected_output",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/firestore_event_location_resolutions_export.expected.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/544c6a20129e7529-firestore_event_location_resolutions_export.expected.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "544c6a20129e7529a1fb47ce1f51483cbd7e3c71328abd93d006362c7ea23389",
+      "sizeBytes": 767,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-firestore-event-location-resolutions-sample-a22b28cb0cb4",
+      "artifactKind": "fixture_sample_input",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/firestore_event_location_resolutions.sample.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/a22b28cb0cb4108a-firestore_event_location_resolutions.sample.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "a22b28cb0cb4108a5f0799b03d10d0213b17c0dce1bbc8dc55f7ef413adcf652",
+      "sizeBytes": 1079,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-firestore-event-review-decisions-export-expected-55076bb6b1ec",
+      "artifactKind": "fixture_expected_output",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/firestore_event_review_decisions_export.expected.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/55076bb6b1ec784a-firestore_event_review_decisions_export.expected.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "55076bb6b1ec784a5f50620253a028964c9a3af97c91f12fd5d6cdfddd19329a",
+      "sizeBytes": 646,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-firestore-event-review-decisions-sample-dc09243f2ada",
+      "artifactKind": "fixture_sample_input",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/firestore_event_review_decisions.sample.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/dc09243f2adaa964-firestore_event_review_decisions.sample.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "dc09243f2adaa9642b7890755e1f7c71a0578e6d552fd9642c59dd611344d877",
+      "sizeBytes": 1012,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-firestore-policy-gap-decisions-export-expected-bafcb6de2ae7",
+      "artifactKind": "fixture_expected_output",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/firestore_policy_gap_decisions_export.expected.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/bafcb6de2ae7d531-firestore_policy_gap_decisions_export.expected.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "bafcb6de2ae7d5319788173fe266c2a0f42c1997d0f4c2b07c7d38e1d2d978ac",
+      "sizeBytes": 689,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-firestore-policy-gap-decisions-sample-ae34f75332d4",
+      "artifactKind": "fixture_sample_input",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/firestore_policy_gap_decisions.sample.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/ae34f75332d42472-firestore_policy_gap_decisions.sample.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "ae34f75332d424723b7267febbe3917b9a3669923524c8e798c5d45cab115fdc",
+      "sizeBytes": 1618,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-firestore-review-decisions-export-expected-a7837a1a78bb",
+      "artifactKind": "fixture_expected_output",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/firestore_review_decisions_export.expected.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/a7837a1a78bbcc3e-firestore_review_decisions_export.expected.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "a7837a1a78bbcc3eaffc18a2896b19fee05e9cfd314f239f56f3f521e96ae79d",
+      "sizeBytes": 1030,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-firestore-review-decisions-sample-d46511f55889",
+      "artifactKind": "fixture_sample_input",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/firestore_review_decisions.sample.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/d46511f558893b00-firestore_review_decisions.sample.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "d46511f558893b00fa0728da70bfbb7eae6d07a057e59b13d6e256d1b2b99062",
+      "sizeBytes": 1833,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-luma-event-afterfly-expected-717b31f0a88a",
+      "artifactKind": "fixture_expected_output",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/luma_event.afterfly.expected.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/717b31f0a88a9d9b-luma_event.afterfly.expected.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "717b31f0a88a9d9bc3a6981e284fea99036814acf5460ca9b7242b5ba38c5add",
+      "sizeBytes": 1014,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-luma-event-afterfly-raw-dcf48559e5c8",
+      "artifactKind": "raw_provider_payload",
+      "containsRawProviderPayload": true,
+      "firestoreMode": "forbidden_raw_or_source_payload",
+      "path": "tool/organizer_intake/fixtures/luma_event.afterfly.raw.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/raw-private-payload/dcf48559e5c8e6b0-luma_event.afterfly.raw.json",
+      "retentionStatus": "decision_required",
+      "sha256": "dcf48559e5c8e6b0a23695f3cce75ece98b67b0fa0d57a856cc3cb43cb008867",
+      "sizeBytes": 868,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "blocked",
+      "storageClass": "raw_private_payload"
+    },
+    {
+      "artifactId": "fixtures-search-capture-afterfly-expected-dd5b8f08f3c8",
+      "artifactKind": "fixture_expected_output",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/search_capture.afterfly.expected.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/dd5b8f08f3c842bf-search_capture.afterfly.expected.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "dd5b8f08f3c842bf105ab3931f7b4d1d4d91585245201b667aa18c28647af8f0",
+      "sizeBytes": 1767,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-search-capture-afterfly-serpapi-raw-ac23e860f93b",
+      "artifactKind": "raw_provider_payload",
+      "containsRawProviderPayload": true,
+      "firestoreMode": "forbidden_raw_or_source_payload",
+      "path": "tool/organizer_intake/fixtures/search_capture.afterfly.serpapi.raw.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/raw-private-payload/ac23e860f93b69c9-search_capture.afterfly.serpapi.raw.json",
+      "retentionStatus": "decision_required",
+      "sha256": "ac23e860f93b69c9c0f345024ca95cc01369843c9f2365f78c6b799709aea116",
+      "sizeBytes": 799,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "blocked",
+      "storageClass": "raw_private_payload"
+    },
+    {
+      "artifactId": "fixtures-search-result-candidates-expected-0e72eb6aa723",
+      "artifactKind": "fixture_expected_output",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/search_result_candidates.expected.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/0e72eb6aa723d90e-search_result_candidates.expected.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "0e72eb6aa723d90eeead2fe6bd1a93c27859f2d89097f0e9268f0470b77a14f3",
+      "sizeBytes": 9255,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "fixtures-search-results-afterfly-sample-3e98153649ee",
+      "artifactKind": "fixture_sample_input",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "not_applicable_local_or_generated",
+      "path": "tool/organizer_intake/fixtures/search_results.afterfly.sample.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/fixture-support/3e98153649ee44fd-search_results.afterfly.sample.json",
+      "retentionStatus": "test_fixture",
+      "sha256": "3e98153649ee44fd34743ba4f02b86a40c66c3127f43c03fd47e42d9c4495b57",
+      "sizeBytes": 1821,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "fixture_support"
+    },
+    {
+      "artifactId": "policy-gap-decisions-2026-06-18-external-event-defaults-policy-policy-hold-61ac39e5607c",
+      "artifactKind": "review_decision_batch",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "allowed_low_volume_review_state_only",
+      "path": "tool/organizer_intake/policy_gap_decisions/2026-06-18-external-event-defaults-policy-policy-hold.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/review-decision-state/61ac39e5607cdc58-2026-06-18-external-event-defaults-policy-policy-hold.json",
+      "retentionStatus": "repo_reviewed",
+      "sha256": "61ac39e5607cdc586efb954e53735f01ee4d624ed7292b60715c367f838beea3",
+      "sizeBytes": 425,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "review_decision_state"
+    },
+    {
+      "artifactId": "policy-gap-decisions-2026-06-18-external-event-import-write-policy-policy-accept-4e55825ca136",
+      "artifactKind": "review_decision_batch",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "allowed_low_volume_review_state_only",
+      "path": "tool/organizer_intake/policy_gap_decisions/2026-06-18-external-event-import-write-policy-policy-accept.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/review-decision-state/4e55825ca136aed1-2026-06-18-external-event-import-write-policy-policy-accept.json",
+      "retentionStatus": "repo_reviewed",
+      "sha256": "4e55825ca136aed1aa5d2d569f8f3686a74b3221980460c8a091e4f28ecdf1b0",
+      "sizeBytes": 1241,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "review_decision_state"
+    },
+    {
+      "artifactId": "policy-gap-decisions-2026-06-18-external-event-location-provider-policy-policy-hold-67023e370620",
+      "artifactKind": "review_decision_batch",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "allowed_low_volume_review_state_only",
+      "path": "tool/organizer_intake/policy_gap_decisions/2026-06-18-external-event-location-provider-policy-policy-hold.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/review-decision-state/67023e3706200890-2026-06-18-external-event-location-provider-policy-policy-hold.json",
+      "retentionStatus": "repo_reviewed",
+      "sha256": "67023e37062008901b9f57810d089ac4ace2cffaeeac97530506fa1fad1285d2",
+      "sizeBytes": 443,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "review_decision_state"
+    },
+    {
+      "artifactId": "policy-gap-decisions-2026-06-18-organizer-host-naming-migration-policy-policy-accept-13dc4dc2e7c3",
+      "artifactKind": "review_decision_batch",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "allowed_low_volume_review_state_only",
+      "path": "tool/organizer_intake/policy_gap_decisions/2026-06-18-organizer-host-naming-migration-policy-policy-accept.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/review-decision-state/13dc4dc2e7c3fef3-2026-06-18-organizer-host-naming-migration-policy-policy-accept.json",
+      "retentionStatus": "repo_reviewed",
+      "sha256": "13dc4dc2e7c3fef377629c689c2b3416fb30bd88d50fe4d9e5383a42ba9c645e",
+      "sizeBytes": 836,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "review_decision_state"
+    },
+    {
+      "artifactId": "policy-gap-decisions-2026-06-18-recurring-event-crawl-policy-policy-hold-65ea9c0bbd38",
+      "artifactKind": "review_decision_batch",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "allowed_low_volume_review_state_only",
+      "path": "tool/organizer_intake/policy_gap_decisions/2026-06-18-recurring-event-crawl-policy-policy-hold.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/review-decision-state/65ea9c0bbd386180-2026-06-18-recurring-event-crawl-policy-policy-hold.json",
+      "retentionStatus": "repo_reviewed",
+      "sha256": "65ea9c0bbd386180078f1f4f1a0adcd5d08db637064c4495cf088b553eb1c63d",
+      "sizeBytes": 421,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "review_decision_state"
+    },
+    {
+      "artifactId": "review-decisions-2026-06-18-afterfly-approve-public-9c4acd84b3d7",
+      "artifactKind": "review_decision_batch",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "allowed_low_volume_review_state_only",
+      "path": "tool/organizer_intake/review_decisions/2026-06-18-afterfly-approve-public.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/review-decision-state/9c4acd84b3d70ec2-2026-06-18-afterfly-approve-public.json",
+      "retentionStatus": "repo_reviewed",
+      "sha256": "9c4acd84b3d70ec2f05d71333299f4fc0e7fa49881d4796a0ea7e26333fd8314",
+      "sizeBytes": 722,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "review_decision_state"
+    },
+    {
+      "artifactId": "review-decisions-2026-06-18-bhag-approve-public-e8ee0cf61cd1",
+      "artifactKind": "review_decision_batch",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "allowed_low_volume_review_state_only",
+      "path": "tool/organizer_intake/review_decisions/2026-06-18-bhag-approve-public.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/review-decision-state/e8ee0cf61cd1487e-2026-06-18-bhag-approve-public.json",
+      "retentionStatus": "repo_reviewed",
+      "sha256": "e8ee0cf61cd1487ee0ef9f5086ac32478f59871739fc93318b72039646247021",
+      "sizeBytes": 675,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "review_decision_state"
+    }
+  ],
+  "generatedFrom": {
+    "adminReviewQueue": "tool/organizer_intake/generated/admin_review_queue.json",
+    "canonicalHostEntities": "tool/organizer_intake/generated/canonical_host_entities.json",
+    "curationState": "tool/organizer_intake/generated/organizer_curation_state.json",
+    "externalEventCandidateQueue": "tool/organizer_intake/generated/external_event_candidate_queue.json",
+    "rawArtifactStorageManifest": "tool/organizer_intake/generated/raw_artifact_storage_manifest.json",
+    "searchResultCandidateQueue": "tool/organizer_intake/generated/search_result_candidate_queue.json"
+  },
+  "guardrails": [
+    "Evidence records are provenance only; they never publish pages, call providers, enable crawls, upload objects, or write Firestore.",
+    "Raw provider payloads are retained as object-storage candidates and remain forbidden from Firestore.",
+    "Manual reports without artifacts are review prompts, not identity proof.",
+    "Published host pages, claim targets, crawl plans, and event imports should reference canonicalHostId plus evidence record ids."
+  ],
+  "records": [
+    {
+      "artifact": {
+        "artifactId": "tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-2139cd51dc7b",
+        "artifactKind": "referenced_evidence_file",
+        "containsRawProviderPayload": false,
+        "firestoreMode": "not_applicable_local_source_reference",
+        "path": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+        "remoteObjectKey": null,
+        "retentionStatus": "repo_reviewed",
+        "sha256": "2139cd51dc7bc12e8aa01c57b10140cbddbb7ce00fdaabb9cc5964179861d36c",
+        "sizeBytes": 3575,
+        "source": "evidence_ref_file",
+        "storageAction": "not_required",
+        "storageClass": "reviewed_source_reference"
+      },
+      "canonicalHostId": "afterfly",
+      "correlatedCandidates": {
+        "externalEventCandidateIds": [],
+        "searchCandidateIds": []
+      },
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "evidence": {
+        "description": "Embedded Luma data listed instagram_handle afterfly.in.",
+        "ref": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+        "status": "resolved_artifact",
+        "type": "hostDiscoveryRun"
+      },
+      "evidenceId": "evidence-afterfly-afterfly-instagram-primary-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-json",
+      "nextAction": "evidence_available_for_admin_review",
+      "reviewState": {
+        "appVisibility": "hidden",
+        "claimState": "unclaimed",
+        "curation": null,
+        "entityReviewStatus": "needs_admin_review",
+        "indexStatus": "indexed",
+        "publishStatus": "published",
+        "reviewBlockers": [],
+        "reviewTaskType": "promotion_review"
+      },
+      "riskFlags": [],
+      "surface": {
+        "confidence": {
+          "city": "medium",
+          "entityMatch": "high",
+          "ownership": "medium"
+        },
+        "normalizedKey": "instagram:afterfly.in",
+        "platform": "instagram",
+        "role": "primary",
+        "status": "active",
+        "supportsEventExtraction": false,
+        "surfaceId": "afterfly-instagram-primary",
+        "surfaceKind": "socialProfile",
+        "url": "https://www.instagram.com/afterfly.in/"
+      }
+    },
+    {
+      "artifact": {
+        "artifactId": "tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-2139cd51dc7b",
+        "artifactKind": "referenced_evidence_file",
+        "containsRawProviderPayload": false,
+        "firestoreMode": "not_applicable_local_source_reference",
+        "path": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+        "remoteObjectKey": null,
+        "retentionStatus": "repo_reviewed",
+        "sha256": "2139cd51dc7bc12e8aa01c57b10140cbddbb7ce00fdaabb9cc5964179861d36c",
+        "sizeBytes": 3575,
+        "source": "evidence_ref_file",
+        "storageAction": "not_required",
+        "storageClass": "reviewed_source_reference"
+      },
+      "canonicalHostId": "afterfly",
+      "correlatedCandidates": {
+        "externalEventCandidateIds": [],
+        "searchCandidateIds": []
+      },
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "evidence": {
+        "description": "Public event page captured in the legacy host discovery run.",
+        "ref": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+        "status": "resolved_artifact",
+        "type": "hostDiscoveryRun"
+      },
+      "evidenceId": "evidence-afterfly-afterfly-luma-takeoff-run-rave-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-json",
+      "nextAction": "evidence_available_for_admin_review",
+      "reviewState": {
+        "appVisibility": "hidden",
+        "claimState": "unclaimed",
+        "curation": null,
+        "entityReviewStatus": "needs_admin_review",
+        "indexStatus": "indexed",
+        "publishStatus": "published",
+        "reviewBlockers": [],
+        "reviewTaskType": "promotion_review"
+      },
+      "riskFlags": [],
+      "surface": {
+        "confidence": {
+          "city": "high",
+          "entityMatch": "high",
+          "ownership": "medium"
+        },
+        "normalizedKey": "luma:event:pxgmph3b",
+        "platform": "luma",
+        "role": "primary",
+        "status": "active",
+        "supportsEventExtraction": true,
+        "surfaceId": "afterfly-luma-takeoff-run-rave",
+        "surfaceKind": "eventListing",
+        "url": "https://luma.com/pxgmph3b"
+      }
+    },
+    {
+      "artifact": {
+        "artifactId": "tool-host-discovery-seed-clubs-afterfly-run-club-indore-28e62c026bab",
+        "artifactKind": "referenced_evidence_file",
+        "containsRawProviderPayload": false,
+        "firestoreMode": "not_applicable_local_source_reference",
+        "path": "tool/host_discovery/seed_clubs/afterfly-run-club-indore.json",
+        "remoteObjectKey": null,
+        "retentionStatus": "repo_reviewed",
+        "sha256": "28e62c026babbf91bb72ebd4f92ada61a8932aefa7a1012ac558321a9ba66ed7",
+        "sizeBytes": 8033,
+        "source": "evidence_ref_file",
+        "storageAction": "not_required",
+        "storageClass": "reviewed_source_reference"
+      },
+      "canonicalHostId": "afterfly",
+      "correlatedCandidates": {
+        "externalEventCandidateIds": [],
+        "searchCandidateIds": []
+      },
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "evidence": {
+        "description": "Legacy seed club projection derived from the Luma evidence.",
+        "ref": "tool/host_discovery/seed_clubs/afterfly-run-club-indore.json",
+        "status": "resolved_artifact",
+        "type": "seedClub"
+      },
+      "evidenceId": "evidence-afterfly-afterfly-luma-takeoff-run-rave-seedclub-tool-host-discovery-seed-clubs-afterfly-run-club-indore-json",
+      "nextAction": "evidence_available_for_admin_review",
+      "reviewState": {
+        "appVisibility": "hidden",
+        "claimState": "unclaimed",
+        "curation": null,
+        "entityReviewStatus": "needs_admin_review",
+        "indexStatus": "indexed",
+        "publishStatus": "published",
+        "reviewBlockers": [],
+        "reviewTaskType": "promotion_review"
+      },
+      "riskFlags": [],
+      "surface": {
+        "confidence": {
+          "city": "high",
+          "entityMatch": "high",
+          "ownership": "medium"
+        },
+        "normalizedKey": "luma:event:pxgmph3b",
+        "platform": "luma",
+        "role": "primary",
+        "status": "active",
+        "supportsEventExtraction": true,
+        "surfaceId": "afterfly-luma-takeoff-run-rave",
+        "surfaceKind": "eventListing",
+        "url": "https://luma.com/pxgmph3b"
+      }
+    },
+    {
+      "artifact": {
+        "artifactId": "tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-2139cd51dc7b",
+        "artifactKind": "referenced_evidence_file",
+        "containsRawProviderPayload": false,
+        "firestoreMode": "not_applicable_local_source_reference",
+        "path": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+        "remoteObjectKey": null,
+        "retentionStatus": "repo_reviewed",
+        "sha256": "2139cd51dc7bc12e8aa01c57b10140cbddbb7ce00fdaabb9cc5964179861d36c",
+        "sizeBytes": 3575,
+        "source": "evidence_ref_file",
+        "storageAction": "not_required",
+        "storageClass": "reviewed_source_reference"
+      },
+      "canonicalHostId": "afterfly",
+      "correlatedCandidates": {
+        "externalEventCandidateIds": [],
+        "searchCandidateIds": []
+      },
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "evidence": {
+        "description": "Probe returned generic Instagram HTML and was not identity proof.",
+        "ref": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+        "status": "resolved_artifact",
+        "type": "hostDiscoveryRun"
+      },
+      "evidenceId": "evidence-afterfly-afterfly-instagram-probed-runclub-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-afterfly-run-club-indore-json",
+      "nextAction": "curate_surface_state_before_using_for_public_or_crawl_outputs",
+      "reviewState": {
+        "appVisibility": "hidden",
+        "claimState": "unclaimed",
+        "curation": null,
+        "entityReviewStatus": "needs_admin_review",
+        "indexStatus": "indexed",
+        "publishStatus": "published",
+        "reviewBlockers": [],
+        "reviewTaskType": "promotion_review"
+      },
+      "riskFlags": [
+        "surface_ambiguous"
+      ],
+      "surface": {
+        "confidence": {
+          "city": "low",
+          "entityMatch": "low",
+          "ownership": "low"
+        },
+        "normalizedKey": "instagram:afterflyrunclub",
+        "platform": "instagram",
+        "role": "ambiguous",
+        "status": "ambiguous",
+        "supportsEventExtraction": false,
+        "surfaceId": "afterfly-instagram-probed-runclub",
+        "surfaceKind": "socialProfile",
+        "url": "https://www.instagram.com/afterflyrunclub/"
+      }
+    },
+    {
+      "artifact": null,
+      "canonicalHostId": "afterfly",
+      "correlatedCandidates": {
+        "externalEventCandidateIds": [],
+        "searchCandidateIds": []
+      },
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "evidence": {
+        "description": "User reported seeing a Sort My Scene listing in Google results; exact URL is not captured yet.",
+        "ref": null,
+        "status": "manual_report_without_artifact",
+        "type": "userReportedSearchResult"
+      },
+      "evidenceId": "evidence-afterfly-afterfly-sortmyscene-reported-userreportedsearchresult-missing-1",
+      "nextAction": "capture_or_attach_reviewed_artifact_for_manual_report",
+      "reviewState": {
+        "appVisibility": "hidden",
+        "claimState": "unclaimed",
+        "curation": null,
+        "entityReviewStatus": "needs_admin_review",
+        "indexStatus": "indexed",
+        "publishStatus": "published",
+        "reviewBlockers": [],
+        "reviewTaskType": "promotion_review"
+      },
+      "riskFlags": [
+        "manual_report_without_artifact",
+        "surface_candidate",
+        "surface_url_missing",
+        "user_reported_evidence"
+      ],
+      "surface": {
+        "confidence": {
+          "city": "low",
+          "entityMatch": "medium",
+          "ownership": "low"
+        },
+        "normalizedKey": null,
+        "platform": "sortMyScene",
+        "role": "ambiguous",
+        "status": "candidate",
+        "supportsEventExtraction": true,
+        "surfaceId": "afterfly-sortmyscene-reported",
+        "surfaceKind": "organizerProfile",
+        "url": null
+      }
+    },
+    {
+      "artifact": null,
+      "canonicalHostId": "afterfly",
+      "correlatedCandidates": {
+        "externalEventCandidateIds": [],
+        "searchCandidateIds": []
+      },
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "evidence": {
+        "description": "User reported a first-party-looking Afterfly website that appears to be a different entity.",
+        "ref": null,
+        "status": "manual_report_without_artifact",
+        "type": "userReportedSearchResult"
+      },
+      "evidenceId": "evidence-afterfly-afterfly-wrong-website-reported-userreportedsearchresult-missing-1",
+      "nextAction": "capture_or_attach_reviewed_artifact_for_manual_report",
+      "reviewState": {
+        "appVisibility": "hidden",
+        "claimState": "unclaimed",
+        "curation": {
+          "decision": "reject_wrong_entity",
+          "operation": "surface_decision",
+          "reason": "User-reported first-party-looking Afterfly website appears to belong to a different entity."
+        },
+        "entityReviewStatus": "needs_admin_review",
+        "indexStatus": "indexed",
+        "publishStatus": "published",
+        "reviewBlockers": [],
+        "reviewTaskType": "promotion_review"
+      },
+      "riskFlags": [
+        "manual_report_without_artifact",
+        "surface_rejected",
+        "surface_url_missing",
+        "user_reported_evidence"
+      ],
+      "surface": {
+        "confidence": {
+          "city": "low",
+          "entityMatch": "low",
+          "ownership": "low"
+        },
+        "normalizedKey": null,
+        "platform": "officialWebsite",
+        "role": "rejected",
+        "status": "rejected",
+        "supportsEventExtraction": false,
+        "surfaceId": "afterfly-wrong-website-reported",
+        "surfaceKind": "wrongEntity",
+        "url": null
+      }
+    },
+    {
+      "artifact": {
+        "artifactId": "tool-host-discovery-seed-clubs-bhag-run-club-delhi-6e2582438db6",
+        "artifactKind": "referenced_evidence_file",
+        "containsRawProviderPayload": false,
+        "firestoreMode": "not_applicable_local_source_reference",
+        "path": "tool/host_discovery/seed_clubs/bhag-run-club-delhi.json",
+        "remoteObjectKey": null,
+        "retentionStatus": "repo_reviewed",
+        "sha256": "6e2582438db627d62c60710cb774acf6ec4de696f6eabd77631a3fc6b6c4d896",
+        "sizeBytes": 8523,
+        "source": "evidence_ref_file",
+        "storageAction": "not_required",
+        "storageClass": "reviewed_source_reference"
+      },
+      "canonicalHostId": "bhag",
+      "correlatedCandidates": {
+        "externalEventCandidateIds": [],
+        "searchCandidateIds": []
+      },
+      "displayName": "Bhag Club",
+      "entityId": "bhag",
+      "evidence": {
+        "description": "Legacy seed profile stores bhagclub as the Instagram handle.",
+        "ref": "tool/host_discovery/seed_clubs/bhag-run-club-delhi.json",
+        "status": "resolved_artifact",
+        "type": "seedClub"
+      },
+      "evidenceId": "evidence-bhag-bhag-instagram-primary-seedclub-tool-host-discovery-seed-clubs-bhag-run-club-delhi-json",
+      "nextAction": "evidence_available_for_admin_review",
+      "reviewState": {
+        "appVisibility": "hidden",
+        "claimState": "unclaimed",
+        "curation": null,
+        "entityReviewStatus": "needs_more_evidence",
+        "indexStatus": "indexed",
+        "publishStatus": "published",
+        "reviewBlockers": [],
+        "reviewTaskType": "evidence_review"
+      },
+      "riskFlags": [],
+      "surface": {
+        "confidence": {
+          "city": "medium",
+          "entityMatch": "high",
+          "ownership": "medium"
+        },
+        "normalizedKey": "instagram:bhagclub",
+        "platform": "instagram",
+        "role": "primary",
+        "status": "active",
+        "supportsEventExtraction": false,
+        "surfaceId": "bhag-instagram-primary",
+        "surfaceKind": "socialProfile",
+        "url": "https://www.instagram.com/bhagclub/"
+      }
+    },
+    {
+      "artifact": {
+        "artifactId": "tool-host-discovery-runs-2026-06-10-bhag-run-club-delhi-d6c9e6d7d342",
+        "artifactKind": "referenced_evidence_file",
+        "containsRawProviderPayload": false,
+        "firestoreMode": "not_applicable_local_source_reference",
+        "path": "tool/host_discovery/runs/2026-06-10-bhag-run-club-delhi.json",
+        "remoteObjectKey": null,
+        "retentionStatus": "repo_reviewed",
+        "sha256": "d6c9e6d7d34267097459d208de103086a39dfe99c94f49e089b36ba566e159b9",
+        "sizeBytes": 3864,
+        "source": "evidence_ref_file",
+        "storageAction": "not_required",
+        "storageClass": "reviewed_source_reference"
+      },
+      "canonicalHostId": "bhag",
+      "correlatedCandidates": {
+        "externalEventCandidateIds": [],
+        "searchCandidateIds": []
+      },
+      "displayName": "Bhag Club",
+      "entityId": "bhag",
+      "evidence": {
+        "description": "Legacy host discovery captured official site evidence.",
+        "ref": "tool/host_discovery/runs/2026-06-10-bhag-run-club-delhi.json",
+        "status": "resolved_artifact",
+        "type": "hostDiscoveryRun"
+      },
+      "evidenceId": "evidence-bhag-bhag-official-site-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-bhag-run-club-delhi-json",
+      "nextAction": "evidence_available_for_admin_review",
+      "reviewState": {
+        "appVisibility": "hidden",
+        "claimState": "unclaimed",
+        "curation": null,
+        "entityReviewStatus": "needs_more_evidence",
+        "indexStatus": "indexed",
+        "publishStatus": "published",
+        "reviewBlockers": [],
+        "reviewTaskType": "evidence_review"
+      },
+      "riskFlags": [],
+      "surface": {
+        "confidence": {
+          "city": "medium",
+          "entityMatch": "high",
+          "ownership": "high"
+        },
+        "normalizedKey": "domain:thebhag.in",
+        "platform": "officialWebsite",
+        "role": "primary",
+        "status": "active",
+        "supportsEventExtraction": false,
+        "surfaceId": "bhag-official-site",
+        "surfaceKind": "website",
+        "url": "https://thebhag.in/"
+      }
+    },
+    {
+      "artifact": {
+        "artifactId": "tool-host-discovery-runs-2026-06-10-bhag-run-club-delhi-d6c9e6d7d342",
+        "artifactKind": "referenced_evidence_file",
+        "containsRawProviderPayload": false,
+        "firestoreMode": "not_applicable_local_source_reference",
+        "path": "tool/host_discovery/runs/2026-06-10-bhag-run-club-delhi.json",
+        "remoteObjectKey": null,
+        "retentionStatus": "repo_reviewed",
+        "sha256": "d6c9e6d7d34267097459d208de103086a39dfe99c94f49e089b36ba566e159b9",
+        "sizeBytes": 3864,
+        "source": "evidence_ref_file",
+        "storageAction": "not_required",
+        "storageClass": "reviewed_source_reference"
+      },
+      "canonicalHostId": "bhag",
+      "correlatedCandidates": {
+        "externalEventCandidateIds": [],
+        "searchCandidateIds": []
+      },
+      "displayName": "Bhag Club",
+      "entityId": "bhag",
+      "evidence": {
+        "description": "Legacy run captured Bhag Luma event evidence with Delhi NCR ambiguity.",
+        "ref": "tool/host_discovery/runs/2026-06-10-bhag-run-club-delhi.json",
+        "status": "resolved_artifact",
+        "type": "hostDiscoveryRun"
+      },
+      "evidenceId": "evidence-bhag-bhag-luma-runs-hostdiscoveryrun-tool-host-discovery-runs-2026-06-10-bhag-run-club-delhi-json",
+      "nextAction": "evidence_available_for_admin_review",
+      "reviewState": {
+        "appVisibility": "hidden",
+        "claimState": "unclaimed",
+        "curation": null,
+        "entityReviewStatus": "needs_more_evidence",
+        "indexStatus": "indexed",
+        "publishStatus": "published",
+        "reviewBlockers": [],
+        "reviewTaskType": "evidence_review"
+      },
+      "riskFlags": [],
+      "surface": {
+        "confidence": {
+          "city": "medium",
+          "entityMatch": "high",
+          "ownership": "medium"
+        },
+        "normalizedKey": "luma:event:ixj7uqiu",
+        "platform": "luma",
+        "role": "secondary",
+        "status": "active",
+        "supportsEventExtraction": true,
+        "surfaceId": "bhag-luma-runs",
+        "surfaceKind": "eventListing",
+        "url": "https://luma.com/ixj7uqiu"
+      }
+    }
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "artifactKinds": {
+      "fixture_expected_output": 12,
+      "fixture_sample_input": 6,
+      "fixture_support": 1,
+      "raw_provider_payload": 2,
+      "referenced_evidence_file": 4,
+      "review_decision_batch": 8,
+      "seed_intake_batch": 1
+    },
+    "evidenceByStatus": {
+      "manual_report_without_artifact": 2,
+      "resolved_artifact": 7
+    },
+    "evidenceByType": {
+      "hostDiscoveryRun": 5,
+      "seedClub": 2,
+      "userReportedSearchResult": 2
+    },
+    "externalUrlRefs": 0,
+    "firestoreForbiddenArtifactRefs": 0,
+    "hosts": 2,
+    "manualReportsWithoutArtifacts": 2,
+    "publishStatuses": {
+      "published": 9
+    },
+    "rawPayloadBytes": 1667,
+    "rawProviderArtifacts": 2,
+    "rawProviderArtifactsReferenced": 0,
+    "records": 9,
+    "remoteUploadBlockedArtifactRefs": 0,
+    "resolvedArtifactRefs": 7,
+    "surfaces": 8,
+    "surfaceStatuses": {
+      "active": 6,
+      "ambiguous": 1,
+      "candidate": 1,
+      "rejected": 1
+    },
+    "surfacesWithoutEvidence": 0,
+    "unresolvedLocalRefs": 0
+  }
+}

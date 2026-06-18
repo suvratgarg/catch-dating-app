@@ -15,15 +15,15 @@
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "4.1.8",
-    "updated": "2026-06-05",
+    "version": "4.1.9",
+    "updated": "2026-06-17",
     "status": "active",
     "read_policy": "Use for compact read/skip policies before opening long markdown docs."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "4.1.15",
-    "updated": "2026-06-05",
+    "version": "4.1.16",
+    "updated": "2026-06-17",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
   },
@@ -141,15 +141,15 @@
   },
   "ui_architecture": {
     "path": "docs/ui_architecture.md",
-    "version": "1.3.0",
-    "updated": "2026-06-05",
+    "version": "1.4.0",
+    "updated": "2026-06-17",
     "status": "active",
-    "read_policy": "Read before changing shared screen padding, tab body insets, sliver-native screens, NestedScrollView tabs, sticky headers, scroll ownership, semantic UI lint policy, or design-token tier ownership."
+    "read_policy": "Read before changing shared screen padding, tab body insets, sliver-native screens, NestedScrollView tabs, sticky headers, scroll ownership, semantic UI lint policy, design-token tier ownership, Style Dictionary adoption, or component contract registry policy."
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.166",
-    "updated": "2026-06-11",
+    "version": "2.5.280",
+    "updated": "2026-06-17",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },

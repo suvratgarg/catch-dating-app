@@ -50,6 +50,7 @@ import {
   validateClubDocument,
   validateClubMembershipDocument,
   validateEventDocument,
+  validateExternalEventDocument,
   validateEventParticipationDocument,
   validateEventSafetyReportDocument,
   validateEventSuccessAssignmentDocument,
@@ -145,6 +146,10 @@ test("generated schema validators accept valid contract fixtures", () => {
   assertValid(
     validateEventDocument as Validator,
     readFixture("fixtures/valid/event_doc.json")
+  );
+  assertValid(
+    validateExternalEventDocument as Validator,
+    readFixture("fixtures/valid/external_event_doc.json")
   );
   assertValid(
     validateEventParticipationDocument as Validator,
@@ -438,6 +443,12 @@ test("generated schema validators reject invalid contract fixtures", () => {
   assertInvalid(
     validateUpdateEventCallablePayload as Validator,
     readFixture("fixtures/invalid/update_event_empty_fields.json")
+  );
+  assertInvalid(
+    validateExternalEventDocument as Validator,
+    readFixture(
+      "fixtures/invalid/external_event_doc_enables_catch_booking.json"
+    )
   );
   assertInvalid(
     validateCreateEventReviewCallablePayload as Validator,

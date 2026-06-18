@@ -40,6 +40,12 @@ export type DataMode = "sample" | "live";
 export type AccessApplicationDecision = "approve" | "deny";
 export type ClubClaimDecision = "approve" | "reject";
 export type ClubIndexDecision = "indexReady" | "noindex";
+export type OrganizerIntakeDecision = "approve_public" | "hold" | "suppress";
+export type OrganizerEventCandidateDecision =
+  | "approve_for_import"
+  | "hold"
+  | "reject";
+export type OrganizerPolicyGapDecision = "accept" | "hold" | "reject";
 export type OrganizerEntityKind =
   | "club"
   | "venue"
@@ -63,6 +69,63 @@ export type OrganizerVerificationStatus =
   | "unverified"
   | "sourceBacked"
   | "ownerVerified";
+export type OrganizerCurationOperation =
+  | "attach_surface"
+  | "merge_entity"
+  | "split_surface"
+  | "suppress_entity"
+  | "surface_decision";
+export type OrganizerSurfaceDecision =
+  | "accept_primary"
+  | "accept_secondary"
+  | "reject_wrong_entity"
+  | "mark_ambiguous"
+  | "mark_historical";
+
+export interface OrganizerCurationSurface {
+  surfaceId: string;
+  platform:
+    | "bookMyShow"
+    | "district"
+    | "instagram"
+    | "linkedin"
+    | "luma"
+    | "news"
+    | "officialWebsite"
+    | "partiful"
+    | "sortMyScene"
+    | "userReport"
+    | "other";
+  surfaceKind:
+    | "eventListing"
+    | "eventCalendar"
+    | "organizerProfile"
+    | "personProfile"
+    | "press"
+    | "socialProfile"
+    | "website"
+    | "wrongEntity";
+  url: string | null;
+  normalizedKey: string | null;
+  role: "primary" | "secondary" | "backup" | "historical" | "ambiguous" | "rejected";
+  status: "active" | "candidate" | "ambiguous" | "historical" | "rejected";
+  confidence: {
+    city: "low" | "medium" | "high";
+    entityMatch: "low" | "medium" | "high";
+    ownership: "low" | "medium" | "high";
+  };
+  crawl: {
+    eventDiscoveryStatus: "disabled" | "candidate" | "approved" | "paused";
+    policy: "manualOnly" | "blocked" | "apiPreferred";
+    supportsEventExtraction: boolean;
+  };
+  evidenceRefs: Array<{
+    type: "hostDiscoveryRun" | "seedClub" | "userReportedSearchResult" | "manualNote";
+    ref: string | null;
+    description: string;
+  }>;
+  notes: string;
+}
 
 export interface AdminDecideAccessApplicationPayload {
   applicationUid: string;
@@ -107,6 +170,127 @@ export interface AdminSetClubIndexStatusResponse {
   indexStatus: ClubIndexDecision;
   publishStatus: "qa" | "published";
   robots: "noindex, follow" | "index, follow";
+}
+
+export interface AdminDecideOrganizerIntakePayload {
+  entityId: string;
+  decision: OrganizerIntakeDecision;
+  appVisibility: OrganizerAppVisibility;
+  checklist: {
+    identityReviewed: boolean;
+    surfaceInventoryReviewed: boolean;
+    ownerSafeCopyReviewed: boolean;
+    marketScopeReviewed: boolean;
+    mediaRightsReviewed: boolean;
+    crawlDisabledReviewed: boolean;
+    manualReportsReviewed?: boolean;
+  };
+  note: string;
+}
+
+export interface AdminDecideOrganizerIntakeResponse {
+  entityId: string;
+  decision: OrganizerIntakeDecision;
+  decisionStatus: "approved_public" | "held" | "suppressed";
+  appVisibility: OrganizerAppVisibility;
+  decisionPath: string;
+  projectionState: "pending_static_generation" | "not_projectable";
+}
+
+export interface AdminDecideOrganizerEventCandidatePayload {
+  candidateId: string;
+  decision: OrganizerEventCandidateDecision;
+  checklist: {
+    identityReviewed: boolean;
+    sourceEventReviewed: boolean;
+    timeReviewed: boolean;
+    locationReviewed: boolean;
+    dedupeReviewed: boolean;
+    ownerSafeCopyReviewed: boolean;
+    importPolicyAcknowledged: boolean;
+  };
+  note: string;
+}
+
+export interface AdminDecideOrganizerEventCandidateResponse {
+  candidateId: string;
+  decisionId: string;
+  decision: OrganizerEventCandidateDecision;
+  decisionStatus: "approved_for_import" | "held" | "rejected";
+  decisionPath: string;
+  importState: "blocked_by_policy" | "not_importable" | "pending_import";
+}
+
+export interface AdminDecideOrganizerPolicyGapPayload {
+  gapId: string;
+  decision: OrganizerPolicyGapDecision;
+  requiredInputsReviewed: string[];
+  checklist: {
+    requiredInputsReviewed: boolean;
+    costAndSafetyReviewed: boolean;
+    implementationOwnerReviewed: boolean;
+    behaviorStillDisabledAcknowledged: boolean;
+  };
+  note: string;
+}
+
+export interface AdminDecideOrganizerPolicyGapResponse {
+  gapId: string;
+  decisionId: string;
+  decision: OrganizerPolicyGapDecision;
+  decisionStatus: "accepted" | "held" | "rejected";
+  decisionPath: string;
+  operationalState: "blocked_until_policy_encoded" | "not_approved";
+}
+
+export interface OrganizerResolvedEventLocation {
+  name: string;
+  address?: string | null;
+  placeId?: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  notes?: string | null;
+}
+
+export interface AdminResolveOrganizerEventLocationPayload {
+  candidateId: string;
+  location: OrganizerResolvedEventLocation;
+  checklist: {
+    sourceLocationReviewed: boolean;
+    coordinatesReviewed: boolean;
+    placeIdentityReviewed: boolean;
+    importSafetyReviewed: boolean;
+  };
+  note: string;
+}
+
+export interface AdminResolveOrganizerEventLocationResponse {
+  candidateId: string;
+  resolutionId: string;
+  resolutionStatus: "resolved";
+  decisionPath: string;
+  location: OrganizerResolvedEventLocation;
+}
+
+export interface AdminRecordOrganizerCurationPayload {
+  operationId?: string;
+  operationType: OrganizerCurationOperation;
+  entityId?: string;
+  sourceEntityId?: string;
+  targetEntityId?: string;
+  surfaceId?: string;
+  newEntityId?: string;
+  sourceCandidateId?: string;
+  decision?: OrganizerSurfaceDecision;
+  surface?: OrganizerCurationSurface;
+  reason: string;
+}
+
+export interface AdminRecordOrganizerCurationResponse {
+  operationId: string;
+  operationType: OrganizerCurationOperation;
+  operationStatus: "active" | "superseded";
+  decisionPath: string;
 }
 
 export interface AdminClubDetails {

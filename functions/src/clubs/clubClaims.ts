@@ -307,6 +307,7 @@ export async function adminDecideClubClaimHandler(
       hostAvatarUrl: avatarUrl,
       hostUserIds: [claimRequest.requesterUid],
       hostProfiles: [ownerProfile],
+      appVisibility: "discoverable",
       ownership: {
         state: "claimed",
         ownerUserId: claimRequest.requesterUid,

@@ -1,0 +1,37 @@
+{
+  "candidates": [],
+  "commands": {
+    "captureLuma": "node tool/organizer_intake/capture_luma_events.mjs --entity ENTITY --surface SURFACE --raw-results LUMA_JSON --date YYYY-MM-DD",
+    "exportLocationResolutions": "node tool/organizer_intake/export_event_location_resolutions_from_firestore.mjs --env dev --date YYYY-MM-DD",
+    "exportReviewDecisions": "node tool/organizer_intake/export_event_review_decisions_from_firestore.mjs --env dev --date YYYY-MM-DD",
+    "ingest": "node tool/organizer_intake/ingest_event_sources.mjs",
+    "review": "node tool/organizer_intake/event_review_decision.mjs list"
+  },
+  "duplicateEventKeys": [],
+  "errors": [],
+  "generatedFrom": {
+    "batches": [],
+    "locationResolutionBatches": [],
+    "reviewDecisionBatches": []
+  },
+  "policy": {
+    "importWritesEnabled": false,
+    "reason": "External event import is modeled for review only. No recurring crawl, Firestore event write, or host notification is enabled by this artifact.",
+    "status": "disabled"
+  },
+  "schemaVersion": 1,
+  "summary": {
+    "approvedForImport": 0,
+    "batches": 0,
+    "blocked": 0,
+    "candidates": 0,
+    "duplicateEventKeys": 0,
+    "events": 0,
+    "held": 0,
+    "locationResolved": 0,
+    "platforms": {},
+    "rejected": 0,
+    "reviewed": 0
+  },
+  "warnings": []
+}

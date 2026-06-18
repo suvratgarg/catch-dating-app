@@ -1,0 +1,294 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://catch.local/design/components/catch.components.schema.json",
+  "title": "Catch Component Contract Registry",
+  "type": "object",
+  "required": ["version", "updated", "sourceOfTruth", "components"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updated": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "sourceOfTruth": {
+      "type": "object",
+      "required": ["behavior", "tokens", "designTools", "handoff"],
+      "additionalProperties": false,
+      "properties": {
+        "behavior": {
+          "type": "string"
+        },
+        "tokens": {
+          "type": "string"
+        },
+        "designTools": {
+          "type": "string"
+        },
+        "handoff": {
+          "type": "string"
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/component"
+      },
+      "minItems": 1
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "status",
+        "kind",
+        "summary",
+        "dart",
+        "design",
+        "contract",
+        "handoff"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^catch\\.[a-z0-9_.-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": ["active", "planned", "deprecated"]
+        },
+        "kind": {
+          "enum": ["primitive", "composite", "pattern", "screen-contract"]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dart": {
+          "type": "object",
+          "required": ["symbol", "file"],
+          "additionalProperties": false,
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "minLength": 1
+            },
+            "file": {
+              "type": "string",
+              "pattern": "^lib/.+\\.dart$"
+            },
+            "constructors": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            }
+          }
+        },
+        "design": {
+          "type": "object",
+          "required": ["figma", "codeConnect", "claude"],
+          "additionalProperties": false,
+          "properties": {
+            "figma": {
+              "type": "object",
+              "required": ["status", "componentName", "componentUrl"],
+              "additionalProperties": false,
+              "properties": {
+                "status": {
+                  "enum": ["unmapped", "mapped", "planned"]
+                },
+                "componentName": {
+                  "type": "string"
+                },
+                "componentUrl": {
+                  "type": ["string", "null"]
+                }
+              }
+            },
+            "codeConnect": {
+              "type": "object",
+              "required": ["status", "snippetLanguage", "template"],
+              "additionalProperties": false,
+              "properties": {
+                "status": {
+                  "enum": ["planned", "mapped", "not-applicable"]
+                },
+                "snippetLanguage": {
+                  "type": "string"
+                },
+                "template": {
+                  "type": ["string", "null"]
+                }
+              }
+            },
+            "claude": {
+              "type": "object",
+              "required": ["handoffName", "allowed"],
+              "additionalProperties": false,
+              "properties": {
+                "handoffName": {
+                  "type": "string"
+                },
+                "allowed": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        },
+        "contract": {
+          "type": "object",
+          "required": ["props", "states", "slots", "tokens", "dartRoles", "goldens"],
+          "additionalProperties": false,
+          "properties": {
+            "props": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/prop"
+              }
+            },
+            "states": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            },
+            "slots": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/slot"
+              }
+            },
+            "tokens": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9]+(?:[A-Za-z0-9_-]*)(\\.[A-Za-z0-9]+(?:[A-Za-z0-9_-]*))*$"
+              },
+              "uniqueItems": true
+            },
+            "dartRoles": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            },
+            "goldens": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          }
+        },
+        "handoff": {
+          "type": "object",
+          "required": ["allowedChildren", "notes"],
+          "additionalProperties": false,
+          "properties": {
+            "allowedChildren": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            },
+            "notes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "prop": {
+      "type": "object",
+      "required": ["name", "type", "required"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "string",
+            "bool",
+            "enum",
+            "callback",
+            "widget",
+            "color",
+            "number",
+            "list",
+            "generic-list",
+            "object"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "default": {
+          "type": ["string", "number", "boolean", "null"]
+        },
+        "dartType": {
+          "type": "string"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "slot": {
+      "type": "object",
+      "required": ["name", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "allowedComponents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

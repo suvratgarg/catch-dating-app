@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.278
-updated: 2026-06-15
+version: 2.5.280
+updated: 2026-06-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,18 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.280
+
+- Added the component contract registry under `design/components/`. The initial
+  registry covers 10 high-traffic `Catch*` primitives/composites (`CatchButton`,
+  `CatchIconButton`, `CatchSurface`, `CatchChip`, `CatchBadge`,
+  `CatchTextField`, `CatchField`, `CatchSegmentedControl`, `CatchOptionCard`,
+  and `CatchTopBar`) with props, states, slots, DTCG token refs, Dart roles, and
+  handoff names.
+- Added `node tool/design/check_component_contracts.mjs` as the local validator
+  and wired the registry into `design_context_pack/design_system/components.json`
+  so Claude/Figma handoffs can consume the same allowed primitive contracts.
 
 ### 2.5.279
 

@@ -1,0 +1,950 @@
+{
+  "$schema": "./catch.components.schema.json",
+  "version": 1,
+  "updated": "2026-06-17",
+  "sourceOfTruth": {
+    "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
+    "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
+    "designTools": "Figma and Claude Design may compose these contracts, but they do not own production widget implementation.",
+    "handoff": "Design handoffs should name contract ids and props. Arbitrary JSX/CSS is proposal material until mapped to these contracts."
+  },
+  "components": [
+    {
+      "id": "catch.badge",
+      "name": "CatchBadge",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Small status badge for compact metadata, state, and count-adjacent labels.",
+      "dart": {
+        "symbol": "CatchBadge",
+        "file": "lib/core/widgets/catch_badge.dart",
+        "constructors": ["CatchBadge"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Badge",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Badge",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "label",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "tone",
+            "type": "enum",
+            "required": false,
+            "default": "neutral",
+            "dartType": "CatchBadgeTone",
+            "values": ["neutral", "brand", "success", "warning", "danger", "gold", "solid", "live"]
+          },
+          {
+            "name": "size",
+            "type": "enum",
+            "required": false,
+            "default": "sm",
+            "dartType": "CatchBadgeSize",
+            "values": ["sm", "md", "action"]
+          },
+          {
+            "name": "icon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData?"
+          },
+          {
+            "name": "uppercase",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          }
+        ],
+        "states": ["default", "live", "with-icon", "truncated"],
+        "slots": [],
+        "tokens": ["space.s1", "space.micro6", "space.micro10", "space.micro14", "radius.pill", "theme.light.color.primary", "theme.light.color.primaryInk", "theme.light.color.line"],
+        "dartRoles": ["CatchTextStyles.badge", "CatchTextStyles.labelL", "CatchTextStyles.buttonSm", "CatchIcon.badge", "CatchIcon.sm", "CatchLayout.badgeActionHeight"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use for short factual labels only; long prose belongs in supporting text.",
+          "Use activity accent overrides only when the badge meaning is activity-scoped."
+        ]
+      }
+    },
+    {
+      "id": "catch.button",
+      "name": "CatchButton",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Canonical action button for product CTAs, destructive actions, and secondary commands.",
+      "dart": {
+        "symbol": "CatchButton",
+        "file": "lib/core/widgets/catch_button.dart",
+        "constructors": ["CatchButton"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Button",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Button",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "label",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "onPressed",
+            "type": "callback",
+            "required": true,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "default": "primary",
+            "dartType": "CatchButtonVariant",
+            "values": ["primary", "secondary", "ghost", "danger", "light"]
+          },
+          {
+            "name": "size",
+            "type": "enum",
+            "required": false,
+            "default": "md",
+            "dartType": "CatchButtonSize",
+            "values": ["sm", "md", "lg"]
+          },
+          {
+            "name": "icon",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "isLoading",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "fullWidth",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "accentColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          }
+        ],
+        "states": ["default", "pressed", "hovered", "disabled", "loading", "full-width", "with-icon"],
+        "slots": [
+          {
+            "name": "icon",
+            "kind": "optional-leading-widget",
+            "notes": "Prefer Icon(CatchIcons.*) sized by the primitive."
+          }
+        ],
+        "tokens": ["space.s1", "space.s2", "space.s3", "space.s4", "space.micro6", "radius.pill", "theme.light.color.primary", "theme.light.color.primaryInk", "theme.light.color.danger", "theme.light.color.surface", "theme.light.color.line2"],
+        "dartRoles": ["CatchMotion.fast", "CatchOpacity.controlOverlayPressed", "CatchOpacity.controlOverlayHover", "CatchIcon.md", "CatchTextStyles.buttonSm", "CatchTextStyles.buttonMd", "CatchTextStyles.buttonLg"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Every product action still needs action cardinality and controller ownership outside this visual contract.",
+          "Use accentColor only for activity-scoped primary actions."
+        ]
+      }
+    },
+    {
+      "id": "catch.chip",
+      "name": "CatchChip",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Quiet fact/filter pill with optional icon, selected state, and remove action.",
+      "dart": {
+        "symbol": "CatchChip",
+        "file": "lib/core/widgets/catch_chip.dart",
+        "constructors": ["CatchChip"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Chip",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Chip",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "label",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "active",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "icon",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "onRemove",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "enabled",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          }
+        ],
+        "states": ["default", "active", "disabled", "with-icon", "removable", "activity-tinted"],
+        "slots": [
+          {
+            "name": "icon",
+            "kind": "optional-leading-widget"
+          }
+        ],
+        "tokens": ["space.s2", "space.micro2", "space.micro14", "radius.pill", "theme.light.color.surface", "theme.light.color.ink", "theme.light.color.line2"],
+        "dartRoles": ["CatchTextStyles.labelL", "CatchIcon.sm", "CatchOpacity.disabledControl", "CatchOpacity.controlOverlayPressed", "CatchOpacity.controlOverlayHover"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use for compact labels and filters; use OptionCard when each choice needs explanatory copy."
+        ]
+      }
+    },
+    {
+      "id": "catch.field",
+      "name": "CatchField",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Unified row primitive for edit, read, nav, toggle, and expandable control rows.",
+      "dart": {
+        "symbol": "CatchField",
+        "file": "lib/core/widgets/catch_field.dart",
+        "constructors": ["CatchField"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Field",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Field",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "label",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "value",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "mode",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchFieldMode?",
+            "values": ["edit", "read", "nav", "toggle"]
+          },
+          {
+            "name": "emphasis",
+            "type": "enum",
+            "required": false,
+            "default": "value",
+            "dartType": "CatchFieldEmphasis",
+            "values": ["value", "label"]
+          },
+          {
+            "name": "icon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData?"
+          },
+          {
+            "name": "trailing",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "control",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "error",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "divider",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          }
+        ],
+        "states": ["read", "edit", "nav", "toggle", "expanded-control", "error", "focused", "add"],
+        "slots": [
+          {
+            "name": "control",
+            "kind": "optional-expanded-widget",
+            "notes": "Use for option groups, chips, steppers, or other controlled primitives."
+          },
+          {
+            "name": "trailing",
+            "kind": "optional-trailing-widget"
+          }
+        ],
+        "tokens": ["space.s3", "space.s4", "space.s8", "space.s12", "space.micro2", "space.micro6", "space.micro10", "space.micro14", "theme.light.color.surface", "theme.light.color.ink", "theme.light.color.ink2", "theme.light.color.danger", "theme.light.color.line"],
+        "dartRoles": ["CatchRadius.interactiveTile", "CatchStroke.hairline", "CatchTextStyles.fieldLabel", "CatchTextStyles.titleS", "CatchToggle"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": ["catch.text_field", "catch.chip", "catch.option_card"],
+        "notes": [
+          "This is the preferred form/settings row contract before inventing local input rows."
+        ]
+      }
+    },
+    {
+      "id": "catch.icon_button",
+      "name": "CatchIconButton",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Circular icon action for toolbar, overlay, and plain glyph-button affordances.",
+      "dart": {
+        "symbol": "CatchIconButton",
+        "file": "lib/core/widgets/catch_icon_button.dart",
+        "constructors": ["CatchIconButton", "CatchIconButton.icon"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/IconButton",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "IconButton",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "child",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "default": "bordered",
+            "dartType": "CatchIconButtonVariant",
+            "values": ["bordered", "float", "plain"]
+          },
+          {
+            "name": "active",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "disabled",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "size",
+            "type": "number",
+            "required": false,
+            "default": "CatchIconButton.defaultSize",
+            "dartType": "double"
+          }
+        ],
+        "states": ["default", "active", "disabled", "bordered", "float", "plain"],
+        "slots": [
+          {
+            "name": "child",
+            "kind": "required-icon-widget",
+            "notes": "Prefer Icon(CatchIcons.*); the primitive owns glyph size and color."
+          }
+        ],
+        "tokens": ["radius.pill", "theme.light.color.surface", "theme.light.color.ink", "theme.light.color.line2"],
+        "dartRoles": ["CatchLayout.iconButtonSize", "CatchLayout.iconButtonNavSize", "CatchLayout.iconButtonGlyphScale", "CatchOpacity.disabledControl", "CatchElevation.iconButtonFloat"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Design handoff must include tooltip/action label when used as an accessible command."
+        ]
+      }
+    },
+    {
+      "id": "catch.option_card",
+      "name": "CatchOptionCard",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Selectable explanatory choice card for mutually exclusive options with a sentence of supporting copy.",
+      "dart": {
+        "symbol": "CatchOptionCard",
+        "file": "lib/core/widgets/catch_option_card.dart",
+        "constructors": ["CatchOptionCard"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/OptionCard",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "OptionCard",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "title",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "selected",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          }
+        ],
+        "states": ["default", "selected", "disabled-by-null-action"],
+        "slots": [],
+        "tokens": ["space.s3", "space.micro3", "radius.md", "theme.light.color.surface", "theme.light.color.ink", "theme.light.color.ink3", "theme.light.color.line2"],
+        "dartRoles": ["CatchSurface", "CatchStroke.underline", "CatchInsets.tileContentCompact", "CatchTextStyles.labelL", "CatchTextStyles.bodyS", "CatchIcon.lg"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use Chip or SelectChip for terse filter labels; use OptionCard when the option needs explanation."
+        ]
+      }
+    },
+    {
+      "id": "catch.segmented_control",
+      "name": "CatchSegmentedControl",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Pill-style segmented selector for two or more peer modes.",
+      "dart": {
+        "symbol": "CatchSegmentedControl",
+        "file": "lib/core/widgets/catch_segmented_control.dart",
+        "constructors": ["CatchSegmentedControl", "CatchSegment"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/SegmentedControl",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "SegmentedControl",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "segments",
+            "type": "generic-list",
+            "required": true,
+            "dartType": "List<CatchSegment<T>>"
+          },
+          {
+            "name": "selected",
+            "type": "object",
+            "required": true,
+            "dartType": "T"
+          },
+          {
+            "name": "onChanged",
+            "type": "callback",
+            "required": true,
+            "dartType": "ValueChanged<T>"
+          },
+          {
+            "name": "expanded",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "style",
+            "type": "enum",
+            "required": false,
+            "default": "filled",
+            "dartType": "CatchSegmentedControlStyle",
+            "values": ["filled", "surface"]
+          }
+        ],
+        "states": ["default", "selected", "expanded", "with-icons", "surface-style"],
+        "slots": [],
+        "tokens": ["space.s1", "space.s2", "space.s3", "theme.light.color.raised", "theme.light.color.ink", "theme.light.color.ink2", "theme.light.color.surface", "theme.light.color.line"],
+        "dartRoles": ["CatchRadius.segmentedOuter", "CatchRadius.segmentedInner", "CatchMotion.micro", "CatchMotion.easeInOutCurve", "CatchElevation.segmentedSelected", "CatchTextStyles.sectionTitle", "CatchIcon.control"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use only for peer mode switching, not for multi-select filters."
+        ]
+      }
+    },
+    {
+      "id": "catch.surface",
+      "name": "CatchSurface",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Canonical surface shell for cards, panels, and tappable tiles.",
+      "dart": {
+        "symbol": "CatchSurface",
+        "file": "lib/core/widgets/catch_surface.dart",
+        "constructors": ["CatchSurface"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Surface",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Surface",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "child",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget"
+          },
+          {
+            "name": "tone",
+            "type": "enum",
+            "required": false,
+            "default": "surface",
+            "dartType": "CatchSurfaceTone",
+            "values": ["surface", "raised", "primarySoft", "transparent"]
+          },
+          {
+            "name": "elevation",
+            "type": "enum",
+            "required": false,
+            "default": "none",
+            "dartType": "CatchSurfaceElevation",
+            "values": ["none", "card", "raised", "overlay"]
+          },
+          {
+            "name": "padding",
+            "type": "object",
+            "required": false,
+            "dartType": "EdgeInsetsGeometry?"
+          },
+          {
+            "name": "radius",
+            "type": "number",
+            "required": false,
+            "default": "CatchRadius.lg",
+            "dartType": "double"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          }
+        ],
+        "states": ["surface", "raised", "primary-soft", "transparent", "tappable", "elevated"],
+        "slots": [
+          {
+            "name": "child",
+            "kind": "required-content-widget"
+          }
+        ],
+        "tokens": ["radius.lg", "theme.light.color.surface", "theme.light.color.raised", "theme.light.color.primarySoft"],
+        "dartRoles": ["CatchElevation.none", "CatchElevation.card", "CatchElevation.raised", "CatchElevation.overlay", "CatchMotion.fast"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": ["catch.badge", "catch.button", "catch.chip", "catch.option_card"],
+        "notes": [
+          "Do not hand-roll Container/DecoratedBox cards in feature UI; request a Surface variant if this contract is missing a state."
+        ]
+      }
+    },
+    {
+      "id": "catch.text_field",
+      "name": "CatchTextField",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Token-driven text input shell with labels, helper/error support, clear actions, and boxed/underline/bare variants.",
+      "dart": {
+        "symbol": "CatchTextField",
+        "file": "lib/core/widgets/catch_text_field.dart",
+        "constructors": ["CatchTextField"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/TextField",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "TextField",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "label",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "hintText",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "helperText",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "errorText",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "size",
+            "type": "enum",
+            "required": false,
+            "default": "md",
+            "dartType": "CatchTextFieldSize",
+            "values": ["floating", "compact", "md"]
+          },
+          {
+            "name": "shape",
+            "type": "enum",
+            "required": false,
+            "default": "rounded",
+            "dartType": "CatchTextFieldShape",
+            "values": ["rounded", "pill"]
+          },
+          {
+            "name": "tone",
+            "type": "enum",
+            "required": false,
+            "default": "surface",
+            "dartType": "CatchTextFieldTone",
+            "values": ["surface", "raised"]
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "default": "box",
+            "dartType": "CatchTextFieldVariant",
+            "values": ["box", "underline", "bare"]
+          },
+          {
+            "name": "showClearButton",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          }
+        ],
+        "states": ["empty", "filled", "focused", "disabled", "read-only", "error", "helper", "multiline", "clearable"],
+        "slots": [
+          {
+            "name": "prefixIcon",
+            "kind": "optional-leading-widget"
+          },
+          {
+            "name": "suffixIcon",
+            "kind": "optional-trailing-widget"
+          },
+          {
+            "name": "trailing",
+            "kind": "optional-adjacent-widget"
+          }
+        ],
+        "tokens": ["space.s2", "space.s3", "space.s4", "space.micro10", "space.micro14", "radius.pill", "theme.light.color.surface", "theme.light.color.raised", "theme.light.color.ink", "theme.light.color.ink2", "theme.light.color.ink3", "theme.light.color.danger", "theme.light.color.line2"],
+        "dartRoles": ["CatchControlShell", "CatchFormFieldLabel", "CatchTextStyles.fieldLabel", "CatchTextStyles.bodyM", "CatchIcon.sm", "CatchMotion.fast"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Prefer CatchField for unified settings/form rows; use CatchTextField when the control itself is the design object."
+        ]
+      }
+    },
+    {
+      "id": "catch.top_bar",
+      "name": "CatchTopBar",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Canonical app-bar primitive for compact/large title chrome, back/close leading, trailing actions, and expanding search.",
+      "dart": {
+        "symbol": "CatchTopBar",
+        "file": "lib/core/widgets/catch_top_bar.dart",
+        "constructors": ["CatchTopBar"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/TopBar",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "TopBar",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "title",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "subtitle",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "kicker",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "leadingType",
+            "type": "enum",
+            "required": false,
+            "default": "auto",
+            "dartType": "CatchTopBarLeading",
+            "values": ["auto", "back", "close", "none"]
+          },
+          {
+            "name": "surface",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "border",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "actionIcon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData?"
+          },
+          {
+            "name": "searchValue",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "onSearch",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<String>?"
+          }
+        ],
+        "states": ["compact", "large", "with-leading", "with-action-icon", "with-action-text", "with-search", "surface", "bordered"],
+        "slots": [
+          {
+            "name": "titleWidget",
+            "kind": "optional-title-widget"
+          },
+          {
+            "name": "actions",
+            "kind": "optional-action-list"
+          },
+          {
+            "name": "bottom",
+            "kind": "optional-preferred-size-widget"
+          }
+        ],
+        "tokens": ["space.s0", "space.micro3", "space.micro6", "theme.light.color.bg", "theme.light.color.surface", "theme.light.color.ink", "theme.light.color.ink2", "theme.light.color.line"],
+        "dartRoles": ["CatchLayout.topBarHeight", "CatchLayout.topBarLargeHeight", "CatchIconButton.navSize", "CatchExpandingSearch", "CatchKicker", "CatchTextStyles.titleL", "CatchTextStyles.appBarSubtitle"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": ["catch.icon_button"],
+        "notes": [
+          "Use this primitive for route chrome before creating local AppBar variants.",
+          "Large mode is implied by a non-empty kicker unless explicitly overridden."
+        ]
+      }
+    }
+  ]
+}

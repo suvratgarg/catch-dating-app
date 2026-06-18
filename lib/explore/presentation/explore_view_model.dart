@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
@@ -6,6 +8,7 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/sentinels.dart';
+import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/search/data/explore_search_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -115,6 +118,18 @@ class ExploreFilterSelection {
   bool get hasActiveFilters =>
       timeFilter != defaultExploreTimeFilter ||
       distanceFilter != ExploreDistanceFilter.any ||
+      highRatedOnly ||
+      joinedOnly ||
+      activityTag != null ||
+      area != null;
+
+  /// Active filters that actually narrow the **club** list. Distance is
+  /// excluded on purpose: clubs carry no coordinates, so distance only narrows
+  /// the events feed. Including it here would make a distance-only selection
+  /// silently start applying the time window to the club list (and rebuild it)
+  /// while doing nothing for distance.
+  bool get hasActiveClubFilters =>
+      timeFilter != defaultExploreTimeFilter ||
       highRatedOnly ||
       joinedOnly ||
       activityTag != null ||
@@ -280,6 +295,31 @@ class ExploreSearchQuery extends _$ExploreSearchQuery {
   void clear() => state = '';
 }
 
+/// The search query after a short typing pause, trimmed for use as the
+/// server-search key.
+///
+/// Keeps a fast typist from firing one Cloud Function call per keystroke — we
+/// issue at most one search per settled phrase. Local substring filtering stays
+/// instant because it reads [exploreSearchQueryProvider] directly; only the
+/// (networked) server search keys off this debounced value. Short/empty queries
+/// settle immediately — a clear shouldn't lag, and [exploreServerSearch] ignores
+/// queries under two characters anyway. Longer queries wait out a ~300ms pause;
+/// if the query changes again the pending delay is cancelled (via onDispose), so
+/// rapid typing collapses to a single server call. Trimming also means a trailing
+/// space no longer mints a distinct search key for an otherwise identical query.
+@riverpod
+Future<String> debouncedExploreSearchQuery(Ref ref) async {
+  final query = ref.watch(exploreSearchQueryProvider).trim();
+  if (query.length < 2) return query;
+
+  final completer = Completer<void>();
+  // ~300ms typing-pause window before the query reaches the network.
+  final timer = Timer(const Duration(milliseconds: 300), completer.complete);
+  ref.onDispose(timer.cancel);
+  await completer.future;
+  return query;
+}
+
 @Riverpod(keepAlive: true)
 class ExploreFilters extends _$ExploreFilters {
   @override
@@ -324,7 +364,9 @@ class ExploreFilters extends _$ExploreFilters {
     final next = _normalizeFilterValue(tag);
     if (next == null) return;
     state = state.copyWith(
-      activityTag: _sameFilterValue(state.activityTag, next) ? null : next,
+      activityTag: exploreFilterValuesMatch(state.activityTag, next)
+          ? null
+          : next,
     );
   }
 
@@ -332,7 +374,7 @@ class ExploreFilters extends _$ExploreFilters {
     final next = _normalizeFilterValue(area);
     if (next == null) return;
     state = state.copyWith(
-      area: _sameFilterValue(state.area, next) ? null : next,
+      area: exploreFilterValuesMatch(state.area, next) ? null : next,
     );
   }
 
@@ -392,8 +434,16 @@ AsyncValue<List<Club>> filteredExploreClubs(Ref ref) {
   final localFallback = sourceClubs
       .where((club) => matchesExploreClubSearchQuery(club, normalizedQuery))
       .toList(growable: false);
+  // Server search keys off the debounced query so typing doesn't fire a
+  // Cloud Function call per keystroke. Until it settles, `localFallback`
+  // (computed from the live query above) keeps results responsive.
+  final debouncedQuery =
+      ref.watch(debouncedExploreSearchQueryProvider).asData?.value ?? '';
+  if (debouncedQuery.length < 2) {
+    return AsyncData(localFallback);
+  }
   final searchAsync = ref.watch(
-    exploreServerSearchProvider(query: query, cityName: city.name),
+    exploreServerSearchProvider(query: debouncedQuery, cityName: city.name),
   );
 
   if (searchAsync.isLoading) {
@@ -518,7 +568,7 @@ List<Club> applyExploreFilters({
   required Set<String> joinedClubIds,
   DateTime? now,
 }) {
-  if (!filters.hasActiveFilters) return clubs;
+  if (!filters.hasActiveClubFilters) return clubs;
 
   final referenceNow = now ?? DateTime.now();
   return clubs
@@ -526,22 +576,11 @@ List<Club> applyExploreFilters({
         if (!_clubMatchesTimeFilter(club, filters.timeFilter, referenceNow)) {
           return false;
         }
-        if (filters.highRatedOnly && club.rating < 4.5) {
-          return false;
-        }
-        if (filters.joinedOnly && !joinedClubIds.contains(club.id)) {
-          return false;
-        }
-        final activityTag = filters.activityTag;
-        if (activityTag != null &&
-            !club.tags.any((tag) => _sameFilterValue(tag, activityTag))) {
-          return false;
-        }
-        final area = filters.area;
-        if (area != null && !_sameFilterValue(club.area, area)) {
-          return false;
-        }
-        return true;
+        return clubMatchesScopeFilters(
+          club: club,
+          filters: filters,
+          joinedClubIds: joinedClubIds,
+        );
       })
       .toList(growable: false);
 }
@@ -561,8 +600,4 @@ String? _normalizeFilterValue(String? value) {
   final normalized = value?.trim();
   if (normalized == null || normalized.isEmpty) return null;
   return normalized;
-}
-
-bool _sameFilterValue(String? left, String right) {
-  return left?.trim().toLowerCase() == right.trim().toLowerCase();
 }

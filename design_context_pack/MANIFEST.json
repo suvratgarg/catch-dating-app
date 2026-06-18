@@ -5,13 +5,18 @@
   "files": [
     {
       "path": "README.txt",
-      "sha256": "30a0636a15f8fd9a88d27e87d6fb8024b16924234936bd9ebed26b42dd4edb0f",
-      "bytes": 815
+      "sha256": "ad53ab02bb8c8d895b01d877b804cc15579f16bf06d629e6aee6dad5dbf9b3a7",
+      "bytes": 950
     },
     {
       "path": "design_system/activity_palette.json",
       "sha256": "128bcd762c701dbeb24862b3360d54c6f6f5a8c892f38bdd0f969bd909729653",
       "bytes": 4368
+    },
+    {
+      "path": "design_system/components.json",
+      "sha256": "26c357d55ad7dadbb467d764084a4c9b5f4780666bd7a9b084f9b890f7871a5d",
+      "bytes": 33686
     },
     {
       "path": "design_system/design_language.txt",
@@ -20,22 +25,22 @@
     },
     {
       "path": "design_system/specimens/catch_design_system.html",
-      "sha256": "057f722955c3f2e543b249518c5747b8737cee7c4c3b096f4993f4d48f921658",
-      "bytes": 5551
+      "sha256": "cf693c5bb5cb35da700cde95e9d91788771b5bfbc4662533bc92b2fbfaa75d05",
+      "bytes": 5557
     },
     {
       "path": "design_system/tokens.json",
-      "sha256": "b83b2a4183a8ae4e201814c6cef211632ae61ff52668697a234f67401dc20d0d",
-      "bytes": 24519
+      "sha256": "08814157d010b4fd59a36bb19d711c28c7c6bec4ce5c827c4345813df2326341",
+      "bytes": 25480
     },
     {
       "path": "design_system/typography.json",
-      "sha256": "fa3e374695cd8ebb2e4e8f55d879cd448e94591f9d617a4c43829568fed03e52",
-      "bytes": 22479
+      "sha256": "cea3c473fef4331114639071d0930f01ea8916b318205cdf94536676c7f197d2",
+      "bytes": 22493
     },
     {
       "path": "gallery/manifest.json",
-      "sha256": "adb7dc7905a7f2626b77336f9158bc07079c4ddb824f686c5e40fb0d5b3a5901",
+      "sha256": "19416a3759f7713ebc4d76995e4bdc0722ba34301dcab47bf04ace04f0196daa",
       "bytes": 15342
     }
   ]

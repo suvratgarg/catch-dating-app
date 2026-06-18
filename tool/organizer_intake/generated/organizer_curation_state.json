@@ -1,0 +1,47 @@
+{
+  "attachedSurfaces": [],
+  "commands": {
+    "attachSurface": "node tool/organizer_intake/curation_decision.mjs draft attach_surface --entity ENTITY --search-candidate CANDIDATE_ID --reviewer REVIEWER --date YYYY-MM-DD --reason \"Surface belongs to this organizer.\"",
+    "mergeEntity": "node tool/organizer_intake/curation_decision.mjs draft merge_entity --source SOURCE_ENTITY --target TARGET_ENTITY --reviewer REVIEWER --date YYYY-MM-DD --reason \"Same organizer entity.\"",
+    "splitSurface": "node tool/organizer_intake/curation_decision.mjs draft split_surface --entity ENTITY --surface SURFACE --new-entity NEW_ENTITY --reviewer REVIEWER --date YYYY-MM-DD --reason \"Surface belongs to a separate organizer.\"",
+    "suppressEntity": "node tool/organizer_intake/curation_decision.mjs draft suppress_entity --entity ENTITY --reviewer REVIEWER --date YYYY-MM-DD --reason \"False-positive organizer candidate.\"",
+    "surfaceDecision": "node tool/organizer_intake/curation_decision.mjs draft surface_decision --entity ENTITY --surface SURFACE --decision reject_wrong_entity --reviewer REVIEWER --date YYYY-MM-DD --reason \"Wrong entity.\""
+  },
+  "generatedFrom": {
+    "batches": [
+      "tool/organizer_intake/batches/2026-06-17-foundation.json"
+    ],
+    "curationDecisionBatches": [
+      "tool/organizer_intake/curation_decisions/2026-06-17-afterfly-wrong-website.json"
+    ],
+    "schema": "tool/organizer_intake/schemas/organizer_curation_decisions.schema.json"
+  },
+  "mergedEntities": [],
+  "schemaVersion": 1,
+  "splitSurfaces": [],
+  "summary": {
+    "attachedSurfaces": 0,
+    "entities": 2,
+    "mergedSources": 0,
+    "merges": 0,
+    "mergeTargets": 0,
+    "operations": 1,
+    "splitSurfaces": 0,
+    "suppressions": 0,
+    "surfaceDecisions": 1
+  },
+  "suppressedEntities": [],
+  "surfaceDecisions": [
+    {
+      "curationBatchId": "2026-06-17-afterfly-wrong-website",
+      "decidedAt": "2026-06-17",
+      "decision": "reject_wrong_entity",
+      "entityId": "afterfly",
+      "operationId": "2026-06-17-afterfly-wrong-website:0",
+      "reason": "User-reported first-party-looking Afterfly website appears to belong to a different entity.",
+      "reviewer": "codex",
+      "sourceFile": "tool/organizer_intake/curation_decisions/2026-06-17-afterfly-wrong-website.json",
+      "surfaceId": "afterfly-wrong-website-reported"
+    }
+  ]
+}

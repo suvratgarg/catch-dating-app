@@ -1,0 +1,14 @@
+{
+  "decidedAt": "2026-06-18",
+  "decisions": [
+    {
+      "decision": "hold",
+      "gapId": "external_event_defaults_policy",
+      "note": "Safe default hold retained because no product approval was provided for this policy on 2026-06-18.",
+      "requiredInputsReviewed": []
+    }
+  ],
+  "policyGapDecisionBatchId": "2026-06-18-external-event-defaults-policy-policy-hold",
+  "reviewer": "suvrat",
+  "schemaVersion": 1
+}

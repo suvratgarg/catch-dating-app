@@ -67,7 +67,7 @@ class CatchInfoRow extends StatelessWidget {
         if (divider)
           Positioned(
             top: 0,
-            left: icon != null ? CatchIcon.control + CatchSpacing.s3 : 0,
+            left: icon != null ? CatchLayout.infoRowDividerIconInset : 0,
             right: 0,
             child: ColoredBox(
               color: t.line.withValues(alpha: CatchOpacity.infoRowDivider),

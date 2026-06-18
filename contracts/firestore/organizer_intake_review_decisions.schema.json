@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_intake_review_decisions.schema.json",
+  "title": "OrganizerIntakeReviewDecisionDocument",
+  "description": "Latest admin review decision stored at organizerIntakeReviewDecisions/{entityId}. Raw scrape/search evidence is not stored here.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerIntakeReviewDecisions",
+  "x-firestore-path": "organizerIntakeReviewDecisions/{entityId}",
+  "x-document-id-field": "entityId",
+  "x-owner": "adminDecideOrganizerIntake callable",
+  "required": [
+    "schemaVersion",
+    "entityId",
+    "decision",
+    "decisionStatus",
+    "appVisibility",
+    "checklist",
+    "note",
+    "reviewedByUid",
+    "reviewedAt",
+    "updatedAt",
+    "projectionState"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "entityId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "decision": {"type": "string", "enum": ["approve_public", "hold", "suppress"]},
+    "decisionStatus": {"type": "string", "enum": ["approved_public", "held", "suppressed"]},
+    "appVisibility": {"type": "string", "enum": ["hidden", "discoverable"]},
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identityReviewed",
+        "surfaceInventoryReviewed",
+        "ownerSafeCopyReviewed",
+        "marketScopeReviewed",
+        "mediaRightsReviewed",
+        "crawlDisabledReviewed"
+      ],
+      "properties": {
+        "identityReviewed": {"type": "boolean"},
+        "surfaceInventoryReviewed": {"type": "boolean"},
+        "ownerSafeCopyReviewed": {"type": "boolean"},
+        "marketScopeReviewed": {"type": "boolean"},
+        "mediaRightsReviewed": {"type": "boolean"},
+        "crawlDisabledReviewed": {"type": "boolean"},
+        "manualReportsReviewed": {
+          "type": "boolean",
+          "description": "True when the reviewer explicitly inspected manual reports that have no local raw artifact. Raw evidence remains outside Firestore; projection replay decides when this acknowledgement is required."
+        }
+      }
+    },
+    "note": {"type": "string", "minLength": 1, "maxLength": 1000},
+    "reviewedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "reviewedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "projectionState": {
+      "type": "string",
+      "enum": ["pending_static_generation", "not_projectable"]
+    }
+  }
+}

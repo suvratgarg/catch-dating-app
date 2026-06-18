@@ -1,0 +1,418 @@
+{
+  "candidates": [
+    {
+      "activeSurfaceCount": 2,
+      "ambiguousSurfaceCount": 2,
+      "canonicalPath": "/organizers/afterfly/",
+      "dedupeKeys": [
+        {
+          "reason": "Normalized alias.",
+          "strength": "weak",
+          "type": "alias",
+          "value": "afterfly"
+        },
+        {
+          "reason": "Normalized alias.",
+          "strength": "weak",
+          "type": "alias",
+          "value": "afterfly run club"
+        },
+        {
+          "reason": "Canonical public path.",
+          "strength": "strong",
+          "type": "canonical_public_path",
+          "value": "/organizers/afterfly/"
+        },
+        {
+          "reason": "Canonical public slug.",
+          "strength": "medium",
+          "type": "canonical_slug",
+          "value": "afterfly"
+        },
+        {
+          "reason": "Manual or compatibility dedupe hint.",
+          "strength": "medium",
+          "type": "canonicalPath",
+          "value": "/organizers/indore/afterfly-run-club/"
+        },
+        {
+          "reason": "Canonical organizer entity id.",
+          "strength": "strong",
+          "type": "entity_id",
+          "value": "afterfly"
+        },
+        {
+          "reason": "Legacy public path kept for redirect/dedupe.",
+          "strength": "medium",
+          "type": "legacy_public_path",
+          "value": "/organizers/indore/afterfly-run-club/"
+        },
+        {
+          "reason": "Manual or compatibility dedupe hint.",
+          "strength": "strong",
+          "type": "legacyClubId",
+          "value": "afterfly-run-club-indore"
+        },
+        {
+          "reason": "Normalized display name.",
+          "strength": "medium",
+          "type": "normalized_name",
+          "value": "after fly"
+        },
+        {
+          "reason": "instagram socialProfile surface.",
+          "strength": "strong",
+          "type": "surface",
+          "value": "instagram:afterfly.in"
+        },
+        {
+          "reason": "instagram socialProfile surface.",
+          "strength": "strong",
+          "type": "surface",
+          "value": "instagram:afterflyrunclub"
+        },
+        {
+          "reason": "luma eventListing surface.",
+          "strength": "strong",
+          "type": "surface",
+          "value": "luma:event:pxgmph3b"
+        }
+      ],
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "entityKind": "eventOrganizer",
+      "geographicScope": "city",
+      "legacyPaths": [
+        "/organizers/indore/afterfly-run-club/"
+      ],
+      "markets": [
+        "indore"
+      ],
+      "mergedEntityIds": [],
+      "rejectedSurfaceCount": 1,
+      "relationshipToCatch": "unclaimed",
+      "reviewStatus": "needs_admin_review"
+    },
+    {
+      "activeSurfaceCount": 3,
+      "ambiguousSurfaceCount": 0,
+      "canonicalPath": "/organizers/bhag/",
+      "dedupeKeys": [
+        {
+          "reason": "Normalized alias.",
+          "strength": "weak",
+          "type": "alias",
+          "value": "bhag run club"
+        },
+        {
+          "reason": "Normalized alias.",
+          "strength": "weak",
+          "type": "alias",
+          "value": "bhag runs"
+        },
+        {
+          "reason": "Normalized alias.",
+          "strength": "weak",
+          "type": "alias",
+          "value": "the bhag"
+        },
+        {
+          "reason": "Canonical public path.",
+          "strength": "strong",
+          "type": "canonical_public_path",
+          "value": "/organizers/bhag/"
+        },
+        {
+          "reason": "Canonical public slug.",
+          "strength": "medium",
+          "type": "canonical_slug",
+          "value": "bhag"
+        },
+        {
+          "reason": "Manual or compatibility dedupe hint.",
+          "strength": "medium",
+          "type": "canonicalPath",
+          "value": "/organizers/delhi/bhag-run-club/"
+        },
+        {
+          "reason": "Canonical organizer entity id.",
+          "strength": "strong",
+          "type": "entity_id",
+          "value": "bhag"
+        },
+        {
+          "reason": "Legacy public path kept for redirect/dedupe.",
+          "strength": "medium",
+          "type": "legacy_public_path",
+          "value": "/organizers/delhi/bhag-run-club/"
+        },
+        {
+          "reason": "Manual or compatibility dedupe hint.",
+          "strength": "strong",
+          "type": "legacyClubId",
+          "value": "bhag-run-club-delhi"
+        },
+        {
+          "reason": "Normalized display name.",
+          "strength": "medium",
+          "type": "normalized_name",
+          "value": "bhag club"
+        },
+        {
+          "reason": "officialWebsite website surface.",
+          "strength": "strong",
+          "type": "surface",
+          "value": "domain:thebhag.in"
+        },
+        {
+          "reason": "instagram socialProfile surface.",
+          "strength": "strong",
+          "type": "surface",
+          "value": "instagram:bhagclub"
+        },
+        {
+          "reason": "luma eventListing surface.",
+          "strength": "strong",
+          "type": "surface",
+          "value": "luma:event:ixj7uqiu"
+        }
+      ],
+      "displayName": "Bhag Club",
+      "entityId": "bhag",
+      "entityKind": "brand",
+      "geographicScope": "national",
+      "legacyPaths": [
+        "/organizers/delhi/bhag-run-club/"
+      ],
+      "markets": [
+        "delhi-ncr"
+      ],
+      "mergedEntityIds": [],
+      "rejectedSurfaceCount": 0,
+      "relationshipToCatch": "unclaimed",
+      "reviewStatus": "needs_more_evidence"
+    }
+  ],
+  "conflicts": [],
+  "counts": {
+    "byEntityKind": {
+      "brand": 1,
+      "eventOrganizer": 1
+    },
+    "byGeographicScope": {
+      "city": 1,
+      "national": 1
+    },
+    "byRelationshipToCatch": {
+      "unclaimed": 2
+    },
+    "byReviewStatus": {
+      "needs_admin_review": 1,
+      "needs_more_evidence": 1
+    }
+  },
+  "curationSummary": {
+    "attachedSurfaces": 0,
+    "entities": 2,
+    "mergedSources": 0,
+    "merges": 0,
+    "mergeTargets": 0,
+    "operations": 1,
+    "splitSurfaces": 0,
+    "suppressions": 0,
+    "surfaceDecisions": 1
+  },
+  "dedupeKeys": [
+    {
+      "entityId": "afterfly",
+      "reason": "Normalized alias.",
+      "strength": "weak",
+      "type": "alias",
+      "value": "afterfly run club"
+    },
+    {
+      "entityId": "afterfly",
+      "reason": "Normalized alias.",
+      "strength": "weak",
+      "type": "alias",
+      "value": "afterfly"
+    },
+    {
+      "entityId": "bhag",
+      "reason": "Normalized alias.",
+      "strength": "weak",
+      "type": "alias",
+      "value": "bhag run club"
+    },
+    {
+      "entityId": "bhag",
+      "reason": "Normalized alias.",
+      "strength": "weak",
+      "type": "alias",
+      "value": "bhag runs"
+    },
+    {
+      "entityId": "bhag",
+      "reason": "Normalized alias.",
+      "strength": "weak",
+      "type": "alias",
+      "value": "the bhag"
+    },
+    {
+      "entityId": "afterfly",
+      "reason": "Canonical public path.",
+      "strength": "strong",
+      "type": "canonical_public_path",
+      "value": "/organizers/afterfly/"
+    },
+    {
+      "entityId": "bhag",
+      "reason": "Canonical public path.",
+      "strength": "strong",
+      "type": "canonical_public_path",
+      "value": "/organizers/bhag/"
+    },
+    {
+      "entityId": "afterfly",
+      "reason": "Canonical public slug.",
+      "strength": "medium",
+      "type": "canonical_slug",
+      "value": "afterfly"
+    },
+    {
+      "entityId": "bhag",
+      "reason": "Canonical public slug.",
+      "strength": "medium",
+      "type": "canonical_slug",
+      "value": "bhag"
+    },
+    {
+      "entityId": "bhag",
+      "reason": "Manual or compatibility dedupe hint.",
+      "strength": "medium",
+      "type": "canonicalPath",
+      "value": "/organizers/delhi/bhag-run-club/"
+    },
+    {
+      "entityId": "afterfly",
+      "reason": "Manual or compatibility dedupe hint.",
+      "strength": "medium",
+      "type": "canonicalPath",
+      "value": "/organizers/indore/afterfly-run-club/"
+    },
+    {
+      "entityId": "afterfly",
+      "reason": "Canonical organizer entity id.",
+      "strength": "strong",
+      "type": "entity_id",
+      "value": "afterfly"
+    },
+    {
+      "entityId": "bhag",
+      "reason": "Canonical organizer entity id.",
+      "strength": "strong",
+      "type": "entity_id",
+      "value": "bhag"
+    },
+    {
+      "entityId": "bhag",
+      "reason": "Legacy public path kept for redirect/dedupe.",
+      "strength": "medium",
+      "type": "legacy_public_path",
+      "value": "/organizers/delhi/bhag-run-club/"
+    },
+    {
+      "entityId": "afterfly",
+      "reason": "Legacy public path kept for redirect/dedupe.",
+      "strength": "medium",
+      "type": "legacy_public_path",
+      "value": "/organizers/indore/afterfly-run-club/"
+    },
+    {
+      "entityId": "afterfly",
+      "reason": "Manual or compatibility dedupe hint.",
+      "strength": "strong",
+      "type": "legacyClubId",
+      "value": "afterfly-run-club-indore"
+    },
+    {
+      "entityId": "bhag",
+      "reason": "Manual or compatibility dedupe hint.",
+      "strength": "strong",
+      "type": "legacyClubId",
+      "value": "bhag-run-club-delhi"
+    },
+    {
+      "entityId": "afterfly",
+      "reason": "Normalized display name.",
+      "strength": "medium",
+      "type": "normalized_name",
+      "value": "after fly"
+    },
+    {
+      "entityId": "bhag",
+      "reason": "Normalized display name.",
+      "strength": "medium",
+      "type": "normalized_name",
+      "value": "bhag club"
+    },
+    {
+      "entityId": "bhag",
+      "reason": "officialWebsite website surface.",
+      "strength": "strong",
+      "type": "surface",
+      "value": "domain:thebhag.in"
+    },
+    {
+      "entityId": "afterfly",
+      "reason": "instagram socialProfile surface.",
+      "strength": "strong",
+      "type": "surface",
+      "value": "instagram:afterfly.in"
+    },
+    {
+      "entityId": "afterfly",
+      "reason": "instagram socialProfile surface.",
+      "strength": "strong",
+      "type": "surface",
+      "value": "instagram:afterflyrunclub"
+    },
+    {
+      "entityId": "bhag",
+      "reason": "instagram socialProfile surface.",
+      "strength": "strong",
+      "type": "surface",
+      "value": "instagram:bhagclub"
+    },
+    {
+      "entityId": "bhag",
+      "reason": "luma eventListing surface.",
+      "strength": "strong",
+      "type": "surface",
+      "value": "luma:event:ixj7uqiu"
+    },
+    {
+      "entityId": "afterfly",
+      "reason": "luma eventListing surface.",
+      "strength": "strong",
+      "type": "surface",
+      "value": "luma:event:pxgmph3b"
+    }
+  ],
+  "entityCount": 2,
+  "generatedFrom": {
+    "batches": [
+      "tool/organizer_intake/batches/2026-06-17-foundation.json"
+    ],
+    "curationDecisionBatches": [
+      "tool/organizer_intake/curation_decisions/2026-06-17-afterfly-wrong-website.json"
+    ],
+    "reviewDecisionBatches": [
+      "tool/organizer_intake/review_decisions/2026-06-18-afterfly-approve-public.json",
+      "tool/organizer_intake/review_decisions/2026-06-18-bhag-approve-public.json"
+    ],
+    "schema": "tool/organizer_intake/schemas/organizer_intake_batch.schema.json"
+  },
+  "inputHash": "79a68f0eea5183554aaa5eaea666a29f263cf32b8f3c278aff63959d68047b3c",
+  "schemaVersion": 1
+}

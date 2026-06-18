@@ -118,3 +118,8 @@ catch-dating-app/
 
 # Deep semantic audit scratch artifacts
 .audit_work/
+
+# Organizer intake raw provider payloads
+tool/organizer_intake/raw_artifacts/**
+!tool/organizer_intake/raw_artifacts/
+!tool/organizer_intake/raw_artifacts/README.md

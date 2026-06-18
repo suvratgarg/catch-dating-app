@@ -60,7 +60,7 @@ class CatchActivityAvatar extends StatelessWidget {
           border: ring
               ? null
               : Border.all(
-                  color: Colors.white.withValues(
+                  color: CatchTokens.editorialLight.withValues(
                     alpha: CatchOpacity.activityAvatarInnerRule,
                   ),
                 ),
@@ -93,7 +93,7 @@ class CatchActivityAvatar extends StatelessWidget {
                           height: 1,
                           fontWeight: FontWeight.w700,
                           letterSpacing: initialsSize * 0.02,
-                          color: Colors.white,
+                          color: CatchTokens.editorialLight,
                         ),
                       );
                     },
@@ -101,7 +101,7 @@ class CatchActivityAvatar extends StatelessWidget {
                 ),
               if (dim)
                 ColoredBox(
-                  color: Colors.black.withValues(
+                  color: CatchTokens.editorialDark.withValues(
                     alpha: CatchOpacity.activityAvatarDim,
                   ),
                 ),
@@ -117,7 +117,9 @@ class _ActivityAvatarTexturePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: CatchOpacity.activityAvatarPrint)
+      ..color = CatchTokens.editorialLight.withValues(
+        alpha: CatchOpacity.activityAvatarPrint,
+      )
       ..strokeWidth = CatchLayout.activityAvatarTextureStrokeWidth;
     final stride = CatchLayout.activityAvatarTextureStride;
     for (

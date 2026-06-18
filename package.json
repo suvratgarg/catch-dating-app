@@ -16,7 +16,8 @@
     "web:build": "npm run web:marketing:build && npm run web:admin:build",
     "web:typecheck": "npm run web:marketing:typecheck && npm run web:admin:typecheck",
     "web:tokens": "dart run tool/design_tokens.dart",
-    "web:tokens:check": "dart run tool/design_tokens.dart --check"
+    "web:tokens:check": "dart run tool/design_tokens.dart --check",
+    "design:components:check": "node tool/design/check_component_contracts.mjs"
   },
   "devDependencies": {
     "react": "^19.2.7",

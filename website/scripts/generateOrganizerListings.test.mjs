@@ -1,0 +1,138 @@
+import assert from "node:assert/strict";
+import {execFileSync} from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import test from "node:test";
+import {fileURLToPath} from "node:url";
+
+const scriptPath = fileURLToPath(new URL("./generateOrganizerListings.mjs", import.meta.url));
+
+test("approved organizer intake projections render canonical listings and suppress legacy seeds", () => {
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-organizer-listings-"));
+  const projectionPath = path.join(tmpRoot, "public_projection_plan.json");
+  const seedRoot = path.join(tmpRoot, "seed_clubs");
+  const outputPath = path.join(tmpRoot, "hostListings.json");
+  fs.mkdirSync(seedRoot, {recursive: true});
+  fs.writeFileSync(projectionPath, `${JSON.stringify(approvedProjectionPlan(), null, 2)}\n`);
+  fs.writeFileSync(
+    path.join(seedRoot, "afterfly-run-club-indore.json"),
+    `${JSON.stringify(legacySeedListing(), null, 2)}\n`
+  );
+
+  execFileSync(process.execPath, [
+    scriptPath,
+    "--projection-plan",
+    projectionPath,
+    "--seed-root",
+    seedRoot,
+    "--output",
+    outputPath,
+    "--no-demo",
+  ], {stdio: "pipe"});
+
+  const listings = JSON.parse(fs.readFileSync(outputPath, "utf8"));
+  assert.equal(listings.length, 1);
+  assert.equal(listings[0].id, "afterfly");
+  assert.equal(listings[0].dataOrigin, "organizerIntake");
+  assert.equal(listings[0].path, "/organizers/afterfly/");
+  assert.deepEqual(listings[0].legacyPaths, ["/organizers/indore/afterfly-run-club/"]);
+  assert.equal(listings[0].indexing, "index, follow");
+  assert.equal(listings[0].claim.href, "/organizers/afterfly/#claim");
+  assert.equal(listings[0].city, "Indore");
+  assert.equal(listings[0].country, "India");
+  assert.equal(listings[0].sourceConfidence, "high");
+  assert.equal(listings[0].lastVerifiedAt, "2026-06-17");
+  assert.equal(
+    listings.some((listing) => listing.id === "afterfly-run-club-indore"),
+    false
+  );
+
+  execFileSync(process.execPath, [
+    scriptPath,
+    "--projection-plan",
+    projectionPath,
+    "--seed-root",
+    seedRoot,
+    "--output",
+    outputPath,
+    "--no-demo",
+    "--check",
+  ], {stdio: "pipe"});
+});
+
+function approvedProjectionPlan() {
+  return {
+    schemaVersion: 1,
+    entries: [
+      {
+        appVisibility: "hidden",
+        blockedBy: [],
+        canonicalPath: "/organizers/afterfly/",
+        displayName: "AFTER FLY",
+        entityId: "afterfly",
+        indexStatus: "indexed",
+        legacyPaths: ["/organizers/indore/afterfly-run-club/"],
+        pageMode: "singleEntity",
+        projectionStatus: "ready",
+        publicListing: {
+          category: "Event organizer",
+          description:
+            "AFTER FLY is an Indore run-and-rave organizer promoted after manual admin review.",
+          formats: ["Social runs", "Run-and-rave"],
+          id: "afterfly",
+          indexing: "index, follow",
+          markets: [
+            {
+              countryCode: "IN",
+              displayName: "Indore",
+              marketSlug: "indore",
+            },
+          ],
+          missingEvidence: ["Owner claim"],
+          name: "AFTER FLY",
+          path: "/organizers/afterfly/",
+          slug: "afterfly",
+          sourceSummary:
+            "Admin-reviewed public surfaces confirm the organizer identity.",
+          sources: [
+            {
+              confidence: "high",
+              detail: "Public Luma event page reviewed during organizer intake.",
+              href: "https://luma.com/pxgmph3b",
+              label: "Luma event page",
+              type: "public_event_page",
+            },
+          ],
+          status: "unclaimed",
+        },
+        publishStatus: "published",
+        reviewDecision: {
+          decidedAt: "2026-06-17",
+        },
+      },
+    ],
+  };
+}
+
+function legacySeedListing() {
+  return {
+    path: "clubs/afterfly-run-club-indore",
+    data: {
+      cityName: "Indore",
+      description: "Legacy seed listing that should be suppressed.",
+      displayCategory: "Run club",
+      name: "AFTER FLY",
+      publicPage: {
+        canonicalPath: "/organizers/indore/afterfly-run-club/",
+        citySlug: "indore",
+        publishStatus: "published",
+        robots: "noindex, follow",
+        slug: "afterfly-run-club",
+      },
+      publicProfile: {
+        summary: "Legacy seed listing.",
+      },
+    },
+  };
+}

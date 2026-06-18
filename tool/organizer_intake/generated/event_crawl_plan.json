@@ -1,0 +1,130 @@
+{
+  "entries": [
+    {
+      "blockedBy": [
+        "global_recurring_crawl_disabled",
+        "surface_crawl_status_not_approved",
+        "surface_crawl_policy_not_api_preferred",
+        "organizer_not_public_approved"
+      ],
+      "crawl": {
+        "eventDiscoveryStatus": "disabled",
+        "policy": "manualOnly",
+        "supportsEventExtraction": true
+      },
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "entityKind": "eventOrganizer",
+      "markets": [],
+      "nextGate": "crawl_policy_review",
+      "normalizedKey": "luma:event:pxgmph3b",
+      "platform": "luma",
+      "readiness": "blocked",
+      "relationshipState": null,
+      "reviewStatus": "needs_admin_review",
+      "role": "primary",
+      "status": "active",
+      "surfaceId": "afterfly-luma-takeoff-run-rave",
+      "surfaceKind": "eventListing",
+      "url": "https://luma.com/pxgmph3b"
+    },
+    {
+      "blockedBy": [
+        "global_recurring_crawl_disabled",
+        "surface_not_active",
+        "surface_url_missing",
+        "surface_crawl_status_not_approved",
+        "surface_crawl_policy_not_api_preferred",
+        "organizer_not_public_approved"
+      ],
+      "crawl": {
+        "eventDiscoveryStatus": "disabled",
+        "policy": "manualOnly",
+        "supportsEventExtraction": true
+      },
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "entityKind": "eventOrganizer",
+      "markets": [],
+      "nextGate": "crawl_policy_review",
+      "normalizedKey": null,
+      "platform": "sortMyScene",
+      "readiness": "blocked",
+      "relationshipState": null,
+      "reviewStatus": "needs_admin_review",
+      "role": "ambiguous",
+      "status": "candidate",
+      "surfaceId": "afterfly-sortmyscene-reported",
+      "surfaceKind": "organizerProfile",
+      "url": null
+    },
+    {
+      "blockedBy": [
+        "global_recurring_crawl_disabled",
+        "surface_crawl_status_not_approved",
+        "surface_crawl_policy_not_api_preferred",
+        "organizer_not_public_approved"
+      ],
+      "crawl": {
+        "eventDiscoveryStatus": "disabled",
+        "policy": "manualOnly",
+        "supportsEventExtraction": true
+      },
+      "displayName": "Bhag Club",
+      "entityId": "bhag",
+      "entityKind": "brand",
+      "markets": [],
+      "nextGate": "crawl_policy_review",
+      "normalizedKey": "luma:event:ixj7uqiu",
+      "platform": "luma",
+      "readiness": "blocked",
+      "relationshipState": null,
+      "reviewStatus": "needs_more_evidence",
+      "role": "secondary",
+      "status": "active",
+      "surfaceId": "bhag-luma-runs",
+      "surfaceKind": "eventListing",
+      "url": "https://luma.com/ixj7uqiu"
+    }
+  ],
+  "generatedFrom": {
+    "batches": [
+      "tool/organizer_intake/batches/2026-06-17-foundation.json"
+    ],
+    "curationDecisionBatches": [
+      "tool/organizer_intake/curation_decisions/2026-06-17-afterfly-wrong-website.json"
+    ],
+    "policy": "organizer-event-crawl-v0-disabled"
+  },
+  "guardrails": [
+    "No scheduled event crawling is enabled by this artifact.",
+    "Manual-only surfaces require explicit policy approval before any recurring fetch.",
+    "Rejected, ambiguous, historical, or URL-missing surfaces stay blocked.",
+    "Organizer publication, app discoverability, claim approval, and crawl approval are separate gates."
+  ],
+  "policy": {
+    "defaultSurfacePolicy": "manualOnly",
+    "reason": "Recurring event crawling is modeled for future support but remains disabled until cost, provider policy, rate limits, and owner-safety rules are approved.",
+    "schedulerEnabled": false,
+    "status": "disabled"
+  },
+  "schemaVersion": 1,
+  "summary": {
+    "approvedSurfaces": 0,
+    "blockedSurfaces": 3,
+    "blockers": {
+      "global_recurring_crawl_disabled": 3,
+      "organizer_not_public_approved": 3,
+      "surface_crawl_policy_not_api_preferred": 3,
+      "surface_crawl_status_not_approved": 3,
+      "surface_not_active": 1,
+      "surface_url_missing": 1
+    },
+    "crawlCapableSurfaces": 3,
+    "entities": 2,
+    "platforms": {
+      "luma": 2,
+      "sortMyScene": 1
+    }
+  }
+}

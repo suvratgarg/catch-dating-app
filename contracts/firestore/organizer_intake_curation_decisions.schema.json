@@ -1,0 +1,166 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_intake_curation_decisions.schema.json",
+  "title": "OrganizerIntakeCurationDecisionDocument",
+  "description": "One manual organizer-intake curation operation stored at organizerIntakeCurationDecisions/{operationId}. Raw scrape/search evidence is not stored here.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerIntakeCurationDecisions",
+  "x-firestore-path": "organizerIntakeCurationDecisions/{operationId}",
+  "x-document-id-field": "operationId",
+  "x-owner": "adminRecordOrganizerCuration callable",
+  "required": [
+    "schemaVersion",
+    "operationId",
+    "operationType",
+    "operationStatus",
+    "reason",
+    "reviewedByUid",
+    "reviewedAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "operationId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "operationType": {
+      "type": "string",
+      "enum": [
+        "attach_surface",
+        "merge_entity",
+        "split_surface",
+        "suppress_entity",
+        "surface_decision"
+      ]
+    },
+    "operationStatus": {"type": "string", "enum": ["active", "superseded"]},
+    "entityId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "sourceEntityId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "targetEntityId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "surfaceId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "newEntityId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "sourceCandidateId": {"type": "string", "minLength": 1, "maxLength": 240},
+    "decision": {
+      "type": "string",
+      "enum": [
+        "accept_primary",
+        "accept_secondary",
+        "reject_wrong_entity",
+        "mark_ambiguous",
+        "mark_historical"
+      ]
+    },
+    "surface": {"$ref": "#/definitions/surface"},
+    "reason": {"type": "string", "minLength": 1, "maxLength": 500},
+    "reviewedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "reviewedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  },
+  "definitions": {
+    "urlOrNull": {
+      "anyOf": [
+        {"type": "string", "format": "uri"},
+        {"type": "null"}
+      ]
+    },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surfaceId",
+        "platform",
+        "surfaceKind",
+        "url",
+        "normalizedKey",
+        "role",
+        "status",
+        "confidence",
+        "crawl",
+        "evidenceRefs",
+        "notes"
+      ],
+      "properties": {
+        "surfaceId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "platform": {
+          "type": "string",
+          "enum": [
+            "bookMyShow",
+            "district",
+            "instagram",
+            "linkedin",
+            "luma",
+            "news",
+            "officialWebsite",
+            "partiful",
+            "sortMyScene",
+            "userReport",
+            "other"
+          ]
+        },
+        "surfaceKind": {
+          "type": "string",
+          "enum": [
+            "eventListing",
+            "eventCalendar",
+            "organizerProfile",
+            "personProfile",
+            "press",
+            "socialProfile",
+            "website",
+            "wrongEntity"
+          ]
+        },
+        "url": {"$ref": "#/definitions/urlOrNull"},
+        "normalizedKey": {"type": ["string", "null"], "maxLength": 240},
+        "role": {
+          "type": "string",
+          "enum": ["primary", "secondary", "backup", "historical", "ambiguous", "rejected"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "candidate", "ambiguous", "historical", "rejected"]
+        },
+        "confidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["entityMatch", "ownership", "city"],
+          "properties": {
+            "entityMatch": {"type": "string", "enum": ["low", "medium", "high"]},
+            "ownership": {"type": "string", "enum": ["low", "medium", "high"]},
+            "city": {"type": "string", "enum": ["low", "medium", "high"]}
+          }
+        },
+        "crawl": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["eventDiscoveryStatus", "policy", "supportsEventExtraction"],
+          "properties": {
+            "eventDiscoveryStatus": {
+              "type": "string",
+              "enum": ["disabled", "candidate", "approved", "paused"]
+            },
+            "policy": {"type": "string", "enum": ["manualOnly", "blocked", "apiPreferred"]},
+            "supportsEventExtraction": {"type": "boolean"}
+          }
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/evidenceRef"}
+        },
+        "notes": {"type": "string", "maxLength": 500}
+      }
+    },
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "ref", "description"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["hostDiscoveryRun", "seedClub", "userReportedSearchResult", "manualNote"]
+        },
+        "ref": {"type": ["string", "null"], "maxLength": 240},
+        "description": {"type": "string", "minLength": 1, "maxLength": 400}
+      }
+    }
+  }
+}

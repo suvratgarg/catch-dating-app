@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "eventId": "ext-afterfly-202503151800-takeoff-run-rave-e99b5e2138",
+  "canonicalHostId": "afterfly",
+  "compatibilityClubId": "afterfly",
+  "title": "Takeoff: Run + Rave",
+  "description": "Reviewed external event listing.",
+  "startTime": {
+    "_seconds": 1742041800,
+    "_nanoseconds": 0
+  },
+  "endTime": {
+    "_seconds": 1742052600,
+    "_nanoseconds": 0
+  },
+  "timezone": "Asia/Kolkata",
+  "meetingPoint": "Nehru Stadium",
+  "meetingLocation": {
+    "name": "Nehru Stadium",
+    "address": "Nehru Stadium, Indore, Madhya Pradesh",
+    "placeId": "ChIJ-afterfly-indore",
+    "latitude": 22.7196,
+    "longitude": 75.8577,
+    "notes": "Matched to source listing and map result."
+  },
+  "locationDetails": "Nehru Stadium, Indore, Madhya Pradesh",
+  "photoUrl": "https://images.lumacdn.com/event-afterfly.jpg",
+  "activity": {
+    "version": 1,
+    "activityKind": "socialRun",
+    "interactionModel": "openFormat",
+    "source": "heuristic"
+  },
+  "price": {
+    "displayText": "0 INR",
+    "parsedPriceInPaise": 0,
+    "currency": "INR"
+  },
+  "status": "active",
+  "publicationStatus": "public",
+  "booking": {
+    "mode": "external_outbound_only",
+    "catchBookingEnabled": true,
+    "catchPaymentsEnabled": false,
+    "catchReservationsEnabled": false,
+    "catchWaitlistEnabled": false,
+    "externalLinks": [
+      {
+        "platform": "luma",
+        "url": "https://luma.com/pxgmph3b",
+        "linkType": "booking_or_event_page",
+        "sourceEventKey": "luma:event:pxgmph3b",
+        "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+        "primary": true
+      }
+    ]
+  },
+  "discovery": {
+    "citySlug": "indore",
+    "countryCode": "IN",
+    "availability": "read_only_external",
+    "manualApprovalRequired": true
+  },
+  "dedupe": {
+    "normalizedEventKey": "afterfly:2025-03-15T18:00:00+05:30:takeoff-run-rave",
+    "primaryCandidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+    "duplicateCandidateIds": [],
+    "conflictPolicy": "single_read_only_event_with_multiple_outbound_links"
+  },
+  "externalSource": {
+    "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+    "sourceEventKey": "luma:event:pxgmph3b",
+    "sourceEventId": "pxgmph3b",
+    "platform": "luma",
+    "eventUrl": "https://luma.com/pxgmph3b",
+    "sourceUrl": "https://luma.com/pxgmph3b"
+  },
+  "review": {
+    "eventReviewBatchId": "2026-06-17-afterfly-event-review",
+    "reviewer": "admin@example.com",
+    "decidedAt": "2026-06-17",
+    "note": "Reviewed for future import.",
+    "importPolicyAcknowledged": true,
+    "ownerSafeCopyReviewed": true
+  },
+  "createdAt": {
+    "_seconds": 1781740800,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1781740800,
+    "_nanoseconds": 0
+  }
+}

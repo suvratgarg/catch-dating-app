@@ -1,0 +1,182 @@
+{
+  "entries": [
+    {
+      "app": {
+        "appVisibility": "hidden",
+        "wouldBeDiscoverable": false
+      },
+      "claimTarget": {
+        "appVisibility": "hidden",
+        "claimState": "not_created",
+        "path": null,
+        "sourceHash": null,
+        "wouldCreateOrRefresh": false,
+        "writeMode": null
+      },
+      "commands": [],
+      "decisionRequired": {
+        "appVisibility": "hidden",
+        "checklist": {
+          "crawlDisabledReviewed": true,
+          "identityReviewed": true,
+          "manualReportsReviewed": true,
+          "marketScopeReviewed": true,
+          "mediaRightsReviewed": true,
+          "ownerSafeCopyReviewed": true,
+          "surfaceInventoryReviewed": true
+        },
+        "command": "node tool/organizer_intake/review_decision.mjs draft afterfly --decision approve_public --app-visibility hidden --reviewer REVIEWER --date YYYY-MM-DD --note \"Manual publication QA complete.\" --confirm-publication-checklist --confirm-manual-reports-reviewed",
+        "decision": "approve_public"
+      },
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "impactId": "publication-impact-afterfly",
+      "packetId": "publication-review-afterfly",
+      "preconditions": {
+        "blockers": [
+          "packet_status:published"
+        ],
+        "dataBlockers": [],
+        "evidenceBlockers": [],
+        "manualReportsWithoutArtifacts": 2,
+        "packetStatus": "published",
+        "reviewerAcknowledgementRequired": true
+      },
+      "publicProjection": {
+        "canonicalPath": "/organizers/afterfly/",
+        "dataOrigin": null,
+        "indexing": "noindex, follow",
+        "indexStatus": "noindex",
+        "legacyPaths": [
+          "/organizers/indore/afterfly-run-club/"
+        ],
+        "listingId": null,
+        "listingName": null,
+        "listingVariant": null,
+        "missingEvidence": [
+          "Current event cadence after March 2025",
+          "Logo or media permission",
+          "Manual admin approval for public publication",
+          "Owner or preferred business contact",
+          "Whether every discovered Afterfly surface belongs to this organizer"
+        ],
+        "pageMode": null,
+        "projectionStatus": "blocked",
+        "publishStatus": "blocked",
+        "sourceCount": 6,
+        "wouldIndex": false,
+        "wouldPublish": false
+      },
+      "remoteEffects": {
+        "claimSyncRequired": false,
+        "claimSyncTargetPath": null,
+        "sitemapEligible": false,
+        "websiteGenerationRequired": false,
+        "writesDuringDecisionExport": 0,
+        "writesDuringPreview": 0
+      },
+      "status": "blocked"
+    },
+    {
+      "app": {
+        "appVisibility": "hidden",
+        "wouldBeDiscoverable": false
+      },
+      "claimTarget": {
+        "appVisibility": "hidden",
+        "claimState": "not_created",
+        "path": null,
+        "sourceHash": null,
+        "wouldCreateOrRefresh": false,
+        "writeMode": null
+      },
+      "commands": [],
+      "decisionRequired": {
+        "appVisibility": "hidden",
+        "checklist": {
+          "crawlDisabledReviewed": true,
+          "identityReviewed": true,
+          "marketScopeReviewed": true,
+          "mediaRightsReviewed": true,
+          "ownerSafeCopyReviewed": true,
+          "surfaceInventoryReviewed": true
+        },
+        "command": "node tool/organizer_intake/review_decision.mjs draft bhag --decision approve_public --app-visibility hidden --reviewer REVIEWER --date YYYY-MM-DD --note \"Manual publication QA complete.\" --confirm-publication-checklist",
+        "decision": "approve_public"
+      },
+      "displayName": "Bhag Club",
+      "entityId": "bhag",
+      "impactId": "publication-impact-bhag",
+      "packetId": "publication-review-bhag",
+      "preconditions": {
+        "blockers": [
+          "packet_status:published"
+        ],
+        "dataBlockers": [],
+        "evidenceBlockers": [],
+        "manualReportsWithoutArtifacts": 0,
+        "packetStatus": "published",
+        "reviewerAcknowledgementRequired": false
+      },
+      "publicProjection": {
+        "canonicalPath": "/organizers/bhag/",
+        "dataOrigin": null,
+        "indexing": "noindex, follow",
+        "indexStatus": "noindex",
+        "legacyPaths": [
+          "/organizers/delhi/bhag-run-club/"
+        ],
+        "listingId": null,
+        "listingName": null,
+        "listingVariant": null,
+        "missingEvidence": [
+          "Current city-specific event cadence",
+          "Logo or media permission",
+          "Manual admin approval for public publication",
+          "Owner or preferred business contact",
+          "Whether Delhi NCR should be the primary market or only one market"
+        ],
+        "pageMode": null,
+        "projectionStatus": "blocked",
+        "publishStatus": "blocked",
+        "sourceCount": 3,
+        "wouldIndex": false,
+        "wouldPublish": false
+      },
+      "remoteEffects": {
+        "claimSyncRequired": false,
+        "claimSyncTargetPath": null,
+        "sitemapEligible": false,
+        "websiteGenerationRequired": false,
+        "writesDuringDecisionExport": 0,
+        "writesDuringPreview": 0
+      },
+      "status": "blocked"
+    }
+  ],
+  "generatedFrom": {
+    "claimTargetPlan": "tool/organizer_intake/generated/organizer_claim_targets.json",
+    "projectionPlan": "tool/organizer_intake/generated/public_projection_plan.json",
+    "publicationReviewPackets": "tool/organizer_intake/generated/publication_review_packets.json",
+    "reviewQueue": "tool/organizer_intake/generated/admin_review_queue.json"
+  },
+  "guardrails": [
+    "Impact previews do not record decisions, write Firestore, publish pages, update sitemaps, or sync claim targets.",
+    "Only the explicit admin approve_public decision can publish and index a website projection.",
+    "Claim-target Firestore writes still require a separate reviewed dry run and --write.",
+    "App discoverability remains hidden in this preview unless a separate app-visibility approval is added."
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "blocked": 2,
+    "byStatus": {
+      "blocked": 2
+    },
+    "impacts": 2,
+    "reviewerAcknowledgementsRequired": 1,
+    "wouldBeAppDiscoverable": 0,
+    "wouldCreateClaimTargets": 0,
+    "wouldIndex": 0,
+    "wouldPublish": 0
+  }
+}

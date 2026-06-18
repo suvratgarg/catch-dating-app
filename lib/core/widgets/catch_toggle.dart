@@ -48,18 +48,12 @@ class CatchToggle extends StatelessWidget {
                 curve: CatchMotion.standardCurve,
                 alignment: value ? Alignment.centerRight : Alignment.centerLeft,
                 child: Padding(
-                  padding: const EdgeInsets.all(3),
+                  padding: const EdgeInsets.all(CatchLayout.toggleTrackPadding),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: t.surface,
                       borderRadius: BorderRadius.circular(CatchRadius.pill),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color.fromRGBO(0, 0, 0, 0.25),
-                          blurRadius: 3,
-                          offset: Offset(0, 1),
-                        ),
-                      ],
+                      boxShadow: CatchElevation.toggleKnob,
                     ),
                     child: const SizedBox.square(
                       dimension: CatchLayout.toggleKnobExtent,

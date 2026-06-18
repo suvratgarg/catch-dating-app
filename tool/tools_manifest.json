@@ -33,6 +33,16 @@
       "checks": ["dart analyze tool/audit/backend_error_candidates.dart"]
     },
     {
+      "id": "audit:frontend-errors",
+      "category": "audit",
+      "path": "tool/audit/frontend_error_candidates.dart",
+      "command": "dart tool/audit/frontend_error_candidates.dart",
+      "safety": "local",
+      "status": "active",
+      "description": "Scans frontend, provider, plugin, and local error-handling migration candidates.",
+      "checks": ["dart analyze tool/audit/frontend_error_candidates.dart"]
+    },
+    {
       "id": "audit:definition-catalog",
       "category": "audit",
       "path": "tool/audit/definition_catalog.py",
@@ -161,6 +171,19 @@
       ]
     },
     {
+      "id": "scanner:no-raw-network-image",
+      "category": "lint",
+      "path": "tool/check_no_raw_network_image.sh",
+      "command": "bash tool/check_no_raw_network_image.sh",
+      "safety": "local",
+      "status": "active",
+      "description": "Blocks raw Image.network widgets outside the shared CatchNetworkImage primitive.",
+      "checks": [
+        "bash -n tool/check_no_raw_network_image.sh",
+        "bash tool/check_no_raw_network_image.sh"
+      ]
+    },
+    {
       "id": "contracts:check-all",
       "category": "contracts",
       "path": "tool/check_data_contract.sh",
@@ -262,6 +285,19 @@
       "status": "active",
       "description": "Checks schema/type boundary hygiene.",
       "checks": ["node --check tool/contracts/check_schema_type_boundaries.mjs"]
+    },
+    {
+      "id": "contracts:generate-domain-classes",
+      "category": "contracts",
+      "path": "tool/contracts/generate_domain_classes.mjs",
+      "command": "node tool/contracts/generate_domain_classes.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Generates schema-derived Dart domain classes from curated contract projection specs.",
+      "checks": [
+        "node --check tool/contracts/generate_domain_classes.mjs",
+        "node tool/contracts/generate_domain_classes.mjs --check"
+      ]
     },
     {
       "id": "data:validate",
@@ -696,6 +732,591 @@
       "checks": ["node --check tool/host_discovery/apply_seed_import_plan.mjs"]
     },
     {
+      "id": "organizer-intake:generate",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/organizer_intake.mjs",
+      "command": "node tool/organizer_intake/organizer_intake.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Validates private organizer entities, multi-surface identity, dedupe keys, manual review queues, and public projection guardrails.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/canonical_evidence_index_core.mjs",
+        "node --check tool/organizer_intake/lib/canonical_host_entity_core.mjs",
+        "node --check tool/organizer_intake/lib/claim_target_sync_core.mjs",
+        "node --check tool/organizer_intake/lib/decision_answer_packet_fingerprint.mjs",
+        "node --check tool/organizer_intake/lib/event_crawl_run_plan_core.mjs",
+        "node --check tool/organizer_intake/lib/operator_action_queue_core.mjs",
+        "node --check tool/organizer_intake/lib/operational_health_core.mjs",
+        "node --check tool/organizer_intake/lib/pending_decision_answer_packet_core.mjs",
+        "node --check tool/organizer_intake/lib/pending_decision_answer_plan_core.mjs",
+        "node --check tool/organizer_intake/lib/pending_input_request_core.mjs",
+        "node --check tool/organizer_intake/lib/pending_work_coverage_core.mjs",
+        "node --check tool/organizer_intake/lib/policy_decision_packet_core.mjs",
+        "node --check tool/organizer_intake/lib/policy_gap_core.mjs",
+        "node --check tool/organizer_intake/lib/promotion_execution_packet_core.mjs",
+        "node --check tool/organizer_intake/lib/publication_review_packet_core.mjs",
+        "node --check tool/organizer_intake/lib/raw_artifact_storage_core.mjs",
+        "node --check tool/organizer_intake/plan_event_crawl_runs.mjs",
+        "node --check tool/organizer_intake/plan_raw_artifact_storage.mjs",
+        "node --check tool/organizer_intake/create_decision_answer_packet.mjs",
+        "node --check tool/organizer_intake/apply_pending_decision_answers.mjs",
+        "node --check tool/organizer_intake/reviewed_decision_answer_packets.mjs",
+        "node --check tool/organizer_intake/check_operational_health.mjs",
+        "node --check tool/organizer_intake/pending_decision_answer_packet.mjs",
+        "node --check tool/organizer_intake/pending_decision_answer_plan.mjs",
+        "node --check tool/organizer_intake/pending_input_request.mjs",
+        "node --check tool/organizer_intake/pending_work_coverage.mjs",
+        "node --check tool/organizer_intake/policy_gap_decision.mjs",
+        "node --check tool/organizer_intake/promotion_execution_packet.mjs",
+        "node --check tool/organizer_intake/organizer_intake.mjs",
+        "node --test tool/organizer_intake/canonical_evidence_index_core.test.mjs",
+        "node --test tool/organizer_intake/event_crawl_run_plan_core.test.mjs",
+        "node --test tool/organizer_intake/operator_action_queue_core.test.mjs",
+        "node --test tool/organizer_intake/operational_health_core.test.mjs",
+        "node --test tool/organizer_intake/create_decision_answer_packet.test.mjs",
+        "node --test tool/organizer_intake/apply_pending_decision_answers.test.mjs",
+        "node --test tool/organizer_intake/reviewed_decision_answer_packets.test.mjs",
+        "node --test tool/organizer_intake/check_operational_health.test.mjs",
+        "node --test tool/organizer_intake/pending_decision_answer_packet_core.test.mjs",
+        "node --test tool/organizer_intake/pending_decision_answer_packet.test.mjs",
+        "node --test tool/organizer_intake/pending_decision_answer_plan_core.test.mjs",
+        "node --test tool/organizer_intake/pending_decision_answer_plan.test.mjs",
+        "node --test tool/organizer_intake/pending_input_request_core.test.mjs",
+        "node --test tool/organizer_intake/pending_input_request.test.mjs",
+        "node --test tool/organizer_intake/pending_work_coverage_core.test.mjs",
+        "node --test tool/organizer_intake/pending_work_coverage.test.mjs",
+        "node --test tool/organizer_intake/promotion_execution_packet_core.test.mjs",
+        "node --test tool/organizer_intake/promotion_execution_packet.test.mjs",
+        "node --test tool/organizer_intake/canonical_host_entity_core.test.mjs",
+        "node --test tool/organizer_intake/policy_decision_packet_core.test.mjs",
+        "node --test tool/organizer_intake/policy_gap_core.test.mjs",
+        "node --test tool/organizer_intake/publication_review_packet_core.test.mjs",
+        "node --test tool/organizer_intake/raw_artifact_storage_core.test.mjs",
+        "node --test tool/organizer_intake/organizer_intake_projection.test.mjs",
+        "node tool/organizer_intake/organizer_intake.mjs --check",
+        "node tool/organizer_intake/reviewed_decision_answer_packets.mjs --check",
+        "node tool/organizer_intake/apply_pending_decision_answers.mjs --check --allow-partial",
+        "node tool/organizer_intake/pending_decision_answer_packet.mjs --check",
+        "node tool/organizer_intake/pending_decision_answer_plan.mjs --check",
+        "node tool/organizer_intake/pending_input_request.mjs --check",
+        "node tool/organizer_intake/pending_work_coverage.mjs --check --require-covered",
+        "node tool/organizer_intake/promotion_execution_packet.mjs --check",
+        "node tool/organizer_intake/check_operational_health.mjs --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:create-decision-answer-packet",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/create_decision_answer_packet.mjs",
+      "command": "node tool/organizer_intake/create_decision_answer_packet.mjs",
+      "safety": "local-writes-answer-packet",
+      "status": "active",
+      "description": "Creates a reviewed copy of the generated organizer pending-decision answer packet with reviewer/date metadata, leaving decisions null for manual review.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/decision_answer_packet_fingerprint.mjs",
+        "node --check tool/organizer_intake/create_decision_answer_packet.mjs",
+        "node --test tool/organizer_intake/create_decision_answer_packet.test.mjs",
+        "node tool/organizer_intake/create_decision_answer_packet.mjs --date 2026-06-18 --reviewer codex-dry-run --slug manifest-dry-run --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:pending-decision-answer-packet",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/pending_decision_answer_packet.mjs",
+      "command": "node tool/organizer_intake/pending_decision_answer_packet.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates and renders the read-only answer packet for pending organizer publication and product policy decisions.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/pending_decision_answer_packet_core.mjs",
+        "node --check tool/organizer_intake/pending_decision_answer_packet.mjs",
+        "node --test tool/organizer_intake/pending_decision_answer_packet_core.test.mjs",
+        "node --test tool/organizer_intake/pending_decision_answer_packet.test.mjs",
+        "node tool/organizer_intake/pending_decision_answer_packet.mjs --check",
+        "node tool/organizer_intake/pending_decision_answer_packet.mjs --format markdown"
+      ]
+    },
+    {
+      "id": "organizer-intake:pending-decision-answer-plan",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/pending_decision_answer_plan.mjs",
+      "command": "node tool/organizer_intake/pending_decision_answer_plan.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates a completed organizer pending-decision answer packet and renders local decision draft commands without executing them.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/pending_decision_answer_plan_core.mjs",
+        "node --check tool/organizer_intake/pending_decision_answer_plan.mjs",
+        "node --test tool/organizer_intake/pending_decision_answer_plan_core.test.mjs",
+        "node --test tool/organizer_intake/pending_decision_answer_plan.test.mjs",
+        "node tool/organizer_intake/pending_decision_answer_plan.mjs --check",
+        "node tool/organizer_intake/pending_decision_answer_plan.mjs --format markdown"
+      ]
+    },
+    {
+      "id": "organizer-intake:apply-pending-decision-answers",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/apply_pending_decision_answers.mjs",
+      "command": "node tool/organizer_intake/apply_pending_decision_answers.mjs",
+      "safety": "local-writes-organizer-decisions",
+      "status": "active",
+      "description": "Validates a filled pending-decision answer packet, runs every local decision draft dry-run, and writes repo-backed decision JSON only when --write is passed.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/decision_answer_packet_fingerprint.mjs",
+        "node --check tool/organizer_intake/apply_pending_decision_answers.mjs",
+        "node --test tool/organizer_intake/apply_pending_decision_answers.test.mjs",
+        "node tool/organizer_intake/apply_pending_decision_answers.mjs --check --allow-partial"
+      ]
+    },
+    {
+      "id": "organizer-intake:reviewed-decision-answer-packets",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/reviewed_decision_answer_packets.mjs",
+      "command": "node tool/organizer_intake/reviewed_decision_answer_packets.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Scans reviewed organizer answer-packet drafts and reports whether any are source-fresh, complete, and ready for the guarded apply step.",
+      "checks": [
+        "node --check tool/organizer_intake/reviewed_decision_answer_packets.mjs",
+        "node --test tool/organizer_intake/reviewed_decision_answer_packets.test.mjs",
+        "node tool/organizer_intake/reviewed_decision_answer_packets.mjs --check",
+        "node tool/organizer_intake/reviewed_decision_answer_packets.mjs --format markdown"
+      ]
+    },
+    {
+      "id": "organizer-intake:promotion-execution-packet",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/promotion_execution_packet.mjs",
+      "command": "node tool/organizer_intake/promotion_execution_packet.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates and renders the read-only organizer promotion execution packet linking reviewed approvals to website generation and claim-target sync gates.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/promotion_execution_packet_core.mjs",
+        "node --check tool/organizer_intake/promotion_execution_packet.mjs",
+        "node --test tool/organizer_intake/promotion_execution_packet_core.test.mjs",
+        "node --test tool/organizer_intake/promotion_execution_packet.test.mjs",
+        "node tool/organizer_intake/promotion_execution_packet.mjs --check",
+        "node tool/organizer_intake/promotion_execution_packet.mjs --format markdown"
+      ]
+    },
+    {
+      "id": "organizer-intake:policy-gap-decision",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/policy_gap_decision.mjs",
+      "command": "node tool/organizer_intake/policy_gap_decision.mjs",
+      "safety": "local-writes-policy-gap-decisions",
+      "status": "active",
+      "description": "Lists organizer intake policy gaps and drafts reviewed accept, hold, or reject decisions without enabling crawls, provider lookups, or event imports.",
+      "checks": [
+        "node --check tool/organizer_intake/policy_gap_decision.mjs",
+        "node tool/organizer_intake/policy_gap_decision.mjs list",
+        "node tool/organizer_intake/policy_gap_decision.mjs draft recurring_event_crawl_policy --decision hold --reviewer codex-dry-run --date 2026-06-17 --note \"Need budget decision.\" --dry-run"
+      ]
+    },
+    {
+      "id": "organizer-intake:check-operational-health",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/check_operational_health.mjs",
+      "command": "node tool/organizer_intake/check_operational_health.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates and prints the read-only organizer operational health rollup without requiring pending admin or policy work to be complete.",
+      "checks": [
+        "node --check tool/organizer_intake/check_operational_health.mjs",
+        "node --test tool/organizer_intake/check_operational_health.test.mjs",
+        "node tool/organizer_intake/check_operational_health.mjs --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:pending-input-request",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/pending_input_request.mjs",
+      "command": "node tool/organizer_intake/pending_input_request.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates and renders the read-only organizer admin/product pending-input request generated from publication packets, policy packets, and workflow health.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/pending_input_request_core.mjs",
+        "node --check tool/organizer_intake/pending_input_request.mjs",
+        "node --test tool/organizer_intake/pending_input_request_core.test.mjs",
+        "node --test tool/organizer_intake/pending_input_request.test.mjs",
+        "node tool/organizer_intake/pending_input_request.mjs --check",
+        "node tool/organizer_intake/pending_input_request.mjs --format markdown"
+      ]
+    },
+    {
+      "id": "organizer-intake:pending-work-coverage",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/pending_work_coverage.mjs",
+      "command": "node tool/organizer_intake/pending_work_coverage.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates that every unresolved organizer operational-health workstream is represented by a pending input request or workflow follow-up.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/pending_work_coverage_core.mjs",
+        "node --check tool/organizer_intake/pending_work_coverage.mjs",
+        "node --test tool/organizer_intake/pending_work_coverage_core.test.mjs",
+        "node --test tool/organizer_intake/pending_work_coverage.test.mjs",
+        "node tool/organizer_intake/pending_work_coverage.mjs --check --require-covered",
+        "node tool/organizer_intake/pending_work_coverage.mjs --format markdown"
+      ]
+    },
+    {
+      "id": "organizer-intake:normalize-surface-url",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/normalize_surface_url.mjs",
+      "command": "node tool/organizer_intake/normalize_surface_url.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Normalizes external organizer surface URLs into schema-shaped platform surfaces with stable dedupe keys and disabled-by-default crawl metadata.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/platform_adapters.mjs",
+        "node --check tool/organizer_intake/normalize_surface_url.mjs",
+        "node --test tool/organizer_intake/platform_adapters.test.mjs",
+        "node tool/organizer_intake/normalize_surface_url.mjs https://luma.com/pxgmph3b --surface-id sample-luma-surface --expect-platform luma --expect-kind eventListing --expect-key luma:event:pxgmph3b"
+      ]
+    },
+    {
+      "id": "organizer-intake:capture-search-results",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/capture_search_results.mjs",
+      "command": "node tool/organizer_intake/capture_search_results.mjs",
+      "safety": "local-writes-search-result-batches",
+      "status": "active",
+      "description": "Converts captured provider search results for a host-discovery run key into a private organizer search-result batch without live crawling or Firestore writes.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/search_capture_core.mjs",
+        "node --check tool/organizer_intake/capture_search_results.mjs",
+        "node --test tool/organizer_intake/search_capture_core.test.mjs",
+        "node tool/organizer_intake/capture_search_results.mjs --source fixture --run-key 'web_search|\"after fly\" luma|indore|social_run_club|afterfly-run-club-indore' --raw-results tool/organizer_intake/fixtures/search_capture.afterfly.serpapi.raw.json --date 2026-06-17 --output tool/organizer_intake/fixtures/search_capture.afterfly.expected.json --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:ingest-search-results",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/ingest_search_results.mjs",
+      "command": "node tool/organizer_intake/ingest_search_results.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Normalizes captured organizer search-result batches into admin-reviewable surface candidates matched against existing organizer dedupe keys.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/search_result_ingest_core.mjs",
+        "node --check tool/organizer_intake/ingest_search_results.mjs",
+        "node --test tool/organizer_intake/search_result_ingest_core.test.mjs",
+        "node tool/organizer_intake/ingest_search_results.mjs --fixture tool/organizer_intake/fixtures/search_results.afterfly.sample.json --output tool/organizer_intake/fixtures/search_result_candidates.expected.json --check",
+        "node tool/organizer_intake/ingest_search_results.mjs --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:capture-luma-events",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/capture_luma_events.mjs",
+      "command": "node tool/organizer_intake/capture_luma_events.mjs",
+      "safety": "local-writes-event-source-batches",
+      "status": "active",
+      "description": "Converts reviewed Luma event JSON/JSON-LD payloads into private external event source batches without live crawling or Firestore writes.",
+      "checks": [
+        "node --check tool/organizer_intake/capture_luma_events.mjs",
+        "node --test tool/organizer_intake/capture_luma_events.test.mjs",
+        "node tool/organizer_intake/capture_luma_events.mjs --entity afterfly --surface afterfly-luma-takeoff-run-rave --raw-results tool/organizer_intake/fixtures/luma_event.afterfly.raw.json --date 2026-06-17 --city-slug indore --country-code IN --source-url https://luma.com/pxgmph3b --output tool/organizer_intake/fixtures/luma_event.afterfly.expected.json --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:ingest-event-sources",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/ingest_event_sources.mjs",
+      "command": "node tool/organizer_intake/ingest_event_sources.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Normalizes reviewed external event source batches into blocked-by-policy event candidates for admin review and future import planning.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/event_source_ingest_core.mjs",
+        "node --check tool/organizer_intake/ingest_event_sources.mjs",
+        "node --test tool/organizer_intake/event_source_ingest_core.test.mjs",
+        "node tool/organizer_intake/ingest_event_sources.mjs --fixture tool/organizer_intake/fixtures/luma_event.afterfly.expected.json --output tool/organizer_intake/fixtures/external_event_candidates.expected.json --check",
+        "node tool/organizer_intake/ingest_event_sources.mjs --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:plan-event-location-resolution",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/plan_event_location_resolution.mjs",
+      "command": "node tool/organizer_intake/plan_event_location_resolution.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Builds a no-provider-call location resolution queue for external event candidates missing exact coordinates before import planning.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/event_location_resolution_core.mjs",
+        "node --check tool/organizer_intake/plan_event_location_resolution.mjs",
+        "node --test tool/organizer_intake/event_location_resolution_core.test.mjs",
+        "node tool/organizer_intake/plan_event_location_resolution.mjs --queue tool/organizer_intake/fixtures/external_event_candidates.expected.json --output tool/organizer_intake/fixtures/external_event_location_resolution_queue.expected.json --check",
+        "node tool/organizer_intake/plan_event_location_resolution.mjs --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:event-location-resolution",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/event_location_resolution.mjs",
+      "command": "node tool/organizer_intake/event_location_resolution.mjs",
+      "safety": "local-writes-event-location-resolutions",
+      "status": "active",
+      "description": "Lists external event location tasks and drafts reviewed exact-coordinate resolution files without calling providers, importing events, or writing Firestore.",
+      "checks": [
+        "node --check tool/organizer_intake/event_location_resolution.mjs",
+        "node --test tool/organizer_intake/event_location_resolution.test.mjs",
+        "node tool/organizer_intake/event_location_resolution.mjs list",
+        "node tool/organizer_intake/event_location_resolution.mjs draft 2026-06-17-afterfly-luma-events:pxgmph3b --queue tool/organizer_intake/fixtures/external_event_location_resolution_queue.expected.json --name \"Nehru Stadium\" --address \"Nehru Stadium, Indore, Madhya Pradesh\" --place-id ChIJ-afterfly-indore --latitude 22.7196 --longitude 75.8577 --reviewer codex-dry-run --date 2026-06-17 --note \"Manual location QA complete.\" --confirm-location-checklist --dry-run"
+      ]
+    },
+    {
+      "id": "organizer-intake:plan-event-crawl-runs",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/plan_event_crawl_runs.mjs",
+      "command": "node tool/organizer_intake/plan_event_crawl_runs.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Builds a no-network crawl run intent plan for crawl-capable organizer surfaces without fetching providers, scheduling jobs, or writing Firestore.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/event_crawl_run_plan_core.mjs",
+        "node --check tool/organizer_intake/plan_event_crawl_runs.mjs",
+        "node --test tool/organizer_intake/event_crawl_run_plan_core.test.mjs",
+        "node tool/organizer_intake/plan_event_crawl_runs.mjs --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:plan-raw-artifact-storage",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/plan_raw_artifact_storage.mjs",
+      "command": "node tool/organizer_intake/plan_raw_artifact_storage.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Builds a no-upload raw artifact storage manifest that keeps raw provider payloads out of Firestore and blocks object storage until retention policy is approved.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/raw_artifact_storage_core.mjs",
+        "node --check tool/organizer_intake/plan_raw_artifact_storage.mjs",
+        "node --test tool/organizer_intake/raw_artifact_storage_core.test.mjs",
+        "node tool/organizer_intake/plan_raw_artifact_storage.mjs --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:plan-external-event-imports",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/plan_external_event_imports.mjs",
+      "command": "node tool/organizer_intake/plan_external_event_imports.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Builds a disabled-by-default import plan from reviewed external event candidates into proposed event write actions without mutating Firestore.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/event_import_plan_core.mjs",
+        "node --check tool/organizer_intake/plan_external_event_imports.mjs",
+        "node --test tool/organizer_intake/event_import_plan_core.test.mjs",
+        "node tool/organizer_intake/plan_external_event_imports.mjs --queue tool/organizer_intake/fixtures/external_event_candidates.expected.json --output tool/organizer_intake/fixtures/external_event_import_plan.expected.json --check",
+        "node tool/organizer_intake/plan_external_event_imports.mjs --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:preflight-external-event-imports",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/preflight_external_event_imports.mjs",
+      "command": "node tool/organizer_intake/preflight_external_event_imports.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Validates proposed external event imports against the createEvent callable payload contract without invoking the callable or writing Firestore.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/event_import_execution_core.mjs",
+        "node --check tool/organizer_intake/preflight_external_event_imports.mjs",
+        "node --test tool/organizer_intake/event_import_execution_core.test.mjs",
+        "node tool/organizer_intake/preflight_external_event_imports.mjs --plan tool/organizer_intake/fixtures/external_event_import_plan.expected.json --output tool/organizer_intake/fixtures/external_event_import_execution_plan.expected.json --check",
+        "node tool/organizer_intake/preflight_external_event_imports.mjs --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:event-review-decision",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/event_review_decision.mjs",
+      "command": "node tool/organizer_intake/event_review_decision.mjs",
+      "safety": "local-writes-event-review-decisions",
+      "status": "active",
+      "description": "Lists external event candidates and drafts manual QA approve, hold, or reject decision files without importing events.",
+      "checks": [
+        "node --check tool/organizer_intake/event_review_decision.mjs",
+        "node tool/organizer_intake/event_review_decision.mjs list",
+        "node tool/organizer_intake/event_review_decision.mjs draft 2026-06-17-afterfly-luma-events:pxgmph3b --queue tool/organizer_intake/fixtures/external_event_candidates.expected.json --decision approve_for_import --reviewer codex-dry-run --date 2026-06-17 --note \"Reviewed for future import.\" --confirm-import-checklist --dry-run"
+      ]
+    },
+    {
+      "id": "organizer-intake:review-decision",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/review_decision.mjs",
+      "command": "node tool/organizer_intake/review_decision.mjs",
+      "safety": "local-writes-review-decisions",
+      "status": "active",
+      "description": "Lists organizer intake review items and drafts manual QA approve, hold, or suppress decision files.",
+      "checks": [
+        "node --check tool/organizer_intake/review_decision.mjs",
+        "node --test tool/organizer_intake/review_decision.test.mjs",
+        "node tool/organizer_intake/review_decision.mjs list",
+        "node tool/organizer_intake/review_decision.mjs draft afterfly --decision approve_public --reviewer codex-dry-run --date 2026-06-17 --note \"Reviewed for public projection.\" --confirm-publication-checklist --confirm-manual-reports-reviewed --dry-run"
+      ]
+    },
+    {
+      "id": "organizer-intake:curation-decision",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/curation_decision.mjs",
+      "command": "node tool/organizer_intake/curation_decision.mjs",
+      "safety": "local-writes-curation-decisions",
+      "status": "active",
+      "description": "Lists and drafts organizer intake curation operations for merges, suppressions, surface decisions, and split-required surfaces.",
+      "checks": [
+        "node --check tool/organizer_intake/curation_decision.mjs",
+        "node tool/organizer_intake/curation_decision.mjs list",
+        "node tool/organizer_intake/curation_decision.mjs draft attach_surface --entity afterfly --search-candidate 2026-06-17-afterfly-search-fixture:sort-my-scene --search-queue tool/organizer_intake/fixtures/search_result_candidates.expected.json --reviewer codex-dry-run --date 2026-06-17 --reason \"Surface belongs to this organizer.\" --dry-run",
+        "node tool/organizer_intake/curation_decision.mjs draft surface_decision --entity afterfly --surface afterfly-wrong-website-reported --decision reject_wrong_entity --reviewer codex-dry-run --date 2026-06-17 --reason \"Wrong entity.\" --dry-run"
+      ]
+    },
+    {
+      "id": "organizer-intake:export-curation-decisions",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/export_curation_decisions_from_firestore.mjs",
+      "command": "node tool/organizer_intake/export_curation_decisions_from_firestore.mjs",
+      "safety": "remote-read-local-write-guarded",
+      "status": "active",
+      "description": "Exports live admin organizer-intake curation operations from Firestore into repo-backed curation batches.",
+      "checks": [
+        "node --check tool/organizer_intake/export_curation_decisions_from_firestore.mjs",
+        "node --test tool/organizer_intake/export_curation_decisions_from_firestore.test.mjs",
+        "node tool/organizer_intake/export_curation_decisions_from_firestore.mjs --fixture tool/organizer_intake/fixtures/firestore_curation_decisions.sample.json --date 2026-06-17 --source-label fixture --output tool/organizer_intake/fixtures/firestore_curation_decisions_export.expected.json --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:export-review-decisions",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/export_review_decisions_from_firestore.mjs",
+      "command": "node tool/organizer_intake/export_review_decisions_from_firestore.mjs",
+      "safety": "remote-read-local-write-guarded",
+      "status": "active",
+      "description": "Exports live admin organizer-intake review decisions from Firestore into repo-backed static website decision batches.",
+      "checks": [
+        "node --check tool/organizer_intake/export_review_decisions_from_firestore.mjs",
+        "node --test tool/organizer_intake/export_review_decisions_from_firestore.test.mjs",
+        "node tool/organizer_intake/export_review_decisions_from_firestore.mjs --fixture tool/organizer_intake/fixtures/firestore_review_decisions.sample.json --date 2026-06-17 --source-label fixture --output tool/organizer_intake/fixtures/firestore_review_decisions_export.expected.json --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:export-event-review-decisions",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/export_event_review_decisions_from_firestore.mjs",
+      "command": "node tool/organizer_intake/export_event_review_decisions_from_firestore.mjs",
+      "safety": "remote-read-local-write-guarded",
+      "status": "active",
+      "description": "Exports live admin external event-candidate review decisions from Firestore into repo-backed event review batches.",
+      "checks": [
+        "node --check tool/organizer_intake/export_event_review_decisions_from_firestore.mjs",
+        "node --test tool/organizer_intake/export_event_review_decisions_from_firestore.test.mjs",
+        "node tool/organizer_intake/export_event_review_decisions_from_firestore.mjs --fixture tool/organizer_intake/fixtures/firestore_event_review_decisions.sample.json --date 2026-06-17 --source-label fixture --output tool/organizer_intake/fixtures/firestore_event_review_decisions_export.expected.json --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:export-event-location-resolutions",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/export_event_location_resolutions_from_firestore.mjs",
+      "command": "node tool/organizer_intake/export_event_location_resolutions_from_firestore.mjs",
+      "safety": "remote-read-local-write-guarded",
+      "status": "active",
+      "description": "Exports live admin external event-location resolutions from Firestore into repo-backed location resolution batches.",
+      "checks": [
+        "node --check tool/organizer_intake/export_event_location_resolutions_from_firestore.mjs",
+        "node --test tool/organizer_intake/export_event_location_resolutions_from_firestore.test.mjs",
+        "node tool/organizer_intake/export_event_location_resolutions_from_firestore.mjs --fixture tool/organizer_intake/fixtures/firestore_event_location_resolutions.sample.json --date 2026-06-17 --source-label fixture --output tool/organizer_intake/fixtures/firestore_event_location_resolutions_export.expected.json --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:export-policy-gap-decisions",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/export_policy_gap_decisions_from_firestore.mjs",
+      "command": "node tool/organizer_intake/export_policy_gap_decisions_from_firestore.mjs",
+      "safety": "remote-read-local-write-guarded",
+      "status": "active",
+      "description": "Exports live admin organizer policy-gap review decisions from Firestore into repo-backed policy-gap decision batches.",
+      "checks": [
+        "node --check tool/organizer_intake/export_policy_gap_decisions_from_firestore.mjs",
+        "node --test tool/organizer_intake/export_policy_gap_decisions_from_firestore.test.mjs",
+        "node tool/organizer_intake/export_policy_gap_decisions_from_firestore.mjs --fixture tool/organizer_intake/fixtures/firestore_policy_gap_decisions.sample.json --date 2026-06-17 --source-label fixture --output tool/organizer_intake/fixtures/firestore_policy_gap_decisions_export.expected.json --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:sync-claim-targets",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/sync_claim_targets_to_firestore.mjs",
+      "command": "node tool/organizer_intake/sync_claim_targets_to_firestore.mjs",
+      "safety": "remote-write-guarded",
+      "status": "active",
+      "description": "Syncs approved organizer-intake claim targets into Firestore clubs with dry-run, prod, and owner-bound overwrite guardrails.",
+      "checks": [
+        "node --check tool/organizer_intake/sync_claim_targets_to_firestore.mjs",
+        "node --test tool/organizer_intake/sync_claim_targets_to_firestore.test.mjs",
+        "node tool/organizer_intake/sync_claim_targets_to_firestore.mjs --fixture tool/organizer_intake/fixtures/existing_club_docs.empty.json --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:check-promotion-bridge",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/check_promotion_bridge.mjs",
+      "command": "node tool/organizer_intake/check_promotion_bridge.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates approved organizer projections are backed by canonical host entities, website listings, Firestore claim targets, and matching claim-target sync previews without legacy duplicate pages.",
+      "checks": [
+        "node --check tool/organizer_intake/check_promotion_bridge.mjs",
+        "node --test tool/organizer_intake/check_promotion_bridge.test.mjs",
+        "node tool/organizer_intake/check_promotion_bridge.mjs"
+      ]
+    },
+    {
+      "id": "organizer-intake:check-admin-review-bridge",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/check_admin_review_bridge.mjs",
+      "command": "node tool/organizer_intake/check_admin_review_bridge.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates every organizer admin review channel is wired through admin UI/API, backend callable, contracts, Firestore decision export, tooling manifests, promotion pipeline flags, and the generated pending-input and promotion-execution admin handoffs.",
+      "checks": [
+        "node --check tool/organizer_intake/check_admin_review_bridge.mjs",
+        "node --test tool/organizer_intake/check_admin_review_bridge.test.mjs",
+        "node tool/organizer_intake/check_admin_review_bridge.mjs"
+      ]
+    },
+    {
+      "id": "organizer-intake:run-promotion-pipeline",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/run_promotion_pipeline.mjs",
+      "command": "node tool/organizer_intake/run_promotion_pipeline.mjs",
+      "safety": "local-by-default-remote-guarded",
+      "status": "active",
+      "description": "Runs the admin-approved organizer promotion pipeline from optional reviewed answer-packet application through search-result and event candidate regeneration, bridge validation, marketing website build-output validation, and claim-target sync preview.",
+      "checks": [
+        "node --check tool/organizer_intake/run_promotion_pipeline.mjs",
+        "node --test tool/organizer_intake/run_promotion_pipeline.test.mjs",
+        "node tool/organizer_intake/run_promotion_pipeline.mjs --apply-decision-answers --allow-partial-decision-answers --claim-sync none --skip-website-build --json",
+        "node tool/organizer_intake/run_promotion_pipeline.mjs"
+      ]
+    },
+    {
+      "id": "marketing:generate-organizer-listings",
+      "category": "marketing",
+      "path": "website/scripts/generateOrganizerListings.mjs",
+      "command": "npm --workspace catch-marketing run generate:organizer-listings",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Projects approved organizer intake and seed organizer records into website hostListings.json.",
+      "checks": [
+        "node --check website/scripts/generateOrganizerListings.mjs",
+        "node --test website/scripts/generateOrganizerListings.test.mjs",
+        "node website/scripts/generateOrganizerListings.mjs --check"
+      ]
+    },
+    {
       "id": "marketing:device-frame",
       "category": "marketing",
       "path": "tool/marketing/frame_device_capture.dart",
@@ -729,6 +1350,10 @@
       "status": "active",
       "description": "Builds the Vite React marketing website and route-specific static metadata.",
       "checks": [
+        "node --check website/scripts/checkOrganizerBuildOutputs.mjs",
+        "node --check website/scripts/postbuild.mjs",
+        "node --test website/scripts/checkOrganizerBuildOutputs.test.mjs",
+        "node --test website/scripts/postbuild.test.mjs",
         "npm --prefix website run build"
       ]
     },
@@ -792,6 +1417,19 @@
       "checks": [
         "dart analyze tool/design_tokens.dart lib/core/theme/generated/catch_design_tokens.g.dart",
         "dart run tool/design_tokens.dart --check"
+      ]
+    },
+    {
+      "id": "design:component-contracts",
+      "category": "design",
+      "path": "tool/design/check_component_contracts.mjs",
+      "command": "node tool/design/check_component_contracts.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates the Catch component contract registry used by Figma, Claude Design, and Code Connect handoffs.",
+      "checks": [
+        "node --check tool/design/check_component_contracts.mjs",
+        "node tool/design/check_component_contracts.mjs"
       ]
     },
     {

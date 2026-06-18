@@ -18,6 +18,7 @@ import {ClubMembershipDocument} from "./clubMembershipDocument";
 import {ClubHostClaimDocument} from "./clubHostClaimDocument";
 import {ClubClaimRequestDocument} from "./clubClaimRequestDocument";
 import {EventDocument} from "./eventDocument";
+import {ExternalEventDocument} from "./externalEventDocument";
 import {EventPrivateAccessDocument} from "./eventPrivateAccessDocument";
 import {EventInviteLinkDocument} from "./eventInviteLinkDocument";
 import {EventParticipationDocument} from "./eventParticipationDocument";
@@ -49,6 +50,11 @@ import {DeletedUserTombstoneDocument} from "./deletedUserTombstoneDocument";
 import {RateLimitDocument} from "./rateLimitDocument";
 import {FunctionEventReceiptDocument} from "./functionEventReceiptDocument";
 import {SeedEventManifestDocument} from "./seedEventManifestDocument";
+import {OrganizerIntakeReviewDecisionDocument} from "./organizerIntakeReviewDecisionDocument";
+import {OrganizerIntakeCurationDecisionDocument} from "./organizerIntakeCurationDecisionDocument";
+import {OrganizerEventCandidateReviewDecisionDocument} from "./organizerEventCandidateReviewDecisionDocument";
+import {OrganizerEventLocationResolutionDecisionDocument} from "./organizerEventLocationResolutionDecisionDocument";
+import {OrganizerPolicyGapReviewDecisionDocument} from "./organizerPolicyGapReviewDecisionDocument";
 import {UpdateUserProfileCallablePayload} from "./updateUserProfileCallablePayload";
 import {CreateClubCallablePayload} from "./createClubCallablePayload";
 import {CreateClubCallableResponse} from "./createClubCallableResponse";
@@ -58,6 +64,11 @@ import {RemoveClubHostCallablePayload} from "./removeClubHostCallablePayload";
 import {TransferClubOwnershipCallablePayload} from "./transferClubOwnershipCallablePayload";
 import {RequestClubClaimCallablePayload} from "./requestClubClaimCallablePayload";
 import {AdminDecideClubClaimCallablePayload} from "./adminDecideClubClaimCallablePayload";
+import {AdminDecideOrganizerIntakeCallablePayload} from "./adminDecideOrganizerIntakeCallablePayload";
+import {AdminRecordOrganizerCurationCallablePayload} from "./adminRecordOrganizerCurationCallablePayload";
+import {AdminDecideOrganizerEventCandidateCallablePayload} from "./adminDecideOrganizerEventCandidateCallablePayload";
+import {AdminDecideOrganizerPolicyGapCallablePayload} from "./adminDecideOrganizerPolicyGapCallablePayload";
+import {AdminResolveOrganizerEventLocationCallablePayload} from "./adminResolveOrganizerEventLocationCallablePayload";
 import {AdminSetClubIndexStatusCallablePayload} from "./adminSetClubIndexStatusCallablePayload";
 import {AdminGetClubDetailsCallablePayload} from "./adminGetClubDetailsCallablePayload";
 import {AdminUpdateClubDetailsCallablePayload} from "./adminUpdateClubDetailsCallablePayload";
@@ -132,6 +143,7 @@ import {
   clubHostClaimDocumentSchema,
   clubClaimRequestDocumentSchema,
   eventDocumentSchema,
+  externalEventDocumentSchema,
   eventPrivateAccessDocumentSchema,
   eventInviteLinkDocumentSchema,
   eventParticipationDocumentSchema,
@@ -163,6 +175,11 @@ import {
   rateLimitDocumentSchema,
   functionEventReceiptDocumentSchema,
   seedEventManifestDocumentSchema,
+  organizerIntakeReviewDecisionDocumentSchema,
+  organizerIntakeCurationDecisionDocumentSchema,
+  organizerEventCandidateReviewDecisionDocumentSchema,
+  organizerEventLocationResolutionDecisionDocumentSchema,
+  organizerPolicyGapReviewDecisionDocumentSchema,
   updateUserProfileCallablePayloadSchema,
   createClubCallablePayloadSchema,
   createClubCallableResponseSchema,
@@ -172,6 +189,11 @@ import {
   transferClubOwnershipCallablePayloadSchema,
   requestClubClaimCallablePayloadSchema,
   adminDecideClubClaimCallablePayloadSchema,
+  adminDecideOrganizerIntakeCallablePayloadSchema,
+  adminRecordOrganizerCurationCallablePayloadSchema,
+  adminDecideOrganizerEventCandidateCallablePayloadSchema,
+  adminDecideOrganizerPolicyGapCallablePayloadSchema,
+  adminResolveOrganizerEventLocationCallablePayloadSchema,
   adminSetClubIndexStatusCallablePayloadSchema,
   adminGetClubDetailsCallablePayloadSchema,
   adminUpdateClubDetailsCallablePayloadSchema,
@@ -292,6 +314,10 @@ export const validateEventDocument:
   ValidateFunction<EventDocument> =
     ajv.compile(eventDocumentSchema) as
       ValidateFunction<EventDocument>;
+export const validateExternalEventDocument:
+  ValidateFunction<ExternalEventDocument> =
+    ajv.compile(externalEventDocumentSchema) as
+      ValidateFunction<ExternalEventDocument>;
 export const validateEventPrivateAccessDocument:
   ValidateFunction<EventPrivateAccessDocument> =
     ajv.compile(eventPrivateAccessDocumentSchema) as
@@ -416,6 +442,26 @@ export const validateSeedEventManifestDocument:
   ValidateFunction<SeedEventManifestDocument> =
     ajv.compile(seedEventManifestDocumentSchema) as
       ValidateFunction<SeedEventManifestDocument>;
+export const validateOrganizerIntakeReviewDecisionDocument:
+  ValidateFunction<OrganizerIntakeReviewDecisionDocument> =
+    ajv.compile(organizerIntakeReviewDecisionDocumentSchema) as
+      ValidateFunction<OrganizerIntakeReviewDecisionDocument>;
+export const validateOrganizerIntakeCurationDecisionDocument:
+  ValidateFunction<OrganizerIntakeCurationDecisionDocument> =
+    ajv.compile(organizerIntakeCurationDecisionDocumentSchema) as
+      ValidateFunction<OrganizerIntakeCurationDecisionDocument>;
+export const validateOrganizerEventCandidateReviewDecisionDocument:
+  ValidateFunction<OrganizerEventCandidateReviewDecisionDocument> =
+    ajv.compile(organizerEventCandidateReviewDecisionDocumentSchema) as
+      ValidateFunction<OrganizerEventCandidateReviewDecisionDocument>;
+export const validateOrganizerEventLocationResolutionDecisionDocument:
+  ValidateFunction<OrganizerEventLocationResolutionDecisionDocument> =
+    ajv.compile(organizerEventLocationResolutionDecisionDocumentSchema) as
+      ValidateFunction<OrganizerEventLocationResolutionDecisionDocument>;
+export const validateOrganizerPolicyGapReviewDecisionDocument:
+  ValidateFunction<OrganizerPolicyGapReviewDecisionDocument> =
+    ajv.compile(organizerPolicyGapReviewDecisionDocumentSchema) as
+      ValidateFunction<OrganizerPolicyGapReviewDecisionDocument>;
 export const validateUpdateUserProfileCallablePayload:
   ValidateFunction<UpdateUserProfileCallablePayload> =
     ajv.compile(updateUserProfileCallablePayloadSchema) as
@@ -452,6 +498,26 @@ export const validateAdminDecideClubClaimCallablePayload:
   ValidateFunction<AdminDecideClubClaimCallablePayload> =
     ajv.compile(adminDecideClubClaimCallablePayloadSchema) as
       ValidateFunction<AdminDecideClubClaimCallablePayload>;
+export const validateAdminDecideOrganizerIntakeCallablePayload:
+  ValidateFunction<AdminDecideOrganizerIntakeCallablePayload> =
+    ajv.compile(adminDecideOrganizerIntakeCallablePayloadSchema) as
+      ValidateFunction<AdminDecideOrganizerIntakeCallablePayload>;
+export const validateAdminRecordOrganizerCurationCallablePayload:
+  ValidateFunction<AdminRecordOrganizerCurationCallablePayload> =
+    ajv.compile(adminRecordOrganizerCurationCallablePayloadSchema) as
+      ValidateFunction<AdminRecordOrganizerCurationCallablePayload>;
+export const validateAdminDecideOrganizerEventCandidateCallablePayload:
+  ValidateFunction<AdminDecideOrganizerEventCandidateCallablePayload> =
+    ajv.compile(adminDecideOrganizerEventCandidateCallablePayloadSchema) as
+      ValidateFunction<AdminDecideOrganizerEventCandidateCallablePayload>;
+export const validateAdminDecideOrganizerPolicyGapCallablePayload:
+  ValidateFunction<AdminDecideOrganizerPolicyGapCallablePayload> =
+    ajv.compile(adminDecideOrganizerPolicyGapCallablePayloadSchema) as
+      ValidateFunction<AdminDecideOrganizerPolicyGapCallablePayload>;
+export const validateAdminResolveOrganizerEventLocationCallablePayload:
+  ValidateFunction<AdminResolveOrganizerEventLocationCallablePayload> =
+    ajv.compile(adminResolveOrganizerEventLocationCallablePayloadSchema) as
+      ValidateFunction<AdminResolveOrganizerEventLocationCallablePayload>;
 export const validateAdminSetClubIndexStatusCallablePayload:
   ValidateFunction<AdminSetClubIndexStatusCallablePayload> =
     ajv.compile(adminSetClubIndexStatusCallablePayloadSchema) as

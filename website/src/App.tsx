@@ -246,7 +246,7 @@ interface HostListingEventSuccessSummary {
 interface HostListing {
   id: string;
   listingVariant?: "unclaimedScraped" | "appCreatedClub";
-  dataOrigin?: "scrapedSeed" | "catchDemo";
+  dataOrigin?: "scrapedSeed" | "catchDemo" | "organizerIntake";
   name: string;
   slug: string;
   city: string;
@@ -254,6 +254,7 @@ interface HostListing {
   region: string;
   country: string;
   path: string;
+  legacyPaths?: string[];
   category: string;
   status: string;
   indexing: string;
@@ -5777,7 +5778,10 @@ function getPageKey(): Exclude<PageKey, "listing"> {
 
 function getHostListingForPath(pathname: string) {
   const normalizedPath = pathname.endsWith("/") ? pathname : `${pathname}/`;
-  return hostListings.find((listing) => listing.path === normalizedPath) ?? null;
+  return hostListings.find((listing) =>
+    listing.path === normalizedPath ||
+    listing.legacyPaths?.includes(normalizedPath)
+  ) ?? null;
 }
 
 function getClaimListingFromUrl() {
@@ -5786,7 +5790,8 @@ function getClaimListingFromUrl() {
   return hostListings.find((listing) =>
     listing.id === lookup ||
     listing.slug === lookup ||
-    listing.path === lookup
+    listing.path === lookup ||
+    listing.legacyPaths?.includes(lookup)
   ) ?? null;
 }
 

@@ -1,0 +1,19 @@
+{
+  "candidates": [],
+  "duplicateKeys": [],
+  "errors": [],
+  "generatedFrom": {
+    "batches": [],
+    "dedupeIndexGeneratedAt": null
+  },
+  "schemaVersion": 1,
+  "summary": {
+    "batches": 0,
+    "candidates": 0,
+    "duplicateNormalizedKeys": 0,
+    "matchedExistingEntities": 0,
+    "platforms": {},
+    "results": 0
+  },
+  "warnings": []
+}

@@ -1,0 +1,243 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/external_events.schema.json",
+  "title": "ExternalEventDocument",
+  "description": "Read-only external event document stored at externalEvents/{eventId}. These records are sourced from reviewed organizer intake candidates and may link to external booking platforms, but they never enable Catch booking, payments, reservations, waitlists, attendance, or schedule locks.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "externalEvents",
+  "x-firestore-path": "externalEvents/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "organizer intake import tooling after admin review; external source corrections and takedowns are admin-owned",
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "canonicalHostId",
+    "compatibilityClubId",
+    "title",
+    "description",
+    "startTime",
+    "endTime",
+    "timezone",
+    "meetingPoint",
+    "meetingLocation",
+    "locationDetails",
+    "photoUrl",
+    "activity",
+    "price",
+    "status",
+    "publicationStatus",
+    "booking",
+    "discovery",
+    "dedupe",
+    "externalSource",
+    "review",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "canonicalHostId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "compatibilityClubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 240},
+    "description": {"type": "string", "minLength": 1, "maxLength": 4000},
+    "startTime": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "endTime": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "timezone": {"type": ["string", "null"], "maxLength": 80},
+    "meetingPoint": {"type": "string", "minLength": 1, "maxLength": 240},
+    "meetingLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "address", "placeId", "latitude", "longitude", "notes"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1, "maxLength": 240},
+        "address": {"type": ["string", "null"], "maxLength": 500},
+        "placeId": {"type": ["string", "null"], "minLength": 1, "maxLength": 256},
+        "latitude": {
+          "anyOf": [
+            {"$ref": "../shared/event_common.schema.json#/definitions/latitude"},
+            {"type": "null"}
+          ]
+        },
+        "longitude": {
+          "anyOf": [
+            {"$ref": "../shared/event_common.schema.json#/definitions/longitude"},
+            {"type": "null"}
+          ]
+        },
+        "notes": {"type": ["string", "null"], "maxLength": 1000}
+      }
+    },
+    "locationDetails": {"type": ["string", "null"], "maxLength": 1000},
+    "photoUrl": {"$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"},
+    "activity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "activityKind", "interactionModel", "source"],
+      "properties": {
+        "version": {"type": "integer", "const": 1},
+        "activityKind": {"$ref": "../shared/event_common.schema.json#/definitions/activityKind"},
+        "interactionModel": {"$ref": "../shared/event_common.schema.json#/definitions/eventInteractionModel"},
+        "source": {"type": "string", "enum": ["heuristic", "admin", "source"]}
+      }
+    },
+    "price": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["displayText", "parsedPriceInPaise", "currency"],
+      "properties": {
+        "displayText": {"type": ["string", "null"], "maxLength": 120},
+        "parsedPriceInPaise": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"}
+      }
+    },
+    "status": {"type": "string", "enum": ["active", "cancelled"]},
+    "publicationStatus": {
+      "type": "string",
+      "enum": ["draft", "public", "archived", "removed"]
+    },
+    "booking": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "catchBookingEnabled",
+        "catchPaymentsEnabled",
+        "catchReservationsEnabled",
+        "catchWaitlistEnabled",
+        "externalLinks"
+      ],
+      "properties": {
+        "mode": {"type": "string", "const": "external_outbound_only"},
+        "catchBookingEnabled": {"type": "boolean", "const": false},
+        "catchPaymentsEnabled": {"type": "boolean", "const": false},
+        "catchReservationsEnabled": {"type": "boolean", "const": false},
+        "catchWaitlistEnabled": {"type": "boolean", "const": false},
+        "externalLinks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "platform",
+              "url",
+              "linkType",
+              "sourceEventKey",
+              "candidateId",
+              "primary"
+            ],
+            "properties": {
+              "platform": {
+                "type": "string",
+                "enum": [
+                  "bookMyShow",
+                  "district",
+                  "luma",
+                  "partiful",
+                  "sortMyScene"
+                ]
+              },
+              "url": {"$ref": "../shared/profile_common.schema.json#/definitions/url"},
+              "linkType": {"type": "string", "enum": ["booking_or_event_page", "source_surface"]},
+              "sourceEventKey": {"type": "string", "minLength": 1, "maxLength": 240},
+              "candidateId": {"type": "string", "minLength": 1, "maxLength": 240},
+              "primary": {"type": "boolean"}
+            }
+          }
+        }
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["citySlug", "countryCode", "availability", "manualApprovalRequired"],
+      "properties": {
+        "citySlug": {
+          "anyOf": [
+            {"$ref": "../shared/event_common.schema.json#/definitions/citySlug"},
+            {"type": "null"}
+          ]
+        },
+        "countryCode": {"type": ["string", "null"], "minLength": 2, "maxLength": 2},
+        "availability": {"type": "string", "const": "read_only_external"},
+        "manualApprovalRequired": {"type": "boolean", "const": true}
+      }
+    },
+    "dedupe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "normalizedEventKey",
+        "primaryCandidateId",
+        "duplicateCandidateIds",
+        "conflictPolicy"
+      ],
+      "properties": {
+        "normalizedEventKey": {"type": "string", "minLength": 1, "maxLength": 500},
+        "primaryCandidateId": {"type": "string", "minLength": 1, "maxLength": 240},
+        "duplicateCandidateIds": {
+          "type": "array",
+          "maxItems": 24,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 240}
+        },
+        "conflictPolicy": {
+          "type": "string",
+          "const": "single_read_only_event_with_multiple_outbound_links"
+        }
+      }
+    },
+    "externalSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidateId",
+        "sourceEventKey",
+        "sourceEventId",
+        "platform",
+        "eventUrl",
+        "sourceUrl"
+      ],
+      "properties": {
+        "candidateId": {"type": "string", "minLength": 1, "maxLength": 240},
+        "sourceEventKey": {"type": "string", "minLength": 1, "maxLength": 240},
+        "sourceEventId": {"type": "string", "minLength": 1, "maxLength": 180},
+        "platform": {
+          "type": "string",
+          "enum": ["bookMyShow", "district", "luma", "partiful", "sortMyScene"]
+        },
+        "eventUrl": {"$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"},
+        "sourceUrl": {"$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"}
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventReviewBatchId",
+        "reviewer",
+        "decidedAt",
+        "note",
+        "importPolicyAcknowledged",
+        "ownerSafeCopyReviewed"
+      ],
+      "properties": {
+        "eventReviewBatchId": {"type": ["string", "null"], "maxLength": 180},
+        "reviewer": {"type": ["string", "null"], "maxLength": 180},
+        "decidedAt": {"type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+        "note": {"type": ["string", "null"], "maxLength": 1000},
+        "importPolicyAcknowledged": {"type": "boolean"},
+        "ownerSafeCopyReviewed": {"type": "boolean"}
+      }
+    },
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

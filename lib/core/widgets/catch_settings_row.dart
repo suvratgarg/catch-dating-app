@@ -74,7 +74,7 @@ class CatchSettingsRow extends StatelessWidget {
         if (divider)
           Positioned(
             top: 0,
-            left: CatchIcon.row + CatchSpacing.s3,
+            left: CatchLayout.settingsRowDividerIconInset,
             right: 0,
             child: ColoredBox(
               color: t.line.withValues(alpha: CatchOpacity.profileInfoDivider),
@@ -82,7 +82,9 @@ class CatchSettingsRow extends StatelessWidget {
             ),
           ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 13),
+          padding: const EdgeInsets.symmetric(
+            vertical: CatchLayout.settingsRowVerticalPadding,
+          ),
           child: Row(
             children: [
               Icon(
@@ -114,7 +116,11 @@ class CatchSettingsRow extends StatelessWidget {
               if (trailing != null) ...[gapW12, trailing!],
               if (shouldShowChevron) ...[
                 gapW6,
-                Icon(CatchIcons.chevronRightRounded, color: t.ink3, size: 16),
+                Icon(
+                  CatchIcons.chevronRightRounded,
+                  color: t.ink3,
+                  size: CatchLayout.settingsRowChevronIconSize,
+                ),
               ],
             ],
           ),

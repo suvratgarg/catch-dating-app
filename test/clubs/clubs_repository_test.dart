@@ -79,6 +79,7 @@ void main() {
             .data()!;
         expect(decoded?.id, 'club-88');
         expect(decoded?.name, 'Stride Social');
+        expect(decoded?.appVisibility, ClubAppVisibility.discoverable);
         expect(encoded.containsKey('id'), isFalse);
         expect(encoded['name'], 'Stride Social');
       },
@@ -100,6 +101,21 @@ void main() {
       expect(decoded?.displayHostName, 'Open Organizer');
       expect(decoded?.displayHostProfiles, isEmpty);
     });
+
+    test(
+      'converter treats legacy docs without appVisibility as discoverable',
+      () async {
+        final legacy = buildClub(id: 'legacy-club');
+        await firestore
+            .collection('clubs')
+            .doc(legacy.id)
+            .set(legacy.toJson()..remove('appVisibility'));
+
+        final decoded = await repository.fetchClub(legacy.id);
+        expect(decoded?.appVisibility, ClubAppVisibility.discoverable);
+        expect(decoded?.isAppDiscoverable, isTrue);
+      },
+    );
 
     test('watchClub emits the decoded club when the document exists', () async {
       final club = buildClub();
@@ -142,6 +158,22 @@ void main() {
       },
     );
 
+    test('watchClubsByLocation hides app-hidden organizer profiles', () async {
+      final visible = buildClub(id: 'visible');
+      final hidden = buildClub(
+        id: 'hidden',
+        appVisibility: ClubAppVisibility.hidden,
+        createdAt: DateTime(2025, 1, 2),
+      );
+      await _seedClub(firestore, visible);
+      await _seedClub(firestore, hidden);
+
+      await expectLater(
+        repository.watchClubsByLocation('mumbai'),
+        emits([visible]),
+      );
+    });
+
     test('watchClubsByLocation caps the discovery stream', () async {
       for (var i = 0; i < ClubsRepository.discoveryLimit + 5; i++) {
         await _seedClub(
@@ -177,6 +209,21 @@ void main() {
       await expectLater(
         repository.watchClubsByLocationSortedByRating('delhi'),
         emits([topClub, lowerRated]),
+      );
+    });
+
+    test('watchClubsByIds hides app-hidden search matches', () async {
+      final visible = buildClub(id: 'visible');
+      final hidden = buildClub(
+        id: 'hidden',
+        appVisibility: ClubAppVisibility.hidden,
+      );
+      await _seedClub(firestore, visible);
+      await _seedClub(firestore, hidden);
+
+      await expectLater(
+        repository.watchClubsByIds(clubIds: const ['hidden', 'visible']),
+        emits([visible]),
       );
     });
 

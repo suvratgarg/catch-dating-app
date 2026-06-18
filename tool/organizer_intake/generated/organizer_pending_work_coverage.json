@@ -1,0 +1,166 @@
+{
+  "entries": [
+    {
+      "blockerClass": "requires_decision_input",
+      "blockers": [
+        "tool/organizer_intake/generated/event_crawl_plan.json",
+        "tool/organizer_intake/generated/external_event_import_plan.json",
+        "tool/organizer_intake/generated/external_event_location_resolution_queue.json"
+      ],
+      "commands": [
+        "node tool/organizer_intake/policy_gap_decision.mjs draft recurring_event_crawl_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
+        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_defaults_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
+        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_location_provider_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+      ],
+      "coverageId": "pending-work:policy_decisions",
+      "coverageStatus": "covered_by_input_request",
+      "followUpIds": [],
+      "label": "Policy Decisions",
+      "nextActions": [
+        "Choose platform order, frequency, budget cap, and owner-safety rules before enabling scheduled crawls.",
+        "Choose default capacity, admission, pricing, and activity-field policy before enabling imports.",
+        "Keep manual resolution as the default until provider, confidence, retention, and spend caps are approved."
+      ],
+      "pendingRequestIds": [
+        "policy:recurring_event_crawl_policy",
+        "policy:external_event_defaults_policy",
+        "policy:external_event_location_provider_policy"
+      ],
+      "priority": "p0",
+      "status": "requires_policy_input",
+      "workstreamId": "policy_decisions"
+    },
+    {
+      "blockerClass": "covered_follow_up",
+      "blockers": [
+        "ready"
+      ],
+      "commands": [
+        "node tool/organizer_intake/sync_claim_targets_to_firestore.mjs --fixture tool/organizer_intake/fixtures/existing_club_docs.empty.json",
+        "node tool/organizer_intake/sync_claim_targets_to_firestore.mjs --env dev"
+      ],
+      "coverageId": "pending-work:claim_target_sync",
+      "coverageStatus": "covered_by_follow_up",
+      "followUpIds": [
+        "workflow:claim_target_sync"
+      ],
+      "label": "Claim Target Sync",
+      "nextActions": [
+        "Review the generated claim-target sync preview, then run a Firestore dry run before any write."
+      ],
+      "pendingRequestIds": [],
+      "priority": "p1",
+      "status": "dry_run_review_required",
+      "workstreamId": "claim_target_sync"
+    },
+    {
+      "blockerClass": "covered_follow_up",
+      "blockers": [
+        "global_recurring_crawl_disabled",
+        "organizer_not_public_approved",
+        "surface_crawl_policy_not_api_preferred",
+        "surface_crawl_status_not_approved",
+        "surface_not_active",
+        "surface_url_missing",
+        "crawl_run_request_cap_missing",
+        "network_disabled",
+        "platform_not_allowlisted",
+        "scheduler_disabled"
+      ],
+      "commands": [
+        "node tool/organizer_intake/plan_event_crawl_runs.mjs --check"
+      ],
+      "coverageId": "pending-work:crawl_execution",
+      "coverageStatus": "covered_by_follow_up",
+      "followUpIds": [
+        "workflow:crawl_execution"
+      ],
+      "label": "Crawl Execution",
+      "nextActions": [
+        "Record crawl policy and budget decision before enabling any provider fetch."
+      ],
+      "pendingRequestIds": [],
+      "priority": "p1",
+      "status": "disabled_by_policy",
+      "workstreamId": "crawl_execution"
+    },
+    {
+      "blockerClass": "covered_follow_up",
+      "blockers": [],
+      "commands": [
+        "node tool/organizer_intake/organizer_intake.mjs --check"
+      ],
+      "coverageId": "pending-work:evidence_quality",
+      "coverageStatus": "covered_by_follow_up",
+      "followUpIds": [
+        "workflow:evidence_quality"
+      ],
+      "label": "Evidence Quality",
+      "nextActions": [
+        "Admin publication approvals must acknowledge manual reports without artifacts."
+      ],
+      "pendingRequestIds": [],
+      "priority": "p1",
+      "status": "review_needed",
+      "workstreamId": "evidence_quality"
+    },
+    {
+      "blockerClass": "covered_follow_up",
+      "blockers": [
+        "object_storage_bucket_missing",
+        "remote_object_storage_disabled",
+        "retention_policy_missing"
+      ],
+      "commands": [
+        "node tool/organizer_intake/plan_raw_artifact_storage.mjs --check"
+      ],
+      "coverageId": "pending-work:raw_artifact_storage",
+      "coverageStatus": "covered_by_follow_up",
+      "followUpIds": [
+        "workflow:raw_artifact_storage"
+      ],
+      "label": "Raw Artifact Storage",
+      "nextActions": [
+        "Approve object storage bucket, retention, deletion, and crawl-cost policy before uploading raw payloads."
+      ],
+      "pendingRequestIds": [],
+      "priority": "p1",
+      "status": "blocked_by_policy",
+      "workstreamId": "raw_artifact_storage"
+    }
+  ],
+  "generatedFrom": {
+    "operationalHealth": "tool/organizer_intake/generated/organizer_operational_health.json",
+    "pendingInputRequest": "tool/organizer_intake/generated/organizer_pending_input_request.json"
+  },
+  "guardrails": [
+    "Pending-work coverage is read-only; it never records decisions, writes Firestore, publishes pages, enables crawls, uploads artifacts, or imports events.",
+    "Every unresolved operational-health workstream must be covered by either a pending decision request or a workflow follow-up.",
+    "Covered workstreams can still be blocked; coverage only proves the blocker is visible and assigned."
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "coverageByStatus": {
+      "covered_by_follow_up": 4,
+      "covered_by_input_request": 1
+    },
+    "coveredByFollowUp": 4,
+    "coveredByInputRequest": 1,
+    "coveredWorkstreams": 5,
+    "highestPriority": "p0",
+    "status": "awaiting_required_input",
+    "unresolvedWorkstreams": 5,
+    "untriagedWorkstreams": 0,
+    "workstreamsByPriority": {
+      "p0": 1,
+      "p1": 4
+    },
+    "workstreamsByStatus": {
+      "blocked_by_policy": 1,
+      "disabled_by_policy": 1,
+      "dry_run_review_required": 1,
+      "requires_policy_input": 1,
+      "review_needed": 1
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "decidedAt": "2026-06-18",
+  "decisionBatchId": "2026-06-18-bhag-approve-public",
+  "decisions": [
+    {
+      "appVisibility": "hidden",
+      "checklist": {
+        "crawlDisabledReviewed": true,
+        "identityReviewed": true,
+        "marketScopeReviewed": true,
+        "mediaRightsReviewed": true,
+        "ownerSafeCopyReviewed": true,
+        "surfaceInventoryReviewed": true
+      },
+      "decision": "approve_public",
+      "entityId": "bhag",
+      "note": "User approved Bhag Club for a public unclaimed Host page on 2026-06-18; app visibility remains hidden until claim or explicit app approval."
+    }
+  ],
+  "reviewer": "suvrat",
+  "schemaVersion": 1
+}

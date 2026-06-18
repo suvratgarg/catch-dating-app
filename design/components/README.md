@@ -1,0 +1,40 @@
+---
+doc_id: component_contract_registry
+version: 1.0.0
+updated: 2026-06-17
+owner: ui_elevation_initiative
+status: active
+---
+
+# Component Contract Registry
+
+`catch.components.json` is the cross-tool contract layer for Catch UI
+primitives. Flutter remains the implementation source of truth; this registry
+names the public component contract that Figma, Claude Design, future Code
+Connect templates, docs, and validators should agree on.
+
+The registry deliberately describes component APIs, states, slots, token
+dependencies, and handoff names. It does not attempt to generate Dart widget
+implementations from JSX, CSS, or Figma node geometry.
+
+## Files
+
+| File | Purpose |
+|---|---|
+| `catch.components.json` | Authoritative component contract registry. |
+| `catch.components.schema.json` | JSON Schema for the registry shape. |
+
+## Workflow
+
+1. Add or change the Flutter primitive in `lib/core/widgets`.
+2. Update the matching contract entry here, including props, states, slots, and
+   DTCG token references.
+3. Run `node tool/design/check_component_contracts.mjs`.
+4. Regenerate the design context pack with
+   `node tool/design/build_context_pack.mjs` when the registry should be shared
+   with Claude Design or another design tool.
+
+Figma mappings start as `unmapped`. Once a Figma library component exists, set
+`design.figma.status` to `mapped` and add its component URL. Code Connect
+templates should then live beside their owning Flutter primitive or in a
+dedicated Figma mapping folder, and the registry should point at that template.

@@ -110,6 +110,20 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   adminGetOverview: {maxRequests: 30, windowMs: 60 * 1000},
   adminGetClubDetails: {maxRequests: 60, windowMs: 60 * 1000},
   adminSetClubIndexStatus: {maxRequests: 30, windowMs: 60 * 1000},
+  adminDecideOrganizerIntake: {maxRequests: 30, windowMs: 60 * 1000},
+  adminRecordOrganizerCuration: {maxRequests: 30, windowMs: 60 * 1000},
+  adminDecideOrganizerEventCandidate: {
+    maxRequests: 30,
+    windowMs: 60 * 1000,
+  },
+  adminResolveOrganizerEventLocation: {
+    maxRequests: 30,
+    windowMs: 60 * 1000,
+  },
+  adminDecideOrganizerPolicyGap: {
+    maxRequests: 30,
+    windowMs: 60 * 1000,
+  },
   adminDecideAccessApplication: {maxRequests: 30, windowMs: 60 * 1000},
   adminUpdateClubDetails: {maxRequests: 30, windowMs: 60 * 1000},
   requestSuvbotDemoOperation: {maxRequests: 20, windowMs: 60 * 1000},
