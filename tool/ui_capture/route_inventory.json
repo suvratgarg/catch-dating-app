@@ -3,12 +3,12 @@
   "generatedBy": "tool/ui_capture/check_route_inventory.mjs",
   "source": {
     "path": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "379ffb297c682e7a9373da3244aac0e4c87fba13d988c52defd8219bdc435a31",
-    "routeContractSha256": "2e64f8cfac7ea03ba3405fc5787f9a954a0a96834052b37c5d99e2efcb968018",
-    "goRouteCount": 32,
+    "normalizedFileSha256": "23c7f748cdc0fe12c651aa72ea3c47a6610ec490dbf03503759718f7bfde6053",
+    "routeContractSha256": "b7ce0377788c4f1bfbc1c0f180063bdf22ac5231b1f438fdedc632be2b473526",
+    "goRouteCount": 33,
     "shellBranchCount": 5,
-    "enumRouteCount": 47,
-    "referencedRouteCount": 33
+    "enumRouteCount": 48,
+    "referencedRouteCount": 34
   },
   "routes": [
     {
@@ -129,6 +129,14 @@
     {
       "id": "exploreScreen",
       "path": "/clubs",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "exploreMapScreen",
+      "path": "/clubs/map",
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
@@ -457,6 +465,7 @@
     "eventSuccessLabScreen",
     "eventSuccessManualQaScreen",
     "eventSuccessPreviewScreen",
+    "exploreMapScreen",
     "exploreScreen",
     "filtersScreen",
     "hostHomeScreen",
