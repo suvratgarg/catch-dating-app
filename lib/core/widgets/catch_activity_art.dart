@@ -39,7 +39,7 @@ class CatchActivityArt extends StatelessWidget {
               colors: [activity.accent, activity.deep],
             ),
             border: Border.all(
-              color: Colors.white.withValues(
+              color: CatchTokens.editorialLight.withValues(
                 alpha: CatchOpacity.activityArtInnerRule,
               ),
             ),
@@ -54,14 +54,14 @@ class CatchActivityArt extends StatelessWidget {
                 child: Icon(
                   activity.glyph,
                   size: height * CatchLayout.activityArtGlyphScale,
-                  color: Colors.white.withValues(
+                  color: CatchTokens.editorialLight.withValues(
                     alpha: CatchOpacity.activityArtGlyph,
                   ),
                 ),
               ),
               if (dim)
                 ColoredBox(
-                  color: Colors.black.withValues(
+                  color: CatchTokens.editorialDark.withValues(
                     alpha: CatchOpacity.activityArtDim,
                   ),
                 ),
@@ -78,7 +78,9 @@ class _ActivityArtTexturePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: CatchOpacity.activityArtPrint)
+      ..color = CatchTokens.editorialLight.withValues(
+        alpha: CatchOpacity.activityArtPrint,
+      )
       ..strokeWidth = CatchLayout.activityArtTextureStrokeWidth;
     final stride = CatchLayout.activityArtTextureStride;
     for (

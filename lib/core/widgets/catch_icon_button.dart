@@ -165,7 +165,9 @@ class _IconBtnPalette {
         return _IconBtnPalette(
           background:
               background ??
-              Colors.white.withValues(alpha: CatchOpacity.iconButtonFloatFill),
+              tokens.surface.withValues(
+                alpha: CatchOpacity.iconButtonFloatFill,
+              ),
           foreground: active
               ? activeColor
               : CatchIconButtonColors.floatingForeground,

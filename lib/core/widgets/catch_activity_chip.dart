@@ -22,8 +22,9 @@ class CatchActivityChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     final activity = ActivityPalette.resolve(context, activityKind);
-    final foreground = primary ? Colors.white : activity.deep;
+    final foreground = primary ? t.onFill(activity.accent) : activity.deep;
 
     return CatchSurface(
       radius: CatchRadius.pill,

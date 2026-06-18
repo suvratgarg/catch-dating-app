@@ -34,7 +34,7 @@ class CatchCountPill extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (icon != null)
-          Icon(icon, size: CatchIcon.sm + CatchSpacing.micro2, color: t.ink),
+          Icon(icon, size: CatchLayout.countPillIconSize, color: t.ink),
         if (icon != null && hasLabel) gapW8,
         if (hasLabel)
           Text(
@@ -54,7 +54,7 @@ class CatchCountPill extends StatelessWidget {
       padding: hasLabel
           ? const EdgeInsets.symmetric(
               horizontal: CatchSpacing.s4,
-              vertical: 11,
+              vertical: CatchLayout.countPillLabelVerticalPadding,
             )
           : EdgeInsets.zero,
       width: hasLabel ? null : 38,

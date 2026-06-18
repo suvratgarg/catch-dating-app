@@ -175,8 +175,11 @@ class _GrainPainter extends CustomPainter {
       final dx = rng.nextDouble() * size.width;
       final dy = rng.nextDouble() * size.height;
       final light = rng.nextBool();
-      // token:allow: deterministic film-grain speck color (theme-independent art)
-      paint.color = (light ? Colors.white : Colors.black).withValues(
+      // Fixed editorial grain tones keep generated texture theme-independent.
+      final tone = light
+          ? CatchTokens.editorialLight
+          : CatchTokens.editorialDark;
+      paint.color = tone.withValues(
         alpha: opacity * (0.35 + rng.nextDouble() * 0.65),
       );
       canvas.drawRect(Rect.fromLTWH(dx, dy, 1, 1), paint);

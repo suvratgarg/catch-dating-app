@@ -59,7 +59,7 @@
         {
           "photoIndex": 3,
           "promptId": "proofIRun",
-          "prompt": "Proof I actually event"
+          "prompt": "Proof I actually run"
         }
       ],
       "profilePhotos": [
@@ -112,7 +112,7 @@
           "storagePath": "demo/sales-personas/us-nyc-v1/maya-shah/04-riverside-run.jpg",
           "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/maya-shah/thumbs/04-riverside-run.jpg",
           "promptId": "proofIRun",
-          "prompt": "Proof I actually event",
+          "prompt": "Proof I actually run",
           "position": 3,
           "moderation": {
             "status": "approved",
@@ -385,7 +385,7 @@
         {
           "photoIndex": 1,
           "promptId": "proofIRun",
-          "prompt": "Proof I actually event"
+          "prompt": "Proof I actually run"
         },
         {
           "photoIndex": 2,
@@ -420,7 +420,7 @@
           "storagePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/02-morning-run.jpg",
           "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/thumbs/02-morning-run.jpg",
           "promptId": "proofIRun",
-          "prompt": "Proof I actually event",
+          "prompt": "Proof I actually run",
           "position": 1,
           "moderation": {
             "status": "approved",
@@ -1179,7 +1179,7 @@
         {
           "photoIndex": 3,
           "promptId": "proofIRun",
-          "prompt": "Proof I actually event"
+          "prompt": "Proof I actually run"
         }
       ],
       "profilePhotos": [
@@ -1232,7 +1232,7 @@
           "storagePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/04-easy-riverside-run.jpg",
           "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/04-easy-riverside-run.jpg",
           "promptId": "proofIRun",
-          "prompt": "Proof I actually event",
+          "prompt": "Proof I actually run",
           "position": 3,
           "moderation": {
             "status": "approved",
@@ -1505,7 +1505,7 @@
         {
           "photoIndex": 1,
           "promptId": "proofIRun",
-          "prompt": "Proof I actually event"
+          "prompt": "Proof I actually run"
         },
         {
           "photoIndex": 2,
@@ -1540,7 +1540,7 @@
           "storagePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/02-morning-run.jpg",
           "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/thumbs/02-morning-run.jpg",
           "promptId": "proofIRun",
-          "prompt": "Proof I actually event",
+          "prompt": "Proof I actually run",
           "position": 1,
           "moderation": {
             "status": "approved",
@@ -2065,7 +2065,7 @@
         {
           "photoIndex": 1,
           "promptId": "proofIRun",
-          "prompt": "Proof I actually event"
+          "prompt": "Proof I actually run"
         },
         {
           "photoIndex": 2,
@@ -2100,7 +2100,7 @@
           "storagePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/02-easy-run.jpg",
           "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/thumbs/02-easy-run.jpg",
           "promptId": "proofIRun",
-          "prompt": "Proof I actually event",
+          "prompt": "Proof I actually run",
           "position": 1,
           "moderation": {
             "status": "approved",
@@ -2187,7 +2187,7 @@
         {
           "photoIndex": 3,
           "promptId": "proofIRun",
-          "prompt": "Proof I actually event"
+          "prompt": "Proof I actually run"
         }
       ],
       "profilePhotos": [
@@ -2240,7 +2240,7 @@
           "storagePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/04-riverside-run.jpg",
           "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/thumbs/04-riverside-run.jpg",
           "promptId": "proofIRun",
-          "prompt": "Proof I actually event",
+          "prompt": "Proof I actually run",
           "position": 3,
           "moderation": {
             "status": "approved",
@@ -2401,7 +2401,7 @@
         {
           "photoIndex": 1,
           "promptId": "proofIRun",
-          "prompt": "Proof I actually event"
+          "prompt": "Proof I actually run"
         },
         {
           "photoIndex": 2,
@@ -2436,7 +2436,7 @@
           "storagePath": "demo/sales-personas/us-nyc-v1/samir-khan/02-bridge-run.jpg",
           "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/samir-khan/thumbs/02-bridge-run.jpg",
           "promptId": "proofIRun",
-          "prompt": "Proof I actually event",
+          "prompt": "Proof I actually run",
           "position": 1,
           "moderation": {
             "status": "approved",
