@@ -1,0 +1,300 @@
+{
+  "errors": [],
+  "gaps": [
+    {
+      "area": "crawl",
+      "blockedArtifacts": [
+        "tool/organizer_intake/generated/event_crawl_plan.json"
+      ],
+      "currentState": "3 crawl-capable surface(s); scheduler disabled.",
+      "decisionOwner": "product_ops",
+      "decisionStatus": "held",
+      "defaultPosition": "disabled_until_policy_approved",
+      "evidence": {
+        "approvedSurfaces": 0,
+        "blockers": {
+          "global_recurring_crawl_disabled": 3,
+          "organizer_not_public_approved": 3,
+          "surface_crawl_policy_not_api_preferred": 3,
+          "surface_crawl_status_not_approved": 3,
+          "surface_not_active": 1,
+          "surface_url_missing": 1
+        },
+        "crawlCapableSurfaces": 3,
+        "schedulerEnabled": false
+      },
+      "gapId": "recurring_event_crawl_policy",
+      "nextAction": "Choose platform order, frequency, budget cap, and owner-safety rules before enabling scheduled crawls.",
+      "requiredInputs": [
+        "platform allowlist and fallback order",
+        "crawl frequency by platform and organizer tier",
+        "monthly spend cap and per-run rate limits",
+        "API-first vs scrape fallback policy",
+        "owner-safety and takedown policy"
+      ],
+      "reviewDecision": {
+        "decidedAt": "2026-06-18",
+        "decision": "hold",
+        "missingRequiredInputs": [
+          "platform allowlist and fallback order",
+          "crawl frequency by platform and organizer tier",
+          "monthly spend cap and per-run rate limits",
+          "API-first vs scrape fallback policy",
+          "owner-safety and takedown policy"
+        ],
+        "note": "Safe default hold retained because no product approval was provided for this policy on 2026-06-18.",
+        "policyGapDecisionBatchId": "2026-06-18-recurring-event-crawl-policy-policy-hold",
+        "requiredInputsReviewed": [],
+        "reviewer": "suvrat",
+        "unknownRequiredInputs": []
+      },
+      "severity": "high",
+      "status": "decision_required",
+      "unblockCriteria": [
+        "event crawl plan policy.schedulerEnabled is true",
+        "approved surfaces use crawl.policy apiPreferred",
+        "remote ops manifest names budget and rate-limit guardrails"
+      ]
+    },
+    {
+      "area": "event_import",
+      "blockedArtifacts": [
+        "tool/organizer_intake/generated/external_event_import_plan.json",
+        "tool/organizer_intake/generated/external_event_import_execution_plan.json"
+      ],
+      "currentState": "0 approved candidate(s), 0 proposed read-only event(s); writes disabled.",
+      "decisionOwner": "product_ops",
+      "decisionStatus": "accepted",
+      "defaultPosition": "disabled_until_policy_approved",
+      "evidence": {
+        "approvedCandidates": 0,
+        "authorityModel": "undecided",
+        "executionWouldCreate": 0,
+        "executionWouldPublishReadOnly": 0,
+        "importPlanWriteReady": 0,
+        "proposedCreates": 0,
+        "proposedReadOnlyEvents": 0,
+        "writeEnabled": false
+      },
+      "gapId": "external_event_import_write_policy",
+      "nextAction": "Encode import authority, host notification, duplicate handling, and rollback gates before writing read-only external events.",
+      "requiredInputs": [
+        "write authority model and service identity",
+        "final admin approval threshold before import",
+        "duplicate event conflict policy",
+        "host notification policy for imported events",
+        "rollback, correction, and takedown workflow"
+      ],
+      "reviewDecision": {
+        "decidedAt": "2026-06-18",
+        "decision": "accept",
+        "missingRequiredInputs": [],
+        "note": "User accepted a constrained external event import policy on 2026-06-18: imported external events may be read-only Catch event records with one or more outbound booking links to external platforms; Catch must not provide in-app booking, payments, reservations, or waitlist functionality for events not hosted on Catch. Every imported event must come from reviewed external candidates. If the same event appears on multiple platforms, keep one canonical read-only event and attach multiple outbound source/booking links instead of creating duplicate events. Corrections, takedowns, and bad imports remain admin-owned rollback actions.",
+        "policyGapDecisionBatchId": "2026-06-18-external-event-import-write-policy-policy-accept",
+        "requiredInputsReviewed": [
+          "duplicate event conflict policy",
+          "final admin approval threshold before import",
+          "host notification policy for imported events",
+          "rollback, correction, and takedown workflow",
+          "write authority model and service identity"
+        ],
+        "reviewer": "suvrat",
+        "unknownRequiredInputs": []
+      },
+      "severity": "high",
+      "status": "decision_required",
+      "unblockCriteria": [
+        "import plan policy.writeEnabled is true",
+        "execution preflight policy.writeEnabled is true",
+        "execution authorityModel is admin_import_service",
+        "all write-ready actions pass read-only external event projection validation"
+      ]
+    },
+    {
+      "area": "event_import",
+      "blockedArtifacts": [
+        "tool/organizer_intake/generated/external_event_import_plan.json"
+      ],
+      "currentState": "No current action is blocked by defaults, but imported-event defaults are not yet approved.",
+      "decisionOwner": "product_ops",
+      "decisionStatus": "held",
+      "defaultPosition": "disabled_until_policy_approved",
+      "evidence": {
+        "blockers": {},
+        "proposedCreates": 0,
+        "proposedReadOnlyEvents": 0
+      },
+      "gapId": "external_event_defaults_policy",
+      "nextAction": "Choose default capacity, admission, pricing, and activity-field policy before enabling imports.",
+      "requiredInputs": [
+        "default capacity by activity and source platform",
+        "admission mode for imported events",
+        "pricing display and payment handling for externally ticketed events",
+        "default cancellation and settlement behavior",
+        "activity-specific required fields such as distance, pace, or venue"
+      ],
+      "reviewDecision": {
+        "decidedAt": "2026-06-18",
+        "decision": "hold",
+        "missingRequiredInputs": [
+          "default capacity by activity and source platform",
+          "admission mode for imported events",
+          "pricing display and payment handling for externally ticketed events",
+          "default cancellation and settlement behavior",
+          "activity-specific required fields such as distance, pace, or venue"
+        ],
+        "note": "Safe default hold retained because no product approval was provided for this policy on 2026-06-18.",
+        "policyGapDecisionBatchId": "2026-06-18-external-event-defaults-policy-policy-hold",
+        "requiredInputsReviewed": [],
+        "reviewer": "suvrat",
+        "unknownRequiredInputs": []
+      },
+      "severity": "medium",
+      "status": "decision_required",
+      "unblockCriteria": [
+        "import actions no longer include requires_event_defaults_policy",
+        "read-only event projection preflight validates for every would-publish action"
+      ]
+    },
+    {
+      "area": "location_resolution",
+      "blockedArtifacts": [
+        "tool/organizer_intake/generated/external_event_location_resolution_queue.json"
+      ],
+      "currentState": "0 unresolved location task(s); provider lookup disabled.",
+      "decisionOwner": "product_ops",
+      "decisionStatus": "held",
+      "defaultPosition": "disabled_until_policy_approved",
+      "evidence": {
+        "missingExactCoordinates": 0,
+        "provider": "googlePlaces",
+        "providerLookupEnabled": false,
+        "tasks": 0
+      },
+      "gapId": "external_event_location_provider_policy",
+      "nextAction": "Keep manual resolution as the default until provider, confidence, retention, and spend caps are approved.",
+      "requiredInputs": [
+        "provider selection and fallback order",
+        "per-run lookup cap and monthly spend cap",
+        "minimum confidence threshold for auto-resolution",
+        "admin review threshold for provider-suggested coordinates",
+        "raw provider response retention policy"
+      ],
+      "reviewDecision": {
+        "decidedAt": "2026-06-18",
+        "decision": "hold",
+        "missingRequiredInputs": [
+          "provider selection and fallback order",
+          "per-run lookup cap and monthly spend cap",
+          "minimum confidence threshold for auto-resolution",
+          "admin review threshold for provider-suggested coordinates",
+          "raw provider response retention policy"
+        ],
+        "note": "Safe default hold retained because no product approval was provided for this policy on 2026-06-18.",
+        "policyGapDecisionBatchId": "2026-06-18-external-event-location-provider-policy-policy-hold",
+        "requiredInputsReviewed": [],
+        "reviewer": "suvrat",
+        "unknownRequiredInputs": []
+      },
+      "severity": "medium",
+      "status": "decision_required",
+      "unblockCriteria": [
+        "location resolution policy.providerLookupEnabled is true",
+        "cost caps and provider names are encoded in repo config",
+        "provider results still write reviewed location resolution batches before import planning"
+      ]
+    },
+    {
+      "area": "naming",
+      "blockedArtifacts": [
+        "admin/src/App.tsx",
+        "website/src/App.tsx",
+        "lib/clubs/domain/club.dart"
+      ],
+      "currentState": "Organizer is canonical in intake; Club remains the app/backend compatibility projection; Host remains the human/operator role.",
+      "decisionOwner": "product",
+      "decisionStatus": "accepted",
+      "defaultPosition": "compatibility_projection_until_policy_approved",
+      "evidence": {
+        "compatibilityProjection": "club",
+        "intakeCanonicalEntity": "organizer",
+        "operatorRole": "host"
+      },
+      "gapId": "organizer_host_naming_migration_policy",
+      "nextAction": "Confirm Organizer as the entity and Host as the operator role before broad UI/schema renames.",
+      "requiredInputs": [
+        "canonical public entity label",
+        "operator/account role label",
+        "legacy Club migration scope",
+        "URL and SEO naming transition policy",
+        "admin/app copy migration order"
+      ],
+      "reviewDecision": {
+        "decidedAt": "2026-06-18",
+        "decision": "accept",
+        "missingRequiredInputs": [],
+        "note": "User accepted the naming migration policy on 2026-06-18: public pages should standardize on Host as the user-facing entity, keep OrganizerEntity internally during the migration, and preserve Club compatibility until downstream app/backend surfaces are migrated deliberately.",
+        "policyGapDecisionBatchId": "2026-06-18-organizer-host-naming-migration-policy-policy-accept",
+        "requiredInputsReviewed": [
+          "URL and SEO naming transition policy",
+          "admin/app copy migration order",
+          "canonical public entity label",
+          "legacy Club migration scope",
+          "operator/account role label"
+        ],
+        "reviewer": "suvrat",
+        "unknownRequiredInputs": []
+      },
+      "severity": "medium",
+      "status": "decision_required",
+      "unblockCriteria": [
+        "canonical entity and role terms are approved",
+        "schema/backfill plan exists for legacy Club compatibility",
+        "public website, admin, Flutter app, and backend copy migration is sequenced"
+      ]
+    }
+  ],
+  "generatedFrom": {
+    "eventCrawlPlan": "tool/organizer_intake/generated/event_crawl_plan.json",
+    "externalEventCandidateQueue": "tool/organizer_intake/generated/external_event_candidate_queue.json",
+    "externalEventImportExecutionPlan": "tool/organizer_intake/generated/external_event_import_execution_plan.json",
+    "externalEventImportPlan": "tool/organizer_intake/generated/external_event_import_plan.json",
+    "externalEventLocationResolutionQueue": "tool/organizer_intake/generated/external_event_location_resolution_queue.json",
+    "policyGapDecisionBatches": "tool/organizer_intake/policy_gap_decisions/*.json"
+  },
+  "guardrails": [
+    "Policy gaps are declarative; this artifact never enables crawls, provider lookups, or event writes.",
+    "A gap is resolved only when the required input is encoded in repo-backed policy/config and passes checks.",
+    "Admin review remains necessary even after a product policy is approved."
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "blockedByPolicy": 4,
+    "decisionRequired": 5,
+    "gaps": 5,
+    "gapsByArea": {
+      "crawl": 1,
+      "event_import": 2,
+      "location_resolution": 1,
+      "naming": 1
+    },
+    "gapsByDecisionStatus": {
+      "accepted": 2,
+      "held": 3
+    },
+    "gapsBySeverity": {
+      "high": 2,
+      "medium": 3
+    },
+    "gapsByStatus": {
+      "decision_required": 5
+    },
+    "ready": 0,
+    "reviewAccepted": 2,
+    "reviewDecisions": 5,
+    "reviewHeld": 3,
+    "reviewInvalid": 0,
+    "reviewNotReviewed": 0,
+    "reviewRejected": 0
+  }
+}

@@ -1,0 +1,728 @@
+{
+  "answerSlots": [
+    {
+      "answerId": "admin-publication:afterfly",
+      "blockingWorkstreams": [
+        "publication_review"
+      ],
+      "decisionOptions": [
+        "approve_public",
+        "hold",
+        "suppress"
+      ],
+      "dryRunCommands": [
+        "node tool/organizer_intake/review_decision.mjs draft afterfly --decision hold --app-visibility hidden --reviewer REVIEWER --date YYYY-MM-DD --note \"Hold pending admin review.\" --dry-run"
+      ],
+      "owner": "admin",
+      "priority": "p0",
+      "prompt": "Should AFTER FLY become a public unclaimed Host page, be held for later, or be suppressed?",
+      "requestType": "admin_publication_decision",
+      "requiredAcknowledgements": [
+        "crawlDisabledReviewed",
+        "identityReviewed",
+        "manualReportsReviewed",
+        "marketScopeReviewed",
+        "mediaRightsReviewed",
+        "ownerSafeCopyReviewed",
+        "surfaceInventoryReviewed"
+      ],
+      "requiredInputs": [],
+      "safeDefaultAction": "hold",
+      "safeDefaultDecision": "hold",
+      "safeDefaultPayload": {
+        "appVisibility": "hidden",
+        "checklist": {
+          "crawlDisabledReviewed": true,
+          "identityReviewed": true,
+          "marketScopeReviewed": true,
+          "mediaRightsReviewed": false,
+          "ownerSafeCopyReviewed": true,
+          "surfaceInventoryReviewed": true
+        },
+        "decision": "hold",
+        "entityId": "afterfly",
+        "note": "Manual QA held AFTER FLY for additional evidence."
+      },
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/publication_review_packets.json",
+        "tool/organizer_intake/generated/organizer_operator_action_queue.json"
+      ],
+      "subjectId": "afterfly",
+      "subjectName": "AFTER FLY"
+    },
+    {
+      "answerId": "admin-publication:bhag",
+      "blockingWorkstreams": [
+        "publication_review"
+      ],
+      "decisionOptions": [
+        "approve_public",
+        "hold",
+        "suppress"
+      ],
+      "dryRunCommands": [
+        "node tool/organizer_intake/review_decision.mjs draft bhag --decision hold --app-visibility hidden --reviewer REVIEWER --date YYYY-MM-DD --note \"Hold pending admin review.\" --dry-run"
+      ],
+      "owner": "admin",
+      "priority": "p0",
+      "prompt": "Should Bhag Club become a public unclaimed Host page, be held for later, or be suppressed?",
+      "requestType": "admin_publication_decision",
+      "requiredAcknowledgements": [
+        "crawlDisabledReviewed",
+        "identityReviewed",
+        "marketScopeReviewed",
+        "mediaRightsReviewed",
+        "ownerSafeCopyReviewed",
+        "surfaceInventoryReviewed"
+      ],
+      "requiredInputs": [],
+      "safeDefaultAction": "hold",
+      "safeDefaultDecision": "hold",
+      "safeDefaultPayload": {
+        "appVisibility": "hidden",
+        "checklist": {
+          "crawlDisabledReviewed": true,
+          "identityReviewed": true,
+          "marketScopeReviewed": true,
+          "mediaRightsReviewed": false,
+          "ownerSafeCopyReviewed": true,
+          "surfaceInventoryReviewed": true
+        },
+        "decision": "hold",
+        "entityId": "bhag",
+        "note": "Manual QA held Bhag Club for additional evidence."
+      },
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/publication_review_packets.json",
+        "tool/organizer_intake/generated/organizer_operator_action_queue.json"
+      ],
+      "subjectId": "bhag",
+      "subjectName": "Bhag Club"
+    },
+    {
+      "answerId": "policy:external_event_import_write_policy",
+      "blockingWorkstreams": [
+        "policy_decisions"
+      ],
+      "decisionOptions": [
+        "accept",
+        "hold",
+        "reject"
+      ],
+      "dryRunCommands": [
+        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_import_write_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+      ],
+      "owner": "product_ops",
+      "priority": "p0",
+      "prompt": "When may reviewed external event candidates become live app events?",
+      "requestType": "policy_decision",
+      "requiredAcknowledgements": [
+        "behaviorStillDisabledAcknowledged",
+        "costAndSafetyReviewed",
+        "implementationOwnerReviewed",
+        "requiredInputsReviewed"
+      ],
+      "requiredInputs": [
+        {
+          "input": "write authority model and service identity",
+          "prompt": "write authority model and service identity for event import.",
+          "questionId": "external_event_import_write_policy:write-authority-model-and-service-identity",
+          "recommendedSafeDefault": "keep_event_import_writes_disabled"
+        },
+        {
+          "input": "final admin approval threshold before import",
+          "prompt": "final admin approval threshold before import for event import.",
+          "questionId": "external_event_import_write_policy:final-admin-approval-threshold-before-import",
+          "recommendedSafeDefault": "keep_event_import_writes_disabled"
+        },
+        {
+          "input": "duplicate event conflict policy",
+          "prompt": "duplicate event conflict policy for event import.",
+          "questionId": "external_event_import_write_policy:duplicate-event-conflict-policy",
+          "recommendedSafeDefault": "keep_event_import_writes_disabled"
+        },
+        {
+          "input": "host notification policy for imported events",
+          "prompt": "host notification policy for imported events for event import.",
+          "questionId": "external_event_import_write_policy:host-notification-policy-for-imported-events",
+          "recommendedSafeDefault": "keep_event_import_writes_disabled"
+        },
+        {
+          "input": "rollback, correction, and takedown workflow",
+          "prompt": "rollback, correction, and takedown workflow for event import.",
+          "questionId": "external_event_import_write_policy:rollback-correction-and-takedown-workflow",
+          "recommendedSafeDefault": "keep_event_import_writes_disabled"
+        }
+      ],
+      "safeDefaultAction": "keep_event_import_writes_disabled",
+      "safeDefaultDecision": "hold",
+      "safeDefaultPayload": {
+        "checklist": {
+          "behaviorStillDisabledAcknowledged": true,
+          "costAndSafetyReviewed": false,
+          "implementationOwnerReviewed": true,
+          "requiredInputsReviewed": false
+        },
+        "decision": "hold",
+        "gapId": "external_event_import_write_policy",
+        "note": "Product policy held for external_event_import_write_policy; required inputs remain unresolved.",
+        "requiredInputsReviewed": []
+      },
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/organizer_policy_decision_packets.json",
+        "tool/organizer_intake/generated/organizer_operator_action_queue.json"
+      ],
+      "subjectId": "external_event_import_write_policy",
+      "subjectName": "event_import"
+    },
+    {
+      "answerId": "policy:recurring_event_crawl_policy",
+      "blockingWorkstreams": [
+        "policy_decisions"
+      ],
+      "decisionOptions": [
+        "accept",
+        "hold",
+        "reject"
+      ],
+      "dryRunCommands": [
+        "node tool/organizer_intake/policy_gap_decision.mjs draft recurring_event_crawl_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+      ],
+      "owner": "product_ops",
+      "priority": "p0",
+      "prompt": "Should recurring provider crawls be enabled for any organizer surface?",
+      "requestType": "policy_decision",
+      "requiredAcknowledgements": [
+        "behaviorStillDisabledAcknowledged",
+        "costAndSafetyReviewed",
+        "implementationOwnerReviewed",
+        "requiredInputsReviewed"
+      ],
+      "requiredInputs": [
+        {
+          "input": "platform allowlist and fallback order",
+          "prompt": "platform allowlist and fallback order for crawl.",
+          "questionId": "recurring_event_crawl_policy:platform-allowlist-and-fallback-order",
+          "recommendedSafeDefault": "keep_scheduler_disabled"
+        },
+        {
+          "input": "crawl frequency by platform and organizer tier",
+          "prompt": "crawl frequency by platform and organizer tier for crawl.",
+          "questionId": "recurring_event_crawl_policy:crawl-frequency-by-platform-and-organizer-tier",
+          "recommendedSafeDefault": "keep_scheduler_disabled"
+        },
+        {
+          "input": "monthly spend cap and per-run rate limits",
+          "prompt": "monthly spend cap and per-run rate limits for crawl.",
+          "questionId": "recurring_event_crawl_policy:monthly-spend-cap-and-per-run-rate-limits",
+          "recommendedSafeDefault": "keep_scheduler_disabled"
+        },
+        {
+          "input": "API-first vs scrape fallback policy",
+          "prompt": "API-first vs scrape fallback policy for crawl.",
+          "questionId": "recurring_event_crawl_policy:api-first-vs-scrape-fallback-policy",
+          "recommendedSafeDefault": "keep_scheduler_disabled"
+        },
+        {
+          "input": "owner-safety and takedown policy",
+          "prompt": "owner-safety and takedown policy for crawl.",
+          "questionId": "recurring_event_crawl_policy:owner-safety-and-takedown-policy",
+          "recommendedSafeDefault": "keep_scheduler_disabled"
+        }
+      ],
+      "safeDefaultAction": "keep_scheduler_disabled",
+      "safeDefaultDecision": "hold",
+      "safeDefaultPayload": {
+        "checklist": {
+          "behaviorStillDisabledAcknowledged": true,
+          "costAndSafetyReviewed": false,
+          "implementationOwnerReviewed": true,
+          "requiredInputsReviewed": false
+        },
+        "decision": "hold",
+        "gapId": "recurring_event_crawl_policy",
+        "note": "Product policy held for recurring_event_crawl_policy; required inputs remain unresolved.",
+        "requiredInputsReviewed": []
+      },
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/organizer_policy_decision_packets.json",
+        "tool/organizer_intake/generated/organizer_operator_action_queue.json"
+      ],
+      "subjectId": "recurring_event_crawl_policy",
+      "subjectName": "crawl"
+    },
+    {
+      "answerId": "policy:external_event_defaults_policy",
+      "blockingWorkstreams": [
+        "policy_decisions"
+      ],
+      "decisionOptions": [
+        "accept",
+        "hold",
+        "reject"
+      ],
+      "dryRunCommands": [
+        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_defaults_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+      ],
+      "owner": "product_ops",
+      "priority": "p1",
+      "prompt": "What default event fields should imported external events receive?",
+      "requestType": "policy_decision",
+      "requiredAcknowledgements": [
+        "behaviorStillDisabledAcknowledged",
+        "costAndSafetyReviewed",
+        "implementationOwnerReviewed",
+        "requiredInputsReviewed"
+      ],
+      "requiredInputs": [
+        {
+          "input": "default capacity by activity and source platform",
+          "prompt": "default capacity by activity and source platform for event import.",
+          "questionId": "external_event_defaults_policy:default-capacity-by-activity-and-source-platform",
+          "recommendedSafeDefault": "keep_imports_blocked_without_event_defaults"
+        },
+        {
+          "input": "admission mode for imported events",
+          "prompt": "admission mode for imported events for event import.",
+          "questionId": "external_event_defaults_policy:admission-mode-for-imported-events",
+          "recommendedSafeDefault": "keep_imports_blocked_without_event_defaults"
+        },
+        {
+          "input": "pricing display and payment handling for externally ticketed events",
+          "prompt": "pricing display and payment handling for externally ticketed events for event import.",
+          "questionId": "external_event_defaults_policy:pricing-display-and-payment-handling-for-externally-ticketed-events",
+          "recommendedSafeDefault": "keep_imports_blocked_without_event_defaults"
+        },
+        {
+          "input": "default cancellation and settlement behavior",
+          "prompt": "default cancellation and settlement behavior for event import.",
+          "questionId": "external_event_defaults_policy:default-cancellation-and-settlement-behavior",
+          "recommendedSafeDefault": "keep_imports_blocked_without_event_defaults"
+        },
+        {
+          "input": "activity-specific required fields such as distance, pace, or venue",
+          "prompt": "activity-specific required fields such as distance, pace, or venue for event import.",
+          "questionId": "external_event_defaults_policy:activity-specific-required-fields-such-as-distance-pace-or-venue",
+          "recommendedSafeDefault": "keep_imports_blocked_without_event_defaults"
+        }
+      ],
+      "safeDefaultAction": "keep_imports_blocked_without_event_defaults",
+      "safeDefaultDecision": "hold",
+      "safeDefaultPayload": {
+        "checklist": {
+          "behaviorStillDisabledAcknowledged": true,
+          "costAndSafetyReviewed": false,
+          "implementationOwnerReviewed": true,
+          "requiredInputsReviewed": false
+        },
+        "decision": "hold",
+        "gapId": "external_event_defaults_policy",
+        "note": "Product policy held for external_event_defaults_policy; required inputs remain unresolved.",
+        "requiredInputsReviewed": []
+      },
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/organizer_policy_decision_packets.json",
+        "tool/organizer_intake/generated/organizer_operator_action_queue.json"
+      ],
+      "subjectId": "external_event_defaults_policy",
+      "subjectName": "event_import"
+    },
+    {
+      "answerId": "policy:external_event_location_provider_policy",
+      "blockingWorkstreams": [
+        "policy_decisions"
+      ],
+      "decisionOptions": [
+        "accept",
+        "hold",
+        "reject"
+      ],
+      "dryRunCommands": [
+        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_location_provider_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+      ],
+      "owner": "product_ops",
+      "priority": "p1",
+      "prompt": "Should provider-backed location lookup be allowed for external events?",
+      "requestType": "policy_decision",
+      "requiredAcknowledgements": [
+        "behaviorStillDisabledAcknowledged",
+        "costAndSafetyReviewed",
+        "implementationOwnerReviewed",
+        "requiredInputsReviewed"
+      ],
+      "requiredInputs": [
+        {
+          "input": "provider selection and fallback order",
+          "prompt": "provider selection and fallback order for location resolution.",
+          "questionId": "external_event_location_provider_policy:provider-selection-and-fallback-order",
+          "recommendedSafeDefault": "keep_manual_location_resolution"
+        },
+        {
+          "input": "per-run lookup cap and monthly spend cap",
+          "prompt": "per-run lookup cap and monthly spend cap for location resolution.",
+          "questionId": "external_event_location_provider_policy:per-run-lookup-cap-and-monthly-spend-cap",
+          "recommendedSafeDefault": "keep_manual_location_resolution"
+        },
+        {
+          "input": "minimum confidence threshold for auto-resolution",
+          "prompt": "minimum confidence threshold for auto-resolution for location resolution.",
+          "questionId": "external_event_location_provider_policy:minimum-confidence-threshold-for-auto-resolution",
+          "recommendedSafeDefault": "keep_manual_location_resolution"
+        },
+        {
+          "input": "admin review threshold for provider-suggested coordinates",
+          "prompt": "admin review threshold for provider-suggested coordinates for location resolution.",
+          "questionId": "external_event_location_provider_policy:admin-review-threshold-for-provider-suggested-coordinates",
+          "recommendedSafeDefault": "keep_manual_location_resolution"
+        },
+        {
+          "input": "raw provider response retention policy",
+          "prompt": "raw provider response retention policy for location resolution.",
+          "questionId": "external_event_location_provider_policy:raw-provider-response-retention-policy",
+          "recommendedSafeDefault": "keep_manual_location_resolution"
+        }
+      ],
+      "safeDefaultAction": "keep_manual_location_resolution",
+      "safeDefaultDecision": "hold",
+      "safeDefaultPayload": {
+        "checklist": {
+          "behaviorStillDisabledAcknowledged": true,
+          "costAndSafetyReviewed": false,
+          "implementationOwnerReviewed": true,
+          "requiredInputsReviewed": false
+        },
+        "decision": "hold",
+        "gapId": "external_event_location_provider_policy",
+        "note": "Product policy held for external_event_location_provider_policy; required inputs remain unresolved.",
+        "requiredInputsReviewed": []
+      },
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/organizer_policy_decision_packets.json",
+        "tool/organizer_intake/generated/organizer_operator_action_queue.json"
+      ],
+      "subjectId": "external_event_location_provider_policy",
+      "subjectName": "location_resolution"
+    },
+    {
+      "answerId": "policy:organizer_host_naming_migration_policy",
+      "blockingWorkstreams": [
+        "policy_decisions"
+      ],
+      "decisionOptions": [
+        "accept",
+        "hold",
+        "reject"
+      ],
+      "dryRunCommands": [
+        "node tool/organizer_intake/policy_gap_decision.mjs draft organizer_host_naming_migration_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+      ],
+      "owner": "product",
+      "priority": "p1",
+      "prompt": "What public entity and operator role labels should Catch standardize on?",
+      "requestType": "policy_decision",
+      "requiredAcknowledgements": [
+        "behaviorStillDisabledAcknowledged",
+        "costAndSafetyReviewed",
+        "implementationOwnerReviewed",
+        "requiredInputsReviewed"
+      ],
+      "requiredInputs": [
+        {
+          "input": "canonical public entity label",
+          "prompt": "canonical public entity label for naming.",
+          "questionId": "organizer_host_naming_migration_policy:canonical-public-entity-label",
+          "recommendedSafeDefault": "keep_organizer_entity_with_club_compatibility"
+        },
+        {
+          "input": "operator/account role label",
+          "prompt": "operator/account role label for naming.",
+          "questionId": "organizer_host_naming_migration_policy:operator-account-role-label",
+          "recommendedSafeDefault": "keep_organizer_entity_with_club_compatibility"
+        },
+        {
+          "input": "legacy Club migration scope",
+          "prompt": "legacy Club migration scope for naming.",
+          "questionId": "organizer_host_naming_migration_policy:legacy-club-migration-scope",
+          "recommendedSafeDefault": "keep_organizer_entity_with_club_compatibility"
+        },
+        {
+          "input": "URL and SEO naming transition policy",
+          "prompt": "URL and SEO naming transition policy for naming.",
+          "questionId": "organizer_host_naming_migration_policy:url-and-seo-naming-transition-policy",
+          "recommendedSafeDefault": "keep_organizer_entity_with_club_compatibility"
+        },
+        {
+          "input": "admin/app copy migration order",
+          "prompt": "admin/app copy migration order for naming.",
+          "questionId": "organizer_host_naming_migration_policy:admin-app-copy-migration-order",
+          "recommendedSafeDefault": "keep_organizer_entity_with_club_compatibility"
+        }
+      ],
+      "safeDefaultAction": "keep_organizer_entity_with_club_compatibility",
+      "safeDefaultDecision": "hold",
+      "safeDefaultPayload": {
+        "checklist": {
+          "behaviorStillDisabledAcknowledged": true,
+          "costAndSafetyReviewed": false,
+          "implementationOwnerReviewed": true,
+          "requiredInputsReviewed": false
+        },
+        "decision": "hold",
+        "gapId": "organizer_host_naming_migration_policy",
+        "note": "Product policy held for organizer_host_naming_migration_policy; required inputs remain unresolved.",
+        "requiredInputsReviewed": []
+      },
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/organizer_policy_decision_packets.json",
+        "tool/organizer_intake/generated/organizer_operator_action_queue.json"
+      ],
+      "subjectId": "organizer_host_naming_migration_policy",
+      "subjectName": "naming"
+    }
+  ],
+  "answerTemplate": {
+    "answers": [
+      {
+        "acknowledgements": {
+          "crawlDisabledReviewed": true,
+          "identityReviewed": true,
+          "manualReportsReviewed": true,
+          "marketScopeReviewed": true,
+          "mediaRightsReviewed": true,
+          "ownerSafeCopyReviewed": true,
+          "surfaceInventoryReviewed": true
+        },
+        "answerId": "admin-publication:afterfly",
+        "decision": "approve_public",
+        "note": "User approved AFTER FLY for a public unclaimed Host page on 2026-06-18; app visibility remains hidden until claim or explicit app approval.",
+        "requiredInputsReviewed": []
+      },
+      {
+        "acknowledgements": {
+          "crawlDisabledReviewed": true,
+          "identityReviewed": true,
+          "marketScopeReviewed": true,
+          "mediaRightsReviewed": true,
+          "ownerSafeCopyReviewed": true,
+          "surfaceInventoryReviewed": true
+        },
+        "answerId": "admin-publication:bhag",
+        "decision": "approve_public",
+        "note": "User approved Bhag Club for a public unclaimed Host page on 2026-06-18; app visibility remains hidden until claim or explicit app approval.",
+        "requiredInputsReviewed": []
+      },
+      {
+        "acknowledgements": {
+          "behaviorStillDisabledAcknowledged": true,
+          "costAndSafetyReviewed": false,
+          "implementationOwnerReviewed": true,
+          "requiredInputsReviewed": false
+        },
+        "answerId": "policy:external_event_import_write_policy",
+        "decision": "hold",
+        "note": "Safe default hold retained because no product approval was provided for this policy on 2026-06-18.",
+        "requiredInputsReviewed": []
+      },
+      {
+        "acknowledgements": {
+          "behaviorStillDisabledAcknowledged": true,
+          "costAndSafetyReviewed": false,
+          "implementationOwnerReviewed": true,
+          "requiredInputsReviewed": false
+        },
+        "answerId": "policy:recurring_event_crawl_policy",
+        "decision": "hold",
+        "note": "Safe default hold retained because no product approval was provided for this policy on 2026-06-18.",
+        "requiredInputsReviewed": []
+      },
+      {
+        "acknowledgements": {
+          "behaviorStillDisabledAcknowledged": true,
+          "costAndSafetyReviewed": false,
+          "implementationOwnerReviewed": true,
+          "requiredInputsReviewed": false
+        },
+        "answerId": "policy:external_event_defaults_policy",
+        "decision": "hold",
+        "note": "Safe default hold retained because no product approval was provided for this policy on 2026-06-18.",
+        "requiredInputsReviewed": []
+      },
+      {
+        "acknowledgements": {
+          "behaviorStillDisabledAcknowledged": true,
+          "costAndSafetyReviewed": false,
+          "implementationOwnerReviewed": true,
+          "requiredInputsReviewed": false
+        },
+        "answerId": "policy:external_event_location_provider_policy",
+        "decision": "hold",
+        "note": "Safe default hold retained because no product approval was provided for this policy on 2026-06-18.",
+        "requiredInputsReviewed": []
+      },
+      {
+        "acknowledgements": {
+          "behaviorStillDisabledAcknowledged": true,
+          "costAndSafetyReviewed": true,
+          "implementationOwnerReviewed": true,
+          "requiredInputsReviewed": true
+        },
+        "answerId": "policy:organizer_host_naming_migration_policy",
+        "decision": "accept",
+        "note": "User accepted the naming migration policy on 2026-06-18: public pages should standardize on Host as the user-facing entity, keep OrganizerEntity internally during the migration, and preserve Club compatibility until downstream app/backend surfaces are migrated deliberately.",
+        "requiredInputsReviewed": [
+          "canonical public entity label",
+          "operator/account role label",
+          "legacy Club migration scope",
+          "URL and SEO naming transition policy",
+          "admin/app copy migration order"
+        ]
+      }
+    ],
+    "decidedAt": "2026-06-18",
+    "reviewer": "suvrat"
+  },
+  "followUps": [
+    {
+      "blockers": [
+        "global_recurring_crawl_disabled",
+        "organizer_not_public_approved",
+        "surface_crawl_policy_not_api_preferred",
+        "surface_crawl_status_not_approved",
+        "surface_not_active",
+        "surface_url_missing",
+        "crawl_run_request_cap_missing",
+        "network_disabled",
+        "platform_not_allowlisted",
+        "scheduler_disabled"
+      ],
+      "commands": [
+        "node tool/organizer_intake/plan_event_crawl_runs.mjs --check"
+      ],
+      "followUpId": "workflow:crawl_execution",
+      "label": "Crawl Execution",
+      "nextActions": [
+        "Record crawl policy and budget decision before enabling any provider fetch."
+      ],
+      "priority": "p1",
+      "status": "disabled_by_policy",
+      "workstreamId": "crawl_execution"
+    },
+    {
+      "blockers": [],
+      "commands": [
+        "node tool/organizer_intake/organizer_intake.mjs --check"
+      ],
+      "followUpId": "workflow:evidence_quality",
+      "label": "Evidence Quality",
+      "nextActions": [
+        "Admin publication approvals must acknowledge manual reports without artifacts."
+      ],
+      "priority": "p1",
+      "status": "review_needed",
+      "workstreamId": "evidence_quality"
+    },
+    {
+      "blockers": [
+        "waiting"
+      ],
+      "commands": [
+        "node tool/organizer_intake/run_promotion_pipeline.mjs"
+      ],
+      "followUpId": "workflow:promotion_pipeline",
+      "label": "Promotion Pipeline",
+      "nextActions": [
+        "Export admin review decisions, regenerate intake artifacts, regenerate website listings, then run the promotion bridge check."
+      ],
+      "priority": "p1",
+      "status": "waiting_on_admin_review",
+      "workstreamId": "promotion_pipeline"
+    },
+    {
+      "blockers": [
+        "object_storage_bucket_missing",
+        "remote_object_storage_disabled",
+        "retention_policy_missing"
+      ],
+      "commands": [
+        "node tool/organizer_intake/plan_raw_artifact_storage.mjs --check"
+      ],
+      "followUpId": "workflow:raw_artifact_storage",
+      "label": "Raw Artifact Storage",
+      "nextActions": [
+        "Approve object storage bucket, retention, deletion, and crawl-cost policy before uploading raw payloads."
+      ],
+      "priority": "p1",
+      "status": "blocked_by_policy",
+      "workstreamId": "raw_artifact_storage"
+    },
+    {
+      "blockers": [
+        "waiting"
+      ],
+      "commands": [
+        "node tool/organizer_intake/sync_claim_targets_to_firestore.mjs --fixture tool/organizer_intake/fixtures/existing_club_docs.empty.json",
+        "node tool/organizer_intake/sync_claim_targets_to_firestore.mjs --env dev"
+      ],
+      "followUpId": "workflow:claim_target_sync",
+      "label": "Claim Target Sync",
+      "nextActions": [
+        "Review the generated claim-target sync preview, then run a Firestore dry run before any write."
+      ],
+      "priority": "p2",
+      "status": "waiting_on_public_projection",
+      "workstreamId": "claim_target_sync"
+    }
+  ],
+  "generatedFrom": {
+    "pendingInputRequest": "tool/organizer_intake/generated/organizer_pending_input_request.json",
+    "pendingWorkCoverage": "tool/organizer_intake/generated/organizer_pending_work_coverage.json"
+  },
+  "guardrails": [
+    "The answer packet is a review template only; it never records decisions, writes Firestore, publishes pages, enables crawls, uploads artifacts, or imports events.",
+    "Each answer must choose one of the listed decision options and include a reviewer note before a decision batch or admin callable should be used.",
+    "Safe defaults keep publication held and disabled policy surfaces disabled until an admin or product owner records a different reviewed decision."
+  ],
+  "reviewDraft": {
+    "createdAt": "2026-06-18",
+    "instructions": [
+      "Fill answerTemplate.answers[*].decision with one allowed option.",
+      "Fill answerTemplate.answers[*].note with reviewer rationale.",
+      "Set required acknowledgements to true only after review.",
+      "For accepted policy decisions, copy every required input string into requiredInputsReviewed.",
+      "Run pending_decision_answer_plan.mjs --packet <this file> --require-complete before applying."
+    ],
+    "reviewer": "suvrat",
+    "slug": "approve-afterfly-bhag-accept-naming",
+    "sourceFingerprint": {
+      "algorithm": "sha256",
+      "value": "c14026ec65d9ba8ccdcf24044389b6bcc1ebdb42574fa134cb1a2846e46f33b4"
+    },
+    "sourcePacket": "tool/organizer_intake/generated/organizer_pending_decision_answer_packet.json"
+  },
+  "schemaVersion": 1,
+  "summary": {
+    "adminPublicationDecisions": 2,
+    "answerSlots": 7,
+    "highestPriority": "p0",
+    "policyDecisions": 5,
+    "requiredAcknowledgements": 33,
+    "requiredPolicyQuestions": 25,
+    "safeDefaultDecisions": 7,
+    "slotsByOwner": {
+      "admin": 2,
+      "product": 1,
+      "product_ops": 4
+    },
+    "slotsByPriority": {
+      "p0": 4,
+      "p1": 3
+    },
+    "slotsByType": {
+      "admin_publication_decision": 2,
+      "policy_decision": 5
+    },
+    "status": "awaiting_user_input",
+    "untriagedWorkstreams": 0,
+    "workflowFollowUps": 5
+  }
+}

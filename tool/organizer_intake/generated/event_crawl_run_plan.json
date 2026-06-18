@@ -1,0 +1,118 @@
+{
+  "generatedFrom": {
+    "eventCrawlPlan": "tool/organizer_intake/generated/event_crawl_plan.json",
+    "policy": "organizer-event-crawl-run-v0-disabled"
+  },
+  "guardrails": [
+    "This artifact does not fetch organizer pages or event listings.",
+    "This artifact does not write Firestore, create events, notify hosts, or schedule jobs.",
+    "A future runner must consume this plan through an approved crawl policy with rate and budget caps.",
+    "Crawl results must become reviewed event source batches before import planning."
+  ],
+  "policy": {
+    "firestoreWritesEnabled": false,
+    "maxRequestsPerRun": 0,
+    "networkEnabled": false,
+    "platformAllowlist": [],
+    "reason": "Crawl run planning is generated for review only; scheduler, network access, platform allowlist, and request caps remain disabled.",
+    "schedulerEnabled": false,
+    "status": "disabled"
+  },
+  "runIntents": [
+    {
+      "action": "blocked",
+      "blockedBy": [
+        "crawl_run_request_cap_missing",
+        "global_recurring_crawl_disabled",
+        "network_disabled",
+        "organizer_not_public_approved",
+        "platform_not_allowlisted",
+        "scheduler_disabled",
+        "surface_crawl_policy_not_api_preferred",
+        "surface_crawl_status_not_approved"
+      ],
+      "crawlRunId": "crawl-afterfly-luma-afterfly-luma-takeoff-run-rave",
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "expectedOutput": "tool/organizer_intake/event_source_batches/<reviewed-provider-payload>.json",
+      "nextGate": "crawl_policy_review",
+      "normalizedKey": "luma:event:pxgmph3b",
+      "platform": "luma",
+      "surfaceId": "afterfly-luma-takeoff-run-rave",
+      "surfaceKind": "eventListing",
+      "url": "https://luma.com/pxgmph3b"
+    },
+    {
+      "action": "blocked",
+      "blockedBy": [
+        "crawl_run_request_cap_missing",
+        "global_recurring_crawl_disabled",
+        "network_disabled",
+        "organizer_not_public_approved",
+        "platform_not_allowlisted",
+        "scheduler_disabled",
+        "surface_crawl_policy_not_api_preferred",
+        "surface_crawl_status_not_approved",
+        "surface_not_active",
+        "surface_url_missing"
+      ],
+      "crawlRunId": "crawl-afterfly-sortmyscene-afterfly-sortmyscene-reported",
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "expectedOutput": "tool/organizer_intake/event_source_batches/<reviewed-provider-payload>.json",
+      "nextGate": "crawl_policy_review",
+      "normalizedKey": null,
+      "platform": "sortMyScene",
+      "surfaceId": "afterfly-sortmyscene-reported",
+      "surfaceKind": "organizerProfile",
+      "url": null
+    },
+    {
+      "action": "blocked",
+      "blockedBy": [
+        "crawl_run_request_cap_missing",
+        "global_recurring_crawl_disabled",
+        "network_disabled",
+        "organizer_not_public_approved",
+        "platform_not_allowlisted",
+        "scheduler_disabled",
+        "surface_crawl_policy_not_api_preferred",
+        "surface_crawl_status_not_approved"
+      ],
+      "crawlRunId": "crawl-bhag-luma-bhag-luma-runs",
+      "displayName": "Bhag Club",
+      "entityId": "bhag",
+      "expectedOutput": "tool/organizer_intake/event_source_batches/<reviewed-provider-payload>.json",
+      "nextGate": "crawl_policy_review",
+      "normalizedKey": "luma:event:ixj7uqiu",
+      "platform": "luma",
+      "surfaceId": "bhag-luma-runs",
+      "surfaceKind": "eventListing",
+      "url": "https://luma.com/ixj7uqiu"
+    }
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "blocked": 3,
+    "blockers": {
+      "crawl_run_request_cap_missing": 3,
+      "global_recurring_crawl_disabled": 3,
+      "network_disabled": 3,
+      "organizer_not_public_approved": 3,
+      "platform_not_allowlisted": 3,
+      "scheduler_disabled": 3,
+      "surface_crawl_policy_not_api_preferred": 3,
+      "surface_crawl_status_not_approved": 3,
+      "surface_not_active": 1,
+      "surface_url_missing": 1
+    },
+    "candidateSurfaces": 3,
+    "firestoreWrites": 0,
+    "networkRequests": 0,
+    "platforms": {
+      "luma": 2,
+      "sortMyScene": 1
+    },
+    "wouldFetch": 0
+  }
+}

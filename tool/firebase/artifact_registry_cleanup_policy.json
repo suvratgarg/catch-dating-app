@@ -1,0 +1,17 @@
+[
+  {
+    "name": "keep-recent-function-images",
+    "action": {"type": "Keep"},
+    "mostRecentVersions": {
+      "keepCount": 10
+    }
+  },
+  {
+    "name": "delete-untagged-function-images-older-than-14-days",
+    "action": {"type": "Delete"},
+    "condition": {
+      "tagState": "untagged",
+      "olderThan": "14d"
+    }
+  }
+]

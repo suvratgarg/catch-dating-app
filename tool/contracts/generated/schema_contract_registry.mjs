@@ -5621,6 +5621,647 @@ export const eventDocumentSchema = {
   }
 };
 
+export const externalEventDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/external_events.schema.json",
+  "title": "ExternalEventDocument",
+  "description": "Read-only external event document stored at externalEvents/{eventId}. These records are sourced from reviewed organizer intake candidates and may link to external booking platforms, but they never enable Catch booking, payments, reservations, waitlists, attendance, or schedule locks.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "externalEvents",
+  "x-firestore-path": "externalEvents/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "organizer intake import tooling after admin review; external source corrections and takedowns are admin-owned",
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "canonicalHostId",
+    "compatibilityClubId",
+    "title",
+    "description",
+    "startTime",
+    "endTime",
+    "timezone",
+    "meetingPoint",
+    "meetingLocation",
+    "locationDetails",
+    "photoUrl",
+    "activity",
+    "price",
+    "status",
+    "publicationStatus",
+    "booking",
+    "discovery",
+    "dedupe",
+    "externalSource",
+    "review",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "canonicalHostId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "compatibilityClubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "startTime": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "endTime": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "timezone": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80
+    },
+    "meetingPoint": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "meetingLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "address",
+        "placeId",
+        "latitude",
+        "longitude",
+        "notes"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "placeId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "latitude": {
+          "anyOf": [
+            {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": -90,
+              "maximum": 90
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "longitude": {
+          "anyOf": [
+            {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": -180,
+              "maximum": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
+    "locationDetails": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "photoUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "activity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "activityKind",
+        "interactionModel",
+        "source"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "const": 1
+        },
+        "activityKind": {
+          "type": "string",
+          "enum": [
+            "socialRun",
+            "running",
+            "walking",
+            "pickleball",
+            "padel",
+            "tennis",
+            "badminton",
+            "cycling",
+            "spinClass",
+            "yoga",
+            "strengthTraining",
+            "pubQuiz",
+            "barCrawl",
+            "dinner",
+            "singlesMixer",
+            "openActivity"
+          ]
+        },
+        "interactionModel": {
+          "type": "string",
+          "enum": [
+            "pacePods",
+            "pairedRotations",
+            "teamRotations",
+            "seatedTable",
+            "freeFormMixer",
+            "hostLedProgram",
+            "openFormat"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "heuristic",
+            "admin",
+            "source"
+          ]
+        }
+      }
+    },
+    "price": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "displayText",
+        "parsedPriceInPaise",
+        "currency"
+      ],
+      "properties": {
+        "displayText": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "parsedPriceInPaise": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "cancelled"
+      ]
+    },
+    "publicationStatus": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "public",
+        "archived",
+        "removed"
+      ]
+    },
+    "booking": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "catchBookingEnabled",
+        "catchPaymentsEnabled",
+        "catchReservationsEnabled",
+        "catchWaitlistEnabled",
+        "externalLinks"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "external_outbound_only"
+        },
+        "catchBookingEnabled": {
+          "type": "boolean",
+          "const": false
+        },
+        "catchPaymentsEnabled": {
+          "type": "boolean",
+          "const": false
+        },
+        "catchReservationsEnabled": {
+          "type": "boolean",
+          "const": false
+        },
+        "catchWaitlistEnabled": {
+          "type": "boolean",
+          "const": false
+        },
+        "externalLinks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "platform",
+              "url",
+              "linkType",
+              "sourceEventKey",
+              "candidateId",
+              "primary"
+            ],
+            "properties": {
+              "platform": {
+                "type": "string",
+                "enum": [
+                  "bookMyShow",
+                  "district",
+                  "luma",
+                  "partiful",
+                  "sortMyScene"
+                ]
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              "linkType": {
+                "type": "string",
+                "enum": [
+                  "booking_or_event_page",
+                  "source_surface"
+                ]
+              },
+              "sourceEventKey": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "candidateId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "primary": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "citySlug",
+        "countryCode",
+        "availability",
+        "manualApprovalRequired"
+      ],
+      "properties": {
+        "citySlug": {
+          "anyOf": [
+            {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^[a-z0-9-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "countryCode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 2,
+          "maxLength": 2
+        },
+        "availability": {
+          "type": "string",
+          "const": "read_only_external"
+        },
+        "manualApprovalRequired": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "dedupe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "normalizedEventKey",
+        "primaryCandidateId",
+        "duplicateCandidateIds",
+        "conflictPolicy"
+      ],
+      "properties": {
+        "normalizedEventKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "primaryCandidateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "duplicateCandidateIds": {
+          "type": "array",
+          "maxItems": 24,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "conflictPolicy": {
+          "type": "string",
+          "const": "single_read_only_event_with_multiple_outbound_links"
+        }
+      }
+    },
+    "externalSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidateId",
+        "sourceEventKey",
+        "sourceEventId",
+        "platform",
+        "eventUrl",
+        "sourceUrl"
+      ],
+      "properties": {
+        "candidateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "sourceEventKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "sourceEventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "bookMyShow",
+            "district",
+            "luma",
+            "partiful",
+            "sortMyScene"
+          ]
+        },
+        "eventUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventReviewBatchId",
+        "reviewer",
+        "decidedAt",
+        "note",
+        "importPolicyAcknowledged",
+        "ownerSafeCopyReviewed"
+      ],
+      "properties": {
+        "eventReviewBatchId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "reviewer": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "decidedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "note": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "importPolicyAcknowledged": {
+          "type": "boolean"
+        },
+        "ownerSafeCopyReviewed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
 export const eventPrivateAccessDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_private_access.schema.json",
@@ -11380,6 +12021,1216 @@ export const seedEventManifestDocumentSchema = {
   }
 };
 
+export const organizerIntakeReviewDecisionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_intake_review_decisions.schema.json",
+  "title": "OrganizerIntakeReviewDecisionDocument",
+  "description": "Latest admin review decision stored at organizerIntakeReviewDecisions/{entityId}. Raw scrape/search evidence is not stored here.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerIntakeReviewDecisions",
+  "x-firestore-path": "organizerIntakeReviewDecisions/{entityId}",
+  "x-document-id-field": "entityId",
+  "x-owner": "adminDecideOrganizerIntake callable",
+  "required": [
+    "schemaVersion",
+    "entityId",
+    "decision",
+    "decisionStatus",
+    "appVisibility",
+    "checklist",
+    "note",
+    "reviewedByUid",
+    "reviewedAt",
+    "updatedAt",
+    "projectionState"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve_public",
+        "hold",
+        "suppress"
+      ]
+    },
+    "decisionStatus": {
+      "type": "string",
+      "enum": [
+        "approved_public",
+        "held",
+        "suppressed"
+      ]
+    },
+    "appVisibility": {
+      "type": "string",
+      "enum": [
+        "hidden",
+        "discoverable"
+      ]
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identityReviewed",
+        "surfaceInventoryReviewed",
+        "ownerSafeCopyReviewed",
+        "marketScopeReviewed",
+        "mediaRightsReviewed",
+        "crawlDisabledReviewed"
+      ],
+      "properties": {
+        "identityReviewed": {
+          "type": "boolean"
+        },
+        "surfaceInventoryReviewed": {
+          "type": "boolean"
+        },
+        "ownerSafeCopyReviewed": {
+          "type": "boolean"
+        },
+        "marketScopeReviewed": {
+          "type": "boolean"
+        },
+        "mediaRightsReviewed": {
+          "type": "boolean"
+        },
+        "crawlDisabledReviewed": {
+          "type": "boolean"
+        },
+        "manualReportsReviewed": {
+          "type": "boolean",
+          "description": "True when the reviewer explicitly inspected manual reports that have no local raw artifact. Raw evidence remains outside Firestore; projection replay decides when this acknowledgement is required."
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "reviewedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reviewedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "projectionState": {
+      "type": "string",
+      "enum": [
+        "pending_static_generation",
+        "not_projectable"
+      ]
+    }
+  }
+};
+
+export const organizerIntakeCurationDecisionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_intake_curation_decisions.schema.json",
+  "title": "OrganizerIntakeCurationDecisionDocument",
+  "description": "One manual organizer-intake curation operation stored at organizerIntakeCurationDecisions/{operationId}. Raw scrape/search evidence is not stored here.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerIntakeCurationDecisions",
+  "x-firestore-path": "organizerIntakeCurationDecisions/{operationId}",
+  "x-document-id-field": "operationId",
+  "x-owner": "adminRecordOrganizerCuration callable",
+  "required": [
+    "schemaVersion",
+    "operationId",
+    "operationType",
+    "operationStatus",
+    "reason",
+    "reviewedByUid",
+    "reviewedAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "operationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "operationType": {
+      "type": "string",
+      "enum": [
+        "attach_surface",
+        "merge_entity",
+        "split_surface",
+        "suppress_entity",
+        "surface_decision"
+      ]
+    },
+    "operationStatus": {
+      "type": "string",
+      "enum": [
+        "active",
+        "superseded"
+      ]
+    },
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceEntityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "targetEntityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "surfaceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "newEntityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceCandidateId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "accept_primary",
+        "accept_secondary",
+        "reject_wrong_entity",
+        "mark_ambiguous",
+        "mark_historical"
+      ]
+    },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surfaceId",
+        "platform",
+        "surfaceKind",
+        "url",
+        "normalizedKey",
+        "role",
+        "status",
+        "confidence",
+        "crawl",
+        "evidenceRefs",
+        "notes"
+      ],
+      "properties": {
+        "surfaceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "bookMyShow",
+            "district",
+            "instagram",
+            "linkedin",
+            "luma",
+            "news",
+            "officialWebsite",
+            "partiful",
+            "sortMyScene",
+            "userReport",
+            "other"
+          ]
+        },
+        "surfaceKind": {
+          "type": "string",
+          "enum": [
+            "eventListing",
+            "eventCalendar",
+            "organizerProfile",
+            "personProfile",
+            "press",
+            "socialProfile",
+            "website",
+            "wrongEntity"
+          ]
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "normalizedKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "primary",
+            "secondary",
+            "backup",
+            "historical",
+            "ambiguous",
+            "rejected"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "candidate",
+            "ambiguous",
+            "historical",
+            "rejected"
+          ]
+        },
+        "confidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "entityMatch",
+            "ownership",
+            "city"
+          ],
+          "properties": {
+            "entityMatch": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "ownership": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "city": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            }
+          }
+        },
+        "crawl": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventDiscoveryStatus",
+            "policy",
+            "supportsEventExtraction"
+          ],
+          "properties": {
+            "eventDiscoveryStatus": {
+              "type": "string",
+              "enum": [
+                "disabled",
+                "candidate",
+                "approved",
+                "paused"
+              ]
+            },
+            "policy": {
+              "type": "string",
+              "enum": [
+                "manualOnly",
+                "blocked",
+                "apiPreferred"
+              ]
+            },
+            "supportsEventExtraction": {
+              "type": "boolean"
+            }
+          }
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "ref",
+              "description"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "hostDiscoveryRun",
+                  "seedClub",
+                  "userReportedSearchResult",
+                  "manualNote"
+                ]
+              },
+              "ref": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 400
+              }
+            }
+          }
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "reviewedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reviewedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "definitions": {
+    "urlOrNull": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surfaceId",
+        "platform",
+        "surfaceKind",
+        "url",
+        "normalizedKey",
+        "role",
+        "status",
+        "confidence",
+        "crawl",
+        "evidenceRefs",
+        "notes"
+      ],
+      "properties": {
+        "surfaceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "bookMyShow",
+            "district",
+            "instagram",
+            "linkedin",
+            "luma",
+            "news",
+            "officialWebsite",
+            "partiful",
+            "sortMyScene",
+            "userReport",
+            "other"
+          ]
+        },
+        "surfaceKind": {
+          "type": "string",
+          "enum": [
+            "eventListing",
+            "eventCalendar",
+            "organizerProfile",
+            "personProfile",
+            "press",
+            "socialProfile",
+            "website",
+            "wrongEntity"
+          ]
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "normalizedKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "primary",
+            "secondary",
+            "backup",
+            "historical",
+            "ambiguous",
+            "rejected"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "candidate",
+            "ambiguous",
+            "historical",
+            "rejected"
+          ]
+        },
+        "confidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "entityMatch",
+            "ownership",
+            "city"
+          ],
+          "properties": {
+            "entityMatch": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "ownership": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "city": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            }
+          }
+        },
+        "crawl": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventDiscoveryStatus",
+            "policy",
+            "supportsEventExtraction"
+          ],
+          "properties": {
+            "eventDiscoveryStatus": {
+              "type": "string",
+              "enum": [
+                "disabled",
+                "candidate",
+                "approved",
+                "paused"
+              ]
+            },
+            "policy": {
+              "type": "string",
+              "enum": [
+                "manualOnly",
+                "blocked",
+                "apiPreferred"
+              ]
+            },
+            "supportsEventExtraction": {
+              "type": "boolean"
+            }
+          }
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "ref",
+              "description"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "hostDiscoveryRun",
+                  "seedClub",
+                  "userReportedSearchResult",
+                  "manualNote"
+                ]
+              },
+              "ref": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 400
+              }
+            }
+          }
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    },
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "ref",
+        "description"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "hostDiscoveryRun",
+            "seedClub",
+            "userReportedSearchResult",
+            "manualNote"
+          ]
+        },
+        "ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        }
+      }
+    }
+  }
+};
+
+export const organizerEventCandidateReviewDecisionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_event_candidate_review_decisions.schema.json",
+  "title": "OrganizerEventCandidateReviewDecisionDocument",
+  "description": "Latest admin event-candidate review decision stored at organizerEventCandidateReviewDecisions/{decisionId}. Raw provider event evidence and imported events are not stored here.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerEventCandidateReviewDecisions",
+  "x-firestore-path": "organizerEventCandidateReviewDecisions/{decisionId}",
+  "x-document-id-field": "decisionId",
+  "x-owner": "adminDecideOrganizerEventCandidate callable",
+  "required": [
+    "schemaVersion",
+    "decisionId",
+    "candidateId",
+    "decision",
+    "decisionStatus",
+    "checklist",
+    "note",
+    "reviewedByUid",
+    "reviewedAt",
+    "updatedAt",
+    "importState"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "decisionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "candidateId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve_for_import",
+        "hold",
+        "reject"
+      ]
+    },
+    "decisionStatus": {
+      "type": "string",
+      "enum": [
+        "approved_for_import",
+        "held",
+        "rejected"
+      ]
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identityReviewed",
+        "sourceEventReviewed",
+        "timeReviewed",
+        "locationReviewed",
+        "dedupeReviewed",
+        "ownerSafeCopyReviewed",
+        "importPolicyAcknowledged"
+      ],
+      "properties": {
+        "identityReviewed": {
+          "type": "boolean"
+        },
+        "sourceEventReviewed": {
+          "type": "boolean"
+        },
+        "timeReviewed": {
+          "type": "boolean"
+        },
+        "locationReviewed": {
+          "type": "boolean"
+        },
+        "dedupeReviewed": {
+          "type": "boolean"
+        },
+        "ownerSafeCopyReviewed": {
+          "type": "boolean"
+        },
+        "importPolicyAcknowledged": {
+          "type": "boolean"
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "reviewedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reviewedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "importState": {
+      "type": "string",
+      "enum": [
+        "blocked_by_policy",
+        "not_importable",
+        "pending_import"
+      ]
+    }
+  }
+};
+
+export const organizerEventLocationResolutionDecisionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_event_location_resolution_decisions.schema.json",
+  "title": "OrganizerEventLocationResolutionDecisionDocument",
+  "description": "Latest admin-reviewed event location resolution stored at organizerEventLocationResolutionDecisions/{resolutionId}. Raw provider lookup responses and imported events are not stored here.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerEventLocationResolutionDecisions",
+  "x-firestore-path": "organizerEventLocationResolutionDecisions/{resolutionId}",
+  "x-document-id-field": "resolutionId",
+  "x-owner": "adminResolveOrganizerEventLocation callable",
+  "required": [
+    "schemaVersion",
+    "resolutionId",
+    "candidateId",
+    "location",
+    "checklist",
+    "note",
+    "reviewedByUid",
+    "reviewedAt",
+    "updatedAt",
+    "resolutionStatus"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "resolutionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "candidateId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "latitude",
+        "longitude"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "placeId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "latitude": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -180,
+          "maximum": 180
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceLocationReviewed",
+        "coordinatesReviewed",
+        "placeIdentityReviewed",
+        "importSafetyReviewed"
+      ],
+      "properties": {
+        "sourceLocationReviewed": {
+          "type": "boolean"
+        },
+        "coordinatesReviewed": {
+          "type": "boolean"
+        },
+        "placeIdentityReviewed": {
+          "type": "boolean"
+        },
+        "importSafetyReviewed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "reviewedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reviewedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "resolutionStatus": {
+      "type": "string",
+      "enum": [
+        "resolved"
+      ]
+    }
+  }
+};
+
+export const organizerPolicyGapReviewDecisionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_policy_gap_review_decisions.schema.json",
+  "title": "OrganizerPolicyGapReviewDecisionDocument",
+  "description": "Latest admin/product policy-gap review decision stored at organizerPolicyGapReviewDecisions/{decisionId}. These decisions are review state only and do not enable organizer crawls, provider lookups, event imports, defaults, or naming migrations.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerPolicyGapReviewDecisions",
+  "x-firestore-path": "organizerPolicyGapReviewDecisions/{decisionId}",
+  "x-document-id-field": "decisionId",
+  "x-owner": "adminDecideOrganizerPolicyGap callable",
+  "required": [
+    "schemaVersion",
+    "decisionId",
+    "gapId",
+    "decision",
+    "decisionStatus",
+    "requiredInputsReviewed",
+    "checklist",
+    "note",
+    "reviewedByUid",
+    "reviewedAt",
+    "updatedAt",
+    "operationalState"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "decisionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "gapId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "accept",
+        "hold",
+        "reject"
+      ]
+    },
+    "decisionStatus": {
+      "type": "string",
+      "enum": [
+        "accepted",
+        "held",
+        "rejected"
+      ]
+    },
+    "requiredInputsReviewed": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 240
+      },
+      "uniqueItems": true
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requiredInputsReviewed",
+        "costAndSafetyReviewed",
+        "implementationOwnerReviewed",
+        "behaviorStillDisabledAcknowledged"
+      ],
+      "properties": {
+        "requiredInputsReviewed": {
+          "type": "boolean"
+        },
+        "costAndSafetyReviewed": {
+          "type": "boolean"
+        },
+        "implementationOwnerReviewed": {
+          "type": "boolean"
+        },
+        "behaviorStillDisabledAcknowledged": {
+          "type": "boolean"
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "reviewedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reviewedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "operationalState": {
+      "type": "string",
+      "enum": [
+        "blocked_until_policy_encoded",
+        "not_approved"
+      ]
+    }
+  }
+};
+
 export const updateUserProfileCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/patches/update_user_profile.schema.json",
@@ -14083,6 +15934,845 @@ export const adminDecideClubClaimCallablePayloadSchema = {
         "string",
         "null"
       ],
+      "maxLength": 1000
+    }
+  }
+};
+
+export const adminDecideOrganizerIntakeCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_decide_organizer_intake_payload.schema.json",
+  "title": "AdminDecideOrganizerIntakeCallablePayload",
+  "description": "Callable payload accepted by adminDecideOrganizerIntake. This records a manual admin review decision for a private organizer-intake candidate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "entityId",
+    "decision",
+    "appVisibility",
+    "checklist",
+    "note"
+  ],
+  "properties": {
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve_public",
+        "hold",
+        "suppress"
+      ]
+    },
+    "appVisibility": {
+      "type": "string",
+      "enum": [
+        "hidden",
+        "discoverable"
+      ]
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identityReviewed",
+        "surfaceInventoryReviewed",
+        "ownerSafeCopyReviewed",
+        "marketScopeReviewed",
+        "mediaRightsReviewed",
+        "crawlDisabledReviewed"
+      ],
+      "properties": {
+        "identityReviewed": {
+          "type": "boolean"
+        },
+        "surfaceInventoryReviewed": {
+          "type": "boolean"
+        },
+        "ownerSafeCopyReviewed": {
+          "type": "boolean"
+        },
+        "marketScopeReviewed": {
+          "type": "boolean"
+        },
+        "mediaRightsReviewed": {
+          "type": "boolean"
+        },
+        "crawlDisabledReviewed": {
+          "type": "boolean"
+        },
+        "manualReportsReviewed": {
+          "type": "boolean",
+          "description": "True when the reviewer explicitly inspected manual reports that have no local raw artifact. Raw evidence remains outside Firestore; replay validation decides when this acknowledgement is required."
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  }
+};
+
+export const adminRecordOrganizerCurationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_record_organizer_curation_payload.schema.json",
+  "title": "AdminRecordOrganizerCurationCallablePayload",
+  "description": "Callable payload accepted by adminRecordOrganizerCuration. This records one low-volume manual organizer-intake curation operation for deterministic export into repo-backed curation batches.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "operationType",
+    "reason"
+  ],
+  "properties": {
+    "operationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "operationType": {
+      "type": "string",
+      "enum": [
+        "attach_surface",
+        "merge_entity",
+        "split_surface",
+        "suppress_entity",
+        "surface_decision"
+      ]
+    },
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceEntityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "targetEntityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "surfaceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "newEntityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceCandidateId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "accept_primary",
+        "accept_secondary",
+        "reject_wrong_entity",
+        "mark_ambiguous",
+        "mark_historical"
+      ]
+    },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surfaceId",
+        "platform",
+        "surfaceKind",
+        "url",
+        "normalizedKey",
+        "role",
+        "status",
+        "confidence",
+        "crawl",
+        "evidenceRefs",
+        "notes"
+      ],
+      "properties": {
+        "surfaceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "bookMyShow",
+            "district",
+            "instagram",
+            "linkedin",
+            "luma",
+            "news",
+            "officialWebsite",
+            "partiful",
+            "sortMyScene",
+            "userReport",
+            "other"
+          ]
+        },
+        "surfaceKind": {
+          "type": "string",
+          "enum": [
+            "eventListing",
+            "eventCalendar",
+            "organizerProfile",
+            "personProfile",
+            "press",
+            "socialProfile",
+            "website",
+            "wrongEntity"
+          ]
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "normalizedKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "primary",
+            "secondary",
+            "backup",
+            "historical",
+            "ambiguous",
+            "rejected"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "candidate",
+            "ambiguous",
+            "historical",
+            "rejected"
+          ]
+        },
+        "confidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "entityMatch",
+            "ownership",
+            "city"
+          ],
+          "properties": {
+            "entityMatch": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "ownership": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "city": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            }
+          }
+        },
+        "crawl": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventDiscoveryStatus",
+            "policy",
+            "supportsEventExtraction"
+          ],
+          "properties": {
+            "eventDiscoveryStatus": {
+              "type": "string",
+              "enum": [
+                "disabled",
+                "candidate",
+                "approved",
+                "paused"
+              ]
+            },
+            "policy": {
+              "type": "string",
+              "enum": [
+                "manualOnly",
+                "blocked",
+                "apiPreferred"
+              ]
+            },
+            "supportsEventExtraction": {
+              "type": "boolean"
+            }
+          }
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "ref",
+              "description"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "hostDiscoveryRun",
+                  "seedClub",
+                  "userReportedSearchResult",
+                  "manualNote"
+                ]
+              },
+              "ref": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 400
+              }
+            }
+          }
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    }
+  },
+  "definitions": {
+    "urlOrNull": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surfaceId",
+        "platform",
+        "surfaceKind",
+        "url",
+        "normalizedKey",
+        "role",
+        "status",
+        "confidence",
+        "crawl",
+        "evidenceRefs",
+        "notes"
+      ],
+      "properties": {
+        "surfaceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "bookMyShow",
+            "district",
+            "instagram",
+            "linkedin",
+            "luma",
+            "news",
+            "officialWebsite",
+            "partiful",
+            "sortMyScene",
+            "userReport",
+            "other"
+          ]
+        },
+        "surfaceKind": {
+          "type": "string",
+          "enum": [
+            "eventListing",
+            "eventCalendar",
+            "organizerProfile",
+            "personProfile",
+            "press",
+            "socialProfile",
+            "website",
+            "wrongEntity"
+          ]
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "normalizedKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "primary",
+            "secondary",
+            "backup",
+            "historical",
+            "ambiguous",
+            "rejected"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "candidate",
+            "ambiguous",
+            "historical",
+            "rejected"
+          ]
+        },
+        "confidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "entityMatch",
+            "ownership",
+            "city"
+          ],
+          "properties": {
+            "entityMatch": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "ownership": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "city": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            }
+          }
+        },
+        "crawl": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventDiscoveryStatus",
+            "policy",
+            "supportsEventExtraction"
+          ],
+          "properties": {
+            "eventDiscoveryStatus": {
+              "type": "string",
+              "enum": [
+                "disabled",
+                "candidate",
+                "approved",
+                "paused"
+              ]
+            },
+            "policy": {
+              "type": "string",
+              "enum": [
+                "manualOnly",
+                "blocked",
+                "apiPreferred"
+              ]
+            },
+            "supportsEventExtraction": {
+              "type": "boolean"
+            }
+          }
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "ref",
+              "description"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "hostDiscoveryRun",
+                  "seedClub",
+                  "userReportedSearchResult",
+                  "manualNote"
+                ]
+              },
+              "ref": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 400
+              }
+            }
+          }
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    },
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "ref",
+        "description"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "hostDiscoveryRun",
+            "seedClub",
+            "userReportedSearchResult",
+            "manualNote"
+          ]
+        },
+        "ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        }
+      }
+    }
+  }
+};
+
+export const adminDecideOrganizerEventCandidateCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
+  "title": "AdminDecideOrganizerEventCandidateCallablePayload",
+  "description": "Callable payload accepted by adminDecideOrganizerEventCandidate. This records a manual admin review decision for a private external event candidate without importing the event.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "candidateId",
+    "decision",
+    "checklist",
+    "note"
+  ],
+  "properties": {
+    "candidateId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve_for_import",
+        "hold",
+        "reject"
+      ]
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identityReviewed",
+        "sourceEventReviewed",
+        "timeReviewed",
+        "locationReviewed",
+        "dedupeReviewed",
+        "ownerSafeCopyReviewed",
+        "importPolicyAcknowledged"
+      ],
+      "properties": {
+        "identityReviewed": {
+          "type": "boolean"
+        },
+        "sourceEventReviewed": {
+          "type": "boolean"
+        },
+        "timeReviewed": {
+          "type": "boolean"
+        },
+        "locationReviewed": {
+          "type": "boolean"
+        },
+        "dedupeReviewed": {
+          "type": "boolean"
+        },
+        "ownerSafeCopyReviewed": {
+          "type": "boolean"
+        },
+        "importPolicyAcknowledged": {
+          "type": "boolean"
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  }
+};
+
+export const adminDecideOrganizerPolicyGapCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_decide_organizer_policy_gap_payload.schema.json",
+  "title": "AdminDecideOrganizerPolicyGapCallablePayload",
+  "description": "Callable payload accepted by adminDecideOrganizerPolicyGap. This records a manual product/admin review decision for an organizer intake policy gap without enabling crawls, provider lookups, imports, defaults, or naming migrations.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "gapId",
+    "decision",
+    "requiredInputsReviewed",
+    "checklist",
+    "note"
+  ],
+  "properties": {
+    "gapId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "accept",
+        "hold",
+        "reject"
+      ]
+    },
+    "requiredInputsReviewed": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 240
+      },
+      "uniqueItems": true
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requiredInputsReviewed",
+        "costAndSafetyReviewed",
+        "implementationOwnerReviewed",
+        "behaviorStillDisabledAcknowledged"
+      ],
+      "properties": {
+        "requiredInputsReviewed": {
+          "type": "boolean"
+        },
+        "costAndSafetyReviewed": {
+          "type": "boolean"
+        },
+        "implementationOwnerReviewed": {
+          "type": "boolean"
+        },
+        "behaviorStillDisabledAcknowledged": {
+          "type": "boolean"
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  }
+};
+
+export const adminResolveOrganizerEventLocationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
+  "title": "AdminResolveOrganizerEventLocationCallablePayload",
+  "description": "Callable payload accepted by adminResolveOrganizerEventLocation. This records reviewed coordinates for a private external event candidate without importing the event.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "candidateId",
+    "location",
+    "checklist",
+    "note"
+  ],
+  "properties": {
+    "candidateId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "latitude",
+        "longitude"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "placeId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "latitude": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -180,
+          "maximum": 180
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceLocationReviewed",
+        "coordinatesReviewed",
+        "placeIdentityReviewed",
+        "importSafetyReviewed"
+      ],
+      "properties": {
+        "sourceLocationReviewed": {
+          "type": "boolean"
+        },
+        "coordinatesReviewed": {
+          "type": "boolean"
+        },
+        "placeIdentityReviewed": {
+          "type": "boolean"
+        },
+        "importSafetyReviewed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
       "maxLength": 1000
     }
   }

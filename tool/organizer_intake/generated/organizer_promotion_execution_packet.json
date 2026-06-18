@@ -1,0 +1,181 @@
+{
+  "generatedFrom": {
+    "claimTargetSyncPreview": "tool/organizer_intake/generated/organizer_claim_target_sync_preview.json",
+    "pendingDecisionAnswerPacket": "tool/organizer_intake/generated/organizer_pending_decision_answer_packet.json",
+    "pendingInputRequest": "tool/organizer_intake/generated/organizer_pending_input_request.json",
+    "pendingWorkCoverage": "tool/organizer_intake/generated/organizer_pending_work_coverage.json",
+    "projectionPlan": "tool/organizer_intake/generated/public_projection_plan.json",
+    "publicationDecisionImpactPreview": "tool/organizer_intake/generated/publication_decision_impact_preview.json",
+    "reviewedDecisionAnswerPackets": "tool/organizer_intake/generated/organizer_reviewed_decision_answer_packets.json",
+    "workflowReadiness": "tool/organizer_intake/generated/organizer_workflow_readiness.json"
+  },
+  "guardrails": [
+    "This packet is a promotion execution preflight only; it never exports decisions, builds the website, writes Firestore, deploys pages, or syncs claim targets.",
+    "Public unclaimed Host pages become deployable only after admin publication approval is exported, intake artifacts are regenerated, website listings are regenerated, and the promotion bridge passes.",
+    "Claim-target writes require a reviewed generated preview plus a live Firestore dry run before any --write flag is used.",
+    "Policy inputs for crawling, raw artifact storage, provider location lookup, event imports, and naming migration remain separate from public-page promotion and must not be inferred from publication approval."
+  ],
+  "phases": [
+    {
+      "blockers": [],
+      "command": "node tool/organizer_intake/pending_decision_answer_packet.mjs --format markdown",
+      "executionMode": "manual_review",
+      "label": "Review admin publication decisions",
+      "outputs": [
+        "filled organizer_pending_decision_answer_packet copy",
+        "organizerIntakeReviewDecisions Firestore documents or repo-backed review_decisions JSON"
+      ],
+      "phaseId": "review_admin_publication_decisions",
+      "status": "ready"
+    },
+    {
+      "blockers": [
+        "3 product policy decision(s) pending"
+      ],
+      "command": "node tool/organizer_intake/pending_decision_answer_packet.mjs --format markdown",
+      "executionMode": "manual_review",
+      "label": "Review product policy decisions",
+      "outputs": [
+        "filled organizer_pending_decision_answer_packet copy",
+        "organizerPolicyGapReviewDecisions Firestore documents or repo-backed policy_gap_decisions JSON"
+      ],
+      "phaseId": "review_product_policy_decisions",
+      "status": "waiting_on_policy_input"
+    },
+    {
+      "blockers": [
+        "3 answer slot(s) remain in generated packet",
+        "no reviewed answer packet is ready to apply",
+        "use --write only against a reviewed copied answer packet"
+      ],
+      "command": "node tool/organizer_intake/run_promotion_pipeline.mjs --apply-decision-answers --answer-packet PATH --write-decision-answers",
+      "executionMode": "local_write_guarded",
+      "label": "Apply answered decision packet",
+      "outputs": [
+        "reviewed answer-packet readiness check",
+        "dry-run preflight for every answered decision command",
+        "review_decisions JSON",
+        "policy_gap_decisions JSON"
+      ],
+      "phaseId": "apply_answered_decision_packet",
+      "status": "waiting_on_answer_packet"
+    },
+    {
+      "blockers": [],
+      "command": "node tool/organizer_intake/run_promotion_pipeline.mjs --export-curation-decisions --export-review-decisions --export-event-review-decisions --export-event-location-resolutions --export-policy-gap-decisions --date YYYY-MM-DD --write-export",
+      "executionMode": "remote_read_local_write_guarded",
+      "label": "Export reviewed admin and policy decisions",
+      "outputs": [
+        "review_decisions JSON",
+        "curation_decisions JSON",
+        "event_review_decisions JSON",
+        "event_location_resolutions JSON",
+        "policy_gap_decisions JSON"
+      ],
+      "phaseId": "export_review_decisions",
+      "status": "ready"
+    },
+    {
+      "blockers": [],
+      "command": "node tool/organizer_intake/run_promotion_pipeline.mjs",
+      "executionMode": "local",
+      "label": "Run local promotion preview",
+      "outputs": [
+        "regenerated organizer intake artifacts",
+        "regenerated website organizer listings",
+        "admin bridge validation",
+        "promotion bridge validation",
+        "marketing website build",
+        "fixture claim-target sync preview"
+      ],
+      "phaseId": "local_promotion_preview",
+      "status": "ready"
+    },
+    {
+      "blockers": [],
+      "command": "node tool/organizer_intake/check_promotion_bridge.mjs",
+      "executionMode": "local",
+      "label": "Validate public listing and claim-target bridge",
+      "outputs": [
+        "canonical Host entity to website listing parity",
+        "website listing to claim target parity",
+        "empty-fixture claim-target sync preview parity"
+      ],
+      "phaseId": "validate_promotion_bridge",
+      "status": "ready"
+    },
+    {
+      "blockers": [],
+      "command": "npm --workspace catch-marketing run build",
+      "executionMode": "local",
+      "label": "Build marketing website",
+      "outputs": [
+        "route HTML",
+        "canonical tags",
+        "robots tags",
+        "sitemap"
+      ],
+      "phaseId": "build_marketing_website",
+      "status": "ready"
+    },
+    {
+      "blockers": [],
+      "command": "node tool/organizer_intake/run_promotion_pipeline.mjs --claim-sync firestore --env ENV",
+      "executionMode": "remote_read_local_preview",
+      "label": "Run Firestore claim-target dry run",
+      "outputs": [
+        "live Firestore create/refresh/skip preview"
+      ],
+      "phaseId": "claim_target_firestore_dry_run",
+      "status": "ready_for_firestore_dry_run"
+    },
+    {
+      "blockers": [],
+      "command": "node tool/organizer_intake/run_promotion_pipeline.mjs --claim-sync firestore --env ENV --write-claim-targets",
+      "executionMode": "remote_write_guarded",
+      "label": "Write reviewed claim targets",
+      "outputs": [
+        "clubs/{entityId} unclaimed claim-target documents"
+      ],
+      "phaseId": "claim_target_firestore_write",
+      "status": "ready_after_reviewed_firestore_dry_run"
+    }
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "approvedPublicProjections": 2,
+    "blockedPhases": 2,
+    "canDeployNewPublicPages": true,
+    "canRunLocalPreview": true,
+    "canWriteClaimTargets": true,
+    "claimSyncReady": true,
+    "claimTargetPreviewTargets": 2,
+    "claimTargetPreviewWrites": 2,
+    "guardedRemoteReadPhases": 1,
+    "guardedRemoteWritePhases": 1,
+    "localPromotionPipelineReady": true,
+    "pendingAdminDecisions": 0,
+    "pendingAnswerSlots": 3,
+    "pendingPolicyDecisions": 3,
+    "pendingWorkUntriaged": 0,
+    "phases": 9,
+    "phasesByStatus": {
+      "ready": 5,
+      "ready_after_reviewed_firestore_dry_run": 1,
+      "ready_for_firestore_dry_run": 1,
+      "waiting_on_answer_packet": 1,
+      "waiting_on_policy_input": 1
+    },
+    "policyInputRequiredBeforeCrawlStorageOrImport": true,
+    "publicationImpacts": 2,
+    "publicationImpactWouldPublish": 0,
+    "publicProjectionReady": true,
+    "reviewedAnswerPackets": 0,
+    "reviewedAnswerPacketsAwaitingAnswers": 0,
+    "reviewedAnswerPacketsInvalid": 0,
+    "reviewedAnswerPacketsReady": 0,
+    "reviewedAnswerPacketsStale": 0,
+    "reviewedAnswerPacketStatus": "no_reviewed_packets",
+    "status": "waiting_on_policy_input"
+  }
+}

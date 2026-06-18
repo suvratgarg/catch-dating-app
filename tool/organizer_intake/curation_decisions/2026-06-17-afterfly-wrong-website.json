@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "curationBatchId": "2026-06-17-afterfly-wrong-website",
+  "decidedAt": "2026-06-17",
+  "reviewer": "codex",
+  "operations": [
+    {
+      "type": "surface_decision",
+      "entityId": "afterfly",
+      "surfaceId": "afterfly-wrong-website-reported",
+      "decision": "reject_wrong_entity",
+      "reason": "User-reported first-party-looking Afterfly website appears to belong to a different entity."
+    }
+  ]
+}

@@ -86,6 +86,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventDocument.ts",
   },
   {
+    name: "ExternalEventDocument",
+    source: "firestore/external_events.schema.json",
+    typeOutput: "functions/src/shared/generated/externalEventDocument.ts",
+  },
+  {
     name: "EventPrivateAccessDocument",
     source: "firestore/event_private_access.schema.json",
     typeOutput:
@@ -259,6 +264,37 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/seedEventManifestDocument.ts",
   },
   {
+    name: "OrganizerIntakeReviewDecisionDocument",
+    source: "firestore/organizer_intake_review_decisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerIntakeReviewDecisionDocument.ts",
+  },
+  {
+    name: "OrganizerIntakeCurationDecisionDocument",
+    source: "firestore/organizer_intake_curation_decisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerIntakeCurationDecisionDocument.ts",
+  },
+  {
+    name: "OrganizerEventCandidateReviewDecisionDocument",
+    source: "firestore/organizer_event_candidate_review_decisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerEventCandidateReviewDecisionDocument.ts",
+  },
+  {
+    name: "OrganizerEventLocationResolutionDecisionDocument",
+    source:
+      "firestore/organizer_event_location_resolution_decisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerEventLocationResolutionDecisionDocument.ts",
+  },
+  {
+    name: "OrganizerPolicyGapReviewDecisionDocument",
+    source: "firestore/organizer_policy_gap_review_decisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerPolicyGapReviewDecisionDocument.ts",
+  },
+  {
     name: "UpdateUserProfileCallablePayload",
     source: "patches/update_user_profile.schema.json",
     typeOutput:
@@ -311,6 +347,37 @@ const schemaSpecs = [
     source: "callables/admin_decide_club_claim_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/adminDecideClubClaimCallablePayload.ts",
+  },
+  {
+    name: "AdminDecideOrganizerIntakeCallablePayload",
+    source: "callables/admin_decide_organizer_intake_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminDecideOrganizerIntakeCallablePayload.ts",
+  },
+  {
+    name: "AdminRecordOrganizerCurationCallablePayload",
+    source: "callables/admin_record_organizer_curation_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminRecordOrganizerCurationCallablePayload.ts",
+  },
+  {
+    name: "AdminDecideOrganizerEventCandidateCallablePayload",
+    source: "callables/admin_decide_organizer_event_candidate_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminDecideOrganizerEventCandidateCallablePayload.ts",
+  },
+  {
+    name: "AdminDecideOrganizerPolicyGapCallablePayload",
+    source: "callables/admin_decide_organizer_policy_gap_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminDecideOrganizerPolicyGapCallablePayload.ts",
+  },
+  {
+    name: "AdminResolveOrganizerEventLocationCallablePayload",
+    source:
+      "callables/admin_resolve_organizer_event_location_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminResolveOrganizerEventLocationCallablePayload.ts",
   },
   {
     name: "AdminSetClubIndexStatusCallablePayload",

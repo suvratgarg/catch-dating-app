@@ -4,10 +4,13 @@ Upload surface for Claude Design and other AI design tools. This pack is generat
 from the live Flutter design system; do not edit generated files by hand.
 
 Use the design_system files to establish or refresh the organization-level design
-system. Use gallery shots as per-screen taste anchors during a redesign chat.
+system. Use design_system/components.json as the allowed Catch primitive
+contract list for handoffs. Use gallery shots as per-screen taste anchors during
+a redesign chat.
 
 Generated sources:
 - docs/design_language.md
+- design/components/catch.components.json
 - lib/core/theme/catch_tokens.dart
 - lib/core/theme/activity_palette.dart
 - lib/core/theme/catch_text_styles.dart

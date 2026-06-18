@@ -366,6 +366,14 @@
       ]
     },
     {
+      "collectionGroup": "eventWaitlistOffers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "expiresAt", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "razorpayPendingOrders",
       "queryScope": "COLLECTION",
       "fields": [

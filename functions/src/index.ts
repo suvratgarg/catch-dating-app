@@ -145,3 +145,18 @@ export {
   adminGetClubDetails,
   adminUpdateClubDetails,
 } from "./admin/clubDetails";
+export {
+  adminDecideOrganizerIntake,
+} from "./admin/organizerIntake";
+export {
+  adminRecordOrganizerCuration,
+} from "./admin/organizerCuration";
+export {
+  adminDecideOrganizerEventCandidate,
+} from "./admin/organizerEventIntake";
+export {
+  adminResolveOrganizerEventLocation,
+} from "./admin/organizerEventLocationResolution";
+export {
+  adminDecideOrganizerPolicyGap,
+} from "./admin/organizerPolicyGap";

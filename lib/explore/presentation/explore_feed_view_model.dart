@@ -17,6 +17,7 @@ import 'package:catch_dating_app/events/domain/saved_event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/search/data/explore_search_repository.dart';
@@ -279,10 +280,18 @@ final exploreFeedViewModelProvider = Provider<AsyncValue<ExploreFeedViewModel>>(
     final deviceLocationAsync = distanceFilterKm == null
         ? const AsyncData<LocationCoordinate?>(null)
         : ref.watch(deviceLocationProvider);
-    final searchAsync = normalizedQuery.isEmpty
+    // Server search keys off the debounced query so typing doesn't fire a
+    // Cloud Function call per keystroke. Local substring matching below uses
+    // the live `normalizedQuery`, so the feed stays responsive while it settles.
+    final debouncedQuery =
+        ref.watch(debouncedExploreSearchQueryProvider).asData?.value ?? '';
+    final searchAsync = debouncedQuery.length < 2
         ? const AsyncData<ExploreSearchResult?>(null)
         : ref.watch(
-            exploreServerSearchProvider(query: query, cityName: city.name),
+            exploreServerSearchProvider(
+              query: debouncedQuery,
+              cityName: city.name,
+            ),
           );
 
     if (clubsAsync.isLoading ||
@@ -535,17 +544,14 @@ bool _matchesClubScopeFilters({
   required Set<String> joinedClubIds,
   required ActivityKind? activityKindFilter,
 }) {
-  if (filters.highRatedOnly && club.rating < 4.5) return false;
-  if (filters.joinedOnly && !joinedClubIds.contains(club.id)) return false;
-  final activityTag = filters.activityTag;
-  if (activityTag != null &&
-      activityKindFilter == null &&
-      !club.tags.any((tag) => _sameFilterValue(tag, activityTag))) {
-    return false;
-  }
-  final area = filters.area;
-  if (area != null && !_sameFilterValue(club.area, area)) return false;
-  return true;
+  // When the selected tag resolves to a concrete ActivityKind the events query
+  // already filtered on it, so the club need not also carry the tag as text.
+  return clubMatchesScopeFilters(
+    club: club,
+    filters: filters,
+    joinedClubIds: joinedClubIds,
+    activityHandledByEventFilter: activityKindFilter != null,
+  );
 }
 
 bool _matchesEventTimeFilters(
@@ -601,10 +607,6 @@ bool _matchesSearch(
     ...club.tags,
   ].join(' ').toLowerCase();
   return searchable.contains(normalizedQuery);
-}
-
-bool _sameFilterValue(String? left, String right) {
-  return left?.trim().toLowerCase() == right.trim().toLowerCase();
 }
 
 DateTime _discoveryReferenceNow() {

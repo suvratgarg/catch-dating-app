@@ -62,6 +62,9 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
     const TimestampConverter().fromJson,
   ),
   archiveReason: json['archiveReason'] as String?,
+  appVisibility:
+      $enumDecodeNullable(_$ClubAppVisibilityEnumMap, json['appVisibility']) ??
+      ClubAppVisibility.discoverable,
   hostDefaults: json['hostDefaults'] == null
       ? const ClubHostDefaults()
       : ClubHostDefaults.fromJson(json['hostDefaults'] as Map<String, dynamic>),
@@ -102,6 +105,7 @@ Map<String, dynamic> _$ClubToJson(_Club instance) => <String, dynamic>{
     const TimestampConverter().toJson,
   ),
   'archiveReason': instance.archiveReason,
+  'appVisibility': _$ClubAppVisibilityEnumMap[instance.appVisibility]!,
   'hostDefaults': instance.hostDefaults.toJson(),
 };
 
@@ -113,6 +117,11 @@ Value? _$JsonConverterFromJson<Json, Value>(
 const _$ClubLifecycleStatusEnumMap = {
   ClubLifecycleStatus.active: 'active',
   ClubLifecycleStatus.archived: 'archived',
+};
+
+const _$ClubAppVisibilityEnumMap = {
+  ClubAppVisibility.discoverable: 'discoverable',
+  ClubAppVisibility.hidden: 'hidden',
 };
 
 Json? _$JsonConverterToJson<Json, Value>(

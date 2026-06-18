@@ -37,6 +37,7 @@ Club buildClub({
   String? instagramHandle,
   String? phoneNumber,
   String? email,
+  ClubAppVisibility appVisibility = ClubAppVisibility.discoverable,
 }) {
   return Club(
     id: id,
@@ -62,6 +63,7 @@ Club buildClub({
     instagramHandle: instagramHandle,
     phoneNumber: phoneNumber,
     email: email,
+    appVisibility: appVisibility,
   );
 }
 
@@ -565,12 +567,11 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     required String matchId,
     required String messageId,
     required XFile image,
-  }) async =>
-      (await uploadChatImageWithMetadata(
-        matchId: matchId,
-        messageId: messageId,
-        image: image,
-      )).url;
+  }) async => (await uploadChatImageWithMetadata(
+    matchId: matchId,
+    messageId: messageId,
+    image: image,
+  )).url;
 
   @override
   Future<UploadedImage> uploadChatImageWithMetadata({

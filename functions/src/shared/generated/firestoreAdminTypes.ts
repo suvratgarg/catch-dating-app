@@ -961,6 +961,120 @@ export interface EventDocument {
 }
 
 /**
+ * Read-only external event document stored at externalEvents/{eventId}. These records are sourced from reviewed organizer intake candidates and may link to external booking platforms, but they never enable Catch booking, payments, reservations, waitlists, attendance, or schedule locks.
+ */
+export interface ExternalEventDocument {
+  schemaVersion: 1;
+  eventId: string;
+  canonicalHostId: string;
+  compatibilityClubId: string;
+  title: string;
+  description: string;
+  startTime: FirebaseFirestore.Timestamp;
+  endTime: FirebaseFirestore.Timestamp | null;
+  timezone: string | null;
+  meetingPoint: string;
+  meetingLocation: {
+    name: string;
+    address: string | null;
+    placeId: string | null;
+    latitude: (number | null) | null;
+    longitude: (number | null) | null;
+    notes: string | null;
+  };
+  locationDetails: string | null;
+  photoUrl: string | null;
+  activity: {
+    version: 1;
+    activityKind:
+      | "socialRun"
+      | "running"
+      | "walking"
+      | "pickleball"
+      | "padel"
+      | "tennis"
+      | "badminton"
+      | "cycling"
+      | "spinClass"
+      | "yoga"
+      | "strengthTraining"
+      | "pubQuiz"
+      | "barCrawl"
+      | "dinner"
+      | "singlesMixer"
+      | "openActivity";
+    interactionModel:
+      | "pacePods"
+      | "pairedRotations"
+      | "teamRotations"
+      | "seatedTable"
+      | "freeFormMixer"
+      | "hostLedProgram"
+      | "openFormat";
+    source: "heuristic" | "admin" | "source";
+  };
+  price: {
+    displayText: string | null;
+    parsedPriceInPaise: number | null;
+    currency: string;
+  };
+  status: "active" | "cancelled";
+  publicationStatus: "draft" | "public" | "archived" | "removed";
+  booking: {
+    mode: "external_outbound_only";
+    catchBookingEnabled: false;
+    catchPaymentsEnabled: false;
+    catchReservationsEnabled: false;
+    catchWaitlistEnabled: false;
+    /**
+     * @minItems 1
+     * @maxItems 12
+     */
+    externalLinks: {
+      platform: "bookMyShow" | "district" | "luma" | "partiful" | "sortMyScene";
+      url: string;
+      linkType: "booking_or_event_page" | "source_surface";
+      sourceEventKey: string;
+      candidateId: string;
+      primary: boolean;
+    }[];
+  };
+  discovery: {
+    citySlug: (string | null) | null;
+    countryCode: string | null;
+    availability: "read_only_external";
+    manualApprovalRequired: true;
+  };
+  dedupe: {
+    normalizedEventKey: string;
+    primaryCandidateId: string;
+    /**
+     * @maxItems 24
+     */
+    duplicateCandidateIds: string[];
+    conflictPolicy: "single_read_only_event_with_multiple_outbound_links";
+  };
+  externalSource: {
+    candidateId: string;
+    sourceEventKey: string;
+    sourceEventId: string;
+    platform: "bookMyShow" | "district" | "luma" | "partiful" | "sortMyScene";
+    eventUrl: string | null;
+    sourceUrl: string | null;
+  };
+  review: {
+    eventReviewBatchId: string | null;
+    reviewer: string | null;
+    decidedAt: string | null;
+    note: string | null;
+    importPolicyAcknowledged: boolean;
+    ownerSafeCopyReviewed: boolean;
+  };
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Host-private access material for invite-only events stored at eventPrivateAccess/{eventId}.
  */
 export interface EventPrivateAccessDocument {
@@ -1767,4 +1881,196 @@ export interface SeedEventManifestDocument {
   paths: string[];
   appendMode?: boolean;
   appendedAnchorUserIds?: string[];
+}
+
+/**
+ * Latest admin review decision stored at organizerIntakeReviewDecisions/{entityId}. Raw scrape/search evidence is not stored here.
+ */
+export interface OrganizerIntakeReviewDecisionDocument {
+  schemaVersion: 1;
+  entityId: string;
+  decision: "approve_public" | "hold" | "suppress";
+  decisionStatus: "approved_public" | "held" | "suppressed";
+  appVisibility: "hidden" | "discoverable";
+  checklist: {
+    identityReviewed: boolean;
+    surfaceInventoryReviewed: boolean;
+    ownerSafeCopyReviewed: boolean;
+    marketScopeReviewed: boolean;
+    mediaRightsReviewed: boolean;
+    crawlDisabledReviewed: boolean;
+    /**
+     * True when the reviewer explicitly inspected manual reports that have no local raw artifact. Raw evidence remains outside Firestore; projection replay decides when this acknowledgement is required.
+     */
+    manualReportsReviewed?: boolean;
+  };
+  note: string;
+  reviewedByUid: string;
+  reviewedAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  projectionState: "pending_static_generation" | "not_projectable";
+}
+
+/**
+ * One manual organizer-intake curation operation stored at organizerIntakeCurationDecisions/{operationId}. Raw scrape/search evidence is not stored here.
+ */
+export interface OrganizerIntakeCurationDecisionDocument {
+  schemaVersion: 1;
+  operationId: string;
+  operationType:
+    | "attach_surface"
+    | "merge_entity"
+    | "split_surface"
+    | "suppress_entity"
+    | "surface_decision";
+  operationStatus: "active" | "superseded";
+  entityId?: string;
+  sourceEntityId?: string;
+  targetEntityId?: string;
+  surfaceId?: string;
+  newEntityId?: string;
+  sourceCandidateId?: string;
+  decision?:
+    | "accept_primary"
+    | "accept_secondary"
+    | "reject_wrong_entity"
+    | "mark_ambiguous"
+    | "mark_historical";
+  surface?: {
+    surfaceId: string;
+    platform:
+      | "bookMyShow"
+      | "district"
+      | "instagram"
+      | "linkedin"
+      | "luma"
+      | "news"
+      | "officialWebsite"
+      | "partiful"
+      | "sortMyScene"
+      | "userReport"
+      | "other";
+    surfaceKind:
+      | "eventListing"
+      | "eventCalendar"
+      | "organizerProfile"
+      | "personProfile"
+      | "press"
+      | "socialProfile"
+      | "website"
+      | "wrongEntity";
+    url: string | null;
+    normalizedKey: string | null;
+    role:
+      | "primary"
+      | "secondary"
+      | "backup"
+      | "historical"
+      | "ambiguous"
+      | "rejected";
+    status: "active" | "candidate" | "ambiguous" | "historical" | "rejected";
+    confidence: {
+      entityMatch: "low" | "medium" | "high";
+      ownership: "low" | "medium" | "high";
+      city: "low" | "medium" | "high";
+    };
+    crawl: {
+      eventDiscoveryStatus: "disabled" | "candidate" | "approved" | "paused";
+      policy: "manualOnly" | "blocked" | "apiPreferred";
+      supportsEventExtraction: boolean;
+    };
+    evidenceRefs: {
+      type:
+        | "hostDiscoveryRun"
+        | "seedClub"
+        | "userReportedSearchResult"
+        | "manualNote";
+      ref: string | null;
+      description: string;
+    }[];
+    notes: string;
+  };
+  reason: string;
+  reviewedByUid: string;
+  reviewedAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Latest admin event-candidate review decision stored at organizerEventCandidateReviewDecisions/{decisionId}. Raw provider event evidence and imported events are not stored here.
+ */
+export interface OrganizerEventCandidateReviewDecisionDocument {
+  schemaVersion: 1;
+  decisionId: string;
+  candidateId: string;
+  decision: "approve_for_import" | "hold" | "reject";
+  decisionStatus: "approved_for_import" | "held" | "rejected";
+  checklist: {
+    identityReviewed: boolean;
+    sourceEventReviewed: boolean;
+    timeReviewed: boolean;
+    locationReviewed: boolean;
+    dedupeReviewed: boolean;
+    ownerSafeCopyReviewed: boolean;
+    importPolicyAcknowledged: boolean;
+  };
+  note: string;
+  reviewedByUid: string;
+  reviewedAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  importState: "blocked_by_policy" | "not_importable" | "pending_import";
+}
+
+/**
+ * Latest admin-reviewed event location resolution stored at organizerEventLocationResolutionDecisions/{resolutionId}. Raw provider lookup responses and imported events are not stored here.
+ */
+export interface OrganizerEventLocationResolutionDecisionDocument {
+  schemaVersion: 1;
+  resolutionId: string;
+  candidateId: string;
+  location: {
+    name: string;
+    address?: string | null;
+    placeId?: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    notes?: string | null;
+  };
+  checklist: {
+    sourceLocationReviewed: boolean;
+    coordinatesReviewed: boolean;
+    placeIdentityReviewed: boolean;
+    importSafetyReviewed: boolean;
+  };
+  note: string;
+  reviewedByUid: string;
+  reviewedAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  resolutionStatus: "resolved";
+}
+
+/**
+ * Latest admin/product policy-gap review decision stored at organizerPolicyGapReviewDecisions/{decisionId}. These decisions are review state only and do not enable organizer crawls, provider lookups, event imports, defaults, or naming migrations.
+ */
+export interface OrganizerPolicyGapReviewDecisionDocument {
+  schemaVersion: 1;
+  decisionId: string;
+  gapId: string;
+  decision: "accept" | "hold" | "reject";
+  decisionStatus: "accepted" | "held" | "rejected";
+  /**
+   * @maxItems 20
+   */
+  requiredInputsReviewed: string[];
+  checklist: {
+    requiredInputsReviewed: boolean;
+    costAndSafetyReviewed: boolean;
+    implementationOwnerReviewed: boolean;
+    behaviorStillDisabledAcknowledged: boolean;
+  };
+  note: string;
+  reviewedByUid: string;
+  reviewedAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  operationalState: "blocked_until_policy_encoded" | "not_approved";
 }

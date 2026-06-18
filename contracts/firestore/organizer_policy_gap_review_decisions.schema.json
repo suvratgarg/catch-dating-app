@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_policy_gap_review_decisions.schema.json",
+  "title": "OrganizerPolicyGapReviewDecisionDocument",
+  "description": "Latest admin/product policy-gap review decision stored at organizerPolicyGapReviewDecisions/{decisionId}. These decisions are review state only and do not enable organizer crawls, provider lookups, event imports, defaults, or naming migrations.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerPolicyGapReviewDecisions",
+  "x-firestore-path": "organizerPolicyGapReviewDecisions/{decisionId}",
+  "x-document-id-field": "decisionId",
+  "x-owner": "adminDecideOrganizerPolicyGap callable",
+  "required": [
+    "schemaVersion",
+    "decisionId",
+    "gapId",
+    "decision",
+    "decisionStatus",
+    "requiredInputsReviewed",
+    "checklist",
+    "note",
+    "reviewedByUid",
+    "reviewedAt",
+    "updatedAt",
+    "operationalState"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "decisionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "gapId": {"type": "string", "minLength": 1, "maxLength": 160},
+    "decision": {"type": "string", "enum": ["accept", "hold", "reject"]},
+    "decisionStatus": {"type": "string", "enum": ["accepted", "held", "rejected"]},
+    "requiredInputsReviewed": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {"type": "string", "minLength": 1, "maxLength": 240},
+      "uniqueItems": true
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requiredInputsReviewed",
+        "costAndSafetyReviewed",
+        "implementationOwnerReviewed",
+        "behaviorStillDisabledAcknowledged"
+      ],
+      "properties": {
+        "requiredInputsReviewed": {"type": "boolean"},
+        "costAndSafetyReviewed": {"type": "boolean"},
+        "implementationOwnerReviewed": {"type": "boolean"},
+        "behaviorStillDisabledAcknowledged": {"type": "boolean"}
+      }
+    },
+    "note": {"type": "string", "minLength": 1, "maxLength": 1000},
+    "reviewedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "reviewedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "operationalState": {
+      "type": "string",
+      "enum": ["blocked_until_policy_encoded", "not_approved"]
+    }
+  }
+}

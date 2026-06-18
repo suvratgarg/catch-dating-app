@@ -1,7 +1,7 @@
 ---
 doc_id: ui_architecture
-version: 1.3.0
-updated: 2026-06-05
+version: 1.4.0
+updated: 2026-06-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -130,6 +130,72 @@ Do not add a new token namespace just because one raw value exists. Add a
 primitive token when the value belongs to the global scale; add a semantic role
 when the value names a repeated relationship; keep one-off component geometry in
 the component until reuse is real.
+
+## Design Tooling Workflow
+
+Catch's UI system has separate sources of truth by layer:
+
+| Layer | Source of truth | Mirrors / consumers |
+|---|---|---|
+| Primitive token values | `design/tokens/catch.tokens.json` | Flutter generated tokens, website CSS, Figma variables, Claude/Figma context packs |
+| Flutter widget behavior | `lib/core/widgets/catch_*.dart` | Component contracts, goldens/captures, Figma Code Connect snippets |
+| Cross-tool component API | `design/components/catch.components.json` | Claude handoff rules, Figma component mappings, Code Connect templates, future registry docs |
+| Screen composition | Feature Flutter code | UI captures, gallery screenshots, design review packs |
+
+Design tools may propose screen structure, but production code should be built
+from registered `Catch*` primitives or explicit deltas to the registry. Treat
+arbitrary JSX/CSS exports as visual proposal material, not implementation source.
+A handoff is implementation-ready only when it names component contract ids,
+props, slots, and any missing primitive/token deltas.
+
+### Style Dictionary Decision
+
+Style Dictionary is a candidate token transformation engine, not a component
+translator. Its current value for Catch is standardizing the build backend that
+turns DTCG-shaped token JSON into platform outputs. It does not replace
+`CatchButton`, `CatchField`, `CatchSurface`, or any other Flutter primitive, and
+it does not translate arbitrary React/JSX handoffs into Dart widgets.
+
+As of 2026-06-17, keep `dart run tool/design_tokens.dart` as the production
+generator. The current generator owns Catch-specific behavior that would need
+custom Style Dictionary formats/actions:
+
+- the exact Dart grouping used by `GeneratedCatchColorTokens`,
+  `GeneratedCatchGradientTokens`, spacing, radius, activity pigment, font, and
+  website token classes;
+- Flutter `Color`, alpha, gradient, and dimension serialization;
+- website CSS variable naming plus temporary legacy aliases;
+- website font asset syncing and `--check` staleness behavior; and
+- no additional Node dependency in the critical Flutter token path.
+
+Adopt Style Dictionary only after a spike proves all gates:
+
+1. Generated Dart and CSS are byte-equivalent, or the intentional diff is small
+   and reviewed.
+2. Catch custom formats cover gradients, semantic class grouping, legacy
+   website aliases, font asset copying, and deterministic `--check` output.
+3. DTCG source compatibility remains explicit; no tool-specific token format
+   becomes the source of truth.
+4. Figma/Tokens Studio sync benefits are real enough to justify the extra Node
+   dependency and custom format maintenance.
+5. Component contracts remain separate; no Style Dictionary output is treated as
+   widget implementation.
+
+### Component Contract Registry
+
+`design/components/catch.components.json` is the first cross-tool component
+contract registry. It describes public `Catch*` primitive APIs, states, slots,
+DTCG token references, Dart roles, and handoff names. Validate it with:
+
+```sh
+node tool/design/check_component_contracts.mjs
+```
+
+The design context pack exports the registry as
+`design_context_pack/design_system/components.json` so Claude Design, Figma, and
+future Code Connect work can consume the same allowed primitive list. Figma
+component URLs and Code Connect templates start as `unmapped`/`planned` and must
+be filled as the Figma library is built.
 
 `CatchBreakpoints` is intentionally rejected for now. Whole-window responsive
 classes already live in `ScreenSize`, while local component reflow thresholds

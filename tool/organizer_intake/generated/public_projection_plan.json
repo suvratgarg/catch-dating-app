@@ -1,0 +1,174 @@
+{
+  "entries": [
+    {
+      "appVisibility": "hidden",
+      "blockedBy": [],
+      "canonicalPath": "/organizers/afterfly/",
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "indexStatus": "indexed",
+      "legacyPaths": [
+        "/organizers/indore/afterfly-run-club/"
+      ],
+      "pageMode": "singleEntity",
+      "projectionStatus": "ready",
+      "publicListing": {
+        "category": "eventOrganizer",
+        "description": "AFTER FLY is an Indore organizer candidate discovered through public event evidence. The current draft should remain website-only until an admin reviews identity, surfaces, cadence, and owner-safe copy.",
+        "formats": [
+          "Social runs",
+          "Run-and-rave",
+          "Fitness/wellness community",
+          "Music social"
+        ],
+        "headline": "AFTER FLY organizer profile",
+        "id": "afterfly",
+        "indexing": "index, follow",
+        "markets": [
+          {
+            "countryCode": "IN",
+            "displayName": "Indore",
+            "eventFilter": {
+              "citySlug": "indore",
+              "mode": "eventCity"
+            },
+            "marketSlug": "indore"
+          }
+        ],
+        "missingEvidence": [
+          "Current event cadence after March 2025",
+          "Owner or preferred business contact",
+          "Logo or media permission",
+          "Whether every discovered Afterfly surface belongs to this organizer"
+        ],
+        "name": "AFTER FLY",
+        "path": "/organizers/afterfly/",
+        "slug": "afterfly",
+        "sources": [
+          {
+            "confidence": "high",
+            "href": "https://luma.com/pxgmph3b",
+            "label": "Luma",
+            "type": "luma"
+          },
+          {
+            "confidence": "high",
+            "href": "https://www.instagram.com/afterfly.in/",
+            "label": "Instagram",
+            "type": "instagram"
+          }
+        ],
+        "sourceSummary": "A public Luma event page connects AFTER FLY to an Indore run-and-rave event in March 2025 and embedded event data lists Instagram handle afterfly.in.",
+        "status": "unclaimed"
+      },
+      "publishStatus": "published",
+      "reviewDecision": {
+        "appVisibility": "hidden",
+        "decidedAt": "2026-06-18",
+        "decision": "approve_public",
+        "decisionBatchId": "2026-06-18-afterfly-approve-public",
+        "reviewer": "suvrat",
+        "sourceFile": "tool/organizer_intake/review_decisions/2026-06-18-afterfly-approve-public.json"
+      }
+    },
+    {
+      "appVisibility": "hidden",
+      "blockedBy": [],
+      "canonicalPath": "/organizers/bhag/",
+      "displayName": "Bhag Club",
+      "entityId": "bhag",
+      "indexStatus": "indexed",
+      "legacyPaths": [
+        "/organizers/delhi/bhag-run-club/"
+      ],
+      "pageMode": "singleEntity",
+      "projectionStatus": "ready",
+      "publicListing": {
+        "category": "brand",
+        "description": "Bhag Club appears to be a running community and brand with public web and event-platform evidence. The entity should be represented once, with city-filtered events, rather than duplicated into separate city logins.",
+        "formats": [
+          "Running community",
+          "Training programs",
+          "Social runs"
+        ],
+        "headline": "Bhag Club organizer profile",
+        "id": "bhag",
+        "indexing": "index, follow",
+        "markets": [
+          {
+            "countryCode": "IN",
+            "displayName": "Delhi NCR",
+            "eventFilter": {
+              "citySlug": "delhi-ncr",
+              "mode": "eventCity"
+            },
+            "marketSlug": "delhi-ncr"
+          }
+        ],
+        "missingEvidence": [
+          "Whether Delhi NCR should be the primary market or only one market",
+          "Current city-specific event cadence",
+          "Owner or preferred business contact",
+          "Logo or media permission"
+        ],
+        "name": "Bhag Club",
+        "path": "/organizers/bhag/",
+        "slug": "bhag",
+        "sources": [
+          {
+            "confidence": "high",
+            "href": "https://thebhag.in/",
+            "label": "Official website",
+            "type": "officialWebsite"
+          },
+          {
+            "confidence": "high",
+            "href": "https://www.instagram.com/bhagclub/",
+            "label": "Instagram",
+            "type": "instagram"
+          },
+          {
+            "confidence": "high",
+            "href": "https://luma.com/ixj7uqiu",
+            "label": "Luma",
+            "type": "luma"
+          }
+        ],
+        "sourceSummary": "The official Bhag site and a Luma event page provide evidence for running programming, but the city-specific public listing still needs admin review.",
+        "status": "unclaimed"
+      },
+      "publishStatus": "published",
+      "reviewDecision": {
+        "appVisibility": "hidden",
+        "decidedAt": "2026-06-18",
+        "decision": "approve_public",
+        "decisionBatchId": "2026-06-18-bhag-approve-public",
+        "reviewer": "suvrat",
+        "sourceFile": "tool/organizer_intake/review_decisions/2026-06-18-bhag-approve-public.json"
+      }
+    }
+  ],
+  "generatedFrom": {
+    "batches": [
+      "tool/organizer_intake/batches/2026-06-17-foundation.json"
+    ],
+    "reviewDecisionBatches": [
+      "tool/organizer_intake/review_decisions/2026-06-18-afterfly-approve-public.json",
+      "tool/organizer_intake/review_decisions/2026-06-18-bhag-approve-public.json"
+    ],
+    "reviewQueue": "tool/organizer_intake/generated/admin_review_queue.json"
+  },
+  "guardrails": [
+    "Do not import blocked projections into Firestore clubs.",
+    "Public website approval and app discoverability are separate gates.",
+    "Admin approval publishes and indexes website pages by default under organizer-intake-v1.",
+    "Recurring event crawling remains disabled until a separate crawl policy review."
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "appDiscoverable": 0,
+    "approvedPublic": 2,
+    "blocked": 0,
+    "entities": 2
+  }
+}

@@ -1,22 +1,25 @@
 [
   {
-    "id": "afterfly-run-club-indore",
+    "id": "afterfly",
     "listingVariant": "unclaimedScraped",
-    "dataOrigin": "scrapedSeed",
+    "dataOrigin": "organizerIntake",
     "name": "AFTER FLY",
-    "slug": "afterfly-run-club",
+    "slug": "afterfly",
     "city": "Indore",
     "citySlug": "indore",
-    "region": "Madhya Pradesh",
+    "region": "",
     "country": "India",
-    "path": "/organizers/indore/afterfly-run-club/",
-    "category": "Progressive techno run club",
+    "path": "/organizers/afterfly/",
+    "legacyPaths": [
+      "/organizers/indore/afterfly-run-club/"
+    ],
+    "category": "eventOrganizer",
     "status": "unclaimed",
-    "indexing": "noindex, follow",
+    "indexing": "index, follow",
     "sourceConfidence": "high",
-    "headline": "AFTER FLY run club in Indore",
-    "description": "AFTER FLY is an Indore run-and-rave organizer discovered through a public Luma event page. This unclaimed profile summarizes verified public facts for owner review and stays out of search until cadence, contact, and claim details are confirmed.",
-    "sourceSummary": "A public Luma event page confirms AFTER FLY hosted AFTERFLY TAKEOFF RUN & RAVE in Indore on 2025-03-16. The page describes a movement-and-music community and the embedded event data lists Instagram handle afterfly.in.",
+    "headline": "AFTER FLY organizer profile",
+    "description": "AFTER FLY is an Indore organizer candidate discovered through public event evidence. The current draft should remain website-only until an admin reviews identity, surfaces, cadence, and owner-safe copy.",
+    "sourceSummary": "A public Luma event page connects AFTER FLY to an Indore run-and-rave event in March 2025 and embedded event data lists Instagram handle afterfly.in.",
     "logo": {
       "mode": "monogram",
       "text": "AF",
@@ -26,231 +29,169 @@
       "Social runs",
       "Run-and-rave",
       "Fitness/wellness community",
-      "Techno afters"
+      "Music social"
     ],
     "facts": [
       {
-        "label": "Location",
-        "value": "Indore, Madhya Pradesh"
+        "label": "Market",
+        "value": "Indore"
       },
       {
-        "label": "Official source name",
-        "value": "AFTER FLY"
-      },
-      {
-        "label": "Instagram",
-        "value": "afterfly.in"
-      },
-      {
-        "label": "Format",
-        "value": "Run club plus post-run music social"
-      },
-      {
-        "label": "Verified event",
-        "value": "AFTERFLY TAKEOFF RUN & RAVE, 16 Mar 2025"
-      },
-      {
-        "label": "Categories",
-        "value": "Fitness, Wellness"
+        "label": "Organizer type",
+        "value": "eventOrganizer"
       },
       {
         "label": "Claim state",
-        "value": "Unclaimed seed listing"
+        "value": "Unclaimed"
       },
       {
         "label": "Indexing",
-        "value": "Noindex until verified"
-      }
-    ],
-    "eventEvidence": [
+        "value": "index, follow"
+      },
       {
-        "title": "AFTERFLY TAKEOFF RUN & RAVE",
-        "date": "16 Mar 2025, 7:00 AM-11:00 AM IST",
-        "location": "Indore, Madhya Pradesh",
-        "summary": "The public Luma page lists a Sunday social run from Traffic Park near Daly College followed by a post-run techno social at Tropico Cafe.",
-        "facts": [
-          "Hosted by AFTER FLY",
-          "Listed under Fitness and Wellness",
-          "Run segment described as 2.2 km and optional for walkers",
-          "Page copy states INR 499 per person with payment link sent by Instagram DM after registering",
-          "Luma registration is closed on the public page"
-        ],
-        "sourceLabel": "Luma event page",
-        "sourceHref": "https://luma.com/pxgmph3b"
+        "label": "App visibility",
+        "value": "hidden"
+      },
+      {
+        "label": "Source surfaces",
+        "value": "2"
       }
     ],
+    "eventEvidence": [],
     "reviews": [],
     "fitNotes": [
-      "Repeatable run-club programming is a strong Catch organizer category because guests already share a live activity.",
-      "Indore gives the first test outside the largest metros, which helps validate city coverage and source sparsity.",
-      "Run-and-rave programming is a useful adjacency test because it blends low-pressure activity, curated crowd energy, and a post-event social setting."
+      "This profile was promoted from organizer intake after manual admin review.",
+      "Events remain market-filtered under one canonical organizer identity.",
+      "Claiming unlocks owner-managed copy, official media, Catch events, and verified reviews."
     ],
     "missingEvidence": [
-      "Owner verification or claim",
-      "Logo or profile image permission",
       "Current event cadence after March 2025",
-      "Owner or host contact outside platform relay",
-      "Current booking or attendance process",
-      "Whether the public Instagram handle is the preferred owner contact"
+      "Owner or preferred business contact",
+      "Logo or media permission",
+      "Whether every discovered Afterfly surface belongs to this organizer"
     ],
     "sources": [
       {
-        "type": "user_supplied",
-        "label": "User seed input",
-        "detail": "User requested an initial listing for Afterfly Run Club in Indore.",
-        "confidence": "medium"
-      },
-      {
-        "type": "public_event_page",
-        "label": "Luma event page",
-        "detail": "AFTERFLY TAKEOFF RUN & RAVE is a public event page hosted by AFTER FLY in Indore, with Fitness and Wellness categories, registration closed, and source copy describing a run plus post-run techno social.",
+        "type": "luma",
+        "label": "Luma",
+        "detail": "Luma was reviewed as an organizer-intake surface with high confidence.",
         "confidence": "high",
         "href": "https://luma.com/pxgmph3b"
       },
       {
-        "type": "embedded_event_data",
-        "label": "Luma structured event data",
-        "detail": "The event page's structured data confirms the Indore location and 2025-03-16 timing; embedded page data lists instagram_handle afterfly.in.",
+        "type": "instagram",
+        "label": "Instagram",
+        "detail": "Instagram was reviewed as an organizer-intake surface with high confidence.",
         "confidence": "high",
-        "href": "https://luma.com/pxgmph3b"
+        "href": "https://www.instagram.com/afterfly.in/"
       }
     ],
     "claim": {
-      "href": "/organizers/indore/afterfly-run-club/#claim",
+      "href": "/organizers/afterfly/#claim",
       "label": "Claim this listing"
     },
-    "lastVerifiedAt": "2026-06-10",
-    "searchText": "after fly indore indore progressive techno run club afterfly.in social runs run-and-rave fitness/wellness techno afters social runs run-and-rave fitness/wellness community techno afters"
+    "lastVerifiedAt": "2026-06-18",
+    "searchText": "after fly eventorganizer indore indore social runs run-and-rave fitness/wellness community music social indore luma luma was reviewed as an organizer-intake surface with high confidence. instagram instagram was reviewed as an organizer-intake surface with high confidence."
   },
   {
-    "id": "bhag-run-club-delhi",
+    "id": "bhag",
     "listingVariant": "unclaimedScraped",
-    "dataOrigin": "scrapedSeed",
+    "dataOrigin": "organizerIntake",
     "name": "Bhag Club",
-    "slug": "bhag-run-club",
-    "city": "Delhi",
-    "citySlug": "delhi",
-    "region": "Delhi",
+    "slug": "bhag",
+    "city": "Delhi NCR",
+    "citySlug": "delhi-ncr",
+    "region": "",
     "country": "India",
-    "path": "/organizers/delhi/bhag-run-club/",
-    "category": "Running community and activewear brand",
+    "path": "/organizers/bhag/",
+    "legacyPaths": [
+      "/organizers/delhi/bhag-run-club/"
+    ],
+    "category": "brand",
     "status": "unclaimed",
-    "indexing": "noindex, follow",
-    "sourceConfidence": "medium",
-    "headline": "Bhag Club running community in Delhi",
-    "description": "Bhag Club appears to be both a running community and an activewear brand. Its official website describes weekly runs, training programs, and performance activewear; this Delhi-targeted Catch profile remains unclaimed and noindexed until a stable Delhi-specific source is verified.",
-    "sourceSummary": "The official Bhag site confirms the brand/community positioning. A public Luma event page confirms a BHAG RUNS calendar and Bhag Club host profile with a Gurgaon event, but not a Delhi-specific event in this pass.",
+    "indexing": "index, follow",
+    "sourceConfidence": "high",
+    "headline": "Bhag Club organizer profile",
+    "description": "Bhag Club appears to be a running community and brand with public web and event-platform evidence. The entity should be represented once, with city-filtered events, rather than duplicated into separate city logins.",
+    "sourceSummary": "The official Bhag site and a Luma event page provide evidence for running programming, but the city-specific public listing still needs admin review.",
     "logo": {
       "mode": "monogram",
       "text": "BC",
       "status": "not_verified"
     },
     "formats": [
-      "Community runs",
+      "Running community",
       "Training programs",
-      "Fitness events",
-      "Activewear"
+      "Social runs"
     ],
     "facts": [
       {
-        "label": "Location target",
-        "value": "Delhi, India"
+        "label": "Market",
+        "value": "Delhi NCR"
       },
       {
-        "label": "City evidence",
-        "value": "Delhi is user-supplied; Gurgaon event evidence found"
-      },
-      {
-        "label": "Official source name",
-        "value": "Bhag Club"
-      },
-      {
-        "label": "Luma calendar",
-        "value": "BHAG RUNS"
-      },
-      {
-        "label": "Instagram",
-        "value": "bhagclub"
-      },
-      {
-        "label": "Verified event",
-        "value": "Bhag GGN, 8 Nov 2025"
+        "label": "Organizer type",
+        "value": "brand"
       },
       {
         "label": "Claim state",
-        "value": "Unclaimed seed listing"
+        "value": "Unclaimed"
       },
       {
         "label": "Indexing",
-        "value": "Noindex until Delhi evidence is verified"
-      }
-    ],
-    "eventEvidence": [
+        "value": "index, follow"
+      },
       {
-        "title": "Bhag GGN",
-        "date": "8 Nov 2025, 7:00 AM-9:00 AM IST",
-        "location": "Espressos AnyDay, Gurugram, Haryana",
-        "summary": "The public Luma page lists a Bhag Club-hosted Gurgaon run from Espressos AnyDay with a 3KM distance and free general admission.",
-        "facts": [
-          "Hosted by Bhag Club under the BHAG RUNS calendar",
-          "Listed under Fitness",
-          "Event location is Gurugram, not Delhi",
-          "Registration questions include Instagram, age, gender, emergency contact, attendance intent, and consent",
-          "Embedded host data lists website thebhag.in and social handle bhagclub"
-        ],
-        "sourceLabel": "Luma event page",
-        "sourceHref": "https://luma.com/ixj7uqiu"
+        "label": "App visibility",
+        "value": "hidden"
+      },
+      {
+        "label": "Source surfaces",
+        "value": "3"
       }
     ],
+    "eventEvidence": [],
     "reviews": [],
     "fitNotes": [
-      "BHAG shows why the entity model needs to cover brands and organizers, not only clubs.",
-      "The Luma event includes registration questions, consent, emergency contact, and attendance intent, which maps to Catch's host onboarding and event policy surfaces.",
-      "The official website combines commerce and community; organizer profiles need to model external websites and source-backed event evidence separately from Catch events."
+      "This profile was promoted from organizer intake after manual admin review.",
+      "Events remain market-filtered under one canonical organizer identity.",
+      "Claiming unlocks owner-managed copy, official media, Catch events, and verified reviews."
     ],
     "missingEvidence": [
-      "Stable Delhi-specific event evidence",
-      "Owner verification or claim",
-      "Logo or profile image permission",
-      "Current Delhi cadence",
-      "Preferred business contact for the organizer",
-      "Whether Bhag Club should be represented as one national brand or separate city chapters"
+      "Whether Delhi NCR should be the primary market or only one market",
+      "Current city-specific event cadence",
+      "Owner or preferred business contact",
+      "Logo or media permission"
     ],
     "sources": [
       {
-        "type": "user_supplied",
-        "label": "User seed input",
-        "detail": "User requested a listing for Bhag Run Club in Delhi.",
-        "confidence": "medium"
-      },
-      {
-        "type": "official_site",
-        "label": "Official Bhag site",
-        "detail": "The official site describes THE BHAG Club as a running community with weekly runs, training programs, and activewear.",
+        "type": "officialWebsite",
+        "label": "Official website",
+        "detail": "Official website was reviewed as an organizer-intake surface with high confidence.",
         "confidence": "high",
         "href": "https://thebhag.in/"
       },
       {
-        "type": "official_registration_page",
-        "label": "Bhag registration page",
-        "detail": "The official registration page shares the same brand metadata and registration surface for Bhag events.",
-        "confidence": "medium",
-        "href": "https://thebhag.in/pages/registration"
+        "type": "instagram",
+        "label": "Instagram",
+        "detail": "Instagram was reviewed as an organizer-intake surface with high confidence.",
+        "confidence": "high",
+        "href": "https://www.instagram.com/bhagclub/"
       },
       {
-        "type": "public_event_page",
-        "label": "Luma event page",
-        "detail": "Bhag GGN is a public Luma event tied to BHAG RUNS and hosted by Bhag Club, with a Gurugram start point and Fitness category.",
+        "type": "luma",
+        "label": "Luma",
+        "detail": "Luma was reviewed as an organizer-intake surface with high confidence.",
         "confidence": "high",
         "href": "https://luma.com/ixj7uqiu"
       }
     ],
     "claim": {
-      "href": "/organizers/delhi/bhag-run-club/#claim",
+      "href": "/organizers/bhag/#claim",
       "label": "Claim this listing"
     },
-    "lastVerifiedAt": "2026-06-10",
-    "searchText": "bhag club delhi delhi running community and activewear brand bhagclub running community training programs activewear fitness events community runs training programs fitness events activewear"
+    "lastVerifiedAt": "2026-06-18",
+    "searchText": "bhag club brand delhi ncr delhi-ncr running community training programs social runs delhi ncr official website official website was reviewed as an organizer-intake surface with high confidence. instagram instagram was reviewed as an organizer-intake surface with high confidence. luma luma was reviewed as an organizer-intake surface with high confidence."
   },
   {
     "id": "club-sales-sunday-table",

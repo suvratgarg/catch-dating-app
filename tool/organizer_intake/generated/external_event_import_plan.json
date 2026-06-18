@@ -1,0 +1,41 @@
+{
+  "actions": [],
+  "commands": {
+    "exportReviewDecisions": "node tool/organizer_intake/export_event_review_decisions_from_firestore.mjs --env dev --date YYYY-MM-DD",
+    "ingest": "node tool/organizer_intake/ingest_event_sources.mjs",
+    "plan": "node tool/organizer_intake/plan_external_event_imports.mjs"
+  },
+  "generatedFrom": {
+    "batches": [],
+    "externalEventCandidateQueue": "tool/organizer_intake/generated/external_event_candidate_queue.json",
+    "locationResolutionBatches": [],
+    "reviewDecisionBatches": []
+  },
+  "guardrails": [
+    "event_import_writes_disabled_by_default",
+    "approved_event_candidates_project_to_read_only_external_events",
+    "catch_booking_payments_reservations_and_waitlists_remain_disabled",
+    "duplicate_platform_listings_merge_as_outbound_links",
+    "missing_coordinates_defaults_or_copy_policy_blocks_event_writes",
+    "plan_outputs_are_review_artifacts_not_firestore_mutations"
+  ],
+  "policy": {
+    "reason": "External event import is planned for read-only review only. No Catch booking, payment, reservation, waitlist, notification, or recurring crawl is enabled by this artifact.",
+    "status": "disabled",
+    "writeEnabled": false
+  },
+  "schemaVersion": 1,
+  "summary": {
+    "actionsByPlatform": {},
+    "actionsByStatus": {},
+    "blocked": 0,
+    "candidates": 0,
+    "duplicateEventKeys": 0,
+    "mergedSourceLinks": 0,
+    "proposedCreates": 0,
+    "proposedReadOnlyEvents": 0,
+    "rejected": 0,
+    "waitingReview": 0,
+    "writeReady": 0
+  }
+}

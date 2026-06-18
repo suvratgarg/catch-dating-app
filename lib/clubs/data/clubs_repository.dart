@@ -73,7 +73,9 @@ class ClubsRepository {
             .orderBy('createdAt', descending: true)
             .limit(discoveryLimit)
             .snapshots()
-            .map((snap) => snap.docs.map((d) => d.data()).toList()),
+            .map(
+              (snap) => _appDiscoverableClubs(snap.docs.map((d) => d.data())),
+            ),
         context: const BackendErrorContext(
           service: BackendService.firestore,
           action: 'watch clubs by location',
@@ -88,7 +90,9 @@ class ClubsRepository {
             .orderBy('rating', descending: true)
             .limit(discoveryLimit)
             .snapshots()
-            .map((snap) => snap.docs.map((d) => d.data()).toList()),
+            .map(
+              (snap) => _appDiscoverableClubs(snap.docs.map((d) => d.data())),
+            ),
         context: const BackendErrorContext(
           service: BackendService.firestore,
           action: 'watch clubs by rating',
@@ -153,7 +157,7 @@ class ClubsRepository {
         for (final id in uniqueIds)
           if (byId[id] != null) byId[id]!,
       ];
-      controller.add(clubs);
+      controller.add(_appDiscoverableClubs(clubs));
     }
 
     controller = StreamController<List<Club>>(
@@ -199,6 +203,9 @@ class ClubsRepository {
       ),
     );
   }
+
+  static List<Club> _appDiscoverableClubs(Iterable<Club> clubs) =>
+      clubs.where((club) => club.isAppDiscoverable).toList(growable: false);
 
   // ── Write ──────────────────────────────────────────────────────────────────
 

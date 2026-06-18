@@ -366,7 +366,7 @@ Live Apple verification showed:
    - `GOOGLE_MAPS_IOS_API_KEY_PROD`
 
 3. Set `CATCH_APP_ROLE=host` in the workflow if Xcode Cloud does not infer host
-   mode from the `host-prod` scheme through `CI_XCODEBUILD_SCHEME`.
+   mode from the `host-prod` scheme through `CI_XCODE_SCHEME`.
 
 4. Run one Xcode Cloud archive and upload it to TestFlight.
 

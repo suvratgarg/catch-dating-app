@@ -210,6 +210,79 @@ abstract class _$ExploreSearchQuery extends $Notifier<String> {
   }
 }
 
+/// The search query after a short typing pause, trimmed for use as the
+/// server-search key.
+///
+/// Keeps a fast typist from firing one Cloud Function call per keystroke — we
+/// issue at most one search per settled phrase. Local substring filtering stays
+/// instant because it reads [exploreSearchQueryProvider] directly; only the
+/// (networked) server search keys off this debounced value. Short/empty queries
+/// settle immediately — a clear shouldn't lag, and [exploreServerSearch] ignores
+/// queries under two characters anyway. Longer queries wait out a ~300ms pause;
+/// if the query changes again the pending delay is cancelled (via onDispose), so
+/// rapid typing collapses to a single server call. Trimming also means a trailing
+/// space no longer mints a distinct search key for an otherwise identical query.
+
+@ProviderFor(debouncedExploreSearchQuery)
+final debouncedExploreSearchQueryProvider =
+    DebouncedExploreSearchQueryProvider._();
+
+/// The search query after a short typing pause, trimmed for use as the
+/// server-search key.
+///
+/// Keeps a fast typist from firing one Cloud Function call per keystroke — we
+/// issue at most one search per settled phrase. Local substring filtering stays
+/// instant because it reads [exploreSearchQueryProvider] directly; only the
+/// (networked) server search keys off this debounced value. Short/empty queries
+/// settle immediately — a clear shouldn't lag, and [exploreServerSearch] ignores
+/// queries under two characters anyway. Longer queries wait out a ~300ms pause;
+/// if the query changes again the pending delay is cancelled (via onDispose), so
+/// rapid typing collapses to a single server call. Trimming also means a trailing
+/// space no longer mints a distinct search key for an otherwise identical query.
+
+final class DebouncedExploreSearchQueryProvider
+    extends $FunctionalProvider<AsyncValue<String>, String, FutureOr<String>>
+    with $FutureModifier<String>, $FutureProvider<String> {
+  /// The search query after a short typing pause, trimmed for use as the
+  /// server-search key.
+  ///
+  /// Keeps a fast typist from firing one Cloud Function call per keystroke — we
+  /// issue at most one search per settled phrase. Local substring filtering stays
+  /// instant because it reads [exploreSearchQueryProvider] directly; only the
+  /// (networked) server search keys off this debounced value. Short/empty queries
+  /// settle immediately — a clear shouldn't lag, and [exploreServerSearch] ignores
+  /// queries under two characters anyway. Longer queries wait out a ~300ms pause;
+  /// if the query changes again the pending delay is cancelled (via onDispose), so
+  /// rapid typing collapses to a single server call. Trimming also means a trailing
+  /// space no longer mints a distinct search key for an otherwise identical query.
+  DebouncedExploreSearchQueryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'debouncedExploreSearchQueryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$debouncedExploreSearchQueryHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<String> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String> create(Ref ref) {
+    return debouncedExploreSearchQuery(ref);
+  }
+}
+
+String _$debouncedExploreSearchQueryHash() =>
+    r'9643b08f8a74e46e7c3c9183933a16e3ecab37aa';
+
 @ProviderFor(ExploreFilters)
 final exploreFiltersProvider = ExploreFiltersProvider._();
 
@@ -242,7 +315,7 @@ final class ExploreFiltersProvider
   }
 }
 
-String _$exploreFiltersHash() => r'eecbc04f0291a16be14582f554d3bc3fcef46544';
+String _$exploreFiltersHash() => r'0893aca903bdd33a179d425d3726e3017ec5347d';
 
 abstract class _$ExploreFilters extends $Notifier<ExploreFilterSelection> {
   ExploreFilterSelection build();
@@ -374,7 +447,7 @@ final class FilteredExploreClubsProvider
 }
 
 String _$filteredExploreClubsHash() =>
-    r'80b04ddd99bfd7ed6c475d18bd431ed6889ca26f';
+    r'784ffc4dfd4474bfe27dc9e801276c22ba1b76ba';
 
 /// **Pattern D: View-model provider**
 ///

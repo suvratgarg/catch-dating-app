@@ -117,7 +117,9 @@ flutter --version
 flutter precache --ios
 
 app_role="${CATCH_APP_ROLE:-consumer}"
-if [[ "${CI_XCODEBUILD_SCHEME:-}" == host-* ]]; then
+xcode_scheme="${CI_XCODE_SCHEME:-${CI_XCODEBUILD_SCHEME:-}}"
+
+if [[ "$xcode_scheme" == host-* && -z "${CATCH_APP_ROLE:-}" ]]; then
   app_role="host"
 fi
 case "$app_role" in
@@ -128,6 +130,18 @@ case "$app_role" in
     exit 64
     ;;
 esac
+
+if [[ "$xcode_scheme" == host-* && "$app_role" != "host" ]]; then
+  echo "Xcode scheme '$xcode_scheme' is a host scheme, but CATCH_APP_ROLE resolved to '$app_role'."
+  echo "Set CATCH_APP_ROLE=host for host Xcode Cloud workflows."
+  exit 64
+fi
+
+if [[ "$app_role" == "host" && -n "$xcode_scheme" && "$xcode_scheme" != host-* ]]; then
+  echo "CATCH_APP_ROLE=host requires a host-* Xcode scheme when a CI scheme variable is set; got '$xcode_scheme'."
+  echo "Archive the host-prod scheme or remove the conflicting CATCH_APP_ROLE override."
+  exit 64
+fi
 
 version_line="$(awk '/^version: / { print $2; exit }' pubspec.yaml)"
 build_name="${FLUTTER_BUILD_NAME:-${version_line%%+*}}"

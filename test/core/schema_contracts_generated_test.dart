@@ -164,6 +164,7 @@ void main() {
         'UserProfileDocument',
         'PublicProfileDocument',
         'EventDocument',
+        'ExternalEventDocument',
         'EventSuccessPlanDocument',
         'EventSuccessFeedbackDocument',
         'EventSuccessPreferenceDocument',
@@ -185,6 +186,7 @@ void main() {
       containsAll(<String>[
         'firestore/users.schema.json',
         'firestore/events.schema.json',
+        'firestore/external_events.schema.json',
         'firestore/event_success_plans.schema.json',
         'firestore/event_success_feedback.schema.json',
         'firestore/event_success_preferences.schema.json',
@@ -216,9 +218,17 @@ void main() {
         'valid/public_profile_doc.json',
       ),
       _SchemaFixtureCase.valid('EventDocument', 'valid/event_doc.json'),
+      _SchemaFixtureCase.valid(
+        'ExternalEventDocument',
+        'valid/external_event_doc.json',
+      ),
       _SchemaFixtureCase.invalid(
         'EventDocument',
         'invalid/event_doc_invalid_pace.json',
+      ),
+      _SchemaFixtureCase.invalid(
+        'ExternalEventDocument',
+        'invalid/external_event_doc_enables_catch_booking.json',
       ),
       _SchemaFixtureCase.valid(
         'EventSuccessPlanDocument',

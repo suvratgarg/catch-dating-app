@@ -1,0 +1,371 @@
+{
+  "applyRequires": [
+    "Export and review live admin decisions before generation.",
+    "Run a dry-run Firestore sync before any remote write.",
+    "Never overwrite claimed or owner-bound organizer club documents."
+  ],
+  "generatedFrom": {
+    "batches": [
+      "tool/organizer_intake/batches/2026-06-17-foundation.json"
+    ],
+    "projectionPlan": "tool/organizer_intake/generated/public_projection_plan.json",
+    "reviewDecisionBatches": [
+      "tool/organizer_intake/review_decisions/2026-06-18-afterfly-approve-public.json",
+      "tool/organizer_intake/review_decisions/2026-06-18-bhag-approve-public.json"
+    ]
+  },
+  "guardrails": [
+    "Only approved public organizer projections become Firestore claim targets.",
+    "Claim targets start unclaimed and app-hidden unless the review decision explicitly approved app discoverability.",
+    "Claim approval, not public website publication, unlocks app discoverability by default.",
+    "Existing claimed organizer documents must be skipped by the sync tool."
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "discoverable": 0,
+    "hidden": 2,
+    "targets": 2
+  },
+  "targets": [
+    {
+      "appVisibility": "hidden",
+      "canonicalPath": "/organizers/afterfly/",
+      "claimState": "unclaimed",
+      "clubDocument": {
+        "appVisibility": "hidden",
+        "archived": false,
+        "archivedAt": null,
+        "archiveReason": null,
+        "area": "Indore",
+        "cityName": "Indore",
+        "claim": {
+          "claimHref": "/organizers/afterfly/#claim",
+          "lastClaimRequestId": null,
+          "state": "unclaimed"
+        },
+        "countryCode": "IN",
+        "countryName": "India",
+        "createdAt": {
+          "_nanoseconds": 0,
+          "_seconds": 1781740800
+        },
+        "description": "AFTER FLY is an Indore organizer candidate discovered through public event evidence. The current draft should remain website-only until an admin reviews identity, surfaces, cadence, and owner-safe copy.",
+        "displayCategory": "Event organizer",
+        "email": null,
+        "entityKind": "eventOrganizer",
+        "entitySubtypes": [
+          "eventOrganizer",
+          "Afterfly",
+          "Afterfly Run Club",
+          "AFTERFLY"
+        ],
+        "hostAvatarUrl": null,
+        "hostDefaults": {
+          "primaryActivityKind": "socialRun",
+          "supportedActivityKinds": [
+            "socialRun",
+            "openActivity"
+          ]
+        },
+        "hostName": null,
+        "hostProfiles": [],
+        "hostUserId": null,
+        "hostUserIds": [],
+        "imageUrl": null,
+        "instagramHandle": "afterfly.in",
+        "location": "indore",
+        "memberCount": 0,
+        "name": "AFTER FLY",
+        "nextEventAt": null,
+        "nextEventLabel": null,
+        "ownership": {
+          "claimedAt": null,
+          "claimedByUid": null,
+          "hostUserIds": [],
+          "ownerUserId": null,
+          "primaryHostUserId": null,
+          "state": "programmatic"
+        },
+        "ownerUserId": null,
+        "phoneNumber": null,
+        "profileImageUrl": null,
+        "provenance": {
+          "lastVerifiedAt": {
+            "_nanoseconds": 0,
+            "_seconds": 1781740800
+          },
+          "origin": "scraper",
+          "sourceConfidence": "high",
+          "verificationStatus": "sourceBacked"
+        },
+        "publicPage": {
+          "canonicalPath": "/organizers/afterfly/",
+          "citySlug": "indore",
+          "indexStatus": "indexed",
+          "lastRenderedAt": null,
+          "publishStatus": "published",
+          "robots": "index, follow",
+          "seoDescription": "AFTER FLY is an Indore organizer candidate discovered through public event evidence. The current draft should remain website-only until an admin reviews identity, surfaces, cadence, and owner-safe copy.",
+          "seoTitle": "AFTER FLY organizer profile | Catch",
+          "slug": "afterfly"
+        },
+        "publicProfile": {
+          "eventEvidence": [],
+          "facts": [
+            {
+              "label": "Market",
+              "value": "Indore"
+            },
+            {
+              "label": "Organizer type",
+              "value": "Event organizer"
+            },
+            {
+              "label": "Claim state",
+              "value": "Unclaimed"
+            }
+          ],
+          "fitNotes": [
+            "This organizer profile was promoted from public source evidence after manual admin review.",
+            "Claiming unlocks owner-managed copy, official media, Catch events, and review tools."
+          ],
+          "formats": [
+            "Social runs",
+            "Run-and-rave",
+            "Fitness/wellness community",
+            "Music social"
+          ],
+          "headline": "AFTER FLY organizer profile",
+          "missingEvidence": [
+            "Current event cadence after March 2025",
+            "Owner or preferred business contact",
+            "Logo or media permission",
+            "Whether every discovered Afterfly surface belongs to this organizer"
+          ],
+          "sourceSummary": "A public Luma event page connects AFTER FLY to an Indore run-and-rave event in March 2025 and embedded event data lists Instagram handle afterfly.in.",
+          "summary": "AFTER FLY is an Indore organizer candidate discovered through public event evidence. The current draft should remain website-only until an admin reviews identity, surfaces, cadence, and owner-safe copy."
+        },
+        "publicSources": [
+          {
+            "confidence": "high",
+            "detail": "Luma source for AFTER FLY",
+            "href": "https://luma.com/pxgmph3b",
+            "label": "Luma",
+            "lastCheckedAt": {
+              "_nanoseconds": 0,
+              "_seconds": 1781740800
+            },
+            "type": "luma"
+          },
+          {
+            "confidence": "high",
+            "detail": "Instagram source for AFTER FLY",
+            "href": "https://www.instagram.com/afterfly.in/",
+            "label": "Instagram",
+            "lastCheckedAt": {
+              "_nanoseconds": 0,
+              "_seconds": 1781740800
+            },
+            "type": "instagram"
+          }
+        ],
+        "rating": 0,
+        "regionName": null,
+        "reviewCount": 0,
+        "status": "active",
+        "tags": [
+          "Social runs",
+          "Run-and-rave",
+          "Fitness/wellness community",
+          "Music social",
+          "Event organizer",
+          "Indore"
+        ],
+        "verifiedReviewCount": 0
+      },
+      "clubId": "afterfly",
+      "entityId": "afterfly",
+      "legacyPaths": [
+        "/organizers/indore/afterfly-run-club/"
+      ],
+      "path": "clubs/afterfly",
+      "sourceHash": "657a4a48c3a431e717ba2ce7c6d336a2f24d1c5a966b60210234846c22ebdb5a",
+      "writeMode": "create_or_refresh_unclaimed_public_fields"
+    },
+    {
+      "appVisibility": "hidden",
+      "canonicalPath": "/organizers/bhag/",
+      "claimState": "unclaimed",
+      "clubDocument": {
+        "appVisibility": "hidden",
+        "archived": false,
+        "archivedAt": null,
+        "archiveReason": null,
+        "area": "Delhi NCR",
+        "cityName": "Delhi NCR",
+        "claim": {
+          "claimHref": "/organizers/bhag/#claim",
+          "lastClaimRequestId": null,
+          "state": "unclaimed"
+        },
+        "countryCode": "IN",
+        "countryName": "India",
+        "createdAt": {
+          "_nanoseconds": 0,
+          "_seconds": 1781740800
+        },
+        "description": "Bhag Club appears to be a running community and brand with public web and event-platform evidence. The entity should be represented once, with city-filtered events, rather than duplicated into separate city logins.",
+        "displayCategory": "Brand",
+        "email": null,
+        "entityKind": "brand",
+        "entitySubtypes": [
+          "brand",
+          "Bhag Run Club",
+          "BHAG RUNS",
+          "The Bhag"
+        ],
+        "hostAvatarUrl": null,
+        "hostDefaults": {
+          "primaryActivityKind": "running",
+          "supportedActivityKinds": [
+            "running",
+            "socialRun",
+            "openActivity"
+          ]
+        },
+        "hostName": null,
+        "hostProfiles": [],
+        "hostUserId": null,
+        "hostUserIds": [],
+        "imageUrl": null,
+        "instagramHandle": "bhagclub",
+        "location": "delhi-ncr",
+        "memberCount": 0,
+        "name": "Bhag Club",
+        "nextEventAt": null,
+        "nextEventLabel": null,
+        "ownership": {
+          "claimedAt": null,
+          "claimedByUid": null,
+          "hostUserIds": [],
+          "ownerUserId": null,
+          "primaryHostUserId": null,
+          "state": "programmatic"
+        },
+        "ownerUserId": null,
+        "phoneNumber": null,
+        "profileImageUrl": null,
+        "provenance": {
+          "lastVerifiedAt": {
+            "_nanoseconds": 0,
+            "_seconds": 1781740800
+          },
+          "origin": "scraper",
+          "sourceConfidence": "high",
+          "verificationStatus": "sourceBacked"
+        },
+        "publicPage": {
+          "canonicalPath": "/organizers/bhag/",
+          "citySlug": "delhi-ncr",
+          "indexStatus": "indexed",
+          "lastRenderedAt": null,
+          "publishStatus": "published",
+          "robots": "index, follow",
+          "seoDescription": "Bhag Club appears to be a running community and brand with public web and event-platform evidence. The entity should be represented once, with city-filtered events, rather than duplicated into separate city logins.",
+          "seoTitle": "Bhag Club organizer profile | Catch",
+          "slug": "bhag"
+        },
+        "publicProfile": {
+          "eventEvidence": [],
+          "facts": [
+            {
+              "label": "Market",
+              "value": "Delhi NCR"
+            },
+            {
+              "label": "Organizer type",
+              "value": "Brand"
+            },
+            {
+              "label": "Claim state",
+              "value": "Unclaimed"
+            }
+          ],
+          "fitNotes": [
+            "This organizer profile was promoted from public source evidence after manual admin review.",
+            "Claiming unlocks owner-managed copy, official media, Catch events, and review tools."
+          ],
+          "formats": [
+            "Running community",
+            "Training programs",
+            "Social runs"
+          ],
+          "headline": "Bhag Club organizer profile",
+          "missingEvidence": [
+            "Whether Delhi NCR should be the primary market or only one market",
+            "Current city-specific event cadence",
+            "Owner or preferred business contact",
+            "Logo or media permission"
+          ],
+          "sourceSummary": "The official Bhag site and a Luma event page provide evidence for running programming, but the city-specific public listing still needs admin review.",
+          "summary": "Bhag Club appears to be a running community and brand with public web and event-platform evidence. The entity should be represented once, with city-filtered events, rather than duplicated into separate city logins."
+        },
+        "publicSources": [
+          {
+            "confidence": "high",
+            "detail": "Official website source for Bhag Club",
+            "href": "https://thebhag.in/",
+            "label": "Official website",
+            "lastCheckedAt": {
+              "_nanoseconds": 0,
+              "_seconds": 1781740800
+            },
+            "type": "officialWebsite"
+          },
+          {
+            "confidence": "high",
+            "detail": "Instagram source for Bhag Club",
+            "href": "https://www.instagram.com/bhagclub/",
+            "label": "Instagram",
+            "lastCheckedAt": {
+              "_nanoseconds": 0,
+              "_seconds": 1781740800
+            },
+            "type": "instagram"
+          },
+          {
+            "confidence": "high",
+            "detail": "Luma source for Bhag Club",
+            "href": "https://luma.com/ixj7uqiu",
+            "label": "Luma",
+            "lastCheckedAt": {
+              "_nanoseconds": 0,
+              "_seconds": 1781740800
+            },
+            "type": "luma"
+          }
+        ],
+        "rating": 0,
+        "regionName": null,
+        "reviewCount": 0,
+        "status": "active",
+        "tags": [
+          "Running community",
+          "Training programs",
+          "Social runs",
+          "Brand",
+          "Delhi NCR"
+        ],
+        "verifiedReviewCount": 0
+      },
+      "clubId": "bhag",
+      "entityId": "bhag",
+      "legacyPaths": [
+        "/organizers/delhi/bhag-run-club/"
+      ],
+      "path": "clubs/bhag",
+      "sourceHash": "3d189b59fcabb2b9e5eb8808a4e3a1f817d55d9fbcc8b013098f8bcf4f99877a",
+      "writeMode": "create_or_refresh_unclaimed_public_fields"
+    }
+  ]
+}

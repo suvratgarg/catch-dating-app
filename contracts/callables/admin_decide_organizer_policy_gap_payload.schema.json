@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_decide_organizer_policy_gap_payload.schema.json",
+  "title": "AdminDecideOrganizerPolicyGapCallablePayload",
+  "description": "Callable payload accepted by adminDecideOrganizerPolicyGap. This records a manual product/admin review decision for an organizer intake policy gap without enabling crawls, provider lookups, imports, defaults, or naming migrations.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["gapId", "decision", "requiredInputsReviewed", "checklist", "note"],
+  "properties": {
+    "gapId": {"type": "string", "minLength": 1, "maxLength": 160},
+    "decision": {"type": "string", "enum": ["accept", "hold", "reject"]},
+    "requiredInputsReviewed": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {"type": "string", "minLength": 1, "maxLength": 240},
+      "uniqueItems": true
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requiredInputsReviewed",
+        "costAndSafetyReviewed",
+        "implementationOwnerReviewed",
+        "behaviorStillDisabledAcknowledged"
+      ],
+      "properties": {
+        "requiredInputsReviewed": {"type": "boolean"},
+        "costAndSafetyReviewed": {"type": "boolean"},
+        "implementationOwnerReviewed": {"type": "boolean"},
+        "behaviorStillDisabledAcknowledged": {"type": "boolean"}
+      }
+    },
+    "note": {"type": "string", "minLength": 1, "maxLength": 1000}
+  }
+}

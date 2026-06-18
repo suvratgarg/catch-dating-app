@@ -37,6 +37,7 @@ class _ContextPackBuilder {
     final tokens = _tokensJson();
     final activityPalette = _activityPaletteJson();
     final typography = await _typographyJson(tester);
+    final componentContracts = _componentContractsJson();
     final galleryManifest = _galleryManifestJson();
 
     _writeText('README.txt', _readmeText());
@@ -47,6 +48,7 @@ class _ContextPackBuilder {
     _writeJson('design_system/tokens.json', tokens);
     _writeJson('design_system/activity_palette.json', activityPalette);
     _writeJson('design_system/typography.json', typography);
+    _writeJson('design_system/components.json', componentContracts);
     _writeText(
       'design_system/specimens/catch_design_system.html',
       _specimenHtml(
@@ -76,10 +78,13 @@ Upload surface for Claude Design and other AI design tools. This pack is generat
 from the live Flutter design system; do not edit generated files by hand.
 
 Use the design_system files to establish or refresh the organization-level design
-system. Use gallery shots as per-screen taste anchors during a redesign chat.
+system. Use design_system/components.json as the allowed Catch primitive
+contract list for handoffs. Use gallery shots as per-screen taste anchors during
+a redesign chat.
 
 Generated sources:
 - docs/design_language.md
+- design/components/catch.components.json
 - lib/core/theme/catch_tokens.dart
 - lib/core/theme/activity_palette.dart
 - lib/core/theme/catch_text_styles.dart
@@ -263,6 +268,13 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
       'deep': _colorValue(swatch.deep),
       'soft': _colorValue(swatch.soft),
     };
+  }
+
+  Map<String, Object?> _componentContractsJson() {
+    return jsonDecode(
+          File('design/components/catch.components.json').readAsStringSync(),
+        )
+        as Map<String, Object?>;
   }
 
   Future<Map<String, Object?>> _typographyJson(WidgetTester tester) async {

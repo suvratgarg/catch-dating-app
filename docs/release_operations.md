@@ -691,7 +691,7 @@ distribution:
 
 1. Add or update the Xcode Cloud workflow to archive `host-prod` with
    `Release-host-prod`. Set `CATCH_APP_ROLE=host` on the workflow if Xcode Cloud
-   does not expose the `host-prod` scheme through `CI_XCODEBUILD_SCHEME`.
+   does not expose the `host-prod` scheme through `CI_XCODE_SCHEME`.
    App Store Connect web for app id `6778927317` currently says to create the
    workflow in Xcode.
 2. Confirm provisioning, Associated Domains, HealthKit, Maps key injection,

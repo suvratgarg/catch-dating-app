@@ -1,0 +1,359 @@
+{
+  "generatedFrom": {
+    "batches": [
+      "tool/organizer_intake/batches/2026-06-17-foundation.json"
+    ],
+    "curationDecisionBatches": [
+      "tool/organizer_intake/curation_decisions/2026-06-17-afterfly-wrong-website.json"
+    ],
+    "dedupeIndex": "tool/organizer_intake/generated/organizer_dedupe_index.json",
+    "reviewDecisionBatches": [
+      "tool/organizer_intake/review_decisions/2026-06-18-afterfly-approve-public.json",
+      "tool/organizer_intake/review_decisions/2026-06-18-bhag-approve-public.json"
+    ]
+  },
+  "items": [
+    {
+      "blockers": [],
+      "canonicalPath": "/organizers/afterfly/",
+      "curation": {
+        "attachedSurfaces": [],
+        "mergedFrom": [],
+        "mergedInto": null,
+        "splitSurfaces": [],
+        "suppressed": null,
+        "surfaceDecisions": [
+          {
+            "decision": "reject_wrong_entity",
+            "reason": "User-reported first-party-looking Afterfly website appears to belong to a different entity.",
+            "surfaceId": "afterfly-wrong-website-reported"
+          }
+        ]
+      },
+      "displayName": "AFTER FLY",
+      "entityId": "afterfly",
+      "gates": [
+        {
+          "description": "Every public promotion requires an explicit admin decision.",
+          "id": "manual_admin_review_required",
+          "passed": true
+        },
+        {
+          "description": "At least one active public surface supports organizer identity.",
+          "id": "identity_surface_present",
+          "passed": true
+        },
+        {
+          "description": "Entity has one canonical profile with market filters, not duplicate city identities.",
+          "id": "market_model_present",
+          "passed": true
+        },
+        {
+          "description": "Draft has original, owner-safe public copy.",
+          "id": "owner_safe_public_draft",
+          "passed": true
+        },
+        {
+          "description": "No strong identifier is shared by multiple organizer entities.",
+          "id": "no_strong_dedupe_conflicts",
+          "passed": true
+        },
+        {
+          "description": "Surface inventory is explicit enough for admin QA.",
+          "id": "surface_inventory_reviewable",
+          "passed": true
+        },
+        {
+          "description": "Unclaimed public listings remain hidden from the native app by default.",
+          "id": "app_visibility_separate_from_publication",
+          "passed": true
+        },
+        {
+          "description": "Future event extraction is modeled but not scheduled.",
+          "id": "crawl_disabled_by_default",
+          "passed": true
+        }
+      ],
+      "legacyPaths": [
+        "/organizers/indore/afterfly-run-club/"
+      ],
+      "markets": [
+        {
+          "countryCode": "IN",
+          "displayName": "Indore",
+          "eventFilter": {
+            "citySlug": "indore",
+            "mode": "eventCity"
+          },
+          "marketSlug": "indore"
+        }
+      ],
+      "priority": "p0",
+      "promotionPolicy": {
+        "adminApprovalIndexesWebsite": true,
+        "adminApprovalPublishesWebsite": true,
+        "appVisibilityAfterPublicApproval": "hidden"
+      },
+      "recommendedAction": "Admin can review final copy and approve public indexed website listing.",
+      "relationshipToCatch": "unclaimed",
+      "reviewDecision": {
+        "appVisibility": "hidden",
+        "decidedAt": "2026-06-18",
+        "decision": "approve_public",
+        "decisionBatchId": "2026-06-18-afterfly-approve-public",
+        "reviewer": "suvrat",
+        "sourceFile": "tool/organizer_intake/review_decisions/2026-06-18-afterfly-approve-public.json"
+      },
+      "reviewNotes": [
+        "Organizer, not Host, is the canonical entity name. Hosts are user accounts with operating rights.",
+        "Admin public approval should publish and index the website page, but keep app discoverability hidden until claim or explicit app approval.",
+        "Surface afterfly-wrong-website-reported reject_wrong_entity: User-reported first-party-looking Afterfly website appears to belong to a different entity."
+      ],
+      "reviewStatus": "needs_admin_review",
+      "surfaces": [
+        {
+          "crawl": {
+            "eventDiscoveryStatus": "disabled",
+            "policy": "manualOnly",
+            "supportsEventExtraction": false
+          },
+          "normalizedKey": "instagram:afterfly.in",
+          "notes": "Treat as likely primary social handle, but admin should confirm it is current and owner-controlled.",
+          "platform": "instagram",
+          "role": "primary",
+          "status": "active",
+          "surfaceId": "afterfly-instagram-primary",
+          "surfaceKind": "socialProfile",
+          "url": "https://www.instagram.com/afterfly.in/"
+        },
+        {
+          "crawl": {
+            "eventDiscoveryStatus": "disabled",
+            "policy": "manualOnly",
+            "supportsEventExtraction": false
+          },
+          "normalizedKey": "instagram:afterflyrunclub",
+          "notes": "Keep as ambiguous so future search does not silently re-promote it.",
+          "platform": "instagram",
+          "role": "ambiguous",
+          "status": "ambiguous",
+          "surfaceId": "afterfly-instagram-probed-runclub",
+          "surfaceKind": "socialProfile",
+          "url": "https://www.instagram.com/afterflyrunclub/"
+        },
+        {
+          "crawl": {
+            "eventDiscoveryStatus": "disabled",
+            "policy": "manualOnly",
+            "supportsEventExtraction": true
+          },
+          "normalizedKey": "luma:event:pxgmph3b",
+          "notes": "Good event evidence, but not a recurring event calendar by itself.",
+          "platform": "luma",
+          "role": "primary",
+          "status": "active",
+          "surfaceId": "afterfly-luma-takeoff-run-rave",
+          "surfaceKind": "eventListing",
+          "url": "https://luma.com/pxgmph3b"
+        },
+        {
+          "crawl": {
+            "eventDiscoveryStatus": "disabled",
+            "policy": "manualOnly",
+            "supportsEventExtraction": true
+          },
+          "normalizedKey": null,
+          "notes": "Admin or a future search run should resolve the exact URL before this surface can affect dedupe.",
+          "platform": "sortMyScene",
+          "role": "ambiguous",
+          "status": "candidate",
+          "surfaceId": "afterfly-sortmyscene-reported",
+          "surfaceKind": "organizerProfile",
+          "url": null
+        },
+        {
+          "crawl": {
+            "eventDiscoveryStatus": "disabled",
+            "policy": "blocked",
+            "supportsEventExtraction": false
+          },
+          "normalizedKey": null,
+          "notes": "Rejected surfaces are retained to prevent future false-positive merges. Curated reject_wrong_entity: User-reported first-party-looking Afterfly website appears to belong to a different entity.",
+          "platform": "officialWebsite",
+          "role": "rejected",
+          "status": "rejected",
+          "surfaceId": "afterfly-wrong-website-reported",
+          "surfaceKind": "wrongEntity",
+          "url": null
+        }
+      ],
+      "surfaceSummary": {
+        "active": 2,
+        "ambiguous": 1,
+        "candidate": 1,
+        "platforms": {
+          "instagram": 2,
+          "luma": 1,
+          "officialWebsite": 1,
+          "sortMyScene": 1
+        },
+        "rejected": 1,
+        "total": 5
+      },
+      "taskType": "promotion_review"
+    },
+    {
+      "blockers": [],
+      "canonicalPath": "/organizers/bhag/",
+      "curation": null,
+      "displayName": "Bhag Club",
+      "entityId": "bhag",
+      "gates": [
+        {
+          "description": "Every public promotion requires an explicit admin decision.",
+          "id": "manual_admin_review_required",
+          "passed": true
+        },
+        {
+          "description": "At least one active public surface supports organizer identity.",
+          "id": "identity_surface_present",
+          "passed": true
+        },
+        {
+          "description": "Entity has one canonical profile with market filters, not duplicate city identities.",
+          "id": "market_model_present",
+          "passed": true
+        },
+        {
+          "description": "Draft has original, owner-safe public copy.",
+          "id": "owner_safe_public_draft",
+          "passed": true
+        },
+        {
+          "description": "No strong identifier is shared by multiple organizer entities.",
+          "id": "no_strong_dedupe_conflicts",
+          "passed": true
+        },
+        {
+          "description": "Surface inventory is explicit enough for admin QA.",
+          "id": "surface_inventory_reviewable",
+          "passed": true
+        },
+        {
+          "description": "Unclaimed public listings remain hidden from the native app by default.",
+          "id": "app_visibility_separate_from_publication",
+          "passed": true
+        },
+        {
+          "description": "Future event extraction is modeled but not scheduled.",
+          "id": "crawl_disabled_by_default",
+          "passed": true
+        }
+      ],
+      "legacyPaths": [
+        "/organizers/delhi/bhag-run-club/"
+      ],
+      "markets": [
+        {
+          "countryCode": "IN",
+          "displayName": "Delhi NCR",
+          "eventFilter": {
+            "citySlug": "delhi-ncr",
+            "mode": "eventCity"
+          },
+          "marketSlug": "delhi-ncr"
+        }
+      ],
+      "priority": "p0",
+      "promotionPolicy": {
+        "adminApprovalIndexesWebsite": true,
+        "adminApprovalPublishesWebsite": true,
+        "appVisibilityAfterPublicApproval": "hidden"
+      },
+      "recommendedAction": "Admin can review final copy and approve public indexed website listing.",
+      "relationshipToCatch": "unclaimed",
+      "reviewDecision": {
+        "appVisibility": "hidden",
+        "decidedAt": "2026-06-18",
+        "decision": "approve_public",
+        "decisionBatchId": "2026-06-18-bhag-approve-public",
+        "reviewer": "suvrat",
+        "sourceFile": "tool/organizer_intake/review_decisions/2026-06-18-bhag-approve-public.json"
+      },
+      "reviewNotes": [
+        "Use one organizer entity with market filtering rather than separate city identities.",
+        "Do not make the app discoverable until claimed or explicitly app-approved."
+      ],
+      "reviewStatus": "needs_more_evidence",
+      "surfaces": [
+        {
+          "crawl": {
+            "eventDiscoveryStatus": "disabled",
+            "policy": "manualOnly",
+            "supportsEventExtraction": false
+          },
+          "normalizedKey": "instagram:bhagclub",
+          "notes": "Likely primary social surface; admin should verify owner control before claim handoff.",
+          "platform": "instagram",
+          "role": "primary",
+          "status": "active",
+          "surfaceId": "bhag-instagram-primary",
+          "surfaceKind": "socialProfile",
+          "url": "https://www.instagram.com/bhagclub/"
+        },
+        {
+          "crawl": {
+            "eventDiscoveryStatus": "disabled",
+            "policy": "manualOnly",
+            "supportsEventExtraction": true
+          },
+          "normalizedKey": "luma:event:ixj7uqiu",
+          "notes": "Useful event evidence, but market scope needs manual review.",
+          "platform": "luma",
+          "role": "secondary",
+          "status": "active",
+          "surfaceId": "bhag-luma-runs",
+          "surfaceKind": "eventListing",
+          "url": "https://luma.com/ixj7uqiu"
+        },
+        {
+          "crawl": {
+            "eventDiscoveryStatus": "disabled",
+            "policy": "manualOnly",
+            "supportsEventExtraction": false
+          },
+          "normalizedKey": "domain:thebhag.in",
+          "notes": "Strong identity surface, but not enough by itself to decide city page shape.",
+          "platform": "officialWebsite",
+          "role": "primary",
+          "status": "active",
+          "surfaceId": "bhag-official-site",
+          "surfaceKind": "website",
+          "url": "https://thebhag.in/"
+        }
+      ],
+      "surfaceSummary": {
+        "active": 3,
+        "ambiguous": 0,
+        "candidate": 0,
+        "platforms": {
+          "instagram": 1,
+          "luma": 1,
+          "officialWebsite": 1
+        },
+        "rejected": 0,
+        "total": 3
+      },
+      "taskType": "evidence_review"
+    }
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "approvedByDecision": 2,
+    "blocked": 0,
+    "evidenceReview": 1,
+    "promotionReview": 1,
+    "readyForManualApproval": 2,
+    "total": 2
+  }
+}

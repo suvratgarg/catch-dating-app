@@ -1,0 +1,23 @@
+{
+  "decidedAt": "2026-06-18",
+  "decisionBatchId": "2026-06-18-afterfly-approve-public",
+  "decisions": [
+    {
+      "appVisibility": "hidden",
+      "checklist": {
+        "crawlDisabledReviewed": true,
+        "identityReviewed": true,
+        "manualReportsReviewed": true,
+        "marketScopeReviewed": true,
+        "mediaRightsReviewed": true,
+        "ownerSafeCopyReviewed": true,
+        "surfaceInventoryReviewed": true
+      },
+      "decision": "approve_public",
+      "entityId": "afterfly",
+      "note": "User approved AFTER FLY for a public unclaimed Host page on 2026-06-18; app visibility remains hidden until claim or explicit app approval."
+    }
+  ],
+  "reviewer": "suvrat",
+  "schemaVersion": 1
+}

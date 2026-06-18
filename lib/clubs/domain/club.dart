@@ -9,6 +9,8 @@ part 'club.g.dart';
 
 enum ClubLifecycleStatus { active, archived }
 
+enum ClubAppVisibility { discoverable, hidden }
+
 @freezed
 abstract class Club with _$Club {
   const Club._();
@@ -43,6 +45,7 @@ abstract class Club with _$Club {
     @Default(false) bool archived,
     @TimestampConverter() DateTime? archivedAt,
     String? archiveReason,
+    @Default(ClubAppVisibility.discoverable) ClubAppVisibility appVisibility,
     @Default(ClubHostDefaults()) ClubHostDefaults hostDefaults,
   }) = _Club;
 
@@ -88,6 +91,11 @@ abstract class Club with _$Club {
   }
 
   String? get logoPhotoUrl => logoPhoto?.thumbnailOrUrl ?? profileImageUrl;
+
+  bool get isAppDiscoverable =>
+      appVisibility == ClubAppVisibility.discoverable &&
+      status == ClubLifecycleStatus.active &&
+      !archived;
 }
 
 enum ClubHostRole { owner, host }

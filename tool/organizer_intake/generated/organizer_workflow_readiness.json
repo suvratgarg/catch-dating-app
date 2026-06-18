@@ -1,0 +1,198 @@
+{
+  "commands": {
+    "exportCurationAndReview": "node tool/organizer_intake/run_promotion_pipeline.mjs --export-curation-decisions --export-review-decisions --export-event-review-decisions --export-event-location-resolutions --export-policy-gap-decisions --date YYYY-MM-DD --write-export",
+    "exportCurationDecisions": "node tool/organizer_intake/run_promotion_pipeline.mjs --export-curation-decisions --date YYYY-MM-DD --write-export",
+    "exportEventLocationResolutions": "node tool/organizer_intake/run_promotion_pipeline.mjs --export-event-location-resolutions --date YYYY-MM-DD --write-export",
+    "exportEventReviewDecisions": "node tool/organizer_intake/run_promotion_pipeline.mjs --export-event-review-decisions --date YYYY-MM-DD --write-export",
+    "exportPolicyGapDecisions": "node tool/organizer_intake/run_promotion_pipeline.mjs --export-policy-gap-decisions --date YYYY-MM-DD --write-export",
+    "exportReviewDecisions": "node tool/organizer_intake/run_promotion_pipeline.mjs --export-review-decisions --date YYYY-MM-DD --write-export",
+    "localPromotionPreview": "node tool/organizer_intake/run_promotion_pipeline.mjs",
+    "planExternalEventImports": "node tool/organizer_intake/plan_external_event_imports.mjs",
+    "planExternalEventLocationResolution": "node tool/organizer_intake/plan_event_location_resolution.mjs",
+    "preflightExternalEventImports": "node tool/organizer_intake/preflight_external_event_imports.mjs",
+    "reviewedClaimSync": "node tool/organizer_intake/run_promotion_pipeline.mjs --claim-sync firestore --env ENV",
+    "writeClaimTargets": "node tool/organizer_intake/run_promotion_pipeline.mjs --claim-sync firestore --env ENV --write-claim-targets"
+  },
+  "gates": [
+    {
+      "detail": "2 canonical host entity record(s), 2 public, 2 claim target(s).",
+      "id": "canonical_host_registry",
+      "label": "Canonical host registry",
+      "nextAction": "Use canonicalHostId as the durable organizer identity before projecting into public pages, legacy clubs, crawls, or event imports.",
+      "status": "ready"
+    },
+    {
+      "detail": "9 evidence record(s), 7 resolved artifact ref(s), 0 surface(s) missing evidence.",
+      "id": "canonical_evidence_index",
+      "label": "Canonical evidence index",
+      "nextAction": "Use evidence record ids as provenance for publication review, crawl planning, and event import planning.",
+      "status": "ready"
+    },
+    {
+      "detail": "2 publication packet(s), 0 ready for manual review, 0 blocked by data.",
+      "id": "publication_review_packets",
+      "label": "Publication review packets",
+      "nextAction": "Keep publication packets regenerated after curation or evidence changes.",
+      "status": "ready"
+    },
+    {
+      "detail": "0 captured surface candidate(s), 0 matched existing entities.",
+      "id": "search_capture_ingestion",
+      "label": "Search capture ingestion",
+      "nextAction": "Capture provider search payloads when a new planned search run is reviewed.",
+      "status": "ready"
+    },
+    {
+      "detail": "2 raw provider payload(s), 2 remote upload blocked, 71465 byte(s) inventoried.",
+      "id": "raw_artifact_storage",
+      "label": "Raw artifact storage",
+      "nextAction": "Choose object-storage bucket, retention days, and deletion policy before recurring crawls upload raw payloads.",
+      "status": "policy_needed"
+    },
+    {
+      "detail": "5 policy packet(s), 25 question(s), 15 still need input.",
+      "id": "policy_decision_packets",
+      "label": "Policy decision packets",
+      "nextAction": "Answer or hold the policy decision packets before enabling crawls, provider lookups, imports, storage, or naming migration.",
+      "status": "policy_needed"
+    },
+    {
+      "detail": "0 external event candidate(s), 0 reviewed, 0 blocked by import policy.",
+      "id": "external_event_candidates",
+      "label": "External event candidates",
+      "nextAction": "Capture reviewed provider event payloads when event import testing is needed.",
+      "status": "ready"
+    },
+    {
+      "detail": "0 location task(s), 0 missing exact coordinate(s).",
+      "id": "external_event_location_resolution",
+      "label": "External event location resolution",
+      "nextAction": "Run the location queue after each event-source ingestion.",
+      "status": "ready"
+    },
+    {
+      "detail": "0 proposed read-only event(s), 0 blocked, 0 write-ready.",
+      "id": "external_event_import_plan",
+      "label": "External event import plan",
+      "nextAction": "Review event candidates before planning any external read-only event writes.",
+      "status": "ready"
+    },
+    {
+      "detail": "0 read-only action(s), 0 invalid projection(s), 0 would publish.",
+      "id": "external_event_import_execution_preflight",
+      "label": "External event import execution preflight",
+      "nextAction": "Run preflight after each import-plan regeneration; keep writes disabled until policy is approved.",
+      "status": "ready"
+    },
+    {
+      "detail": "1 curation operation(s), 0 merge(s), 1 surface decision(s).",
+      "id": "dedupe_curation",
+      "label": "Dedupe curation",
+      "nextAction": "Continue using curation decisions for merges, wrong-entity surfaces, suppressions, and splits before approval.",
+      "status": "ready"
+    },
+    {
+      "detail": "2 private entity review item(s), 2 ready for approval, 0 blocked.",
+      "id": "admin_review",
+      "label": "Manual admin review",
+      "nextAction": "An admin decision is required before any private intake entity becomes public or indexable.",
+      "status": "ready"
+    },
+    {
+      "detail": "2 approved public projection(s), 0 blocked projection(s).",
+      "id": "public_projection",
+      "label": "Public projection",
+      "nextAction": "Export admin review decisions, regenerate intake artifacts, regenerate website listings, then run the promotion bridge check.",
+      "status": "ready"
+    },
+    {
+      "detail": "2 claim target(s), 2 write(s) needed in the local preview, 0 owner-bound skip(s).",
+      "id": "claim_target_sync",
+      "label": "Claim target sync",
+      "nextAction": "Review the generated claim-target sync preview, then run a Firestore dry run before any write.",
+      "status": "ready"
+    },
+    {
+      "detail": "3 crawl-capable surface(s), 0 approved for recurring crawl.",
+      "id": "event_crawl_policy",
+      "label": "Recurring event crawl policy",
+      "nextAction": "Choose provider order, frequency, budget cap, API-vs-scrape fallback, and owner-safety rules before enabling recurring crawls.",
+      "status": "policy_needed"
+    },
+    {
+      "detail": "3 run intent(s), 3 blocked, 0 would fetch.",
+      "id": "event_crawl_run_plan",
+      "label": "Recurring event crawl run plan",
+      "nextAction": "Regenerate the crawl run plan after organizer approval or crawl policy changes.",
+      "status": "ready"
+    },
+    {
+      "detail": "Low-volume curation operations can be recorded through the admin callable and exported into reviewed repo-backed JSON.",
+      "id": "curation_persistence_policy",
+      "label": "Curation persistence",
+      "nextAction": "Export live curation decisions before projection, then review the generated curation batch in git.",
+      "status": "ready"
+    },
+    {
+      "detail": "Host is the public entity label, OrganizerEntity remains the private intake model, and Club remains the app/backend compatibility projection.",
+      "id": "naming_migration_policy",
+      "label": "Naming migration",
+      "nextAction": "Confirm the public Host label, operator account label, URL policy, and legacy Club migration order before broader UI/schema renames.",
+      "status": "policy_needed"
+    }
+  ],
+  "generatedFrom": {
+    "adminReviewQueue": "tool/organizer_intake/generated/admin_review_queue.json",
+    "canonicalEvidenceIndex": "tool/organizer_intake/generated/canonical_evidence_index.json",
+    "canonicalHostEntities": "tool/organizer_intake/generated/canonical_host_entities.json",
+    "claimTargetPlan": "tool/organizer_intake/generated/organizer_claim_targets.json",
+    "claimTargetSyncPreview": "tool/organizer_intake/generated/organizer_claim_target_sync_preview.json",
+    "curationState": "tool/organizer_intake/generated/organizer_curation_state.json",
+    "eventCrawlPlan": "tool/organizer_intake/generated/event_crawl_plan.json",
+    "eventCrawlRunPlan": "tool/organizer_intake/generated/event_crawl_run_plan.json",
+    "externalEventCandidateQueue": "tool/organizer_intake/generated/external_event_candidate_queue.json",
+    "externalEventImportExecutionPlan": "tool/organizer_intake/generated/external_event_import_execution_plan.json",
+    "externalEventImportPlan": "tool/organizer_intake/generated/external_event_import_plan.json",
+    "externalEventLocationResolutionQueue": "tool/organizer_intake/generated/external_event_location_resolution_queue.json",
+    "policyDecisionPackets": "tool/organizer_intake/generated/organizer_policy_decision_packets.json",
+    "projectionPlan": "tool/organizer_intake/generated/public_projection_plan.json",
+    "publicationReviewPackets": "tool/organizer_intake/generated/publication_review_packets.json",
+    "rawArtifactStorageManifest": "tool/organizer_intake/generated/raw_artifact_storage_manifest.json",
+    "searchResultCandidateQueue": "tool/organizer_intake/generated/search_result_candidate_queue.json"
+  },
+  "schemaVersion": 1,
+  "status": "ready_for_claim_sync_review",
+  "summary": {
+    "blocked": 0,
+    "canonicalEvidenceManualReportsWithoutArtifacts": 2,
+    "canonicalEvidenceRecords": 9,
+    "canonicalEvidenceResolvedRefs": 7,
+    "canonicalEvidenceSurfacesWithoutEvidence": 0,
+    "canonicalHostClaimTargets": 2,
+    "canonicalHostEntities": 2,
+    "canonicalHostPublicPublished": 2,
+    "claimSyncReady": true,
+    "claimTargetSyncPreviewCreates": 2,
+    "claimTargetSyncPreviewRefreshes": 0,
+    "claimTargetSyncPreviewSkippedOwnerBound": 0,
+    "claimTargetSyncPreviewWrites": 2,
+    "crawlRunIntents": 3,
+    "gates": 18,
+    "localPromotionPipelineReady": true,
+    "policyDecisionPackets": 5,
+    "policyDecisionQuestions": 25,
+    "policyDecisionUnanswered": 15,
+    "policyNeeded": 4,
+    "publicationReviewBlockedByData": 0,
+    "publicationReviewPackets": 2,
+    "publicationReviewReady": 0,
+    "publicProjectionReady": true,
+    "rawArtifacts": 30,
+    "rawArtifactStorageBlocked": 2,
+    "rawProviderPayloads": 2,
+    "ready": 14,
+    "recurringCrawlEnabled": false,
+    "reviewNeeded": 0,
+    "waiting": 0
+  }
+}
