@@ -40,6 +40,14 @@
   "extensions": {
     "bq-event-success-feedback": "firebase/firestore-bigquery-export@0.3.2",
     "bq-event-success-scorecards": "firebase/firestore-bigquery-export@0.3.2",
+    "bq-host-clubs": "firebase/firestore-bigquery-export@0.3.2",
+    "bq-host-event-invite-links": "firebase/firestore-bigquery-export@0.3.2",
+    "bq-host-event-participations": "firebase/firestore-bigquery-export@0.3.2",
+    "bq-host-events": "firebase/firestore-bigquery-export@0.3.2",
+    "bq-host-matches": "firebase/firestore-bigquery-export@0.3.2",
+    "bq-host-payments": "firebase/firestore-bigquery-export@0.3.2",
+    "bq-host-reviews": "firebase/firestore-bigquery-export@0.3.2",
+    "bq-host-saved-events": "firebase/firestore-bigquery-export@0.3.2",
     "bq-participant-marketplace-metrics": "firebase/firestore-bigquery-export@0.3.2",
     "bq-participant-metric-counters": "firebase/firestore-bigquery-export@0.3.2",
     "bq-participant-momentum": "firebase/firestore-bigquery-export@0.3.2",
@@ -56,6 +64,7 @@
         "**/node_modules/**"
       ],
       "predeploy": [
+        "node tool/env/check_web_hosting_env.mjs marketing",
         "npm run web:marketing:build"
       ],
       "headers": [
@@ -125,6 +134,7 @@
         "**/node_modules/**"
       ],
       "predeploy": [
+        "node tool/env/check_web_hosting_env.mjs admin",
         "npm run web:admin:build"
       ],
       "headers": [

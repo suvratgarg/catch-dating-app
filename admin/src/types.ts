@@ -35,6 +35,101 @@ export interface AdminOverviewResponse {
   }>;
 }
 
+export interface HostAnalyticsQueryPayload {
+  clubId?: string | null;
+  eventId?: string | null;
+  rangePreset?: "7d" | "30d" | "90d" | "month" | "custom";
+  startDate?: string | null;
+  endDate?: string | null;
+  granularity?: "day" | "week" | "month";
+}
+
+export interface HostAnalyticsMetricCard {
+  id: string;
+  label: string;
+  value: number;
+  unit: "count" | "percent" | "money_minor" | "rating";
+  status: "ready" | "partial" | "missing";
+  caption?: string | null;
+}
+
+export interface HostAnalyticsTrendPoint {
+  periodStart: string;
+  periodEnd: string;
+  metrics: Record<string, number>;
+}
+
+export interface HostAnalyticsEventRow {
+  eventId: string;
+  clubId: string;
+  title: string;
+  startTime: string;
+  status: string;
+  capacityLimit: number;
+  bookedCount: number;
+  checkedInCount: number;
+  waitlistedCount: number;
+  fillRate: number;
+  checkInRate: number;
+  grossRevenueMinor: number;
+  currency: string;
+  checkoutStartedCount: number;
+  checkoutDropoffCount: number;
+  paymentCompletedCount: number;
+  paymentFailedCount: number;
+  paymentRefundedCount: number;
+  reviewCount: number;
+  averageRating: number;
+  demandCount: number;
+  inviteOpenCount: number;
+  mutualMatchCount: number;
+  chatStartedCount: number;
+  repeatAttendeeCount: number;
+}
+
+export interface HostAnalyticsResponse {
+  generatedAt: string;
+  timezone: string;
+  range: {
+    startDate: string;
+    endDate: string;
+    granularity: "day" | "week" | "month";
+    preset?: string | null;
+  };
+  scope: {
+    clubIds: string[];
+    eventIds: string[];
+    clubName?: string | null;
+    eventTitle?: string | null;
+  };
+  summaryCards: HostAnalyticsMetricCard[];
+  trend: HostAnalyticsTrendPoint[];
+  topEvents: HostAnalyticsEventRow[];
+  reviewSummary: {
+    newReviews: number;
+    publishedReviews: number;
+    verifiedReviews: number;
+    publicReviews: number;
+    ownerResponseCount: number;
+    averageRating: number;
+  };
+  discoverySummary: {
+    listingViews: number;
+    searchAppearances: number;
+    eventViews: number;
+    organizerSaves: number;
+    eventSaves: number;
+    contactClicks: number;
+    claimClicks: number;
+    outboundClicks: number;
+  };
+  dataQuality: Array<{
+    id: string;
+    state: "ok" | "partial" | "missing";
+    detail: string;
+  }>;
+}
+
 export type DataMode = "sample" | "live";
 
 export type AccessApplicationDecision = "approve" | "deny";

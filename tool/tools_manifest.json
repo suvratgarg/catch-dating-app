@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-06-02",
+  "updated": "2026-06-18",
   "tools": [
     {
       "id": "tool:runner",
@@ -627,6 +627,16 @@
       "checks": ["bash -n tool/validate_firebase_environment.sh"]
     },
     {
+      "id": "env:check-web-hosting",
+      "category": "env",
+      "path": "tool/env/check_web_hosting_env.mjs",
+      "command": "node tool/env/check_web_hosting_env.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Requires explicit Vite Firebase/App Check env before web Hosting deploys.",
+      "checks": ["node --check tool/env/check_web_hosting_env.mjs"]
+    },
+    {
       "id": "firebase:deploy-targets",
       "category": "firebase",
       "path": "tool/deploy_firebase_targets.sh",
@@ -635,6 +645,72 @@
       "status": "active",
       "description": "Deploys Firebase targets in safe order.",
       "checks": ["bash -n tool/deploy_firebase_targets.sh"]
+    },
+    {
+      "id": "analytics:check-host-bigquery",
+      "category": "analytics",
+      "path": "tool/analytics/check_host_analytics_bigquery.mjs",
+      "command": "node tool/analytics/check_host_analytics_bigquery.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates host analytics Firebase exports, BigQuery SQL, and callable wiring.",
+      "checks": [
+        "node --check tool/analytics/check_host_analytics_bigquery.mjs",
+        "node tool/analytics/check_host_analytics_bigquery.mjs"
+      ]
+    },
+    {
+      "id": "analytics:deploy-host-bigquery",
+      "category": "analytics",
+      "path": "tool/analytics/deploy_host_analytics_bigquery.sh",
+      "command": "bash tool/analytics/deploy_host_analytics_bigquery.sh",
+      "safety": "remote-bigquery",
+      "status": "active",
+      "description": "Applies host analytics BigQuery DDL and mart refresh SQL.",
+      "checks": ["bash -n tool/analytics/deploy_host_analytics_bigquery.sh"]
+    },
+    {
+      "id": "analytics:host-bigquery-live-status",
+      "category": "analytics",
+      "path": "tool/analytics/host_analytics_live_status.mjs",
+      "command": "node tool/analytics/host_analytics_live_status.mjs",
+      "safety": "remote-readonly",
+      "status": "active",
+      "description": "Checks live Firebase and BigQuery host analytics deployment status.",
+      "checks": ["node --check tool/analytics/host_analytics_live_status.mjs"]
+    },
+    {
+      "id": "analytics:check-user-bigquery",
+      "category": "analytics",
+      "path": "tool/analytics/check_user_analytics_bigquery.mjs",
+      "command": "node tool/analytics/check_user_analytics_bigquery.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates user analytics BigQuery SQL, callable wiring, and app copy references.",
+      "checks": [
+        "node --check tool/analytics/check_user_analytics_bigquery.mjs",
+        "node tool/analytics/check_user_analytics_bigquery.mjs"
+      ]
+    },
+    {
+      "id": "analytics:deploy-user-bigquery",
+      "category": "analytics",
+      "path": "tool/analytics/deploy_user_analytics_bigquery.sh",
+      "command": "bash tool/analytics/deploy_user_analytics_bigquery.sh",
+      "safety": "remote-bigquery",
+      "status": "active",
+      "description": "Applies user analytics BigQuery DDL and mart refresh SQL.",
+      "checks": ["bash -n tool/analytics/deploy_user_analytics_bigquery.sh"]
+    },
+    {
+      "id": "analytics:user-bigquery-live-status",
+      "category": "analytics",
+      "path": "tool/analytics/user_analytics_live_status.mjs",
+      "command": "node tool/analytics/user_analytics_live_status.mjs",
+      "safety": "remote-readonly",
+      "status": "active",
+      "description": "Checks live Firebase and BigQuery user analytics deployment status.",
+      "checks": ["node --check tool/analytics/user_analytics_live_status.mjs"]
     },
     {
       "id": "platform:apple-flavors",
@@ -910,6 +986,7 @@
       "description": "Lists organizer intake policy gaps and drafts reviewed accept, hold, or reject decisions without enabling crawls, provider lookups, or event imports.",
       "checks": [
         "node --check tool/organizer_intake/policy_gap_decision.mjs",
+        "node --test tool/organizer_intake/policy_gap_decision.test.mjs",
         "node tool/organizer_intake/policy_gap_decision.mjs list",
         "node tool/organizer_intake/policy_gap_decision.mjs draft recurring_event_crawl_policy --decision hold --reviewer codex-dry-run --date 2026-06-17 --note \"Need budget decision.\" --dry-run"
       ]
@@ -1256,7 +1333,7 @@
       "checks": [
         "node --check tool/organizer_intake/sync_claim_targets_to_firestore.mjs",
         "node --test tool/organizer_intake/sync_claim_targets_to_firestore.test.mjs",
-        "node tool/organizer_intake/sync_claim_targets_to_firestore.mjs --fixture tool/organizer_intake/fixtures/existing_club_docs.empty.json --check"
+        "node tool/organizer_intake/sync_claim_targets_to_firestore.mjs --fixture tool/organizer_intake/fixtures/existing_club_docs.empty.json --json"
       ]
     },
     {

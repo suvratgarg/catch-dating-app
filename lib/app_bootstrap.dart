@@ -103,6 +103,7 @@ Future<(Object, StackTrace)?> _initializeFirebaseServices() async {
   await _initializeDefaultFirebaseApp();
   await _activateFirebaseAppCheck();
   await _configureFirebaseAuthTestingSettings();
+  await _debugSignOutOnStartIfRequested();
 
   // Enable offline persistence explicitly — defaults differ by platform
   // (mobile: enabled, web: disabled). Setting it ensures consistent behavior.
@@ -164,6 +165,17 @@ Future<void> _configureFirebaseAuthTestingSettings() async {
   await FirebaseAuth.instance.setSettings(
     appVerificationDisabledForTesting: true,
   );
+}
+
+Future<void> _debugSignOutOnStartIfRequested() async {
+  if (!AppConfig.debugSignOutOnStart) return;
+  if (!AppConfig.shouldDebugSignOutOnStart) {
+    throw StateError(
+      'DEBUG_SIGN_OUT_ON_START is only allowed for non-release builds.',
+    );
+  }
+  debugPrint('Firebase Auth debug sign-out requested at startup.');
+  await FirebaseAuth.instance.signOut();
 }
 
 /// Returns the fetch failure (error, stack) when the initial Remote Config

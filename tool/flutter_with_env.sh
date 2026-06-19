@@ -146,7 +146,7 @@ if [[ "$app_role" == "host" ]]; then
   fi
 fi
 
-"$repo_root/tool/use_firebase_environment.sh" "$environment" "$app_role" >/dev/null
+bash "$repo_root/tool/use_firebase_environment.sh" "$environment" "$app_role" >/dev/null
 
 has_flavor=0
 has_target=0

@@ -63,6 +63,6 @@ for spec in "${copy_specs[@]}"; do
   echo "Applied $source_rel -> $dest_rel"
 done
 
-"$repo_root/tool/validate_firebase_environment.sh" "$environment" "$app_role" >/dev/null
+bash "$repo_root/tool/validate_firebase_environment.sh" "$environment" "$app_role" >/dev/null
 
 echo "Active Firebase environment: $environment ($app_role)"

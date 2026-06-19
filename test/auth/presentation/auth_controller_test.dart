@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +12,8 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../onboarding/onboarding_test_helpers.dart';
 
 void main() {
+  tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
   group('AuthController.sendOtp', () {
     test(
       'prefixes +91 and advances to the OTP step when code is sent',
@@ -250,6 +253,23 @@ void main() {
 
       expect(container.read(authInitialCountryDialCodeProvider), '+61');
       expect(container.read(authControllerProvider).countryCode, '+61');
+    });
+
+    test('host app defaults phone auth to the Catch market', () {
+      AppConfig.configureEntrypointRole(AppRole.host);
+      final binding = TestWidgetsFlutterBinding.ensureInitialized();
+      binding.platformDispatcher.localeTestValue = const Locale('en', 'US');
+      addTearDown(binding.platformDispatcher.clearLocaleTestValue);
+
+      final repository = FakeAuthRepository();
+      final container = ProviderContainer(
+        overrides: [authRepositoryProvider.overrideWithValue(repository)],
+      );
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+
+      expect(container.read(authInitialCountryDialCodeProvider), '+91');
+      expect(container.read(authControllerProvider).countryCode, '+91');
     });
 
     test('defaults country code from the locale provider', () {

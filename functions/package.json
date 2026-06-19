@@ -4,7 +4,7 @@
     "lint": "eslint --ext .js,.ts src",
     "prebuild": "node scripts/clean-lib.cjs",
     "build": "tsc",
-    "test": "npm run build && node --test lib/admin/*.test.js lib/matching/*.test.js lib/marketplace/*.test.js lib/moderation/*.test.js lib/payments/*.test.js lib/places/*.test.js lib/profiles/*.test.js lib/reviews/*.test.js lib/clubs/*.test.js lib/events/*.test.js lib/eventSuccess/*.test.js lib/safety/*.test.js lib/search/*.test.js lib/demoOps/*.test.js lib/shared/*.test.js lib/waitlist/*.test.js test/callable-app-check.test.cjs",
+    "test": "npm run build && node --test lib/admin/*.test.js lib/matching/*.test.js lib/marketplace/*.test.js lib/moderation/*.test.js lib/payments/*.test.js lib/places/*.test.js lib/profiles/*.test.js lib/reviews/*.test.js lib/clubs/*.test.js lib/events/*.test.js lib/eventSuccess/*.test.js lib/analytics/*.test.js lib/safety/*.test.js lib/search/*.test.js lib/demoOps/*.test.js lib/shared/*.test.js lib/waitlist/*.test.js test/callable-app-check.test.cjs",
     "test:rules": "node --test --test-concurrency=1 test/firestore.rules.test.cjs test/storage.rules.test.cjs",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",
@@ -27,6 +27,7 @@
     "date-fns": "^4.4.0",
     "firebase-admin": "^13.10.0",
     "firebase-functions": "^7.2.5",
+    "google-auth-library": "^10.7.0",
     "razorpay": "^2.9.6",
     "sharp": "^0.34.5"
   },

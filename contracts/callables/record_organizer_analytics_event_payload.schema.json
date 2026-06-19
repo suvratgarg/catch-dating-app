@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/record_organizer_analytics_event_payload.schema.json",
+  "title": "RecordOrganizerAnalyticsEventCallablePayload",
+  "description": "Public website analytics event for host-visible organizer metrics. The callable validates organizer scope and writes a raw, aggregate-safe event to BigQuery.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["clubId", "eventName", "pagePath"],
+  "properties": {
+    "clubId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "eventId": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ]
+    },
+    "eventName": {
+      "type": "string",
+      "enum": [
+        "listingView",
+        "searchAppearance",
+        "eventView",
+        "organizerSave",
+        "eventSave",
+        "contactClick",
+        "claimClick",
+        "outboundClick"
+      ]
+    },
+    "pagePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "source": {
+      "type": ["string", "null"],
+      "maxLength": 80
+    },
+    "sessionId": {
+      "type": ["string", "null"],
+      "maxLength": 80
+    },
+    "platform": {
+      "type": ["string", "null"],
+      "maxLength": 40
+    }
+  }
+}

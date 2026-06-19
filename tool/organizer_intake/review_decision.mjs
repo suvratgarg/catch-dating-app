@@ -115,18 +115,11 @@ function draftDecision(rawArgs) {
     appVisibility,
     confirmManualReportsReviewed,
     decision,
+    dryRun,
     entityId,
     item,
     publicationPacketsPath,
   });
-
-  if (existingDecisionFiles(entityId, outputRoot).length > 0) {
-    console.error(`A review decision already exists for ${entityId}:`);
-    for (const file of existingDecisionFiles(entityId, outputRoot)) {
-      console.error(`- ${relative(file)}`);
-    }
-    process.exit(1);
-  }
 
   const decisionBatchId = `${date}-${entityId}-${decision.replaceAll("_", "-")}`;
   const outputPath = path.join(outputRoot, `${decisionBatchId}.json`);
@@ -154,6 +147,15 @@ function draftDecision(rawArgs) {
     console.log(`Would write ${relative(outputPath)}:`);
     console.log(rendered);
     return;
+  }
+
+  const existingFiles = existingDecisionFiles(entityId, outputRoot);
+  if (existingFiles.length > 0) {
+    console.error(`A review decision already exists for ${entityId}:`);
+    for (const file of existingFiles) {
+      console.error(`- ${relative(file)}`);
+    }
+    process.exit(1);
   }
 
   fs.mkdirSync(outputRoot, {recursive: true});
@@ -200,11 +202,12 @@ function assertPublicationDecisionAllowed({
   appVisibility,
   confirmManualReportsReviewed,
   decision,
+  dryRun,
   entityId,
   item,
   publicationPacketsPath,
 }) {
-  if (item.reviewDecision) {
+  if (item.reviewDecision && !dryRun) {
     console.error(
       `Generated review state already has a ${item.reviewDecision.decision} decision for ${entityId}.`
     );
@@ -222,7 +225,7 @@ function assertPublicationDecisionAllowed({
     console.error(`Publication packet ${packet.packetId} does not allow ${decision}.`);
     process.exit(1);
   }
-  if (packet.adminDecision?.currentDecision) {
+  if (packet.adminDecision?.currentDecision && !dryRun) {
     console.error(
       `Publication packet ${packet.packetId} already has a ` +
         `${packet.adminDecision.currentDecision.decision} decision.`
@@ -233,7 +236,9 @@ function assertPublicationDecisionAllowed({
   const evidenceBlockers = packet.evidenceBlockers ?? [];
   const checklist = packet.approvalChecklist ?? {};
   const checklistComplete = Object.values(checklist).every(Boolean);
-  if (packet.status !== "ready_for_manual_publication_review" ||
+  const statusReady = packet.status === "ready_for_manual_publication_review" ||
+    (dryRun && packet.status === "published");
+  if (!statusReady ||
     dataBlockers.length > 0 ||
     evidenceBlockers.length > 0 ||
     !checklistComplete) {

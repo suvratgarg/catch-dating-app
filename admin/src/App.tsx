@@ -30,6 +30,7 @@ import {
   decideOrganizerEventCandidate,
   decideOrganizerIntake,
   decideOrganizerPolicyGap,
+  loadHostAnalytics,
   loadClubDetails,
   loadOverview,
   recordOrganizerCuration,
@@ -38,9 +39,7 @@ import {
   setClubIndexStatus,
 } from "./adminApi";
 import {
-  eventRows,
-  hostGrowth,
-  retentionPoints,
+  sampleHostAnalytics,
   sampleOverview,
 } from "./sampleData";
 import organizerIntakeBridgeJson from "./generated/organizerIntakeBridge.json";
@@ -61,6 +60,9 @@ import {
   AdminUpdateClubDetailsPayload,
   ClubClaimDecision,
   ClubIndexDecision,
+  HostAnalyticsQueryPayload,
+  HostAnalyticsEventRow,
+  HostAnalyticsResponse,
   OrganizerAppVisibility,
   OrganizerCurationOperation,
   OrganizerEntityKind,
@@ -73,6 +75,13 @@ import {
   OrganizerSurfaceDecision,
   OrganizerVerificationStatus,
 } from "./types";
+
+type AnalyticsRangePreset = NonNullable<
+  HostAnalyticsQueryPayload["rangePreset"]
+>;
+type AnalyticsGranularity = NonNullable<
+  HostAnalyticsQueryPayload["granularity"]
+>;
 
 const navigation = [
   {id: "overview", label: "Overview", icon: Activity},
@@ -1850,9 +1859,20 @@ interface OrganizerDetailsFormState {
 export function App() {
   const mode = dataMode();
   const [activeNav, setActiveNav] = useState("overview");
-  const [activeRange, setActiveRange] = useState("7d");
+  const [analyticsRangePreset, setAnalyticsRangePreset] =
+    useState<AnalyticsRangePreset>("30d");
+  const [analyticsGranularity, setAnalyticsGranularity] =
+    useState<AnalyticsGranularity>("day");
+  const [analyticsStartDate, setAnalyticsStartDate] =
+    useState(defaultAnalyticsDate(29));
+  const [analyticsEndDate, setAnalyticsEndDate] =
+    useState(defaultAnalyticsDate(0));
+  const [analyticsClubId, setAnalyticsClubId] = useState("");
+  const [analyticsEventId, setAnalyticsEventId] = useState("");
   const [overview, setOverview] =
     useState<AdminOverviewResponse>(sampleOverview);
+  const [hostAnalytics, setHostAnalytics] =
+    useState<HostAnalyticsResponse>(sampleHostAnalytics);
   const [isLoading, setIsLoading] = useState(false);
   const [decisionInFlight, setDecisionInFlight] =
     useState<Record<string, AccessApplicationDecision>>({});
@@ -1877,11 +1897,35 @@ export function App() {
     return onAuthStateChanged(auth, setUser);
   }, [mode]);
 
+  const analyticsPayload = useMemo(
+    () => buildHostAnalyticsPayload({
+      clubId: analyticsClubId,
+      eventId: analyticsEventId,
+      granularity: analyticsGranularity,
+      rangePreset: analyticsRangePreset,
+      startDate: analyticsStartDate,
+      endDate: analyticsEndDate,
+    }),
+    [
+      analyticsClubId,
+      analyticsEndDate,
+      analyticsEventId,
+      analyticsGranularity,
+      analyticsRangePreset,
+      analyticsStartDate,
+    ]
+  );
+
   const refresh = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      setOverview(await loadOverview());
+      const [nextOverview, nextHostAnalytics] = await Promise.all([
+        loadOverview(),
+        loadHostAnalytics(analyticsPayload),
+      ]);
+      setOverview(nextOverview);
+      setHostAnalytics(nextHostAnalytics);
     } catch (loadError) {
       setError(
         loadError instanceof Error ?
@@ -1891,7 +1935,7 @@ export function App() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [analyticsPayload]);
 
   useEffect(() => {
     if (mode === "live" && !user) return;
@@ -2160,14 +2204,14 @@ export function App() {
               <option value="prod">Prod</option>
             </select>
             <div className="segmented" aria-label="Time range">
-              {["24h", "7d", "30d"].map((range) => (
+              {(["7d", "30d", "90d", "month"] as AnalyticsRangePreset[]).map((range) => (
                 <button
-                  className={activeRange === range ? "selected" : ""}
+                  className={analyticsRangePreset === range ? "selected" : ""}
                   key={range}
-                  onClick={() => setActiveRange(range)}
+                  onClick={() => setAnalyticsRangePreset(range)}
                   type="button"
                 >
-                  {range}
+                  {range === "month" ? "month" : range}
                 </button>
               ))}
             </div>
@@ -2225,6 +2269,24 @@ export function App() {
           />
         ) : (
           <>
+            <AnalyticsControls
+              clubId={analyticsClubId}
+              endDate={analyticsEndDate}
+              eventId={analyticsEventId}
+              granularity={analyticsGranularity}
+              rangePreset={analyticsRangePreset}
+              startDate={analyticsStartDate}
+              onClearScope={() => {
+                setAnalyticsClubId("");
+                setAnalyticsEventId("");
+              }}
+              onClubIdChange={setAnalyticsClubId}
+              onEndDateChange={setAnalyticsEndDate}
+              onEventIdChange={setAnalyticsEventId}
+              onGranularityChange={setAnalyticsGranularity}
+              onRangePresetChange={setAnalyticsRangePreset}
+              onStartDateChange={setAnalyticsStartDate}
+            />
             <section className="metric-grid" aria-label="Key metrics">
               {primaryMetrics.map((metric) => (
                 <MetricTile key={metric.id} metric={metric} />
@@ -2281,27 +2343,33 @@ export function App() {
 
               <Panel
                 icon={<LineChart size={18} strokeWidth={1.9} />}
-                title="Cohort retention"
-                action="M1 58%"
+                title="Attendance trend"
+                action={analyticsMetricAction(hostAnalytics, "attendanceRate")}
               >
-                <LineMiniChart points={retentionPoints} />
+                <LineMiniChart points={analyticsRatePoints(hostAnalytics)} />
               </Panel>
 
               <Panel
                 icon={<Users size={18} strokeWidth={1.9} />}
-                title="Host MoM growth"
-                action="+21%"
+                title="Booking demand"
+                action={analyticsMetricAction(hostAnalytics, "bookings")}
               >
-                <BarMiniChart points={hostGrowth} />
+                <BarMiniChart points={analyticsTrendPoints(
+                  hostAnalytics,
+                  "bookings"
+                )} />
               </Panel>
 
               <Panel
                 className="span-2"
                 icon={<BarChart3 size={18} strokeWidth={1.9} />}
                 title="Event performance"
-                action="Top active events"
+                action={`${hostAnalytics.topEvents.length} ranked`}
               >
-                <EventPerformanceTable />
+                <EventPerformanceTable
+                  events={hostAnalytics.topEvents}
+                  onFocusEvent={setAnalyticsEventId}
+                />
               </Panel>
 
               <Panel
@@ -2317,7 +2385,10 @@ export function App() {
                 title="Data quality"
                 action={overview.timezone}
               >
-                <DataQualityRows overview={overview} />
+                <DataQualityRows
+                  hostAnalytics={hostAnalytics}
+                  overview={overview}
+                />
               </Panel>
             </section>
           </>
@@ -2346,6 +2417,146 @@ function copyForAdminSection(activeNav: string) {
     title: "Overview",
     subtitle: "Live operations, cohort health, finance risk, and marketplace signals.",
   };
+}
+
+function AnalyticsControls({
+  clubId,
+  endDate,
+  eventId,
+  granularity,
+  rangePreset,
+  startDate,
+  onClearScope,
+  onClubIdChange,
+  onEndDateChange,
+  onEventIdChange,
+  onGranularityChange,
+  onRangePresetChange,
+  onStartDateChange,
+}: {
+  clubId: string;
+  endDate: string;
+  eventId: string;
+  granularity: AnalyticsGranularity;
+  rangePreset: AnalyticsRangePreset;
+  startDate: string;
+  onClearScope: () => void;
+  onClubIdChange: (value: string) => void;
+  onEndDateChange: (value: string) => void;
+  onEventIdChange: (value: string) => void;
+  onGranularityChange: (value: AnalyticsGranularity) => void;
+  onRangePresetChange: (value: AnalyticsRangePreset) => void;
+  onStartDateChange: (value: string) => void;
+}) {
+  const hasScope = clubId.trim() || eventId.trim();
+  return (
+    <section className="analytics-controls" aria-label="Host analytics filters">
+      <label className="field-control">
+        <span>Range</span>
+        <select
+          value={rangePreset}
+          onChange={(event) =>
+            onRangePresetChange(event.target.value as AnalyticsRangePreset)
+          }
+        >
+          <option value="7d">Last 7 days</option>
+          <option value="30d">Last 30 days</option>
+          <option value="90d">Last 90 days</option>
+          <option value="month">This month</option>
+          <option value="custom">Custom</option>
+        </select>
+      </label>
+      <label className="field-control">
+        <span>Group by</span>
+        <select
+          value={granularity}
+          onChange={(event) =>
+            onGranularityChange(event.target.value as AnalyticsGranularity)
+          }
+        >
+          <option value="day">Day</option>
+          <option value="week">Week</option>
+          <option value="month">Month</option>
+        </select>
+      </label>
+      {rangePreset === "custom" && (
+        <>
+          <label className="field-control">
+            <span>Start date</span>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(event) => onStartDateChange(event.target.value)}
+            />
+          </label>
+          <label className="field-control">
+            <span>End date</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(event) => onEndDateChange(event.target.value)}
+            />
+          </label>
+        </>
+      )}
+      <label className="field-control">
+        <span>Organizer id</span>
+        <input
+          value={clubId}
+          onChange={(event) => onClubIdChange(event.target.value)}
+          placeholder="all organizers"
+        />
+      </label>
+      <label className="field-control">
+        <span>Event id</span>
+        <input
+          value={eventId}
+          onChange={(event) => onEventIdChange(event.target.value)}
+          placeholder="all events"
+        />
+      </label>
+      <button
+        className="ghost-button analytics-clear"
+        disabled={!hasScope}
+        onClick={onClearScope}
+        type="button"
+      >
+        Clear scope
+      </button>
+    </section>
+  );
+}
+
+function buildHostAnalyticsPayload({
+  clubId,
+  endDate,
+  eventId,
+  granularity,
+  rangePreset,
+  startDate,
+}: {
+  clubId: string;
+  endDate: string;
+  eventId: string;
+  granularity: AnalyticsGranularity;
+  rangePreset: AnalyticsRangePreset;
+  startDate: string;
+}): HostAnalyticsQueryPayload {
+  const isCustom = rangePreset === "custom";
+  return {
+    clubId: clubId.trim() || null,
+    eventId: eventId.trim() || null,
+    rangePreset,
+    startDate: isCustom ? startDate : null,
+    endDate: isCustom ? endDate : null,
+    granularity,
+  };
+}
+
+function defaultAnalyticsDate(daysAgo: number): string {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() - daysAgo);
+  return date.toISOString().slice(0, 10);
 }
 
 function SignInScreen({onSignIn}: {onSignIn: () => void}) {
@@ -7620,8 +7831,11 @@ function QueueRow({
 }
 
 function LineMiniChart({points}: {points: Array<{label: string; value: number}>}) {
+  if (points.length === 0) {
+    return <div className="empty-panel">No trend data yet.</div>;
+  }
   const path = points.map((point, index) => {
-    const x = (index / (points.length - 1)) * 100;
+    const x = points.length === 1 ? 50 : (index / (points.length - 1)) * 100;
     const y = 100 - point.value;
     return `${index === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
   }).join(" ");
@@ -7641,7 +7855,10 @@ function LineMiniChart({points}: {points: Array<{label: string; value: number}>}
 }
 
 function BarMiniChart({points}: {points: Array<{label: string; value: number}>}) {
-  const max = Math.max(...points.map((point) => point.value), 1);
+  if (points.length === 0) {
+    return <div className="empty-panel">No trend data yet.</div>;
+  }
+  const max = Math.max(1, ...points.map((point) => point.value));
   return (
     <div className="bar-chart">
       {points.map((point) => (
@@ -7657,31 +7874,131 @@ function BarMiniChart({points}: {points: Array<{label: string; value: number}>})
   );
 }
 
-function EventPerformanceTable() {
+function analyticsRangePreset(
+  activeRange: string
+): "7d" | "30d" | "90d" | "month" {
+  if (activeRange === "30d") return "30d";
+  return "7d";
+}
+
+function analyticsTrendPoints(
+  analytics: HostAnalyticsResponse,
+  metric: string
+): Array<{label: string; value: number}> {
+  return analytics.trend.map((point) => ({
+    label: shortPeriodLabel(point.periodStart),
+    value: Math.round(point.metrics[metric] ?? 0),
+  }));
+}
+
+function analyticsRatePoints(
+  analytics: HostAnalyticsResponse
+): Array<{label: string; value: number}> {
+  return analytics.trend.map((point) => {
+    const bookings = point.metrics.bookings ?? 0;
+    const checkedIn = point.metrics.checkedIn ?? 0;
+    return {
+      label: shortPeriodLabel(point.periodStart),
+      value: bookings <= 0 ? 0 : Math.round((checkedIn / bookings) * 100),
+    };
+  });
+}
+
+function analyticsMetricAction(
+  analytics: HostAnalyticsResponse,
+  metricId: string
+): string {
+  const metric = analytics.summaryCards.find((card) => card.id === metricId);
+  if (!metric) return "n/a";
+  if (metric.unit === "percent") return `${Math.round(metric.value)}%`;
+  if (metric.unit === "money_minor") {
+    return formatMinorCurrency(metric.value, "INR");
+  }
+  return String(Math.round(metric.value));
+}
+
+function shortPeriodLabel(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "n/a";
+  return date.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function formatMinorCurrency(value: number, currency: string): string {
+  return new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(value / 100);
+}
+
+function eventRisk(row: HostAnalyticsEventRow): "low" | "medium" | "high" {
+  if (
+    row.paymentFailedCount > 2 ||
+    row.checkoutDropoffCount > 5 ||
+    row.checkInRate < 55
+  ) return "high";
+  if (
+    row.paymentFailedCount > 0 ||
+    row.checkoutDropoffCount > 0 ||
+    row.checkInRate < 70
+  ) return "medium";
+  return "low";
+}
+
+function EventPerformanceTable({
+  events,
+  onFocusEvent,
+}: {
+  events: HostAnalyticsEventRow[];
+  onFocusEvent: (eventId: string) => void;
+}) {
   return (
     <div className="table-wrap">
       <table>
         <thead>
           <tr>
             <th>Event</th>
-            <th>Host</th>
+            <th>Club</th>
             <th>Fill</th>
             <th>Check-in</th>
             <th>Rating</th>
+            <th>Checkout</th>
             <th>GMV</th>
             <th>Risk</th>
+            <th>Scope</th>
           </tr>
         </thead>
         <tbody>
-          {eventRows.map((row) => (
-            <tr key={row.event}>
-              <td>{row.event}</td>
-              <td>{row.host}</td>
-              <td>{row.fill}</td>
-              <td>{row.checkIn}</td>
-              <td>{row.rating}</td>
-              <td>{row.gmv}</td>
-              <td><span className={`risk ${row.risk}`}>{row.risk}</span></td>
+          {events.map((row) => (
+            <tr key={row.eventId}>
+              <td>{row.title}</td>
+              <td>{row.clubId}</td>
+              <td>{Math.round(row.fillRate)}%</td>
+              <td>{Math.round(row.checkInRate)}%</td>
+              <td>{row.averageRating > 0 ? row.averageRating.toFixed(1) : "n/a"}</td>
+              <td>
+                {row.checkoutStartedCount
+                  ? `${row.checkoutDropoffCount}/${row.checkoutStartedCount} drop`
+                  : "n/a"}
+              </td>
+              <td>{formatMinorCurrency(row.grossRevenueMinor, row.currency)}</td>
+              <td>
+                <span className={`risk ${eventRisk(row)}`}>
+                  {eventRisk(row)}
+                </span>
+              </td>
+              <td>
+                <button
+                  className="table-action"
+                  onClick={() => onFocusEvent(row.eventId)}
+                  type="button"
+                >
+                  Focus
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -7717,7 +8034,13 @@ function ValueSignals() {
   );
 }
 
-function DataQualityRows({overview}: {overview: AdminOverviewResponse}) {
+function DataQualityRows({
+  hostAnalytics,
+  overview,
+}: {
+  hostAnalytics: HostAnalyticsResponse;
+  overview: AdminOverviewResponse;
+}) {
   return (
     <div className="quality-list">
       {overview.dataQuality.map((item) => (
@@ -7729,6 +8052,19 @@ function DataQualityRows({overview}: {overview: AdminOverviewResponse}) {
           )}
           <div>
             <strong>{item.label}</strong>
+            <span>{item.detail}</span>
+          </div>
+        </div>
+      ))}
+      {hostAnalytics.dataQuality.map((item) => (
+        <div className={`quality-row ${item.state}`} key={`analytics-${item.id}`}>
+          {item.state === "missing" ? (
+            <FileWarning size={16} strokeWidth={1.9} />
+          ) : (
+            <Clock3 size={16} strokeWidth={1.9} />
+          )}
+          <div>
+            <strong>Analytics · {item.id}</strong>
             <span>{item.detail}</span>
           </div>
         </div>

@@ -41,6 +41,8 @@ String? _redirect({
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
   group('route role boundary', () {
@@ -81,6 +83,55 @@ void main() {
   });
 
   group('appRedirect', () {
+    test('host app starts on host tooling instead of the consumer welcome', () {
+      AppConfig.configureEntrypointRole(AppRole.host);
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      expect(
+        container.read(initialAppLocationProvider),
+        Routes.hostHomeScreen.path,
+      );
+    });
+
+    test('host app sends unauthenticated users directly to auth', () {
+      AppConfig.configureEntrypointRole(AppRole.host);
+
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(null),
+          userProfileAsync: const AsyncData(null),
+          location: '/host/clubs',
+          matchedLocation: Routes.hostClubsScreen.path,
+        ),
+        '/auth?from=%2Fhost%2Fclubs',
+      );
+
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(null),
+          userProfileAsync: const AsyncData(null),
+          location: '/start',
+          matchedLocation: Routes.startScreen.path,
+        ),
+        '/auth',
+      );
+    });
+
+    test('host app does not resume stale consumer destinations', () {
+      AppConfig.configureEntrypointRole(AppRole.host);
+
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: const AsyncData(null),
+          location: '/auth?from=%2Fclubs',
+          matchedLocation: Routes.authScreen.path,
+        ),
+        Routes.hostHomeScreen.path,
+      );
+    });
+
     test(
       'unauthenticated users are sent to the start screen with the pending route',
       () {

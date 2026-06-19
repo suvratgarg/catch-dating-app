@@ -926,6 +926,69 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("allows owners to persist push installation tokens", async () => {
+      await seed(["users", "runner-1"], userProfile());
+      const installationRef = doc(
+        authedDb("runner-1"),
+        "users",
+        "runner-1",
+        "pushInstallations",
+        "host_ios_installation_1",
+      );
+
+      await assertSucceeds(
+        setDoc(installationRef, {
+          token: "token-1",
+          appRole: "host",
+          environment: "prod",
+          platform: "ios",
+          appVersion: "1.0.0",
+          buildNumber: "42",
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertSucceeds(
+        updateDoc(installationRef, {
+          token: "token-2",
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertSucceeds(getDoc(installationRef));
+      await assertSucceeds(deleteDoc(installationRef));
+    });
+
+    it("denies invalid or cross-user push installation writes", async () => {
+      await seed(["users", "runner-1"], userProfile());
+      const ownerDb = authedDb("runner-1");
+      const otherDb = authedDb("runner-2");
+      const installationPath = [
+        "users",
+        "runner-1",
+        "pushInstallations",
+        "host_ios_installation_1",
+      ];
+
+      await assertFails(
+        setDoc(doc(ownerDb, ...installationPath), {
+          token: "token-1",
+          appRole: "admin",
+          environment: "prod",
+          platform: "ios",
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertFails(
+        setDoc(doc(otherDb, ...installationPath), {
+          token: "token-1",
+          appRole: "host",
+          environment: "prod",
+          platform: "ios",
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertFails(getDoc(doc(otherDb, ...installationPath)));
+    });
+
     it("denies direct profile field updates regardless of field shape", async () => {
       await seed(["users", "runner-1"], userProfile());
       const userRef = doc(authedDb("runner-1"), "users", "runner-1");

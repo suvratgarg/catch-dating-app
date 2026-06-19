@@ -185,6 +185,16 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/savedEventDocument.ts",
   },
   {
+    name: "HostAnalyticsEvent",
+    source: "bigquery/host_analytics_event.schema.json",
+    typeOutput: "functions/src/shared/generated/hostAnalyticsEvent.ts",
+  },
+  {
+    name: "UserProfileExposureEvent",
+    source: "bigquery/user_profile_exposure_event.schema.json",
+    typeOutput: "functions/src/shared/generated/userProfileExposureEvent.ts",
+  },
+  {
     name: "PaymentDocument",
     source: "firestore/payments.schema.json",
     typeOutput: "functions/src/shared/generated/paymentDocument.ts",
@@ -317,6 +327,30 @@ const schemaSpecs = [
     source: "callables/update_club_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/updateClubCallablePayload.ts",
+  },
+  {
+    name: "HostAnalyticsQueryCallablePayload",
+    source: "callables/host_analytics_query_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/hostAnalyticsQueryCallablePayload.ts",
+  },
+  {
+    name: "HostAnalyticsCallableResponse",
+    source: "callable_responses/host_analytics_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/hostAnalyticsCallableResponse.ts",
+  },
+  {
+    name: "UserAnalyticsQueryCallablePayload",
+    source: "callables/user_analytics_query_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/userAnalyticsQueryCallablePayload.ts",
+  },
+  {
+    name: "UserAnalyticsCallableResponse",
+    source: "callable_responses/user_analytics_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/userAnalyticsCallableResponse.ts",
   },
   {
     name: "AddClubHostCallablePayload",
@@ -479,6 +513,14 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "recordEventInviteLinkOpenCallablePayload.ts",
+  },
+  {
+    name: "RecordOrganizerAnalyticsEventCallablePayload",
+    source:
+      "callables/record_organizer_analytics_event_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "recordOrganizerAnalyticsEventCallablePayload.ts",
   },
   {
     name: "MarkEventAttendanceCallablePayload",
