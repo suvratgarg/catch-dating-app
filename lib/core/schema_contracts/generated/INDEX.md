@@ -43,6 +43,8 @@ Do not edit it by hand.
 | ClubScheduleLockDocument | `firestore/club_schedule_locks.schema.json` | `functions/src/shared/generated/clubScheduleLockDocument.ts` |
 | UserEventScheduleLockDocument | `firestore/user_event_schedule_locks.schema.json` | `functions/src/shared/generated/userEventScheduleLockDocument.ts` |
 | SavedEventDocument | `firestore/saved_events.schema.json` | `functions/src/shared/generated/savedEventDocument.ts` |
+| HostAnalyticsEvent | `bigquery/host_analytics_event.schema.json` | `functions/src/shared/generated/hostAnalyticsEvent.ts` |
+| UserProfileExposureEvent | `bigquery/user_profile_exposure_event.schema.json` | `functions/src/shared/generated/userProfileExposureEvent.ts` |
 | PaymentDocument | `firestore/payments.schema.json` | `functions/src/shared/generated/paymentDocument.ts` |
 | HostPaymentAccountDocument | `firestore/host_payment_accounts.schema.json` | `functions/src/shared/generated/hostPaymentAccountDocument.ts` |
 | RazorpayPendingOrderDocument | `firestore/razorpay_pending_orders.schema.json` | `functions/src/shared/generated/razorpayPendingOrderDocument.ts` |
@@ -67,6 +69,10 @@ Do not edit it by hand.
 | CreateClubCallablePayload | `callables/create_club_payload.schema.json` | `functions/src/shared/generated/createClubCallablePayload.ts` |
 | CreateClubCallableResponse | `callable_responses/create_club_response.schema.json` | `functions/src/shared/generated/createClubCallableResponse.ts` |
 | UpdateClubCallablePayload | `callables/update_club_payload.schema.json` | `functions/src/shared/generated/updateClubCallablePayload.ts` |
+| HostAnalyticsQueryCallablePayload | `callables/host_analytics_query_payload.schema.json` | `functions/src/shared/generated/hostAnalyticsQueryCallablePayload.ts` |
+| HostAnalyticsCallableResponse | `callable_responses/host_analytics_response.schema.json` | `functions/src/shared/generated/hostAnalyticsCallableResponse.ts` |
+| UserAnalyticsQueryCallablePayload | `callables/user_analytics_query_payload.schema.json` | `functions/src/shared/generated/userAnalyticsQueryCallablePayload.ts` |
+| UserAnalyticsCallableResponse | `callable_responses/user_analytics_response.schema.json` | `functions/src/shared/generated/userAnalyticsCallableResponse.ts` |
 | AddClubHostCallablePayload | `callables/add_club_host_payload.schema.json` | `functions/src/shared/generated/addClubHostCallablePayload.ts` |
 | RemoveClubHostCallablePayload | `callables/remove_club_host_payload.schema.json` | `functions/src/shared/generated/removeClubHostCallablePayload.ts` |
 | TransferClubOwnershipCallablePayload | `callables/transfer_club_ownership_payload.schema.json` | `functions/src/shared/generated/transferClubOwnershipCallablePayload.ts` |
@@ -94,6 +100,7 @@ Do not edit it by hand.
 | CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `functions/src/shared/generated/createEventInviteLinkCallablePayload.ts` |
 | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `functions/src/shared/generated/disableEventInviteLinkCallablePayload.ts` |
 | RecordEventInviteLinkOpenCallablePayload | `callables/record_event_invite_link_open_payload.schema.json` | `functions/src/shared/generated/recordEventInviteLinkOpenCallablePayload.ts` |
+| RecordOrganizerAnalyticsEventCallablePayload | `callables/record_organizer_analytics_event_payload.schema.json` | `functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload.ts` |
 | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `functions/src/shared/generated/markEventAttendanceCallablePayload.ts` |
 | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `functions/src/shared/generated/eventJoinRequestDecisionCallablePayload.ts` |
 | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `functions/src/shared/generated/overrideEventSuccessRotationsCallablePayload.ts` |
@@ -172,6 +179,8 @@ Do not edit it by hand.
 | `schemaClubScheduleLockDocumentSchema` | ClubScheduleLockDocument | `firestore/club_schedule_locks.schema.json` | `lib/core/schema_contracts/generated/schemas/club_schedule_lock_document.g.dart` |
 | `schemaUserEventScheduleLockDocumentSchema` | UserEventScheduleLockDocument | `firestore/user_event_schedule_locks.schema.json` | `lib/core/schema_contracts/generated/schemas/user_event_schedule_lock_document.g.dart` |
 | `schemaSavedEventDocumentSchema` | SavedEventDocument | `firestore/saved_events.schema.json` | `lib/core/schema_contracts/generated/schemas/saved_event_document.g.dart` |
+| `schemaHostAnalyticsEventSchema` | HostAnalyticsEvent | `bigquery/host_analytics_event.schema.json` | `lib/core/schema_contracts/generated/schemas/host_analytics_event.g.dart` |
+| `schemaUserProfileExposureEventSchema` | UserProfileExposureEvent | `bigquery/user_profile_exposure_event.schema.json` | `lib/core/schema_contracts/generated/schemas/user_profile_exposure_event.g.dart` |
 | `schemaPaymentDocumentSchema` | PaymentDocument | `firestore/payments.schema.json` | `lib/core/schema_contracts/generated/schemas/payment_document.g.dart` |
 | `schemaHostPaymentAccountDocumentSchema` | HostPaymentAccountDocument | `firestore/host_payment_accounts.schema.json` | `lib/core/schema_contracts/generated/schemas/host_payment_account_document.g.dart` |
 | `schemaRazorpayPendingOrderDocumentSchema` | RazorpayPendingOrderDocument | `firestore/razorpay_pending_orders.schema.json` | `lib/core/schema_contracts/generated/schemas/razorpay_pending_order_document.g.dart` |
@@ -196,6 +205,10 @@ Do not edit it by hand.
 | `schemaCreateClubCallablePayloadSchema` | CreateClubCallablePayload | `callables/create_club_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_club_callable_payload.g.dart` |
 | `schemaCreateClubCallableResponseSchema` | CreateClubCallableResponse | `callable_responses/create_club_response.schema.json` | `lib/core/schema_contracts/generated/schemas/create_club_callable_response.g.dart` |
 | `schemaUpdateClubCallablePayloadSchema` | UpdateClubCallablePayload | `callables/update_club_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_club_callable_payload.g.dart` |
+| `schemaHostAnalyticsQueryCallablePayloadSchema` | HostAnalyticsQueryCallablePayload | `callables/host_analytics_query_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/host_analytics_query_callable_payload.g.dart` |
+| `schemaHostAnalyticsCallableResponseSchema` | HostAnalyticsCallableResponse | `callable_responses/host_analytics_response.schema.json` | `lib/core/schema_contracts/generated/schemas/host_analytics_callable_response.g.dart` |
+| `schemaUserAnalyticsQueryCallablePayloadSchema` | UserAnalyticsQueryCallablePayload | `callables/user_analytics_query_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/user_analytics_query_callable_payload.g.dart` |
+| `schemaUserAnalyticsCallableResponseSchema` | UserAnalyticsCallableResponse | `callable_responses/user_analytics_response.schema.json` | `lib/core/schema_contracts/generated/schemas/user_analytics_callable_response.g.dart` |
 | `schemaAddClubHostCallablePayloadSchema` | AddClubHostCallablePayload | `callables/add_club_host_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/add_club_host_callable_payload.g.dart` |
 | `schemaRemoveClubHostCallablePayloadSchema` | RemoveClubHostCallablePayload | `callables/remove_club_host_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/remove_club_host_callable_payload.g.dart` |
 | `schemaTransferClubOwnershipCallablePayloadSchema` | TransferClubOwnershipCallablePayload | `callables/transfer_club_ownership_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/transfer_club_ownership_callable_payload.g.dart` |
@@ -223,6 +236,7 @@ Do not edit it by hand.
 | `schemaCreateEventInviteLinkCallablePayloadSchema` | CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_event_invite_link_callable_payload.g.dart` |
 | `schemaDisableEventInviteLinkCallablePayloadSchema` | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/disable_event_invite_link_callable_payload.g.dart` |
 | `schemaRecordEventInviteLinkOpenCallablePayloadSchema` | RecordEventInviteLinkOpenCallablePayload | `callables/record_event_invite_link_open_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_event_invite_link_open_callable_payload.g.dart` |
+| `schemaRecordOrganizerAnalyticsEventCallablePayloadSchema` | RecordOrganizerAnalyticsEventCallablePayload | `callables/record_organizer_analytics_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_organizer_analytics_event_callable_payload.g.dart` |
 | `schemaMarkEventAttendanceCallablePayloadSchema` | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/mark_event_attendance_callable_payload.g.dart` |
 | `schemaEventJoinRequestDecisionCallablePayloadSchema` | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/event_join_request_decision_callable_payload.g.dart` |
 | `schemaOverrideEventSuccessRotationsCallablePayloadSchema` | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/override_event_success_rotations_callable_payload.g.dart` |
@@ -272,6 +286,8 @@ Do not edit it by hand.
 |---|---|---|---|
 | UpdateUserProfilePatch | UpdateUserProfileCallablePayload | `patches/update_user_profile.schema.json` | `lib/core/schema_contracts/generated/callables/update_user_profile_patch.g.dart` |
 | CreateClubCallableRequest | CreateClubCallablePayload | `callables/create_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_club_callable_request.g.dart` |
+| HostAnalyticsQueryCallableRequest | HostAnalyticsQueryCallablePayload | `callables/host_analytics_query_payload.schema.json` | `lib/core/schema_contracts/generated/callables/host_analytics_query_callable_request.g.dart` |
+| UserAnalyticsQueryCallableRequest | UserAnalyticsQueryCallablePayload | `callables/user_analytics_query_payload.schema.json` | `lib/core/schema_contracts/generated/callables/user_analytics_query_callable_request.g.dart` |
 | AddClubHostCallableRequest | AddClubHostCallablePayload | `callables/add_club_host_payload.schema.json` | `lib/core/schema_contracts/generated/callables/add_club_host_callable_request.g.dart` |
 | RemoveClubHostCallableRequest | RemoveClubHostCallablePayload | `callables/remove_club_host_payload.schema.json` | `lib/core/schema_contracts/generated/callables/remove_club_host_callable_request.g.dart` |
 | TransferClubOwnershipCallableRequest | TransferClubOwnershipCallablePayload | `callables/transfer_club_ownership_payload.schema.json` | `lib/core/schema_contracts/generated/callables/transfer_club_ownership_callable_request.g.dart` |
@@ -299,6 +315,7 @@ Do not edit it by hand.
 | CreateEventInviteLinkCallableRequest | CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_event_invite_link_callable_request.g.dart` |
 | DisableEventInviteLinkCallableRequest | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/disable_event_invite_link_callable_request.g.dart` |
 | RecordEventInviteLinkOpenCallableRequest | RecordEventInviteLinkOpenCallablePayload | `callables/record_event_invite_link_open_payload.schema.json` | `lib/core/schema_contracts/generated/callables/record_event_invite_link_open_callable_request.g.dart` |
+| RecordOrganizerAnalyticsEventCallableRequest | RecordOrganizerAnalyticsEventCallablePayload | `callables/record_organizer_analytics_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/record_organizer_analytics_event_callable_request.g.dart` |
 | MarkEventAttendanceCallableRequest | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/callables/mark_event_attendance_callable_request.g.dart` |
 | EventJoinRequestDecisionCallableRequest | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `lib/core/schema_contracts/generated/callables/event_join_request_decision_callable_request.g.dart` |
 | OverrideEventSuccessRotationsCallableRequest | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `lib/core/schema_contracts/generated/callables/override_event_success_rotations_callable_request.g.dart` |

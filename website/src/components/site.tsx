@@ -72,6 +72,7 @@ export interface EventAction {
   target?: string;
   rel?: string;
   trackingLabel?: string;
+  onClick?: () => void;
 }
 
 export interface EventActionCardModel {
@@ -476,7 +477,10 @@ export function EventActionCard({event}: {event: EventActionCardModel}) {
             key={`${action.href}-${action.label}`}
             target={action.target}
             rel={action.rel}
-            onClick={() => trackCtaClick(action.trackingLabel ?? "event_action", action.href)}
+            onClick={() => {
+              trackCtaClick(action.trackingLabel ?? "event_action", action.href);
+              action.onClick?.();
+            }}
           >
             {action.label}
           </a>

@@ -35,6 +35,8 @@ import {EventSafetyReportDocument} from "./eventSafetyReportDocument";
 import {ClubScheduleLockDocument} from "./clubScheduleLockDocument";
 import {UserEventScheduleLockDocument} from "./userEventScheduleLockDocument";
 import {SavedEventDocument} from "./savedEventDocument";
+import {HostAnalyticsEvent} from "./hostAnalyticsEvent";
+import {UserProfileExposureEvent} from "./userProfileExposureEvent";
 import {PaymentDocument} from "./paymentDocument";
 import {HostPaymentAccountDocument} from "./hostPaymentAccountDocument";
 import {RazorpayPendingOrderDocument} from "./razorpayPendingOrderDocument";
@@ -59,6 +61,10 @@ import {UpdateUserProfileCallablePayload} from "./updateUserProfileCallablePaylo
 import {CreateClubCallablePayload} from "./createClubCallablePayload";
 import {CreateClubCallableResponse} from "./createClubCallableResponse";
 import {UpdateClubCallablePayload} from "./updateClubCallablePayload";
+import {HostAnalyticsQueryCallablePayload} from "./hostAnalyticsQueryCallablePayload";
+import {HostAnalyticsCallableResponse} from "./hostAnalyticsCallableResponse";
+import {UserAnalyticsQueryCallablePayload} from "./userAnalyticsQueryCallablePayload";
+import {UserAnalyticsCallableResponse} from "./userAnalyticsCallableResponse";
 import {AddClubHostCallablePayload} from "./addClubHostCallablePayload";
 import {RemoveClubHostCallablePayload} from "./removeClubHostCallablePayload";
 import {TransferClubOwnershipCallablePayload} from "./transferClubOwnershipCallablePayload";
@@ -86,6 +92,7 @@ import {CreateEventWaitlistOffersCallablePayload} from "./createEventWaitlistOff
 import {CreateEventInviteLinkCallablePayload} from "./createEventInviteLinkCallablePayload";
 import {DisableEventInviteLinkCallablePayload} from "./disableEventInviteLinkCallablePayload";
 import {RecordEventInviteLinkOpenCallablePayload} from "./recordEventInviteLinkOpenCallablePayload";
+import {RecordOrganizerAnalyticsEventCallablePayload} from "./recordOrganizerAnalyticsEventCallablePayload";
 import {MarkEventAttendanceCallablePayload} from "./markEventAttendanceCallablePayload";
 import {EventJoinRequestDecisionCallablePayload} from "./eventJoinRequestDecisionCallablePayload";
 import {OverrideEventSuccessRotationsCallablePayload} from "./overrideEventSuccessRotationsCallablePayload";
@@ -160,6 +167,8 @@ import {
   clubScheduleLockDocumentSchema,
   userEventScheduleLockDocumentSchema,
   savedEventDocumentSchema,
+  hostAnalyticsEventSchema,
+  userProfileExposureEventSchema,
   paymentDocumentSchema,
   hostPaymentAccountDocumentSchema,
   razorpayPendingOrderDocumentSchema,
@@ -184,6 +193,10 @@ import {
   createClubCallablePayloadSchema,
   createClubCallableResponseSchema,
   updateClubCallablePayloadSchema,
+  hostAnalyticsQueryCallablePayloadSchema,
+  hostAnalyticsCallableResponseSchema,
+  userAnalyticsQueryCallablePayloadSchema,
+  userAnalyticsCallableResponseSchema,
   addClubHostCallablePayloadSchema,
   removeClubHostCallablePayloadSchema,
   transferClubOwnershipCallablePayloadSchema,
@@ -211,6 +224,7 @@ import {
   createEventInviteLinkCallablePayloadSchema,
   disableEventInviteLinkCallablePayloadSchema,
   recordEventInviteLinkOpenCallablePayloadSchema,
+  recordOrganizerAnalyticsEventCallablePayloadSchema,
   markEventAttendanceCallablePayloadSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
@@ -382,6 +396,14 @@ export const validateSavedEventDocument:
   ValidateFunction<SavedEventDocument> =
     ajv.compile(savedEventDocumentSchema) as
       ValidateFunction<SavedEventDocument>;
+export const validateHostAnalyticsEvent:
+  ValidateFunction<HostAnalyticsEvent> =
+    ajv.compile(hostAnalyticsEventSchema) as
+      ValidateFunction<HostAnalyticsEvent>;
+export const validateUserProfileExposureEvent:
+  ValidateFunction<UserProfileExposureEvent> =
+    ajv.compile(userProfileExposureEventSchema) as
+      ValidateFunction<UserProfileExposureEvent>;
 export const validatePaymentDocument:
   ValidateFunction<PaymentDocument> =
     ajv.compile(paymentDocumentSchema) as
@@ -478,6 +500,22 @@ export const validateUpdateClubCallablePayload:
   ValidateFunction<UpdateClubCallablePayload> =
     ajv.compile(updateClubCallablePayloadSchema) as
       ValidateFunction<UpdateClubCallablePayload>;
+export const validateHostAnalyticsQueryCallablePayload:
+  ValidateFunction<HostAnalyticsQueryCallablePayload> =
+    ajv.compile(hostAnalyticsQueryCallablePayloadSchema) as
+      ValidateFunction<HostAnalyticsQueryCallablePayload>;
+export const validateHostAnalyticsCallableResponse:
+  ValidateFunction<HostAnalyticsCallableResponse> =
+    ajv.compile(hostAnalyticsCallableResponseSchema) as
+      ValidateFunction<HostAnalyticsCallableResponse>;
+export const validateUserAnalyticsQueryCallablePayload:
+  ValidateFunction<UserAnalyticsQueryCallablePayload> =
+    ajv.compile(userAnalyticsQueryCallablePayloadSchema) as
+      ValidateFunction<UserAnalyticsQueryCallablePayload>;
+export const validateUserAnalyticsCallableResponse:
+  ValidateFunction<UserAnalyticsCallableResponse> =
+    ajv.compile(userAnalyticsCallableResponseSchema) as
+      ValidateFunction<UserAnalyticsCallableResponse>;
 export const validateAddClubHostCallablePayload:
   ValidateFunction<AddClubHostCallablePayload> =
     ajv.compile(addClubHostCallablePayloadSchema) as
@@ -586,6 +624,10 @@ export const validateRecordEventInviteLinkOpenCallablePayload:
   ValidateFunction<RecordEventInviteLinkOpenCallablePayload> =
     ajv.compile(recordEventInviteLinkOpenCallablePayloadSchema) as
       ValidateFunction<RecordEventInviteLinkOpenCallablePayload>;
+export const validateRecordOrganizerAnalyticsEventCallablePayload:
+  ValidateFunction<RecordOrganizerAnalyticsEventCallablePayload> =
+    ajv.compile(recordOrganizerAnalyticsEventCallablePayloadSchema) as
+      ValidateFunction<RecordOrganizerAnalyticsEventCallablePayload>;
 export const validateMarkEventAttendanceCallablePayload:
   ValidateFunction<MarkEventAttendanceCallablePayload> =
     ajv.compile(markEventAttendanceCallablePayloadSchema) as

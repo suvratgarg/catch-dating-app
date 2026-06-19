@@ -36,7 +36,7 @@ Client:
 - Freezed + json_serializable
 - Firebase Auth / Firestore / Storage / Functions / Messaging
 - Razorpay (`razorpay_flutter`)
-- `flutter_map` + OpenStreetMap tiles
+- `google_maps_flutter` (Google Maps SDK; `flutter_map`/OpenStreetMap is no longer a dependency)
 - `google_fonts`
 
 Backend:
@@ -235,11 +235,17 @@ Files:
 Behavior:
 
 - Browsing is city-based, with GPS auto-detecting the nearest city on first launch. Falls back to Mumbai when GPS is unavailable or denied.
-- Search is client-side and filters by club name, area, host name, and tags.
+- Full-text search is **server-side via Algolia** (the `exploreSearch` callable in
+  `functions/src/search/exploreSearch.ts`, backed by trigger-synced `clubs`/`events`
+  Algolia indices). Client-side substring matching over the already-loaded city list
+  (name, area, host name, tags) remains only as an instant local fallback. The live
+  code lives in `lib/explore/presentation/explore_view_model.dart`, not the old
+  `lib/clubs/presentation/clubs_list_*` files.
+- City club browse itself is a server-side Firestore query filtered by city and
+  capped at 30 docs (`lib/clubs/data/clubs_repository.dart`) — it does not fetch all clubs.
 - Clubs are partitioned into:
   - `joinedClubs`
   - `discoverClubs`
-- The file explicitly marks the filtered provider as the future “Algolia swap point”.
 
 ### 6.4 Club detail and hosting
 
@@ -377,7 +383,10 @@ Matching files:
 Behavior:
 
 - Mutual likes create a deterministic match doc.
-- Chats are stored under `chats/{matchId}/messages`.
+- Chat messages are stored under `matches/{matchId}/messages` (there is no
+  top-level `chats` collection). Match-list metadata (last-message preview,
+  `unreadCounts`) is denormalized onto the `matches/{matchId}` doc, server-owned
+  and kept idempotent by the `onMessageCreated` trigger.
 - Opening/leaving chat resets the current user’s unread count.
 - The bottom nav chat tab shows total unread across all matches.
 
@@ -461,8 +470,12 @@ Files:
 Behavior:
 
 - Initialized from `AppShell` after auth shell mounts.
-- Stores `fcmToken` into `users/{uid}`.
-- Handles notification tap routing to `/chats/:matchId`.
+- Writes a per-device `users/{uid}/pushInstallations/{installationId}` doc (token,
+  appRole, platform, appVersion). The consumer app **also** writes a flat
+  `users/{uid}.fcmToken`; the host app currently does not, so backend senders that
+  read only `users/{uid}.fcmToken` cannot reach host devices yet (known gap —
+  multi-device + host push need the senders to read `pushInstallations`).
+- Handles notification tap routing (e.g. `/chats/:matchId`, host inbox routes).
 - Requires provisioning and/or flags depending on platform.
 
 ## 7. Firestore data model
@@ -490,11 +503,21 @@ Events:
 
 - `events/{eventId}`
   - schedule, location, price, constraints
-  - booking arrays:
-    - `signedUpUserIds`
-    - `attendedUserIds`
-    - `waitlistUserIds`
-  - `genderCounts` is a denormalized map maintained by sign-up/cancel flows
+  - **denormalized scalar counters only** (no user-id arrays): `bookedCount`,
+    `checkedInCount`, `waitlistedCount`, plus `genderCounts`/`cohortCounts` maps,
+    all maintained server-side via `FieldValue.increment` in sign-up/cancel/attendance
+    transactions, plus server-computed discovery projection fields
+    (`discoveryCityName`, `discoveryGeoCell`, etc.)
+
+Event participation (roster edges):
+
+- `eventParticipations/{eventId}_{uid}`
+  - one edge doc per user per event, server-owned (`allow write: if false`)
+  - carries `status` (`signedUp` / `waitlisted` / `attended` / `cancelled` / `deleted`),
+    `genderAtSignup`, `cohortAtSignup`
+  - this is the source of truth for rosters and for swipe-candidate selection;
+    the old `signedUpUserIds` / `attendedUserIds` / `waitlistUserIds` arrays on the
+    event doc no longer exist
 
 Payments:
 
@@ -515,7 +538,8 @@ Matches:
 
 Chats:
 
-- `chats/{matchId}/messages/{messageId}`
+- `matches/{matchId}/messages/{messageId}` (message subcollection under the match;
+  there is no top-level `chats` collection)
 
 Reviews:
 
@@ -572,8 +596,9 @@ Callable functions:
   - direct client updates to club membership fields are denied by rules
 - `markEventAttendance`
   - host-only
-  - can event only after event end
-  - copies signed-up users into `attendedUserIds`
+  - runs only after event end
+  - marks signed-up users as attended by setting their `eventParticipations`
+    edge `status` to `attended` and incrementing `checkedInCount`
 - `blockUser`
   - creates a block edge between two users
   - enforces symmetric discovery/communication barriers
@@ -632,11 +657,21 @@ Summary:
 - `matches` are backend-write-only.
 - `functionEventReceipts` are backend-write-only idempotency receipts for
   retry-safe triggers.
-- `chats` are writable only by match participants.
+- Chat messages under `matches/{matchId}/messages` are writable only by match
+  participants (and only when no block edge exists between them).
 - `swipes` are writable only by the owner of the outgoing subcollection.
 - Direct event and club deletes are denied until backend cleanup/refund behavior
   exists.
-- Storage is currently permissive for any authenticated user.
+- Storage **write** rules are tightly scoped per path: profile-photo writes require
+  `request.auth.uid == uid` + filename/size/content-type checks; club/event media
+  writes require Firestore host-ownership; chat-image writes require active-match
+  membership with no block edge; thumbnail paths are server-write-only; a catch-all
+  denies everything else. (The earlier "permissive for any authenticated user"
+  description was inaccurate.)
+- Storage **read** rules are the looser side: `users/{uid}/hostedMedia` and the
+  club/event media paths are currently `allow read: if true` (public to anyone),
+  and profile photos are readable by any signed-in user. Tightening public read
+  access is a known follow-up.
 
 ## 10. Maps and location
 
@@ -673,7 +708,23 @@ Location data model:
 - `events/{eventId}` stores required `startingPointLat`/`startingPointLng` for new events.
 - Flutter app/domain code uses `LocationCoordinate`; Google Maps `LatLng` is confined to adapter/UI SDK edges.
 
-No geohash, GeoPoint, or server-side proximity queries are used — all distance math is client-side. If server-side "within X km" queries are needed later, add a geohash field in a separate migration.
+Discovery proximity is a **two-stage** model, not purely client-side:
+
+- Each event carries a server-computed `discoveryGeoCell` string (a ~0.08° grid
+  bucket) written by `functions/src/events/eventDiscoveryProjection.ts` and indexed.
+  Radius discovery pushes a `whereIn` over the candidate cells server-side
+  (`lib/events/data/event_discovery_repository.dart`), so Firestore only transfers
+  events in the relevant city + cells — it does not fetch everything.
+- Exact "within X km" filtering is a client-side Haversine post-filter over that
+  already-narrowed candidate set.
+- Server-side Haversine is also used authoritatively for attendance geofencing
+  (200 m self check-in / 100 m first-hello) in Cloud Functions.
+
+Caveats: the `0.08` cell-size constant is declared independently in the TS writer
+and the Dart reader (drift would silently break radius discovery — guard with a
+test); the grid math is not hardened for antimeridian/pole wrap (irrelevant for
+India today). A vetted geohash library or Algolia geo would only be worth it if
+true cross-city "near me" or non-India coordinates become a requirement.
 
 ## 11. Dev commands
 
@@ -865,7 +916,8 @@ The profile `email` field is optional and defaults to an empty string.
 
 ### 14.4 Attendance is manual, not automatic
 
-Swiping depends on `attendedUserIds`, and those are only populated when the host calls `markEventAttendance`.
+Swiping depends on `attended`-status `eventParticipations` edges, and those are only
+populated when the host calls `markEventAttendance`.
 
 Impact:
 
@@ -999,8 +1051,8 @@ rejections gracefully so users (and developers) aren't left guessing.
   that touches rules, schema, or contract files. Keep
   `functions/test/firestore.rules.test.cjs` and `tool/contracts/firestore_contract.json`
   in sync with rule changes.
-- **Log Firestore write failures to Analytics** via
-  `AppAnalytics.logFirestoreWriteFailed()` so permission spikes and quota
+- **Log backend write failures to Analytics** via
+  `AppAnalytics.logBackendOperationFailed()` so permission spikes and quota
   issues are visible in dashboards, not just Crashlytics.
 
 ### Common Firestore error codes

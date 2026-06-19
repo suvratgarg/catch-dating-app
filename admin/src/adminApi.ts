@@ -1,6 +1,10 @@
 import {httpsCallable} from "firebase/functions";
 import {functions} from "./firebase";
-import {sampleClubDetails, sampleOverview} from "./sampleData";
+import {
+  sampleClubDetails,
+  sampleHostAnalytics,
+  sampleOverview,
+} from "./sampleData";
 import {
   AdminDecideAccessApplicationPayload,
   AdminDecideAccessApplicationResponse,
@@ -24,6 +28,8 @@ import {
   AdminUpdateClubDetailsPayload,
   AdminUpdateClubDetailsResponse,
   DataMode,
+  HostAnalyticsQueryPayload,
+  HostAnalyticsResponse,
 } from "./types";
 
 export function dataMode(): DataMode {
@@ -41,6 +47,22 @@ export async function loadOverview(): Promise<AdminOverviewResponse> {
     "adminGetOverview"
   );
   const result = await callable({});
+  return result.data;
+}
+
+export async function loadHostAnalytics(
+  payload: HostAnalyticsQueryPayload = {}
+): Promise<HostAnalyticsResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+    return sampleHostAnalytics;
+  }
+
+  const callable = httpsCallable<
+    HostAnalyticsQueryPayload,
+    HostAnalyticsResponse
+  >(functions, "adminGetHostAnalytics");
+  const result = await callable(payload);
   return result.data;
 }
 

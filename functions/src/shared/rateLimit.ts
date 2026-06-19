@@ -108,6 +108,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   // audit-logged, so the cap is defense-in-depth against a compromised admin
   // token or a runaway client, not a primary control.
   adminGetOverview: {maxRequests: 30, windowMs: 60 * 1000},
+  getHostAnalytics: {maxRequests: 30, windowMs: 60 * 1000},
+  adminGetHostAnalytics: {maxRequests: 30, windowMs: 60 * 1000},
   adminGetClubDetails: {maxRequests: 60, windowMs: 60 * 1000},
   adminSetClubIndexStatus: {maxRequests: 30, windowMs: 60 * 1000},
   adminDecideOrganizerIntake: {maxRequests: 30, windowMs: 60 * 1000},

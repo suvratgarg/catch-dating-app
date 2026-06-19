@@ -31,6 +31,30 @@ test("review decision draft requires and consumes ready publication packet", asy
   assert.match(result.stdout, /"appVisibility": "hidden"/);
 });
 
+test("review decision dry-run ignores existing generated decisions", async () => {
+  const fixture = writeFixture({
+    itemOverrides: {
+      reviewDecision: {decision: "approve_public"},
+    },
+    packetOverrides: {
+      status: "published",
+      adminDecision: {
+        allowedDecisions: ["approve_public", "hold", "suppress"],
+        currentDecision: {decision: "approve_public"},
+      },
+    },
+  });
+
+  const result = await runDraft(fixture, [
+    "--confirm-publication-checklist",
+    "--confirm-manual-reports-reviewed",
+  ]);
+
+  assert.match(result.stdout, /Would write/);
+  assert.match(result.stdout, /"decision": "approve_public"/);
+  assert.equal(result.stderr, "");
+});
+
 test("review decision draft rejects blocked publication packets", async () => {
   const fixture = writeFixture({
     packetOverrides: {

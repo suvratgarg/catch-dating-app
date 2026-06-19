@@ -160,3 +160,14 @@ export {
 export {
   adminDecideOrganizerPolicyGap,
 } from "./admin/organizerPolicyGap";
+export {
+  adminGetHostAnalytics,
+  getHostAnalytics,
+} from "./analytics/hostAnalytics";
+export {
+  adminGetUserAnalytics,
+  getUserAnalytics,
+} from "./analytics/userAnalytics";
+export {
+  recordOrganizerAnalyticsEvent,
+} from "./analytics/organizerAnalyticsEvents";

@@ -1582,7 +1582,7 @@ abstract final class CatchLayout {
   static const double passButtonExtent = CatchSpacing.s16;
   static const double clubMemberSealCompactExtent = CatchSpacing.s16;
   static const double clubMemberSealExtent = 70.0;
-  static const double countryCodeSelectorWidth = 120.0;
+  static const double countryCodeSelectorWidth = 136.0;
   static const double activityLoadingIndicatorExtent = CatchIcon.md;
   static const double eventSuccessLabStepMarkerExtent = 34.0;
   static const double eventPolicyLabScenarioCardWidth = 220.0;

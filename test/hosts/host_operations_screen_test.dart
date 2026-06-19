@@ -4,6 +4,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -202,6 +203,113 @@ void main() {
 
     expect(find.text('Open public preview'), findsOneWidget);
   });
+
+  testWidgets('Host club fields edit inline without opening edit wizard', (
+    tester,
+  ) async {
+    final ownedClub = buildClub(
+      id: 'owned-club',
+      name: 'Sunday sea-face crew',
+      description: 'Dawn runs along the Bandra seafront, every Sunday.',
+      location: 'Mumbai',
+      ownerUserId: _hostUid,
+    );
+    final repository = FakeClubsRepository();
+
+    await _pumpHostScreen(
+      tester,
+      const HostClubsScreen(),
+      overrides: [
+        ..._hostClubOverrides(owned: [ownedClub]),
+        clubsRepositoryProvider.overrideWith((ref) => repository),
+        watchHostPaymentAccountProvider(
+          _hostUid,
+        ).overrideWithValue(const AsyncData<HostPaymentAccount?>(null)),
+      ],
+    );
+
+    await tester.tap(find.text('Description'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Edit owned-club'), findsNothing);
+
+    final descriptionEditor = find.byKey(
+      const ValueKey('host-inline-description'),
+    );
+    expect(descriptionEditor, findsOneWidget);
+
+    await tester.enterText(
+      find.descendant(
+        of: descriptionEditor,
+        matching: find.byType(EditableText),
+      ),
+      'Updated dawn loops.',
+    );
+    await tester.tap(find.text('Done'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Edit owned-club'), findsNothing);
+    expect(repository.lastUpdatedClubId, ownedClub.id);
+    expect(
+      repository.lastUpdatedFields,
+      containsPair('description', 'Updated dawn loops.'),
+    );
+  });
+
+  testWidgets(
+    'Host account edit loads from club snapshot while profile waits',
+    (tester) async {
+      final ownedClub = buildClub(
+        id: 'owned-club',
+        name: 'Saket Run Club',
+        ownerUserId: _hostUid,
+        hostProfiles: const [
+          ClubHostProfile(
+            uid: _hostUid,
+            displayName: 'Suvrat',
+            role: ClubHostRole.owner,
+          ),
+        ],
+      );
+      final repository = _FakeHostProfileRepository();
+
+      await _pumpHostScreen(
+        tester,
+        const HostAccountScreen(),
+        overrides: [
+          ..._hostClubOverrides(owned: [ownedClub]),
+          watchHostProfileProvider(
+            _hostUid,
+          ).overrideWithValue(const AsyncLoading<HostProfile?>()),
+          hostProfileRepositoryProvider.overrideWith((ref) => repository),
+        ],
+      );
+
+      expect(find.byType(CatchLoadingIndicator), findsNothing);
+      expect(find.text('Display name'), findsOneWidget);
+      expect(find.text('Suvrat'), findsOneWidget);
+      expect(find.text('Create host profile'), findsNothing);
+
+      await tester.tap(find.text('Display name'));
+      await pumpFeatureUi(tester);
+      final displayNameField = find.ancestor(
+        of: find.descendant(
+          of: find.byType(CatchBottomSheetScaffold),
+          matching: find.text('Display name'),
+        ),
+        matching: find.byType(CatchTextField),
+      );
+      await tester.enterText(
+        find.descendant(of: displayNameField, matching: find.byType(TextField)),
+        'Updated Host',
+      );
+      await tester.tap(find.text('Save profile'));
+      await pumpFeatureUi(tester);
+
+      expect(repository.savedUid, _hostUid);
+      expect(repository.savedDisplayName, 'Updated Host');
+    },
+  );
 
   testWidgets(
     'Host account edits active professional profile in account sheet',

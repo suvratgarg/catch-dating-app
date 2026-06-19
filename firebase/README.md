@@ -94,6 +94,25 @@ Current state:
   `catch-dating-app-64e51` in `Mumbai (asia-south1)`. The expected dataset is
   `analytics_526484083`. Daily event export is enabled for all streams; streaming
   export, mobile advertising identifiers, and daily user-data export are off.
+- Host analytics BigQuery setup is repo-owned. Deploy the `bq-host-*`
+  Firestore export extensions, then apply the DDL and mart refresh schedule with
+  `tool/analytics/deploy_host_analytics_bigquery.sh <env>`.
+  `extensions/bq-host-*.env` intentionally sets `EXCLUDE_OLD_DATA=no` so the
+  first install backfills historical host operational documents instead of
+  producing a forward-only analytics cutover.
+- As of the 2026-06-18 live prod inspection, host analytics infrastructure is
+  checked in but not yet deployed: `catch_analytics` does not exist,
+  `bq-host-*` extension instances are not installed, no matching scheduled query
+  exists, and the three host analytics callables are not live.
+- Host analytics IAM has three separate identities. The Functions runtime
+  service account needs `roles/bigquery.jobUser` on the project and write/read
+  access to `catch_analytics` because `recordOrganizerAnalyticsEvent` inserts
+  raw events and `getHostAnalytics` / `adminGetHostAnalytics` query the mart.
+  The deployer or scheduled-query identity needs `roles/bigquery.jobUser`,
+  editor access to `catch_analytics`, and viewer access to
+  `catch_marketplace_metrics` for Event Success scorecard joins. The
+  Firestore-to-BigQuery extension service accounts must retain write access to
+  the export tables they own.
 
 ## Current environment state
 

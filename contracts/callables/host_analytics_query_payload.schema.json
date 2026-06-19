@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/host_analytics_query_payload.schema.json",
+  "title": "HostAnalyticsQueryCallablePayload",
+  "description": "Callable payload accepted by getHostAnalytics and adminGetHostAnalytics.",
+  "x-callable-aliases": ["getHostAnalytics", "adminGetHostAnalytics"],
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "clubId": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ]
+    },
+    "eventId": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ]
+    },
+    "rangePreset": {
+      "type": "string",
+      "enum": ["7d", "30d", "90d", "month", "custom"]
+    },
+    "startDate": {
+      "type": ["string", "null"],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "endDate": {
+      "type": ["string", "null"],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "granularity": {
+      "type": "string",
+      "enum": ["day", "week", "month"]
+    }
+  }
+}

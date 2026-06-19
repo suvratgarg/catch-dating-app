@@ -43,7 +43,9 @@ jobs:
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
           cache: npm
-          cache-dependency-path: functions/package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            functions/package-lock.json
 
       - uses: actions/setup-java@v5
         with:
@@ -51,6 +53,8 @@ jobs:
           java-version: ${{ steps.toolchain.outputs.java-version }}
 
       - run: npm --prefix functions ci
+
+      - run: npm ci
 
       - run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
 
@@ -73,4 +77,17 @@ jobs:
         run: firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions run test:rules"
 
       - name: Deploy selected Firebase targets in safe order
+        env:
+          VITE_GTM_ID: ${{ vars.VITE_GTM_ID }}
+          VITE_WEBSITE_APPCHECK_SITE_KEY: ${{ vars.VITE_WEBSITE_APPCHECK_SITE_KEY }}
+          VITE_ADMIN_DATA_MODE: ${{ vars.VITE_ADMIN_DATA_MODE }}
+          VITE_ADMIN_FIREBASE_ENV: ${{ vars.VITE_ADMIN_FIREBASE_ENV }}
+          VITE_ADMIN_APPCHECK_SITE_KEY: ${{ vars.VITE_ADMIN_APPCHECK_SITE_KEY }}
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
         run: ./tool/deploy_firebase_targets.sh "${{ inputs.environment }}" "${{ inputs.targets }}"

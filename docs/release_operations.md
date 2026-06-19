@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.7.5
-updated: 2026-06-10
+version: 1.7.6
+updated: 2026-06-18
 owner: recursive_audit_loop
 status: active
 ---
@@ -37,6 +37,7 @@ The current workflows are:
 | `.github/workflows/firebase-dev-deploy.yml` | Automatic dev Firebase deploy after `main` is green. |
 | `.github/workflows/firebase-deploy.yml` | Manual deploy of selected Firebase targets to dev, staging, or prod. Keep staging/prod explicit. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
+| `.github/workflows/admin-website.yml` | Validates and deploys the production Firebase Hosting `admin` target after matching changes land on `main`. |
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
 | `.github/workflows/ios-testflight-release.yml` | Manual prod iOS archive/export gate. TestFlight upload is break-glass only while Xcode Cloud is canonical. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
@@ -214,6 +215,27 @@ Functions, Firestore indexes, Firestore rules, and Storage rules in the safe
 order. Mobile app binaries, TestFlight, Play internal testing, Hosting, and
 observability evidence remain separate release steps unless explicitly added to
 the selected manual deploy targets.
+
+Marketing and admin Hosting deploys require explicit Vite Firebase/App Check
+environment variables. Firebase Hosting predeploy runs
+`tool/env/check_web_hosting_env.mjs` for both targets so a deployment fails
+before build if the site would fall back to dev Firebase config, sample admin
+mode, or missing App Check.
+
+The production admin Hosting target has its own `Admin Website` workflow. It
+validates `npm run web:admin:build`, checks live prod Vite Firebase/App Check
+env, then deploys only `hosting:admin` after matching changes land on `main`.
+
+The manual `Firebase Deploy` workflow forwards these GitHub Environment
+variables into Firebase Hosting predeploys when `hosting` is selected:
+`VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`,
+`VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`,
+`VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`,
+`VITE_FIREBASE_MEASUREMENT_ID`, `VITE_WEBSITE_APPCHECK_SITE_KEY`,
+`VITE_GTM_ID`, `VITE_ADMIN_DATA_MODE`, `VITE_ADMIN_FIREBASE_ENV`, and
+`VITE_ADMIN_APPCHECK_SITE_KEY`. The environment-specific values must match the
+selected Firebase alias; for prod, `VITE_FIREBASE_PROJECT_ID` must be
+`catch-dating-app-64e51` and `VITE_ADMIN_FIREBASE_ENV` must be `prod`.
 
 If the automatic dev deploy fails, fix the branch with a new PR rather than
 rerunning deploys against a stale commit. Use the manual `Firebase Deploy`
@@ -457,16 +479,72 @@ Remote Config is intentionally separate from the standard backend deploy:
 ./tool/deploy_firebase_targets.sh prod remoteconfig
 ```
 
-Firebase Extensions (the six `firestore-bigquery-export` instances in
-`firebase.json`) are **not** part of the standard backend deploy and are not
-in the `deploy_firebase_targets.sh` default target set. When extension
-parameters change in `firebase.json`, deploy them explicitly and deliberately:
+Firebase Extensions (`firestore-bigquery-export` instances in `firebase.json`)
+are **not** part of the standard backend deploy and are not in the
+`deploy_firebase_targets.sh` default target set. When extension parameters
+change in `firebase.json`, deploy them explicitly and deliberately:
 
 ```bash
 ./tool/firebase_with_env.sh prod deploy --only extensions
 ```
 
 Otherwise extension config in the repo silently drifts from what is installed.
+
+Host analytics uses BigQuery as the reporting source of truth. Before deploying
+or refreshing it, run the local wiring check:
+
+```bash
+node tool/run.mjs check analytics:check-host-bigquery
+```
+
+Use this production order so the mart is never refreshed before its source
+exports exist:
+
+```bash
+# 1. Create the analytics dataset and host analytics tables.
+tool/analytics/deploy_host_analytics_bigquery.sh prod --skip-refresh
+
+# 2. Install or update the Firestore-to-BigQuery export extensions.
+./tool/firebase_with_env.sh prod deploy --only extensions
+
+# 3. Deploy only the callable code that records and reads analytics.
+./tool/firebase_with_env.sh prod deploy --only \
+  functions:getHostAnalytics,functions:adminGetHostAnalytics,functions:recordOrganizerAnalyticsEvent
+
+# 4. After the bq-host-* backfill/export views exist, refresh and schedule.
+tool/analytics/deploy_host_analytics_bigquery.sh prod \
+  --refresh-only \
+  --create-schedule
+
+# 5. Verify the live backend state.
+node tool/analytics/host_analytics_live_status.mjs --env prod
+```
+
+Use `--dry-run` first when validating credentials or SQL syntax locally.
+`--create-schedule` is idempotent by display name: it updates the existing
+scheduled-query transfer config when exactly one matching config exists, creates
+it when none exists, and fails if duplicate configs already exist.
+
+Live prod evidence from 2026-06-18 before the first host analytics deploy:
+`catch_analytics` did not exist, no `bq-host-*` extension instances were
+installed, no matching scheduled query existed, and
+`getHostAnalytics` / `adminGetHostAnalytics` /
+`recordOrganizerAnalyticsEvent` were not deployed. Do not treat checked-in
+analytics code as live until the four-step sequence above has completed and the
+post-deploy smoke checks prove it. The live-status command above is expected to
+exit nonzero until all required BigQuery tables/views, extension instances,
+scheduled refresh, and callable Functions are present.
+
+The required IAM is not optional. The Functions runtime service account needs
+`roles/bigquery.jobUser` at project scope plus access to `catch_analytics`
+because the public analytics callable inserts into
+`catch_analytics.host_analytics_events` and the host/admin callables read
+`catch_analytics.mart_host_event_daily`. The deployer or scheduled-query
+identity needs `roles/bigquery.jobUser`, write access to `catch_analytics`, and
+read access to `catch_marketplace_metrics` for Event Success scorecard joins.
+The `bq-host-*` extension service accounts must retain write access to their
+own export tables. The host export env files intentionally use
+`EXCLUDE_OLD_DATA=no` so first install backfills existing host data.
 
 After production Functions deploys, sync callable invokers if needed:
 
@@ -561,11 +639,13 @@ A smoke build can also emit a single canary event with
 
 ### BigQuery — two separate exports, do not conflate them
 
-- **Firestore → BigQuery**: configured in-repo. `firebase.json` declares six
-  `firestore-bigquery-export` extension instances (`bq-event-success-*`,
-  `bq-participant-*`), installed in all three projects. These stream Firestore
-  collections into BigQuery. Extension parameter changes are **not** part of the
-  normal `deploy_firebase_targets.sh` target set — push them with an explicit
+- **Firestore → BigQuery**: configured in-repo. `firebase.json` declares the
+  Event Success, participant metric, and host analytics operational export
+  instances. Existing `bq-event-success-*` and `bq-participant-*` instances are
+  installed in all three projects; newly declared `bq-host-*` instances must be
+  deployed explicitly before host analytics marts can refresh from live data.
+  Extension parameter changes are **not** part of the normal
+  `deploy_firebase_targets.sh` target set — push them with an explicit
   `firebase deploy --only extensions` when changed.
 - **GA4 → BigQuery**: a Google Analytics Admin product link, not repo config.
   Production is linked as of 2026-05-23: GA4 property `catch-dating-app-64e51`
@@ -577,6 +657,17 @@ A smoke build can also emit a single canary event with
   export are disabled. GA4→BigQuery only exports from the day it is enabled.
   Capture the dataset link/table proof in the `ga4_bigquery_evidence` input of
   `observability-evidence.yml` after the first daily table lands.
+- **Host analytics marts**: source-controlled DDL and refresh SQL live under
+  `analytics/sql/**`. `getHostAnalytics` and `adminGetHostAnalytics` read
+  `catch_analytics.mart_host_event_daily`; `recordOrganizerAnalyticsEvent`
+  writes aggregate-safe discovery events to
+  `catch_analytics.host_analytics_events`. The mart also reads
+  `analytics_526484083.events_*` for `organizer_<eventName>` GA4 exports when
+  the dataset/tables exist, using the larger direct-vs-GA4 daily count per
+  club/event/event-name key to avoid double-counting mirrored browser events.
+  Apply the warehouse layer with
+  `tool/analytics/deploy_host_analytics_bigquery.sh <env>` after deploying the
+  `bq-host-*` extension instances.
 
 ## Automated Integration Test Backlog
 
