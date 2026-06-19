@@ -18,6 +18,10 @@ enum AuthStep { phone, otp }
 
 @Riverpod(keepAlive: true)
 String authInitialCountryDialCode(Ref ref) {
+  if (AppConfig.appRole.isHost) {
+    return defaultCountryDialCode;
+  }
+
   final countryCode = WidgetsFlutterBinding.ensureInitialized()
       .platformDispatcher
       .locale

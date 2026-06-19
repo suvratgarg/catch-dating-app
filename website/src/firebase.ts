@@ -92,6 +92,30 @@ export interface ListPublicClubReviewsResponse {
   reviews: PublicClubReview[];
 }
 
+export type OrganizerAnalyticsEventName =
+  | "listingView"
+  | "searchAppearance"
+  | "eventView"
+  | "organizerSave"
+  | "eventSave"
+  | "contactClick"
+  | "claimClick"
+  | "outboundClick";
+
+export interface RecordOrganizerAnalyticsEventPayload {
+  clubId: string;
+  eventId?: string | null;
+  eventName: OrganizerAnalyticsEventName;
+  pagePath: string;
+  source?: string | null;
+  sessionId?: string | null;
+  platform?: string | null;
+}
+
+export interface RecordOrganizerAnalyticsEventResponse {
+  accepted: boolean;
+}
+
 const config = resolveFirebaseConfig();
 const app = config ? initializeApp(config) : null;
 const appCheckSiteKey = import.meta.env.VITE_WEBSITE_APPCHECK_SITE_KEY;
@@ -105,6 +129,7 @@ if (app && appCheckSiteKey) {
 
 export const claimFirebaseConfigured = Boolean(app && appCheckSiteKey);
 export const publicReviewsFirebaseConfigured = Boolean(app && appCheckSiteKey);
+export const publicAnalyticsFirebaseConfigured = Boolean(app && appCheckSiteKey);
 export const auth = app ? getAuth(app) : null;
 const functions = app ? getFunctions(app, "asia-south1") : null;
 
@@ -172,6 +197,20 @@ export async function listPublicClubReviews(
     ListPublicClubReviewsPayload,
     ListPublicClubReviewsResponse
   >(functions, "listPublicClubReviews");
+  const result = await callable(payload);
+  return result.data;
+}
+
+export async function recordOrganizerAnalyticsEvent(
+  payload: RecordOrganizerAnalyticsEventPayload
+): Promise<RecordOrganizerAnalyticsEventResponse> {
+  if (!functions || !publicAnalyticsFirebaseConfigured) {
+    return {accepted: false};
+  }
+  const callable = httpsCallable<
+    RecordOrganizerAnalyticsEventPayload,
+    RecordOrganizerAnalyticsEventResponse
+  >(functions, "recordOrganizerAnalyticsEvent");
   const result = await callable(payload);
   return result.data;
 }

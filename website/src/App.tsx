@@ -14,6 +14,7 @@ import {
   createPublicClubReview,
   listPublicClubReviews,
   publicReviewsFirebaseConfigured,
+  recordOrganizerAnalyticsEvent,
   requestClubClaim,
   signInForClaim,
   signOutClaimUser,
@@ -2129,6 +2130,12 @@ function OrganizerSearchPage() {
       min_rating: minRating,
       sort,
     });
+    results.slice(0, 20).forEach((listing) =>
+      trackOrganizerSearchAppearance(
+        listing,
+        organizerAppearanceContext(currentFilters)
+      )
+    );
   }
 
   function clearFilters() {
@@ -2259,6 +2266,7 @@ function OrganizerSearchPage() {
           {results.length ? (
             results.map((listing) => (
               <OrganizerResultCard
+                appearanceContext={organizerAppearanceContext(currentFilters)}
                 listing={listing}
                 key={listing.id}
                 queryTerms={queryTerms}
@@ -2960,9 +2968,11 @@ function claimWhileYouWaitItems(listing: HostListing | null) {
 }
 
 function OrganizerResultCard({
+  appearanceContext,
   listing,
   queryTerms,
 }: {
+  appearanceContext: string;
   listing: HostListing;
   queryTerms: string[];
 }) {
@@ -2972,6 +2982,11 @@ function OrganizerResultCard({
   const activity = activityForListing(listing);
   const eventHighlights = eventHighlightsForListing(listing, queryTerms);
   const nextEvent = nextFutureCatchEvent(listing);
+
+  useEffect(() => {
+    trackOrganizerSearchAppearance(listing, appearanceContext);
+  }, [appearanceContext, listing]);
+
   return (
     <article
       className="organizer-result-card"
@@ -3023,6 +3038,7 @@ function HostListingPage({listing}: {listing: HostListing}) {
   const activity = activityForListing(listing);
   const claimHref = isAppCreated ? listing.claim.href : claimHrefForListing(listing);
   const [shareStatus, setShareStatus] = useState("");
+  const [isSaved, setIsSaved] = useState(() => readSavedOrganizer(listing.id));
   const nav = [
     {href: "#profile", label: "Profile"},
     ...(listing.catchEvents?.length ? [{href: "#events", label: "Events"}] : []),
@@ -3032,6 +3048,19 @@ function HostListingPage({listing}: {listing: HostListing}) {
     {href: "/organizers/", label: "Search"},
     {href: "/host/", label: "For hosts"},
   ];
+
+  useEffect(() => {
+    trackOrganizerAnalytics(listing, "listingView", "listing_page");
+  }, [listing]);
+
+  function handleSaveListing() {
+    const nextSaved = !isSaved;
+    setIsSaved(nextSaved);
+    writeSavedOrganizer(listing.id, nextSaved);
+    if (nextSaved) {
+      trackOrganizerAnalytics(listing, "organizerSave", "listing_hero");
+    }
+  }
 
   async function handleShareListing() {
     const shareUrl = absoluteListingUrl(listing);
@@ -3107,7 +3136,10 @@ function HostListingPage({listing}: {listing: HostListing}) {
                 <a
                   className="button"
                   href={claimHref}
-                  onClick={() => trackCtaClick("listing_claim", claimHref)}
+                  onClick={() => {
+                    trackCtaClick("listing_claim", claimHref);
+                    trackOrganizerAnalytics(listing, "claimClick", "hero");
+                  }}
                 >
                   {listing.claim.label}
                 </a>
@@ -3127,6 +3159,14 @@ function HostListingPage({listing}: {listing: HostListing}) {
                   onClick={() => void handleShareListing()}
                 >
                   Share listing
+                </button>
+                <button
+                  className="button button--ghost"
+                  type="button"
+                  aria-pressed={isSaved}
+                  onClick={handleSaveListing}
+                >
+                  {isSaved ? "Saved" : "Save"}
                 </button>
               </div>
               <p className="listing-share-status" role="status" aria-live="polite">
@@ -3215,7 +3255,16 @@ function HostListingPage({listing}: {listing: HostListing}) {
                     <div>
                       <dt>Source</dt>
                       <dd>
-                        <a href={event.sourceHref} target="_blank" rel="noreferrer">
+                        <a
+                          href={event.sourceHref}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={() => trackOrganizerAnalytics(
+                            listing,
+                            "outboundClick",
+                            "event_evidence"
+                          )}
+                        >
                           {event.sourceLabel}
                         </a>
                       </dd>
@@ -3350,7 +3399,10 @@ function ClaimUnlocksCard({listing}: {listing: HostListing}) {
       <a
         className="button"
         href={claimHref}
-        onClick={() => trackCtaClick("claim_unlocks_panel", claimHref)}
+        onClick={() => {
+          trackCtaClick("claim_unlocks_panel", claimHref);
+          trackOrganizerAnalytics(listing, "claimClick", "claim_unlocks_panel");
+        }}
       >
         Claim this listing
       </a>
@@ -3484,7 +3536,17 @@ function ListingSourcesSection({listing}: {listing: HostListing}) {
             </div>
             <p>{source.detail}</p>
             {source.href ? (
-              <a className="source-link" href={source.href} target="_blank" rel="noreferrer">
+              <a
+                className="source-link"
+                href={source.href}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => trackOrganizerAnalytics(
+                  listing,
+                  source.type === "socialProfile" ? "contactClick" : "outboundClick",
+                  `source_${source.type}`
+                )}
+              >
                 Open source
               </a>
             ) : null}
@@ -5469,6 +5531,18 @@ function replaceOrganizerDirectoryUrl(filters: OrganizerDirectoryFilters) {
   }
 }
 
+function organizerAppearanceContext(filters: OrganizerDirectoryFilters) {
+  return [
+    filters.query.trim().toLowerCase(),
+    filters.statusFilter,
+    filters.formatFilter,
+    filters.cityFilter,
+    filters.upcomingOnly ? "upcoming" : "all-dates",
+    filters.minRating,
+    filters.sort,
+  ].join("|");
+}
+
 function filterOptionValue(value: string | null, options: string[]) {
   return value && options.includes(value) ? value : "all";
 }
@@ -5852,6 +5926,12 @@ function eventActionCardForListing(
       href: eventDeepLinkForListing(listing, event),
       label: isFuture ? "Open event link" : "Open event record",
       trackingLabel: isFuture ? "listing_event_open_upcoming" : "listing_event_open_past",
+      onClick: () => trackOrganizerAnalytics(
+        listing,
+        "eventView",
+        "catch_event_card",
+        event.id
+      ),
     },
   ];
 
@@ -5861,6 +5941,12 @@ function eventActionCardForListing(
       label: "See outcomes",
       variant: "secondary",
       trackingLabel: "listing_event_success",
+      onClick: () => trackOrganizerAnalytics(
+        listing,
+        "eventView",
+        "event_success_panel",
+        event.id
+      ),
     });
   } else {
     actions.push({
@@ -6055,6 +6141,95 @@ function trackCtaClick(label: string, href: string) {
     cta_label: label,
     page_path: `${window.location.pathname}${window.location.search}`,
   });
+}
+
+const trackedOrganizerSearchAppearances = new Set<string>();
+
+function trackOrganizerSearchAppearance(
+  listing: HostListing,
+  appearanceContext: string
+) {
+  const key = `${listing.id}:${appearanceContext}`;
+  if (trackedOrganizerSearchAppearances.has(key)) return;
+  if (trackedOrganizerSearchAppearances.size > 2000) {
+    trackedOrganizerSearchAppearances.clear();
+  }
+  trackedOrganizerSearchAppearances.add(key);
+  trackOrganizerAnalytics(listing, "searchAppearance", "directory_result");
+}
+
+function trackOrganizerAnalytics(
+  listing: HostListing,
+  eventName:
+    | "listingView"
+    | "searchAppearance"
+    | "eventView"
+    | "organizerSave"
+    | "eventSave"
+    | "contactClick"
+    | "claimClick"
+    | "outboundClick",
+  source?: string,
+  eventId?: string | null
+) {
+  void recordOrganizerAnalyticsEvent({
+    clubId: listing.id,
+    eventId: eventId ?? null,
+    eventName,
+    pagePath: `${window.location.pathname}${window.location.search}`,
+    source: source ?? null,
+    sessionId: hostAnalyticsSessionId(),
+    platform: "web",
+  }).catch(() => undefined);
+  trackMarketingEvent(`organizer_${eventName}`, {
+    club_id: listing.id,
+    event_id: eventId ?? null,
+    source: source ?? null,
+  });
+}
+
+function hostAnalyticsSessionId(): string | null {
+  try {
+    const key = "catch_host_analytics_session_v1";
+    const existing = window.localStorage.getItem(key);
+    if (existing) return existing;
+    const next =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `session_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    window.localStorage.setItem(key, next);
+    return next;
+  } catch {
+    return null;
+  }
+}
+
+function readSavedOrganizer(clubId: string): boolean {
+  try {
+    const raw = window.localStorage.getItem("catch_saved_organizers_v1");
+    const saved = raw ? JSON.parse(raw) as string[] : [];
+    return saved.includes(clubId);
+  } catch {
+    return false;
+  }
+}
+
+function writeSavedOrganizer(clubId: string, saved: boolean) {
+  try {
+    const raw = window.localStorage.getItem("catch_saved_organizers_v1");
+    const values = new Set(raw ? JSON.parse(raw) as string[] : []);
+    if (saved) {
+      values.add(clubId);
+    } else {
+      values.delete(clubId);
+    }
+    window.localStorage.setItem(
+      "catch_saved_organizers_v1",
+      JSON.stringify([...values])
+    );
+  } catch {
+    // Local saves should not block the public listing UI.
+  }
 }
 
 export default App;

@@ -27,4 +27,19 @@ if [[ ! -f "$firebaserc" ]] || ! grep -q "\"$environment\"" "$firebaserc"; then
   exit 1
 fi
 
+project_id="$(
+  node -e '
+    const fs = require("fs");
+    const env = process.argv[1];
+    const rc = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
+    const project = rc.projects && rc.projects[env];
+    if (!project) process.exit(2);
+    console.log(project);
+  ' "$environment" "$firebaserc"
+)"
+
+export CATCH_FIREBASE_DEPLOY_ENV="$environment"
+export CATCH_FIREBASE_PROJECT_ID="$project_id"
+export NO_UPDATE_NOTIFIER=true
+
 exec firebase --project "$environment" "$@"

@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart';
+import 'package:catch_dating_app/user_analytics/presentation/user_analytics_panel.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
@@ -500,6 +501,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
               }),
             ),
           ),
+          const UserAnalyticsPanel(),
           ProfileInfoSection(
             title: 'Prompts',
             subtitle:

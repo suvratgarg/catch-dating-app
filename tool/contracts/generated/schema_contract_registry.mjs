@@ -9917,6 +9917,230 @@ export const savedEventDocumentSchema = {
   }
 };
 
+export const hostAnalyticsEventSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/bigquery/host_analytics_event.schema.json",
+  "title": "HostAnalyticsEvent",
+  "description": "Raw aggregate-safe BigQuery event for host-visible organizer analytics. This is the source event table for discovery metrics; Firestore must not be the source of truth for these counters.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "analytics_event_id",
+    "occurred_at",
+    "event_date",
+    "event_name",
+    "club_id",
+    "page_path",
+    "ingested_at"
+  ],
+  "properties": {
+    "analytics_event_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "event_date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "event_name": {
+      "type": "string",
+      "enum": [
+        "listingView",
+        "searchAppearance",
+        "eventView",
+        "organizerSave",
+        "eventSave",
+        "contactClick",
+        "claimClick",
+        "outboundClick"
+      ]
+    },
+    "club_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "target_event_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "page_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80
+    },
+    "session_hash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "platform": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 40
+    },
+    "ingested_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+};
+
+export const userProfileExposureEventSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/bigquery/user_profile_exposure_event.schema.json",
+  "title": "UserProfileExposureEvent",
+  "description": "Raw BigQuery event for profile impression, dwell, and photo performance analytics. This table is the denominator for user-safe profile analytics and internal composition models.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "analytics_event_id",
+    "occurred_at",
+    "event_date",
+    "subject_uid",
+    "event_name",
+    "ingested_at"
+  ],
+  "properties": {
+    "analytics_event_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "event_date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "viewer_uid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "subject_uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "event_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "club_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "event_name": {
+      "type": "string",
+      "enum": [
+        "profileImpression",
+        "profileView",
+        "profileDwell",
+        "photoImpression",
+        "photoDwell"
+      ]
+    },
+    "surface": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80
+    },
+    "photo_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "photo_slot": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 24
+    },
+    "dwell_ms": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 3600000
+    },
+    "session_hash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "platform": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 40
+    },
+    "ingested_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+};
+
 export const paymentDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/payments.schema.json",
@@ -15746,6 +15970,1008 @@ export const updateClubCallablePayloadSchema = {
   }
 };
 
+export const hostAnalyticsQueryCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/host_analytics_query_payload.schema.json",
+  "title": "HostAnalyticsQueryCallablePayload",
+  "description": "Callable payload accepted by getHostAnalytics and adminGetHostAnalytics.",
+  "x-callable-aliases": [
+    "getHostAnalytics",
+    "adminGetHostAnalytics"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "clubId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "eventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "rangePreset": {
+      "type": "string",
+      "enum": [
+        "7d",
+        "30d",
+        "90d",
+        "month",
+        "custom"
+      ]
+    },
+    "startDate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "endDate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "granularity": {
+      "type": "string",
+      "enum": [
+        "day",
+        "week",
+        "month"
+      ]
+    }
+  }
+};
+
+export const hostAnalyticsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/host_analytics_response.schema.json",
+  "title": "HostAnalyticsCallableResponse",
+  "description": "Shared aggregate analytics response returned by host and admin analytics callables. Values are aggregate-only and host-safe.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "timezone",
+    "range",
+    "scope",
+    "summaryCards",
+    "trend",
+    "topEvents",
+    "reviewSummary",
+    "discoverySummary",
+    "dataQuality"
+  ],
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "startDate",
+        "endDate",
+        "granularity"
+      ],
+      "properties": {
+        "startDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "granularity": {
+          "type": "string",
+          "enum": [
+            "day",
+            "week",
+            "month"
+          ]
+        },
+        "preset": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 24
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clubIds",
+        "eventIds"
+      ],
+      "properties": {
+        "clubIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        },
+        "eventIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        },
+        "clubName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "eventTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        }
+      }
+    },
+    "summaryCards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "value",
+          "unit",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "count",
+              "percent",
+              "money_minor",
+              "rating"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "partial",
+              "missing"
+            ]
+          },
+          "caption": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          }
+        }
+      }
+    },
+    "trend": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "periodStart",
+          "periodEnd",
+          "metrics"
+        ],
+        "properties": {
+          "periodStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "periodEnd": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "metrics": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "topEvents": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "clubId",
+          "title",
+          "startTime",
+          "status",
+          "capacityLimit",
+          "bookedCount",
+          "checkedInCount",
+          "waitlistedCount",
+          "fillRate",
+          "checkInRate",
+          "grossRevenueMinor",
+          "currency",
+          "checkoutStartedCount",
+          "checkoutDropoffCount",
+          "paymentCompletedCount",
+          "paymentFailedCount",
+          "paymentRefundedCount",
+          "reviewCount",
+          "averageRating",
+          "demandCount",
+          "inviteOpenCount",
+          "mutualMatchCount",
+          "chatStartedCount",
+          "repeatAttendeeCount"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "clubId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "maxLength": 48
+          },
+          "capacityLimit": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "bookedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "checkedInCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "waitlistedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "fillRate": {
+            "type": "number",
+            "minimum": 0
+          },
+          "checkInRate": {
+            "type": "number",
+            "minimum": 0
+          },
+          "grossRevenueMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3
+          },
+          "checkoutStartedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "checkoutDropoffCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paymentCompletedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paymentFailedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paymentRefundedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reviewCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "averageRating": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "demandCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "inviteOpenCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mutualMatchCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "chatStartedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "repeatAttendeeCount": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "reviewSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "newReviews",
+        "publishedReviews",
+        "verifiedReviews",
+        "publicReviews",
+        "ownerResponseCount",
+        "averageRating"
+      ],
+      "properties": {
+        "newReviews": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "publishedReviews": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verifiedReviews": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "publicReviews": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ownerResponseCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "averageRating": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+        }
+      }
+    },
+    "discoverySummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "listingViews",
+        "searchAppearances",
+        "eventViews",
+        "organizerSaves",
+        "eventSaves",
+        "contactClicks",
+        "claimClicks",
+        "outboundClicks"
+      ],
+      "properties": {
+        "listingViews": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "searchAppearances": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "eventViews": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "organizerSaves": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "eventSaves": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "contactClicks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "claimClicks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "outboundClicks": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "dataQuality": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "state",
+          "detail"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "partial",
+              "missing"
+            ]
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "metricCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "value",
+        "unit",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "enum": [
+            "count",
+            "percent",
+            "money_minor",
+            "rating"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "partial",
+            "missing"
+          ]
+        },
+        "caption": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        }
+      }
+    }
+  }
+};
+
+export const userAnalyticsQueryCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/user_analytics_query_payload.schema.json",
+  "title": "UserAnalyticsQueryCallablePayload",
+  "description": "Callable payload accepted by getUserAnalytics and adminGetUserAnalytics.",
+  "x-callable-aliases": [
+    "getUserAnalytics",
+    "adminGetUserAnalytics"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "userId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Admin-only user scope override. getUserAnalytics always scopes to the signed-in user."
+    },
+    "rangePreset": {
+      "type": "string",
+      "enum": [
+        "7d",
+        "30d",
+        "90d",
+        "month",
+        "custom"
+      ]
+    },
+    "startDate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "endDate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "granularity": {
+      "type": "string",
+      "enum": [
+        "day",
+        "week",
+        "month"
+      ]
+    }
+  }
+};
+
+export const userAnalyticsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/user_analytics_response.schema.json",
+  "title": "UserAnalyticsCallableResponse",
+  "description": "User-safe profile and connection analytics response. Internal scoring columns stay in BigQuery and are intentionally not exposed here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "timezone",
+    "range",
+    "scope",
+    "summaryCards",
+    "trend",
+    "connectionSummary",
+    "profileSummary",
+    "coachingTipRefs",
+    "dataQuality"
+  ],
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "startDate",
+        "endDate",
+        "granularity"
+      ],
+      "properties": {
+        "startDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "granularity": {
+          "type": "string",
+          "enum": [
+            "day",
+            "week",
+            "month"
+          ]
+        },
+        "preset": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 24
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "userId"
+      ],
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    },
+    "summaryCards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "value",
+          "unit",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "count",
+              "percent",
+              "duration_seconds"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "partial",
+              "missing"
+            ]
+          },
+          "caption": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          }
+        }
+      }
+    },
+    "trend": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "periodStart",
+          "periodEnd",
+          "metrics"
+        ],
+        "properties": {
+          "periodStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "periodEnd": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "metrics": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "connectionSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outgoingLikes",
+        "incomingLikes",
+        "privateInterestReceived",
+        "mutualCatches",
+        "chatsStarted",
+        "chatMessagesSent",
+        "followThroughRate",
+        "eventsAttended"
+      ],
+      "properties": {
+        "outgoingLikes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "incomingLikes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "privateInterestReceived": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mutualCatches": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "chatsStarted": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "chatMessagesSent": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "followThroughRate": {
+          "type": "number",
+          "minimum": 0
+        },
+        "eventsAttended": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "profileSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profileViews",
+        "uniqueViewers",
+        "profileDwellSeconds",
+        "photoImpressions",
+        "topPhotoId",
+        "activeMinutes"
+      ],
+      "properties": {
+        "profileViews": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "uniqueViewers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "profileDwellSeconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "photoImpressions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "topPhotoId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "activeMinutes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "coachingTipRefs": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "copyKey",
+          "priority",
+          "metricIds"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "copyKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "metricIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          }
+        }
+      }
+    },
+    "dataQuality": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "state",
+          "detail"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "partial",
+              "missing"
+            ]
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "metricCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "value",
+        "unit",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "enum": [
+            "count",
+            "percent",
+            "duration_seconds"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "partial",
+            "missing"
+          ]
+        },
+        "caption": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        }
+      }
+    }
+  }
+};
+
 export const addClubHostCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/add_club_host_payload.schema.json",
@@ -19110,6 +20336,78 @@ export const recordEventInviteLinkOpenCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    }
+  }
+};
+
+export const recordOrganizerAnalyticsEventCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/record_organizer_analytics_event_payload.schema.json",
+  "title": "RecordOrganizerAnalyticsEventCallablePayload",
+  "description": "Public website analytics event for host-visible organizer metrics. The callable validates organizer scope and writes a raw, aggregate-safe event to BigQuery.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId",
+    "eventName",
+    "pagePath"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "eventName": {
+      "type": "string",
+      "enum": [
+        "listingView",
+        "searchAppearance",
+        "eventView",
+        "organizerSave",
+        "eventSave",
+        "contactClick",
+        "claimClick",
+        "outboundClick"
+      ]
+    },
+    "pagePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80
+    },
+    "sessionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80
+    },
+    "platform": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 40
     }
   }
 };

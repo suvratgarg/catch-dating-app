@@ -80,10 +80,14 @@ business facts.
   - per-user counters: `participantMetricCounters/{uid}`;
   - future user-facing summaries: `participantMomentum/{uid}`;
   - future admin summaries: `participantMarketplaceMetrics/{uid}`.
-- Firestore-to-BigQuery export extensions are already declared for Event Success
-  and participant metric collections.
-- Production GA4-to-BigQuery export is documented as enabled, but daily-only and
-  forward-looking from the date it was enabled.
+- Firestore-to-BigQuery export extensions are declared for Event Success,
+  participant metric collections, and host analytics operational collections
+  (`clubs`, `events`, `eventParticipations`, `payments`, `reviews`,
+  `savedEvents`, `eventInviteLinks`, and `matches`).
+- Production GA4-to-BigQuery export is documented as enabled, daily-only, and
+  forward-looking from the date it was enabled. Host analytics mart refresh SQL
+  now reads `organizer_<eventName>` GA4 exports when those tables exist and
+  de-duplicates them against direct host analytics callable events.
 
 ### Existing Gaps
 
@@ -104,9 +108,9 @@ business facts.
 - Participant metric collections currently have Functions helpers and rules
   entries, but no JSON Schema contracts. If the admin product depends on them,
   they should become first-class contract sources.
-- Firestore-to-BigQuery exports currently cover participant and Event Success
-  collections, not every collection needed for cohorts, finance, reviews,
-  users, host growth, and event analytics.
+- Firestore-to-BigQuery exports still do not cover every collection needed for
+  user cohorts, referrals, finance ledgers, and full admin retention analysis.
+  Host/event analytics operational coverage is now declared in `firebase.json`.
 
 ## Data Architecture
 
@@ -200,9 +204,12 @@ in Firestore under `adminAnalyticsSnapshots/{snapshotId}`.
 - Current app observability collection is intentionally off in normal debug
   builds and on only for prod release or explicit collection-enabled builds.
   Analytics QA needs purpose-built smoke runs.
-- Firestore-to-BigQuery extension env files use `EXCLUDE_OLD_DATA=yes`; old
-  Firestore documents require explicit backfill if they matter for launch
-  analytics.
+- Existing participant/Event Success Firestore-to-BigQuery extension env files
+  use `EXCLUDE_OLD_DATA=yes`; old Firestore documents require explicit backfill
+  if those dashboards need pre-link history. The new host analytics export
+  configs use `EXCLUDE_OLD_DATA=no` so existing clubs, events, payments,
+  reviews, saves, invite links, participations, and matches backfill on first
+  install.
 - BigQuery and Analytics Admin access can be an operational blocker. The repo
   previously recorded Analytics Admin scope problems when trying to verify GA4
   BigQuery links through APIs.
@@ -477,6 +484,7 @@ Suggested marts:
 - `mart_user_ltv`
 - `mart_host_monthly`
 - `mart_host_retention`
+- `mart_host_event_daily`
 - `mart_event_performance`
 - `mart_referral_funnel`
 - `mart_finance_daily`
@@ -617,8 +625,8 @@ Suggested roles:
 - Wire access applications end-to-end if gated launch is still desired.
 - Add user signup/profile-completion timestamps.
 - Add backend admin APIs for Overview, Safety, Access, and User Search.
-- Add BigQuery export coverage for `users`, `events`, `eventParticipations`,
-  `clubs`, `clubHostClaims`, `reviews`, and `payments`.
+- Add BigQuery export coverage for `users`, `clubHostClaims`, referral
+  attribution, settlement/ledger collections, and any remaining cohort inputs.
 - Add launch-ready payment provider setup and finance smoke evidence before paid
   events.
 
@@ -627,8 +635,9 @@ Suggested roles:
 - Add referral data model and attribution.
 - Add schemas for `participantSignalFacts`, `participantMetricCounters`,
   `participantMomentum`, and `participantMarketplaceMetrics`.
-- Add scheduled BigQuery SQL under a checked-in folder, for example
-  `analytics/sql/**`.
+- Add the remaining admin marts under `analytics/sql/**`. Host analytics now has
+  checked-in DDL and mart refresh SQL in `analytics/sql/ddl/**` and
+  `analytics/sql/marts/refresh_mart_host_event_daily.sql`.
 - Add `adminAnalyticsSnapshots` cache docs for common dashboard cards.
 - Add analytics instrumentation for declared funnel events and missing product
   moments.

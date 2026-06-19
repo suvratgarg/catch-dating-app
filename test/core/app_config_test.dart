@@ -292,4 +292,24 @@ void main() {
       );
     });
   });
+
+  group('debug sign-out on start', () {
+    test('allows requested non-release builds', () {
+      expect(
+        AppConfig.canDebugSignOutOnStart(releaseMode: false, requested: true),
+        isTrue,
+      );
+    });
+
+    test('blocks release builds and inactive requests', () {
+      expect(
+        AppConfig.canDebugSignOutOnStart(releaseMode: true, requested: true),
+        isFalse,
+      );
+      expect(
+        AppConfig.canDebugSignOutOnStart(releaseMode: false, requested: false),
+        isFalse,
+      );
+    });
+  });
 }

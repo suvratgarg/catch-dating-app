@@ -34,6 +34,8 @@ import {
   clubScheduleLockDocumentSchema,
   userEventScheduleLockDocumentSchema,
   savedEventDocumentSchema,
+  hostAnalyticsEventSchema,
+  userProfileExposureEventSchema,
   paymentDocumentSchema,
   hostPaymentAccountDocumentSchema,
   razorpayPendingOrderDocumentSchema,
@@ -58,6 +60,10 @@ import {
   createClubCallablePayloadSchema,
   createClubCallableResponseSchema,
   updateClubCallablePayloadSchema,
+  hostAnalyticsQueryCallablePayloadSchema,
+  hostAnalyticsCallableResponseSchema,
+  userAnalyticsQueryCallablePayloadSchema,
+  userAnalyticsCallableResponseSchema,
   addClubHostCallablePayloadSchema,
   removeClubHostCallablePayloadSchema,
   transferClubOwnershipCallablePayloadSchema,
@@ -85,6 +91,7 @@ import {
   createEventInviteLinkCallablePayloadSchema,
   disableEventInviteLinkCallablePayloadSchema,
   recordEventInviteLinkOpenCallablePayloadSchema,
+  recordOrganizerAnalyticsEventCallablePayloadSchema,
   markEventAttendanceCallablePayloadSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
@@ -169,6 +176,8 @@ export const validateEventSafetyReportDocument = ajv.compile(eventSafetyReportDo
 export const validateClubScheduleLockDocument = ajv.compile(clubScheduleLockDocumentSchema);
 export const validateUserEventScheduleLockDocument = ajv.compile(userEventScheduleLockDocumentSchema);
 export const validateSavedEventDocument = ajv.compile(savedEventDocumentSchema);
+export const validateHostAnalyticsEvent = ajv.compile(hostAnalyticsEventSchema);
+export const validateUserProfileExposureEvent = ajv.compile(userProfileExposureEventSchema);
 export const validatePaymentDocument = ajv.compile(paymentDocumentSchema);
 export const validateHostPaymentAccountDocument = ajv.compile(hostPaymentAccountDocumentSchema);
 export const validateRazorpayPendingOrderDocument = ajv.compile(razorpayPendingOrderDocumentSchema);
@@ -193,6 +202,10 @@ export const validateUpdateUserProfileCallablePayload = ajv.compile(updateUserPr
 export const validateCreateClubCallablePayload = ajv.compile(createClubCallablePayloadSchema);
 export const validateCreateClubCallableResponse = ajv.compile(createClubCallableResponseSchema);
 export const validateUpdateClubCallablePayload = ajv.compile(updateClubCallablePayloadSchema);
+export const validateHostAnalyticsQueryCallablePayload = ajv.compile(hostAnalyticsQueryCallablePayloadSchema);
+export const validateHostAnalyticsCallableResponse = ajv.compile(hostAnalyticsCallableResponseSchema);
+export const validateUserAnalyticsQueryCallablePayload = ajv.compile(userAnalyticsQueryCallablePayloadSchema);
+export const validateUserAnalyticsCallableResponse = ajv.compile(userAnalyticsCallableResponseSchema);
 export const validateAddClubHostCallablePayload = ajv.compile(addClubHostCallablePayloadSchema);
 export const validateRemoveClubHostCallablePayload = ajv.compile(removeClubHostCallablePayloadSchema);
 export const validateTransferClubOwnershipCallablePayload = ajv.compile(transferClubOwnershipCallablePayloadSchema);
@@ -220,6 +233,7 @@ export const validateCreateEventWaitlistOffersCallablePayload = ajv.compile(crea
 export const validateCreateEventInviteLinkCallablePayload = ajv.compile(createEventInviteLinkCallablePayloadSchema);
 export const validateDisableEventInviteLinkCallablePayload = ajv.compile(disableEventInviteLinkCallablePayloadSchema);
 export const validateRecordEventInviteLinkOpenCallablePayload = ajv.compile(recordEventInviteLinkOpenCallablePayloadSchema);
+export const validateRecordOrganizerAnalyticsEventCallablePayload = ajv.compile(recordOrganizerAnalyticsEventCallablePayloadSchema);
 export const validateMarkEventAttendanceCallablePayload = ajv.compile(markEventAttendanceCallablePayloadSchema);
 export const validateEventJoinRequestDecisionCallablePayload = ajv.compile(eventJoinRequestDecisionCallablePayloadSchema);
 export const validateOverrideEventSuccessRotationsCallablePayload = ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema);

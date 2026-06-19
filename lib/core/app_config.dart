@@ -164,6 +164,14 @@ class AppConfig {
       );
 
   @visibleForTesting
+  static bool canDebugSignOutOnStart({
+    required bool releaseMode,
+    required bool requested,
+  }) {
+    return requested && !releaseMode;
+  }
+
+  @visibleForTesting
   static bool canDisableAuthAppVerificationForTesting({
     required AppEnvironment environment,
     required bool releaseMode,
@@ -241,6 +249,15 @@ class AppConfig {
 
   static const bool disableAuthAppVerificationForTesting = bool.fromEnvironment(
     'DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING',
+  );
+
+  static const bool debugSignOutOnStart = bool.fromEnvironment(
+    'DEBUG_SIGN_OUT_ON_START',
+  );
+
+  static bool get shouldDebugSignOutOnStart => canDebugSignOutOnStart(
+    releaseMode: kReleaseMode,
+    requested: debugSignOutOnStart,
   );
 
   static bool get shouldDisableAuthAppVerificationForTesting =>

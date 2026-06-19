@@ -84,13 +84,6 @@ function draftDecision(rawArgs) {
   const decisionsRoot = flags["decisions-root"] ?
     path.resolve(repoRoot, flags["decisions-root"]) :
     defaultDecisionsRoot;
-  if (existingDecisionFiles(decisionsRoot, gapId).length > 0) {
-    console.error(`A policy gap decision already exists for ${gapId}:`);
-    for (const file of existingDecisionFiles(decisionsRoot, gapId)) {
-      console.error(`- ${relative(file)}`);
-    }
-    process.exit(1);
-  }
 
   const requiredInputsReviewed = confirmRequiredInputs ?
     gap.requiredInputs :
@@ -141,6 +134,15 @@ function draftDecision(rawArgs) {
     console.log(`Would write ${relative(outputPath)}:`);
     console.log(rendered);
     return;
+  }
+
+  const existingFiles = existingDecisionFiles(decisionsRoot, gapId);
+  if (existingFiles.length > 0) {
+    console.error(`A policy gap decision already exists for ${gapId}:`);
+    for (const file of existingFiles) {
+      console.error(`- ${relative(file)}`);
+    }
+    process.exit(1);
   }
 
   fs.mkdirSync(decisionsRoot, {recursive: true});

@@ -287,6 +287,23 @@ select {
   margin-bottom: 14px;
 }
 
+.analytics-controls {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(140px, 1fr)) auto;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 14px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-strong);
+  box-shadow: var(--shadow);
+}
+
+.analytics-clear {
+  height: 36px;
+}
+
 .metric-tile {
   min-height: 92px;
   padding: 13px;
@@ -1108,9 +1125,27 @@ th {
   color: var(--green);
 }
 
+.risk.medium,
 .risk.watch {
   background: var(--orange-soft);
   color: var(--orange);
+}
+
+.risk.high {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.table-action {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .signals,
@@ -1230,6 +1265,10 @@ th {
 }
 
 @media (max-width: 1180px) {
+  .analytics-controls {
+    grid-template-columns: repeat(3, minmax(140px, 1fr));
+  }
+
   .metric-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1288,6 +1327,10 @@ th {
 
   .search-control {
     min-width: min(100%, 280px);
+  }
+
+  .analytics-controls {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .metric-grid {

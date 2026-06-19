@@ -759,9 +759,20 @@ String _initialLocationFromPlatform() {
       WidgetsBinding.instance.platformDispatcher.defaultRouteName;
   if (defaultRouteName.isNotEmpty &&
       defaultRouteName != Navigator.defaultRouteName) {
+    if (AppConfig.appRole.isHost) {
+      final routePath = Uri.tryParse(defaultRouteName)?.path;
+      if (_isHostRoute(routePath) ||
+          routePath == Routes.authScreen.path ||
+          routePath == Routes.loadingScreen.path) {
+        return defaultRouteName;
+      }
+      return Routes.hostHomeScreen.path;
+    }
     return defaultRouteName;
   }
-  return Routes.startScreen.path;
+  return AppConfig.appRole.isHost
+      ? Routes.hostHomeScreen.path
+      : Routes.startScreen.path;
 }
 
 /// Routes that unauthenticated users may access for read-only browsing.
@@ -815,7 +826,7 @@ String? appRedirect({
       userProfileAsync.isLoading;
 
   if (isWaitingOnAuth || isWaitingOnProfile) {
-    if (_isPublicRoute(matchedLocation)) return null;
+    if (!isHostApp && _isPublicRoute(matchedLocation)) return null;
     if (onLoading) return null;
     return _locationWithFrom(
       Routes.loadingScreen.path,
@@ -827,6 +838,17 @@ String? appRedirect({
   final userProfile = userProfileAsync.value;
 
   if (uid == null) {
+    if (isHostApp) {
+      if (onAuth) return null;
+      return _locationWithFrom(
+        Routes.authScreen.path,
+        from: _hostPendingDestination(
+          uri: uri,
+          matchedLocation: matchedLocation,
+        ),
+      );
+    }
+
     if (hasPendingAuthVerification && !onAuth) {
       if (!_isPublicRoute(matchedLocation) ||
           _isTransientRoute(matchedLocation)) {
@@ -918,7 +940,21 @@ String _resumeDestination(Uri uri) {
   if (_isTransientRoute(targetPath)) {
     return defaultPath;
   }
+  if (AppConfig.appRole.isHost && !_isHostRoute(targetPath)) {
+    return defaultPath;
+  }
   return from;
+}
+
+String? _hostPendingDestination({
+  required Uri uri,
+  required String matchedLocation,
+}) {
+  final from = _sanitizeFrom(uri.queryParameters[_fromQueryParam]);
+  if (from != null && _isHostRoute(Uri.parse(from).path)) return from;
+  if (_isTransientRoute(matchedLocation)) return null;
+  if (_isHostRoute(uri.path)) return uri.toString();
+  return null;
 }
 
 String _locationWithFrom(String path, {String? from}) {
@@ -970,6 +1006,10 @@ bool _isTransientRoute(String path) =>
     path == Routes.startScreen.path ||
     path == Routes.authScreen.path ||
     path == Routes.onboardingScreen.path;
+
+bool _isHostRoute(String? path) =>
+    path == Routes.hostHomeScreen.path ||
+    (path?.startsWith('${Routes.hostHomeScreen.path}/') ?? false);
 
 class _RouterLoadingScreen extends StatelessWidget {
   const _RouterLoadingScreen();
