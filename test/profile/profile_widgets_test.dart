@@ -141,6 +141,11 @@ Finder _catchChip(String label) => find.byWidgetPredicate(
   (widget) => widget is CatchChip && widget.label == label,
 );
 
+int _loadingCatchButtonCount(WidgetTester tester) => tester
+    .widgetList<CatchButton>(find.byType(CatchButton))
+    .where((button) => button.isLoading)
+    .length;
+
 final _perfectRunPromptTitle = profilePromptDefinition(
   profilePromptPerfectEventId,
 ).title;
@@ -1088,10 +1093,7 @@ void main() {
 
     expect(repository.updatedFields, {'height': 173});
     expect(find.byTooltip('Increase height'), findsOneWidget);
-    expect(
-      tester.widget<CatchButton>(find.byType(CatchButton)).isLoading,
-      isTrue,
-    );
+    expect(_loadingCatchButtonCount(tester), 1);
 
     repository.updateCompleter!.complete();
     await _pumpProfileSheet(tester);
@@ -1221,10 +1223,7 @@ void main() {
       containsPair('answer', 'Updated bio'),
     ]);
     expect(find.byType(EditableText), findsOneWidget);
-    expect(
-      tester.widget<CatchButton>(find.byType(CatchButton)).isLoading,
-      isTrue,
-    );
+    expect(_loadingCatchButtonCount(tester), 1);
 
     repository.updateCompleter!.complete();
     await _pumpProfileSheet(tester);
@@ -1447,10 +1446,7 @@ void main() {
     expect(repository.updatedFields, {
       'education': EducationLevel.values.first.name,
     });
-    expect(
-      tester.widget<CatchButton>(find.byType(CatchButton)).isLoading,
-      isTrue,
-    );
+    expect(_loadingCatchButtonCount(tester), 1);
     expect(
       tester
           .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
