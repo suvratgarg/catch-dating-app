@@ -273,8 +273,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
   ),
   SchemaContractDefinition(
     name: 'OrganizerEventLocationResolutionDecisionDocument',
-    source:
-        'firestore/organizer_event_location_resolution_decisions.schema.json',
+    source: 'firestore/organizer_event_location_resolution_decisions.schema.json',
     schema: schemaOrganizerEventLocationResolutionDecisionDocumentSchema,
   ),
   SchemaContractDefinition(
@@ -359,8 +358,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
   ),
   SchemaContractDefinition(
     name: 'AdminDecideOrganizerEventCandidateCallablePayload',
-    source:
-        'callables/admin_decide_organizer_event_candidate_payload.schema.json',
+    source: 'callables/admin_decide_organizer_event_candidate_payload.schema.json',
     schema: schemaAdminDecideOrganizerEventCandidateCallablePayloadSchema,
   ),
   SchemaContractDefinition(
@@ -370,8 +368,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
   ),
   SchemaContractDefinition(
     name: 'AdminResolveOrganizerEventLocationCallablePayload',
-    source:
-        'callables/admin_resolve_organizer_event_location_payload.schema.json',
+    source: 'callables/admin_resolve_organizer_event_location_payload.schema.json',
     schema: schemaAdminResolveOrganizerEventLocationCallablePayloadSchema,
   ),
   SchemaContractDefinition(
@@ -486,20 +483,17 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
   ),
   SchemaContractDefinition(
     name: 'SubmitEventSuccessWingmanRequestCallablePayload',
-    source:
-        'callables/submit_event_success_wingman_request_payload.schema.json',
+    source: 'callables/submit_event_success_wingman_request_payload.schema.json',
     schema: schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema,
   ),
   SchemaContractDefinition(
     name: 'StartEventSuccessFirstHelloMissionCallablePayload',
-    source:
-        'callables/start_event_success_first_hello_mission_payload.schema.json',
+    source: 'callables/start_event_success_first_hello_mission_payload.schema.json',
     schema: schemaStartEventSuccessFirstHelloMissionCallablePayloadSchema,
   ),
   SchemaContractDefinition(
     name: 'CompleteEventSuccessFirstHelloMissionCallablePayload',
-    source:
-        'callables/complete_event_success_first_hello_mission_payload.schema.json',
+    source: 'callables/complete_event_success_first_hello_mission_payload.schema.json',
     schema: schemaCompleteEventSuccessFirstHelloMissionCallablePayloadSchema,
   ),
   SchemaContractDefinition(
@@ -609,8 +603,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
   ),
   SchemaContractDefinition(
     name: 'StripeHostOnboardingLinkCallableResponse',
-    source:
-        'callable_responses/stripe_host_onboarding_link_response.schema.json',
+    source: 'callable_responses/stripe_host_onboarding_link_response.schema.json',
     schema: schemaStripeHostOnboardingLinkCallableResponseSchema,
   ),
   SchemaContractDefinition(
@@ -645,8 +638,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
   ),
   SchemaContractDefinition(
     name: 'FetchEventSuccessWingmanCandidatesCallableResponse',
-    source:
-        'callable_responses/fetch_event_success_wingman_candidates_response.schema.json',
+    source: 'callable_responses/fetch_event_success_wingman_candidates_response.schema.json',
     schema: schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema,
   ),
   SchemaContractDefinition(
@@ -704,12 +696,9 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'EventSuccessPlanDocument': schemaEventSuccessPlanDocumentSchema,
   'EventSuccessFeedbackDocument': schemaEventSuccessFeedbackDocumentSchema,
   'EventSuccessPreferenceDocument': schemaEventSuccessPreferenceDocumentSchema,
-  'EventSuccessCompatibilityResponseDocument':
-      schemaEventSuccessCompatibilityResponseDocumentSchema,
-  'EventSuccessWingmanRequestDocument':
-      schemaEventSuccessWingmanRequestDocumentSchema,
-  'EventSuccessArrivalMissionDocument':
-      schemaEventSuccessArrivalMissionDocumentSchema,
+  'EventSuccessCompatibilityResponseDocument': schemaEventSuccessCompatibilityResponseDocumentSchema,
+  'EventSuccessWingmanRequestDocument': schemaEventSuccessWingmanRequestDocumentSchema,
+  'EventSuccessArrivalMissionDocument': schemaEventSuccessArrivalMissionDocumentSchema,
   'EventSuccessAssignmentDocument': schemaEventSuccessAssignmentDocumentSchema,
   'EventSuccessScorecardDocument': schemaEventSuccessScorecardDocumentSchema,
   'EventSafetyReportDocument': schemaEventSafetyReportDocumentSchema,
@@ -733,145 +722,89 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'RateLimitDocument': schemaRateLimitDocumentSchema,
   'FunctionEventReceiptDocument': schemaFunctionEventReceiptDocumentSchema,
   'SeedEventManifestDocument': schemaSeedEventManifestDocumentSchema,
-  'OrganizerIntakeReviewDecisionDocument':
-      schemaOrganizerIntakeReviewDecisionDocumentSchema,
-  'OrganizerIntakeCurationDecisionDocument':
-      schemaOrganizerIntakeCurationDecisionDocumentSchema,
-  'OrganizerEventCandidateReviewDecisionDocument':
-      schemaOrganizerEventCandidateReviewDecisionDocumentSchema,
-  'OrganizerEventLocationResolutionDecisionDocument':
-      schemaOrganizerEventLocationResolutionDecisionDocumentSchema,
-  'OrganizerPolicyGapReviewDecisionDocument':
-      schemaOrganizerPolicyGapReviewDecisionDocumentSchema,
-  'UpdateUserProfileCallablePayload':
-      schemaUpdateUserProfileCallablePayloadSchema,
+  'OrganizerIntakeReviewDecisionDocument': schemaOrganizerIntakeReviewDecisionDocumentSchema,
+  'OrganizerIntakeCurationDecisionDocument': schemaOrganizerIntakeCurationDecisionDocumentSchema,
+  'OrganizerEventCandidateReviewDecisionDocument': schemaOrganizerEventCandidateReviewDecisionDocumentSchema,
+  'OrganizerEventLocationResolutionDecisionDocument': schemaOrganizerEventLocationResolutionDecisionDocumentSchema,
+  'OrganizerPolicyGapReviewDecisionDocument': schemaOrganizerPolicyGapReviewDecisionDocumentSchema,
+  'UpdateUserProfileCallablePayload': schemaUpdateUserProfileCallablePayloadSchema,
   'CreateClubCallablePayload': schemaCreateClubCallablePayloadSchema,
   'CreateClubCallableResponse': schemaCreateClubCallableResponseSchema,
   'UpdateClubCallablePayload': schemaUpdateClubCallablePayloadSchema,
-  'HostAnalyticsQueryCallablePayload':
-      schemaHostAnalyticsQueryCallablePayloadSchema,
+  'HostAnalyticsQueryCallablePayload': schemaHostAnalyticsQueryCallablePayloadSchema,
   'HostAnalyticsCallableResponse': schemaHostAnalyticsCallableResponseSchema,
-  'UserAnalyticsQueryCallablePayload':
-      schemaUserAnalyticsQueryCallablePayloadSchema,
+  'UserAnalyticsQueryCallablePayload': schemaUserAnalyticsQueryCallablePayloadSchema,
   'UserAnalyticsCallableResponse': schemaUserAnalyticsCallableResponseSchema,
   'AddClubHostCallablePayload': schemaAddClubHostCallablePayloadSchema,
   'RemoveClubHostCallablePayload': schemaRemoveClubHostCallablePayloadSchema,
-  'TransferClubOwnershipCallablePayload':
-      schemaTransferClubOwnershipCallablePayloadSchema,
-  'RequestClubClaimCallablePayload':
-      schemaRequestClubClaimCallablePayloadSchema,
-  'AdminDecideClubClaimCallablePayload':
-      schemaAdminDecideClubClaimCallablePayloadSchema,
-  'AdminDecideOrganizerIntakeCallablePayload':
-      schemaAdminDecideOrganizerIntakeCallablePayloadSchema,
-  'AdminRecordOrganizerCurationCallablePayload':
-      schemaAdminRecordOrganizerCurationCallablePayloadSchema,
-  'AdminDecideOrganizerEventCandidateCallablePayload':
-      schemaAdminDecideOrganizerEventCandidateCallablePayloadSchema,
-  'AdminDecideOrganizerPolicyGapCallablePayload':
-      schemaAdminDecideOrganizerPolicyGapCallablePayloadSchema,
-  'AdminResolveOrganizerEventLocationCallablePayload':
-      schemaAdminResolveOrganizerEventLocationCallablePayloadSchema,
-  'AdminSetClubIndexStatusCallablePayload':
-      schemaAdminSetClubIndexStatusCallablePayloadSchema,
-  'AdminGetClubDetailsCallablePayload':
-      schemaAdminGetClubDetailsCallablePayloadSchema,
-  'AdminUpdateClubDetailsCallablePayload':
-      schemaAdminUpdateClubDetailsCallablePayloadSchema,
-  'StartClubHostConversationCallablePayload':
-      schemaStartClubHostConversationCallablePayloadSchema,
+  'TransferClubOwnershipCallablePayload': schemaTransferClubOwnershipCallablePayloadSchema,
+  'RequestClubClaimCallablePayload': schemaRequestClubClaimCallablePayloadSchema,
+  'AdminDecideClubClaimCallablePayload': schemaAdminDecideClubClaimCallablePayloadSchema,
+  'AdminDecideOrganizerIntakeCallablePayload': schemaAdminDecideOrganizerIntakeCallablePayloadSchema,
+  'AdminRecordOrganizerCurationCallablePayload': schemaAdminRecordOrganizerCurationCallablePayloadSchema,
+  'AdminDecideOrganizerEventCandidateCallablePayload': schemaAdminDecideOrganizerEventCandidateCallablePayloadSchema,
+  'AdminDecideOrganizerPolicyGapCallablePayload': schemaAdminDecideOrganizerPolicyGapCallablePayloadSchema,
+  'AdminResolveOrganizerEventLocationCallablePayload': schemaAdminResolveOrganizerEventLocationCallablePayloadSchema,
+  'AdminSetClubIndexStatusCallablePayload': schemaAdminSetClubIndexStatusCallablePayloadSchema,
+  'AdminGetClubDetailsCallablePayload': schemaAdminGetClubDetailsCallablePayloadSchema,
+  'AdminUpdateClubDetailsCallablePayload': schemaAdminUpdateClubDetailsCallablePayloadSchema,
+  'StartClubHostConversationCallablePayload': schemaStartClubHostConversationCallablePayloadSchema,
   'ArchiveClubCallablePayload': schemaArchiveClubCallablePayloadSchema,
   'DeleteClubCallablePayload': schemaDeleteClubCallablePayloadSchema,
   'ClubMembershipCallablePayload': schemaClubMembershipCallablePayloadSchema,
-  'SetClubNotificationPreferenceCallablePayload':
-      schemaSetClubNotificationPreferenceCallablePayloadSchema,
+  'SetClubNotificationPreferenceCallablePayload': schemaSetClubNotificationPreferenceCallablePayloadSchema,
   'CreateEventCallablePayload': schemaCreateEventCallablePayloadSchema,
   'UpdateEventCallablePayload': schemaUpdateEventCallablePayloadSchema,
   'CancelEventCallablePayload': schemaCancelEventCallablePayloadSchema,
   'DeleteEventCallablePayload': schemaDeleteEventCallablePayloadSchema,
   'EventIdCallablePayload': schemaEventIdCallablePayloadSchema,
-  'CreateEventWaitlistOffersCallablePayload':
-      schemaCreateEventWaitlistOffersCallablePayloadSchema,
-  'CreateEventInviteLinkCallablePayload':
-      schemaCreateEventInviteLinkCallablePayloadSchema,
-  'DisableEventInviteLinkCallablePayload':
-      schemaDisableEventInviteLinkCallablePayloadSchema,
-  'RecordEventInviteLinkOpenCallablePayload':
-      schemaRecordEventInviteLinkOpenCallablePayloadSchema,
-  'RecordOrganizerAnalyticsEventCallablePayload':
-      schemaRecordOrganizerAnalyticsEventCallablePayloadSchema,
-  'MarkEventAttendanceCallablePayload':
-      schemaMarkEventAttendanceCallablePayloadSchema,
-  'EventJoinRequestDecisionCallablePayload':
-      schemaEventJoinRequestDecisionCallablePayloadSchema,
-  'OverrideEventSuccessRotationsCallablePayload':
-      schemaOverrideEventSuccessRotationsCallablePayloadSchema,
-  'OverrideEventSuccessGroupsCallablePayload':
-      schemaOverrideEventSuccessGroupsCallablePayloadSchema,
-  'SubmitEventSuccessWingmanRequestCallablePayload':
-      schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema,
-  'StartEventSuccessFirstHelloMissionCallablePayload':
-      schemaStartEventSuccessFirstHelloMissionCallablePayloadSchema,
-  'CompleteEventSuccessFirstHelloMissionCallablePayload':
-      schemaCompleteEventSuccessFirstHelloMissionCallablePayloadSchema,
-  'MarkEventAttendanceCallableResponse':
-      schemaMarkEventAttendanceCallableResponseSchema,
-  'SelfCheckInAttendanceCallablePayload':
-      schemaSelfCheckInAttendanceCallablePayloadSchema,
-  'CreateEventReviewCallablePayload':
-      schemaCreateEventReviewCallablePayloadSchema,
-  'CreatePublicClubReviewCallablePayload':
-      schemaCreatePublicClubReviewCallablePayloadSchema,
-  'ListPublicClubReviewsCallablePayload':
-      schemaListPublicClubReviewsCallablePayloadSchema,
-  'UpdateEventReviewCallablePayload':
-      schemaUpdateEventReviewCallablePayloadSchema,
-  'DeleteEventReviewCallablePayload':
-      schemaDeleteEventReviewCallablePayloadSchema,
-  'SetReviewResponseCallablePayload':
-      schemaSetReviewResponseCallablePayloadSchema,
+  'CreateEventWaitlistOffersCallablePayload': schemaCreateEventWaitlistOffersCallablePayloadSchema,
+  'CreateEventInviteLinkCallablePayload': schemaCreateEventInviteLinkCallablePayloadSchema,
+  'DisableEventInviteLinkCallablePayload': schemaDisableEventInviteLinkCallablePayloadSchema,
+  'RecordEventInviteLinkOpenCallablePayload': schemaRecordEventInviteLinkOpenCallablePayloadSchema,
+  'RecordOrganizerAnalyticsEventCallablePayload': schemaRecordOrganizerAnalyticsEventCallablePayloadSchema,
+  'MarkEventAttendanceCallablePayload': schemaMarkEventAttendanceCallablePayloadSchema,
+  'EventJoinRequestDecisionCallablePayload': schemaEventJoinRequestDecisionCallablePayloadSchema,
+  'OverrideEventSuccessRotationsCallablePayload': schemaOverrideEventSuccessRotationsCallablePayloadSchema,
+  'OverrideEventSuccessGroupsCallablePayload': schemaOverrideEventSuccessGroupsCallablePayloadSchema,
+  'SubmitEventSuccessWingmanRequestCallablePayload': schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema,
+  'StartEventSuccessFirstHelloMissionCallablePayload': schemaStartEventSuccessFirstHelloMissionCallablePayloadSchema,
+  'CompleteEventSuccessFirstHelloMissionCallablePayload': schemaCompleteEventSuccessFirstHelloMissionCallablePayloadSchema,
+  'MarkEventAttendanceCallableResponse': schemaMarkEventAttendanceCallableResponseSchema,
+  'SelfCheckInAttendanceCallablePayload': schemaSelfCheckInAttendanceCallablePayloadSchema,
+  'CreateEventReviewCallablePayload': schemaCreateEventReviewCallablePayloadSchema,
+  'CreatePublicClubReviewCallablePayload': schemaCreatePublicClubReviewCallablePayloadSchema,
+  'ListPublicClubReviewsCallablePayload': schemaListPublicClubReviewsCallablePayloadSchema,
+  'UpdateEventReviewCallablePayload': schemaUpdateEventReviewCallablePayloadSchema,
+  'DeleteEventReviewCallablePayload': schemaDeleteEventReviewCallablePayloadSchema,
+  'SetReviewResponseCallablePayload': schemaSetReviewResponseCallablePayloadSchema,
   'BlockUserCallablePayload': schemaBlockUserCallablePayloadSchema,
   'UnblockUserCallablePayload': schemaUnblockUserCallablePayloadSchema,
   'ReportUserCallablePayload': schemaReportUserCallablePayloadSchema,
-  'RequestSuvbotDemoOperationCallablePayload':
-      schemaRequestSuvbotDemoOperationCallablePayloadSchema,
-  'ListSuvbotDemoActionsCallableResponse':
-      schemaListSuvbotDemoActionsCallableResponseSchema,
-  'VerifyRazorpayPaymentCallablePayload':
-      schemaVerifyRazorpayPaymentCallablePayloadSchema,
+  'RequestSuvbotDemoOperationCallablePayload': schemaRequestSuvbotDemoOperationCallablePayloadSchema,
+  'ListSuvbotDemoActionsCallableResponse': schemaListSuvbotDemoActionsCallableResponseSchema,
+  'VerifyRazorpayPaymentCallablePayload': schemaVerifyRazorpayPaymentCallablePayloadSchema,
   'EventBookingCallablePayload': schemaEventBookingCallablePayloadSchema,
-  'CreateRazorpayOrderCallablePayload':
-      schemaCreateRazorpayOrderCallablePayloadSchema,
+  'CreateRazorpayOrderCallablePayload': schemaCreateRazorpayOrderCallablePayloadSchema,
   'RazorpayOrderCallableResponse': schemaRazorpayOrderCallableResponseSchema,
-  'CreateStripeCheckoutSessionCallablePayload':
-      schemaCreateStripeCheckoutSessionCallablePayloadSchema,
-  'StripeCheckoutSessionCallableResponse':
-      schemaStripeCheckoutSessionCallableResponseSchema,
-  'CreateStripeHostOnboardingLinkCallablePayload':
-      schemaCreateStripeHostOnboardingLinkCallablePayloadSchema,
-  'RefreshStripeHostPaymentAccountCallablePayload':
-      schemaRefreshStripeHostPaymentAccountCallablePayloadSchema,
-  'StripeHostOnboardingLinkCallableResponse':
-      schemaStripeHostOnboardingLinkCallableResponseSchema,
-  'PlacesAutocompleteCallablePayload':
-      schemaPlacesAutocompleteCallablePayloadSchema,
-  'PlacesAutocompleteCallableResponse':
-      schemaPlacesAutocompleteCallableResponseSchema,
+  'CreateStripeCheckoutSessionCallablePayload': schemaCreateStripeCheckoutSessionCallablePayloadSchema,
+  'StripeCheckoutSessionCallableResponse': schemaStripeCheckoutSessionCallableResponseSchema,
+  'CreateStripeHostOnboardingLinkCallablePayload': schemaCreateStripeHostOnboardingLinkCallablePayloadSchema,
+  'RefreshStripeHostPaymentAccountCallablePayload': schemaRefreshStripeHostPaymentAccountCallablePayloadSchema,
+  'StripeHostOnboardingLinkCallableResponse': schemaStripeHostOnboardingLinkCallableResponseSchema,
+  'PlacesAutocompleteCallablePayload': schemaPlacesAutocompleteCallablePayloadSchema,
+  'PlacesAutocompleteCallableResponse': schemaPlacesAutocompleteCallableResponseSchema,
   'PlaceDetailsCallablePayload': schemaPlaceDetailsCallablePayloadSchema,
   'PlaceDetailsCallableResponse': schemaPlaceDetailsCallableResponseSchema,
   'ExploreSearchCallablePayload': schemaExploreSearchCallablePayloadSchema,
   'ExploreSearchCallableResponse': schemaExploreSearchCallableResponseSchema,
-  'FetchEventSuccessWingmanCandidatesCallableResponse':
-      schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema,
-  'CreateProfileDecisionClientWrite':
-      schemaCreateProfileDecisionClientWriteSchema,
+  'FetchEventSuccessWingmanCandidatesCallableResponse': schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema,
+  'CreateProfileDecisionClientWrite': schemaCreateProfileDecisionClientWriteSchema,
   'CreateChatMessageClientWrite': schemaCreateChatMessageClientWriteSchema,
   'CreateSavedEventClientWrite': schemaCreateSavedEventClientWriteSchema,
   'DeleteSavedEventClientWrite': schemaDeleteSavedEventClientWriteSchema,
-  'MarkNotificationReadClientWrite':
-      schemaMarkNotificationReadClientWriteSchema,
-  'ResetMatchUnreadCountClientWrite':
-      schemaResetMatchUnreadCountClientWriteSchema,
+  'MarkNotificationReadClientWrite': schemaMarkNotificationReadClientWriteSchema,
+  'ResetMatchUnreadCountClientWrite': schemaResetMatchUnreadCountClientWriteSchema,
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
@@ -881,234 +814,129 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'embedded/uploaded_photo.schema.json': schemaUploadedPhotoSchema,
   'embedded/activity_preferences.schema.json': schemaActivityPreferencesSchema,
   'firestore/config_cities.schema.json': schemaConfigCitiesDocumentSchema,
-  'firestore/onboarding_drafts.schema.json':
-      schemaOnboardingDraftDocumentSchema,
+  'firestore/onboarding_drafts.schema.json': schemaOnboardingDraftDocumentSchema,
   'firestore/users.schema.json': schemaUserProfileDocumentSchema,
   'firestore/public_profiles.schema.json': schemaPublicProfileDocumentSchema,
   'firestore/clubs.schema.json': schemaClubDocumentSchema,
   'firestore/club_memberships.schema.json': schemaClubMembershipDocumentSchema,
   'firestore/club_host_claims.schema.json': schemaClubHostClaimDocumentSchema,
-  'firestore/club_claim_requests.schema.json':
-      schemaClubClaimRequestDocumentSchema,
+  'firestore/club_claim_requests.schema.json': schemaClubClaimRequestDocumentSchema,
   'firestore/events.schema.json': schemaEventDocumentSchema,
   'firestore/external_events.schema.json': schemaExternalEventDocumentSchema,
-  'firestore/event_private_access.schema.json':
-      schemaEventPrivateAccessDocumentSchema,
-  'firestore/event_invite_links.schema.json':
-      schemaEventInviteLinkDocumentSchema,
-  'firestore/event_participations.schema.json':
-      schemaEventParticipationDocumentSchema,
-  'firestore/event_waitlist_offers.schema.json':
-      schemaEventWaitlistOfferDocumentSchema,
-  'firestore/event_success_plans.schema.json':
-      schemaEventSuccessPlanDocumentSchema,
-  'firestore/event_success_feedback.schema.json':
-      schemaEventSuccessFeedbackDocumentSchema,
-  'firestore/event_success_preferences.schema.json':
-      schemaEventSuccessPreferenceDocumentSchema,
-  'firestore/event_success_compatibility_responses.schema.json':
-      schemaEventSuccessCompatibilityResponseDocumentSchema,
-  'firestore/event_success_wingman_requests.schema.json':
-      schemaEventSuccessWingmanRequestDocumentSchema,
-  'firestore/event_success_arrival_missions.schema.json':
-      schemaEventSuccessArrivalMissionDocumentSchema,
-  'firestore/event_success_assignments.schema.json':
-      schemaEventSuccessAssignmentDocumentSchema,
-  'firestore/event_success_scorecards.schema.json':
-      schemaEventSuccessScorecardDocumentSchema,
-  'firestore/event_safety_reports.schema.json':
-      schemaEventSafetyReportDocumentSchema,
-  'firestore/club_schedule_locks.schema.json':
-      schemaClubScheduleLockDocumentSchema,
-  'firestore/user_event_schedule_locks.schema.json':
-      schemaUserEventScheduleLockDocumentSchema,
+  'firestore/event_private_access.schema.json': schemaEventPrivateAccessDocumentSchema,
+  'firestore/event_invite_links.schema.json': schemaEventInviteLinkDocumentSchema,
+  'firestore/event_participations.schema.json': schemaEventParticipationDocumentSchema,
+  'firestore/event_waitlist_offers.schema.json': schemaEventWaitlistOfferDocumentSchema,
+  'firestore/event_success_plans.schema.json': schemaEventSuccessPlanDocumentSchema,
+  'firestore/event_success_feedback.schema.json': schemaEventSuccessFeedbackDocumentSchema,
+  'firestore/event_success_preferences.schema.json': schemaEventSuccessPreferenceDocumentSchema,
+  'firestore/event_success_compatibility_responses.schema.json': schemaEventSuccessCompatibilityResponseDocumentSchema,
+  'firestore/event_success_wingman_requests.schema.json': schemaEventSuccessWingmanRequestDocumentSchema,
+  'firestore/event_success_arrival_missions.schema.json': schemaEventSuccessArrivalMissionDocumentSchema,
+  'firestore/event_success_assignments.schema.json': schemaEventSuccessAssignmentDocumentSchema,
+  'firestore/event_success_scorecards.schema.json': schemaEventSuccessScorecardDocumentSchema,
+  'firestore/event_safety_reports.schema.json': schemaEventSafetyReportDocumentSchema,
+  'firestore/club_schedule_locks.schema.json': schemaClubScheduleLockDocumentSchema,
+  'firestore/user_event_schedule_locks.schema.json': schemaUserEventScheduleLockDocumentSchema,
   'firestore/saved_events.schema.json': schemaSavedEventDocumentSchema,
   'bigquery/host_analytics_event.schema.json': schemaHostAnalyticsEventSchema,
-  'bigquery/user_profile_exposure_event.schema.json':
-      schemaUserProfileExposureEventSchema,
+  'bigquery/user_profile_exposure_event.schema.json': schemaUserProfileExposureEventSchema,
   'firestore/payments.schema.json': schemaPaymentDocumentSchema,
-  'firestore/host_payment_accounts.schema.json':
-      schemaHostPaymentAccountDocumentSchema,
-  'firestore/razorpay_pending_orders.schema.json':
-      schemaRazorpayPendingOrderDocumentSchema,
+  'firestore/host_payment_accounts.schema.json': schemaHostPaymentAccountDocumentSchema,
+  'firestore/razorpay_pending_orders.schema.json': schemaRazorpayPendingOrderDocumentSchema,
   'firestore/swipes.schema.json': schemaSwipeDocumentSchema,
   'firestore/matches.schema.json': schemaMatchDocumentSchema,
   'firestore/chat_messages.schema.json': schemaChatMessageDocumentSchema,
-  'firestore/activity_notifications.schema.json':
-      schemaActivityNotificationDocumentSchema,
+  'firestore/activity_notifications.schema.json': schemaActivityNotificationDocumentSchema,
   'firestore/reviews.schema.json': schemaReviewDocumentSchema,
   'firestore/blocks.schema.json': schemaBlockDocumentSchema,
   'firestore/reports.schema.json': schemaReportDocumentSchema,
   'firestore/moderation_flags.schema.json': schemaModerationFlagDocumentSchema,
-  'firestore/deleted_users.schema.json':
-      schemaDeletedUserTombstoneDocumentSchema,
+  'firestore/deleted_users.schema.json': schemaDeletedUserTombstoneDocumentSchema,
   'firestore/rate_limits.schema.json': schemaRateLimitDocumentSchema,
-  'firestore/function_event_receipts.schema.json':
-      schemaFunctionEventReceiptDocumentSchema,
+  'firestore/function_event_receipts.schema.json': schemaFunctionEventReceiptDocumentSchema,
   'firestore/seed_events.schema.json': schemaSeedEventManifestDocumentSchema,
-  'firestore/organizer_intake_review_decisions.schema.json':
-      schemaOrganizerIntakeReviewDecisionDocumentSchema,
-  'firestore/organizer_intake_curation_decisions.schema.json':
-      schemaOrganizerIntakeCurationDecisionDocumentSchema,
-  'firestore/organizer_event_candidate_review_decisions.schema.json':
-      schemaOrganizerEventCandidateReviewDecisionDocumentSchema,
-  'firestore/organizer_event_location_resolution_decisions.schema.json':
-      schemaOrganizerEventLocationResolutionDecisionDocumentSchema,
-  'firestore/organizer_policy_gap_review_decisions.schema.json':
-      schemaOrganizerPolicyGapReviewDecisionDocumentSchema,
-  'patches/update_user_profile.schema.json':
-      schemaUpdateUserProfileCallablePayloadSchema,
-  'callables/create_club_payload.schema.json':
-      schemaCreateClubCallablePayloadSchema,
-  'callable_responses/create_club_response.schema.json':
-      schemaCreateClubCallableResponseSchema,
-  'callables/update_club_payload.schema.json':
-      schemaUpdateClubCallablePayloadSchema,
-  'callables/host_analytics_query_payload.schema.json':
-      schemaHostAnalyticsQueryCallablePayloadSchema,
-  'callable_responses/host_analytics_response.schema.json':
-      schemaHostAnalyticsCallableResponseSchema,
-  'callables/user_analytics_query_payload.schema.json':
-      schemaUserAnalyticsQueryCallablePayloadSchema,
-  'callable_responses/user_analytics_response.schema.json':
-      schemaUserAnalyticsCallableResponseSchema,
-  'callables/add_club_host_payload.schema.json':
-      schemaAddClubHostCallablePayloadSchema,
-  'callables/remove_club_host_payload.schema.json':
-      schemaRemoveClubHostCallablePayloadSchema,
-  'callables/transfer_club_ownership_payload.schema.json':
-      schemaTransferClubOwnershipCallablePayloadSchema,
-  'callables/request_club_claim_payload.schema.json':
-      schemaRequestClubClaimCallablePayloadSchema,
-  'callables/admin_decide_club_claim_payload.schema.json':
-      schemaAdminDecideClubClaimCallablePayloadSchema,
-  'callables/admin_decide_organizer_intake_payload.schema.json':
-      schemaAdminDecideOrganizerIntakeCallablePayloadSchema,
-  'callables/admin_record_organizer_curation_payload.schema.json':
-      schemaAdminRecordOrganizerCurationCallablePayloadSchema,
-  'callables/admin_decide_organizer_event_candidate_payload.schema.json':
-      schemaAdminDecideOrganizerEventCandidateCallablePayloadSchema,
-  'callables/admin_decide_organizer_policy_gap_payload.schema.json':
-      schemaAdminDecideOrganizerPolicyGapCallablePayloadSchema,
-  'callables/admin_resolve_organizer_event_location_payload.schema.json':
-      schemaAdminResolveOrganizerEventLocationCallablePayloadSchema,
-  'callables/admin_set_club_index_status_payload.schema.json':
-      schemaAdminSetClubIndexStatusCallablePayloadSchema,
-  'callables/admin_get_club_details_payload.schema.json':
-      schemaAdminGetClubDetailsCallablePayloadSchema,
-  'callables/admin_update_club_details_payload.schema.json':
-      schemaAdminUpdateClubDetailsCallablePayloadSchema,
-  'callables/start_club_host_conversation_payload.schema.json':
-      schemaStartClubHostConversationCallablePayloadSchema,
-  'callables/archive_club_payload.schema.json':
-      schemaArchiveClubCallablePayloadSchema,
-  'callables/delete_club_payload.schema.json':
-      schemaDeleteClubCallablePayloadSchema,
-  'callables/club_membership_payload.schema.json':
-      schemaClubMembershipCallablePayloadSchema,
-  'callables/set_club_notification_preference_payload.schema.json':
-      schemaSetClubNotificationPreferenceCallablePayloadSchema,
-  'callables/create_event_payload.schema.json':
-      schemaCreateEventCallablePayloadSchema,
-  'callables/update_event_payload.schema.json':
-      schemaUpdateEventCallablePayloadSchema,
-  'callables/cancel_event_payload.schema.json':
-      schemaCancelEventCallablePayloadSchema,
-  'callables/delete_event_payload.schema.json':
-      schemaDeleteEventCallablePayloadSchema,
+  'firestore/organizer_intake_review_decisions.schema.json': schemaOrganizerIntakeReviewDecisionDocumentSchema,
+  'firestore/organizer_intake_curation_decisions.schema.json': schemaOrganizerIntakeCurationDecisionDocumentSchema,
+  'firestore/organizer_event_candidate_review_decisions.schema.json': schemaOrganizerEventCandidateReviewDecisionDocumentSchema,
+  'firestore/organizer_event_location_resolution_decisions.schema.json': schemaOrganizerEventLocationResolutionDecisionDocumentSchema,
+  'firestore/organizer_policy_gap_review_decisions.schema.json': schemaOrganizerPolicyGapReviewDecisionDocumentSchema,
+  'patches/update_user_profile.schema.json': schemaUpdateUserProfileCallablePayloadSchema,
+  'callables/create_club_payload.schema.json': schemaCreateClubCallablePayloadSchema,
+  'callable_responses/create_club_response.schema.json': schemaCreateClubCallableResponseSchema,
+  'callables/update_club_payload.schema.json': schemaUpdateClubCallablePayloadSchema,
+  'callables/host_analytics_query_payload.schema.json': schemaHostAnalyticsQueryCallablePayloadSchema,
+  'callable_responses/host_analytics_response.schema.json': schemaHostAnalyticsCallableResponseSchema,
+  'callables/user_analytics_query_payload.schema.json': schemaUserAnalyticsQueryCallablePayloadSchema,
+  'callable_responses/user_analytics_response.schema.json': schemaUserAnalyticsCallableResponseSchema,
+  'callables/add_club_host_payload.schema.json': schemaAddClubHostCallablePayloadSchema,
+  'callables/remove_club_host_payload.schema.json': schemaRemoveClubHostCallablePayloadSchema,
+  'callables/transfer_club_ownership_payload.schema.json': schemaTransferClubOwnershipCallablePayloadSchema,
+  'callables/request_club_claim_payload.schema.json': schemaRequestClubClaimCallablePayloadSchema,
+  'callables/admin_decide_club_claim_payload.schema.json': schemaAdminDecideClubClaimCallablePayloadSchema,
+  'callables/admin_decide_organizer_intake_payload.schema.json': schemaAdminDecideOrganizerIntakeCallablePayloadSchema,
+  'callables/admin_record_organizer_curation_payload.schema.json': schemaAdminRecordOrganizerCurationCallablePayloadSchema,
+  'callables/admin_decide_organizer_event_candidate_payload.schema.json': schemaAdminDecideOrganizerEventCandidateCallablePayloadSchema,
+  'callables/admin_decide_organizer_policy_gap_payload.schema.json': schemaAdminDecideOrganizerPolicyGapCallablePayloadSchema,
+  'callables/admin_resolve_organizer_event_location_payload.schema.json': schemaAdminResolveOrganizerEventLocationCallablePayloadSchema,
+  'callables/admin_set_club_index_status_payload.schema.json': schemaAdminSetClubIndexStatusCallablePayloadSchema,
+  'callables/admin_get_club_details_payload.schema.json': schemaAdminGetClubDetailsCallablePayloadSchema,
+  'callables/admin_update_club_details_payload.schema.json': schemaAdminUpdateClubDetailsCallablePayloadSchema,
+  'callables/start_club_host_conversation_payload.schema.json': schemaStartClubHostConversationCallablePayloadSchema,
+  'callables/archive_club_payload.schema.json': schemaArchiveClubCallablePayloadSchema,
+  'callables/delete_club_payload.schema.json': schemaDeleteClubCallablePayloadSchema,
+  'callables/club_membership_payload.schema.json': schemaClubMembershipCallablePayloadSchema,
+  'callables/set_club_notification_preference_payload.schema.json': schemaSetClubNotificationPreferenceCallablePayloadSchema,
+  'callables/create_event_payload.schema.json': schemaCreateEventCallablePayloadSchema,
+  'callables/update_event_payload.schema.json': schemaUpdateEventCallablePayloadSchema,
+  'callables/cancel_event_payload.schema.json': schemaCancelEventCallablePayloadSchema,
+  'callables/delete_event_payload.schema.json': schemaDeleteEventCallablePayloadSchema,
   'callables/event_id_payload.schema.json': schemaEventIdCallablePayloadSchema,
-  'callables/create_event_waitlist_offers_payload.schema.json':
-      schemaCreateEventWaitlistOffersCallablePayloadSchema,
-  'callables/create_event_invite_link_payload.schema.json':
-      schemaCreateEventInviteLinkCallablePayloadSchema,
-  'callables/disable_event_invite_link_payload.schema.json':
-      schemaDisableEventInviteLinkCallablePayloadSchema,
-  'callables/record_event_invite_link_open_payload.schema.json':
-      schemaRecordEventInviteLinkOpenCallablePayloadSchema,
-  'callables/record_organizer_analytics_event_payload.schema.json':
-      schemaRecordOrganizerAnalyticsEventCallablePayloadSchema,
-  'callables/mark_event_attendance_payload.schema.json':
-      schemaMarkEventAttendanceCallablePayloadSchema,
-  'callables/event_join_request_decision_payload.schema.json':
-      schemaEventJoinRequestDecisionCallablePayloadSchema,
-  'callables/override_event_success_rotations_payload.schema.json':
-      schemaOverrideEventSuccessRotationsCallablePayloadSchema,
-  'callables/override_event_success_groups_payload.schema.json':
-      schemaOverrideEventSuccessGroupsCallablePayloadSchema,
-  'callables/submit_event_success_wingman_request_payload.schema.json':
-      schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema,
-  'callables/start_event_success_first_hello_mission_payload.schema.json':
-      schemaStartEventSuccessFirstHelloMissionCallablePayloadSchema,
-  'callables/complete_event_success_first_hello_mission_payload.schema.json':
-      schemaCompleteEventSuccessFirstHelloMissionCallablePayloadSchema,
-  'callable_responses/mark_event_attendance_response.schema.json':
-      schemaMarkEventAttendanceCallableResponseSchema,
-  'callables/self_check_in_attendance_payload.schema.json':
-      schemaSelfCheckInAttendanceCallablePayloadSchema,
-  'callables/create_event_review_payload.schema.json':
-      schemaCreateEventReviewCallablePayloadSchema,
-  'callables/create_public_club_review_payload.schema.json':
-      schemaCreatePublicClubReviewCallablePayloadSchema,
-  'callables/list_public_club_reviews_payload.schema.json':
-      schemaListPublicClubReviewsCallablePayloadSchema,
-  'callables/update_event_review_payload.schema.json':
-      schemaUpdateEventReviewCallablePayloadSchema,
-  'callables/delete_event_review_payload.schema.json':
-      schemaDeleteEventReviewCallablePayloadSchema,
-  'callables/set_review_response_payload.schema.json':
-      schemaSetReviewResponseCallablePayloadSchema,
-  'callables/block_user_payload.schema.json':
-      schemaBlockUserCallablePayloadSchema,
-  'callables/unblock_user_payload.schema.json':
-      schemaUnblockUserCallablePayloadSchema,
-  'callables/report_user_payload.schema.json':
-      schemaReportUserCallablePayloadSchema,
-  'callables/request_suvbot_demo_operation_payload.schema.json':
-      schemaRequestSuvbotDemoOperationCallablePayloadSchema,
-  'callable_responses/list_suvbot_demo_actions_response.schema.json':
-      schemaListSuvbotDemoActionsCallableResponseSchema,
-  'callables/verify_razorpay_payment_payload.schema.json':
-      schemaVerifyRazorpayPaymentCallablePayloadSchema,
-  'callables/event_booking_payload.schema.json':
-      schemaEventBookingCallablePayloadSchema,
-  'callables/create_razorpay_order_payload.schema.json':
-      schemaCreateRazorpayOrderCallablePayloadSchema,
-  'callable_responses/razorpay_order_response.schema.json':
-      schemaRazorpayOrderCallableResponseSchema,
-  'callables/create_stripe_checkout_session_payload.schema.json':
-      schemaCreateStripeCheckoutSessionCallablePayloadSchema,
-  'callable_responses/stripe_checkout_session_response.schema.json':
-      schemaStripeCheckoutSessionCallableResponseSchema,
-  'callables/create_stripe_host_onboarding_link_payload.schema.json':
-      schemaCreateStripeHostOnboardingLinkCallablePayloadSchema,
-  'callables/refresh_stripe_host_payment_account_payload.schema.json':
-      schemaRefreshStripeHostPaymentAccountCallablePayloadSchema,
-  'callable_responses/stripe_host_onboarding_link_response.schema.json':
-      schemaStripeHostOnboardingLinkCallableResponseSchema,
-  'callables/places_autocomplete_payload.schema.json':
-      schemaPlacesAutocompleteCallablePayloadSchema,
-  'callable_responses/places_autocomplete_response.schema.json':
-      schemaPlacesAutocompleteCallableResponseSchema,
-  'callables/place_details_payload.schema.json':
-      schemaPlaceDetailsCallablePayloadSchema,
-  'callable_responses/place_details_response.schema.json':
-      schemaPlaceDetailsCallableResponseSchema,
-  'callables/explore_search_payload.schema.json':
-      schemaExploreSearchCallablePayloadSchema,
-  'callable_responses/explore_search_response.schema.json':
-      schemaExploreSearchCallableResponseSchema,
-  'callable_responses/fetch_event_success_wingman_candidates_response.schema.json':
-      schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema,
-  'client_writes/create_profile_decision.schema.json':
-      schemaCreateProfileDecisionClientWriteSchema,
-  'client_writes/create_chat_message.schema.json':
-      schemaCreateChatMessageClientWriteSchema,
-  'client_writes/create_saved_event.schema.json':
-      schemaCreateSavedEventClientWriteSchema,
-  'client_writes/delete_saved_event.schema.json':
-      schemaDeleteSavedEventClientWriteSchema,
-  'client_writes/mark_notification_read.schema.json':
-      schemaMarkNotificationReadClientWriteSchema,
-  'client_writes/reset_match_unread_count.schema.json':
-      schemaResetMatchUnreadCountClientWriteSchema,
+  'callables/create_event_waitlist_offers_payload.schema.json': schemaCreateEventWaitlistOffersCallablePayloadSchema,
+  'callables/create_event_invite_link_payload.schema.json': schemaCreateEventInviteLinkCallablePayloadSchema,
+  'callables/disable_event_invite_link_payload.schema.json': schemaDisableEventInviteLinkCallablePayloadSchema,
+  'callables/record_event_invite_link_open_payload.schema.json': schemaRecordEventInviteLinkOpenCallablePayloadSchema,
+  'callables/record_organizer_analytics_event_payload.schema.json': schemaRecordOrganizerAnalyticsEventCallablePayloadSchema,
+  'callables/mark_event_attendance_payload.schema.json': schemaMarkEventAttendanceCallablePayloadSchema,
+  'callables/event_join_request_decision_payload.schema.json': schemaEventJoinRequestDecisionCallablePayloadSchema,
+  'callables/override_event_success_rotations_payload.schema.json': schemaOverrideEventSuccessRotationsCallablePayloadSchema,
+  'callables/override_event_success_groups_payload.schema.json': schemaOverrideEventSuccessGroupsCallablePayloadSchema,
+  'callables/submit_event_success_wingman_request_payload.schema.json': schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema,
+  'callables/start_event_success_first_hello_mission_payload.schema.json': schemaStartEventSuccessFirstHelloMissionCallablePayloadSchema,
+  'callables/complete_event_success_first_hello_mission_payload.schema.json': schemaCompleteEventSuccessFirstHelloMissionCallablePayloadSchema,
+  'callable_responses/mark_event_attendance_response.schema.json': schemaMarkEventAttendanceCallableResponseSchema,
+  'callables/self_check_in_attendance_payload.schema.json': schemaSelfCheckInAttendanceCallablePayloadSchema,
+  'callables/create_event_review_payload.schema.json': schemaCreateEventReviewCallablePayloadSchema,
+  'callables/create_public_club_review_payload.schema.json': schemaCreatePublicClubReviewCallablePayloadSchema,
+  'callables/list_public_club_reviews_payload.schema.json': schemaListPublicClubReviewsCallablePayloadSchema,
+  'callables/update_event_review_payload.schema.json': schemaUpdateEventReviewCallablePayloadSchema,
+  'callables/delete_event_review_payload.schema.json': schemaDeleteEventReviewCallablePayloadSchema,
+  'callables/set_review_response_payload.schema.json': schemaSetReviewResponseCallablePayloadSchema,
+  'callables/block_user_payload.schema.json': schemaBlockUserCallablePayloadSchema,
+  'callables/unblock_user_payload.schema.json': schemaUnblockUserCallablePayloadSchema,
+  'callables/report_user_payload.schema.json': schemaReportUserCallablePayloadSchema,
+  'callables/request_suvbot_demo_operation_payload.schema.json': schemaRequestSuvbotDemoOperationCallablePayloadSchema,
+  'callable_responses/list_suvbot_demo_actions_response.schema.json': schemaListSuvbotDemoActionsCallableResponseSchema,
+  'callables/verify_razorpay_payment_payload.schema.json': schemaVerifyRazorpayPaymentCallablePayloadSchema,
+  'callables/event_booking_payload.schema.json': schemaEventBookingCallablePayloadSchema,
+  'callables/create_razorpay_order_payload.schema.json': schemaCreateRazorpayOrderCallablePayloadSchema,
+  'callable_responses/razorpay_order_response.schema.json': schemaRazorpayOrderCallableResponseSchema,
+  'callables/create_stripe_checkout_session_payload.schema.json': schemaCreateStripeCheckoutSessionCallablePayloadSchema,
+  'callable_responses/stripe_checkout_session_response.schema.json': schemaStripeCheckoutSessionCallableResponseSchema,
+  'callables/create_stripe_host_onboarding_link_payload.schema.json': schemaCreateStripeHostOnboardingLinkCallablePayloadSchema,
+  'callables/refresh_stripe_host_payment_account_payload.schema.json': schemaRefreshStripeHostPaymentAccountCallablePayloadSchema,
+  'callable_responses/stripe_host_onboarding_link_response.schema.json': schemaStripeHostOnboardingLinkCallableResponseSchema,
+  'callables/places_autocomplete_payload.schema.json': schemaPlacesAutocompleteCallablePayloadSchema,
+  'callable_responses/places_autocomplete_response.schema.json': schemaPlacesAutocompleteCallableResponseSchema,
+  'callables/place_details_payload.schema.json': schemaPlaceDetailsCallablePayloadSchema,
+  'callable_responses/place_details_response.schema.json': schemaPlaceDetailsCallableResponseSchema,
+  'callables/explore_search_payload.schema.json': schemaExploreSearchCallablePayloadSchema,
+  'callable_responses/explore_search_response.schema.json': schemaExploreSearchCallableResponseSchema,
+  'callable_responses/fetch_event_success_wingman_candidates_response.schema.json': schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema,
+  'client_writes/create_profile_decision.schema.json': schemaCreateProfileDecisionClientWriteSchema,
+  'client_writes/create_chat_message.schema.json': schemaCreateChatMessageClientWriteSchema,
+  'client_writes/create_saved_event.schema.json': schemaCreateSavedEventClientWriteSchema,
+  'client_writes/delete_saved_event.schema.json': schemaDeleteSavedEventClientWriteSchema,
+  'client_writes/mark_notification_read.schema.json': schemaMarkNotificationReadClientWriteSchema,
+  'client_writes/reset_match_unread_count.schema.json': schemaResetMatchUnreadCountClientWriteSchema,
 };

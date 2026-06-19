@@ -6,11 +6,9 @@
 
 const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id':
-      'https://catch.app/contracts/callable_responses/user_analytics_response.schema.json',
+  '\$id': 'https://catch.app/contracts/callable_responses/user_analytics_response.schema.json',
   'title': 'UserAnalyticsCallableResponse',
-  'description':
-      'User-safe profile and connection analytics response. Internal scoring columns stay in BigQuery and are intentionally not exposed here.',
+  'description': 'User-safe profile and connection analytics response. Internal scoring columns stay in BigQuery and are intentionally not exposed here.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -26,7 +24,10 @@ const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
     'dataQuality',
   ],
   'properties': <String, Object?>{
-    'generatedAt': <String, Object?>{'type': 'string', 'format': 'date-time'},
+    'generatedAt': <String, Object?>{
+      'type': 'string',
+      'format': 'date-time',
+    },
     'timezone': <String, Object?>{
       'type': 'string',
       'minLength': 1,
@@ -35,16 +36,33 @@ const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
     'range': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'required': <Object?>['startDate', 'endDate', 'granularity'],
+      'required': <Object?>[
+        'startDate',
+        'endDate',
+        'granularity',
+      ],
       'properties': <String, Object?>{
-        'startDate': <String, Object?>{'type': 'string', 'format': 'date-time'},
-        'endDate': <String, Object?>{'type': 'string', 'format': 'date-time'},
+        'startDate': <String, Object?>{
+          'type': 'string',
+          'format': 'date-time',
+        },
+        'endDate': <String, Object?>{
+          'type': 'string',
+          'format': 'date-time',
+        },
         'granularity': <String, Object?>{
           'type': 'string',
-          'enum': <Object?>['day', 'week', 'month'],
+          'enum': <Object?>[
+            'day',
+            'week',
+            'month',
+          ],
         },
         'preset': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 24,
         },
       },
@@ -52,7 +70,9 @@ const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
     'scope': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'required': <Object?>['userId'],
+      'required': <Object?>[
+        'userId',
+      ],
       'properties': <String, Object?>{
         'userId': <String, Object?>{
           'type': 'string',
@@ -66,7 +86,13 @@ const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
       'items': <String, Object?>{
         'type': 'object',
         'additionalProperties': false,
-        'required': <Object?>['id', 'label', 'value', 'unit', 'status'],
+        'required': <Object?>[
+          'id',
+          'label',
+          'value',
+          'unit',
+          'status',
+        ],
         'properties': <String, Object?>{
           'id': <String, Object?>{
             'type': 'string',
@@ -78,17 +104,30 @@ const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
             'minLength': 1,
             'maxLength': 80,
           },
-          'value': <String, Object?>{'type': 'number'},
+          'value': <String, Object?>{
+            'type': 'number',
+          },
           'unit': <String, Object?>{
             'type': 'string',
-            'enum': <Object?>['count', 'percent', 'duration_seconds'],
+            'enum': <Object?>[
+              'count',
+              'percent',
+              'duration_seconds',
+            ],
           },
           'status': <String, Object?>{
             'type': 'string',
-            'enum': <Object?>['ready', 'partial', 'missing'],
+            'enum': <Object?>[
+              'ready',
+              'partial',
+              'missing',
+            ],
           },
           'caption': <String, Object?>{
-            'type': <Object?>['string', 'null'],
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
             'maxLength': 160,
           },
         },
@@ -99,7 +138,11 @@ const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
       'items': <String, Object?>{
         'type': 'object',
         'additionalProperties': false,
-        'required': <Object?>['periodStart', 'periodEnd', 'metrics'],
+        'required': <Object?>[
+          'periodStart',
+          'periodEnd',
+          'metrics',
+        ],
         'properties': <String, Object?>{
           'periodStart': <String, Object?>{
             'type': 'string',
@@ -111,7 +154,9 @@ const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
           },
           'metrics': <String, Object?>{
             'type': 'object',
-            'additionalProperties': <String, Object?>{'type': 'number'},
+            'additionalProperties': <String, Object?>{
+              'type': 'number',
+            },
           },
         },
       },
@@ -130,17 +175,38 @@ const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
         'eventsAttended',
       ],
       'properties': <String, Object?>{
-        'outgoingLikes': <String, Object?>{'type': 'integer', 'minimum': 0},
-        'incomingLikes': <String, Object?>{'type': 'integer', 'minimum': 0},
+        'outgoingLikes': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'incomingLikes': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
         'privateInterestReceived': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
         },
-        'mutualCatches': <String, Object?>{'type': 'integer', 'minimum': 0},
-        'chatsStarted': <String, Object?>{'type': 'integer', 'minimum': 0},
-        'chatMessagesSent': <String, Object?>{'type': 'integer', 'minimum': 0},
-        'followThroughRate': <String, Object?>{'type': 'number', 'minimum': 0},
-        'eventsAttended': <String, Object?>{'type': 'integer', 'minimum': 0},
+        'mutualCatches': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'chatsStarted': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'chatMessagesSent': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'followThroughRate': <String, Object?>{
+          'type': 'number',
+          'minimum': 0,
+        },
+        'eventsAttended': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
       },
     },
     'profileSummary': <String, Object?>{
@@ -155,18 +221,33 @@ const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
         'activeMinutes',
       ],
       'properties': <String, Object?>{
-        'profileViews': <String, Object?>{'type': 'integer', 'minimum': 0},
-        'uniqueViewers': <String, Object?>{'type': 'integer', 'minimum': 0},
+        'profileViews': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'uniqueViewers': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
         'profileDwellSeconds': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
         },
-        'photoImpressions': <String, Object?>{'type': 'integer', 'minimum': 0},
+        'photoImpressions': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
         'topPhotoId': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 180,
         },
-        'activeMinutes': <String, Object?>{'type': 'integer', 'minimum': 0},
+        'activeMinutes': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
       },
     },
     'coachingTipRefs': <String, Object?>{
@@ -175,7 +256,12 @@ const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
       'items': <String, Object?>{
         'type': 'object',
         'additionalProperties': false,
-        'required': <Object?>['id', 'copyKey', 'priority', 'metricIds'],
+        'required': <Object?>[
+          'id',
+          'copyKey',
+          'priority',
+          'metricIds',
+        ],
         'properties': <String, Object?>{
           'id': <String, Object?>{
             'type': 'string',
@@ -208,7 +294,11 @@ const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
       'items': <String, Object?>{
         'type': 'object',
         'additionalProperties': false,
-        'required': <Object?>['id', 'state', 'detail'],
+        'required': <Object?>[
+          'id',
+          'state',
+          'detail',
+        ],
         'properties': <String, Object?>{
           'id': <String, Object?>{
             'type': 'string',
@@ -217,7 +307,11 @@ const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
           },
           'state': <String, Object?>{
             'type': 'string',
-            'enum': <Object?>['ok', 'partial', 'missing'],
+            'enum': <Object?>[
+              'ok',
+              'partial',
+              'missing',
+            ],
           },
           'detail': <String, Object?>{
             'type': 'string',
@@ -232,7 +326,13 @@ const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
     'metricCard': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'required': <Object?>['id', 'label', 'value', 'unit', 'status'],
+      'required': <Object?>[
+        'id',
+        'label',
+        'value',
+        'unit',
+        'status',
+      ],
       'properties': <String, Object?>{
         'id': <String, Object?>{
           'type': 'string',
@@ -244,17 +344,30 @@ const schemaUserAnalyticsCallableResponseSchema = <String, Object?>{
           'minLength': 1,
           'maxLength': 80,
         },
-        'value': <String, Object?>{'type': 'number'},
+        'value': <String, Object?>{
+          'type': 'number',
+        },
         'unit': <String, Object?>{
           'type': 'string',
-          'enum': <Object?>['count', 'percent', 'duration_seconds'],
+          'enum': <Object?>[
+            'count',
+            'percent',
+            'duration_seconds',
+          ],
         },
         'status': <String, Object?>{
           'type': 'string',
-          'enum': <Object?>['ready', 'partial', 'missing'],
+          'enum': <Object?>[
+            'ready',
+            'partial',
+            'missing',
+          ],
         },
         'caption': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 160,
         },
       },
