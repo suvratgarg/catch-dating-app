@@ -1,0 +1,245 @@
+{
+  "$schema": "./state_matrix.schema.json",
+  "version": 1,
+  "updated": "2026-06-20",
+  "requiredStateKinds": [
+    "loading",
+    "populated",
+    "empty",
+    "error",
+    "offline",
+    "permission",
+    "mutation",
+    "theme",
+    "accessibility"
+  ],
+  "features": [
+    {
+      "id": "start_auth_onboarding",
+      "name": "Start, Auth, and Onboarding",
+      "priority": "P1",
+      "status": "in_progress",
+      "nextPass": "start-auth-onboarding-design-parity-01",
+      "screens": [
+        {
+          "id": "start.welcome",
+          "routeId": "startScreen",
+          "implementationPaths": [
+            "lib/onboarding/presentation/pages/welcome_page.dart"
+          ],
+          "componentIds": ["catch.button"],
+          "captureIds": ["start_welcome"],
+          "designRefs": [
+            {
+              "id": "splash-welcome-handoff",
+              "kind": "external",
+              "status": "available",
+              "notes": "User-supplied splash welcome handoff; export canonical PNG refs into design/reference_screens before enforcing pixel diff."
+            }
+          ],
+          "states": [
+            {
+              "id": "animated_reel",
+              "kind": "populated",
+              "status": "implemented",
+              "tests": ["test/onboarding/onboarding_widgets_test.dart"],
+              "notes": "The reel animates in production; add sampled visual captures if animation timing becomes a regression risk."
+            },
+            {
+              "id": "landed_direct",
+              "kind": "populated",
+              "status": "ready",
+              "captureIds": ["start_welcome"],
+              "tests": ["test/onboarding/onboarding_widgets_test.dart"],
+              "notes": "Deterministic WelcomePage(playIntro: false) capture."
+            },
+            {
+              "id": "reduced_motion",
+              "kind": "accessibility",
+              "status": "tested",
+              "tests": ["test/onboarding/onboarding_widgets_test.dart"]
+            },
+            {
+              "id": "text_scale_2",
+              "kind": "accessibility",
+              "status": "planned",
+              "notes": "Add to the text-scale UI capture batch."
+            },
+            {
+              "id": "light_dark",
+              "kind": "theme",
+              "status": "captured",
+              "captureIds": ["start_welcome"]
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-START-001",
+              "status": "open",
+              "nextAction": "Export canonical design PNGs for the welcome landed state and wire the first advisory visual-diff comparison."
+            },
+            {
+              "id": "DP-START-002",
+              "status": "open",
+              "nextAction": "Add a preview/story for animated, skipped, direct, reduced-motion, and text-scale states."
+            }
+          ]
+        },
+        {
+          "id": "auth.phone_entry",
+          "routeId": "authScreen",
+          "implementationPaths": [
+            "lib/auth/presentation/auth_screen.dart",
+            "lib/auth/presentation/phone_page.dart",
+            "lib/auth/presentation/otp_page.dart"
+          ],
+          "componentIds": ["catch.button", "catch.text_field"],
+          "captureIds": ["auth_phone_entry"],
+          "designRefs": [
+            {
+              "id": "auth-handoff",
+              "kind": "external",
+              "status": "needs_export",
+              "notes": "Needs canonical phone and OTP design refs before pixel comparison."
+            }
+          ],
+          "states": [
+            {
+              "id": "phone_entry",
+              "kind": "populated",
+              "status": "captured",
+              "captureIds": ["auth_phone_entry"],
+              "tests": ["test/auth/presentation/auth_screen_test.dart"]
+            },
+            {
+              "id": "otp_entry",
+              "kind": "populated",
+              "status": "planned",
+              "tests": ["test/auth/presentation/auth_screen_test.dart"],
+              "notes": "Capture exists as a planned auth-flow variant, not as a route capture yet."
+            },
+            {
+              "id": "validation_error",
+              "kind": "error",
+              "status": "tested",
+              "tests": ["test/auth/presentation/auth_input_test.dart"]
+            },
+            {
+              "id": "submit_mutation",
+              "kind": "mutation",
+              "status": "planned",
+              "notes": "Add loading/error visual states for phone submit and OTP verify."
+            },
+            {
+              "id": "text_scale_2",
+              "kind": "accessibility",
+              "status": "planned"
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-AUTH-001",
+              "status": "open",
+              "nextAction": "Add auth OTP, mutation loading, and mutation error captures or previews."
+            },
+            {
+              "id": "DP-AUTH-002",
+              "status": "open",
+              "nextAction": "Verify auth fields and validation banners against component contracts before visual polish."
+            }
+          ]
+        },
+        {
+          "id": "onboarding.flow",
+          "routeId": "onboardingScreen",
+          "implementationPaths": [
+            "lib/onboarding/presentation/onboarding_screen.dart",
+            "lib/onboarding/presentation/pages/name_dob_page.dart",
+            "lib/onboarding/presentation/pages/gender_interest_page.dart",
+            "lib/onboarding/presentation/pages/photos_page.dart",
+            "lib/onboarding/presentation/pages/profile_prompts_page.dart",
+            "lib/onboarding/presentation/pages/running_prefs_page.dart"
+          ],
+          "componentIds": [
+            "catch.button",
+            "catch.chip",
+            "catch.field",
+            "catch.text_field"
+          ],
+          "captureIds": ["onboarding_welcome"],
+          "designRefs": [
+            {
+              "id": "onboarding-handoff",
+              "kind": "external",
+              "status": "needs_export",
+              "notes": "Needs step-by-step canonical design refs for visual comparison."
+            }
+          ],
+          "states": [
+            {
+              "id": "welcome_entry",
+              "kind": "populated",
+              "status": "captured",
+              "captureIds": ["onboarding_welcome"],
+              "tests": ["test/onboarding/onboarding_widgets_test.dart"]
+            },
+            {
+              "id": "required_field_errors",
+              "kind": "error",
+              "status": "tested",
+              "tests": ["test/onboarding/onboarding_widgets_test.dart"]
+            },
+            {
+              "id": "saved_draft",
+              "kind": "populated",
+              "status": "tested",
+              "tests": ["test/onboarding/onboarding_widgets_test.dart"]
+            },
+            {
+              "id": "photo_gate",
+              "kind": "empty",
+              "status": "tested",
+              "tests": ["test/onboarding/onboarding_widgets_test.dart"]
+            },
+            {
+              "id": "text_scale_2",
+              "kind": "accessibility",
+              "status": "planned"
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-ONBOARDING-001",
+              "status": "open",
+              "nextAction": "Add captures/previews for each onboarding step, including validation and disabled CTA states."
+            },
+            {
+              "id": "DP-ONBOARDING-002",
+              "status": "open",
+              "nextAction": "Catalogue repeated step layouts and promote only genuinely shared patterns to component contracts."
+            }
+          ]
+        }
+      ],
+      "lintCandidates": [
+        {
+          "id": "DP-LINT-001",
+          "status": "open",
+          "nextAction": "Add an advisory rule/check that P1 route additions must update capture coverage and design parity matrix entries."
+        },
+        {
+          "id": "DP-LINT-002",
+          "status": "open",
+          "nextAction": "Add an advisory rule/check that new shared primitives need a component contract and preview/story entry."
+        }
+      ],
+      "previewPlan": [
+        {
+          "id": "DP-PREVIEW-001",
+          "status": "open",
+          "nextAction": "Run a Widgetbook or Flutter-preview spike using Start/Auth/Onboarding as the proving ground."
+        }
+      ]
+    }
+  ]
+}

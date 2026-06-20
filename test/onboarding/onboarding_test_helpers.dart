@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -192,8 +193,19 @@ class FakeOnboardingDraftRepository extends Fake
 
 ProviderContainer createOnboardingTestContainer({
   List<Object> overrides = const [],
+  AppAnalytics? appAnalytics,
 }) {
-  final container = ProviderContainer(overrides: overrides.cast());
+  final effectiveOverrides = <Object>[
+    appAnalyticsProvider.overrideWithValue(
+      appAnalytics ??
+          AppAnalytics(
+            reporter: _NoOpAnalyticsReporter(),
+            shouldCollect: false,
+          ),
+    ),
+    ...overrides,
+  ];
+  final container = ProviderContainer(overrides: effectiveOverrides.cast());
   OnboardingController.saveProfileMutation.reset(container);
   OnboardingController.completeMutation.reset(container);
   return container;
@@ -259,4 +271,21 @@ Future<void> primeOnboardingAsyncProviders(ProviderContainer container) async {
     uidSubscription.close();
     userProfileSubscription.close();
   }
+}
+
+final class _NoOpAnalyticsReporter implements AnalyticsReporter {
+  @override
+  Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {}
+
+  @override
+  Future<void> logScreenView({
+    required String screenName,
+    String? screenClass,
+  }) async {}
+
+  @override
+  Future<void> setCollectionEnabled(bool enabled) async {}
+
+  @override
+  Future<void> setUserId(String? userId) async {}
 }

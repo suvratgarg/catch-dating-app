@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
@@ -107,6 +108,9 @@ class ScreenCaptureEntry {
 
 final _profileHeroImage = FileImage(File('test/goldens/fixtures/portrait.jpg'));
 final _captureFixtures = salesDemoSyntheticFixtures;
+final _captureAnalyticsOverride = appAnalyticsProvider.overrideWithValue(
+  AppAnalytics(reporter: _NoOpAnalyticsReporter(), shouldCollect: false),
+);
 final _eventDetailEvent = buildEvent(
   id: 'event-detail-member',
   startTime: DateTime(2026, 6, 12, 7),
@@ -1072,7 +1076,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'start_welcome',
     routeIds: const <String>['startScreen'],
     device: CaptureDevice.reviewPhone,
-    builder: (context) => const WelcomePage(),
+    providerOverrides: [_captureAnalyticsOverride],
+    builder: (context) => const WelcomePage(playIntro: false),
   ),
   ScreenCaptureEntry(
     id: 'auth_phone_entry',
@@ -1085,6 +1090,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['onboardingScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: [
+      _captureAnalyticsOverride,
       uidProvider.overrideWithValue(const AsyncData(null)),
       watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
     ],
@@ -1732,6 +1738,23 @@ ScreenCaptureEntry findScreenCapture(String id) {
     if (entry.id == id) return entry;
   }
   throw ArgumentError.value(id, 'id', 'Unknown screen capture id.');
+}
+
+final class _NoOpAnalyticsReporter implements AnalyticsReporter {
+  @override
+  Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {}
+
+  @override
+  Future<void> logScreenView({
+    required String screenName,
+    String? screenClass,
+  }) async {}
+
+  @override
+  Future<void> setCollectionEnabled(bool enabled) async {}
+
+  @override
+  Future<void> setUserId(String? userId) async {}
 }
 
 ProfileReactionTarget _target(

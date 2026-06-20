@@ -6,6 +6,7 @@ import 'package:image/image.dart' as image;
 
 const _tokenPath = 'design_context_pack/design_system/tokens.json';
 const _baseIconPath = 'assets/branding/catch_icon.png';
+const _hostIconPath = 'assets/branding/catch_hosts_icon.png';
 const _generatedIconDir = 'assets/branding/generated';
 
 const _androidIconSizes = <String, int>{
@@ -22,43 +23,33 @@ const _iconVariants = <String, _IconVariant>{
     androidSourceSet: 'dev',
     appleIconSet: 'AppIcon-dev',
     filenamePrefix: 'dev',
-    badges: [_IconBadge(label: 'D', fillToken: 'ink')],
+    ribbons: [_IconRibbon(label: 'DEV', fillToken: 'bg', labelToken: 'ink')],
   ),
   'staging': _IconVariant(
     generatedName: 'catch_icon_staging.png',
     androidSourceSet: 'staging',
     appleIconSet: 'AppIcon-staging',
     filenamePrefix: 'staging',
-    badges: [_IconBadge(label: 'S', fillToken: 'warning')],
+    ribbons: [
+      _IconRibbon(label: 'STG', fillToken: 'warning', labelToken: 'ink'),
+    ],
   ),
   'host-dev': _IconVariant(
     generatedName: 'catch_icon_host_dev.png',
     androidSourceSet: 'hostDev',
     appleIconSet: 'AppIcon-host-dev',
     filenamePrefix: 'host-dev',
-    badges: [
-      _IconBadge(label: 'H', fillToken: 'success'),
-      _IconBadge(
-        label: 'D',
-        fillToken: 'ink',
-        corner: _BadgeCorner.topLeft,
-        radiusScale: 0.12,
-      ),
-    ],
+    iconBase: _IconBase.host,
+    ribbons: [_IconRibbon(label: 'DEV', fillToken: 'bg', labelToken: 'ink')],
   ),
   'host-staging': _IconVariant(
     generatedName: 'catch_icon_host_staging.png',
     androidSourceSet: 'hostStaging',
     appleIconSet: 'AppIcon-host-staging',
     filenamePrefix: 'host-staging',
-    badges: [
-      _IconBadge(label: 'H', fillToken: 'success'),
-      _IconBadge(
-        label: 'S',
-        fillToken: 'warning',
-        corner: _BadgeCorner.topLeft,
-        radiusScale: 0.12,
-      ),
+    iconBase: _IconBase.host,
+    ribbons: [
+      _IconRibbon(label: 'STG', fillToken: 'warning', labelToken: 'ink'),
     ],
   ),
   'host-prod': _IconVariant(
@@ -66,7 +57,8 @@ const _iconVariants = <String, _IconVariant>{
     androidSourceSet: 'hostProd',
     appleIconSet: 'AppIcon-host-prod',
     filenamePrefix: 'host-prod',
-    badges: [_IconBadge(label: 'H', fillToken: 'success')],
+    iconBase: _IconBase.host,
+    ribbons: [],
   ),
 };
 
@@ -76,13 +68,21 @@ void main() {
   if (baseIcon == null) {
     throw StateError('Could not decode $_baseIconPath.');
   }
+  final hostIcon = image.decodePng(File(_hostIconPath).readAsBytesSync());
+  if (hostIcon == null) {
+    throw StateError('Could not decode $_hostIconPath.');
+  }
 
   _syncPubspecTokens(tokens);
   _writeNativeBrandManifest(tokens);
 
   for (final entry in _iconVariants.entries) {
     final variant = entry.value;
-    final icon = _buildVariantIcon(baseIcon, variant, tokens);
+    final sourceIcon = switch (variant.iconBase) {
+      _IconBase.consumer => baseIcon,
+      _IconBase.host => hostIcon,
+    };
+    final icon = _buildVariantIcon(sourceIcon, variant, tokens);
     final generatedSourcePath = '$_generatedIconDir/${variant.generatedName}';
     _writePng(generatedSourcePath, icon);
     _writeAndroidIcons(variant.androidSourceSet, icon);
@@ -100,75 +100,70 @@ image.Image _buildVariantIcon(
   _NativeBrandTokens tokens,
 ) {
   final icon = baseIcon.convert(numChannels: 4);
-  for (final badge in variant.badges) {
-    _drawBadge(icon, badge, tokens);
+  for (final ribbon in variant.ribbons) {
+    _drawRibbon(icon, ribbon, tokens);
   }
   return icon;
 }
 
-void _drawBadge(image.Image icon, _IconBadge badge, _NativeBrandTokens tokens) {
-  final badgeFill = tokens.color(badge.fillToken, 'light');
-  final badgeInk = tokens.color('primaryInk', 'light');
-  final badgeRing = tokens.color('bg', 'light');
+void _drawRibbon(
+  image.Image icon,
+  _IconRibbon ribbon,
+  _NativeBrandTokens tokens,
+) {
+  final ribbonFill = tokens.color(ribbon.fillToken, 'light');
+  final ribbonInk = tokens.color(ribbon.labelToken, 'light');
   final shadow = image.ColorRgba8(0, 0, 0, 88);
   final size = math.min(icon.width, icon.height);
-  final radius = (size * badge.radiusScale).round();
-  final ring = (size * 0.027).round();
-  final margin = (size * 0.076).round();
-  final centerX = switch (badge.corner) {
-    _BadgeCorner.topLeft => margin + radius,
-    _BadgeCorner.bottomRight => size - margin - radius,
-  };
-  final centerY = switch (badge.corner) {
-    _BadgeCorner.topLeft => margin + radius,
-    _BadgeCorner.bottomRight => size - margin - radius,
-  };
+  final depth = (size * 0.29).round();
+  final band = (size * 0.105).round();
+  final shadowOffset = (size * 0.014).round();
 
-  image.fillCircle(
+  image.fillPolygon(
     icon,
-    x: centerX + (size * 0.012).round(),
-    y: centerY + (size * 0.018).round(),
-    radius: radius + ring,
+    vertices: _topLeftRibbonVertices(depth + shadowOffset, band),
     color: shadow,
-    antialias: true,
   );
-  image.fillCircle(
+  image.fillPolygon(
     icon,
-    x: centerX,
-    y: centerY,
-    radius: radius + ring,
-    color: badgeRing,
-    antialias: true,
-  );
-  image.fillCircle(
-    icon,
-    x: centerX,
-    y: centerY,
-    radius: radius,
-    color: badgeFill,
-    antialias: true,
+    vertices: _topLeftRibbonVertices(depth, band),
+    color: ribbonFill,
   );
 
-  final labelLayer = image.Image(width: 64, height: 64, numChannels: 4);
+  final labelLayer = image.Image(width: 220, height: 72, numChannels: 4);
+  labelLayer.clear(image.ColorRgba8(0, 0, 0, 0));
   image.drawString(
     labelLayer,
-    badge.label,
+    ribbon.label,
     font: image.arial48,
-    color: badgeInk,
+    color: ribbonInk,
   );
-  final labelSize = (radius * 1.18).round();
-  final label = image.copyResize(
+  final scaledLabel = image.copyResize(
     labelLayer,
-    width: labelSize,
-    height: labelSize,
+    width: (size * 0.23).round(),
+    height: (size * 0.076).round(),
+    interpolation: image.Interpolation.cubic,
+  );
+  final label = image.copyRotate(
+    scaledLabel,
+    angle: -45,
     interpolation: image.Interpolation.cubic,
   );
   image.compositeImage(
     icon,
     label,
-    dstX: centerX - label.width ~/ 2,
-    dstY: centerY - label.height ~/ 2,
+    dstX: (size * 0.075).round(),
+    dstY: (size * 0.035).round(),
   );
+}
+
+List<image.Point> _topLeftRibbonVertices(int depth, int band) {
+  return [
+    image.Point(0, depth),
+    image.Point(depth),
+    image.Point(depth + band),
+    image.Point(0, depth + band),
+  ];
 }
 
 void _writeAndroidIcons(String sourceSet, image.Image source) {
@@ -259,12 +254,12 @@ void _writeNativeBrandManifest(_NativeBrandTokens tokens) {
       'splash_light_bg': tokens.colorHex('bg', 'light'),
       'splash_dark_bg': tokens.colorHex('bg', 'dark'),
       'web_theme': tokens.colorHex('ink', 'light'),
-      'dev_badge': tokens.colorHex('ink', 'light'),
-      'staging_badge': tokens.colorHex('warning', 'light'),
-      'host_badge': tokens.colorHex('success', 'light'),
-      'badge_ink': tokens.colorHex('primaryInk', 'light'),
+      'dev_ribbon': tokens.colorHex('bg', 'light'),
+      'staging_ribbon': tokens.colorHex('warning', 'light'),
+      'ribbon_ink': tokens.colorHex('ink', 'light'),
     },
     'generated': [
+      _hostIconPath,
       for (final variant in _iconVariants.values)
         'assets/branding/generated/${variant.generatedName}',
       for (final variant in _iconVariants.values)
@@ -420,28 +415,28 @@ class _IconVariant {
     required this.androidSourceSet,
     required this.appleIconSet,
     required this.filenamePrefix,
-    required this.badges,
+    required this.ribbons,
+    this.iconBase = _IconBase.consumer,
   });
 
   final String generatedName;
   final String androidSourceSet;
   final String appleIconSet;
   final String filenamePrefix;
-  final List<_IconBadge> badges;
+  final List<_IconRibbon> ribbons;
+  final _IconBase iconBase;
 }
 
-enum _BadgeCorner { topLeft, bottomRight }
+enum _IconBase { consumer, host }
 
-class _IconBadge {
-  const _IconBadge({
+class _IconRibbon {
+  const _IconRibbon({
     required this.label,
     required this.fillToken,
-    this.corner = _BadgeCorner.bottomRight,
-    this.radiusScale = 0.205,
+    required this.labelToken,
   });
 
   final String label;
   final String fillToken;
-  final _BadgeCorner corner;
-  final double radiusScale;
+  final String labelToken;
 }

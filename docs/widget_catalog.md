@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.280
-updated: 2026-06-17
+version: 2.5.281
+updated: 2026-06-20
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,12 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.281
+
+- Updated `WelcomePage` from the old static run-club welcome hero to the
+  Splash -> Welcome reel handoff: fixed `Catch`, deterministic object reel
+  landing on "someone real", tap/reduced-motion skip, and bottom welcome CTAs.
 
 ### 2.5.280
 
@@ -3394,11 +3400,16 @@ Generated 2026-05-06.
 | `ProfilePromptsPage` | `lib/onboarding/presentation/pages/profile_prompts_page.dart:20` | Handoff Prompts step: three prompt cards, duplicate-prompt filtering through `CatchSelectMenu`, inline answer fields, footer progress label, and disabled Continue until all prompt slots are answered. |
 | `RunningPrefsPage` | `lib/onboarding/presentation/pages/running_prefs_page.dart:19` | Handoff Running prefs step: TYPICAL PACE range panel on `CatchSurface`, `CatchRangeSlider`, favorite distance/reason/time chip groups, and sticky Save/Continue booking footer. |
 
+### StatefulWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `WelcomePage` | `lib/onboarding/presentation/pages/welcome_page.dart:11` | Animated logged-out start/welcome screen from the Splash -> Welcome handoff: fixed `Catch`, deterministic object reel landing on `someone real`, tap/reduced-motion skip, body copy, primary Continue with phone CTA, and secondary See what's on CTA. |
+
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `WelcomePage` | `lib/onboarding/presentation/pages/welcome_page.dart:10` | Dark editorial welcome screen from the handoff: Catch wordmark, RUN CLUB DATING kicker, large arrival headline, body copy, primary Continue with phone CTA, and secondary Explore events CTA. |
 | `PhotosPage` | `lib/onboarding/presentation/pages/photos_page.dart:19` | Handoff Photos step with header copy, `PhotoGrid`, divider-backed photo tip band, disabled-state continue hint, and sticky Continue footer. |
 
 ### StatelessWidget
