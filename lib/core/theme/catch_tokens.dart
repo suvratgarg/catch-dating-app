@@ -422,6 +422,13 @@ abstract final class CatchInsets {
     CatchSpacing.s7,
   );
 
+  /// Reel row copy inset in the animated welcome splash.
+  static const EdgeInsets welcomeReelRow = EdgeInsets.only(
+    left: CatchLayout.welcomeReelObjectLeft,
+    right: CatchLayout.welcomeReelObjectRight,
+    top: CatchSpacing.micro14,
+  );
+
   /// Header/body padding for page-level intro rows before dense content.
   static const EdgeInsets pageHeaderBody = EdgeInsets.fromLTRB(
     CatchSpacing.s5,
@@ -930,9 +937,15 @@ abstract final class CatchOpacity {
   static const double floatingControlFill = 0.88;
 
   static const double welcomeHeroBody = 0.88;
+  static const double welcomeIntroBody = 0.66;
+  static const double welcomeReelDimMin = 0.12;
+  static const double welcomeReelDimDistanceRows = 3.2;
+  static const double welcomeReelDecolorPigment = 0.26;
   static const double welcomeSecondaryButtonFill = 0.14;
   static const double welcomeSecondaryButtonBorder = 0.42;
   static const double welcomeTrackPattern = 0.16;
+  static const double welcomeReelMaskLead = 0.14;
+  static const double welcomeReelMaskTail = 0.88;
   static const double mapDistanceRingStroke = 0.38;
   static const double mapDistanceRingFill = 0.08;
   static const double mapUserLocationStroke = 0.92;
@@ -1354,6 +1367,16 @@ abstract final class CatchMotion {
   static const Duration ambientLoop = Duration(seconds: 16);
   static const Duration pulse = Duration(milliseconds: 700);
   static const Duration skeletonShimmer = Duration(milliseconds: 1200);
+  static const Duration welcomeReel = Duration(milliseconds: 3000);
+  static const Duration welcomeLandingReveal = Duration(milliseconds: 1400);
+  static const Duration welcomeNonFocusFade = Duration(milliseconds: 500);
+  static const Duration welcomeTextCool = Duration(milliseconds: 700);
+  static const Duration welcomeRevealSettle = Duration(milliseconds: 600);
+  static const Duration welcomeRevealStart = Duration(milliseconds: 520);
+  static const Duration welcomeRevealStagger = Duration(milliseconds: 80);
+  static const int welcomeReelSpins = 1;
+  static const double welcomeSpinCurvePower = 3.0;
+  static const Curve welcomeRevealCurve = Curves.easeOutCubic;
 
   static const Curve standardCurve = Cubic(0.2, 0.0, 0.0, 1.0);
   static const Curve easeInCubicCurve = Curves.easeInCubic;
@@ -1757,6 +1780,47 @@ abstract final class CatchLayout {
   static const double calendarWeekStripVerticalInsetTotal = 16.0;
   static const double calendarMonthGridGapTotal = 30.0;
   static const double welcomeBrandMarkExtent = 52.0;
+  static const double welcomeMaxWidth = 430.0;
+  static const double welcomeReelRowHeight = 90.0;
+  static const double welcomeReelRowHalfHeight = 45.0;
+  static const double welcomeReelTop = 50.0;
+  static const double welcomeReelHeight = 540.0;
+  static const double welcomeReelFocus = 230.0;
+  static const double welcomeReelCatchLeft = 24.0;
+  static const double welcomeReelCatchLineTopOffset = 14.0;
+  static const double welcomeReelCatchFocusTop =
+      welcomeReelFocus -
+      welcomeReelRowHalfHeight +
+      welcomeReelCatchLineTopOffset;
+  static const double welcomeReelObjectLeft = 116.0;
+  static const double welcomeReelObjectRight = 18.0;
+  static const double welcomeReelDimRange =
+      welcomeReelRowHeight * CatchOpacity.welcomeReelDimDistanceRows;
+  static const double welcomeBodyTop = 340.0;
+  static const double welcomeBodyHorizontalPadding = 26.0;
+  static const double welcomeButtonsBottom = 30.0;
+  static const double welcomeButtonGap = 10.0;
+  static const double welcomeCtaApproxHeight = 122.0;
+  static const double welcomeMinBodyToCtaGap = 16.0;
+  static const double welcomeHeadlineToBodyGap = 66.0;
+  static const double welcomeRevealOffsetY = 16.0;
+  static const double welcomeVoiceWidth = 78.0;
+
+  static double welcomeReelLandingOffset(int index) =>
+      (index * welcomeReelRowHeight) +
+      welcomeReelRowHalfHeight -
+      welcomeReelFocus;
+
+  static double welcomeReelRowCenter({
+    required int rowIndex,
+    required double trackOffset,
+  }) =>
+      (rowIndex * welcomeReelRowHeight) -
+      trackOffset +
+      welcomeReelRowHalfHeight;
+
+  static bool welcomeReelRowIsFocused(double distance) =>
+      distance.abs() < welcomeReelRowHalfHeight;
   static const double eventInfoTileExtent = 44.0;
   static const double strideChartHeight = 84.0;
   static const double calendarStatDividerHeight = 44.0;
@@ -1897,6 +1961,11 @@ abstract final class CatchPhotoGradeColors {
 
 abstract final class CatchIconButtonColors {
   static const Color floatingForeground = Color(0xFF16140F);
+}
+
+abstract final class CatchWelcomeColors {
+  static const Color reelMaskClear = Color(0x00FFFFFF);
+  static const Color reelMaskOpaque = Color(0xFFFFFFFF);
 }
 
 abstract final class CatchEventSuccessColors {

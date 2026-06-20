@@ -190,6 +190,9 @@ abstract final class AnalyticsEvents {
   static const authCompleted = 'auth_completed';
   static const onboardingStarted = 'onboarding_started';
   static const onboardingCompleted = 'onboarding_completed';
+  static const welcomeSplashShown = 'welcome_splash_shown';
+  static const welcomeSplashSkipped = 'welcome_splash_skipped';
+  static const welcomeCtaTapped = 'welcome_cta_tapped';
   static const clubViewed = 'club_viewed';
   static const clubJoined = 'club_joined';
   static const exploreEventOpened = 'explore_event_opened';
@@ -213,6 +216,8 @@ abstract final class AnalyticsParameters {
   static const buildNumber = 'build_number';
   static const authMethod = 'auth_method';
   static const onboardingStep = 'onboarding_step';
+  static const splashMotion = 'splash_motion';
+  static const cta = 'cta';
   static const clubId = 'club_id';
   static const eventId = 'event_id';
   static const activityKind = 'activity_kind';

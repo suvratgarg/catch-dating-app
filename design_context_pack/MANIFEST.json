@@ -30,8 +30,8 @@
     },
     {
       "path": "design_system/tokens.json",
-      "sha256": "08814157d010b4fd59a36bb19d711c28c7c6bec4ce5c827c4345813df2326341",
-      "bytes": 25480
+      "sha256": "db936fc6492273f8e83471c8cfaed41334adae4267b4ffbb8870997e8942476c",
+      "bytes": 25979
     },
     {
       "path": "design_system/typography.json",

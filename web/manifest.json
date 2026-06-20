@@ -3,7 +3,7 @@
     "short_name": "Catch",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#F4F4F1",
+    "background_color": "#16140F",
     "theme_color": "#16140F",
     "description": "Catch helps runners discover clubs, book runs, and connect with other people.",
     "orientation": "portrait-primary",

@@ -92,10 +92,17 @@
   },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "4.1.9",
-    "updated": "2026-06-02",
+    "version": "4.1.14",
+    "updated": "2026-06-20",
     "status": "active",
     "read_policy": "Read before adding, deleting, or consolidating docs."
+  },
+  "design_parity_tracker": {
+    "path": "docs/design_parity/README.md",
+    "version": "0.1.0",
+    "updated": "2026-06-20",
+    "status": "active",
+    "read_policy": "Use before design-parity passes to pick feature scope, state coverage, preview/capture requirements, visual-diff gaps, component-contract gaps, and drift-prevention follow-ups."
   },
   "error_handling_audit": {
     "path": "docs/error-handling-audit.md",
@@ -148,8 +155,8 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.280",
-    "updated": "2026-06-17",
+    "version": "2.5.281",
+    "updated": "2026-06-20",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },

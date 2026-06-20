@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/analytics/app_analytics.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
@@ -23,8 +25,46 @@ import 'onboarding_test_helpers.dart';
 
 void main() {
   group('WelcomePage', () {
-    testWidgets('shows the branded welcome page with CTA', (tester) async {
-      final container = createOnboardingTestContainer();
+    testWidgets('shows the landed welcome page with CTA', (tester) async {
+      final reporter = _FakeAnalyticsReporter();
+      final container = createOnboardingTestContainer(
+        appAnalytics: AppAnalytics(reporter: reporter, shouldCollect: true),
+      );
+      addTearDown(container.dispose);
+
+      await pumpOnboardingPage(
+        tester,
+        container: container,
+        child: const WelcomePage(playIntro: false),
+      );
+
+      expect(
+        find.widgetWithText(CatchButton, 'See what\'s on'),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithText(CatchButton, 'Continue with phone'),
+        findsOneWidget,
+      );
+      expect(find.text('Catch'), findsOneWidget);
+      expect(find.textContaining('someone real'), findsWidgets);
+      expect(find.text('RUN CLUB DATING'), findsNothing);
+      expect(find.text('Love arrives\nat mile\nthree.'), findsNothing);
+      expect(find.byType(TextButton), findsNothing);
+      expect(find.text('Already a runner? Sign in'), findsNothing);
+      expect(reporter.events, hasLength(1));
+      expect(reporter.events.single.name, AnalyticsEvents.welcomeSplashShown);
+      expect(
+        reporter.events.single.parameters,
+        containsPair(AnalyticsParameters.splashMotion, 'direct'),
+      );
+    });
+
+    testWidgets('tap skips the reel into the welcome CTAs', (tester) async {
+      final reporter = _FakeAnalyticsReporter();
+      final container = createOnboardingTestContainer(
+        appAnalytics: AppAnalytics(reporter: reporter, shouldCollect: true),
+      );
       addTearDown(container.dispose);
 
       await pumpOnboardingPage(
@@ -34,15 +74,29 @@ void main() {
       );
 
       expect(
-        find.widgetWithText(CatchButton, 'Explore events'),
-        findsOneWidget,
+        find.widgetWithText(CatchButton, 'Continue with phone'),
+        findsNothing,
       );
+
+      await tester.tap(find.byKey(WelcomePage.splashTapTargetKey));
+      await tester.pump(CatchMotion.welcomeLandingReveal);
+      await tester.pump();
+
       expect(
         find.widgetWithText(CatchButton, 'Continue with phone'),
         findsOneWidget,
       );
-      expect(find.byType(TextButton), findsNothing);
-      expect(find.text('Already a runner? Sign in'), findsNothing);
+      expect(
+        find.widgetWithText(CatchButton, 'See what\'s on'),
+        findsOneWidget,
+      );
+      expect(
+        reporter.events.map((event) => event.name),
+        containsAllInOrder([
+          AnalyticsEvents.welcomeSplashShown,
+          AnalyticsEvents.welcomeSplashSkipped,
+        ]),
+      );
     });
   });
 
@@ -408,4 +462,32 @@ void main() {
       expect(find.text('Evening'), findsOneWidget);
     });
   });
+}
+
+final class _AnalyticsEventCall {
+  const _AnalyticsEventCall(this.name, this.parameters);
+
+  final String name;
+  final Map<String, Object>? parameters;
+}
+
+final class _FakeAnalyticsReporter implements AnalyticsReporter {
+  final events = <_AnalyticsEventCall>[];
+
+  @override
+  Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {
+    events.add(_AnalyticsEventCall(name, parameters));
+  }
+
+  @override
+  Future<void> logScreenView({
+    required String screenName,
+    String? screenClass,
+  }) async {}
+
+  @override
+  Future<void> setCollectionEnabled(bool enabled) async {}
+
+  @override
+  Future<void> setUserId(String? userId) async {}
 }

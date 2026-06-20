@@ -1510,6 +1510,19 @@
       ]
     },
     {
+      "id": "design:parity-matrix",
+      "category": "design",
+      "path": "tool/design/check_design_parity_matrix.mjs",
+      "command": "node tool/design/check_design_parity_matrix.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates the feature-by-feature design parity state matrix against routes, captures, components, and source paths.",
+      "checks": [
+        "node --check tool/design/check_design_parity_matrix.mjs",
+        "node tool/design/check_design_parity_matrix.mjs --check"
+      ]
+    },
+    {
       "id": "design:context-pack",
       "category": "design",
       "path": "tool/design/build_context_pack.mjs",
