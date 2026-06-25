@@ -1,0 +1,113 @@
+{
+  "blockingKeys": [
+    {
+      "entityType": "event",
+      "id": "hard:eventUrl",
+      "strength": "hard"
+    },
+    {
+      "entityType": "event",
+      "id": "hard:providerEvent",
+      "strength": "hard"
+    },
+    {
+      "entityType": "event",
+      "id": "date-city",
+      "strength": "blocking"
+    },
+    {
+      "entityType": "event",
+      "id": "date-venue",
+      "strength": "blocking"
+    },
+    {
+      "entityType": "event",
+      "id": "date-organizer",
+      "strength": "blocking"
+    },
+    {
+      "entityType": "event",
+      "id": "title-city",
+      "strength": "blocking"
+    },
+    {
+      "entityType": "event",
+      "id": "week-category-city",
+      "strength": "broad"
+    },
+    {
+      "entityType": "organizer",
+      "id": "hard:surface",
+      "strength": "hard"
+    },
+    {
+      "entityType": "organizer",
+      "id": "organizer-name-city",
+      "strength": "blocking"
+    },
+    {
+      "entityType": "organizer",
+      "id": "organizer-domain",
+      "strength": "blocking"
+    }
+  ],
+  "canonicalBoundary": {
+    "eventCanonicalTarget": "Reviewed event clusters may project to read-only external event preflight or events/{eventId} only after import policy approval.",
+    "generatedCandidates": "Source artifacts, extracted mentions, resolution candidates, and clusters are private intake artifacts.",
+    "organizerCanonicalTarget": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+    "platformVerifiedMeaning": "Platform verified means claimed/owner-controlled on Catch; human-reviewed accuracy is tracked separately as reviewVerified."
+  },
+  "hardKeyPolicy": {
+    "note": "Provider event IDs are hard keys only for platforms whose source event IDs are stable outside one crawl batch. Editorial/import batch row IDs are not hard provider keys.",
+    "stableProviderEventPlatforms": [
+      "eventbrite",
+      "luma",
+      "meetup"
+    ]
+  },
+  "llm": {
+    "adjudicationModelEnv": "LLM_DEDUPE_MODEL",
+    "apiKeyEnv": "OPENAI_API_KEY",
+    "cacheRoot": "tool/organizer_intake/llm_cache",
+    "costControls": [
+      "Never call from the React admin app.",
+      "Hash normalized prompt inputs and reuse cached JSON outputs.",
+      "Send short reviewed excerpts or compact cluster records, not whole pages.",
+      "Only send ambiguous clusters under maxClusterSizeForLlm.",
+      "Validate JSON output before it can enter generated intake artifacts."
+    ],
+    "extractionModelEnv": "LLM_EXTRACTION_MODEL",
+    "promptVersions": {
+      "adjudication": "event-cluster-adjudicate-v1",
+      "extraction": "event-mention-extract-v1"
+    },
+    "status": "disabled"
+  },
+  "policyId": "source-mention-resolution-v1",
+  "schemaVersion": 1,
+  "signalWeights": {
+    "conflictingCity": -0.3,
+    "conflictingDate": -0.45,
+    "conflictingVenue": -0.12,
+    "hardKeyMatch": 1,
+    "sameCanonicalUrl": 0.95,
+    "sameCategory": 0.06,
+    "sameCity": 0.12,
+    "sameDate": 0.24,
+    "sameOrganizer": 0.18,
+    "sameProviderEvent": 0.95,
+    "sameSurfaceKey": 0.95,
+    "sameVenue": 0.18,
+    "titleSimilarity": 0.22
+  },
+  "status": "draft",
+  "summary": "Resolve crawler/editorial organizer and event mentions before canonical Firestore projection.",
+  "thresholds": {
+    "autoAttach": 0.9,
+    "llmAdjudicationMinScore": 0.45,
+    "maxClusterSizeForLlm": 8,
+    "maxPairsPerBlockingKey": 400,
+    "needsHumanReview": 0.45,
+    "probableDuplicate": 0.72
+  }
+}

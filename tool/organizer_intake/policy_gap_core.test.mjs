@@ -5,11 +5,11 @@ import {buildOrganizerPolicyGapRegister} from "./lib/policy_gap_core.mjs";
 test("buildOrganizerPolicyGapRegister reports disabled policy gaps", () => {
   const register = buildOrganizerPolicyGapRegister(sampleInputs());
 
-  assert.equal(register.summary.gaps, 5);
-  assert.equal(register.summary.decisionRequired, 5);
-  assert.equal(register.summary.blockedByPolicy, 4);
+  assert.equal(register.summary.gaps, 6);
+  assert.equal(register.summary.decisionRequired, 6);
+  assert.equal(register.summary.blockedByPolicy, 5);
   assert.equal(register.summary.reviewDecisions, 0);
-  assert.equal(register.summary.reviewNotReviewed, 5);
+  assert.equal(register.summary.reviewNotReviewed, 6);
   assert.equal(register.gaps[0].gapId, "external_event_import_write_policy");
   assert.equal(register.gaps[0].severity, "critical");
   assert.equal(register.gaps[0].status, "decision_required");
@@ -20,7 +20,27 @@ test("buildOrganizerPolicyGapRegister reports disabled policy gaps", () => {
     event_import: 2,
     location_resolution: 1,
     naming: 1,
+    source_resolution: 1,
   });
+});
+
+test("buildOrganizerPolicyGapRegister exposes source mention resolution policy inputs", () => {
+  const register = buildOrganizerPolicyGapRegister(sampleInputs());
+  const gap = register.gaps.find((entry) =>
+    entry.gapId === "source_mention_resolution_policy"
+  );
+
+  assert.equal(gap.status, "decision_required");
+  assert.equal(gap.defaultPosition, "disabled_until_policy_approved");
+  assert.equal(gap.evidence.llmStatus, "disabled");
+  assert.equal(gap.evidence.candidatePairs, 3);
+  assert.equal(gap.evidence.needsHumanReview, 1);
+  assert.deepEqual(gap.evidence.stableProviderEventPlatforms, ["luma"]);
+  assert.match(gap.requiredInputs.join("\n"), /monthly LLM spend cap/);
+  assert.match(
+    gap.blockedArtifacts.join("\n"),
+    /source_mention_resolution_clusters/
+  );
 });
 
 test("buildOrganizerPolicyGapRegister marks enabled import authority ready", () => {
@@ -73,7 +93,7 @@ test("buildOrganizerPolicyGapRegister applies reviewed policy decisions without 
 
   assert.equal(register.errors.length, 0);
   assert.equal(register.summary.reviewAccepted, 1);
-  assert.equal(register.summary.reviewNotReviewed, 4);
+  assert.equal(register.summary.reviewNotReviewed, 5);
   assert.equal(reviewedGap.decisionStatus, "accepted");
   assert.equal(reviewedGap.status, "decision_required");
   assert.equal(reviewedGap.defaultPosition, "disabled_until_policy_approved");
@@ -156,6 +176,47 @@ function sampleInputs() {
       },
       summary: {
         wouldCreate: 0,
+      },
+    },
+    sourceMentionResolution: {
+      extractedMentions: {
+        summary: {
+          mentions: 8,
+        },
+      },
+      resolutionCandidates: {
+        summary: {
+          candidates: 8,
+        },
+      },
+      resolutionClusters: {
+        summary: {
+          candidatePairs: 3,
+          clusters: 5,
+          llmReviewQueued: 1,
+          needsHumanReviewClusters: 1,
+          warnings: 0,
+        },
+      },
+      resolutionPolicy: {
+        blockingKeys: [
+          {id: "hard:eventUrl"},
+          {id: "date-city"},
+        ],
+        hardKeyPolicy: {
+          stableProviderEventPlatforms: ["luma"],
+        },
+        llm: {
+          status: "disabled",
+        },
+        thresholds: {
+          autoAttach: 0.9,
+          llmAdjudicationMinScore: 0.45,
+          maxClusterSizeForLlm: 8,
+          maxPairsPerBlockingKey: 400,
+          needsHumanReview: 0.45,
+          probableDuplicate: 0.72,
+        },
       },
     },
   };

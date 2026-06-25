@@ -149,10 +149,13 @@ export const adminReviewBridgeChannels = [
 ];
 
 const sharedFiles = {
-  adminApi: "admin/src/adminApi.ts",
-  adminApp: "admin/src/App.tsx",
-  adminBridge: "admin/src/generated/organizerIntakeBridge.json",
-  adminTypes: "admin/src/types.ts",
+  adminApi: "admin/src/shared/api/adminApi.ts",
+  adminBridge:
+    "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",
+  adminController:
+    "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
+  adminScreen: "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
+  adminTypes: "admin/src/shared/types/adminTypes.ts",
   generatedPendingInputRequest:
     "tool/organizer_intake/generated/organizer_pending_input_request.json",
   generatedPendingWorkCoverage:
@@ -218,6 +221,34 @@ const exactEmbeddedGeneratedArtifacts = [
     bridgeKey: "promotionExecutionPacket",
     sourceKey: "promotionExecutionPacket",
   },
+  {
+    bridgeKey: "sourceMentionResolution.extractedMentions",
+    sourceKey: "sourceMentionExtractedMentions",
+  },
+  {
+    bridgeKey: "sourceMentionResolution.policy",
+    sourceKey: "sourceMentionResolutionPolicy",
+  },
+  {
+    bridgeKey: "sourceMentionResolution.resolutionCandidates",
+    sourceKey: "sourceMentionResolutionCandidates",
+  },
+  {
+    bridgeKey: "sourceMentionResolution.resolutionClusters",
+    sourceKey: "sourceMentionResolutionClusters",
+  },
+  {
+    bridgeKey: "sourceMentionResolution.reviewPackets",
+    sourceKey: "sourceMentionResolutionReviewPackets",
+  },
+  {
+    bridgeKey: "sourceMentionResolution.llmPromptQueue",
+    sourceKey: "sourceMentionLlmPromptQueue",
+  },
+  {
+    bridgeKey: "sourceMentionResolution.sourceArtifacts",
+    sourceKey: "sourceMentionSourceArtifacts",
+  },
 ];
 
 if (isMain()) {
@@ -262,6 +293,7 @@ export function checkAdminReviewBridge({
     fileCache,
   });
   checkBridgeItemDecisionCommands({root, errors, fileCache});
+  checkSourceMentionResolutionBridge({root, errors, fileCache});
 
   return {
     ok: errors.length === 0,
@@ -316,10 +348,53 @@ export function checkAdminReviewBridge({
   };
 }
 
+function checkSourceMentionResolutionBridge({root, errors, fileCache}) {
+  mustContain({
+    root,
+    file: sharedFiles.adminScreen,
+    token: "sourceMentionResolution",
+    label: "source-mention-resolution: admin bridge property",
+    errors,
+    fileCache,
+  });
+  mustContain({
+    root,
+    file: sharedFiles.adminScreen,
+    token: "OrganizerSourceMentionResolutionView",
+    label: "source-mention-resolution: admin UI view",
+    errors,
+    fileCache,
+  });
+  mustContain({
+    root,
+    file: sharedFiles.adminScreen,
+    token: "Resolution review packets",
+    label: "source-mention-resolution: review packet UI",
+    errors,
+    fileCache,
+  });
+  mustContain({
+    root,
+    file: sharedFiles.adminScreen,
+    token: "LLM Prompt Queue",
+    label: "source-mention-resolution: prompt queue UI",
+    errors,
+    fileCache,
+  });
+  mustContain({
+    root,
+    file: sharedFiles.readme,
+    token: "source_mention_llm_prompt_queue.json",
+    label: "source-mention-resolution: README prompt queue artifact",
+    errors,
+    fileCache,
+  });
+}
+
 function checkReviewedDecisionAnswerPacketsBridge({root, errors, fileCache}) {
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminScreen,
     token: "reviewedDecisionAnswerPackets",
     label: "reviewed-answer-packets: admin bridge property",
     errors,
@@ -327,7 +402,7 @@ function checkReviewedDecisionAnswerPacketsBridge({root, errors, fileCache}) {
   });
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminScreen,
     token: "OrganizerReviewedDecisionAnswerPacketsView",
     label: "reviewed-answer-packets: admin UI view",
     errors,
@@ -335,7 +410,7 @@ function checkReviewedDecisionAnswerPacketsBridge({root, errors, fileCache}) {
   });
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminScreen,
     token: "Reviewed answer packets",
     label: "reviewed-answer-packets: admin panel title",
     errors,
@@ -425,7 +500,7 @@ function checkReviewedDecisionAnswerPacketsBridge({root, errors, fileCache}) {
 function checkPromotionExecutionBridge({root, errors, fileCache}) {
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminScreen,
     token: "promotionExecutionPacket",
     label: "promotion-execution: admin bridge property",
     errors,
@@ -433,7 +508,7 @@ function checkPromotionExecutionBridge({root, errors, fileCache}) {
   });
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminScreen,
     token: "OrganizerPromotionExecutionView",
     label: "promotion-execution: admin UI view",
     errors,
@@ -441,7 +516,7 @@ function checkPromotionExecutionBridge({root, errors, fileCache}) {
   });
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminScreen,
     token: "Promotion execution",
     label: "promotion-execution: admin panel title",
     errors,
@@ -449,7 +524,7 @@ function checkPromotionExecutionBridge({root, errors, fileCache}) {
   });
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminScreen,
     token: "promotionPhaseTone",
     label: "promotion-execution: admin status tone helper",
     errors,
@@ -599,11 +674,12 @@ function checkExactEmbeddedGeneratedArtifactParity({root, errors, fileCache}) {
       fileCache,
     });
     if (!source) continue;
-    if (!Object.hasOwn(bridge, artifact.bridgeKey)) {
+    const embedded = valueAtPath(bridge, artifact.bridgeKey);
+    if (embedded === undefined) {
       errors.push(`${prefix}: admin bridge missing embedded artifact`);
       continue;
     }
-    if (!jsonSemanticallyEqual(bridge[artifact.bridgeKey], source)) {
+    if (!jsonSemanticallyEqual(embedded, source)) {
       errors.push(
         `${prefix}: embedded artifact does not match ${sourceFile}`
       );
@@ -611,10 +687,19 @@ function checkExactEmbeddedGeneratedArtifactParity({root, errors, fileCache}) {
   }
 }
 
+function valueAtPath(value, dottedPath) {
+  return dottedPath.split(".").reduce((current, key) => {
+    if (!current || typeof current !== "object" || !Object.hasOwn(current, key)) {
+      return undefined;
+    }
+    return current[key];
+  }, value);
+}
+
 function checkPendingWorkCoverageBridge({root, errors, fileCache}) {
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminScreen,
     token: "pendingWorkCoverage",
     label: "pending-work-coverage: admin bridge property",
     errors,
@@ -622,7 +707,7 @@ function checkPendingWorkCoverageBridge({root, errors, fileCache}) {
   });
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminScreen,
     token: "OrganizerPendingWorkCoverageView",
     label: "pending-work-coverage: admin UI view",
     errors,
@@ -630,7 +715,7 @@ function checkPendingWorkCoverageBridge({root, errors, fileCache}) {
   });
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminScreen,
     token: "Pending work coverage",
     label: "pending-work-coverage: admin panel title",
     errors,
@@ -711,7 +796,7 @@ function checkPendingWorkCoverageBridge({root, errors, fileCache}) {
 function checkPendingInputBridge({root, errors, fileCache}) {
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminScreen,
     token: "pendingInputRequest",
     label: "pending-input: admin bridge property",
     errors,
@@ -719,7 +804,7 @@ function checkPendingInputBridge({root, errors, fileCache}) {
   });
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminScreen,
     token: "OrganizerPendingInputRequestView",
     label: "pending-input: admin UI view",
     errors,
@@ -727,7 +812,7 @@ function checkPendingInputBridge({root, errors, fileCache}) {
   });
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminController,
     token: "handlePendingInputDecision",
     label: "pending-input: admin UI decision handler",
     errors,
@@ -735,7 +820,7 @@ function checkPendingInputBridge({root, errors, fileCache}) {
   });
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminScreen,
     token: "onPendingDecision",
     label: "pending-input: admin UI action prop",
     errors,
@@ -743,7 +828,7 @@ function checkPendingInputBridge({root, errors, fileCache}) {
   });
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminScreen,
     token: "Pending admin/product inputs",
     label: "pending-input: admin panel title",
     errors,
@@ -1054,7 +1139,7 @@ function checkChannel({root, channel, errors, warnings, fileCache}) {
   });
   mustContain({
     root,
-    file: sharedFiles.adminApp,
+    file: sharedFiles.adminController,
     token: `${channel.adminApiWrapper}(`,
     label: `${channel.id}: admin UI action`,
     errors,

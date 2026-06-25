@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-06-18",
+  "updated": "2026-06-25",
   "tools": [
     {
       "id": "tool:runner",
@@ -73,6 +73,19 @@
       "checks": [
         "node --check tool/check_remote_ops_manifest.mjs",
         "node tool/check_remote_ops_manifest.mjs --check"
+      ]
+    },
+    {
+      "id": "admin:import-boundaries",
+      "category": "lint",
+      "path": "tool/admin/check_import_boundaries.mjs",
+      "command": "node tool/admin/check_import_boundaries.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks React admin app, feature, shared, and generated import boundaries.",
+      "checks": [
+        "node --check tool/admin/check_import_boundaries.mjs",
+        "node tool/admin/check_import_boundaries.mjs"
       ]
     },
     {
@@ -378,6 +391,26 @@
       "status": "active",
       "description": "Backfills event discovery projection fields for Explore's direct event index.",
       "checks": ["node --check tool/data/backfill_event_discovery_fields.mjs", "node --test tool/data/backfill_event_discovery_fields.test.mjs"]
+    },
+    {
+      "id": "data:backfill-event-admin-search",
+      "category": "data",
+      "path": "tool/data/backfill_event_admin_search.mjs",
+      "command": "node tool/data/backfill_event_admin_search.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Backfills event adminSearch projections for the admin Events canonical directory.",
+      "checks": ["node --check tool/data/backfill_event_admin_search.mjs", "node --test tool/data/backfill_event_admin_search.test.mjs"]
+    },
+    {
+      "id": "data:backfill-organizer-admin-search",
+      "category": "data",
+      "path": "tool/data/backfill_organizer_admin_search.mjs",
+      "command": "node tool/data/backfill_organizer_admin_search.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Backfills organizer adminSearch projections for the admin Organizers canonical directory.",
+      "checks": ["node --check tool/data/backfill_organizer_admin_search.mjs", "node --test tool/data/backfill_organizer_admin_search.test.mjs"]
     },
     {
       "id": "data:backfill-algolia-explore-search",
@@ -1193,6 +1226,19 @@
       ]
     },
     {
+      "id": "organizer-intake:llm-source-resolution",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/llm_source_resolution.mjs",
+      "command": "node tool/organizer_intake/llm_source_resolution.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Generates source-mention LLM adjudication prompt payloads without calling a model.",
+      "checks": [
+        "node --check tool/organizer_intake/llm_source_resolution.mjs",
+        "node tool/organizer_intake/llm_source_resolution.mjs --check"
+      ]
+    },
+    {
       "id": "organizer-intake:preflight-external-event-imports",
       "category": "host-discovery",
       "path": "tool/organizer_intake/preflight_external_event_imports.mjs",
@@ -1206,6 +1252,21 @@
         "node --test tool/organizer_intake/event_import_execution_core.test.mjs",
         "node tool/organizer_intake/preflight_external_event_imports.mjs --plan tool/organizer_intake/fixtures/external_event_import_plan.expected.json --output tool/organizer_intake/fixtures/external_event_import_execution_plan.expected.json --check",
         "node tool/organizer_intake/preflight_external_event_imports.mjs --check"
+      ]
+    },
+    {
+      "id": "organizer-intake:publish-event-supply-readiness",
+      "category": "host-discovery",
+      "path": "tool/organizer_intake/publish_event_supply_readiness.mjs",
+      "command": "node tool/organizer_intake/publish_event_supply_readiness.mjs",
+      "safety": "remote-firestore-write-guarded",
+      "status": "active",
+      "description": "Publishes generated external event import-plan and preflight snapshots to eventSupplyReadiness/current for the live Events admin tab; dry-run by default and does not write externalEvents/{id}.",
+      "checks": [
+        "node --check tool/organizer_intake/lib/event_supply_readiness_publish_core.mjs",
+        "node --check tool/organizer_intake/publish_event_supply_readiness.mjs",
+        "node --test tool/organizer_intake/event_supply_readiness_publish_core.test.mjs",
+        "node tool/organizer_intake/publish_event_supply_readiness.mjs --check"
       ]
     },
     {
@@ -1448,13 +1509,88 @@
       ]
     },
     {
+      "id": "marketing:event-guide-capture-search-results",
+      "category": "marketing",
+      "path": "tool/marketing/event_guide/scripts/capture_search_results.mjs",
+      "command": "node tool/marketing/event_guide/scripts/capture_search_results.mjs",
+      "safety": "local-by-default-remote-guarded",
+      "status": "internal",
+      "description": "Captures or plans source-search result packets for the review-first event guide marketing ops workflow.",
+      "checks": [
+        "node --check tool/marketing/event_guide/scripts/capture_search_results.mjs"
+      ]
+    },
+    {
+      "id": "marketing:event-guide-ops-bridge",
+      "category": "marketing",
+      "path": "tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs",
+      "command": "node tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs",
+      "safety": "local-writes-generated",
+      "status": "internal",
+      "description": "Generates the review-first event guide marketing ops bridge packet from configured source results, event candidates, and review decisions.",
+      "checks": [
+        "node --check tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs"
+      ]
+    },
+    {
+      "id": "marketing:event-guide-publish-event-intake-dashboard",
+      "category": "marketing",
+      "path": "tool/marketing/event_guide/publish_event_intake_dashboard.mjs",
+      "command": "node tool/marketing/event_guide/publish_event_intake_dashboard.mjs",
+      "safety": "remote-firestore-write-guarded",
+      "status": "active",
+      "description": "Publishes the generated Event Intake bridge to eventIntakeDashboards/current for the live Intake admin tab; dry-run by default and does not write Marketing dashboards, canonical events, or externalEvents/{id}.",
+      "checks": [
+        "node --check tool/marketing/event_guide/lib/event_intake_dashboard_publish_core.mjs",
+        "node --check tool/marketing/event_guide/publish_event_intake_dashboard.mjs",
+        "node --test tool/marketing/event_guide/event_intake_dashboard_publish_core.test.mjs",
+        "node tool/marketing/event_guide/publish_event_intake_dashboard.mjs --check"
+      ]
+    },
+    {
+      "id": "marketing:weekly-event-guide-validate",
+      "category": "marketing",
+      "path": "tool/marketing/weekly_event_guide_poc/scripts/validate_config.mjs",
+      "command": "node tool/marketing/weekly_event_guide_poc/scripts/validate_config.mjs",
+      "safety": "local",
+      "status": "internal",
+      "description": "Validates the self-contained weekly event guide PoC sample config, candidates, and example review decisions.",
+      "checks": [
+        "node --check tool/marketing/weekly_event_guide_poc/scripts/validate_config.mjs",
+        "node tool/marketing/weekly_event_guide_poc/scripts/validate_config.mjs"
+      ]
+    },
+    {
+      "id": "marketing:weekly-event-guide-brand-references",
+      "category": "marketing",
+      "path": "tool/marketing/weekly_event_guide_poc/scripts/validate_brand_references.mjs",
+      "command": "node tool/marketing/weekly_event_guide_poc/scripts/validate_brand_references.mjs",
+      "safety": "local",
+      "status": "internal",
+      "description": "Validates the weekly event guide PoC brand primitive contract against Catch text styles, token sources, and component contracts.",
+      "checks": [
+        "node --check tool/marketing/weekly_event_guide_poc/scripts/validate_brand_references.mjs",
+        "node tool/marketing/weekly_event_guide_poc/scripts/validate_brand_references.mjs"
+      ]
+    },
+    {
+      "id": "marketing:weekly-event-guide-generate",
+      "category": "marketing",
+      "path": "tool/marketing/weekly_event_guide_poc/scripts/generate_guide.mjs",
+      "command": "node tool/marketing/weekly_event_guide_poc/scripts/generate_guide.mjs",
+      "safety": "local-writes-generated",
+      "status": "internal",
+      "description": "Generates internal weekly event guide draft packets from the PoC city config and reviewed candidate events.",
+      "checks": ["node --check tool/marketing/weekly_event_guide_poc/scripts/generate_guide.mjs"]
+    },
+    {
       "id": "ui-capture:route-inventory",
       "category": "ui-capture",
       "path": "tool/ui_capture/check_route_inventory.mjs",
       "command": "node tool/ui_capture/check_route_inventory.mjs",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Generates and checks the route inventory that keeps UI captures aligned with go_router.dart.",
+      "description": "Generates and checks the route inventory that keeps UI captures aligned with go_router.dart, including semantic runtime path checks for nested GoRoute segments.",
       "checks": [
         "node --check tool/ui_capture/check_route_inventory.mjs",
         "node tool/ui_capture/check_route_inventory.mjs --check"
@@ -1516,10 +1652,88 @@
       "command": "node tool/design/check_design_parity_matrix.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Validates the feature-by-feature design parity state matrix against routes, captures, components, and source paths.",
+      "description": "Validates the feature-by-feature design parity state matrix against routes, captures, components, screen contracts, and source paths.",
       "checks": [
         "node --check tool/design/check_design_parity_matrix.mjs",
         "node tool/design/check_design_parity_matrix.mjs --check"
+      ]
+    },
+    {
+      "id": "design:screen-coverage",
+      "category": "design",
+      "path": "tool/design/check_screen_coverage.mjs",
+      "command": "node tool/design/check_screen_coverage.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates the exhaustive route-to-screen design parity coverage ledger.",
+      "checks": [
+        "node --check tool/design/check_screen_coverage.mjs",
+        "node tool/design/check_screen_coverage.mjs --check"
+      ]
+    },
+    {
+      "id": "design:screen-contracts",
+      "category": "design",
+      "path": "tool/design/check_screen_contracts.mjs",
+      "command": "node tool/design/check_screen_contracts.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates screen composition contracts against routes, captures, components, source paths, and Dart symbols.",
+      "checks": [
+        "node --check tool/design/check_screen_contracts.mjs",
+        "node tool/design/check_screen_contracts.mjs --check"
+      ]
+    },
+    {
+      "id": "design:widgetbook-contract-refs",
+      "category": "design",
+      "path": "tool/design/check_widgetbook_contract_refs.mjs",
+      "command": "node tool/design/check_widgetbook_contract_refs.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates component contracts, primitive contract-state previews, and screen preview ids against generated Widgetbook directories.",
+      "checks": [
+        "node --check tool/design/check_widgetbook_contract_refs.mjs",
+        "node tool/design/check_widgetbook_contract_refs.mjs --check"
+      ]
+    },
+    {
+      "id": "design:screen-contract-hygiene",
+      "category": "design",
+      "path": "tool/design/check_screen_contract_hygiene.mjs",
+      "command": "node tool/design/check_screen_contract_hygiene.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Reports advisory raw Material controls and hand-rolled visual values in contracted screen implementation files.",
+      "checks": [
+        "node --check tool/design/check_screen_contract_hygiene.mjs",
+        "node tool/design/check_screen_contract_hygiene.mjs --summary"
+      ]
+    },
+    {
+      "id": "design:reference-screens",
+      "category": "design",
+      "path": "tool/design/check_reference_screens.mjs",
+      "command": "node tool/design/check_reference_screens.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates exported design reference PNG metadata and supports advisory pixel comparison against UI capture artifacts.",
+      "checks": [
+        "node --check tool/design/check_reference_screens.mjs",
+        "node tool/design/check_reference_screens.mjs --check --summary"
+      ]
+    },
+    {
+      "id": "design:parity-gate",
+      "category": "design",
+      "path": "tool/design/check_design_parity.mjs",
+      "command": "node tool/design/check_design_parity.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Runs the standard local design parity gate across component contracts, routes, captures, screen contracts, Widgetbook refs, and advisory hygiene scanners.",
+      "checks": [
+        "node --check tool/design/check_design_parity.mjs",
+        "node tool/design/check_design_parity.mjs --check"
       ]
     },
     {

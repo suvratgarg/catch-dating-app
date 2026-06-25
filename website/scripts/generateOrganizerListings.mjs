@@ -1,6 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {
+  schemaErrorMessages,
+  validateWebsiteHostListingProjection,
+} from "../../tool/contracts/generated/schema_contract_validators.mjs";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const websiteRoot = path.resolve(dirname, "..");
@@ -21,6 +25,24 @@ const intakeProjectionPath = path.resolve(args.projectionPlan ?? path.join(
   "generated",
   "public_projection_plan.json"
 ));
+const externalEventReadinessPath = path.resolve(
+  args.externalEventReadiness ?? path.join(
+    repoRoot,
+    "tool",
+    "organizer_intake",
+    "generated",
+    "external_event_import_execution_plan.json"
+  )
+);
+const claimTargetSyncPreviewPath = path.resolve(
+  args.claimTargetSyncPreview ?? path.join(
+    repoRoot,
+    "tool",
+    "organizer_intake",
+    "generated",
+    "organizer_claim_target_sync_preview.json"
+  )
+);
 const demoScenarioRoot = path.resolve(
   args.demoScenarioRoot ??
     path.join(repoRoot, "tool", "demo", "demo_seed", "scenarios")
@@ -30,7 +52,10 @@ const generatedPath = path.resolve(
     path.join(websiteRoot, "src", "generated", "hostListings.json")
 );
 const checkOnly = args.check;
+const claimTargetSyncPreview = readJsonIfExists(claimTargetSyncPreviewPath);
 const approvedIntakeProjections = organizerIntakeProjectionEntries();
+const publicExternalEventsByHostId =
+  publicExternalEventsByCanonicalHostId(readJsonIfExists(externalEventReadinessPath));
 const suppressedLegacyPaths = new Set(
   approvedIntakeProjections.flatMap((entry) => [
     entry.publicListing?.path,
@@ -42,7 +67,10 @@ const listings = [
   ...approvedIntakeProjections.map(listingFromOrganizerIntakeProjection),
   ...(args.noSeeds ? [] : scrapedSeedListings(suppressedLegacyPaths)),
   ...(args.noDemo ? [] : appCreatedDemoListings()),
-].sort((a, b) => a.name.localeCompare(b.name));
+]
+  .map(withPublicExternalEvents)
+  .sort((a, b) => a.name.localeCompare(b.name));
+validateListingProjections(listings);
 const renderedListings = `${JSON.stringify(listings, null, 2)}\n`;
 
 if (checkOnly) {
@@ -71,6 +99,183 @@ function organizerIntakeProjectionEntries() {
       entry?.publishStatus === "published"
     )
     .sort((a, b) => a.entityId.localeCompare(b.entityId));
+}
+
+function readJsonIfExists(filePath) {
+  if (!fs.existsSync(filePath)) return null;
+  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
+function publicExternalEventsByCanonicalHostId(readiness) {
+  const grouped = new Map();
+  for (const event of publicExternalEventProjections(readiness)) {
+    for (const hostId of [event.canonicalHostId, event.compatibilityClubId]) {
+      if (!hostId) continue;
+      const hostEvents = grouped.get(hostId) ?? [];
+      hostEvents.push(event.projection);
+      grouped.set(hostId, hostEvents);
+    }
+  }
+  for (const [hostId, events] of grouped) {
+    grouped.set(
+      hostId,
+      uniqueById(events)
+        .sort((a, b) => Date.parse(a.startTime) - Date.parse(b.startTime))
+    );
+  }
+  return grouped;
+}
+
+function publicExternalEventProjections(readiness) {
+  if (!readiness || typeof readiness !== "object") return [];
+  const actions = externalEventReadinessActions(readiness);
+  return actions
+    .filter(isPublishableExternalEventAction)
+    .map((action) => publicExternalEventProjectionFromAction(action))
+    .filter(Boolean);
+}
+
+function externalEventReadinessActions(readiness) {
+  if (Array.isArray(readiness.actions)) return readiness.actions;
+  if (Array.isArray(readiness.executionPlan?.actions)) {
+    return readiness.executionPlan.actions;
+  }
+  return [];
+}
+
+function isPublishableExternalEventAction(action) {
+  const document = action?.externalEventDocument;
+  return Boolean(
+    action &&
+    typeof action === "object" &&
+    action.sourceAction === "publish_read_only_external_event" &&
+    action.status === "would_publish_read_only" &&
+    Array.isArray(action.blockers) &&
+    action.blockers.length === 0 &&
+    action.payloadValidation?.valid === true &&
+    action.projectionValidation?.valid === true &&
+    document?.status === "active" &&
+    document?.publicationStatus === "public" &&
+    document?.discovery?.availability === "read_only_external" &&
+    document?.booking?.mode === "external_outbound_only" &&
+    document?.booking?.catchBookingEnabled === false &&
+    document?.booking?.catchPaymentsEnabled === false &&
+    document?.booking?.catchReservationsEnabled === false &&
+    document?.booking?.catchWaitlistEnabled === false
+  );
+}
+
+function publicExternalEventProjectionFromAction(action) {
+  const event = action.externalEventDocument;
+  const startTime = timestampIso(event.startTime);
+  if (!startTime) return null;
+  const endTime = timestampIso(event.endTime);
+  const primaryLink =
+    event.booking.externalLinks.find((link) => link.primary) ??
+    event.booking.externalLinks[0] ??
+    null;
+  const sourceHref =
+    primaryLink?.url ?? event.externalSource?.eventUrl ?? event.externalSource?.sourceUrl;
+  if (!sourceHref) return null;
+  const sourceLabel = platformLabel(primaryLink?.platform ?? event.externalSource?.platform);
+  return {
+    canonicalHostId: event.canonicalHostId,
+    compatibilityClubId: event.compatibilityClubId,
+    projection: {
+      id: event.eventId,
+      title: event.title,
+      activityKind: event.activity.activityKind,
+      availability: event.discovery.availability,
+      startTime,
+      endTime,
+      date: eventDateLabelForTimezone(startTime, endTime, event.timezone),
+      location: event.meetingPoint,
+      summary: event.description,
+      priceLabel: event.price.displayText ?? "External ticketing",
+      sourceLabel,
+      sourceHref,
+      externalLinkCount: event.booking.externalLinks.length,
+      dedupeKey: event.dedupe.normalizedEventKey,
+    },
+  };
+}
+
+function withPublicExternalEvents(listing) {
+  const externalEvents = publicExternalEventsByHostId.get(listing.id) ?? [];
+  if (!externalEvents.length) return listing;
+  return {
+    ...listing,
+    externalEvents,
+    searchText: searchText([
+      listing.searchText,
+      ...externalEvents.flatMap((event) => [
+        event.title,
+        event.activityKind,
+        event.date,
+        event.location,
+        event.priceLabel,
+        event.sourceLabel,
+      ]),
+    ]),
+  };
+}
+
+function publicApiForOrganizerIntake(entityId) {
+  const action = (claimTargetSyncPreview?.actions ?? []).find((item) =>
+    item?.entityId === entityId || item?.path === `clubs/${entityId}`
+  );
+  if (!claimTargetSyncPreview) {
+    return disabledPublicApi(
+      "Claim target sync preview is missing, so public organizer APIs stay disabled.",
+      "unknown"
+    );
+  }
+  if (!action) {
+    return {
+      state: "enabled",
+      reason: "Firestore claim target sync preview has no pending action for this organizer.",
+      claimTargetSyncStatus: "in_sync",
+    };
+  }
+  if (action.status === "in_sync") {
+    return {
+      state: "enabled",
+      reason: "Firestore claim target sync preview reports this organizer in sync.",
+      claimTargetSyncStatus: "in_sync",
+    };
+  }
+  return disabledPublicApi(
+    `Firestore claim target sync still needs ${action.status ?? "a"} action for ${action.path ?? entityId}.`,
+    "write_needed"
+  );
+}
+
+function staticPublicApi(reason) {
+  return disabledPublicApi(reason, "static_fixture");
+}
+
+function disabledPublicApi(reason, claimTargetSyncStatus) {
+  return {
+    state: "disabled",
+    reason,
+    claimTargetSyncStatus,
+  };
+}
+
+function validateListingProjections(listings) {
+  const errors = [];
+  for (const listing of listings) {
+    if (validateWebsiteHostListingProjection(listing)) continue;
+    const label = listing?.id ?? listing?.path ?? "unknown listing";
+    for (const message of schemaErrorMessages(validateWebsiteHostListingProjection)) {
+      errors.push(`${label}: ${message}`);
+    }
+  }
+  if (errors.length === 0) return;
+  fail([
+    "Generated organizer listings do not match WebsiteHostListingProjection.",
+    ...errors.map((error) => `- ${error}`),
+  ].join("\n"));
 }
 
 function scrapedSeedListings(suppressedPaths) {
@@ -152,6 +357,9 @@ function listingFromClubSeed(wrapper) {
       href: claimHref,
       label: claimState === "claimed" ? "View organizer tools" : "Claim this listing",
     },
+    publicApi: staticPublicApi(
+      "Legacy scraped seed listings are static until their Firestore claim target sync is verified."
+    ),
     lastVerifiedAt: dateLabel(club.provenance?.lastVerifiedAt),
     searchText: searchText([
       club.name,
@@ -226,6 +434,7 @@ function listingFromOrganizerIntakeProjection(entry) {
       href: `${projection.path}#claim`,
       label: "Claim this listing",
     },
+    publicApi: publicApiForOrganizerIntake(entry.entityId),
     lastVerifiedAt: dateLabel(entry.reviewDecision?.decidedAt),
     searchText: searchText([
       projection.name,
@@ -326,6 +535,9 @@ function listingFromSalesDemo(config) {
       href: `${path}#events`,
       label: "View events",
     },
+    publicApi: staticPublicApi(
+      "Catch demo listings use static fixture data and do not call public organizer APIs."
+    ),
     lastVerifiedAt: dateLabel({_seconds: Date.parse(demo.referenceNow) / 1000}),
     searchText: searchText([
       club.name,
@@ -500,9 +712,73 @@ function eventDateLabel(start, end) {
   return `${date}, ${time}-${endTime}`;
 }
 
+function eventDateLabelForTimezone(startIso, endIso, timezone) {
+  const start = new Date(startIso);
+  const end = endIso ? new Date(endIso) : null;
+  const zone = validTimezone(timezone) ? timezone : "UTC";
+  const date = new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: zone,
+  }).format(start);
+  const time = new Intl.DateTimeFormat("en", {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: zone,
+  }).format(start);
+  if (!end || Number.isNaN(end.getTime())) return `${date}, ${time}`;
+  const endTime = new Intl.DateTimeFormat("en", {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: zone,
+  }).format(end);
+  return `${date}, ${time}-${endTime}`;
+}
+
 function priceLabel(priceInPaise) {
   if (!priceInPaise) return "Free";
   return `$${(priceInPaise / 100 / 83).toFixed(0)}`;
+}
+
+function timestampIso(value) {
+  if (!value) return null;
+  if (typeof value === "string" && !Number.isNaN(Date.parse(value))) {
+    return new Date(value).toISOString();
+  }
+  if (typeof value._seconds === "number") {
+    return new Date(value._seconds * 1000).toISOString();
+  }
+  return null;
+}
+
+function validTimezone(value) {
+  if (!value) return false;
+  try {
+    new Intl.DateTimeFormat("en", {timeZone: value}).format(new Date());
+    return true;
+  } catch (_error) {
+    return false;
+  }
+}
+
+function platformLabel(platform) {
+  const labels = {
+    bookMyShow: "BookMyShow",
+    district: "District",
+    luma: "Luma",
+    partiful: "Partiful",
+    sortMyScene: "Sort My Scene",
+  };
+  return labels[platform] ?? titleCaseText(platform ?? "External source");
+}
+
+function uniqueById(items) {
+  const byId = new Map();
+  for (const item of items) {
+    if (!byId.has(item.id)) byId.set(item.id, item);
+  }
+  return Array.from(byId.values());
 }
 
 function offsetIso(date, days) {
@@ -578,6 +854,7 @@ function parseArgs(argv) {
   const parsed = {
     check: false,
     demoScenarioRoot: null,
+    externalEventReadiness: null,
     help: false,
     noDemo: false,
     noSeeds: false,
@@ -598,6 +875,10 @@ function parseArgs(argv) {
       parsed.output = requiredValue(argv, ++index, arg);
     } else if (arg === "--projection-plan") {
       parsed.projectionPlan = requiredValue(argv, ++index, arg);
+    } else if (arg === "--external-event-readiness") {
+      parsed.externalEventReadiness = requiredValue(argv, ++index, arg);
+    } else if (arg === "--claim-target-sync-preview") {
+      parsed.claimTargetSyncPreview = requiredValue(argv, ++index, arg);
     } else if (arg === "--seed-root") {
       parsed.seedRoot = requiredValue(argv, ++index, arg);
     } else {
@@ -620,6 +901,10 @@ function printHelp() {
 Options:
   --check                         Check generated hostListings.json drift.
   --projection-plan <path>         Read a specific organizer public projection plan.
+  --external-event-readiness <path>
+                                  Read a specific external event readiness/preflight plan.
+  --claim-target-sync-preview <path>
+                                  Read a specific claim target sync preview.
   --seed-root <path>               Read legacy scraped seed listings from a specific folder.
   --demo-scenario-root <path>      Read demo scenario configs from a specific folder.
   --output <path>                  Write or check a specific output file.

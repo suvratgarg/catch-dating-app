@@ -90,6 +90,7 @@ node tool/organizer_intake/run_promotion_pipeline.mjs \
 node tool/organizer_intake/pending_input_request.mjs --format markdown
 node tool/organizer_intake/pending_work_coverage.mjs --check --require-covered
 node tool/organizer_intake/promotion_execution_packet.mjs --format markdown
+node tool/organizer_intake/llm_source_resolution.mjs --dry-run
 node tool/organizer_intake/check_admin_review_bridge.mjs
 node tool/organizer_intake/check_promotion_bridge.mjs
 node tool/organizer_intake/run_promotion_pipeline.mjs
@@ -187,6 +188,33 @@ promotion pipeline.
 Use `check_operational_health.mjs --check` to validate that rollup and print
 the unresolved workstreams. Add `--require-ready` only for future deploy gates
 where pending admin review or policy input should fail the command.
+`generated/source_mention_source_artifacts.json`,
+`generated/source_mention_extracted_mentions.json`,
+`generated/source_mention_resolution_candidates.json`,
+`generated/source_mention_resolution_clusters.json`, and
+`generated/source_mention_resolution_review_packets.json` are the private
+source-mention resolution layer. They keep search results, editorial mentions,
+platform event pages, and crawler output separate from canonical Firestore
+documents. The resolver uses hard keys, bounded blocking keys, weighted
+deterministic scorecards, and cluster review packets before anything can project
+to `clubs/{clubId}`, read-only `externalEvents/{eventId}`, or future
+`events/{eventId}` writes. These artifacts never publish a website page, write
+Firestore, enable Catch booking, or import events by themselves.
+`generated/source_mention_resolution_policy.json` is embedded in the admin
+bridge and surfaced through the policy-gap review flow as
+`source_mention_resolution_policy`. Admin/product review can accept, hold, or
+reject the policy direction through the existing policy-gap callable/export
+loop, but accepted policy still does not enable LLM calls or canonical writes
+until the resolver config is explicitly encoded and checks pass.
+`generated/source_mention_llm_prompt_queue.json` is the generated prompt
+payload queue for ambiguous clusters. It is embedded in the admin bridge for
+review and checked with the rest of organizer intake so prompt payload drift is
+not hidden outside the main generation path.
+`llm_source_resolution.mjs` prepares strict prompt payloads for ambiguous
+clusters only. It refuses `--call-model` by design: future model calls must run
+from an approved backend/tool runner with prompt hashing, cache reuse, JSON
+schema validation, per-run request caps, and a monthly spend cap. The React
+admin app must never call an LLM directly.
 `generated/organizer_pending_input_request.json` is the read-only admin/product
 input request derived from publication review packets, policy decision packets,
 the operator action queue, and operational health. It is the artifact to hand to
@@ -280,6 +308,11 @@ for proposed event imports. It converts proposed import actions into
 `createEvent` callable payloads, validates them against the generated schema
 contract, and records blockers. It never invokes `createEvent`, writes
 Firestore, creates schedule locks, or sends notifications.
+`publish_event_supply_readiness.mjs` publishes the generated import plan and
+execution preflight into `eventSupplyReadiness/current` so the live Events admin
+tab can display the same deterministic blockers and commands. It is dry-run by
+default, writes only that dashboard document when `--apply` is supplied, and
+never imports events or writes `externalEvents/{id}`.
 `generated/external_event_location_resolution_queue.json` is the queue of
 external event candidates that cannot become app events because they lack exact
 coordinates. It records deterministic resolution tasks and source location text
@@ -429,9 +462,9 @@ export, contract schema, generated DTO/document, Firestore decision collection,
 exporter, local decision folder, tool manifest entry, or promotion-pipeline
 flag. It also validates that the generated pending-input, pending-work
 coverage, and promotion-execution packets are embedded in
-`admin/src/generated/organizerIntakeBridge.json` and rendered by the admin
-intake screen. Run it before website deploys, claim-target syncs, or adding a
-new manual review channel.
+`admin/src/features/intake/organizer/generated/organizerIntakeBridge.json` and
+rendered by the admin intake screen. Run it before website deploys, claim-target
+syncs, or adding a new manual review channel.
 
 Approved public projections also generate
 `generated/organizer_claim_targets.json` and

@@ -8,6 +8,15 @@ import {
   checkAdminReviewBridge,
 } from "./check_admin_review_bridge.mjs";
 
+const adminApiPath = "admin/src/shared/api/adminApi.ts";
+const adminBridgePath =
+  "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json";
+const adminControllerPath =
+  "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts";
+const adminScreenPath =
+  "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx";
+const adminTypesPath = "admin/src/shared/types/adminTypes.ts";
+
 test("checkAdminReviewBridge passes for the current organizer review channels", () => {
   const result = checkAdminReviewBridge();
   const generatedRequest = JSON.parse(fs.readFileSync(
@@ -96,10 +105,7 @@ test("checkAdminReviewBridge fails when pending input callable payloads drift", 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const bridgePath = path.join(
-    root,
-    "admin/src/generated/organizerIntakeBridge.json"
-  );
+  const bridgePath = path.join(root, adminBridgePath);
   const bridge = JSON.parse(fs.readFileSync(bridgePath, "utf8"));
   const request = bridge.pendingInputRequest.requests.find((item) =>
     item.callableSubmission
@@ -124,10 +130,7 @@ test("checkAdminReviewBridge fails when embedded pending input drifts", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const bridgePath = path.join(
-    root,
-    "admin/src/generated/organizerIntakeBridge.json"
-  );
+  const bridgePath = path.join(root, adminBridgePath);
   const bridge = JSON.parse(fs.readFileSync(bridgePath, "utf8"));
   bridge.pendingInputRequest.requests[0].prompt =
     `${bridge.pendingInputRequest.requests[0].prompt} drift`;
@@ -149,10 +152,7 @@ test("checkAdminReviewBridge fails when embedded pending work coverage drifts", 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const bridgePath = path.join(
-    root,
-    "admin/src/generated/organizerIntakeBridge.json"
-  );
+  const bridgePath = path.join(root, adminBridgePath);
   const bridge = JSON.parse(fs.readFileSync(bridgePath, "utf8"));
   bridge.pendingWorkCoverage.entries[0].coverageStatus = "stale";
   fs.writeFileSync(bridgePath, JSON.stringify(bridge, null, 2));
@@ -173,10 +173,7 @@ test("checkAdminReviewBridge fails when embedded reviewed answer packets drift",
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const bridgePath = path.join(
-    root,
-    "admin/src/generated/organizerIntakeBridge.json"
-  );
+  const bridgePath = path.join(root, adminBridgePath);
   const bridge = JSON.parse(fs.readFileSync(bridgePath, "utf8"));
   bridge.reviewedDecisionAnswerPackets.summary.packets += 1;
   fs.writeFileSync(bridgePath, JSON.stringify(bridge, null, 2));
@@ -197,10 +194,7 @@ test("checkAdminReviewBridge fails when embedded promotion execution drifts", ()
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const bridgePath = path.join(
-    root,
-    "admin/src/generated/organizerIntakeBridge.json"
-  );
+  const bridgePath = path.join(root, adminBridgePath);
   const bridge = JSON.parse(fs.readFileSync(bridgePath, "utf8"));
   bridge.promotionExecutionPacket.summary.phases += 1;
   fs.writeFileSync(bridgePath, JSON.stringify(bridge, null, 2));
@@ -221,10 +215,7 @@ test("checkAdminReviewBridge fails when exact embedded artifacts drift", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const bridgePath = path.join(
-    root,
-    "admin/src/generated/organizerIntakeBridge.json"
-  );
+  const bridgePath = path.join(root, adminBridgePath);
   const bridge = JSON.parse(fs.readFileSync(bridgePath, "utf8"));
   bridge.operatorActionQueue.summary.actions += 1;
   fs.writeFileSync(bridgePath, JSON.stringify(bridge, null, 2));
@@ -241,11 +232,55 @@ test("checkAdminReviewBridge fails when exact embedded artifacts drift", () => {
   );
 });
 
+test("checkAdminReviewBridge fails when nested source mention artifacts drift", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
+  mirrorRequiredFiles(root);
+
+  const bridgePath = path.join(root, adminBridgePath);
+  const bridge = JSON.parse(fs.readFileSync(bridgePath, "utf8"));
+  bridge.sourceMentionResolution.resolutionClusters.summary.clusters += 1;
+  fs.writeFileSync(bridgePath, JSON.stringify(bridge, null, 2));
+
+  const result = checkAdminReviewBridge({
+    root,
+    channels: [adminReviewBridgeChannels[0]],
+  });
+
+  assert.equal(result.ok, false);
+  assert.match(
+    result.errors.join("\n"),
+    /embedded-generated:sourceMentionResolution\.resolutionClusters/
+  );
+});
+
+test("checkAdminReviewBridge fails when source mention review packets are not visible", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
+  mirrorRequiredFiles(root);
+
+  const appPath = path.join(root, adminScreenPath);
+  fs.writeFileSync(
+    appPath,
+    fs.readFileSync(appPath, "utf8")
+      .replaceAll("Resolution review packets", "Removed source packets")
+  );
+
+  const result = checkAdminReviewBridge({
+    root,
+    channels: [adminReviewBridgeChannels[0]],
+  });
+
+  assert.equal(result.ok, false);
+  assert.match(
+    result.errors.join("\n"),
+    /source-mention-resolution: review packet UI/
+  );
+});
+
 test("checkAdminReviewBridge fails when reviewed answer packets are not visible", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const appPath = path.join(root, "admin/src/App.tsx");
+  const appPath = path.join(root, adminScreenPath);
   fs.writeFileSync(
     appPath,
     fs.readFileSync(appPath, "utf8")
@@ -271,7 +306,7 @@ test("checkAdminReviewBridge fails when promotion execution is not visible", () 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const appPath = path.join(root, "admin/src/App.tsx");
+  const appPath = path.join(root, adminScreenPath);
   fs.writeFileSync(
     appPath,
     fs.readFileSync(appPath, "utf8")
@@ -291,7 +326,7 @@ test("checkAdminReviewBridge fails when pending work coverage is not visible", (
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const appPath = path.join(root, "admin/src/App.tsx");
+  const appPath = path.join(root, adminScreenPath);
   fs.writeFileSync(
     appPath,
     fs.readFileSync(appPath, "utf8")
@@ -311,7 +346,7 @@ test("checkAdminReviewBridge fails when pending input actions are not wired", ()
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const appPath = path.join(root, "admin/src/App.tsx");
+  const appPath = path.join(root, adminControllerPath);
   fs.writeFileSync(
     appPath,
     fs.readFileSync(appPath, "utf8")
@@ -331,10 +366,7 @@ test("checkAdminReviewBridge fails when item decision commands drift", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bridge-"));
   mirrorRequiredFiles(root);
 
-  const bridgePath = path.join(
-    root,
-    "admin/src/generated/organizerIntakeBridge.json"
-  );
+  const bridgePath = path.join(root, adminBridgePath);
   const bridge = JSON.parse(fs.readFileSync(bridgePath, "utf8"));
   const afterfly = bridge.items.find((item) => item.entityId === "afterfly");
   afterfly.decisionCommands.approvePublic =
@@ -381,10 +413,11 @@ test("checkAdminReviewBridge fails when a channel is missing its pipeline flag",
 
 function mirrorRequiredFiles(root) {
   const files = new Set([
-    "admin/src/adminApi.ts",
-    "admin/src/App.tsx",
-    "admin/src/generated/organizerIntakeBridge.json",
-    "admin/src/types.ts",
+    adminApiPath,
+    adminBridgePath,
+    adminControllerPath,
+    adminScreenPath,
+    adminTypesPath,
     "functions/src/index.ts",
     "tool/organizer_intake/README.md",
     "tool/organizer_intake/generated/organizer_pending_input_request.json",
@@ -400,7 +433,7 @@ function mirrorRequiredFiles(root) {
   ]);
   const bridge = JSON.parse(
     fs.readFileSync(
-      path.resolve("admin/src/generated/organizerIntakeBridge.json"),
+      path.resolve(adminBridgePath),
       "utf8"
     )
   );

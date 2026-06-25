@@ -101,6 +101,44 @@
       "subjectId": "external_event_location_provider_policy",
       "subjectName": "location_resolution",
       "taskType": "location_resolution"
+    },
+    {
+      "actionId": "policy-decision:source_mention_resolution_policy",
+      "actionType": "policy_decision",
+      "blockers": [
+        "tool/organizer_intake/generated/source_mention_resolution_clusters.json",
+        "tool/organizer_intake/generated/source_mention_resolution_policy.json",
+        "tool/organizer_intake/generated/source_mention_resolution_review_packets.json",
+        "tool/organizer_intake/llm_source_resolution.mjs"
+      ],
+      "commands": [
+        "node tool/organizer_intake/policy_gap_decision.mjs draft source_mention_resolution_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+      ],
+      "decisionOptions": [
+        "accept",
+        "hold",
+        "reject"
+      ],
+      "detail": "Review resolver thresholds, blocking keys, provider hard-key policy, and LLM cost caps before enabling model adjudication.",
+      "nextAction": "Review resolver thresholds, blocking keys, provider hard-key policy, and LLM cost caps before enabling model adjudication.",
+      "priority": "p1",
+      "requiredInputs": [
+        "source_mention_resolution_policy:admin-override-workflow-for-same-split-suppress-and-attach-decisions",
+        "source_mention_resolution_policy:blocking-key-allowlist-and-known-stable-provider-platforms",
+        "source_mention_resolution_policy:llm-model-json-schema-prompt-version-and-cache-invalidation-policy",
+        "source_mention_resolution_policy:maximum-cluster-size-and-pair-cap-before-llm-adjudication",
+        "source_mention_resolution_policy:monthly-llm-spend-cap-and-per-run-request-cap",
+        "source_mention_resolution_policy:thresholds-for-auto-attach-probable-duplicate-and-human-review"
+      ],
+      "safeDefaultAction": "disabled_until_policy_approved",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/organizer_policy_decision_packets.json",
+        "tool/organizer_intake/generated/organizer_policy_gap_register.json"
+      ],
+      "status": "requires_policy_input",
+      "subjectId": "source_mention_resolution_policy",
+      "subjectName": "source_resolution",
+      "taskType": "source_resolution"
     }
   ],
   "generatedFrom": {
@@ -118,21 +156,21 @@
   ],
   "schemaVersion": 1,
   "summary": {
-    "actions": 3,
+    "actions": 4,
     "actionsByPriority": {
       "p0": 1,
-      "p1": 2
+      "p1": 3
     },
     "actionsByStatus": {
-      "requires_policy_input": 3
+      "requires_policy_input": 4
     },
     "actionsByType": {
-      "policy_decision": 3
+      "policy_decision": 4
     },
     "adminDecisionsRequired": 0,
     "highestPriority": "p0",
-    "policyDecisionActions": 3,
-    "policyInputsRequired": 3,
+    "policyDecisionActions": 4,
+    "policyInputsRequired": 4,
     "publicationReviewActions": 0,
     "waitingActions": 0,
     "workflowGateActions": 0

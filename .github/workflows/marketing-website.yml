@@ -14,6 +14,8 @@ on:
       - "design/tokens/**"
       - "tool/ci/toolchain.env"
       - "tool/design_tokens.dart"
+      - "tool/env/check_web_hosting_env.mjs"
+      - "tool/firebase_with_env.sh"
       - "tool/marketing/**"
   push:
     branches: [main]
@@ -29,6 +31,8 @@ on:
       - "design/tokens/**"
       - "tool/ci/toolchain.env"
       - "tool/design_tokens.dart"
+      - "tool/env/check_web_hosting_env.mjs"
+      - "tool/firebase_with_env.sh"
       - "tool/marketing/**"
   workflow_dispatch:
 
@@ -71,6 +75,9 @@ jobs:
 
       - name: Check marketing screenshot design context
         run: node tool/marketing/export_app_screenshots.mjs --check-design-json
+
+      - name: Check generated organizer listings
+        run: npm --workspace catch-marketing run check:organizer-listings
 
       - name: Build marketing website
         run: npm run web:marketing:build

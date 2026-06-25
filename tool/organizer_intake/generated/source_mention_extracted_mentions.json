@@ -1,0 +1,23 @@
+{
+  "extractionPolicy": {
+    "deterministicExtractors": [
+      "search_result_url_surface",
+      "reviewed_event_source_batch"
+    ],
+    "llmExtractionEnabled": false,
+    "note": "LLM extraction can create mentions in this same schema after prompt/cache validation, but is disabled by default."
+  },
+  "generatedFrom": {
+    "externalEventCandidateQueue": "tool/organizer_intake/generated/external_event_candidate_queue.json",
+    "searchResultCandidateQueue": "tool/organizer_intake/generated/search_result_candidate_queue.json"
+  },
+  "mentions": [],
+  "schemaVersion": 1,
+  "summary": {
+    "editorialMentions": 0,
+    "eventMentions": 0,
+    "llmExtractedMentions": 0,
+    "mentions": 0,
+    "organizerMentions": 0
+  }
+}

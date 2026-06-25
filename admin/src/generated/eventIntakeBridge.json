@@ -1,0 +1,731 @@
+{
+  "schemaVersion": 1,
+  "program": "catch-event-intake",
+  "generatedAt": "2026-06-25T06:54:04.777Z",
+  "bridgeSource": "native_generated",
+  "city": {
+    "id": "mumbai",
+    "label": "Mumbai",
+    "timezone": "Asia/Kolkata",
+    "aliases": [
+      "bombay"
+    ]
+  },
+  "weekStart": "2026-06-22",
+  "weekEnd": "2026-06-29",
+  "timezone": "Asia/Kolkata",
+  "summary": {
+    "status": "internal_review",
+    "sourceProfiles": 3,
+    "queryTemplates": 8,
+    "sourceResults": 4,
+    "sourceResultsNeedingReview": 4,
+    "eventCandidates": 7,
+    "reviewableCandidates": 3,
+    "sourceMissingCandidates": 4,
+    "approvedCandidates": 0,
+    "candidatesNeedingReview": 7,
+    "duplicateGroups": 0,
+    "deliverable": "Private Event Intake review bridge; no marketing export or event import."
+  },
+  "guardrails": [
+    "Event Intake approvals are private supply review decisions.",
+    "Do not create canonical events from this bridge.",
+    "Do not publish marketing content from this bridge.",
+    "Keep source attribution visible before downstream use."
+  ],
+  "sourceProfiles": [
+    {
+      "id": "manual-instagram-reference-list",
+      "label": "Instagram reference list",
+      "type": "manual_reference_only",
+      "status": "enabled",
+      "cadence": "weekly",
+      "riskLevel": "medium",
+      "allowedUse": "Use user-provided URLs or manually reviewed posts as editorial leads only. Do not scrape Instagram.",
+      "items": [
+        {
+          "label": "Mumbai Foodie",
+          "url": "https://www.instagram.com/mumbaifoodie/"
+        },
+        {
+          "label": "Servd India",
+          "url": "https://www.instagram.com/servd.india/"
+        },
+        {
+          "label": "Paperboard Magazine",
+          "url": "https://www.instagram.com/paperboard.mag/"
+        },
+        {
+          "label": "Conde Nast Traveller India",
+          "url": "https://www.instagram.com/cntravellerindia/"
+        }
+      ]
+    },
+    {
+      "id": "open-web-event-platforms",
+      "label": "Open web event platforms",
+      "type": "source_url_list",
+      "status": "needs_verification",
+      "cadence": "weekly",
+      "riskLevel": "medium",
+      "allowedUse": "Fetch only if permitted by source terms and robots policy; otherwise use manual review.",
+      "items": [
+        {
+          "label": "BookMyShow Mumbai events",
+          "url": "https://in.bookmyshow.com/explore/events-mumbai"
+        },
+        {
+          "label": "Luma Mumbai discovery",
+          "url": "https://lu.ma/mumbai"
+        },
+        {
+          "label": "District Mumbai",
+          "url": "https://www.district.in/events/mumbai"
+        }
+      ]
+    },
+    {
+      "id": "host-submission-inbox",
+      "label": "Catch host submissions",
+      "type": "future_form_feed",
+      "status": "planned",
+      "cadence": "continuous",
+      "riskLevel": "low",
+      "allowedUse": "Catch-owned host submissions can become the highest trust source once the form exists."
+    }
+  ],
+  "queryTemplates": [
+    {
+      "id": "city-events-week",
+      "template": "events in {city} this week",
+      "intent": "broad event discovery",
+      "priority": 1,
+      "cityLabel": "Mumbai",
+      "query": "events in Mumbai this week",
+      "status": "enabled"
+    },
+    {
+      "id": "city-events-week",
+      "template": "events in {city} this week",
+      "intent": "broad event discovery",
+      "priority": 1,
+      "cityLabel": "bombay",
+      "query": "events in bombay this week",
+      "status": "enabled"
+    },
+    {
+      "id": "city-things-to-do-week",
+      "template": "things to do in {city} this week",
+      "intent": "editorial guides and listings",
+      "priority": 1,
+      "cityLabel": "Mumbai",
+      "query": "things to do in Mumbai this week",
+      "status": "enabled"
+    },
+    {
+      "id": "city-things-to-do-week",
+      "template": "things to do in {city} this week",
+      "intent": "editorial guides and listings",
+      "priority": 1,
+      "cityLabel": "bombay",
+      "query": "things to do in bombay this week",
+      "status": "enabled"
+    },
+    {
+      "id": "city-events-month",
+      "template": "events in {city} this month",
+      "intent": "longer-running exhibitions and festivals",
+      "priority": 2,
+      "cityLabel": "Mumbai",
+      "query": "events in Mumbai this month",
+      "status": "enabled"
+    },
+    {
+      "id": "city-events-month",
+      "template": "events in {city} this month",
+      "intent": "longer-running exhibitions and festivals",
+      "priority": 2,
+      "cityLabel": "bombay",
+      "query": "events in bombay this month",
+      "status": "enabled"
+    },
+    {
+      "id": "city-singles-mixers-week",
+      "template": "singles mixers in {city} this week",
+      "intent": "explicit singles-led events",
+      "priority": 1,
+      "cityLabel": "Mumbai",
+      "query": "singles mixers in Mumbai this week",
+      "status": "enabled"
+    },
+    {
+      "id": "city-singles-mixers-week",
+      "template": "singles mixers in {city} this week",
+      "intent": "explicit singles-led events",
+      "priority": 1,
+      "cityLabel": "bombay",
+      "query": "singles mixers in bombay this week",
+      "status": "enabled"
+    },
+    {
+      "id": "city-singles-events-week",
+      "template": "singles events in {city} this week",
+      "intent": "dating-led or singles-led events",
+      "priority": 1,
+      "cityLabel": "Mumbai",
+      "query": "singles events in Mumbai this week",
+      "status": "enabled"
+    },
+    {
+      "id": "city-singles-events-week",
+      "template": "singles events in {city} this week",
+      "intent": "dating-led or singles-led events",
+      "priority": 1,
+      "cityLabel": "bombay",
+      "query": "singles events in bombay this week",
+      "status": "enabled"
+    },
+    {
+      "id": "city-solo-friendly-week",
+      "template": "events to attend solo in {city} this week",
+      "intent": "singles-friendly and solo-attendable events",
+      "priority": 2,
+      "cityLabel": "Mumbai",
+      "query": "events to attend solo in Mumbai this week",
+      "status": "enabled"
+    },
+    {
+      "id": "city-solo-friendly-week",
+      "template": "events to attend solo in {city} this week",
+      "intent": "singles-friendly and solo-attendable events",
+      "priority": 2,
+      "cityLabel": "bombay",
+      "query": "events to attend solo in bombay this week",
+      "status": "enabled"
+    },
+    {
+      "id": "city-workshops-social-weekend",
+      "template": "{city} workshops social events this weekend",
+      "intent": "structured conversation and learning",
+      "priority": 2,
+      "cityLabel": "Mumbai",
+      "query": "Mumbai workshops social events this weekend",
+      "status": "enabled"
+    },
+    {
+      "id": "city-workshops-social-weekend",
+      "template": "{city} workshops social events this weekend",
+      "intent": "structured conversation and learning",
+      "priority": 2,
+      "cityLabel": "bombay",
+      "query": "bombay workshops social events this weekend",
+      "status": "enabled"
+    },
+    {
+      "id": "city-community-open-mic-quiz",
+      "template": "{city} quiz night open mic community events this week",
+      "intent": "low-pressure conversation",
+      "priority": 3,
+      "cityLabel": "Mumbai",
+      "query": "Mumbai quiz night open mic community events this week",
+      "status": "enabled"
+    },
+    {
+      "id": "city-community-open-mic-quiz",
+      "template": "{city} quiz night open mic community events this week",
+      "intent": "low-pressure conversation",
+      "priority": 3,
+      "cityLabel": "bombay",
+      "query": "bombay quiz night open mic community events this week",
+      "status": "enabled"
+    }
+  ],
+  "runPlan": {
+    "id": "mumbai-2026-06-22-weekly-event-guide",
+    "cityId": "mumbai",
+    "weekStart": "2026-06-22",
+    "status": "planned",
+    "generatedAt": "2026-06-25T06:54:04.777Z",
+    "schedule": {
+      "cadence": "weekly",
+      "publishDay": "Monday",
+      "lookaheadDays": 7
+    },
+    "budgets": {
+      "maxQueries": 16,
+      "maxSourceResults": 40,
+      "maxCandidatePool": 25
+    },
+    "automationPolicy": {
+      "searchProvider": "not_configured",
+      "networkFetchesEnabled": false,
+      "instagramScrapingEnabled": false,
+      "requiresHumanApprovalBeforePublish": true
+    },
+    "queryIds": [
+      "city-events-week",
+      "city-events-week",
+      "city-things-to-do-week",
+      "city-things-to-do-week",
+      "city-events-month",
+      "city-events-month",
+      "city-singles-mixers-week",
+      "city-singles-mixers-week",
+      "city-singles-events-week",
+      "city-singles-events-week",
+      "city-solo-friendly-week",
+      "city-solo-friendly-week",
+      "city-workshops-social-weekend",
+      "city-workshops-social-weekend",
+      "city-community-open-mic-quiz",
+      "city-community-open-mic-quiz"
+    ],
+    "sourceProfileIds": [
+      "manual-instagram-reference-list",
+      "open-web-event-platforms",
+      "host-submission-inbox"
+    ]
+  },
+  "sourceResults": [
+    {
+      "id": "src-mumbai-foodie-servd-hot-month",
+      "sourceProfileId": "manual-instagram-reference-list",
+      "sourceLabel": "Mumbai Foodie x Servd",
+      "queryTemplateId": "manual-social-reference",
+      "resultType": "manual_social_reference",
+      "title": "Everything hot in the Mumbai food scene this month",
+      "url": "https://www.instagram.com/p/DWqROwigmbe/",
+      "snippet": "New menus and openings across Mumbai, including Toast Pasta Bar, Subko, La Panthera, and Fireback.",
+      "observedAt": "2026-06-22T00:00:00.000+05:30",
+      "status": "needs_review",
+      "riskFlags": [
+        "instagram_manual_reference_only"
+      ],
+      "operatorNotes": "Use as lead source only; verify each venue/menu through official pages."
+    },
+    {
+      "id": "src-paperboard-new-restaurants-june",
+      "sourceProfileId": "manual-instagram-reference-list",
+      "sourceLabel": "Paperboard Magazine",
+      "queryTemplateId": "manual-social-reference",
+      "resultType": "manual_social_reference",
+      "title": "11 new restaurants to try in Mumbai this June",
+      "url": "https://www.instagram.com/p/DYwsdQoDVXE/",
+      "snippet": "Punchline, District 11, Concu, Walter's, Kofuku, Foo, Adam & Eve, House of Akina, The Bar Stock Exchange, Twenty Seven Bakehouse, Namah.",
+      "observedAt": "2026-06-22T00:00:00.000+05:30",
+      "status": "needs_review",
+      "riskFlags": [
+        "instagram_manual_reference_only"
+      ],
+      "operatorNotes": "Good restaurant/opening discovery input; verify dates and current status."
+    },
+    {
+      "id": "src-cntraveller-june-culture",
+      "sourceProfileId": "manual-instagram-reference-list",
+      "sourceLabel": "Conde Nast Traveller India",
+      "queryTemplateId": "manual-social-reference",
+      "resultType": "manual_social_reference",
+      "title": "What's on across India this June",
+      "url": "https://www.instagram.com/p/DZK5ZZFjN_W/",
+      "snippet": "Cultural highlights including galleries, concerts, theatre, and food-led events across Indian cities.",
+      "observedAt": "2026-06-22T00:00:00.000+05:30",
+      "status": "needs_review",
+      "riskFlags": [
+        "instagram_manual_reference_only"
+      ],
+      "operatorNotes": "Useful for culture/events format reference; verify city-specific event pages."
+    },
+    {
+      "id": "src-search-events-mumbai-week",
+      "sourceProfileId": "search-provider",
+      "sourceLabel": "Search provider placeholder",
+      "queryTemplateId": "city-events-week",
+      "resultType": "search_result",
+      "title": "Events in Mumbai this week",
+      "url": "https://example.com/search/events-in-mumbai-this-week",
+      "snippet": "Placeholder for search provider results. Replace with SerpAPI, Google CSE, Tavily, or another approved provider.",
+      "observedAt": "2026-06-22T00:00:00.000+05:30",
+      "status": "new",
+      "riskFlags": [
+        "placeholder_result"
+      ],
+      "operatorNotes": "This demonstrates how live search results enter the queue."
+    }
+  ],
+  "eventCandidates": [
+    {
+      "id": "mumbai-2026-06-supper-club-table-for-six",
+      "title": "Supper Club Table for Six",
+      "category": "food_drink",
+      "neighborhood": "Lower Parel",
+      "venue": "TBD restaurant",
+      "startDate": "2026-06-26",
+      "endDate": "2026-06-26",
+      "time": "8:30 PM",
+      "price": "TBD",
+      "sourceResultIds": [
+        "src-search-events-mumbai-week"
+      ],
+      "sourceUrl": null,
+      "sourceLabel": "sample candidate",
+      "reviewState": "new",
+      "requiresVerification": true,
+      "explicitSinglesEvent": true,
+      "whySinglesFriendly": "Small tables and hosted intros make this closer to a singles social than a normal restaurant plan.",
+      "publicDescription": "A dinner format built around meeting people at the table, not just ordering food.",
+      "scores": {
+        "dateRelevance": 5,
+        "soloFriendliness": 5,
+        "conversationPotential": 5,
+        "sourceTrust": 1,
+        "visualPotential": 4,
+        "activityFit": 5
+      },
+      "normalizedEventKey": "mumbai|supper-club-table-for-six|tbd-restaurant|lower-parel|2026-06-26",
+      "sourceCoverage": {
+        "sourceResultIds": [
+          "src-search-events-mumbai-week"
+        ],
+        "matchedSourceResults": 1,
+        "hasSourceUrl": false,
+        "hasManualInstagramReference": false
+      },
+      "score": 27.5,
+      "sourceStatus": "missing_source_url",
+      "publishability": "lead_needs_source",
+      "warnings": [
+        "lead only: add a source URL before shortlisting",
+        "requires verification",
+        "missing source URL",
+        "missing price"
+      ],
+      "dedupe": {
+        "normalizedEventKey": "mumbai|supper-club-table-for-six|tbd-restaurant|lower-parel|2026-06-26",
+        "canonicalCandidateId": "mumbai-2026-06-supper-club-table-for-six",
+        "duplicateCandidateIds": []
+      }
+    },
+    {
+      "id": "mumbai-2026-06-experimenter-colaba-photo",
+      "title": "Photo Exhibition at Experimenter",
+      "category": "culture",
+      "neighborhood": "Colaba",
+      "venue": "Experimenter, Colaba",
+      "startDate": "2026-06-22",
+      "endDate": "2026-07-18",
+      "time": "Gallery hours",
+      "price": "TBD",
+      "sourceResultIds": [
+        "src-cntraveller-june-culture"
+      ],
+      "sourceUrl": "https://www.instagram.com/p/DZK5ZZFjN_W/",
+      "sourceLabel": "Conde Nast Traveller India",
+      "reviewState": "needs_changes",
+      "requiresVerification": true,
+      "explicitSinglesEvent": false,
+      "whySinglesFriendly": "Gallery shows are easy to attend solo and give people a natural conversation prompt.",
+      "publicDescription": "An ongoing photography exhibition that can anchor a low-pressure culture plan.",
+      "scores": {
+        "dateRelevance": 3,
+        "soloFriendliness": 5,
+        "conversationPotential": 4,
+        "sourceTrust": 2,
+        "visualPotential": 5,
+        "activityFit": 5
+      },
+      "normalizedEventKey": "mumbai|photo-exhibition-at-experimenter|experimenter-colaba|colaba|2026-06-22",
+      "sourceCoverage": {
+        "sourceResultIds": [
+          "src-cntraveller-june-culture"
+        ],
+        "matchedSourceResults": 1,
+        "hasSourceUrl": true,
+        "hasManualInstagramReference": true
+      },
+      "score": 26.2,
+      "sourceStatus": "manual_reference_needs_official_verification",
+      "publishability": "reviewable_needs_verification",
+      "warnings": [
+        "requires verification",
+        "missing price",
+        "not explicitly singles-only",
+        "manual Instagram reference"
+      ],
+      "dedupe": {
+        "normalizedEventKey": "mumbai|photo-exhibition-at-experimenter|experimenter-colaba|colaba|2026-06-22",
+        "canonicalCandidateId": "mumbai-2026-06-experimenter-colaba-photo",
+        "duplicateCandidateIds": []
+      }
+    },
+    {
+      "id": "mumbai-2026-06-rooftop-quiz-bandra",
+      "title": "Rooftop Quiz Night",
+      "category": "nightlife",
+      "neighborhood": "Bandra West",
+      "venue": "TBD rooftop",
+      "startDate": "2026-06-27",
+      "endDate": "2026-06-27",
+      "time": "8:00 PM",
+      "price": "TBD",
+      "sourceResultIds": [
+        "src-search-events-mumbai-week"
+      ],
+      "sourceUrl": null,
+      "sourceLabel": "sample candidate",
+      "reviewState": "new",
+      "requiresVerification": true,
+      "explicitSinglesEvent": false,
+      "whySinglesFriendly": "Teams, trivia, and shared prompts make conversation easier than a cold walk-in bar plan.",
+      "publicDescription": "A structured night out for people who want something more social than dinner.",
+      "scores": {
+        "dateRelevance": 5,
+        "soloFriendliness": 4,
+        "conversationPotential": 5,
+        "sourceTrust": 1,
+        "visualPotential": 4,
+        "activityFit": 5
+      },
+      "normalizedEventKey": "mumbai|rooftop-quiz-night|tbd-rooftop|bandra-west|2026-06-27",
+      "sourceCoverage": {
+        "sourceResultIds": [
+          "src-search-events-mumbai-week"
+        ],
+        "matchedSourceResults": 1,
+        "hasSourceUrl": false,
+        "hasManualInstagramReference": false
+      },
+      "score": 26.1,
+      "sourceStatus": "missing_source_url",
+      "publishability": "lead_needs_source",
+      "warnings": [
+        "lead only: add a source URL before shortlisting",
+        "requires verification",
+        "missing source URL",
+        "missing price",
+        "not explicitly singles-only"
+      ],
+      "dedupe": {
+        "normalizedEventKey": "mumbai|rooftop-quiz-night|tbd-rooftop|bandra-west|2026-06-27",
+        "canonicalCandidateId": "mumbai-2026-06-rooftop-quiz-bandra",
+        "duplicateCandidateIds": []
+      }
+    },
+    {
+      "id": "mumbai-2026-06-beginner-pottery-social",
+      "title": "Beginner Pottery Social",
+      "category": "learning",
+      "neighborhood": "Khar",
+      "venue": "TBD studio",
+      "startDate": "2026-06-28",
+      "endDate": "2026-06-28",
+      "time": "11:00 AM",
+      "price": "TBD",
+      "sourceResultIds": [
+        "src-search-events-mumbai-week"
+      ],
+      "sourceUrl": null,
+      "sourceLabel": "sample candidate",
+      "reviewState": "new",
+      "requiresVerification": true,
+      "explicitSinglesEvent": false,
+      "whySinglesFriendly": "Beginner classes reduce social pressure because everyone is focused on the same activity.",
+      "publicDescription": "A hands-on weekend plan for people who want a reason to meet new people without forcing it.",
+      "scores": {
+        "dateRelevance": 4,
+        "soloFriendliness": 5,
+        "conversationPotential": 4,
+        "sourceTrust": 1,
+        "visualPotential": 5,
+        "activityFit": 5
+      },
+      "normalizedEventKey": "mumbai|beginner-pottery-social|tbd-studio|khar|2026-06-28",
+      "sourceCoverage": {
+        "sourceResultIds": [
+          "src-search-events-mumbai-week"
+        ],
+        "matchedSourceResults": 1,
+        "hasSourceUrl": false,
+        "hasManualInstagramReference": false
+      },
+      "score": 25.5,
+      "sourceStatus": "missing_source_url",
+      "publishability": "lead_needs_source",
+      "warnings": [
+        "lead only: add a source URL before shortlisting",
+        "requires verification",
+        "missing source URL",
+        "missing price",
+        "not explicitly singles-only"
+      ],
+      "dedupe": {
+        "normalizedEventKey": "mumbai|beginner-pottery-social|tbd-studio|khar|2026-06-28",
+        "canonicalCandidateId": "mumbai-2026-06-beginner-pottery-social",
+        "duplicateCandidateIds": []
+      }
+    },
+    {
+      "id": "mumbai-2026-06-concu-colaba",
+      "title": "Concu",
+      "category": "food_drink",
+      "neighborhood": "Colaba",
+      "venue": "Concu",
+      "startDate": "2026-06-22",
+      "endDate": "2026-06-29",
+      "time": "All day",
+      "price": "TBD",
+      "sourceResultIds": [
+        "src-paperboard-new-restaurants-june"
+      ],
+      "sourceUrl": "https://www.instagram.com/p/DYwsdQoDVXE/",
+      "sourceLabel": "Paperboard Magazine",
+      "reviewState": "needs_changes",
+      "requiresVerification": true,
+      "explicitSinglesEvent": false,
+      "whySinglesFriendly": "Dessert counters and all-day dining are easy to use as a first meet or solo plan, but the event angle needs verification.",
+      "publicDescription": "A new Colaba patisserie and all-day cafe for a softer weekend plan.",
+      "scores": {
+        "dateRelevance": 4,
+        "soloFriendliness": 4,
+        "conversationPotential": 3,
+        "sourceTrust": 2,
+        "visualPotential": 5,
+        "activityFit": 4
+      },
+      "normalizedEventKey": "mumbai|concu|concu|colaba|2026-06-22",
+      "sourceCoverage": {
+        "sourceResultIds": [
+          "src-paperboard-new-restaurants-june"
+        ],
+        "matchedSourceResults": 1,
+        "hasSourceUrl": true,
+        "hasManualInstagramReference": true
+      },
+      "score": 24,
+      "sourceStatus": "manual_reference_needs_official_verification",
+      "publishability": "reviewable_needs_verification",
+      "warnings": [
+        "requires verification",
+        "missing price",
+        "not explicitly singles-only",
+        "manual Instagram reference"
+      ],
+      "dedupe": {
+        "normalizedEventKey": "mumbai|concu|concu|colaba|2026-06-22",
+        "canonicalCandidateId": "mumbai-2026-06-concu-colaba",
+        "duplicateCandidateIds": []
+      }
+    },
+    {
+      "id": "mumbai-2026-06-punchline-bandra",
+      "title": "Punchline",
+      "category": "food_drink",
+      "neighborhood": "Bandra West",
+      "venue": "Punchline",
+      "startDate": "2026-06-22",
+      "endDate": "2026-06-29",
+      "time": "Venue hours",
+      "price": "TBD",
+      "sourceResultIds": [
+        "src-paperboard-new-restaurants-june"
+      ],
+      "sourceUrl": "https://www.instagram.com/p/DYwsdQoDVXE/",
+      "sourceLabel": "Paperboard Magazine",
+      "reviewState": "needs_changes",
+      "requiresVerification": true,
+      "explicitSinglesEvent": false,
+      "whySinglesFriendly": "A punch-bowl bar format can work for small groups and low-pressure first conversations, but it is not singles-only.",
+      "publicDescription": "A new Bandra bar and food-led hangout worth checking as a small-group evening plan.",
+      "scores": {
+        "dateRelevance": 4,
+        "soloFriendliness": 3,
+        "conversationPotential": 4,
+        "sourceTrust": 2,
+        "visualPotential": 4,
+        "activityFit": 4
+      },
+      "normalizedEventKey": "mumbai|punchline|punchline|bandra-west|2026-06-22",
+      "sourceCoverage": {
+        "sourceResultIds": [
+          "src-paperboard-new-restaurants-june"
+        ],
+        "matchedSourceResults": 1,
+        "hasSourceUrl": true,
+        "hasManualInstagramReference": true
+      },
+      "score": 23.1,
+      "sourceStatus": "manual_reference_needs_official_verification",
+      "publishability": "reviewable_needs_verification",
+      "warnings": [
+        "requires verification",
+        "missing price",
+        "not explicitly singles-only",
+        "manual Instagram reference"
+      ],
+      "dedupe": {
+        "normalizedEventKey": "mumbai|punchline|punchline|bandra-west|2026-06-22",
+        "canonicalCandidateId": "mumbai-2026-06-punchline-bandra",
+        "duplicateCandidateIds": []
+      }
+    },
+    {
+      "id": "mumbai-2026-06-community-run-breakfast",
+      "title": "Community Run + Breakfast",
+      "category": "active",
+      "neighborhood": "Marine Drive",
+      "venue": "TBD meeting point",
+      "startDate": "2026-06-29",
+      "endDate": "2026-06-29",
+      "time": "7:00 AM",
+      "price": "Free or TBD",
+      "sourceResultIds": [
+        "src-search-events-mumbai-week"
+      ],
+      "sourceUrl": null,
+      "sourceLabel": "sample candidate",
+      "reviewState": "new",
+      "requiresVerification": true,
+      "explicitSinglesEvent": false,
+      "whySinglesFriendly": "Group runs create repeated touchpoints and a natural post-run conversation window.",
+      "publicDescription": "A low-cost, active way to meet people without making the plan feel like a date.",
+      "scores": {
+        "dateRelevance": 3,
+        "soloFriendliness": 5,
+        "conversationPotential": 4,
+        "sourceTrust": 1,
+        "visualPotential": 3,
+        "activityFit": 4
+      },
+      "normalizedEventKey": "mumbai|community-run-breakfast|tbd-meeting-point|marine-drive|2026-06-29",
+      "sourceCoverage": {
+        "sourceResultIds": [
+          "src-search-events-mumbai-week"
+        ],
+        "matchedSourceResults": 1,
+        "hasSourceUrl": false,
+        "hasManualInstagramReference": false
+      },
+      "score": 21.8,
+      "sourceStatus": "missing_source_url",
+      "publishability": "lead_needs_source",
+      "warnings": [
+        "lead only: add a source URL before shortlisting",
+        "requires verification",
+        "missing source URL",
+        "not explicitly singles-only"
+      ],
+      "dedupe": {
+        "normalizedEventKey": "mumbai|community-run-breakfast|tbd-meeting-point|marine-drive|2026-06-29",
+        "canonicalCandidateId": "mumbai-2026-06-community-run-breakfast",
+        "duplicateCandidateIds": []
+      }
+    }
+  ],
+  "dedupeGroups": [],
+  "auditTrail": [],
+  "commands": {
+    "regenerate": "node tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs --week 2026-06-22",
+    "updateAdminBridge": "node tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs --week 2026-06-22 --event-intake-admin-output admin/src/generated/eventIntakeBridge.json",
+    "withDecisions": "node tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs --week 2026-06-22 --decisions tool/marketing/event_guide/review_decisions/mumbai.2026-06-22.example.json --event-intake-admin-output admin/src/generated/eventIntakeBridge.json"
+  }
+}

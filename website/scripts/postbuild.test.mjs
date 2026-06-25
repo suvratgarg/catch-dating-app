@@ -45,11 +45,27 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
     "utf8"
   );
   assert.match(legacyHtml, /<meta name="robots" content="noindex, follow" \/>/);
+  assert.match(
+    legacyHtml,
+    /<link rel="canonical" href="https:\/\/example\.test\/organizers\/afterfly\/" \/>/
+  );
+
+  const claimHtml = fs.readFileSync(
+    path.join(distRoot, "claim", "index.html"),
+    "utf8"
+  );
+  assert.match(claimHtml, /<title>Claim your organizer listing \| Catch<\/title>/);
+  assert.match(
+    claimHtml,
+    /<link rel="canonical" href="https:\/\/example\.test\/claim\/" \/>/
+  );
+  assert.match(claimHtml, /<meta name="robots" content="noindex, follow" \/>/);
 
   const sitemap = fs.readFileSync(path.join(distRoot, "sitemap.xml"), "utf8");
   assert.match(sitemap, /<loc>https:\/\/example\.test\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/host\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/organizers\/afterfly\/<\/loc>/);
+  assert.doesNotMatch(sitemap, /claim\/<\/loc>/);
   assert.doesNotMatch(sitemap, /organizers\/$/);
   assert.doesNotMatch(sitemap, /afterfly-run-club/);
   assert.doesNotMatch(sitemap, /noindex-sample/);

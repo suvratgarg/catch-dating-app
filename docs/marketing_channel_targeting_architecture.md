@@ -14,6 +14,13 @@ copywriting and page implementation. The goal is to decide which audiences can
 be reached precisely on which channels, then design landing pages and assets
 around those reachable use cases.
 
+## Execution Artifacts
+
+- [`ads_launch_tracker.md`](ads_launch_tracker.md) owns the first paid
+  acquisition setup sequence, spend gates, campaign cells, and stop rules.
+- [`ads_conversion_spec.md`](ads_conversion_spec.md) owns website and app
+  conversion naming, ad-platform import order, consent rules, and verification.
+
 ## Strategic Premise
 
 Different marketing channels expose different targeting primitives:

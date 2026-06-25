@@ -70,6 +70,7 @@ export function checkOrganizerBuildOutputs({
   if (robots !== null && !robots.includes(`Sitemap: ${baseUrl}/sitemap.xml`)) {
     errors.push("robots.txt missing canonical sitemap URL");
   }
+  checkPublicSourceMaps({distRoot, errors});
 
   const sitemapUrls = new Set(extractSitemapUrls(sitemap ?? ""));
   const paths = new Set();
@@ -177,6 +178,40 @@ function checkRouteHtml({
   } else if (robots !== null) {
     errors.push(`${listingId}: ${routePath} has unexpected robots meta`);
   }
+}
+
+function checkPublicSourceMaps({distRoot, errors}) {
+  for (const file of listFiles(distRoot)) {
+    const relativePath = path.relative(distRoot, file);
+    if (file.endsWith(".map")) {
+      errors.push(`public source map emitted at ${relativePath}`);
+      continue;
+    }
+    if (!file.endsWith(".js")) continue;
+    const content = readTextIfExists(file) ?? "";
+    if (/sourceMappingURL=/u.test(content)) {
+      errors.push(`${relativePath} references a public source map`);
+    }
+  }
+}
+
+function listFiles(root) {
+  if (!fs.existsSync(root)) return [];
+  const files = [];
+  const stack = [root];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    if (!current) continue;
+    const stat = fs.statSync(current);
+    if (stat.isDirectory()) {
+      for (const entry of fs.readdirSync(current)) {
+        stack.push(path.join(current, entry));
+      }
+    } else if (stat.isFile()) {
+      files.push(current);
+    }
+  }
+  return files.sort();
 }
 
 function readRouteHtml({distRoot, routePath}) {

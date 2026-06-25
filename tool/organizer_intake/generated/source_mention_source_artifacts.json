@@ -1,0 +1,14 @@
+{
+  "artifacts": [],
+  "generatedFrom": {
+    "externalEventCandidateQueue": "tool/organizer_intake/generated/external_event_candidate_queue.json",
+    "searchResultCandidateQueue": "tool/organizer_intake/generated/search_result_candidate_queue.json"
+  },
+  "schemaVersion": 1,
+  "summary": {
+    "artifacts": 0,
+    "attributionUrls": 0,
+    "eventSourceBatches": 0,
+    "searchResultBatches": 0
+  }
+}

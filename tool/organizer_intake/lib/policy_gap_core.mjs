@@ -5,9 +5,11 @@ export function buildOrganizerPolicyGapRegister({
   externalEventImportExecutionPlan,
   externalEventImportPlan,
   policyGapDecisionBatches = [],
+  sourceMentionResolution,
 } = {}) {
   const errors = [];
   const baseGaps = [
+    sourceMentionResolutionPolicyGap(sourceMentionResolution),
     recurringCrawlPolicyGap(eventCrawlPlan),
     locationProviderPolicyGap(externalEventLocationResolutionQueue),
     eventImportWritePolicyGap(
@@ -43,6 +45,8 @@ export function buildOrganizerPolicyGapRegister({
         "tool/organizer_intake/generated/external_event_import_plan.json",
       externalEventImportExecutionPlan:
         "tool/organizer_intake/generated/external_event_import_execution_plan.json",
+      sourceMentionResolution:
+        "tool/organizer_intake/generated/source_mention_resolution_clusters.json",
       policyGapDecisionBatches:
         "tool/organizer_intake/policy_gap_decisions/*.json",
     },
@@ -198,6 +202,77 @@ function decisionStatusForDecision(decision) {
     hold: "held",
     reject: "rejected",
   }[decision] ?? "invalid";
+}
+
+function sourceMentionResolutionPolicyGap(
+  sourceMentionResolution = emptySourceMentionResolution()
+) {
+  const policy = sourceMentionResolution.resolutionPolicy ??
+    sourceMentionResolution.policy ??
+    {};
+  const clusters = sourceMentionResolution.resolutionClusters ?? {};
+  const candidates = sourceMentionResolution.resolutionCandidates ?? {};
+  const llmEnabled = policy.llm?.status === "enabled";
+  const reviewQueued = clusters.summary?.llmReviewQueued ?? 0;
+  const candidatePairs = clusters.summary?.candidatePairs ?? 0;
+  const needsHumanReview = clusters.summary?.needsHumanReviewClusters ?? 0;
+  return {
+    gapId: "source_mention_resolution_policy",
+    area: "source_resolution",
+    severity: candidatePairs > 0 || needsHumanReview > 0 ? "high" : "medium",
+    status: llmEnabled ? "ready" : "decision_required",
+    defaultPosition: llmEnabled ?
+      "enabled_by_policy" :
+      "disabled_until_policy_approved",
+    decisionOwner: "product_ops",
+    currentState:
+      `${candidates.summary?.candidates ?? 0} source mention candidate(s), ` +
+      `${candidatePairs} candidate pair(s), ${needsHumanReview} human-review ` +
+      `cluster(s); LLM adjudication ${llmEnabled ? "enabled" : "disabled"}.`,
+    requiredInputs: [
+      "blocking-key allowlist and known stable provider platforms",
+      "thresholds for auto-attach, probable duplicate, and human review",
+      "maximum cluster size and pair cap before LLM adjudication",
+      "LLM model, JSON schema, prompt version, and cache invalidation policy",
+      "monthly LLM spend cap and per-run request cap",
+      "admin override workflow for same, split, suppress, and attach decisions",
+    ],
+    unblockCriteria: [
+      "source mention resolution policy.llm.status is enabled only after cost caps are encoded",
+      "prompt payload generation remains backend/tooling only and never runs from React",
+      "source mention review packets are resolved before canonical organizer or event projection",
+      "accepted policy is encoded in repo-backed resolver config and bridge checks pass",
+    ],
+    blockedArtifacts: [
+      "tool/organizer_intake/generated/source_mention_resolution_policy.json",
+      "tool/organizer_intake/generated/source_mention_resolution_clusters.json",
+      "tool/organizer_intake/generated/source_mention_resolution_review_packets.json",
+      "tool/organizer_intake/llm_source_resolution.mjs",
+    ],
+    evidence: {
+      llmStatus: policy.llm?.status ?? "disabled",
+      autoAttachThreshold: policy.thresholds?.autoAttach ?? null,
+      probableDuplicateThreshold: policy.thresholds?.probableDuplicate ?? null,
+      needsHumanReviewThreshold: policy.thresholds?.needsHumanReview ?? null,
+      llmAdjudicationMinScore:
+        policy.thresholds?.llmAdjudicationMinScore ?? null,
+      maxClusterSizeForLlm: policy.thresholds?.maxClusterSizeForLlm ?? null,
+      maxPairsPerBlockingKey: policy.thresholds?.maxPairsPerBlockingKey ?? null,
+      blockingKeys: (policy.blockingKeys ?? []).map((key) => key.id).sort(),
+      stableProviderEventPlatforms:
+        policy.hardKeyPolicy?.stableProviderEventPlatforms ?? [],
+      sourceMentions:
+        sourceMentionResolution.extractedMentions?.summary?.mentions ?? 0,
+      resolutionCandidates: candidates.summary?.candidates ?? 0,
+      clusters: clusters.summary?.clusters ?? 0,
+      candidatePairs,
+      needsHumanReview,
+      llmReviewQueued: reviewQueued,
+      warnings: clusters.summary?.warnings ?? 0,
+    },
+    nextAction:
+      "Review resolver thresholds, blocking keys, provider hard-key policy, and LLM cost caps before enabling model adjudication.",
+  };
 }
 
 function recurringCrawlPolicyGap(eventCrawlPlan = emptyCrawlPlan()) {
@@ -503,5 +578,18 @@ function emptyExecutionPlan() {
   return {
     policy: {authorityModel: "disabled", writeEnabled: false},
     summary: {},
+  };
+}
+
+function emptySourceMentionResolution() {
+  return {
+    extractedMentions: {summary: {}},
+    resolutionCandidates: {summary: {}},
+    resolutionClusters: {summary: {}},
+    resolutionPolicy: {
+      blockingKeys: [],
+      llm: {status: "disabled"},
+      thresholds: {},
+    },
   };
 }

@@ -13,13 +13,13 @@
       "queryTemplateId": "singles_events_city_v1",
       "categoryId": "singles_event_operator",
       "source": "web_search",
-      "citySlugs": ["delhi-ncr", "mumbai", "bengaluru", "pune", "hyderabad"]
+      "citySlugs": ["delhi-ncr", "mumbai", "bengaluru", "pune", "hyderabad", "indore"]
     },
     {
       "queryTemplateId": "racket_social_city_v1",
       "categoryId": "racket_sport_social",
       "source": "web_search",
-      "citySlugs": ["delhi-ncr", "mumbai", "bengaluru", "pune", "hyderabad"]
+      "citySlugs": ["delhi-ncr", "mumbai", "bengaluru", "pune", "hyderabad", "indore"]
     }
   ],
   "candidateVerification": {

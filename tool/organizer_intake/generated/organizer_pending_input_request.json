@@ -503,6 +503,158 @@
       ],
       "subjectId": "external_event_location_provider_policy",
       "subjectName": "location_resolution"
+    },
+    {
+      "callableSubmission": {
+        "adminApiWrapper": "decideOrganizerPolicyGap",
+        "callableName": "adminDecideOrganizerPolicyGap",
+        "firestoreCollection": "organizerPolicyGapReviewDecisions",
+        "payloadsByDecision": {
+          "accept": {
+            "checklist": {
+              "behaviorStillDisabledAcknowledged": true,
+              "costAndSafetyReviewed": true,
+              "implementationOwnerReviewed": true,
+              "requiredInputsReviewed": true
+            },
+            "decision": "accept",
+            "gapId": "source_mention_resolution_policy",
+            "note": "Product policy accepted for source_mention_resolution_policy; behavior remains disabled until encoded in repo-backed policy.",
+            "requiredInputsReviewed": [
+              "LLM model, JSON schema, prompt version, and cache invalidation policy",
+              "admin override workflow for same, split, suppress, and attach decisions",
+              "blocking-key allowlist and known stable provider platforms",
+              "maximum cluster size and pair cap before LLM adjudication",
+              "monthly LLM spend cap and per-run request cap",
+              "thresholds for auto-attach, probable duplicate, and human review"
+            ]
+          },
+          "hold": {
+            "checklist": {
+              "behaviorStillDisabledAcknowledged": true,
+              "costAndSafetyReviewed": false,
+              "implementationOwnerReviewed": true,
+              "requiredInputsReviewed": false
+            },
+            "decision": "hold",
+            "gapId": "source_mention_resolution_policy",
+            "note": "Product policy held for source_mention_resolution_policy; required inputs remain unresolved.",
+            "requiredInputsReviewed": []
+          },
+          "reject": {
+            "checklist": {
+              "behaviorStillDisabledAcknowledged": true,
+              "costAndSafetyReviewed": false,
+              "implementationOwnerReviewed": true,
+              "requiredInputsReviewed": false
+            },
+            "decision": "reject",
+            "gapId": "source_mention_resolution_policy",
+            "note": "Product policy rejected for source_mention_resolution_policy.",
+            "requiredInputsReviewed": []
+          }
+        },
+        "payloadType": "AdminDecideOrganizerPolicyGapPayload",
+        "safeDefaultPayload": {
+          "checklist": {
+            "behaviorStillDisabledAcknowledged": true,
+            "costAndSafetyReviewed": false,
+            "implementationOwnerReviewed": true,
+            "requiredInputsReviewed": false
+          },
+          "decision": "hold",
+          "gapId": "source_mention_resolution_policy",
+          "note": "Product policy held for source_mention_resolution_policy; required inputs remain unresolved.",
+          "requiredInputsReviewed": []
+        }
+      },
+      "commands": [
+        "node tool/organizer_intake/policy_gap_decision.mjs draft source_mention_resolution_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+      ],
+      "currentState": {
+        "blockedArtifacts": [
+          "tool/organizer_intake/generated/source_mention_resolution_policy.json",
+          "tool/organizer_intake/generated/source_mention_resolution_clusters.json",
+          "tool/organizer_intake/generated/source_mention_resolution_review_packets.json",
+          "tool/organizer_intake/llm_source_resolution.mjs"
+        ],
+        "currentState": "0 source mention candidate(s), 0 candidate pair(s), 0 human-review cluster(s); LLM adjudication disabled.",
+        "implementationGate": "source mention resolution policy.llm.status is enabled only after cost caps are encoded; prompt payload generation remains backend/tooling only and never runs from React; source mention review packets are resolved before canonical organizer or event projection; accepted policy is encoded in repo-backed resolver config and bridge checks pass",
+        "unblockCriteria": [
+          "source mention resolution policy.llm.status is enabled only after cost caps are encoded",
+          "prompt payload generation remains backend/tooling only and never runs from React",
+          "source mention review packets are resolved before canonical organizer or event projection",
+          "accepted policy is encoded in repo-backed resolver config and bridge checks pass"
+        ]
+      },
+      "decisionOptions": [
+        "accept",
+        "hold",
+        "reject"
+      ],
+      "nextAction": "Review resolver thresholds, blocking keys, provider hard-key policy, and LLM cost caps before enabling model adjudication.",
+      "owner": "product_ops",
+      "priority": "p1",
+      "prompt": "Review resolver thresholds, blocking keys, provider hard-key policy, and LLM cost caps before enabling model adjudication.",
+      "requestId": "policy:source_mention_resolution_policy",
+      "requestType": "policy_decision",
+      "requiredInputs": [
+        {
+          "currentDefault": "disabled_until_policy_approved",
+          "input": "blocking-key allowlist and known stable provider platforms",
+          "prompt": "blocking-key allowlist and known stable provider platforms for source resolution.",
+          "questionId": "source_mention_resolution_policy:blocking-key-allowlist-and-known-stable-provider-platforms",
+          "recommendedSafeDefault": "disabled_until_policy_approved",
+          "requiredForAcceptance": true
+        },
+        {
+          "currentDefault": "disabled_until_policy_approved",
+          "input": "thresholds for auto-attach, probable duplicate, and human review",
+          "prompt": "thresholds for auto-attach, probable duplicate, and human review for source resolution.",
+          "questionId": "source_mention_resolution_policy:thresholds-for-auto-attach-probable-duplicate-and-human-review",
+          "recommendedSafeDefault": "disabled_until_policy_approved",
+          "requiredForAcceptance": true
+        },
+        {
+          "currentDefault": "disabled_until_policy_approved",
+          "input": "maximum cluster size and pair cap before LLM adjudication",
+          "prompt": "maximum cluster size and pair cap before LLM adjudication for source resolution.",
+          "questionId": "source_mention_resolution_policy:maximum-cluster-size-and-pair-cap-before-llm-adjudication",
+          "recommendedSafeDefault": "disabled_until_policy_approved",
+          "requiredForAcceptance": true
+        },
+        {
+          "currentDefault": "disabled_until_policy_approved",
+          "input": "LLM model, JSON schema, prompt version, and cache invalidation policy",
+          "prompt": "LLM model, JSON schema, prompt version, and cache invalidation policy for source resolution.",
+          "questionId": "source_mention_resolution_policy:llm-model-json-schema-prompt-version-and-cache-invalidation-policy",
+          "recommendedSafeDefault": "disabled_until_policy_approved",
+          "requiredForAcceptance": true
+        },
+        {
+          "currentDefault": "disabled_until_policy_approved",
+          "input": "monthly LLM spend cap and per-run request cap",
+          "prompt": "monthly LLM spend cap and per-run request cap for source resolution.",
+          "questionId": "source_mention_resolution_policy:monthly-llm-spend-cap-and-per-run-request-cap",
+          "recommendedSafeDefault": "disabled_until_policy_approved",
+          "requiredForAcceptance": true
+        },
+        {
+          "currentDefault": "disabled_until_policy_approved",
+          "input": "admin override workflow for same, split, suppress, and attach decisions",
+          "prompt": "admin override workflow for same, split, suppress, and attach decisions for source resolution.",
+          "questionId": "source_mention_resolution_policy:admin-override-workflow-for-same-split-suppress-and-attach-decisions",
+          "recommendedSafeDefault": "disabled_until_policy_approved",
+          "requiredForAcceptance": true
+        }
+      ],
+      "safeDefaultAction": "disabled_until_policy_approved",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/organizer_policy_decision_packets.json",
+        "tool/organizer_intake/generated/organizer_operator_action_queue.json"
+      ],
+      "subjectId": "source_mention_resolution_policy",
+      "subjectName": "source_resolution"
     }
   ],
   "schemaVersion": 1,
@@ -516,19 +668,19 @@
     },
     "highestPriority": "p0",
     "manualPublicationAcknowledgements": 0,
-    "policyDecisionRequests": 3,
-    "requests": 3,
+    "policyDecisionRequests": 4,
+    "requests": 4,
     "requestsByOwner": {
-      "product_ops": 3
+      "product_ops": 4
     },
     "requestsByPriority": {
       "p0": 1,
-      "p1": 2
+      "p1": 3
     },
     "requestsByType": {
-      "policy_decision": 3
+      "policy_decision": 4
     },
-    "requiredPolicyQuestions": 15,
+    "requiredPolicyQuestions": 21,
     "workflowFollowUps": 4
   }
 }

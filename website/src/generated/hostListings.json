@@ -90,6 +90,11 @@
       "href": "/organizers/afterfly/#claim",
       "label": "Claim this listing"
     },
+    "publicApi": {
+      "state": "disabled",
+      "reason": "Firestore claim target sync still needs create action for clubs/afterfly.",
+      "claimTargetSyncStatus": "write_needed"
+    },
     "lastVerifiedAt": "2026-06-18",
     "searchText": "after fly eventorganizer indore indore social runs run-and-rave fitness/wellness community music social indore luma luma was reviewed as an organizer-intake surface with high confidence. instagram instagram was reviewed as an organizer-intake surface with high confidence."
   },
@@ -189,6 +194,11 @@
     "claim": {
       "href": "/organizers/bhag/#claim",
       "label": "Claim this listing"
+    },
+    "publicApi": {
+      "state": "disabled",
+      "reason": "Firestore claim target sync still needs create action for clubs/bhag.",
+      "claimTargetSyncStatus": "write_needed"
     },
     "lastVerifiedAt": "2026-06-18",
     "searchText": "bhag club brand delhi ncr delhi-ncr running community training programs social runs delhi ncr official website official website was reviewed as an organizer-intake surface with high confidence. instagram instagram was reviewed as an organizer-intake surface with high confidence. luma luma was reviewed as an organizer-intake surface with high confidence."
@@ -422,6 +432,11 @@
     "claim": {
       "href": "/organizers/new-york/sunday-table-club/#events",
       "label": "View events"
+    },
+    "publicApi": {
+      "state": "disabled",
+      "reason": "Catch demo listings use static fixture data and do not call public organizer APIs.",
+      "claimTargetSyncStatus": "static_fixture"
     },
     "lastVerifiedAt": "2026-05-31",
     "searchText": "sunday table club new york west village rohan mehta dinner singles mixer hosted hosted long-table dinner dinner hosted singles mixer singlesmixer hosted singles mixer singlesmixer"

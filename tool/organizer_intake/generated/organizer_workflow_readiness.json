@@ -50,7 +50,7 @@
       "status": "policy_needed"
     },
     {
-      "detail": "5 policy packet(s), 25 question(s), 15 still need input.",
+      "detail": "6 policy packet(s), 31 question(s), 21 still need input.",
       "id": "policy_decision_packets",
       "label": "Policy decision packets",
       "nextAction": "Answer or hold the policy decision packets before enabling crawls, provider lookups, imports, storage, or naming migration.",
@@ -179,9 +179,9 @@
     "crawlRunIntents": 3,
     "gates": 18,
     "localPromotionPipelineReady": true,
-    "policyDecisionPackets": 5,
-    "policyDecisionQuestions": 25,
-    "policyDecisionUnanswered": 15,
+    "policyDecisionPackets": 6,
+    "policyDecisionQuestions": 31,
+    "policyDecisionUnanswered": 21,
     "policyNeeded": 4,
     "publicationReviewBlockedByData": 0,
     "publicationReviewPackets": 2,

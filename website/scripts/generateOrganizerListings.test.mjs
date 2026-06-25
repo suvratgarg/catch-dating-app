@@ -11,10 +11,20 @@ const scriptPath = fileURLToPath(new URL("./generateOrganizerListings.mjs", impo
 test("approved organizer intake projections render canonical listings and suppress legacy seeds", () => {
   const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-organizer-listings-"));
   const projectionPath = path.join(tmpRoot, "public_projection_plan.json");
+  const claimTargetSyncPreviewPath = path.join(tmpRoot, "organizer_claim_target_sync_preview.json");
+  const externalEventReadinessPath = path.join(tmpRoot, "external_event_readiness.json");
   const seedRoot = path.join(tmpRoot, "seed_clubs");
   const outputPath = path.join(tmpRoot, "hostListings.json");
   fs.mkdirSync(seedRoot, {recursive: true});
   fs.writeFileSync(projectionPath, `${JSON.stringify(approvedProjectionPlan(), null, 2)}\n`);
+  fs.writeFileSync(
+    claimTargetSyncPreviewPath,
+    `${JSON.stringify(claimTargetSyncPreview(), null, 2)}\n`
+  );
+  fs.writeFileSync(
+    externalEventReadinessPath,
+    `${JSON.stringify(externalEventReadiness(), null, 2)}\n`
+  );
   fs.writeFileSync(
     path.join(seedRoot, "afterfly-run-club-indore.json"),
     `${JSON.stringify(legacySeedListing(), null, 2)}\n`
@@ -24,6 +34,10 @@ test("approved organizer intake projections render canonical listings and suppre
     scriptPath,
     "--projection-plan",
     projectionPath,
+    "--claim-target-sync-preview",
+    claimTargetSyncPreviewPath,
+    "--external-event-readiness",
+    externalEventReadinessPath,
     "--seed-root",
     seedRoot,
     "--output",
@@ -39,10 +53,21 @@ test("approved organizer intake projections render canonical listings and suppre
   assert.deepEqual(listings[0].legacyPaths, ["/organizers/indore/afterfly-run-club/"]);
   assert.equal(listings[0].indexing, "index, follow");
   assert.equal(listings[0].claim.href, "/organizers/afterfly/#claim");
+  assert.deepEqual(listings[0].publicApi, {
+    state: "disabled",
+    reason: "Firestore claim target sync still needs create action for clubs/afterfly.",
+    claimTargetSyncStatus: "write_needed",
+  });
   assert.equal(listings[0].city, "Indore");
   assert.equal(listings[0].country, "India");
   assert.equal(listings[0].sourceConfidence, "high");
   assert.equal(listings[0].lastVerifiedAt, "2026-06-17");
+  assert.equal(listings[0].externalEvents.length, 1);
+  assert.equal(listings[0].externalEvents[0].id, "ext-afterfly-future-run");
+  assert.equal(listings[0].externalEvents[0].sourceLabel, "Luma");
+  assert.equal(listings[0].externalEvents[0].sourceHref, "https://luma.com/afterfly-future-run");
+  assert.equal(listings[0].externalEvents[0].availability, "read_only_external");
+  assert.match(listings[0].searchText, /future takeoff run/);
   assert.equal(
     listings.some((listing) => listing.id === "afterfly-run-club-indore"),
     false
@@ -52,6 +77,10 @@ test("approved organizer intake projections render canonical listings and suppre
     scriptPath,
     "--projection-plan",
     projectionPath,
+    "--claim-target-sync-preview",
+    claimTargetSyncPreviewPath,
+    "--external-event-readiness",
+    externalEventReadinessPath,
     "--seed-root",
     seedRoot,
     "--output",
@@ -115,6 +144,88 @@ function approvedProjectionPlan() {
   };
 }
 
+function claimTargetSyncPreview() {
+  return {
+    actions: [
+      {
+        entityId: "afterfly",
+        path: "clubs/afterfly",
+        status: "create",
+      },
+    ],
+    schemaVersion: 1,
+    summary: {
+      targets: 1,
+      writesNeeded: 1,
+    },
+  };
+}
+
+function externalEventReadiness() {
+  return {
+    actions: [
+      {
+        actionId: "preflight-import-afterfly-future-run",
+        sourceActionId: "import-afterfly-future-run",
+        sourceAction: "publish_read_only_external_event",
+        status: "would_publish_read_only",
+        candidateId: "afterfly-future-run-candidate",
+        entityId: "afterfly",
+        targetPath: "externalEvents/ext-afterfly-future-run",
+        sourceStatus: "write_ready",
+        sourceReviewStatus: "approved_for_import",
+        blockers: [],
+        payloadValidation: {valid: true, errors: []},
+        projectionValidation: {valid: true, errors: []},
+        externalEventDocument: {
+          eventId: "ext-afterfly-future-run",
+          canonicalHostId: "afterfly",
+          compatibilityClubId: "afterfly",
+          title: "Future Takeoff Run",
+          description: "Source-attributed run imported as read-only external supply.",
+          startTime: timestamp("2099-01-01T12:30:00.000Z"),
+          endTime: timestamp("2099-01-01T14:30:00.000Z"),
+          timezone: "Asia/Kolkata",
+          meetingPoint: "Nehru Park",
+          activity: {
+            activityKind: "socialRun",
+          },
+          price: {
+            displayText: "0 INR",
+          },
+          status: "active",
+          publicationStatus: "public",
+          booking: {
+            mode: "external_outbound_only",
+            catchBookingEnabled: false,
+            catchPaymentsEnabled: false,
+            catchReservationsEnabled: false,
+            catchWaitlistEnabled: false,
+            externalLinks: [
+              {
+                platform: "luma",
+                url: "https://luma.com/afterfly-future-run",
+                primary: true,
+              },
+            ],
+          },
+          discovery: {
+            availability: "read_only_external",
+          },
+          dedupe: {
+            normalizedEventKey: "afterfly:2099-01-01T18:00:00+05:30:future-takeoff-run",
+          },
+          externalSource: {
+            platform: "luma",
+            eventUrl: "https://luma.com/afterfly-future-run",
+            sourceUrl: "https://luma.com/afterfly-future-run",
+          },
+        },
+      },
+    ],
+  };
+}
+
 function legacySeedListing() {
   return {
     path: "clubs/afterfly-run-club-indore",
@@ -134,5 +245,12 @@ function legacySeedListing() {
         summary: "Legacy seed listing.",
       },
     },
+  };
+}
+
+function timestamp(iso) {
+  return {
+    _seconds: Math.trunc(Date.parse(iso) / 1000),
+    _nanoseconds: 0,
   };
 }
