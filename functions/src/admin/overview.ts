@@ -41,6 +41,9 @@ export interface AdminOverviewResponse {
     label: string;
     state: "ok" | "warning" | "blocked";
     detail: string;
+    owner: string;
+    runbook: string;
+    nextAction: string;
   }>;
 }
 
@@ -309,12 +312,21 @@ export async function adminGetOverviewHandler(
         detail:
           "Using Firebase Auth creation metadata until users/profile " +
           "timestamps are added.",
+        owner: "Growth analytics",
+        runbook: "docs/data_contracts.md",
+        nextAction:
+          "Replace proxy metrics when server-owned profile timestamps land.",
       },
       {
         id: "auth-scan",
         label: "Auth users scanned",
         state: "ok",
         detail: `${signupsThisWeek.scanned} Auth users scanned.`,
+        owner: "Admin platform",
+        runbook: "functions/src/admin/overview.ts",
+        nextAction:
+          "No action; this is a bounded Auth bridge until profile " +
+          "timestamps exist.",
       },
       {
         id: "finance-ledger",
@@ -322,6 +334,11 @@ export async function adminGetOverviewHandler(
         state: "blocked",
         detail:
           "Commission and host settlement records are not modeled yet.",
+        owner: "Finance ops",
+        runbook: "docs/data_contracts.md",
+        nextAction:
+          "Define the ledger/read-model contract before enabling " +
+          "finance actions.",
       },
     ],
   };

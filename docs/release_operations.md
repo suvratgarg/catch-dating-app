@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.7.6
+version: 1.7.7
 updated: 2026-06-18
 owner: recursive_audit_loop
 status: active
@@ -29,7 +29,7 @@ The current workflows are:
 
 | Workflow | Purpose |
 |---|---|
-| `.github/workflows/flutter-ci.yml` | Flutter analysis, unit/widget tests, generated Firestore type drift check. |
+| `.github/workflows/flutter-ci.yml` | Design parity gate, Flutter analysis, unit/widget tests, and UI lint smoke checks. |
 | `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. |
 | `.github/workflows/firestore-rules-ci.yml` | Firestore contract check plus emulator-backed rules tests. |
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
@@ -585,6 +585,24 @@ After each environment, smoke test Explore with city, time, activity, distance,
 map pin, saved-event, signed-up-event, hosted-event, and club-metadata cases.
 In a release-like build with observability enabled, verify
 `explore_event_opened` and `explore_map_event_selected` in Analytics DebugView.
+
+When the admin Organizers and Events canonical directories depend on
+token-backed search, dry-run and then apply the admin-search projection repairs
+after Functions have been built from the matching code:
+
+```bash
+npm --prefix functions run build
+node tool/data/backfill_organizer_admin_search.mjs --env dev --summary-only
+node tool/data/backfill_organizer_admin_search.mjs --env staging --summary-only
+node tool/data/backfill_organizer_admin_search.mjs --env prod --summary-only
+node tool/data/backfill_organizer_admin_search.mjs --env dev --apply
+node tool/data/backfill_event_admin_search.mjs --env dev --summary-only
+node tool/data/backfill_event_admin_search.mjs --env staging --summary-only
+node tool/data/backfill_event_admin_search.mjs --env prod --summary-only
+node tool/data/backfill_event_admin_search.mjs --env dev --apply
+```
+
+Repeat for staging, then prod. Production apply requires `--allow-prod`.
 
 ## Smoke Tests
 

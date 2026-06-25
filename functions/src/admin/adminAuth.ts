@@ -1,6 +1,6 @@
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 
-const ADMIN_ROLE_CLAIMS = [
+export const ADMIN_ROLE_CLAIMS = [
   "admin",
   "adminOwner",
   "safetyReviewer",

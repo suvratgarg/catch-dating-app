@@ -31,6 +31,8 @@ Match _buildMatch({
   String? lastMessageSenderId,
   MatchStatus status = MatchStatus.active,
   Map<String, int> unreadCounts = const {},
+  MatchConversationType conversationType = MatchConversationType.match,
+  String? clubId,
 }) {
   return Match(
     id: id,
@@ -43,6 +45,8 @@ Match _buildMatch({
     lastMessageSenderId: lastMessageSenderId,
     status: status,
     unreadCounts: unreadCounts,
+    conversationType: conversationType,
+    clubId: clubId,
   );
 }
 
@@ -227,6 +231,55 @@ void main() {
     expect(collapsed.single.eventIds, const ['event-1', 'event-2']);
     expect(collapsed.single.latestEventId, 'event-2');
   });
+
+  test(
+    'collapseMatchesByOtherUser groups host inquiries by club and attendee',
+    () {
+      final collapsed = collapseMatchesByOtherUser([
+        _buildMatch(
+          id: 'club-a-older',
+          eventIds: const ['event-a-1'],
+          createdAt: DateTime(2025, 1, 1, 7),
+          lastMessageAt: DateTime(2025, 1, 1, 8),
+          lastMessagePreview: 'Older club A message',
+          lastMessageSenderId: 'runner-2',
+          conversationType: MatchConversationType.clubHostInquiry,
+          clubId: 'club-a',
+        ),
+        _buildMatch(
+          id: 'club-a-newer',
+          eventIds: const ['event-a-2'],
+          createdAt: DateTime(2025, 1, 2, 7),
+          lastMessageAt: DateTime(2025, 1, 2, 8),
+          lastMessagePreview: 'Newer club A message',
+          lastMessageSenderId: 'runner-2',
+          unreadCounts: const {'runner-1': 4},
+          conversationType: MatchConversationType.clubHostInquiry,
+          clubId: 'club-a',
+        ),
+        _buildMatch(
+          id: 'club-b',
+          eventIds: const ['event-b-1'],
+          createdAt: DateTime(2025, 1, 3, 7),
+          lastMessageAt: DateTime(2025, 1, 3, 8),
+          lastMessagePreview: 'Club B message',
+          lastMessageSenderId: 'runner-2',
+          conversationType: MatchConversationType.clubHostInquiry,
+          clubId: 'club-b',
+        ),
+      ], 'runner-1');
+
+      expect(collapsed.map((match) => match.id).toSet(), {
+        'club-a-newer',
+        'club-b',
+      });
+      final clubA = collapsed.singleWhere(
+        (match) => match.id == 'club-a-newer',
+      );
+      expect(clubA.eventIds, const ['event-a-1', 'event-a-2']);
+      expect(clubA.unreadCounts['runner-1'], 1);
+    },
+  );
 
   test(
     'collapseMatchesByOtherUser ignores stale unread values on own sent messages',

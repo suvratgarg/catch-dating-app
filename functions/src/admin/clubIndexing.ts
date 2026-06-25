@@ -8,8 +8,16 @@ import {AdminSetClubIndexStatusCallablePayload} from
   "../shared/generated/adminSetClubIndexStatusCallablePayload";
 import {validateAdminSetClubIndexStatusCallablePayload} from
   "../shared/generated/schemaValidators";
-import {validateCallableWithAjv} from "../shared/validation";
+import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
+import {ClubDocument} from "../shared/generated/firestoreAdminTypes";
+import {
+  reserveOrganizerCanonicalRoute,
+} from "./organizerPublishingGuards";
+import {
+  buildOrganizerAdminSearchProjection,
+  clubWithPublicPageForSearch,
+} from "./organizerAdminSearch";
 
 const indexReviewRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -57,6 +65,12 @@ export async function adminSetClubIndexStatusHandler(
       normalizeAdminSetClubIndexStatusPayload
     );
   assertChecklistForIndexableStatus(data.indexStatus, data.checklist);
+  if (!data.reviewNote) {
+    throw new HttpsError(
+      "invalid-argument",
+      "A review note is required for audited organizer indexing decisions."
+    );
+  }
 
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminSetClubIndexStatus");
@@ -72,6 +86,19 @@ export async function adminSetClubIndexStatusHandler(
     if (!clubSnap.exists) {
       throw new HttpsError("not-found", "Organizer listing not found.");
     }
+    const before = requireDoc<ClubDocument>(clubSnap, "ClubDocument");
+    if (data.indexStatus !== "noindex") {
+      await reserveOrganizerCanonicalRoute(tx, db, {
+        clubId: data.clubId,
+        canonicalPath: before.publicPage?.canonicalPath ?? "",
+        slug: before.publicPage?.slug,
+        citySlug: before.publicPage?.citySlug,
+        previousCanonicalPath: before.publicPage?.canonicalPath ?? null,
+        adminUid: adminContext.uid,
+        source: "adminSetClubIndexStatus",
+        serverTimestamp: () => timestamp,
+      });
+    }
 
     tx.update(clubRef, {
       "publicPage.indexStatus": data.indexStatus,
@@ -84,12 +111,24 @@ export async function adminSetClubIndexStatusHandler(
         checklist: data.checklist,
         reviewNote: data.reviewNote ?? null,
       },
+      "adminSearch": buildOrganizerAdminSearchProjection(
+        data.clubId,
+        clubWithPublicPageForSearch(before, {
+          indexStatus: data.indexStatus,
+          publishStatus,
+          robots,
+        }),
+        timestamp,
+        "adminSetClubIndexStatus"
+      ),
     });
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminSetClubIndexStatus",
       targetPath: clubRef.path,
       request,
-      before: {},
+      before: {
+        publicPage: before.publicPage ?? null,
+      },
       after: {
         clubId: data.clubId,
         indexStatus: data.indexStatus,

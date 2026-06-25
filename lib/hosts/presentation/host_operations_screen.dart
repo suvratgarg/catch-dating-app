@@ -15,19 +15,25 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_info_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_settings_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -36,38 +42,80 @@ import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
+import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class HostOperationsHomeScreen extends ConsumerWidget {
-  const HostOperationsHomeScreen({super.key});
+  const HostOperationsHomeScreen({
+    super.key,
+    this.initialClubId,
+    this.initialTab = HostHomeTab.today,
+  });
+
+  final String? initialClubId;
+  final HostHomeTab initialTab;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uid = ref.watch(uidProvider).asData?.value;
-    if (uid == null) return const _HostAuthRequiredScreen();
-
-    final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));
-    return clubsAsync.when(
-      loading: () => const _HostLoadingScreen(),
-      error: (error, _) => CatchErrorScaffold.fromError(
-        error,
-        context: AppErrorContext.club,
-        onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
-      ),
-      data: (clubs) => _HostEventsScaffold(clubs: clubs, currentUid: uid),
+    final uidAsync = ref.watch(uidProvider);
+    final uid = uidAsync.asData?.value;
+    final clubsAsync = uid == null
+        ? null
+        : ref.watch(_hostClubsForUserProvider(uid));
+    final routeState = HostHomeRouteState.fromAsync(
+      uid: uidAsync,
+      clubs: clubsAsync,
     );
+
+    return switch (routeState.status) {
+      HostHomeRouteStatus.authRequired => const _HostAuthRequiredScreen(),
+      HostHomeRouteStatus.loading => const _HostLoadingScreen(
+        title: 'Host events',
+      ),
+      HostHomeRouteStatus.error => CatchErrorScaffold.fromError(
+        routeState.error!,
+        context: routeState.errorContext,
+        onRetry: () => _retryHostHomeRoute(ref, routeState),
+      ),
+      HostHomeRouteStatus.empty => _HostEventsScaffold(
+        clubs: routeState.clubs,
+        currentUid: routeState.uid!,
+        initialClubId: initialClubId,
+        initialTab: initialTab,
+      ),
+      HostHomeRouteStatus.loaded => _HostEventsScaffold(
+        clubs: routeState.clubs,
+        currentUid: routeState.uid!,
+        initialClubId: initialClubId,
+        initialTab: initialTab,
+      ),
+    };
   }
 }
 
 class HostClubsScreen extends ConsumerWidget {
-  const HostClubsScreen({super.key});
+  const HostClubsScreen({
+    super.key,
+    this.initialClubId,
+    this.initialTab = HostClubTab.organizer,
+    this.initialExpandedEditField,
+  });
+
+  final String? initialClubId;
+  final HostClubTab initialTab;
+  final String? initialExpandedEditField;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -75,21 +123,571 @@ class HostClubsScreen extends ConsumerWidget {
     if (uid == null) return const _HostAuthRequiredScreen();
 
     final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));
-    return clubsAsync.when(
-      loading: () => const _HostLoadingScreen(),
-      error: (error, _) => CatchErrorScaffold.fromError(
+    return CatchAsyncValueView<List<Club>>(
+      value: clubsAsync,
+      loadingBuilder: (_) =>
+          const _HostLoadingScreen(title: 'Clubs', showTabRail: true),
+      errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
         error,
         context: AppErrorContext.club,
         onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
       ),
-      data: (clubs) => _HostClubsScaffold(clubs: clubs, currentUid: uid),
+      builder: (context, clubs) => _HostClubsScaffold(
+        clubs: clubs,
+        currentUid: uid,
+        initialClubId: initialClubId,
+        initialTab: initialTab,
+        initialExpandedEditField: initialExpandedEditField,
+      ),
     );
   }
 }
 
-enum _HostAccountTab { edit, preview }
+void _retryHostHomeRoute(WidgetRef ref, HostHomeRouteState state) {
+  final uid = state.uid;
+  if (state.errorContext == AppErrorContext.auth || uid == null) {
+    ref.invalidate(uidProvider);
+    return;
+  }
+  ref.invalidate(_hostClubsForUserProvider(uid));
+}
 
-enum _HostClubTab { edit, insights, preview }
+enum HostSettingsMode { edit, preview }
+
+enum HostClubTab { organizer, edit, insights, preview }
+
+enum HostHomeTab { today, events }
+
+typedef HostHomeCreateEventCallback = void Function(Club club);
+typedef HostHomeManageEventCallback = void Function(Club club, Event event);
+typedef HostClubPreviewCallback = void Function(Club club);
+
+enum HostHomeRouteStatus { authRequired, loading, error, empty, loaded }
+
+@immutable
+class HostHomeRouteState {
+  const HostHomeRouteState._({
+    required this.status,
+    this.uid,
+    this.clubs = const [],
+    this.error,
+    this.stackTrace,
+    this.errorContext = AppErrorContext.club,
+  });
+
+  factory HostHomeRouteState.fromAsync({
+    required AsyncValue<String?> uid,
+    AsyncValue<List<Club>>? clubs,
+  }) {
+    if (uid.hasError) {
+      return HostHomeRouteState._(
+        status: HostHomeRouteStatus.error,
+        error: uid.error,
+        stackTrace: uid.stackTrace,
+        errorContext: AppErrorContext.auth,
+      );
+    }
+
+    final currentUid = uid.asData?.value;
+    if (currentUid == null) {
+      return uid.isLoading
+          ? const HostHomeRouteState._(status: HostHomeRouteStatus.loading)
+          : const HostHomeRouteState._(
+              status: HostHomeRouteStatus.authRequired,
+            );
+    }
+
+    final clubValue = clubs;
+    if (clubValue == null || clubValue.isLoading) {
+      return HostHomeRouteState._(
+        status: HostHomeRouteStatus.loading,
+        uid: currentUid,
+      );
+    }
+    if (clubValue.hasError) {
+      return HostHomeRouteState._(
+        status: HostHomeRouteStatus.error,
+        uid: currentUid,
+        error: clubValue.error,
+        stackTrace: clubValue.stackTrace,
+      );
+    }
+
+    final resolvedClubs = List<Club>.unmodifiable(
+      clubValue.asData?.value ?? const <Club>[],
+    );
+    return HostHomeRouteState._(
+      status: resolvedClubs.isEmpty
+          ? HostHomeRouteStatus.empty
+          : HostHomeRouteStatus.loaded,
+      uid: currentUid,
+      clubs: resolvedClubs,
+    );
+  }
+
+  final HostHomeRouteStatus status;
+  final String? uid;
+  final List<Club> clubs;
+  final Object? error;
+  final StackTrace? stackTrace;
+  final AppErrorContext errorContext;
+}
+
+@immutable
+class HostHomeScreenState {
+  const HostHomeScreenState._({
+    required this.clubs,
+    required this.currentUid,
+    required this.selectedClubIndex,
+    required this.selectedTab,
+  });
+
+  factory HostHomeScreenState.resolve({
+    required List<Club> clubs,
+    required String currentUid,
+    int selectedClubIndex = 0,
+    String? selectedClubId,
+    HostHomeTab selectedTab = HostHomeTab.today,
+  }) {
+    return HostHomeScreenState._(
+      clubs: List<Club>.unmodifiable(clubs),
+      currentUid: currentUid,
+      selectedClubIndex: _resolveSelectedClubIndex(
+        clubs: clubs,
+        selectedClubIndex: selectedClubIndex,
+        selectedClubId: selectedClubId,
+      ),
+      selectedTab: selectedTab,
+    );
+  }
+
+  final List<Club> clubs;
+  final String currentUid;
+  final int selectedClubIndex;
+  final HostHomeTab selectedTab;
+
+  bool get hasClubs => clubs.isNotEmpty;
+  bool get showClubPicker => clubs.length > 1;
+  Club? get selectedClub => hasClubs ? clubs[selectedClubIndex] : null;
+  String get title => selectedClub?.name ?? 'Host events';
+  bool get selectedClubIsOwner => selectedClub?.isOwnedBy(currentUid) ?? false;
+  String get selectedClubRoleLabel =>
+      selectedClubIsOwner ? 'Owner' : 'Host team';
+
+  HostHomeScreenState selectClubIndex(int index) {
+    return HostHomeScreenState.resolve(
+      clubs: clubs,
+      currentUid: currentUid,
+      selectedClubIndex: index,
+      selectedTab: selectedTab,
+    );
+  }
+
+  HostHomeScreenState selectTab(HostHomeTab tab) {
+    return HostHomeScreenState.resolve(
+      clubs: clubs,
+      currentUid: currentUid,
+      selectedClubIndex: selectedClubIndex,
+      selectedTab: tab,
+    );
+  }
+}
+
+@immutable
+class HostHomeEventRowsState {
+  const HostHomeEventRowsState._({required this.rows});
+
+  factory HostHomeEventRowsState.fromEvents(
+    Iterable<Event> events, {
+    int limit = 3,
+  }) {
+    final activeEvents = events.where((event) => !event.isCancelled).toList()
+      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+    final visibleEvents = activeEvents.take(limit).toList(growable: false);
+    return HostHomeEventRowsState._(
+      rows: [
+        for (var index = 0; index < visibleEvents.length; index++)
+          HostHomeEventRowData(event: visibleEvents[index], divider: index > 0),
+      ],
+    );
+  }
+
+  final List<HostHomeEventRowData> rows;
+
+  bool get isEmpty => rows.isEmpty;
+}
+
+@immutable
+class HostHomeEventRowData {
+  const HostHomeEventRowData({required this.event, required this.divider});
+
+  final Event event;
+  final bool divider;
+
+  String get title => event.title;
+  String get timeRangeLabel => event.timeRangeLabel;
+}
+
+enum HostHomeEventsStatus { loading, error, empty, populated }
+
+@immutable
+class HostHomeEventsSectionState {
+  const HostHomeEventsSectionState._({
+    required this.status,
+    this.rows = const HostHomeEventRowsState._(rows: []),
+    this.error,
+    this.stackTrace,
+  });
+
+  factory HostHomeEventsSectionState.fromAsync(AsyncValue<List<Event>> events) {
+    if (events.isLoading) {
+      return const HostHomeEventsSectionState._(
+        status: HostHomeEventsStatus.loading,
+      );
+    }
+    if (events.hasError) {
+      return HostHomeEventsSectionState._(
+        status: HostHomeEventsStatus.error,
+        error: events.error,
+        stackTrace: events.stackTrace,
+      );
+    }
+
+    final rows = HostHomeEventRowsState.fromEvents(
+      events.asData?.value ?? const <Event>[],
+    );
+    return HostHomeEventsSectionState._(
+      status: rows.isEmpty
+          ? HostHomeEventsStatus.empty
+          : HostHomeEventsStatus.populated,
+      rows: rows,
+    );
+  }
+
+  final HostHomeEventsStatus status;
+  final HostHomeEventRowsState rows;
+  final Object? error;
+  final StackTrace? stackTrace;
+}
+
+enum HostHomeTodayStatus { loading, error, empty, content }
+
+@immutable
+class HostHomeTodayDashboardState {
+  const HostHomeTodayDashboardState._({
+    required this.status,
+    this.event,
+    this.tasks = const <HostHomeTodayTaskData>[],
+    this.error,
+    this.stackTrace,
+  });
+
+  factory HostHomeTodayDashboardState.fromAsync(
+    AsyncValue<List<Event>> events,
+  ) {
+    if (events.isLoading) {
+      return const HostHomeTodayDashboardState._(
+        status: HostHomeTodayStatus.loading,
+      );
+    }
+    if (events.hasError) {
+      return HostHomeTodayDashboardState._(
+        status: HostHomeTodayStatus.error,
+        error: events.error,
+        stackTrace: events.stackTrace,
+      );
+    }
+
+    final activeEvents = events.asData?.value
+        .where((event) => !event.isCancelled)
+        .toList();
+    activeEvents?.sort((a, b) => a.startTime.compareTo(b.startTime));
+    final event = activeEvents?.firstOrNull;
+    if (event == null) {
+      return const HostHomeTodayDashboardState._(
+        status: HostHomeTodayStatus.empty,
+      );
+    }
+
+    return HostHomeTodayDashboardState._(
+      status: HostHomeTodayStatus.content,
+      event: event,
+      tasks: HostHomeTodayTaskData.forEvent(event),
+    );
+  }
+
+  final HostHomeTodayStatus status;
+  final Event? event;
+  final List<HostHomeTodayTaskData> tasks;
+  final Object? error;
+  final StackTrace? stackTrace;
+}
+
+@immutable
+class HostHomeTodayTaskData {
+  const HostHomeTodayTaskData({
+    required this.title,
+    required this.body,
+    required this.primaryActionLabel,
+    required this.secondaryActionLabel,
+    required this.icon,
+  });
+
+  factory HostHomeTodayTaskData.approveRequests(Event event) {
+    final waitlistCount = event.waitlistCount;
+    return HostHomeTodayTaskData(
+      title: 'Approve requests',
+      body: waitlistCount > 0
+          ? '$waitlistCount people want into ${event.title}'
+          : 'Review pending guest requests before the event opens.',
+      primaryActionLabel: 'Approve',
+      secondaryActionLabel: 'Later',
+      icon: CatchIcons.personSearchOutlined,
+    );
+  }
+
+  factory HostHomeTodayTaskData.offerWaitlist(Event event) {
+    final waitlistCount = event.waitlistCount;
+    final openCount = event.spotsRemaining;
+    return HostHomeTodayTaskData(
+      title: 'Offer waitlist spots',
+      body: waitlistCount > 0
+          ? '$waitlistCount waiting · $openCount spots open'
+          : 'No waitlist pressure right now.',
+      primaryActionLabel: waitlistCount > 0 ? 'Offer $waitlistCount' : 'Review',
+      secondaryActionLabel: 'Later',
+      icon: CatchIcons.groupAddOutlined,
+    );
+  }
+
+  factory HostHomeTodayTaskData.guestWaiting(Event event) {
+    return HostHomeTodayTaskData(
+      title: 'A guest is waiting on you',
+      body: 'Reply before ${EventFormatters.time(event.startTime)}.',
+      primaryActionLabel: 'Reply',
+      secondaryActionLabel: 'Later',
+      icon: CatchIcons.chatBubbleOutlineRounded,
+    );
+  }
+
+  factory HostHomeTodayTaskData.hostSetup(Event event) {
+    return HostHomeTodayTaskData(
+      title: 'Check host setup',
+      body: 'Confirm entry flow, venue notes, and host cues.',
+      primaryActionLabel: 'Check',
+      secondaryActionLabel: 'Later',
+      icon: CatchIcons.factCheckOutlined,
+    );
+  }
+
+  static List<HostHomeTodayTaskData> forEvent(Event event) => [
+    HostHomeTodayTaskData.approveRequests(event),
+    HostHomeTodayTaskData.offerWaitlist(event),
+    HostHomeTodayTaskData.guestWaiting(event),
+    HostHomeTodayTaskData.hostSetup(event),
+  ];
+
+  final String title;
+  final String body;
+  final String primaryActionLabel;
+  final String secondaryActionLabel;
+  final IconData icon;
+}
+
+@immutable
+class HostClubsScreenState {
+  const HostClubsScreenState._({
+    required this.clubs,
+    required this.currentUid,
+    required this.selectedClubIndex,
+    required this.selectedTab,
+  });
+
+  factory HostClubsScreenState.resolve({
+    required List<Club> clubs,
+    required String currentUid,
+    int selectedClubIndex = 0,
+    String? selectedClubId,
+    HostClubTab selectedTab = HostClubTab.organizer,
+  }) {
+    return HostClubsScreenState._(
+      clubs: List<Club>.unmodifiable(clubs),
+      currentUid: currentUid,
+      selectedClubIndex: _resolveSelectedClubIndex(
+        clubs: clubs,
+        selectedClubIndex: selectedClubIndex,
+        selectedClubId: selectedClubId,
+      ),
+      selectedTab: selectedTab,
+    );
+  }
+
+  final List<Club> clubs;
+  final String currentUid;
+  final int selectedClubIndex;
+  final HostClubTab selectedTab;
+
+  bool get hasClubs => clubs.isNotEmpty;
+  bool get showClubPicker => clubs.length > 1;
+  Club? get selectedClub => hasClubs ? clubs[selectedClubIndex] : null;
+  String get title => selectedClub?.name ?? 'Clubs';
+  bool get selectedClubIsOwner => selectedClub?.isOwnedBy(currentUid) ?? false;
+
+  HostClubsScreenState selectClubIndex(int index) {
+    return HostClubsScreenState.resolve(
+      clubs: clubs,
+      currentUid: currentUid,
+      selectedClubIndex: index,
+      selectedTab: selectedTab,
+    );
+  }
+
+  HostClubsScreenState selectTab(HostClubTab tab) {
+    return HostClubsScreenState.resolve(
+      clubs: clubs,
+      currentUid: currentUid,
+      selectedClubIndex: selectedClubIndex,
+      selectedTab: tab,
+    );
+  }
+
+  static int _resolveSelectedClubIndex({
+    required List<Club> clubs,
+    required int selectedClubIndex,
+    String? selectedClubId,
+  }) {
+    if (clubs.isEmpty) return 0;
+    final selectedId = selectedClubId;
+    if (selectedId != null) {
+      final index = clubs.indexWhere((club) => club.id == selectedId);
+      if (index != -1) return index;
+    }
+    if (selectedClubIndex < 0) return 0;
+    if (selectedClubIndex >= clubs.length) return clubs.length - 1;
+    return selectedClubIndex;
+  }
+}
+
+@immutable
+class HostClubInsightsState {
+  const HostClubInsightsState._({
+    required this.clubId,
+    required this.rangePreset,
+    required this.granularity,
+    required this.selectedEventId,
+    required this.customStartDate,
+    required this.customEndDate,
+  });
+
+  factory HostClubInsightsState.initial({
+    required String clubId,
+    DateTime? now,
+  }) {
+    final today = DateUtils.dateOnly(now ?? DateTime.now());
+    return HostClubInsightsState._(
+      clubId: clubId,
+      rangePreset: HostAnalyticsRangePreset.thirtyDays,
+      granularity: HostAnalyticsGranularity.day,
+      selectedEventId: null,
+      customStartDate: DateTime(today.year, today.month, today.day - 29),
+      customEndDate: today,
+    );
+  }
+
+  final String clubId;
+  final HostAnalyticsRangePreset rangePreset;
+  final HostAnalyticsGranularity granularity;
+  final String? selectedEventId;
+  final DateTime customStartDate;
+  final DateTime customEndDate;
+
+  HostAnalyticsQuery get query {
+    return HostAnalyticsQuery(
+      clubId: clubId,
+      eventId: selectedEventId,
+      rangePreset: rangePreset,
+      startDate: customStartDate,
+      endDate: customEndDate,
+      granularity: granularity,
+    );
+  }
+
+  HostClubInsightsState selectClub(String clubId) {
+    if (clubId == this.clubId) return this;
+    return _copyWith(clubId: clubId, selectedEventId: null);
+  }
+
+  HostClubInsightsState selectRange(HostAnalyticsRangePreset rangePreset) {
+    return _copyWith(rangePreset: rangePreset);
+  }
+
+  HostClubInsightsState selectGranularity(
+    HostAnalyticsGranularity granularity,
+  ) {
+    return _copyWith(granularity: granularity);
+  }
+
+  HostClubInsightsState selectEvent(String eventId) {
+    return _copyWith(selectedEventId: eventId);
+  }
+
+  HostClubInsightsState clearEvent() {
+    if (selectedEventId == null) return this;
+    return _copyWith(selectedEventId: null);
+  }
+
+  HostClubInsightsState selectCustomStartDate(DateTime date) {
+    return _copyWith(
+      rangePreset: HostAnalyticsRangePreset.custom,
+      customStartDate: DateUtils.dateOnly(date),
+    );
+  }
+
+  HostClubInsightsState selectCustomEndDate(DateTime date) {
+    return _copyWith(
+      rangePreset: HostAnalyticsRangePreset.custom,
+      customEndDate: DateUtils.dateOnly(date),
+    );
+  }
+
+  HostClubInsightsState _copyWith({
+    String? clubId,
+    HostAnalyticsRangePreset? rangePreset,
+    HostAnalyticsGranularity? granularity,
+    Object? selectedEventId = _unchanged,
+    DateTime? customStartDate,
+    DateTime? customEndDate,
+  }) {
+    return HostClubInsightsState._(
+      clubId: clubId ?? this.clubId,
+      rangePreset: rangePreset ?? this.rangePreset,
+      granularity: granularity ?? this.granularity,
+      selectedEventId: selectedEventId == _unchanged
+          ? this.selectedEventId
+          : selectedEventId as String?,
+      customStartDate: customStartDate ?? this.customStartDate,
+      customEndDate: customEndDate ?? this.customEndDate,
+    );
+  }
+}
+
+const Object _unchanged = Object();
+
+int _resolveSelectedClubIndex({
+  required List<Club> clubs,
+  required int selectedClubIndex,
+  String? selectedClubId,
+}) {
+  if (clubs.isEmpty) return 0;
+  final selectedId = selectedClubId;
+  if (selectedId != null) {
+    final index = clubs.indexWhere((club) => club.id == selectedId);
+    if (index != -1) return index;
+  }
+  if (selectedClubIndex < 0) return 0;
+  if (selectedClubIndex >= clubs.length) return clubs.length - 1;
+  return selectedClubIndex;
+}
 
 const _hostClubTabRailKey = ValueKey('host-club-tab-rail');
 
@@ -101,7 +699,7 @@ class HostAccountScreen extends ConsumerStatefulWidget {
 }
 
 class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
-  var _selectedTab = _HostAccountTab.edit;
+  var _selectedTab = HostSettingsMode.edit;
 
   @override
   Widget build(BuildContext context) {
@@ -113,123 +711,79 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
     final clubsAsync = uid == null
         ? const AsyncData<List<Club>>([])
         : ref.watch(_hostClubsForUserProvider(uid));
-    final loadedProfile = hostProfileAsync.asData?.value;
-    final fallbackProfile = uid == null
-        ? null
-        : _fallbackHostProfileFromClubs(uid, clubsAsync.asData?.value);
-    final profile = loadedProfile ?? fallbackProfile;
-    final isEditMode = _selectedTab == _HostAccountTab.edit;
-    final profileIsBlockedLoading =
-        hostProfileAsync.isLoading && profile == null;
-    final profileIsBlockedError = hostProfileAsync.hasError && profile == null;
+    final state = HostSettingsState.fromAsync(
+      uid: uid,
+      profile: hostProfileAsync,
+      clubs: clubsAsync,
+    );
+    final profileForEdit = switch (state.profile) {
+      HostSettingsProfileContent(:final profile) => profile,
+      _ => null,
+    };
+    final ensureMutation = ref.watch(
+      HostProfileController.ensureProfileMutation,
+    );
+    final signOutMutation = ref.watch(AuthSessionController.signOutMutation);
+    final isEditMode = _selectedTab == HostSettingsMode.edit;
 
-    return Scaffold(
-      backgroundColor: t.bg,
-      appBar: CatchTopBar(
-        title: 'Host profile',
-        showBackButton: false,
-        border: true,
-        actions: [
-          CatchTopBarIconAction(
-            tooltip: 'Sign out',
-            icon: CatchIcons.logoutRounded,
-            onPressed: () => unawaited(_signOut(context, ref)),
-          ),
+    return CatchMutationErrorListener(
+      mutation: AuthSessionController.signOutMutation,
+      errorContext: AppErrorContext.auth,
+      child: CatchMutationErrorListeners(
+        mutations: [
+          HostProfileController.ensureProfileMutation,
+          HostProfileController.saveProfileMutation,
         ],
-        bottom: _HostAccountTabRail(
-          selected: _selectedTab,
-          onChanged: (tab) => setState(() => _selectedTab = tab),
+        errorContext: AppErrorContext.profile,
+        child: Scaffold(
+          backgroundColor: t.bg,
+          appBar: CatchTopBar(
+            title: 'Host profile',
+            showBackButton: false,
+            border: true,
+            actions: [
+              CatchTopBarIconAction(
+                tooltip: 'Sign out',
+                icon: CatchIcons.logoutRounded,
+                onPressed: signOutMutation.isPending
+                    ? null
+                    : () => unawaited(_signOut(context, ref)),
+              ),
+            ],
+            bottom: HostSettingsTabRail(
+              selected: _selectedTab,
+              onChanged: (tab) => setState(() => _selectedTab = tab),
+            ),
+          ),
+          body: ListView(
+            padding: CatchInsets.pageBodyUnderHeader,
+            children: [
+              HostSettingsProfileSection(
+                state: state.profile,
+                editMode: isEditMode,
+                creatingProfile: ensureMutation.isPending,
+                onRetry: uid == null
+                    ? null
+                    : () => ref.invalidate(watchHostProfileProvider(uid)),
+                onCreateProfile: uid == null
+                    ? null
+                    : () => unawaited(_createHostProfile()),
+                onEditProfile: uid != null && profileForEdit != null
+                    ? () => unawaited(_openProfileEditor(uid, profileForEdit))
+                    : null,
+              ),
+              HostSettingsClubsSection(
+                uid: uid,
+                state: state.clubs,
+                onRetry: uid == null
+                    ? null
+                    : () => ref.invalidate(_hostClubsForUserProvider(uid)),
+                editMode: isEditMode,
+                onOpenClub: (club) => _openSettingsClub(club, isEditMode, uid),
+              ),
+            ],
+          ),
         ),
-      ),
-      body: ListView(
-        padding: CatchInsets.pageBodyUnderHeader,
-        children: [
-          if (profileIsBlockedLoading)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: CatchSpacing.s4),
-              child: CatchLoadingIndicator(),
-            )
-          else if (profileIsBlockedError)
-            CatchErrorState.fromError(
-              hostProfileAsync.error!,
-              onRetry: uid == null
-                  ? null
-                  : () => ref.invalidate(watchHostProfileProvider(uid)),
-            )
-          else if (profile == null)
-            _HostAccountSection(
-              label: 'Profile',
-              first: true,
-              children: [
-                CatchSettingsRow(
-                  label: 'Display name',
-                  value: 'Create host profile',
-                  icon: CatchIcons.businessOutlined,
-                  onTap: uid == null
-                      ? null
-                      : () => unawaited(_createHostProfile(uid)),
-                ),
-              ],
-            )
-          else ...[
-            _HostAccountSection(
-              label: 'Profile',
-              first: true,
-              children: [
-                CatchSettingsRow(
-                  label: 'Display name',
-                  value: profile.displayName,
-                  icon: CatchIcons.personOutlineRounded,
-                  onTap: isEditMode && uid != null
-                      ? () => unawaited(_openProfileEditor(uid, profile))
-                      : null,
-                  showChevron: isEditMode,
-                ),
-                CatchSettingsRow(
-                  label: 'Role title',
-                  value: profile.roleTitle?.trim().isNotEmpty == true
-                      ? profile.roleTitle!.trim()
-                      : 'Add role title',
-                  icon: CatchIcons.cardMembershipOutlined,
-                  divider: true,
-                  onTap: isEditMode && uid != null
-                      ? () => unawaited(_openProfileEditor(uid, profile))
-                      : null,
-                  showChevron: isEditMode,
-                ),
-                CatchSettingsRow(
-                  label: 'Status',
-                  value: _hostProfileStatusLabel(profile.status),
-                  icon: CatchIcons.checkCircleOutlineRounded,
-                  divider: true,
-                  showChevron: false,
-                ),
-              ],
-            ),
-            _HostAccountSection(
-              label: 'Bio',
-              children: [
-                CatchSettingsRow(
-                  label: 'About you as a host',
-                  value: profile.bio?.trim().isNotEmpty == true
-                      ? profile.bio!.trim()
-                      : 'Add a host bio',
-                  icon: CatchIcons.chatBubbleOutlineRounded,
-                  valueMaxLines: 2,
-                  onTap: isEditMode && uid != null
-                      ? () => unawaited(_openProfileEditor(uid, profile))
-                      : null,
-                  showChevron: isEditMode,
-                ),
-              ],
-            ),
-          ],
-          _HostAccountClubsSection(
-            uid: uid,
-            clubsAsync: clubsAsync,
-            editMode: isEditMode,
-          ),
-        ],
       ),
     );
   }
@@ -239,23 +793,36 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      builder: (_) => _HostProfileEditorSheet(uid: uid, profile: profile),
+      builder: (_) => HostProfileEditorSheet(profile: profile),
     );
     if (saved == true && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Host profile saved.')));
+      showCatchSnackBar(context, 'Host profile saved.');
     }
   }
 
-  Future<void> _createHostProfile(String uid) async {
-    await ref
-        .read(hostProfileRepositoryProvider)
-        .ensureHostProfile(uid: uid, displayName: 'Catch Host');
+  Future<void> _createHostProfile() async {
+    try {
+      await HostProfileController.ensureProfileMutation.run(
+        ref,
+        (tx) async =>
+            tx.get(hostProfileControllerProvider.notifier).ensureProfile(),
+      );
+    } catch (_) {
+      // CatchMutationErrorListener owns user-facing error display.
+      return;
+    }
     if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Host profile created.')));
+    showCatchSnackBar(context, 'Host profile created.');
+  }
+
+  void _openSettingsClub(Club club, bool editMode, String? uid) {
+    context.pushNamed(
+      editMode && club.isOwnedBy(uid)
+          ? Routes.hostEditClubScreen.name
+          : Routes.hostClubDetailScreen.name,
+      pathParameters: {'clubId': club.id},
+      extra: club,
+    );
   }
 
   Future<void> _signOut(BuildContext context, WidgetRef ref) async {
@@ -266,21 +833,24 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
         ref,
         (tx) async => tx.get(authSessionControllerProvider.notifier).signOut(),
       );
-    } catch (error) {
-      if (!context.mounted) return;
-      showCatchErrorSnackBar(context, error);
+    } catch (_) {
+      // CatchMutationErrorListener owns user-facing error display.
       return;
     }
     if (context.mounted) context.go(Routes.startScreen.path);
   }
 }
 
-class _HostAccountTabRail extends StatelessWidget
+class HostSettingsTabRail extends StatelessWidget
     implements PreferredSizeWidget {
-  const _HostAccountTabRail({required this.selected, required this.onChanged});
+  const HostSettingsTabRail({
+    super.key,
+    required this.selected,
+    required this.onChanged,
+  });
 
-  final _HostAccountTab selected;
-  final ValueChanged<_HostAccountTab> onChanged;
+  final HostSettingsMode selected;
+  final ValueChanged<HostSettingsMode> onChanged;
 
   @override
   Size get preferredSize => const Size.fromHeight(48);
@@ -296,12 +866,12 @@ class _HostAccountTabRail extends StatelessWidget
           CatchSpacing.s5,
           CatchSpacing.s2,
         ),
-        child: CatchOptionGroup<_HostAccountTab>(
+        child: CatchOptionGroup<HostSettingsMode>(
           selected: selected,
           onChanged: onChanged,
           options: const [
-            CatchOption(value: _HostAccountTab.edit, label: 'Edit'),
-            CatchOption(value: _HostAccountTab.preview, label: 'Preview'),
+            CatchOption(value: HostSettingsMode.edit, label: 'Edit'),
+            CatchOption(value: HostSettingsMode.preview, label: 'Preview'),
           ],
         ),
       ),
@@ -309,56 +879,9 @@ class _HostAccountTabRail extends StatelessWidget
   }
 }
 
-HostProfile? _fallbackHostProfileFromClubs(String uid, List<Club>? clubs) {
-  if (clubs == null || clubs.isEmpty) return null;
-  final hostedClubs = clubs.where((club) => club.isHostedBy(uid)).toList();
-  if (hostedClubs.isEmpty) return null;
-  final firstClub = hostedClubs.first;
-  ClubHostProfile? clubHostProfile;
-  for (final club in hostedClubs) {
-    for (final profile in club.displayHostProfiles) {
-      if (profile.uid == uid) {
-        clubHostProfile = profile;
-        break;
-      }
-    }
-    if (clubHostProfile != null) break;
-  }
-
-  final displayName = _firstNonBlank([
-    clubHostProfile?.displayName,
-    firstClub.hostName,
-    firstClub.displayHostName,
-    'Catch Host',
-  ]);
-  final avatarUrl = _firstNonBlank([
-    clubHostProfile?.avatarUrl,
-    firstClub.hostAvatarUrl,
-  ]);
-  final ownsAnyClub = hostedClubs.any((club) => club.isOwnedBy(uid));
-
-  return HostProfile(
-    uid: uid,
-    displayName: displayName,
-    avatarUrl: avatarUrl,
-    roleTitle: ownsAnyClub ? 'Owner' : 'Host team',
-    status: HostProfileStatus.active,
-    linkedClubIds: [for (final club in hostedClubs) club.id],
-    createdAt: null,
-    updatedAt: null,
-  );
-}
-
-String _firstNonBlank(Iterable<String?> values) {
-  for (final value in values) {
-    final trimmed = value?.trim();
-    if (trimmed != null && trimmed.isNotEmpty) return trimmed;
-  }
-  return 'Catch Host';
-}
-
-class _HostAccountSection extends StatelessWidget {
-  const _HostAccountSection({
+class HostSettingsSection extends StatelessWidget {
+  const HostSettingsSection({
+    super.key,
     required this.label,
     required this.children,
     this.first = false,
@@ -390,81 +913,231 @@ class _HostAccountSection extends StatelessWidget {
   }
 }
 
-class _HostAccountClubsSection extends ConsumerWidget {
-  const _HostAccountClubsSection({
-    required this.uid,
-    required this.clubsAsync,
+class HostSettingsProfileSection extends StatelessWidget {
+  const HostSettingsProfileSection({
+    super.key,
+    required this.state,
     required this.editMode,
+    this.creatingProfile = false,
+    required this.onRetry,
+    required this.onCreateProfile,
+    required this.onEditProfile,
   });
 
-  final String? uid;
-  final AsyncValue<List<Club>> clubsAsync;
+  final HostSettingsProfileState state;
   final bool editMode;
+  final bool creatingProfile;
+  final VoidCallback? onRetry;
+  final VoidCallback? onCreateProfile;
+  final VoidCallback? onEditProfile;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
-    final clubs = clubsAsync.asData?.value;
+  Widget build(BuildContext context) {
+    return switch (state) {
+      HostSettingsProfileLoading() => const HostSettingsRowsSkeleton(),
+      HostSettingsProfileError(:final error) => CatchErrorState.fromError(
+        error,
+        context: AppErrorContext.profile,
+        onRetry: onRetry,
+      ),
+      HostSettingsProfileMissing() => HostSettingsSection(
+        label: 'Profile',
+        first: true,
+        children: [
+          CatchSettingsRow(
+            label: 'Display name',
+            value: creatingProfile
+                ? 'Creating profile...'
+                : 'Create host profile',
+            icon: CatchIcons.businessOutlined,
+            trailing: creatingProfile
+                ? const SizedBox.square(
+                    dimension: CatchIcon.md,
+                    child: CatchLoadingIndicator(
+                      strokeWidth: CatchIcon.strokeSm,
+                    ),
+                  )
+                : null,
+            onTap: creatingProfile ? null : onCreateProfile,
+            showChevron: !creatingProfile,
+          ),
+        ],
+      ),
+      HostSettingsProfileContent(:final profile) => _HostSettingsProfileRows(
+        profile: profile,
+        editMode: editMode,
+        onEditProfile: onEditProfile,
+      ),
+    };
+  }
+}
 
-    return _HostAccountSection(
-      label: 'Clubs you host',
+class _HostSettingsProfileRows extends StatelessWidget {
+  const _HostSettingsProfileRows({
+    required this.profile,
+    required this.editMode,
+    required this.onEditProfile,
+  });
+
+  final HostProfile profile;
+  final bool editMode;
+  final VoidCallback? onEditProfile;
+
+  @override
+  Widget build(BuildContext context) {
+    final canEdit = editMode && onEditProfile != null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (clubsAsync.isLoading)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: CatchSpacing.s4),
-            child: CatchLoadingIndicator(),
-          )
-        else if (clubsAsync.hasError)
-          CatchErrorState.fromError(
-            clubsAsync.error!,
-            onRetry: uid == null
-                ? null
-                : () => ref.invalidate(_hostClubsForUserProvider(uid!)),
-          )
-        else if (clubs == null || clubs.isEmpty)
-          Text(
-            'No host clubs yet.',
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          )
-        else
-          for (final club in clubs) ...[
+        HostSettingsSection(
+          label: 'Profile',
+          first: true,
+          children: [
             CatchSettingsRow(
-              label: club.isOwnedBy(uid) ? 'Owner' : 'Host team',
-              value: club.name,
-              icon: CatchIcons.groupOutlined,
-              divider: club != clubs.first,
-              onTap: () => context.pushNamed(
-                editMode && club.isOwnedBy(uid)
-                    ? Routes.hostEditClubScreen.name
-                    : Routes.hostClubDetailScreen.name,
-                pathParameters: {'clubId': club.id},
-                extra: club,
-              ),
+              label: 'Display name',
+              value: profile.displayName,
+              icon: CatchIcons.personOutlineRounded,
+              onTap: canEdit ? onEditProfile : null,
+              showChevron: canEdit,
+            ),
+            CatchSettingsRow(
+              label: 'Role title',
+              value: profile.roleTitle?.trim().isNotEmpty == true
+                  ? profile.roleTitle!.trim()
+                  : 'Add role title',
+              icon: CatchIcons.cardMembershipOutlined,
+              divider: true,
+              onTap: canEdit ? onEditProfile : null,
+              showChevron: canEdit,
+            ),
+            CatchSettingsRow(
+              label: 'Status',
+              value: hostProfileStatusLabel(profile.status),
+              icon: CatchIcons.checkCircleOutlineRounded,
+              divider: true,
+              showChevron: false,
             ),
           ],
+        ),
+        HostSettingsSection(
+          label: 'Bio',
+          children: [
+            CatchSettingsRow(
+              label: 'About you as a host',
+              value: profile.bio?.trim().isNotEmpty == true
+                  ? profile.bio!.trim()
+                  : 'Add a host bio',
+              icon: CatchIcons.chatBubbleOutlineRounded,
+              valueMaxLines: 2,
+              onTap: canEdit ? onEditProfile : null,
+              showChevron: canEdit,
+            ),
+          ],
+        ),
       ],
     );
   }
 }
 
-class _HostProfileEditorSheet extends ConsumerStatefulWidget {
-  const _HostProfileEditorSheet({required this.uid, required this.profile});
+class HostSettingsClubsSection extends StatelessWidget {
+  const HostSettingsClubsSection({
+    super.key,
+    required this.uid,
+    required this.state,
+    required this.onRetry,
+    required this.editMode,
+    required this.onOpenClub,
+  });
 
-  final String uid;
+  final String? uid;
+  final HostSettingsClubsState state;
+  final VoidCallback? onRetry;
+  final bool editMode;
+  final ValueChanged<Club> onOpenClub;
+
+  @override
+  Widget build(BuildContext context) {
+    return HostSettingsSection(
+      label: 'Clubs you host',
+      children: [
+        switch (state) {
+          HostSettingsClubsLoading() => const HostSettingsRowsSkeleton(
+            rowCount: 2,
+          ),
+          HostSettingsClubsError(:final error) => CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.club,
+            onRetry: onRetry,
+          ),
+          HostSettingsClubsEmpty() => const _HostSettingsClubsEmptyState(),
+          HostSettingsClubsContent(:final clubs) => _HostSettingsClubRows(
+            uid: uid,
+            clubs: clubs,
+            onOpenClub: onOpenClub,
+          ),
+        },
+      ],
+    );
+  }
+}
+
+class _HostSettingsClubsEmptyState extends StatelessWidget {
+  const _HostSettingsClubsEmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Text(
+      'No host clubs yet.',
+      style: CatchTextStyles.supporting(context, color: t.ink2),
+    );
+  }
+}
+
+class _HostSettingsClubRows extends StatelessWidget {
+  const _HostSettingsClubRows({
+    required this.uid,
+    required this.clubs,
+    required this.onOpenClub,
+  });
+
+  final String? uid;
+  final List<Club> clubs;
+  final ValueChanged<Club> onOpenClub;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (final club in clubs)
+          CatchSettingsRow(
+            label: club.isOwnedBy(uid) ? 'Owner' : 'Host team',
+            value: club.name,
+            icon: CatchIcons.groupOutlined,
+            divider: club != clubs.first,
+            onTap: () => onOpenClub(club),
+          ),
+      ],
+    );
+  }
+}
+
+class HostProfileEditorSheet extends ConsumerStatefulWidget {
+  const HostProfileEditorSheet({super.key, required this.profile});
+
   final HostProfile profile;
 
   @override
-  ConsumerState<_HostProfileEditorSheet> createState() =>
+  ConsumerState<HostProfileEditorSheet> createState() =>
       _HostProfileEditorSheetState();
 }
 
 class _HostProfileEditorSheetState
-    extends ConsumerState<_HostProfileEditorSheet> {
+    extends ConsumerState<HostProfileEditorSheet> {
   final _formKey = GlobalKey<FormState>();
   final _displayNameController = TextEditingController();
   final _roleTitleController = TextEditingController();
   final _bioController = TextEditingController();
-  bool _saving = false;
 
   @override
   void initState() {
@@ -484,47 +1157,28 @@ class _HostProfileEditorSheetState
 
   @override
   Widget build(BuildContext context) {
+    final saveMutation = ref.watch(HostProfileController.saveProfileMutation);
     return Form(
       key: _formKey,
       child: CatchBottomSheetScaffold(
         title: 'Professional profile',
-        subtitle: _hostProfileStatusLabel(widget.profile.status),
+        subtitle: hostProfileStatusLabel(widget.profile.status),
         keyboardSafe: true,
         action: CatchButton(
           label: 'Save profile',
           icon: Icon(CatchIcons.checkRounded, size: CatchIcon.md),
-          isLoading: _saving,
+          isLoading: saveMutation.isPending,
           fullWidth: true,
-          onPressed: _saving ? null : () => unawaited(_saveProfile()),
+          onPressed: saveMutation.isPending
+              ? null
+              : () => unawaited(_saveProfile()),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CatchTextField(
-              label: 'Display name',
-              controller: _displayNameController,
-              textInputAction: TextInputAction.next,
-              textCapitalization: TextCapitalization.words,
-              validator: _requiredDisplayName,
-            ),
-            gapH14,
-            CatchTextField(
-              label: 'Role title',
-              isOptional: true,
-              controller: _roleTitleController,
-              textInputAction: TextInputAction.next,
-              textCapitalization: TextCapitalization.words,
-            ),
-            gapH14,
-            CatchTextField(
-              label: 'Bio',
-              isOptional: true,
-              controller: _bioController,
-              minLines: 4,
-              maxLines: 6,
-              textCapitalization: TextCapitalization.sentences,
-            ),
-          ],
+        child: HostProfileFields(
+          status: widget.profile.status,
+          displayNameController: _displayNameController,
+          roleTitleController: _roleTitleController,
+          bioController: _bioController,
+          showStatus: false,
         ),
       ),
     );
@@ -532,29 +1186,32 @@ class _HostProfileEditorSheetState
 
   Future<void> _saveProfile() async {
     if (_formKey.currentState?.validate() != true) return;
-    setState(() => _saving = true);
     try {
-      await ref
-          .read(hostProfileRepositoryProvider)
-          .saveHostProfile(
-            uid: widget.uid,
-            displayName: _displayNameController.text,
-            roleTitle: _roleTitleController.text,
-            bio: _bioController.text,
-          );
+      await HostProfileController.saveProfileMutation.run(
+        ref,
+        (tx) async => tx
+            .get(hostProfileControllerProvider.notifier)
+            .saveProfile(
+              displayName: _displayNameController.text,
+              roleTitle: _roleTitleController.text,
+              bio: _bioController.text,
+            ),
+      );
       if (!mounted) return;
       Navigator.of(context).pop(true);
-    } catch (error) {
-      if (!mounted) return;
-      showCatchErrorSnackBar(context, error);
-    } finally {
-      if (mounted) setState(() => _saving = false);
+    } catch (_) {
+      // CatchMutationErrorListener owns user-facing error display.
     }
   }
 }
 
 class HostProfileScreen extends ConsumerStatefulWidget {
-  const HostProfileScreen({super.key});
+  const HostProfileScreen({
+    super.key,
+    this.formAutovalidateMode = AutovalidateMode.disabled,
+  });
+
+  final AutovalidateMode formAutovalidateMode;
 
   @override
   ConsumerState<HostProfileScreen> createState() => _HostProfileScreenState();
@@ -566,7 +1223,6 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
   final _roleTitleController = TextEditingController();
   final _bioController = TextEditingController();
   String? _loadedProfileKey;
-  bool _saving = false;
 
   @override
   void dispose() {
@@ -579,103 +1235,109 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final compactTextScale = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
     final uid = ref.watch(uidProvider).asData?.value;
-    if (uid == null) return const _HostAuthRequiredScreen();
+    final profileAsync = uid == null
+        ? const AsyncData<HostProfile?>(null)
+        : ref.watch(watchHostProfileProvider(uid));
+    final state = HostProfileEditState.fromAsync(
+      uid: uid,
+      profile: profileAsync,
+    );
+    final ensureMutation = ref.watch(
+      HostProfileController.ensureProfileMutation,
+    );
+    final saveMutation = ref.watch(HostProfileController.saveProfileMutation);
+    if (state is HostProfileEditAuthRequired || uid == null) {
+      return const _HostAuthRequiredScreen();
+    }
 
-    final profileAsync = ref.watch(watchHostProfileProvider(uid));
-    return Scaffold(
-      backgroundColor: t.bg,
-      appBar: CatchTopBar(
-        border: true,
-        titleWidget: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'HOST PROFILE',
-              style: CatchTextStyles.kicker(context, color: t.ink3),
-            ),
-            gapH2,
-            Text(
-              'Professional profile',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.titleL(context, color: t.ink),
-            ),
-          ],
+    return CatchMutationErrorListeners(
+      mutations: [
+        HostProfileController.ensureProfileMutation,
+        HostProfileController.saveProfileMutation,
+      ],
+      errorContext: AppErrorContext.profile,
+      child: Scaffold(
+        backgroundColor: t.bg,
+        appBar: CatchTopBar(
+          border: true,
+          titleWidget: compactTextScale
+              ? Text(
+                  'Professional profile',
+                  semanticsLabel: 'Host profile. Professional profile',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.titleL(context, color: t.ink),
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'HOST PROFILE',
+                      style: CatchTextStyles.kicker(context, color: t.ink3),
+                    ),
+                    gapH2,
+                    Text(
+                      'Professional profile',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.titleL(context, color: t.ink),
+                    ),
+                  ],
+                ),
+        ),
+        body: _buildProfileBody(
+          state,
+          uid,
+          creatingProfile: ensureMutation.isPending,
+          savingProfile: saveMutation.isPending,
         ),
       ),
-      body: profileAsync.when(
-        loading: () => const CatchLoadingIndicator(),
-        error: (error, _) => CatchErrorState.fromError(
-          error,
-          onRetry: () => ref.invalidate(watchHostProfileProvider(uid)),
-        ),
-        data: (profile) {
-          if (profile == null) {
-            return _HostProfileMissingState(uid: uid);
-          }
-          _syncControllers(profile);
-          return Form(
-            key: _formKey,
-            child: ListView(
-              padding: CatchInsets.pageBodyUnderHeader,
-              children: [
-                CatchSurface(
-                  padding: CatchInsets.content,
-                  borderColor: t.line,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _hostProfileStatusLabel(profile.status),
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: profile.isActive ? t.success : t.ink2,
-                        ),
-                      ),
-                      gapH14,
-                      CatchTextField(
-                        label: 'Display name',
-                        controller: _displayNameController,
-                        textInputAction: TextInputAction.next,
-                        textCapitalization: TextCapitalization.words,
-                        validator: _requiredDisplayName,
-                      ),
-                      gapH14,
-                      CatchTextField(
-                        label: 'Role title',
-                        isOptional: true,
-                        controller: _roleTitleController,
-                        textInputAction: TextInputAction.next,
-                        textCapitalization: TextCapitalization.words,
-                      ),
-                      gapH14,
-                      CatchTextField(
-                        label: 'Bio',
-                        isOptional: true,
-                        controller: _bioController,
-                        minLines: 4,
-                        maxLines: 6,
-                        textCapitalization: TextCapitalization.sentences,
-                      ),
-                      gapH18,
-                      CatchButton(
-                        label: 'Save profile',
-                        icon: Icon(CatchIcons.checkRounded, size: CatchIcon.md),
-                        isLoading: _saving,
-                        fullWidth: true,
-                        onPressed: _saving
-                            ? null
-                            : () => unawaited(_saveProfile(uid)),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+    );
+  }
+
+  Widget _buildProfileBody(
+    HostProfileEditState state,
+    String uid, {
+    required bool creatingProfile,
+    required bool savingProfile,
+  }) {
+    return switch (state) {
+      HostProfileEditAuthRequired() => const SizedBox.shrink(),
+      HostProfileEditLoading() => const HostSettingsRowsSkeleton(rowCount: 4),
+      HostProfileEditError(:final error) => CatchErrorState.fromError(
+        error,
+        context: AppErrorContext.profile,
+        onRetry: () => ref.invalidate(watchHostProfileProvider(uid)),
+      ),
+      HostProfileEditMissing() => HostProfileMissingState(
+        creating: creatingProfile,
+        onCreateProfile: () => unawaited(_createHostProfile()),
+      ),
+      HostProfileEditContent(:final profile) => _buildProfileForm(
+        profile: profile,
+        savingProfile: savingProfile,
+      ),
+    };
+  }
+
+  Widget _buildProfileForm({
+    required HostProfile profile,
+    required bool savingProfile,
+  }) {
+    _syncControllers(profile);
+    return Form(
+      key: _formKey,
+      autovalidateMode: widget.formAutovalidateMode,
+      child: HostProfileForm(
+        profile: profile,
+        displayNameController: _displayNameController,
+        roleTitleController: _roleTitleController,
+        bioController: _bioController,
+        saving: savingProfile,
+        onSave: () => unawaited(_saveProfile()),
       ),
     );
   }
@@ -695,38 +1357,165 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
     _bioController.text = profile.bio ?? '';
   }
 
-  Future<void> _saveProfile(String uid) async {
+  Future<void> _saveProfile() async {
     if (_formKey.currentState?.validate() != true) return;
-    setState(() => _saving = true);
     try {
-      await ref
-          .read(hostProfileRepositoryProvider)
-          .saveHostProfile(
-            uid: uid,
-            displayName: _displayNameController.text,
-            roleTitle: _roleTitleController.text,
-            bio: _bioController.text,
-          );
+      await HostProfileController.saveProfileMutation.run(
+        ref,
+        (tx) async => tx
+            .get(hostProfileControllerProvider.notifier)
+            .saveProfile(
+              displayName: _displayNameController.text,
+              roleTitle: _roleTitleController.text,
+              bio: _bioController.text,
+            ),
+      );
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Host profile saved.')));
-    } catch (error) {
-      if (!mounted) return;
-      showCatchErrorSnackBar(context, error);
-    } finally {
-      if (mounted) setState(() => _saving = false);
+      showCatchSnackBar(context, 'Host profile saved.');
+    } catch (_) {
+      // CatchMutationErrorListener owns user-facing error display.
+    }
+  }
+
+  Future<void> _createHostProfile() async {
+    try {
+      await HostProfileController.ensureProfileMutation.run(
+        ref,
+        (tx) async =>
+            tx.get(hostProfileControllerProvider.notifier).ensureProfile(),
+      );
+    } catch (_) {
+      // CatchMutationErrorListener owns user-facing error display.
     }
   }
 }
 
-class _HostProfileMissingState extends ConsumerWidget {
-  const _HostProfileMissingState({required this.uid});
+class HostProfileForm extends StatelessWidget {
+  const HostProfileForm({
+    super.key,
+    required this.profile,
+    required this.displayNameController,
+    required this.roleTitleController,
+    required this.bioController,
+    required this.saving,
+    required this.onSave,
+  });
 
-  final String uid;
+  final HostProfile profile;
+  final TextEditingController displayNameController;
+  final TextEditingController roleTitleController;
+  final TextEditingController bioController;
+  final bool saving;
+  final VoidCallback onSave;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return ListView(
+      padding: CatchInsets.pageBodyUnderHeader,
+      children: [
+        CatchSurface(
+          padding: CatchInsets.content,
+          borderColor: t.line,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              HostProfileFields(
+                status: profile.status,
+                displayNameController: displayNameController,
+                roleTitleController: roleTitleController,
+                bioController: bioController,
+              ),
+              gapH18,
+              CatchButton(
+                label: 'Save profile',
+                icon: Icon(CatchIcons.checkRounded, size: CatchIcon.md),
+                isLoading: saving,
+                fullWidth: true,
+                onPressed: saving ? null : onSave,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class HostProfileFields extends StatelessWidget {
+  const HostProfileFields({
+    super.key,
+    required this.status,
+    required this.displayNameController,
+    required this.roleTitleController,
+    required this.bioController,
+    this.showStatus = true,
+  });
+
+  final HostProfileStatus status;
+  final TextEditingController displayNameController;
+  final TextEditingController roleTitleController;
+  final TextEditingController bioController;
+  final bool showStatus;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (showStatus) ...[
+          Text(
+            hostProfileStatusLabel(status),
+            style: CatchTextStyles.supporting(
+              context,
+              color: status == HostProfileStatus.active ? t.success : t.ink2,
+            ),
+          ),
+          gapH14,
+        ],
+        CatchTextField(
+          label: 'Display name',
+          controller: displayNameController,
+          textInputAction: TextInputAction.next,
+          textCapitalization: TextCapitalization.words,
+          validator: _requiredDisplayName,
+        ),
+        gapH14,
+        CatchTextField(
+          label: 'Role title',
+          isOptional: true,
+          controller: roleTitleController,
+          textInputAction: TextInputAction.next,
+          textCapitalization: TextCapitalization.words,
+        ),
+        gapH14,
+        CatchTextField(
+          label: 'Bio',
+          isOptional: true,
+          controller: bioController,
+          minLines: 4,
+          maxLines: 6,
+          textCapitalization: TextCapitalization.sentences,
+        ),
+      ],
+    );
+  }
+}
+
+class HostProfileMissingState extends StatelessWidget {
+  const HostProfileMissingState({
+    super.key,
+    required this.onCreateProfile,
+    this.creating = false,
+  });
+
+  final VoidCallback onCreateProfile;
+  final bool creating;
+
+  @override
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return ListView(
       padding: CatchInsets.pageBodyUnderHeader,
@@ -750,15 +1539,8 @@ class _HostProfileMissingState extends ConsumerWidget {
               CatchButton(
                 label: 'Create host profile',
                 icon: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
-                onPressed: () async {
-                  try {
-                    await ref
-                        .read(hostProfileRepositoryProvider)
-                        .ensureHostProfile(uid: uid, displayName: 'Catch Host');
-                  } catch (error) {
-                    if (context.mounted) showCatchErrorSnackBar(context, error);
-                  }
-                },
+                isLoading: creating,
+                onPressed: creating ? null : onCreateProfile,
               ),
             ],
           ),
@@ -775,7 +1557,7 @@ String? _requiredDisplayName(String? value) {
   return null;
 }
 
-String _hostProfileStatusLabel(HostProfileStatus status) {
+String hostProfileStatusLabel(HostProfileStatus status) {
   return switch (status) {
     HostProfileStatus.active => 'Active professional profile',
     HostProfileStatus.pending => 'Profile pending review',
@@ -784,53 +1566,113 @@ String _hostProfileStatusLabel(HostProfileStatus status) {
 }
 
 class _HostEventsScaffold extends StatefulWidget {
-  const _HostEventsScaffold({required this.clubs, required this.currentUid});
+  const _HostEventsScaffold({
+    required this.clubs,
+    required this.currentUid,
+    this.initialClubId,
+    this.initialTab = HostHomeTab.today,
+  });
 
   final List<Club> clubs;
   final String currentUid;
+  final String? initialClubId;
+  final HostHomeTab initialTab;
 
   @override
   State<_HostEventsScaffold> createState() => _HostEventsScaffoldState();
 }
 
 class _HostEventsScaffoldState extends State<_HostEventsScaffold> {
-  var _selectedClubIndex = 0;
+  late HostHomeScreenState _state;
+
+  @override
+  void initState() {
+    super.initState();
+    _state = HostHomeScreenState.resolve(
+      clubs: widget.clubs,
+      currentUid: widget.currentUid,
+      selectedClubId: widget.initialClubId,
+      selectedTab: widget.initialTab,
+    );
+  }
 
   @override
   void didUpdateWidget(_HostEventsScaffold oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (_selectedClubIndex >= widget.clubs.length) {
-      _selectedClubIndex = 0;
-    }
+    _state = HostHomeScreenState.resolve(
+      clubs: widget.clubs,
+      currentUid: widget.currentUid,
+      selectedClubIndex: _state.selectedClubIndex,
+      selectedClubId: _state.selectedClub?.id,
+      selectedTab: _state.selectedTab,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final hasClubs = widget.clubs.isNotEmpty;
-    final selectedClub = hasClubs ? widget.clubs[_selectedClubIndex] : null;
-    final showClubPicker = widget.clubs.length > 1;
+    final selectedClub = _state.selectedClub;
+
+    if (_state.selectedTab == HostHomeTab.today) {
+      return Scaffold(
+        backgroundColor: t.bg,
+        body: SafeArea(
+          bottom: false,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.screenPx,
+              CatchSpacing.s12,
+              CatchSpacing.screenPx,
+              CatchSpacing.screenPb,
+            ),
+            children: [
+              if (selectedClub == null)
+                const _HostEmptyState(
+                  title: 'Create your first club',
+                  body:
+                      'Create a club to publish events, manage attendees, and run Event Success.',
+                )
+              else
+                HostTodayDashboardCard(
+                  club: selectedClub,
+                  currentUid: _state.currentUid,
+                  clubs: _state.clubs,
+                  showClubPicker: _state.showClubPicker,
+                  onSwitchClubIndex: (index) =>
+                      setState(() => _state = _state.selectClubIndex(index)),
+                  onViewEvents: () => setState(
+                    () => _state = _state.selectTab(HostHomeTab.events),
+                  ),
+                  onCreateEvent: _openCreateEvent,
+                  onManageEvent: _openManageEvent,
+                ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: _HostOperationsTopBar(
+      appBar: HostOperationsTopBar(
         kicker: 'OPERATIONS',
-        title: selectedClub?.name ?? 'Host events',
+        title: _state.title,
         actions: [
-          if (showClubPicker)
+          if (_state.showClubPicker)
             CatchTopBarMenuAction<int>(
               tooltip: 'Switch club',
               icon: CatchIcons.expandMoreRounded,
               items: [
-                for (var index = 0; index < widget.clubs.length; index++)
+                for (var index = 0; index < _state.clubs.length; index++)
                   CatchActionMenuItem(
                     value: index,
                     label:
-                        '${widget.clubs[index].name} · '
-                        '${widget.clubs[index].isOwnedBy(widget.currentUid) ? 'Owner' : 'Host team'}',
+                        '${_state.clubs[index].name} · '
+                        '${_state.clubs[index].isOwnedBy(_state.currentUid) ? 'Owner' : 'Host team'}',
                   ),
               ],
-              onSelected: (index) => setState(() => _selectedClubIndex = index),
+              onSelected: (index) =>
+                  setState(() => _state = _state.selectClubIndex(index)),
             ),
         ],
       ),
@@ -844,106 +1686,193 @@ class _HostEventsScaffoldState extends State<_HostEventsScaffold> {
                   'Create a club to publish events, manage attendees, and run Event Success.',
             )
           else
-            _HostEventsClubCard(
+            HostEventsClubCard(
               club: selectedClub,
-              currentUid: widget.currentUid,
+              currentUid: _state.currentUid,
+              onCreateEvent: _openCreateEvent,
+              onManageEvent: _openManageEvent,
             ),
         ],
       ),
     );
   }
+
+  void _openCreateEvent(Club club) {
+    context.pushNamed(
+      Routes.hostCreateEventScreen.name,
+      pathParameters: {'clubId': club.id},
+      extra: club,
+    );
+  }
+
+  void _openManageEvent(Club club, Event event) {
+    context.pushNamed(
+      Routes.hostAppEventManageScreen.name,
+      pathParameters: {'clubId': club.id, 'eventId': event.id},
+      extra: event,
+    );
+  }
 }
 
 class _HostClubsScaffold extends StatefulWidget {
-  const _HostClubsScaffold({required this.clubs, required this.currentUid});
+  const _HostClubsScaffold({
+    required this.clubs,
+    required this.currentUid,
+    required this.initialTab,
+    this.initialClubId,
+    this.initialExpandedEditField,
+  });
 
   final List<Club> clubs;
   final String currentUid;
+  final String? initialClubId;
+  final HostClubTab initialTab;
+  final String? initialExpandedEditField;
 
   @override
   State<_HostClubsScaffold> createState() => _HostClubsScaffoldState();
 }
 
 class _HostClubsScaffoldState extends State<_HostClubsScaffold> {
-  var _selectedClubIndex = 0;
-  var _selectedTab = _HostClubTab.edit;
+  late HostClubsScreenState _state;
+
+  @override
+  void initState() {
+    super.initState();
+    _state = HostClubsScreenState.resolve(
+      clubs: widget.clubs,
+      currentUid: widget.currentUid,
+      selectedClubId: widget.initialClubId,
+      selectedTab: _effectiveInitialTab,
+    );
+  }
 
   @override
   void didUpdateWidget(_HostClubsScaffold oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (_selectedClubIndex >= widget.clubs.length) {
-      _selectedClubIndex = 0;
-    }
+    _state = HostClubsScreenState.resolve(
+      clubs: widget.clubs,
+      currentUid: widget.currentUid,
+      selectedClubIndex: _state.selectedClubIndex,
+      selectedClubId: _state.selectedClub?.id,
+      selectedTab: _state.selectedTab,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final hasClubs = widget.clubs.isNotEmpty;
-    final selectedClub = hasClubs ? widget.clubs[_selectedClubIndex] : null;
-    final showClubPicker = widget.clubs.length > 1;
+    final selectedClub = _state.selectedClub;
+    final organizerMode =
+        selectedClub != null && _state.selectedTab == HostClubTab.organizer;
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: _HostOperationsTopBar(
-        kicker: 'HOST CLUBS',
-        title: selectedClub?.name ?? 'Clubs',
-        bottom: selectedClub == null
-            ? null
-            : _HostClubTabRail(
-                selected: _selectedTab,
-                onChanged: (tab) => setState(() => _selectedTab = tab),
-              ),
-        actions: [
-          if (showClubPicker)
-            CatchTopBarMenuAction<int>(
-              tooltip: 'Switch club',
-              icon: CatchIcons.expandMoreRounded,
-              items: [
-                for (var index = 0; index < widget.clubs.length; index++)
-                  CatchActionMenuItem(
-                    value: index,
-                    label:
-                        '${widget.clubs[index].name} · '
-                        '${widget.clubs[index].isOwnedBy(widget.currentUid) ? 'Owner' : 'Host team'}',
+      appBar: organizerMode
+          ? null
+          : HostOperationsTopBar(
+              kicker: 'HOST CLUBS',
+              title: _state.title,
+              bottom: selectedClub == null
+                  ? null
+                  : _HostClubTabRail(
+                      selected: _state.selectedTab,
+                      onChanged: _selectTab,
+                    ),
+              actions: [
+                if (_state.showClubPicker)
+                  CatchTopBarMenuAction<int>(
+                    tooltip: 'Switch club',
+                    icon: CatchIcons.expandMoreRounded,
+                    items: _hostClubSwitcherItems(_state),
+                    onSelected: _selectClubIndex,
                   ),
               ],
-              onSelected: (index) => setState(() => _selectedClubIndex = index),
             ),
-        ],
-      ),
-      body: ListView(
-        padding: CatchInsets.pageBodyUnderHeader,
-        children: [
-          if (selectedClub == null)
-            const _HostEmptyState(
-              title: 'No host clubs yet',
-              body:
-                  'Create a club or accept a host invite to start managing events.',
-            )
-          else
-            switch (_selectedTab) {
-              _HostClubTab.edit => _HostClubProfileCard(
-                club: selectedClub,
-                currentUid: widget.currentUid,
-                isOwner: selectedClub.isOwnedBy(widget.currentUid),
-              ),
-              _HostClubTab.insights => _HostClubInsightsPane(
-                club: selectedClub,
-              ),
-              _HostClubTab.preview => _HostClubPreviewPane(club: selectedClub),
-            },
-        ],
+      body: SafeArea(
+        top: organizerMode,
+        bottom: false,
+        child: ListView(
+          padding: organizerMode
+              ? const EdgeInsets.fromLTRB(
+                  CatchSpacing.screenPx,
+                  CatchSpacing.s12,
+                  CatchSpacing.screenPx,
+                  CatchSpacing.screenPb,
+                )
+              : CatchInsets.pageBodyUnderHeader,
+          children: [
+            if (selectedClub == null)
+              const _HostEmptyState(
+                title: 'No host clubs yet',
+                body:
+                    'Create a club or accept a host invite to start managing events.',
+              )
+            else
+              switch (_state.selectedTab) {
+                HostClubTab.edit => _HostClubProfileCard(
+                  club: selectedClub,
+                  currentUid: _state.currentUid,
+                  isOwner: _state.selectedClubIsOwner,
+                  initialExpandedField: widget.initialExpandedEditField,
+                  onPreviewClub: _openClubPreview,
+                ),
+                HostClubTab.organizer => _HostClubOrganizerOverview(
+                  club: selectedClub,
+                  currentUid: _state.currentUid,
+                  isOwner: _state.selectedClubIsOwner,
+                  clubs: _state.clubs,
+                  showClubPicker: _state.showClubPicker,
+                  onSelectClubIndex: _selectClubIndex,
+                  onSelectTab: _selectTab,
+                  onPreviewClub: _openClubPreview,
+                  onOpenSettings: _openHostSettings,
+                ),
+                HostClubTab.insights => _HostClubInsightsPane(
+                  club: selectedClub,
+                ),
+                HostClubTab.preview => _HostClubPreviewPane(
+                  club: selectedClub,
+                  onPreviewClub: _openClubPreview,
+                ),
+              },
+          ],
+        ),
       ),
     );
+  }
+
+  HostClubTab get _effectiveInitialTab =>
+      widget.initialExpandedEditField == null
+      ? widget.initialTab
+      : HostClubTab.edit;
+
+  void _selectTab(HostClubTab tab) {
+    setState(() => _state = _state.selectTab(tab));
+  }
+
+  void _selectClubIndex(int index) {
+    setState(() => _state = _state.selectClubIndex(index));
+  }
+
+  void _openClubPreview(Club club) {
+    context.pushNamed(
+      Routes.hostClubDetailScreen.name,
+      pathParameters: {'clubId': club.id},
+      extra: club,
+    );
+  }
+
+  void _openHostSettings() {
+    context.pushNamed(Routes.hostSettingsScreen.name);
   }
 }
 
 class _HostClubTabRail extends StatelessWidget implements PreferredSizeWidget {
   const _HostClubTabRail({required this.selected, required this.onChanged});
 
-  final _HostClubTab selected;
-  final ValueChanged<_HostClubTab> onChanged;
+  final HostClubTab selected;
+  final ValueChanged<HostClubTab> onChanged;
 
   @override
   Size get preferredSize => const Size.fromHeight(48);
@@ -959,14 +1888,15 @@ class _HostClubTabRail extends StatelessWidget implements PreferredSizeWidget {
           CatchSpacing.s5,
           CatchSpacing.s2,
         ),
-        child: CatchOptionGroup<_HostClubTab>(
+        child: CatchOptionGroup<HostClubTab>(
           key: _hostClubTabRailKey,
           selected: selected,
           onChanged: onChanged,
           options: const [
-            CatchOption(value: _HostClubTab.edit, label: 'Edit'),
-            CatchOption(value: _HostClubTab.insights, label: 'Insights'),
-            CatchOption(value: _HostClubTab.preview, label: 'Preview'),
+            CatchOption(value: HostClubTab.organizer, label: 'Organizer'),
+            CatchOption(value: HostClubTab.edit, label: 'Edit'),
+            CatchOption(value: HostClubTab.insights, label: 'Insights'),
+            CatchOption(value: HostClubTab.preview, label: 'Preview'),
           ],
         ),
       ),
@@ -974,9 +1904,24 @@ class _HostClubTabRail extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-class _HostOperationsTopBar extends StatelessWidget
+List<CatchActionMenuItem<int>> _hostClubSwitcherItems(
+  HostClubsScreenState state,
+) {
+  return [
+    for (var index = 0; index < state.clubs.length; index++)
+      CatchActionMenuItem(
+        value: index,
+        label:
+            '${state.clubs[index].name} · '
+            '${state.clubs[index].isOwnedBy(state.currentUid) ? 'Owner' : 'Host team'}',
+      ),
+  ];
+}
+
+class HostOperationsTopBar extends StatelessWidget
     implements PreferredSizeWidget {
-  const _HostOperationsTopBar({
+  const HostOperationsTopBar({
+    super.key,
     required this.kicker,
     required this.title,
     this.actions = const [],
@@ -996,24 +1941,36 @@ class _HostOperationsTopBar extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final compactTextScale = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
     return CatchTopBar(
       border: true,
       actions: actions,
       bottom: bottom,
-      titleWidget: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(kicker, style: CatchTextStyles.kicker(context, color: t.ink3)),
-          gapH2,
-          Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.titleL(context, color: t.ink),
-          ),
-        ],
-      ),
+      titleWidget: compactTextScale
+          ? Text(
+              title,
+              semanticsLabel: '$kicker. $title',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.titleL(context, color: t.ink),
+            )
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  kicker,
+                  style: CatchTextStyles.kicker(context, color: t.ink3),
+                ),
+                gapH2,
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.titleL(context, color: t.ink),
+                ),
+              ],
+            ),
     );
   }
 }
@@ -1030,73 +1987,846 @@ class _HostSectionLabel extends StatelessWidget {
   }
 }
 
-class _HostEventsClubCard extends ConsumerWidget {
-  const _HostEventsClubCard({required this.club, required this.currentUid});
+class HostTodayDashboardCard extends ConsumerWidget {
+  const HostTodayDashboardCard({
+    super.key,
+    required this.club,
+    required this.currentUid,
+    required this.clubs,
+    required this.showClubPicker,
+    required this.onSwitchClubIndex,
+    required this.onViewEvents,
+    required this.onCreateEvent,
+    required this.onManageEvent,
+  });
 
   final Club club;
   final String currentUid;
+  final List<Club> clubs;
+  final bool showClubPicker;
+  final ValueChanged<int> onSwitchClubIndex;
+  final VoidCallback onViewEvents;
+  final HostHomeCreateEventCallback onCreateEvent;
+  final HostHomeManageEventCallback onManageEvent;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
-    final events = [...?eventsAsync.asData?.value]
-      ..sort((a, b) => a.startTime.compareTo(b.startTime));
-    final upcoming = events
-        .where((event) => !event.isCancelled)
-        .take(3)
-        .toList(growable: false);
-    final owner = club.isOwnedBy(currentUid);
+    final dashboardState = HostHomeTodayDashboardState.fromAsync(eventsAsync);
 
+    return HostTodayDashboardSection(
+      club: club,
+      currentUid: currentUid,
+      clubs: clubs,
+      showClubPicker: showClubPicker,
+      state: dashboardState,
+      onSwitchClubIndex: onSwitchClubIndex,
+      onRetryEvents: () => ref.invalidate(watchEventsForClubProvider(club.id)),
+      onViewEvents: onViewEvents,
+      onCreateEvent: onCreateEvent,
+      onManageEvent: onManageEvent,
+    );
+  }
+}
+
+class HostTodayDashboardSection extends StatelessWidget {
+  const HostTodayDashboardSection({
+    super.key,
+    required this.club,
+    required this.currentUid,
+    required this.clubs,
+    required this.showClubPicker,
+    required this.state,
+    required this.onSwitchClubIndex,
+    required this.onViewEvents,
+    required this.onCreateEvent,
+    required this.onManageEvent,
+    this.onRetryEvents,
+  });
+
+  final Club club;
+  final String currentUid;
+  final List<Club> clubs;
+  final bool showClubPicker;
+  final HostHomeTodayDashboardState state;
+  final ValueChanged<int> onSwitchClubIndex;
+  final VoidCallback onViewEvents;
+  final HostHomeCreateEventCallback onCreateEvent;
+  final HostHomeManageEventCallback onManageEvent;
+  final VoidCallback? onRetryEvents;
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _HostMetaRow(
+        _HostTodayHeader(
           club: club,
-          roleLabel: owner ? 'Owner' : 'Host team',
-          owner: owner,
+          currentUid: currentUid,
+          clubs: clubs,
+          showClubPicker: showClubPicker,
+          onSwitchClubIndex: onSwitchClubIndex,
         ),
-        gapH24,
-        const _HostSectionLabel(label: 'Upcoming'),
-        gapH8,
-        if (eventsAsync.isLoading)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: CatchSpacing.s4),
-            child: CatchLoadingIndicator(),
-          )
-        else ...[
-          for (final event in upcoming)
-            _HostEventRow(
-              club: club,
-              event: event,
-              divider: event != upcoming.first,
-            ),
-          CatchSettingsRow(
-            label: 'Add event',
-            icon: CatchIcons.addRounded,
-            divider: upcoming.isNotEmpty,
-            onTap: () => context.pushNamed(
-              Routes.hostCreateEventScreen.name,
-              pathParameters: {'clubId': club.id},
-              extra: club,
+        gapH18,
+        switch (state.status) {
+          HostHomeTodayStatus.loading => const _HostTodayLoadingBody(),
+          HostHomeTodayStatus.error => CatchInlineErrorState.fromError(
+            state.error!,
+            context: AppErrorContext.event,
+            onRetry: onRetryEvents,
+          ),
+          HostHomeTodayStatus.empty => _HostTodayEmptyEvents(
+            club: club,
+            onCreateEvent: onCreateEvent,
+            onViewEvents: onViewEvents,
+          ),
+          HostHomeTodayStatus.content => _HostTodayContent(
+            club: club,
+            event: state.event!,
+            tasks: state.tasks,
+            onManageEvent: onManageEvent,
+          ),
+        },
+      ],
+    );
+  }
+}
+
+class _HostTodayHeader extends StatelessWidget {
+  const _HostTodayHeader({
+    required this.club,
+    required this.currentUid,
+    required this.clubs,
+    required this.showClubPicker,
+    required this.onSwitchClubIndex,
+  });
+
+  final Club club;
+  final String currentUid;
+  final List<Club> clubs;
+  final bool showClubPicker;
+  final ValueChanged<int> onSwitchClubIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final hostName = _hostFirstName(club, currentUid);
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'TUESDAY EVENING',
+                style: CatchTextStyles.kicker(context, color: t.ink3),
+              ),
+              gapH8,
+              Text(
+                'Good evening,\n$hostName',
+                style: CatchTextStyles.headlineS(context, color: t.ink),
+              ),
+            ],
+          ),
+        ),
+        gapW12,
+        _HostTodayClubPill(
+          club: club,
+          currentUid: currentUid,
+          clubs: clubs,
+          showClubPicker: showClubPicker,
+          onSwitchClubIndex: onSwitchClubIndex,
+        ),
+      ],
+    );
+  }
+}
+
+class _HostTodayClubPill extends StatelessWidget {
+  const _HostTodayClubPill({
+    required this.club,
+    required this.currentUid,
+    required this.clubs,
+    required this.showClubPicker,
+    required this.onSwitchClubIndex,
+  });
+
+  final Club club;
+  final String currentUid;
+  final List<Club> clubs;
+  final bool showClubPicker;
+  final ValueChanged<int> onSwitchClubIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final initials = _initialsFor(club.name);
+
+    return CatchSurface(
+      borderColor: t.line2,
+      backgroundColor: t.surface,
+      borderRadius: BorderRadius.circular(CatchRadius.pill),
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.micro6,
+        CatchSpacing.micro6,
+        CatchSpacing.s3,
+        CatchSpacing.micro6,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircleAvatar(
+            radius: CatchSpacing.s3,
+            backgroundColor: ActivityPalette.resolve(
+              context,
+              club.hostDefaults.primaryActivityKind,
+            ).deep,
+            child: Text(
+              initials,
+              style: CatchTextStyles.badge(context, color: t.darkPillInk),
             ),
           ),
-          if (upcoming.isEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: CatchSpacing.s2),
-              child: Text(
-                'No active events yet.',
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
+          gapW8,
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 104),
+            child: Text(
+              club.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
+          ),
+          if (showClubPicker) ...[
+            gapW4,
+            CatchTopBarMenuAction<int>(
+              tooltip: 'Switch club',
+              icon: CatchIcons.expandMoreRounded,
+              items: [
+                for (var index = 0; index < clubs.length; index++)
+                  CatchActionMenuItem(
+                    value: index,
+                    label:
+                        '${clubs[index].name} · '
+                        '${clubs[index].isOwnedBy(currentUid) ? 'Owner' : 'Host team'}',
+                  ),
+              ],
+              onSelected: onSwitchClubIndex,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _HostTodayLoadingBody extends StatelessWidget {
+  const _HostTodayLoadingBody();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        HostSummarySkeleton(),
+        gapH14,
+        HostEventRowsSkeleton(count: 3),
+      ],
+    );
+  }
+}
+
+class _HostTodayEmptyEvents extends StatelessWidget {
+  const _HostTodayEmptyEvents({
+    required this.club,
+    required this.onCreateEvent,
+    required this.onViewEvents,
+  });
+
+  final Club club;
+  final HostHomeCreateEventCallback onCreateEvent;
+  final VoidCallback onViewEvents;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: CatchInsets.content,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'No active events yet',
+            style: CatchTextStyles.sectionTitle(context, color: t.ink),
+          ),
+          gapH8,
+          Text(
+            'Create an event for ${club.name} to start filling the host dashboard.',
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
+          gapH18,
+          Row(
+            children: [
+              Expanded(
+                child: CatchButton(
+                  label: 'New event',
+                  icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                  onPressed: () => onCreateEvent(club),
+                ),
+              ),
+              gapW12,
+              CatchButton(
+                label: 'Events',
+                variant: CatchButtonVariant.secondary,
+                size: CatchButtonSize.sm,
+                onPressed: onViewEvents,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HostTodayContent extends StatelessWidget {
+  const _HostTodayContent({
+    required this.club,
+    required this.event,
+    required this.tasks,
+    required this.onManageEvent,
+  });
+
+  final Club club;
+  final Event event;
+  final List<HostHomeTodayTaskData> tasks;
+  final HostHomeManageEventCallback onManageEvent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _HostTodayEventHero(
+          event: event,
+          onPressed: () => onManageEvent(club, event),
+        ),
+        gapH24,
+        _HostSectionLabel(label: 'NEEDS YOU · ${tasks.length}'),
+        gapH12,
+        for (final task in tasks) ...[
+          _HostTodayTaskCard(task: task, onPrimary: () {}),
+          gapH12,
         ],
       ],
     );
   }
 }
 
-class _HostMetaRow extends StatelessWidget {
-  const _HostMetaRow({
+class _HostTodayEventHero extends StatelessWidget {
+  const _HostTodayEventHero({required this.event, required this.onPressed});
+
+  final Event event;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final activity = ActivityPalette.resolve(context, event.activityKind);
+    const heroStart = Color(0xFF303663);
+    const heroEnd = Color(0xFF16140F);
+
+    return CatchSurface(
+      borderRadius: BorderRadius.circular(CatchRadius.lg),
+      clipBehavior: Clip.antiAlias,
+      gradient: const LinearGradient(
+        begin: Alignment.topRight,
+        end: Alignment.bottomLeft,
+        colors: [heroStart, heroEnd],
+      ),
+      padding: CatchInsets.contentRelaxed,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _HostTodayCountdownPill(event: event),
+          gapH16,
+          Text(
+            _todayEventHeroTitle(event),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.headlineS(
+              context,
+              color: CatchTokens.editorialLight,
+            ),
+          ),
+          gapH14,
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '${_eventDayLabel(event)} · ${EventFormatters.time(event.startTime)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: CatchTokens.editorialLight.withValues(
+                      alpha: CatchOpacity.onDarkMuted,
+                    ),
+                  ),
+                ),
+              ),
+              gapW12,
+              Expanded(
+                child: Text(
+                  event.locationName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.right,
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: CatchTokens.editorialLight.withValues(
+                      alpha: CatchOpacity.onDarkMuted,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          gapH16,
+          Divider(
+            height: CatchStroke.hairline,
+            color: CatchTokens.editorialLight.withValues(alpha: 0.18),
+          ),
+          gapH14,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _HostTodayHeroMetric(
+                value: '${event.signedUpCount}',
+                label: 'Going',
+              ),
+              gapW20,
+              _HostTodayHeroMetric(
+                value: '${event.waitlistCount}',
+                label: 'Waiting',
+              ),
+              gapW20,
+              _HostTodayHeroMetric(
+                value: '${_reviewCount(event)}',
+                label: 'To review',
+                valueColor: activity.accent,
+              ),
+              const Spacer(),
+              const _HostTodayAvatarStack(),
+            ],
+          ),
+          gapH20,
+          CatchButton(
+            label: 'Set up & run',
+            fullWidth: true,
+            backgroundColor: activity.accent,
+            foregroundColor: CatchTokens.editorialLight,
+            borderColor: Colors.transparent,
+            onPressed: onPressed,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HostTodayCountdownPill extends StatelessWidget {
+  const _HostTodayCountdownPill({required this.event});
+
+  final Event event;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      backgroundColor: CatchTokens.editorialLight.withValues(alpha: 0.16),
+      borderWidth: 0,
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s3,
+        vertical: CatchSpacing.micro6,
+      ),
+      child: Text(
+        'STARTS ${_eventStartLeadLabel(event)}',
+        style: CatchTextStyles.monoLabel(
+          context,
+          color: CatchTokens.editorialLight,
+        ),
+      ),
+    );
+  }
+}
+
+class _HostTodayHeroMetric extends StatelessWidget {
+  const _HostTodayHeroMetric({
+    required this.value,
+    required this.label,
+    this.valueColor,
+  });
+
+  final String value;
+  final String label;
+  final Color? valueColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          value,
+          style: CatchTextStyles.titleL(
+            context,
+            color: valueColor ?? CatchTokens.editorialLight,
+          ),
+        ),
+        gapH2,
+        Text(
+          label,
+          style: CatchTextStyles.monoLabel(
+            context,
+            color: CatchTokens.editorialLight.withValues(
+              alpha: CatchOpacity.onDarkMuted,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HostTodayAvatarStack extends StatelessWidget {
+  const _HostTodayAvatarStack();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return SizedBox(
+      width: CatchSpacing.s16,
+      height: CatchSpacing.s7,
+      child: Stack(
+        alignment: Alignment.centerRight,
+        children: [
+          const _HostTodayAvatarDot(
+            left: CatchSpacing.s0,
+            fill: Color(0xFF2E271F),
+            label: '',
+          ),
+          _HostTodayAvatarDot(
+            left: CatchSpacing.s5,
+            fill: t.surface,
+            label: 'D',
+          ),
+          const _HostTodayAvatarDot(
+            left: CatchSpacing.s10,
+            fill: Color(0xFFD8E7D2),
+            label: 'M',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HostTodayAvatarDot extends StatelessWidget {
+  const _HostTodayAvatarDot({
+    required this.left,
+    required this.fill,
+    required this.label,
+  });
+
+  final double left;
+  final Color fill;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Positioned(
+      left: left,
+      child: CircleAvatar(
+        radius: CatchSpacing.s3,
+        backgroundColor: CatchTokens.editorialDark.withValues(alpha: 0.28),
+        child: CircleAvatar(
+          radius: CatchSpacing.micro10,
+          backgroundColor: fill,
+          child: label.isEmpty
+              ? null
+              : Text(
+                  label,
+                  style: CatchTextStyles.badge(context, color: t.ink2),
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HostTodayTaskCard extends StatelessWidget {
+  const _HostTodayTaskCard({required this.task, required this.onPrimary});
+
+  final HostHomeTodayTaskData task;
+  final VoidCallback onPrimary;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      borderColor: t.line,
+      backgroundColor: t.surface,
+      padding: CatchInsets.content,
+      child: Row(
+        children: [
+          Container(
+            width: CatchSpacing.s9,
+            height: CatchSpacing.s9,
+            decoration: BoxDecoration(
+              color: t.primarySoft,
+              borderRadius: BorderRadius.circular(CatchRadius.sm),
+            ),
+            child: Icon(task.icon, color: t.ink2, size: CatchIcon.md),
+          ),
+          gapW14,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  task.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.titleS(context, color: t.ink),
+                ),
+                gapH4,
+                Text(
+                  task.body,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
+              ],
+            ),
+          ),
+          gapW12,
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CatchButton(
+                label: task.primaryActionLabel.toUpperCase(),
+                size: CatchButtonSize.sm,
+                accentColor: t.danger,
+                onPressed: onPrimary,
+              ),
+              gapW8,
+              CatchButton(
+                label: task.secondaryActionLabel.toUpperCase(),
+                size: CatchButtonSize.sm,
+                variant: CatchButtonVariant.secondary,
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+String _hostFirstName(Club club, String currentUid) {
+  final hostProfile = club.hostProfiles
+      .where((profile) => profile.uid == currentUid)
+      .firstOrNull;
+  final fallbackName = hostProfile?.displayName.trim().isNotEmpty == true
+      ? hostProfile!.displayName
+      : club.hostName ?? '';
+  final parts = fallbackName.trim().split(RegExp(r'\s+'));
+  return parts.firstWhere((part) => part.isNotEmpty, orElse: () => 'Host');
+}
+
+String _initialsFor(String value) {
+  final parts = value.trim().split(RegExp(r'\s+'));
+  final initials = parts
+      .where((part) => part.isNotEmpty)
+      .take(2)
+      .map((part) => part.characters.first.toUpperCase())
+      .join();
+  return initials.isEmpty ? 'CH' : initials;
+}
+
+String _eventDayLabel(Event event) {
+  if (event.startTime.hour >= 17) return 'Tonight';
+  return EventFormatters.longWeekday(event.startTime);
+}
+
+String _todayEventHeroTitle(Event event) {
+  final weekday = EventFormatters.longWeekday(event.startTime);
+  final period = event.startTime.hour < 12
+      ? 'Morning'
+      : event.startTime.hour < 17
+      ? 'Afternoon'
+      : 'Evening';
+  final prefix = '$weekday $period ';
+  if (event.title.startsWith(prefix)) {
+    return '$weekday ${event.title.substring(prefix.length)}';
+  }
+  return event.title;
+}
+
+String _eventStartLeadLabel(Event event) {
+  final weekday = EventFormatters.longWeekday(event.startTime).toUpperCase();
+  final time = EventFormatters.time(event.startTime).toUpperCase();
+  return '$weekday · $time';
+}
+
+int _reviewCount(Event event) {
+  if (event.waitlistCount > 0) {
+    return event.waitlistCount > 4 ? 4 : event.waitlistCount;
+  }
+  final pendingCount = event.signedUpCount - event.attendedCount;
+  if (pendingCount <= 0) return 0;
+  return pendingCount > 4 ? 4 : pendingCount;
+}
+
+class HostEventsClubCard extends ConsumerWidget {
+  const HostEventsClubCard({
+    super.key,
+    required this.club,
+    required this.currentUid,
+    required this.onCreateEvent,
+    required this.onManageEvent,
+  });
+
+  final Club club;
+  final String currentUid;
+  final HostHomeCreateEventCallback onCreateEvent;
+  final HostHomeManageEventCallback onManageEvent;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
+    final eventsState = HostHomeEventsSectionState.fromAsync(eventsAsync);
+    final owner = club.isOwnedBy(currentUid);
+
+    return HostEventsClubSection(
+      club: club,
+      roleLabel: owner ? 'Owner' : 'Host team',
+      owner: owner,
+      eventsState: eventsState,
+      onRetryEvents: () => ref.invalidate(watchEventsForClubProvider(club.id)),
+      onCreateEvent: onCreateEvent,
+      onManageEvent: onManageEvent,
+    );
+  }
+}
+
+class HostEventsClubSection extends StatelessWidget {
+  const HostEventsClubSection({
+    super.key,
+    required this.club,
+    required this.roleLabel,
+    required this.owner,
+    required this.eventsState,
+    required this.onCreateEvent,
+    required this.onManageEvent,
+    this.onRetryEvents,
+  });
+
+  final Club club;
+  final String roleLabel;
+  final bool owner;
+  final HostHomeEventsSectionState eventsState;
+  final VoidCallback? onRetryEvents;
+  final HostHomeCreateEventCallback onCreateEvent;
+  final HostHomeManageEventCallback onManageEvent;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        HostMetaRow(club: club, roleLabel: roleLabel, owner: owner),
+        gapH24,
+        const _HostSectionLabel(label: 'Upcoming'),
+        gapH8,
+        switch (eventsState.status) {
+          HostHomeEventsStatus.loading => const HostEventRowsSkeleton(),
+          HostHomeEventsStatus.error => CatchInlineErrorState.fromError(
+            eventsState.error!,
+            context: AppErrorContext.event,
+            onRetry: onRetryEvents,
+          ),
+          HostHomeEventsStatus.empty => _HostEventRows(
+            club: club,
+            rows: eventsState.rows,
+            emptyTextColor: t.ink2,
+            onCreateEvent: onCreateEvent,
+            onManageEvent: onManageEvent,
+          ),
+          HostHomeEventsStatus.populated => _HostEventRows(
+            club: club,
+            rows: eventsState.rows,
+            emptyTextColor: t.ink2,
+            onCreateEvent: onCreateEvent,
+            onManageEvent: onManageEvent,
+          ),
+        },
+      ],
+    );
+  }
+}
+
+class _HostEventRows extends StatelessWidget {
+  const _HostEventRows({
+    required this.club,
+    required this.rows,
+    required this.emptyTextColor,
+    required this.onCreateEvent,
+    required this.onManageEvent,
+  });
+
+  final Club club;
+  final HostHomeEventRowsState rows;
+  final Color emptyTextColor;
+  final HostHomeCreateEventCallback onCreateEvent;
+  final HostHomeManageEventCallback onManageEvent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (final row in rows.rows)
+          HostEventRow(row: row, onTap: () => onManageEvent(club, row.event)),
+        CatchSettingsRow(
+          label: 'Add event',
+          icon: CatchIcons.addRounded,
+          divider: !rows.isEmpty,
+          onTap: () => onCreateEvent(club),
+        ),
+        if (rows.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: CatchSpacing.s2),
+            child: Text(
+              'No active events yet.',
+              style: CatchTextStyles.supporting(context, color: emptyTextColor),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class HostMetaRow extends StatelessWidget {
+  const HostMetaRow({
+    super.key,
     required this.club,
     required this.roleLabel,
     required this.owner,
@@ -1138,16 +2868,708 @@ class _HostMetaRow extends StatelessWidget {
   }
 }
 
-class _HostClubProfileCard extends ConsumerStatefulWidget {
-  const _HostClubProfileCard({
+class _HostClubOrganizerOverview extends ConsumerWidget {
+  const _HostClubOrganizerOverview({
     required this.club,
     required this.currentUid,
     required this.isOwner,
+    required this.clubs,
+    required this.showClubPicker,
+    required this.onSelectClubIndex,
+    required this.onSelectTab,
+    required this.onPreviewClub,
+    required this.onOpenSettings,
   });
 
   final Club club;
   final String currentUid;
   final bool isOwner;
+  final List<Club> clubs;
+  final bool showClubPicker;
+  final ValueChanged<int> onSelectClubIndex;
+  final ValueChanged<HostClubTab> onSelectTab;
+  final HostClubPreviewCallback onPreviewClub;
+  final VoidCallback onOpenSettings;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
+    final events = eventsAsync.asData?.value ?? const <Event>[];
+    final activeEvents = events.where((event) => !event.isCancelled).toList();
+
+    return Column(
+      key: const ValueKey('host-club-organizer-overview'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _HostOrganizerHeader(
+          club: club,
+          trailing: showClubPicker
+              ? CatchTopBarMenuAction<int>(
+                  tooltip: 'Switch club',
+                  icon: CatchIcons.expandMoreRounded,
+                  items: [
+                    for (var index = 0; index < clubs.length; index++)
+                      CatchActionMenuItem(
+                        value: index,
+                        label:
+                            '${clubs[index].name} · '
+                            '${clubs[index].isOwnedBy(currentUid) ? 'Owner' : 'Host team'}',
+                      ),
+                  ],
+                  onSelected: onSelectClubIndex,
+                )
+              : null,
+        ),
+        if (isOwner) ...[
+          gapH14,
+          _HostOrganizerPayoutPrompt(
+            uid: currentUid,
+            onManagePayouts: () => onSelectTab(HostClubTab.edit),
+          ),
+        ],
+        gapH16,
+        _HostOrganizerMetricGrid(
+          club: club,
+          eventsLoaded: eventsAsync.hasValue,
+          eventCount: events.length,
+          activeEventCount: activeEvents.length,
+        ),
+        gapH12,
+        CatchSurface(
+          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
+          borderColor: CatchTokens.of(context).line,
+          child: CatchInfoRow(
+            icon: CatchIcons.visibilityOutlined,
+            label: 'How guests see you',
+            value: 'Public page',
+            trailing: CatchInfoRowTrailing.chevron,
+            onTap: () => onPreviewClub(club),
+          ),
+        ),
+        gapH24,
+        _HostOrganizerSectionHeader(
+          label: 'Team · ${club.displayHostProfiles.length}',
+          actionLabel: isOwner ? 'Manage' : null,
+          onAction: isOwner ? () => onSelectTab(HostClubTab.edit) : null,
+        ),
+        gapH10,
+        _HostOrganizerTeamCard(
+          profiles: club.displayHostProfiles,
+          currentUid: currentUid,
+        ),
+        gapH24,
+        _HostOrganizerSectionHeader(
+          label: 'Trends · last 12 weeks',
+          actionLabel: 'See insights',
+          onAction: () => onSelectTab(HostClubTab.insights),
+        ),
+        gapH10,
+        _HostOrganizerTrendStrip(
+          memberCount: club.memberCount,
+          activeEventCount: activeEvents.length,
+          onTap: () => onSelectTab(HostClubTab.insights),
+        ),
+        gapH24,
+        const _HostOrganizerSectionHeader(label: 'Manage'),
+        gapH10,
+        CatchSurface(
+          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
+          borderColor: CatchTokens.of(context).line,
+          child: Column(
+            children: [
+              CatchInfoRow(
+                icon: CatchIcons.paymentsOutlined,
+                label: 'Payouts',
+                value: isOwner ? 'Manage' : 'Owner only',
+                trailing: isOwner
+                    ? CatchInfoRowTrailing.chevron
+                    : CatchInfoRowTrailing.none,
+                onTap: isOwner ? () => onSelectTab(HostClubTab.edit) : null,
+              ),
+              CatchInfoRow(
+                icon: CatchIcons.tuneRounded,
+                label: 'Event defaults',
+                value: 'Prefill new events',
+                trailing: isOwner
+                    ? CatchInfoRowTrailing.chevron
+                    : CatchInfoRowTrailing.none,
+                divider: true,
+                onTap: isOwner ? () => onSelectTab(HostClubTab.edit) : null,
+              ),
+              CatchInfoRow(
+                icon: CatchIcons.settingsOutlined,
+                label: 'Settings',
+                trailing: CatchInfoRowTrailing.chevron,
+                divider: true,
+                onTap: onOpenSettings,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HostOrganizerHeader extends StatelessWidget {
+  const _HostOrganizerHeader({required this.club, this.trailing});
+
+  final Club club;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final formats = _organizerFormats(club);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            CatchPersonAvatar(
+              size: 64,
+              name: club.name,
+              initials: _initialsForName(club.name),
+              imageUrl: club.logoPhotoUrl,
+              shape: CatchPersonAvatarShape.square,
+            ),
+            gapW14,
+            Expanded(
+              child: Text(
+                _organizerMeta(club),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.monoLabel(context, color: t.ink3),
+              ),
+            ),
+            if (trailing != null) ...[gapW12, trailing!],
+          ],
+        ),
+        if (formats.isNotEmpty) ...[
+          gapH14,
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (final format in formats)
+                CatchBadge(label: format, uppercase: true),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _HostOrganizerPayoutPrompt extends ConsumerWidget {
+  const _HostOrganizerPayoutPrompt({
+    required this.uid,
+    required this.onManagePayouts,
+  });
+
+  final String uid;
+  final VoidCallback onManagePayouts;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final accountAsync = ref.watch(watchHostPaymentAccountProvider(uid));
+    final account = accountAsync.asData?.value;
+    if (account?.canAcceptInternationalPayments == true) {
+      return const SizedBox.shrink();
+    }
+
+    final loading = accountAsync.isLoading && !accountAsync.hasValue;
+    final error = accountAsync.hasError;
+    final title = loading
+        ? 'Checking payout status'
+        : error
+        ? 'Payout status needs attention'
+        : 'Connect payouts to get paid';
+    final message = loading
+        ? 'We are checking whether this organizer can collect paid bookings.'
+        : error
+        ? 'Open payouts to retry status checks and continue setup.'
+        : "Paid events can't collect until Stripe is set up.";
+
+    final t = CatchTokens.of(context);
+    final warningFill = Color.alphaBlend(
+      t.warning.withValues(alpha: CatchOpacity.calloutFill),
+      t.surface,
+    );
+
+    return CatchSurface(
+      backgroundColor: warningFill,
+      borderColor: Colors.transparent,
+      radius: CatchRadius.md,
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s4,
+        vertical: CatchSpacing.s3,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: CatchStroke.hairline),
+            child: Icon(
+              CatchIcons.warningAmberRounded,
+              size: CatchIcon.md,
+              color: t.warning,
+            ),
+          ),
+          gapW12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: CatchTextStyles.labelL(context)),
+                gapH2,
+                Text(
+                  message,
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
+                if (!loading) ...[
+                  gapH8,
+                  SizedBox(
+                    width: CatchLayout.hostPayoutSetupButtonWidth,
+                    child: CatchButton(
+                      label: 'Set up payouts',
+                      size: CatchButtonSize.sm,
+                      fullWidth: true,
+                      onPressed: onManagePayouts,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HostOrganizerMetricGrid extends StatelessWidget {
+  const _HostOrganizerMetricGrid({
+    required this.club,
+    required this.eventsLoaded,
+    required this.eventCount,
+    required this.activeEventCount,
+  });
+
+  final Club club;
+  final bool eventsLoaded;
+  final int eventCount;
+  final int activeEventCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = [
+      _HostOrganizerMetricItem(
+        value: _compactCount(club.memberCount),
+        label: 'Members',
+      ),
+      _HostOrganizerMetricItem(
+        value: _ratingValue(club),
+        label: club.reviewCount > 0
+            ? 'Rating · ${club.reviewCount} reviews'
+            : 'Rating',
+      ),
+      _HostOrganizerMetricItem(
+        value: eventsLoaded ? _compactCount(eventCount) : '-',
+        label: 'Events hosted',
+      ),
+      _HostOrganizerMetricItem(
+        value: eventsLoaded ? _compactCount(activeEventCount) : '-',
+        label: 'Upcoming',
+      ),
+    ];
+
+    return Column(
+      children: [
+        _HostOrganizerMetricRow(items: [items[0], items[1]]),
+        gapH12,
+        _HostOrganizerMetricRow(items: [items[2], items[3]]),
+      ],
+    );
+  }
+}
+
+class _HostOrganizerMetricItem {
+  const _HostOrganizerMetricItem({required this.value, required this.label});
+
+  final String value;
+  final String label;
+}
+
+class _HostOrganizerMetricRow extends StatelessWidget {
+  const _HostOrganizerMetricRow({required this.items});
+
+  final List<_HostOrganizerMetricItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      borderColor: t.line,
+      clipBehavior: Clip.antiAlias,
+      child: SizedBox(
+        height: CatchLayout.hostOrganizerMetricRowHeight,
+        child: Row(
+          children: [
+            Expanded(child: _HostOrganizerMetricTile(item: items[0])),
+            ColoredBox(
+              color: t.line,
+              child: const SizedBox(width: CatchStroke.hairline),
+            ),
+            Expanded(child: _HostOrganizerMetricTile(item: items[1])),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HostOrganizerMetricTile extends StatelessWidget {
+  const _HostOrganizerMetricTile({required this.item});
+
+  final _HostOrganizerMetricItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            item.value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.numericLarge(context, color: t.ink),
+          ),
+          gapH4,
+          Text(
+            item.label.toUpperCase(),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.monoLabelS(context, color: t.ink3),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HostOrganizerSectionHeader extends StatelessWidget {
+  const _HostOrganizerSectionHeader({
+    required this.label,
+    this.actionLabel,
+    this.onAction,
+  });
+
+  final String label;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: CatchTextStyles.monoLabel(context, color: t.ink2),
+          ),
+        ),
+        if (actionLabel != null)
+          CatchTextButton(
+            label: actionLabel!,
+            onPressed: onAction,
+            tone: CatchTextButtonTone.neutral,
+            minimumSize: const Size(0, CatchSpacing.s8),
+          ),
+      ],
+    );
+  }
+}
+
+class _HostOrganizerTeamCard extends StatelessWidget {
+  const _HostOrganizerTeamCard({
+    required this.profiles,
+    required this.currentUid,
+  });
+
+  final List<ClubHostProfile> profiles;
+  final String currentUid;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    if (profiles.isEmpty) {
+      return Text(
+        'No host team members yet.',
+        style: CatchTextStyles.supporting(context, color: t.ink2),
+      );
+    }
+
+    final visibleProfiles = profiles.take(3).toList(growable: false);
+    return CatchSurface(
+      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
+      borderColor: t.line,
+      child: Column(
+        children: [
+          for (var index = 0; index < visibleProfiles.length; index++)
+            _HostOrganizerTeamRow(
+              profile: visibleProfiles[index],
+              currentUid: currentUid,
+              divider: index > 0,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HostOrganizerTeamRow extends StatelessWidget {
+  const _HostOrganizerTeamRow({
+    required this.profile,
+    required this.currentUid,
+    required this.divider,
+  });
+
+  final ClubHostProfile profile;
+  final String currentUid;
+  final bool divider;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final isCurrentUser = profile.uid == currentUid;
+    final roleLabel = profile.role == ClubHostRole.owner ? 'Owner' : 'Host';
+    return Stack(
+      children: [
+        if (divider)
+          Positioned(
+            top: 0,
+            left: CatchLayout.hostOrganizerTeamDividerInset,
+            right: 0,
+            child: ColoredBox(
+              color: t.line.withValues(alpha: CatchOpacity.infoRowDivider),
+              child: const SizedBox(height: CatchStroke.hairline),
+            ),
+          ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+          child: Row(
+            children: [
+              CatchPersonAvatar(
+                size: CatchLayout.skeletonAvatarCompactExtent,
+                name: profile.displayName,
+                imageUrl: profile.avatarUrl,
+              ),
+              gapW12,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      profile.displayName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.titleS(context, color: t.ink),
+                    ),
+                    gapH2,
+                    Text(
+                      isCurrentUser ? 'You · $roleLabel' : roleLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    ),
+                  ],
+                ),
+              ),
+              if (profile.role == ClubHostRole.owner)
+                const CatchBadge(
+                  label: 'Owner',
+                  tone: CatchBadgeTone.solid,
+                  uppercase: true,
+                )
+              else
+                Icon(
+                  CatchIcons.chevronRightRounded,
+                  size: CatchIcon.control,
+                  color: t.ink3,
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HostOrganizerTrendStrip extends StatelessWidget {
+  const _HostOrganizerTrendStrip({
+    required this.memberCount,
+    required this.activeEventCount,
+    required this.onTap,
+  });
+
+  final int memberCount;
+  final int activeEventCount;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final bars = _trendBars(memberCount: memberCount, events: activeEventCount);
+
+    return CatchSurface(
+      padding: CatchInsets.content,
+      borderColor: t.line,
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _HostTrendKpi(
+                value: _compactCount(memberCount),
+                label: 'Members',
+              ),
+              gapW16,
+              _HostTrendKpi(
+                value: _compactCount(activeEventCount),
+                label: 'Active events',
+              ),
+              const Spacer(),
+              Icon(CatchIcons.chevronRightRounded, size: CatchIcon.control),
+            ],
+          ),
+          gapH16,
+          SizedBox(
+            height: CatchLayout.hostOrganizerTrendChartHeight,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                for (var index = 0; index < bars.length; index++) ...[
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: FractionallySizedBox(
+                        heightFactor: bars[index],
+                        widthFactor: 0.62,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: t.primary,
+                            borderRadius: BorderRadius.circular(
+                              CatchRadius.pill,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (index < bars.length - 1) gapW4,
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HostTrendKpi extends StatelessWidget {
+  const _HostTrendKpi({required this.value, required this.label});
+
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(value, style: CatchTextStyles.titleS(context, color: t.ink)),
+        gapH2,
+        Text(label, style: CatchTextStyles.monoLabelS(context, color: t.ink3)),
+      ],
+    );
+  }
+}
+
+List<String> _organizerFormats(Club club) {
+  final tags = club.tags
+      .map((tag) => tag.trim())
+      .where((tag) => tag.isNotEmpty)
+      .take(4)
+      .toList(growable: false);
+  if (tags.isNotEmpty) return tags;
+  return [club.hostDefaults.primaryActivityKind.label];
+}
+
+String _organizerMeta(Club club) {
+  final parts = [
+    if (club.area.trim().isNotEmpty) club.area.trim(),
+    if (club.location.trim().isNotEmpty) club.location.trim(),
+    'Since ${club.createdAt.year}',
+  ];
+  return parts.join(' · ').toUpperCase();
+}
+
+String _initialsForName(String name) {
+  final words = name
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((word) => word.isNotEmpty)
+      .toList(growable: false);
+  if (words.isEmpty) return '?';
+  return words.take(2).map((word) => word.characters.first).join();
+}
+
+String _compactCount(int count) {
+  if (count >= 1000000) return '${(count / 1000000).toStringAsFixed(1)}M';
+  if (count >= 1000) return '${(count / 1000).toStringAsFixed(1)}K';
+  return '$count';
+}
+
+String _ratingValue(Club club) {
+  if (club.reviewCount <= 0 || club.rating <= 0) return 'New';
+  final rounded = club.rating.roundToDouble();
+  return club.rating == rounded
+      ? rounded.toStringAsFixed(0)
+      : club.rating.toStringAsFixed(1);
+}
+
+List<double> _trendBars({required int memberCount, required int events}) {
+  final seed = (memberCount + events * 17).clamp(0, 999).toInt();
+  return [
+    for (var index = 0; index < 10; index++)
+      (0.34 + (((seed + index * 13) % 58) / 100)).clamp(0.24, 0.96).toDouble(),
+  ];
+}
+
+class _HostClubProfileCard extends ConsumerStatefulWidget {
+  const _HostClubProfileCard({
+    required this.club,
+    required this.currentUid,
+    required this.isOwner,
+    required this.onPreviewClub,
+    this.initialExpandedField,
+  });
+
+  final Club club;
+  final String currentUid;
+  final bool isOwner;
+  final HostClubPreviewCallback onPreviewClub;
+  final String? initialExpandedField;
 
   @override
   ConsumerState<_HostClubProfileCard> createState() =>
@@ -1156,6 +3578,12 @@ class _HostClubProfileCard extends ConsumerStatefulWidget {
 
 class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
   String? _expandedField;
+
+  @override
+  void initState() {
+    super.initState();
+    _expandedField = widget.initialExpandedField;
+  }
 
   bool _isExpanded(String fieldName) => _expandedField == fieldName;
 
@@ -1174,7 +3602,9 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
   void didUpdateWidget(covariant _HostClubProfileCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.club.id != widget.club.id) {
-      _expandedField = null;
+      _expandedField = widget.initialExpandedField;
+    } else if (oldWidget.initialExpandedField != widget.initialExpandedField) {
+      _expandedField = widget.initialExpandedField;
     }
   }
 
@@ -1186,13 +3616,13 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _HostMetaRow(
+        HostMetaRow(
           club: club,
           roleLabel: isOwner ? 'Owner' : 'Host team',
           owner: isOwner,
         ),
         gapH24,
-        _HostAccountSection(
+        HostSettingsSection(
           label: 'Identity',
           first: true,
           children: [
@@ -1249,7 +3679,7 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
             ),
           ],
         ),
-        _HostAccountSection(
+        HostSettingsSection(
           label: 'Contact',
           children: [
             _textEntry(
@@ -1297,7 +3727,7 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
             ),
           ],
         ),
-        _HostAccountSection(
+        HostSettingsSection(
           label: 'Event defaults',
           children: [
             _activityDefaultEntry(club),
@@ -1306,27 +3736,23 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
             _cancellationDefaultEntry(club),
           ],
         ),
-        _HostAccountSection(
+        HostSettingsSection(
           label: 'Public profile',
           children: [
             CatchSettingsRow(
               label: 'Preview club page',
               value: 'Preview',
               icon: CatchIcons.visibilityOutlined,
-              onTap: () => context.pushNamed(
-                Routes.hostClubDetailScreen.name,
-                pathParameters: {'clubId': club.id},
-                extra: club,
-              ),
+              onTap: () => widget.onPreviewClub(club),
             ),
           ],
         ),
         if (isOwner) ...[
-          _HostAccountSection(
+          HostSettingsSection(
             label: 'Payouts',
             children: [HostPaymentAccountCard(club: club)],
           ),
-          _HostAccountSection(
+          HostSettingsSection(
             label: 'Host team',
             children: [
               HostTeamManagementSection(
@@ -1561,55 +3987,56 @@ class _HostClubInsightsPane extends ConsumerStatefulWidget {
 }
 
 class _HostClubInsightsPaneState extends ConsumerState<_HostClubInsightsPane> {
-  var _rangePreset = HostAnalyticsRangePreset.thirtyDays;
-  var _granularity = HostAnalyticsGranularity.day;
-  String? _selectedEventId;
-  DateTime _customStartDate = DateUtils.dateOnly(_analyticsDateDaysAgo(29));
-  DateTime _customEndDate = DateUtils.dateOnly(DateTime.now());
+  late HostClubInsightsState _state;
+
+  @override
+  void initState() {
+    super.initState();
+    _state = HostClubInsightsState.initial(clubId: widget.club.id);
+  }
+
+  @override
+  void didUpdateWidget(covariant _HostClubInsightsPane oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _state = _state.selectClub(widget.club.id);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final query = HostAnalyticsQuery(
-      clubId: widget.club.id,
-      eventId: _selectedEventId,
-      rangePreset: _rangePreset,
-      startDate: _customStartDate,
-      endDate: _customEndDate,
-      granularity: _granularity,
-    );
+    final query = _state.query;
     final analyticsAsync = ref.watch(hostAnalyticsProvider(query));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _HostMetaRow(club: widget.club, roleLabel: 'Insights', owner: true),
+        HostMetaRow(club: widget.club, roleLabel: 'Insights', owner: true),
         gapH24,
         _HostAnalyticsControls(
-          rangePreset: _rangePreset,
-          granularity: _granularity,
-          customStartDate: _customStartDate,
-          customEndDate: _customEndDate,
-          selectedEventId: _selectedEventId,
-          onRangeChanged: (preset) => setState(() => _rangePreset = preset),
+          rangePreset: _state.rangePreset,
+          granularity: _state.granularity,
+          customStartDate: _state.customStartDate,
+          customEndDate: _state.customEndDate,
+          selectedEventId: _state.selectedEventId,
+          onRangeChanged: (preset) =>
+              setState(() => _state = _state.selectRange(preset)),
           onGranularityChanged: (granularity) =>
-              setState(() => _granularity = granularity),
+              setState(() => _state = _state.selectGranularity(granularity)),
           onPickStartDate: _pickCustomStartDate,
           onPickEndDate: _pickCustomEndDate,
           onClearEvent: _clearEventScope,
         ),
         gapH20,
-        analyticsAsync.when(
-          loading: () => const Padding(
-            padding: CatchInsets.tileVertical,
-            child: CatchLoadingIndicator(),
-          ),
-          error: (error, _) => CatchErrorState.fromError(
+        CatchAsyncValueView<HostAnalyticsReport>(
+          value: analyticsAsync,
+          loadingBuilder: (_) => const HostAnalyticsReportSkeleton(),
+          errorBuilder: (_, error, _) => CatchErrorState.fromError(
             error,
+            context: AppErrorContext.club,
             onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
           ),
-          data: (report) => _HostAnalyticsReportView(
+          builder: (context, report) => _HostAnalyticsReportView(
             report: report,
-            selectedEventId: _selectedEventId,
+            selectedEventId: _state.selectedEventId,
             onEventSelected: _selectEventScope,
             onClearEvent: _clearEventScope,
           ),
@@ -1621,39 +4048,33 @@ class _HostClubInsightsPaneState extends ConsumerState<_HostClubInsightsPane> {
   Future<void> _pickCustomStartDate() async {
     final picked = await showCatchDatePicker(
       context: context,
-      initialDate: _customStartDate,
+      initialDate: _state.customStartDate,
       firstDate: _analyticsDateDaysAgo(366),
-      lastDate: _customEndDate,
+      lastDate: _state.customEndDate,
       title: 'Start date',
     );
     if (picked == null || !mounted) return;
-    setState(() {
-      _customStartDate = DateUtils.dateOnly(picked);
-      _rangePreset = HostAnalyticsRangePreset.custom;
-    });
+    setState(() => _state = _state.selectCustomStartDate(picked));
   }
 
   Future<void> _pickCustomEndDate() async {
     final picked = await showCatchDatePicker(
       context: context,
-      initialDate: _customEndDate,
-      firstDate: _customStartDate,
+      initialDate: _state.customEndDate,
+      firstDate: _state.customStartDate,
       lastDate: DateUtils.dateOnly(DateTime.now()),
       title: 'End date',
     );
     if (picked == null || !mounted) return;
-    setState(() {
-      _customEndDate = DateUtils.dateOnly(picked);
-      _rangePreset = HostAnalyticsRangePreset.custom;
-    });
+    setState(() => _state = _state.selectCustomEndDate(picked));
   }
 
   void _selectEventScope(String eventId) {
-    setState(() => _selectedEventId = eventId);
+    setState(() => _state = _state.selectEvent(eventId));
   }
 
   void _clearEventScope() {
-    setState(() => _selectedEventId = null);
+    setState(() => _state = _state.clearEvent());
   }
 }
 
@@ -2447,44 +4868,33 @@ String _formatCount(num value) {
 
 mixin _HostInlineClubSaveState<T extends ConsumerStatefulWidget>
     on ConsumerState<T> {
-  bool _isSaving = false;
-  Object? _saveError;
-
-  bool get isSaving => _isSaving;
+  bool get isSaving =>
+      ref.read(HostClubEditController.updateClubMutation).isPending;
 
   Future<bool> saveClubPatch({
     required String clubId,
     required UpdateClubPatch patch,
   }) async {
-    if (_isSaving) return false;
+    if (isSaving) return false;
     if (patch.isEmpty) return true;
-    setState(() {
-      _isSaving = true;
-      _saveError = null;
-    });
 
     try {
-      await ref
-          .read(clubsRepositoryProvider)
-          .updateClub(clubId: clubId, patch: patch);
-      if (!mounted) return false;
-      setState(() => _isSaving = false);
+      await HostClubEditController.updateClubMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostClubEditControllerProvider)
+            .updateClub(clubId: clubId, patch: patch),
+      );
       return true;
-    } catch (error) {
-      if (!mounted) return false;
-      setState(() {
-        _isSaving = false;
-        _saveError = error;
-      });
+    } catch (_) {
       return false;
     }
   }
 
-  Widget? buildSaveError() {
-    final error = _saveError;
-    if (error == null) return null;
+  Widget? buildSaveError(MutationState mutation) {
+    if (!mutation.hasError) return null;
     return CatchErrorBanner(
-      message: appErrorMessage(error, context: AppErrorContext.club),
+      message: mutationErrorMessage(mutation, context: AppErrorContext.club),
     );
   }
 }
@@ -2640,13 +5050,15 @@ class _HostInlineTextEntryEditorState
 
   @override
   Widget build(BuildContext context) {
+    final saveMutation = ref.watch(HostClubEditController.updateClubMutation);
+    final saving = saveMutation.isPending;
     return ProfileInlineFieldScaffold(
       icon: widget.icon,
       label: widget.label,
       value: widget.value,
       isExpanded: widget.isExpanded,
       onTap: widget.onTap,
-      isSaving: isSaving,
+      isSaving: saving,
       animateValueContent: false,
       valueContent: ProfileInlineTextValue(
         label: widget.label,
@@ -2655,7 +5067,7 @@ class _HostInlineTextEntryEditorState
         controller: _controller,
         focusNode: _focusNode,
         isEditing: widget.isExpanded,
-        enabled: !isSaving,
+        enabled: !saving,
         keyboardType: widget.keyboardType,
         textCapitalization: widget.textCapitalization,
         maxLines: widget.maxLines,
@@ -2666,7 +5078,7 @@ class _HostInlineTextEntryEditorState
         onSubmitted: (_) => _submit(),
       ),
       saveError: _validationError == null
-          ? buildSaveError()
+          ? buildSaveError(saveMutation)
           : CatchErrorBanner(message: _validationError!),
       actionLeading: widget.showCounter && widget.maxLength != null
           ? AnimatedBuilder(
@@ -2768,6 +5180,8 @@ class _HostInlineOptionEditorState<T>
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final saveMutation = ref.watch(HostClubEditController.updateClubMutation);
+    final saving = saveMutation.isPending;
     final displayValue = widget.isExpanded
         ? _labelFor(_selected)
         : widget.value;
@@ -2777,9 +5191,9 @@ class _HostInlineOptionEditorState<T>
       value: displayValue,
       isExpanded: widget.isExpanded,
       onTap: widget.onTap,
-      isSaving: isSaving,
+      isSaving: saving,
       animateValueContent: false,
-      saveError: buildSaveError(),
+      saveError: buildSaveError(saveMutation),
       editorChildren: [
         if (widget.helperText != null) ...[
           Text(
@@ -2797,7 +5211,7 @@ class _HostInlineOptionEditorState<T>
                 label: option.label,
                 active: _selected == option.value,
                 accentColor: option.accentColor,
-                enabled: !isSaving,
+                enabled: !saving,
                 onTap: () => setState(() => _selected = option.value),
               ),
           ],
@@ -2931,6 +5345,8 @@ class _HostInlineAgeRangeEditorState
 
   @override
   Widget build(BuildContext context) {
+    final saveMutation = ref.watch(HostClubEditController.updateClubMutation);
+    final saving = saveMutation.isPending;
     final displayValue = widget.isExpanded ? _draftValue : widget.value;
     return ProfileInlineFieldScaffold(
       icon: widget.icon,
@@ -2938,10 +5354,10 @@ class _HostInlineAgeRangeEditorState
       value: displayValue,
       isExpanded: widget.isExpanded,
       onTap: widget.onTap,
-      isSaving: isSaving,
+      isSaving: saving,
       animateValueContent: false,
       saveError: _validationError == null
-          ? buildSaveError()
+          ? buildSaveError(saveMutation)
           : CatchErrorBanner(message: _validationError!),
       editorChildren: [
         Row(
@@ -2953,7 +5369,7 @@ class _HostInlineAgeRangeEditorState
                 controller: _minAgeController,
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                enabled: !isSaving,
+                enabled: !saving,
               ),
             ),
             gapW12,
@@ -2964,7 +5380,7 @@ class _HostInlineAgeRangeEditorState
                 controller: _maxAgeController,
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                enabled: !isSaving,
+                enabled: !saving,
               ),
             ),
           ],
@@ -2983,9 +5399,10 @@ class _HostInlineAgeRangeEditorState
 }
 
 class _HostClubPreviewPane extends StatelessWidget {
-  const _HostClubPreviewPane({required this.club});
+  const _HostClubPreviewPane({required this.club, required this.onPreviewClub});
 
   final Club club;
+  final HostClubPreviewCallback onPreviewClub;
 
   @override
   Widget build(BuildContext context) {
@@ -3003,11 +5420,7 @@ class _HostClubPreviewPane extends StatelessWidget {
           label: 'Open public preview',
           value: 'Preview',
           icon: CatchIcons.visibilityOutlined,
-          onTap: () => context.pushNamed(
-            Routes.hostClubDetailScreen.name,
-            pathParameters: {'clubId': club.id},
-            extra: club,
-          ),
+          onTap: () => onPreviewClub(club),
         ),
       ],
     );
@@ -3135,33 +5548,20 @@ class _ParsedAgeRange {
   final String? error;
 }
 
-class _HostEventRow extends StatelessWidget {
-  const _HostEventRow({
-    required this.club,
-    required this.event,
-    this.divider = false,
-  });
+class HostEventRow extends StatelessWidget {
+  const HostEventRow({super.key, required this.row, required this.onTap});
 
-  final Club club;
-  final Event event;
-  final bool divider;
+  final HostHomeEventRowData row;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    void openManageEvent() {
-      context.pushNamed(
-        Routes.hostAppEventManageScreen.name,
-        pathParameters: {'clubId': club.id, 'eventId': event.id},
-        extra: event,
-      );
-    }
-
     return CatchSettingsRow(
-      label: event.title,
-      value: event.timeRangeLabel,
+      label: row.title,
+      value: row.timeRangeLabel,
       icon: CatchIcons.calendarTodayOutlined,
-      divider: divider,
-      onTap: openManageEvent,
+      divider: row.divider,
+      onTap: onTap,
     );
   }
 }
@@ -3213,11 +5613,18 @@ class _HostAuthRequiredScreen extends StatelessWidget {
 }
 
 class _HostLoadingScreen extends StatelessWidget {
-  const _HostLoadingScreen();
+  const _HostLoadingScreen({required this.title, this.showTabRail = false});
+
+  final String title;
+  final bool showTabRail;
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: CatchLoadingIndicator());
+    return Scaffold(
+      backgroundColor: CatchTokens.of(context).bg,
+      appBar: CatchTopBar(title: title, border: true),
+      body: SafeArea(child: HostRouteLoadingBody(showTabRail: showTabRail)),
+    );
   }
 }
 

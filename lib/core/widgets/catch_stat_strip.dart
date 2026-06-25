@@ -61,11 +61,18 @@ class _StatStripCell extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            item.value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.numericLarge(context, color: t.ink),
+          SizedBox(
+            width: double.infinity,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                item.value,
+                maxLines: 1,
+                softWrap: false,
+                style: CatchTextStyles.numericLarge(context, color: t.ink),
+              ),
+            ),
           ),
           const SizedBox(height: CatchSpacing.s1),
           Text(

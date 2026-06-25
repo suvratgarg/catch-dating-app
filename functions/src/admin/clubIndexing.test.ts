@@ -25,6 +25,19 @@ class FakeSnapshot {
   }
 }
 
+class FakeQueryDocumentSnapshot extends FakeSnapshot {
+  readonly id: string;
+
+  constructor(readonly path: string, value: FakeData) {
+    super(value);
+    this.id = path.split("/").at(-1) ?? "";
+  }
+}
+
+class FakeQuerySnapshot {
+  constructor(readonly docs: FakeQueryDocumentSnapshot[]) {}
+}
+
 class FakeCollectionRef {
   constructor(
     private readonly firestore: FakeFirestore,
@@ -35,6 +48,61 @@ class FakeCollectionRef {
     return new FakeDocRef(
       this.firestore,
       `${this.path}/${docId ?? this.firestore.autoId()}`
+    );
+  }
+
+  where(fieldPath: string, op: "==", value: unknown) {
+    return new FakeQuery(this.firestore, this.path)
+      .where(fieldPath, op, value);
+  }
+
+  limit(count: number) {
+    return new FakeQuery(this.firestore, this.path).limit(count);
+  }
+}
+
+class FakeQuery {
+  private readonly filters: Array<{fieldPath: string; value: unknown}> = [];
+  private limitCount = 1000;
+
+  constructor(
+    private readonly firestore: FakeFirestore,
+    private readonly path: string
+  ) {}
+
+  where(fieldPath: string, op: "==", value: unknown) {
+    assert.equal(op, "==");
+    const next = new FakeQuery(this.firestore, this.path);
+    next.filters.push(...this.filters, {fieldPath, value});
+    next.limitCount = this.limitCount;
+    return next;
+  }
+
+  limit(count: number) {
+    const next = new FakeQuery(this.firestore, this.path);
+    next.filters.push(...this.filters);
+    next.limitCount = count;
+    return next;
+  }
+
+  execute(): FakeQuerySnapshot {
+    const prefix = `${this.path}/`;
+    const docs = this.firestore.entries()
+      .filter(([path, value]) =>
+        path.startsWith(prefix) &&
+        path.slice(prefix.length).split("/").length === 1 &&
+        value !== undefined
+      )
+      .filter(([, value]) => this.matches(value as FakeData))
+      .slice(0, this.limitCount)
+      .map(([path, value]) =>
+        new FakeQueryDocumentSnapshot(path, value as FakeData));
+    return new FakeQuerySnapshot(docs);
+  }
+
+  private matches(value: FakeData): boolean {
+    return this.filters.every((filter) =>
+      getPath(value, filter.fieldPath.split(".")) === filter.value
     );
   }
 }
@@ -67,6 +135,13 @@ class FakeFirestore {
     return data === undefined ? undefined : structuredClone(data);
   }
 
+  entries(): Array<[string, FakeData | undefined]> {
+    return Object.entries(this.docs).map(([path, value]) => [
+      path,
+      value === undefined ? undefined : structuredClone(value),
+    ]);
+  }
+
   set(path: string, data: FakeData) {
     this.docs[path] = data;
   }
@@ -85,7 +160,10 @@ class FakeTransaction {
 
   constructor(private readonly firestore: FakeFirestore) {}
 
-  async get(ref: FakeDocRef): Promise<FakeSnapshot> {
+  async get(
+    ref: FakeDocRef | FakeQuery
+  ): Promise<FakeSnapshot | FakeQuerySnapshot> {
+    if (ref instanceof FakeQuery) return ref.execute();
     return new FakeSnapshot(this.firestore.get(ref.path));
   }
 
@@ -137,6 +215,15 @@ function setPath(target: FakeData, path: string[], value: unknown) {
   }
   const finalSegment = path[path.length - 1];
   if (finalSegment) cursor[finalSegment] = value;
+}
+
+function getPath(target: FakeData, path: string[]): unknown {
+  let cursor: unknown = target;
+  for (const segment of path) {
+    if (!cursor || typeof cursor !== "object") return undefined;
+    cursor = (cursor as FakeData)[segment];
+  }
+  return cursor;
 }
 
 function harness(initialDocs: Record<string, FakeData | undefined>) {
@@ -239,8 +326,49 @@ test("adminSetClubIndexStatusHandler marks a page index-ready", async () => {
       },
     }
   );
+  const reservation = h.firestore.get(
+    "publicRouteReservations/organizers__indore__afterfly-run-club"
+  );
+  assert.equal(reservation?.status, "active");
+  assert.equal(reservation?.targetPath, "clubs/afterfly-run-club-indore");
+  assert.equal(
+    reservation?.routePath,
+    "/organizers/indore/afterfly-run-club/"
+  );
+  assert.equal(reservation?.lastVerifiedByUid, "admin-1");
+  assert.equal(reservation?.lastVerifiedSource, "adminSetClubIndexStatus");
+  const search = h.firestore.get("clubs/afterfly-run-club-indore")
+    ?.adminSearch as FakeData | undefined;
+  assert.equal(search?.updatedBySource, "adminSetClubIndexStatus");
+  assert.ok((search?.tokens as string[]).includes("afterfly"));
   assert.equal(h.firestore.auditLogs().length, 1);
 });
+
+test("adminSetClubIndexStatusHandler rejects reserved route conflicts",
+  async () => {
+    const h = harness({
+      "clubs/afterfly-run-club-indore": clubDoc(),
+      "publicRouteReservations/organizers__indore__afterfly-run-club": {
+        status: "active",
+        targetPath: "clubs/other-organizer",
+        routePath: "/organizers/indore/afterfly-run-club/",
+      },
+    });
+
+    await assert.rejects(
+      () => adminSetClubIndexStatusHandler(
+        callableRequest("admin-1", {
+          clubId: "afterfly-run-club-indore",
+          indexStatus: "indexReady",
+          checklist: completeChecklist(),
+          reviewNote: "Checked route before indexing.",
+        }, {support: true}),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "already-exists")
+    );
+  }
+);
 
 test("adminSetClubIndexStatusHandler rejects incomplete index checklist",
   async () => {
@@ -283,6 +411,24 @@ test("adminSetClubIndexStatusHandler blocks viewer-only admins", async () => {
   );
 });
 
+test("adminSetClubIndexStatusHandler requires review notes", async () => {
+  const h = harness({
+    "clubs/afterfly-run-club-indore": clubDoc(),
+  });
+
+  await assert.rejects(
+    () => adminSetClubIndexStatusHandler(
+      callableRequest("admin-1", {
+        clubId: "afterfly-run-club-indore",
+        indexStatus: "indexReady",
+        checklist: completeChecklist(),
+      }, {support: true}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+});
+
 test("adminSetClubIndexStatusHandler enforces the rate limit before writing",
   async () => {
     const h = harness({
@@ -296,6 +442,7 @@ test("adminSetClubIndexStatusHandler enforces the rate limit before writing",
           clubId: "afterfly-run-club-indore",
           indexStatus: "indexReady",
           checklist: completeChecklist(),
+          reviewNote: "Checked route before indexing.",
         }, {support: true}),
         {
           ...h.deps,

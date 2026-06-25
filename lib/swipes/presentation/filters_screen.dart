@@ -6,10 +6,10 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
@@ -41,7 +41,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
   }
 
   void _syncFromProfile(UserProfile user) {
-    _ageRange ??= _ageRangeValues(user);
+    _ageRange ??= filtersAgeRangeValues(user);
     _interestedIn ??= user.interestedInGenders.toSet();
   }
 
@@ -69,7 +69,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
 
   void _reset(UserProfile user) {
     setState(() {
-      _ageRange = _ageRangeValues(user);
+      _ageRange = filtersAgeRangeValues(user);
       _interestedIn = user.interestedInGenders.toSet();
     });
   }
@@ -109,7 +109,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
           ],
         ),
         body: profileAsync.when(
-          loading: () => const CatchLoadingIndicator(),
+          loading: () => const FiltersContentSkeleton(),
           error: (error, _) => CatchErrorState.fromError(
             error,
             context: AppErrorContext.profile,
@@ -122,104 +122,237 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
             final ageRange = _ageRange!;
             final interestedIn = _interestedIn!;
 
-            return Column(
-              children: [
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(
-                      CatchSpacing.s5,
-                      CatchSpacing.s2,
-                      CatchSpacing.s5,
-                      CatchSpacing.s5,
-                    ),
-                    children: [
-                      _FilterSection(
-                        title: 'Age',
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _FilterValue(
-                              value:
-                                  '${ageRange.start.round()} – ${formatPreferredMatchAge(ageRange.end.round())}',
-                            ),
-                            CatchRangeSlider(
-                              key: SwipeKeys.ageRangeSlider,
-                              min: minimumProfileAge.toDouble(),
-                              max: preferredMatchAgeOpenEndedDisplayAge
-                                  .toDouble(),
-                              divisions:
-                                  preferredMatchAgeOpenEndedDisplayAge -
-                                  minimumProfileAge,
-                              values: ageRange,
-                              onChanged: (values) =>
-                                  setState(() => _ageRange = values),
-                            ),
-                          ],
-                        ),
-                      ),
-                      _FilterSection(
-                        title: 'Interested in',
-                        child: Wrap(
-                          spacing: CatchSpacing.s2,
-                          runSpacing: CatchSpacing.s2,
-                          children: [
-                            for (final gender in Gender.values)
-                              CatchSelectChip(
-                                key: SwipeKeys.genderFilterChip(gender.name),
-                                label: gender.label,
-                                active: interestedIn.contains(gender),
-                                onTap: () => setState(() {
-                                  interestedIn.contains(gender)
-                                      ? interestedIn.remove(gender)
-                                      : interestedIn.add(gender);
-                                }),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                CatchBottomDock(
-                  includeSafeArea: false,
-                  padding: const EdgeInsets.fromLTRB(
-                    CatchSpacing.s5,
-                    CatchSpacing.s3,
-                    CatchSpacing.s5,
-                    CatchSpacing.s5,
-                  ),
-                  child: CatchButton(
-                    key: SwipeKeys.applyFiltersButton,
-                    label: 'Apply filters',
-                    onPressed: saving ? null : () => _save(user),
-                    isLoading: saving,
-                    fullWidth: true,
-                  ),
-                ),
-              ],
+            return FiltersContent(
+              ageRange: ageRange,
+              interestedIn: interestedIn,
+              saving: saving,
+              onAgeRangeChanged: (values) => setState(() => _ageRange = values),
+              onGenderToggled: (gender) => setState(() {
+                final next = {...interestedIn};
+                if (!next.add(gender)) next.remove(gender);
+                _interestedIn = next;
+              }),
+              onApply: () => _save(user),
             );
           },
         ),
       ),
     );
   }
+}
 
-  static RangeValues _ageRangeValues(UserProfile user) {
-    final range = normalizeAgePreferenceRange(
-      minAgePreference: user.minAgePreference,
-      maxAgePreference: user.maxAgePreference,
-    );
-    return RangeValues(
-      range.minAge.toDouble(),
-      range.maxAge
-          .clamp(minimumProfileAge, preferredMatchAgeOpenEndedDisplayAge)
-          .toDouble(),
+RangeValues filtersAgeRangeValues(UserProfile user) {
+  final range = normalizeAgePreferenceRange(
+    minAgePreference: user.minAgePreference,
+    maxAgePreference: user.maxAgePreference,
+  );
+  return RangeValues(
+    range.minAge.toDouble(),
+    range.maxAge
+        .clamp(minimumProfileAge, preferredMatchAgeOpenEndedDisplayAge)
+        .toDouble(),
+  );
+}
+
+class FiltersContent extends StatelessWidget {
+  const FiltersContent({
+    super.key,
+    required this.ageRange,
+    required this.interestedIn,
+    required this.saving,
+    required this.onAgeRangeChanged,
+    required this.onGenderToggled,
+    required this.onApply,
+  });
+
+  final RangeValues ageRange;
+  final Set<Gender> interestedIn;
+  final bool saving;
+  final ValueChanged<RangeValues> onAgeRangeChanged;
+  final ValueChanged<Gender> onGenderToggled;
+  final VoidCallback onApply;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.s5,
+              CatchSpacing.s2,
+              CatchSpacing.s5,
+              CatchSpacing.s5,
+            ),
+            children: [
+              FiltersSection(
+                title: 'Age',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FiltersValue(
+                      value:
+                          '${ageRange.start.round()} – ${formatPreferredMatchAge(ageRange.end.round())}',
+                    ),
+                    CatchRangeSlider(
+                      key: SwipeKeys.ageRangeSlider,
+                      min: minimumProfileAge.toDouble(),
+                      max: preferredMatchAgeOpenEndedDisplayAge.toDouble(),
+                      divisions:
+                          preferredMatchAgeOpenEndedDisplayAge -
+                          minimumProfileAge,
+                      values: ageRange,
+                      onChanged: onAgeRangeChanged,
+                    ),
+                  ],
+                ),
+              ),
+              FiltersSection(
+                title: 'Interested in',
+                child: Wrap(
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s2,
+                  children: [
+                    for (final gender in Gender.values)
+                      CatchSelectChip(
+                        key: SwipeKeys.genderFilterChip(gender.name),
+                        label: gender.label,
+                        active: interestedIn.contains(gender),
+                        onTap: () => onGenderToggled(gender),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        CatchBottomDock(
+          includeSafeArea: false,
+          padding: const EdgeInsets.fromLTRB(
+            CatchSpacing.s5,
+            CatchSpacing.s3,
+            CatchSpacing.s5,
+            CatchSpacing.s5,
+          ),
+          child: CatchButton(
+            key: SwipeKeys.applyFiltersButton,
+            label: 'Apply filters',
+            onPressed: saving ? null : onApply,
+            isLoading: saving,
+            fullWidth: true,
+          ),
+        ),
+      ],
     );
   }
 }
 
-class _FilterSection extends StatelessWidget {
-  const _FilterSection({required this.title, required this.child});
+class FiltersContentSkeleton extends StatelessWidget {
+  const FiltersContentSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.s5,
+              CatchSpacing.s2,
+              CatchSpacing.s5,
+              CatchSpacing.s5,
+            ),
+            children: const [
+              FiltersSection(title: 'Age', child: _AgeFilterSkeleton()),
+              FiltersSection(
+                title: 'Interested in',
+                child: _GenderFilterSkeleton(),
+              ),
+            ],
+          ),
+        ),
+        CatchBottomDock(
+          includeSafeArea: false,
+          padding: const EdgeInsets.fromLTRB(
+            CatchSpacing.s5,
+            CatchSpacing.s3,
+            CatchSpacing.s5,
+            CatchSpacing.s5,
+          ),
+          child: CatchSkeleton.box(
+            width: double.infinity,
+            height: CatchLayout.buttonLgHeight,
+            radius: CatchRadius.pill,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AgeFilterSkeleton extends StatelessWidget {
+  const _AgeFilterSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+        gapH16,
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            CatchSkeleton.box(
+              width: double.infinity,
+              height: CatchStroke.selection,
+              radius: CatchRadius.pill,
+            ),
+            Row(
+              children: [
+                CatchSkeleton.circle(size: CatchSpacing.s6),
+                const Spacer(),
+                CatchSkeleton.circle(size: CatchSpacing.s6),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _GenderFilterSkeleton extends StatelessWidget {
+  const _GenderFilterSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: CatchSpacing.s2,
+      runSpacing: CatchSpacing.s2,
+      children: [
+        CatchSkeleton.box(
+          width: CatchSpacing.s16 + CatchSpacing.s7,
+          height: CatchSpacing.s9,
+          radius: CatchRadius.pill,
+        ),
+        CatchSkeleton.box(
+          width: CatchSpacing.s16 + CatchSpacing.s10,
+          height: CatchSpacing.s9,
+          radius: CatchRadius.pill,
+        ),
+        CatchSkeleton.box(
+          width: CatchSpacing.s16 + CatchSpacing.s4,
+          height: CatchSpacing.s9,
+          radius: CatchRadius.pill,
+        ),
+      ],
+    );
+  }
+}
+
+class FiltersSection extends StatelessWidget {
+  const FiltersSection({super.key, required this.title, required this.child});
 
   final String title;
   final Widget child;
@@ -247,8 +380,8 @@ class _FilterSection extends StatelessWidget {
   }
 }
 
-class _FilterValue extends StatelessWidget {
-  const _FilterValue({required this.value});
+class FiltersValue extends StatelessWidget {
+  const FiltersValue({super.key, required this.value});
 
   final String value;
 

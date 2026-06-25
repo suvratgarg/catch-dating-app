@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "screenId": "screen.event_success.companion",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["default_live_guide"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude artboard includes drawn phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "progress_and_step",
+      "stateIds": ["default_live_guide"],
+      "rect": {
+        "x": 16,
+        "y": 72,
+        "width": 358,
+        "height": 30
+      },
+      "reason": "Companion step progress, current moment, and route stage count vary across runtime fixtures."
+    },
+    {
+      "id": "ticket_event_copy",
+      "stateIds": ["default_live_guide"],
+      "rect": {
+        "x": 18,
+        "y": 112,
+        "width": 354,
+        "height": 312
+      },
+      "reason": "Event name, venue, ticket details, barcode, and activity artwork are fixture-dependent."
+    },
+    {
+      "id": "expectation_copy",
+      "stateIds": ["default_live_guide"],
+      "rect": {
+        "x": 20,
+        "y": 474,
+        "width": 350,
+        "height": 196
+      },
+      "reason": "The guide card text and icon rows differ by activity pack and event-success plan configuration."
+    },
+    {
+      "id": "bottom_cta_safe_area",
+      "stateIds": ["default_live_guide"],
+      "rect": {
+        "x": 0,
+        "y": 760,
+        "width": 390,
+        "height": 52
+      },
+      "reason": "Bottom action position, label, and safe-area treatment differ between the interactive Claude flow and Flutter captures."
+    }
+  ]
+}

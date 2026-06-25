@@ -227,6 +227,88 @@
       ],
       "subjectId": "external_event_location_provider_policy",
       "subjectName": "location_resolution"
+    },
+    {
+      "answerId": "policy:source_mention_resolution_policy",
+      "blockingWorkstreams": [
+        "policy_decisions"
+      ],
+      "decisionOptions": [
+        "accept",
+        "hold",
+        "reject"
+      ],
+      "dryRunCommands": [
+        "node tool/organizer_intake/policy_gap_decision.mjs draft source_mention_resolution_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+      ],
+      "owner": "product_ops",
+      "priority": "p1",
+      "prompt": "Review resolver thresholds, blocking keys, provider hard-key policy, and LLM cost caps before enabling model adjudication.",
+      "requestType": "policy_decision",
+      "requiredAcknowledgements": [
+        "behaviorStillDisabledAcknowledged",
+        "costAndSafetyReviewed",
+        "implementationOwnerReviewed",
+        "requiredInputsReviewed"
+      ],
+      "requiredInputs": [
+        {
+          "input": "blocking-key allowlist and known stable provider platforms",
+          "prompt": "blocking-key allowlist and known stable provider platforms for source resolution.",
+          "questionId": "source_mention_resolution_policy:blocking-key-allowlist-and-known-stable-provider-platforms",
+          "recommendedSafeDefault": "disabled_until_policy_approved"
+        },
+        {
+          "input": "thresholds for auto-attach, probable duplicate, and human review",
+          "prompt": "thresholds for auto-attach, probable duplicate, and human review for source resolution.",
+          "questionId": "source_mention_resolution_policy:thresholds-for-auto-attach-probable-duplicate-and-human-review",
+          "recommendedSafeDefault": "disabled_until_policy_approved"
+        },
+        {
+          "input": "maximum cluster size and pair cap before LLM adjudication",
+          "prompt": "maximum cluster size and pair cap before LLM adjudication for source resolution.",
+          "questionId": "source_mention_resolution_policy:maximum-cluster-size-and-pair-cap-before-llm-adjudication",
+          "recommendedSafeDefault": "disabled_until_policy_approved"
+        },
+        {
+          "input": "LLM model, JSON schema, prompt version, and cache invalidation policy",
+          "prompt": "LLM model, JSON schema, prompt version, and cache invalidation policy for source resolution.",
+          "questionId": "source_mention_resolution_policy:llm-model-json-schema-prompt-version-and-cache-invalidation-policy",
+          "recommendedSafeDefault": "disabled_until_policy_approved"
+        },
+        {
+          "input": "monthly LLM spend cap and per-run request cap",
+          "prompt": "monthly LLM spend cap and per-run request cap for source resolution.",
+          "questionId": "source_mention_resolution_policy:monthly-llm-spend-cap-and-per-run-request-cap",
+          "recommendedSafeDefault": "disabled_until_policy_approved"
+        },
+        {
+          "input": "admin override workflow for same, split, suppress, and attach decisions",
+          "prompt": "admin override workflow for same, split, suppress, and attach decisions for source resolution.",
+          "questionId": "source_mention_resolution_policy:admin-override-workflow-for-same-split-suppress-and-attach-decisions",
+          "recommendedSafeDefault": "disabled_until_policy_approved"
+        }
+      ],
+      "safeDefaultAction": "disabled_until_policy_approved",
+      "safeDefaultDecision": "hold",
+      "safeDefaultPayload": {
+        "checklist": {
+          "behaviorStillDisabledAcknowledged": true,
+          "costAndSafetyReviewed": false,
+          "implementationOwnerReviewed": true,
+          "requiredInputsReviewed": false
+        },
+        "decision": "hold",
+        "gapId": "source_mention_resolution_policy",
+        "note": "Product policy held for source_mention_resolution_policy; required inputs remain unresolved.",
+        "requiredInputsReviewed": []
+      },
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/organizer_policy_decision_packets.json",
+        "tool/organizer_intake/generated/organizer_operator_action_queue.json"
+      ],
+      "subjectId": "source_mention_resolution_policy",
+      "subjectName": "source_resolution"
     }
   ],
   "answerTemplate": {
@@ -263,6 +345,18 @@
           "requiredInputsReviewed": false
         },
         "answerId": "policy:external_event_location_provider_policy",
+        "decision": null,
+        "note": "",
+        "requiredInputsReviewed": []
+      },
+      {
+        "acknowledgements": {
+          "behaviorStillDisabledAcknowledged": false,
+          "costAndSafetyReviewed": false,
+          "implementationOwnerReviewed": false,
+          "requiredInputsReviewed": false
+        },
+        "answerId": "policy:source_mention_resolution_policy",
         "decision": null,
         "note": "",
         "requiredInputsReviewed": []
@@ -359,21 +453,21 @@
   "schemaVersion": 1,
   "summary": {
     "adminPublicationDecisions": 0,
-    "answerSlots": 3,
+    "answerSlots": 4,
     "highestPriority": "p0",
-    "policyDecisions": 3,
-    "requiredAcknowledgements": 12,
-    "requiredPolicyQuestions": 15,
-    "safeDefaultDecisions": 3,
+    "policyDecisions": 4,
+    "requiredAcknowledgements": 16,
+    "requiredPolicyQuestions": 21,
+    "safeDefaultDecisions": 4,
     "slotsByOwner": {
-      "product_ops": 3
+      "product_ops": 4
     },
     "slotsByPriority": {
       "p0": 1,
-      "p1": 2
+      "p1": 3
     },
     "slotsByType": {
-      "policy_decision": 3
+      "policy_decision": 4
     },
     "status": "awaiting_user_input",
     "untriagedWorkstreams": 0,

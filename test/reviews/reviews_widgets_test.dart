@@ -1,7 +1,9 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/review_keys.dart';
@@ -180,6 +182,78 @@ void main() {
     expect(repository.responseMessage, 'Thanks for coming.');
   });
 
+  testWidgets('review history prompts signed-out users', (tester) async {
+    await _pumpReviewsHistory(tester, uid: null);
+
+    expect(find.text('Sign in to see reviews'), findsOneWidget);
+    expect(
+      find.text('Your past event reviews will appear here.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('review history shows loading while reviews resolve', (
+    tester,
+  ) async {
+    final user = buildUser(name: 'Asha');
+
+    await _pumpReviewsHistory(
+      tester,
+      uid: user.uid,
+      user: user,
+      repository: _FakeReviewsRepository(
+        reviewsByUserStream: const Stream<List<Review>>.empty(),
+      ),
+      settle: false,
+    );
+
+    expect(find.text('Review history'), findsOneWidget);
+    expect(find.byType(CatchSkeleton), findsAtLeastNWidgets(4));
+  });
+
+  testWidgets('review history shows profile load errors', (tester) async {
+    final user = buildUser(name: 'Asha');
+
+    await _pumpReviewsHistory(
+      tester,
+      uid: user.uid,
+      userStream: Stream<UserProfile?>.error(Exception('profile failed')),
+    );
+
+    expect(find.text('Reviews unavailable'), findsOneWidget);
+    expect(find.text('Could not load your profile.'), findsOneWidget);
+  });
+
+  testWidgets('review history shows review load errors', (tester) async {
+    final user = buildUser(name: 'Asha');
+
+    await _pumpReviewsHistory(
+      tester,
+      uid: user.uid,
+      user: user,
+      repository: _FakeReviewsRepository(
+        reviewsByUserStream: Stream<List<Review>>.error(
+          Exception('reviews failed'),
+        ),
+      ),
+    );
+
+    expect(find.text('Reviews unavailable'), findsOneWidget);
+    expect(find.text('Could not load your reviews.'), findsOneWidget);
+  });
+
+  testWidgets('review history shows empty reviews state', (tester) async {
+    final user = buildUser(name: 'Asha');
+
+    await _pumpReviewsHistory(tester, uid: user.uid, user: user);
+
+    expect(find.text('No reviews yet'), findsOneWidget);
+    expect(
+      find.text('After you review a completed event, it will appear here.'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('review history lists own reviews and opens edit sheet', (
     tester,
   ) async {
@@ -193,28 +267,18 @@ void main() {
       comment: 'Great route.',
     );
     final repository = _FakeReviewsRepository(reviewsByUser: [review]);
-    final container = ProviderContainer(
-      overrides: [
-        uidProvider.overrideWith((ref) => Stream.value(user.uid)),
-        watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-        reviewsRepositoryProvider.overrideWith((ref) => repository),
+
+    await _pumpReviewsHistory(
+      tester,
+      uid: user.uid,
+      user: user,
+      repository: repository,
+      providerOverrides: [
         watchEventsByIdsProvider(
           EventsByIdQuery([event.id]),
         ).overrideWith((ref) => Stream.value([event])),
       ],
     );
-    addTearDown(container.dispose);
-
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: const ReviewsHistoryScreen(),
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
 
     expect(find.text('Review history'), findsOneWidget);
     expect(find.text('Great route.'), findsOneWidget);
@@ -223,6 +287,35 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Edit review'), findsOneWidget);
+  });
+
+  testWidgets('review history falls back when event context is missing', (
+    tester,
+  ) async {
+    final user = buildUser(name: 'Asha');
+    final review = buildReview(
+      id: 'missing-event~runner-1',
+      eventId: 'missing-event',
+      reviewerUserId: user.uid,
+      reviewerName: user.name,
+      comment: 'Still worth remembering.',
+    );
+
+    await _pumpReviewsHistory(
+      tester,
+      uid: user.uid,
+      user: user,
+      repository: _FakeReviewsRepository(reviewsByUser: [review]),
+      providerOverrides: [
+        watchEventsByIdsProvider(
+          EventsByIdQuery(['missing-event']),
+        ).overrideWith((ref) => Stream.value(<Event>[])),
+      ],
+    );
+
+    expect(find.text('Event review'), findsOneWidget);
+    expect(find.text('Still worth remembering.'), findsOneWidget);
+    expect(find.byKey(ReviewKeys.editReviewButton(review.id)), findsOneWidget);
   });
 }
 
@@ -264,10 +357,53 @@ Future<void> _pumpReviewsSection(
   await tester.pump();
 }
 
-class _FakeReviewsRepository extends Fake implements ReviewsRepository {
-  _FakeReviewsRepository({this.reviewsByUser = const []});
+Future<void> _pumpReviewsHistory(
+  WidgetTester tester, {
+  required String? uid,
+  UserProfile? user,
+  Stream<UserProfile?>? userStream,
+  _FakeReviewsRepository? repository,
+  Iterable providerOverrides = const [],
+  bool settle = true,
+}) async {
+  final container = ProviderContainer(
+    overrides: [
+      uidProvider.overrideWith((ref) => Stream.value(uid)),
+      watchUserProfileProvider.overrideWith(
+        (ref) => userStream ?? Stream.value(user),
+      ),
+      reviewsRepositoryProvider.overrideWith(
+        (ref) => repository ?? _FakeReviewsRepository(),
+      ),
+      ...providerOverrides,
+    ],
+  );
+  addTearDown(container.dispose);
 
-  final List<Review> reviewsByUser;
+  await tester.pumpWidget(
+    UncontrolledProviderScope(
+      container: container,
+      child: MaterialApp(
+        theme: AppTheme.light,
+        home: const ReviewsHistoryScreen(),
+      ),
+    ),
+  );
+  if (settle) {
+    await pumpFeatureUi(tester);
+  } else {
+    await tester.pump();
+    await tester.pump();
+  }
+}
+
+class _FakeReviewsRepository extends Fake implements ReviewsRepository {
+  _FakeReviewsRepository({
+    List<Review> reviewsByUser = const [],
+    Stream<List<Review>>? reviewsByUserStream,
+  }) : reviewsByUserStream = reviewsByUserStream ?? Stream.value(reviewsByUser);
+
+  final Stream<List<Review>> reviewsByUserStream;
   Review? addedReview;
   String? deletedReviewId;
   String? responseReviewId;
@@ -275,7 +411,7 @@ class _FakeReviewsRepository extends Fake implements ReviewsRepository {
 
   @override
   Stream<List<Review>> watchReviewsByUser(String reviewerUserId) =>
-      Stream.value(reviewsByUser);
+      reviewsByUserStream;
 
   @override
   Future<void> addReview(Review review) async {

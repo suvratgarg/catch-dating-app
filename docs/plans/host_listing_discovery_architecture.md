@@ -1,7 +1,7 @@
 ---
 doc_id: host_listing_discovery_architecture
-version: 0.1.0
-updated: 2026-06-10
+version: 0.3.0
+updated: 2026-06-24
 owner: marketing_website
 status: draft
 ---
@@ -80,6 +80,335 @@ Deduplication should compare:
 - fuzzy name similarity only as a review queue, not an automatic merge.
 
 Merged candidates should retain all source aliases and all raw evidence.
+
+## Scaled Source-Mention Resolution
+
+The scaled ingestion model must keep crawler/editorial output separate from the
+canonical Firestore documents consumed by the website and app. Search results,
+editorial articles, platform pages, and crawler payloads should create private
+source mentions first. Only reviewed resolution clusters can later project into
+canonical organizer or event documents.
+
+The durable pipeline is:
+
+1. `discoveryRun`: the exact query, city, category, provider, run key, and
+   freshness state.
+2. `sourceArtifact`: the fetched result page or provider payload, with raw
+   storage policy and attribution URL.
+3. `extractedMention`: one possible organizer or event mention extracted from a
+   source artifact. CN Traveler and Vogue articles should create separate
+   mentions, not separate events.
+4. `resolutionCandidate`: a normalized, source-backed object with deterministic
+   keys and scoring signals.
+5. `resolutionCluster`: a group of mentions that may describe the same organizer
+   or event.
+6. `reviewPacket`: the human-editable packet showing the cluster, deterministic
+   scores, LLM opinion when used, conflicts, and publish blockers.
+7. `canonicalProjection`: a preflight-only projection into `clubs`, read-only
+   external event documents, or future `events`, validated against the relevant
+   contracts.
+
+This keeps generated/crawler candidates out of canonical Firestore until the
+human review and schema-validation gates pass.
+
+Current repo implementation:
+
+- `tool/organizer_intake/lib/source_mention_resolution_core.mjs` builds private
+  source artifacts, extracted mentions, resolution candidates, bounded candidate
+  pairs, clusters, and review packets.
+- The generated artifacts are embedded under
+  `admin/src/features/intake/organizer/generated/organizerIntakeBridge.json` as
+  `sourceMentionResolution`, and `check_admin_review_bridge.mjs` now validates
+  nested parity against the generated JSON files.
+- `source_mention_resolution_policy` is a policy-gap review item, so thresholds,
+  blocking keys, stable-provider assumptions, LLM prompt/cache policy, and spend
+  caps are visible in the admin UI and reviewable through the existing
+  admin-policy callable/export loop.
+- `llm_source_resolution.mjs` creates prompt payloads for ambiguous clusters but
+  refuses model calls. A future backend/tool runner must add cache reads/writes,
+  model env config, request caps, and explicit billing approval.
+
+## Event Mention Deduplication
+
+Editorial and free-text sources cannot be deduped by URL alone. The correct
+unit is an event mention with attribution. Multiple mentions may attach to one
+canonical event cluster.
+
+Use hard deterministic keys first:
+
+- provider event ID, such as Luma slug or BookMyShow/District event ID;
+- canonical official event URL after stripping tracking parameters;
+- organizer-owned page URL plus event date;
+- exact venue place ID plus event start time;
+- exact source outbound link to the same official event page;
+- image URL hash when the image is provider-owned and stable.
+
+Then use weighted deterministic signals:
+
+| Signal | Example | Role |
+|---|---|---|
+| Time bucket | same date, overlapping start/end time, same weekend | Strong when paired with title or venue |
+| Venue/location | same place ID, same venue name, same neighborhood/city | Strong for local events |
+| Organizer | same canonicalHostId, profile URL, or normalized organizer name | Strong when paired with time |
+| Title similarity | normalized title, token Jaccard, trigram similarity | Medium; never enough alone |
+| Category/activity | singles dinner, run club, art walk, supper club | Weak-to-medium disambiguator |
+| Price | same price text or price range | Weak supporting signal |
+| Editorial co-mentions | two articles link to the same event page or venue | Supporting attribution |
+
+Suggested deterministic outcomes:
+
+- `auto_attach`: same hard event key, or same official URL.
+- `probable_duplicate`: strong score, such as same venue plus same date plus
+  high title similarity.
+- `needs_review`: partial score, missing date/time, editorial-only source, or
+  conflicting venue/date fields.
+- `separate`: same title but conflicting date or venue, unless a recurring
+  series policy explicitly links them as separate instances.
+
+The current `normalizedEventKey = entityId + startAt + normalized title` should
+remain a simple baseline, but it is not enough for editorial sources. It should
+be replaced by a resolution scorecard plus explicit cluster state.
+
+## Avoiding O(N Squared) Matching
+
+Do not compare every mention to every other mention. Generate blocking keys and
+compare only inside blocks:
+
+- `hard:eventUrl:{canonicalUrl}`
+- `hard:providerEvent:{platform}:{eventId}`
+- `date-city:{yyyy-mm-dd}:{citySlug}`
+- `date-venue:{yyyy-mm-dd}:{normalizedVenue}`
+- `date-organizer:{yyyy-mm-dd}:{canonicalHostIdOrName}`
+- `title-city:{titleTokenPrefix}:{citySlug}`
+- `week-category-city:{isoWeek}:{categoryId}:{citySlug}`
+
+Each mention can emit multiple blocking keys. The resolver builds candidate
+pairs only from shared blocks, dedupes the pair list, scores those pairs, and
+then builds connected clusters. Oversized blocks must be split or downgraded;
+for example, `things to do Mumbai this weekend` should not create one huge LLM
+request. A cluster should be capped before LLM review, with overflow pushed to
+manual review or split by stronger keys.
+
+## LLM Role
+
+The LLM should be a bounded assistant, not the source of truth.
+
+Use it in two places:
+
+1. **Editorial extraction.** Given one source artifact or reviewed text excerpt,
+   extract event or organizer mentions into a strict JSON schema with source
+   attribution. The output is an `extractedMention`, not a canonical record.
+2. **Ambiguous cluster adjudication.** Given a small cluster and deterministic
+   scorecard, ask whether mentions appear to describe the same organizer/event,
+   what fields conflict, and what human decision is needed.
+
+Do not call an LLM from the React admin app. Run LLM work from a backend/tool
+job with:
+
+- an environment-configured provider and model, such as
+  `LLM_EXTRACTION_MODEL` and `LLM_DEDUPE_MODEL`;
+- a prompt version and schema version recorded on every output;
+- input hashes so identical artifacts are never billed twice;
+- low token caps, source excerpts instead of whole pages, and batch limits;
+- JSON schema validation and deterministic post-processing;
+- an allowlist of fields the model may infer;
+- a rule that LLM output can never publish, index, or write canonical Firestore
+  directly.
+
+The default implementation should choose the cheapest reliable structured-output
+model available at execution time. The architecture should not hard-code model
+names in admin UI logic; model choice belongs in config and run metadata.
+
+### Extraction Prompt Skeleton
+
+System:
+
+```text
+You extract event and organizer mentions for Catch intake. Return only JSON
+matching the provided schema. Do not invent facts. Every extracted field must
+cite sourceTextSpanIds or sourceUrls. If a fact is absent, return null. The
+output is a private candidate mention and must not be written to production.
+```
+
+User payload:
+
+```json
+{
+  "task": "extract_event_and_organizer_mentions",
+  "source": {
+    "sourceArtifactId": "article-cntraveler-mumbai-weekend-2026-06-24",
+    "url": "https://example.com/article",
+    "publisher": "CN Traveler",
+    "capturedAt": "2026-06-24"
+  },
+  "cityHints": ["mumbai", "indore"],
+  "categoryHints": ["singles_event_operator", "supper_club", "walks_experiences"],
+  "allowedFields": [
+    "title",
+    "organizerName",
+    "venueName",
+    "citySlug",
+    "startDate",
+    "startTime",
+    "officialUrl",
+    "priceText",
+    "categoryId",
+    "description"
+  ],
+  "textSpans": [
+    {"spanId": "p1", "text": "Short reviewed excerpt..."}
+  ]
+}
+```
+
+Expected output shape:
+
+```json
+{
+  "schemaVersion": 1,
+  "promptVersion": "event-mention-extract-v1",
+  "mentions": [
+    {
+      "mentionType": "event",
+      "title": "string or null",
+      "organizerName": "string or null",
+      "venueName": "string or null",
+      "citySlug": "string or null",
+      "startDate": "YYYY-MM-DD or null",
+      "startTime": "HH:mm or null",
+      "officialUrl": "string or null",
+      "priceText": "string or null",
+      "categoryId": "string or null",
+      "description": "string or null",
+      "confidence": "high | medium | low",
+      "citations": [
+        {"field": "title", "spanId": "p1", "sourceUrl": "https://example.com/article"}
+      ],
+      "warnings": []
+    }
+  ]
+}
+```
+
+### Dedupe Adjudication Prompt Skeleton
+
+System:
+
+```text
+You review already-extracted source mentions. Deterministic rules are primary.
+Use the provided scorecard and evidence only. Return whether the cluster appears
+to describe one event, multiple events, or needs human review. Do not create new
+facts. Cite conflicts.
+```
+
+Input:
+
+```json
+{
+  "task": "adjudicate_event_cluster",
+  "promptVersion": "event-cluster-adjudicate-v1",
+  "clusterId": "cluster-mumbai-2026-07-04-titlehash",
+  "deterministicScore": {
+    "score": 0.74,
+    "matchingSignals": ["same_city", "same_date", "similar_title"],
+    "conflictingSignals": ["different_venue_text"],
+    "hardKeys": []
+  },
+  "mentions": [
+    {
+      "mentionId": "cntraveler:result-4",
+      "title": "Rooftop Singles Mixer",
+      "date": "2026-07-04",
+      "venueName": "AER",
+      "citySlug": "mumbai",
+      "sourceUrl": "https://..."
+    },
+    {
+      "mentionId": "vogue:result-2",
+      "title": "Singles mixer at Four Seasons",
+      "date": "2026-07-04",
+      "venueName": "Four Seasons Mumbai",
+      "citySlug": "mumbai",
+      "sourceUrl": "https://..."
+    }
+  ]
+}
+```
+
+Output:
+
+```json
+{
+  "schemaVersion": 1,
+  "clusterId": "cluster-mumbai-2026-07-04-titlehash",
+  "decision": "same_event | separate_events | needs_human_review",
+  "confidence": "high | medium | low",
+  "recommendedCanonicalMentionId": "string or null",
+  "reasons": ["same date and city", "venue names may refer to the same property"],
+  "conflicts": [
+    {"field": "venueName", "values": ["AER", "Four Seasons Mumbai"]}
+  ],
+  "humanReviewChecklist": ["confirm venue identity", "find official event URL"]
+}
+```
+
+## Admin-Editable Resolution Policy
+
+The assumptions and fears in this workflow should be visible in admin, not
+buried in code. Add a versioned resolution policy artifact that the admin bridge
+can render:
+
+- blocking key definitions;
+- deterministic signal weights;
+- auto-attach thresholds;
+- LLM-call thresholds and per-run caps;
+- maximum cluster size;
+- publisher/source trust tiers;
+- fields the LLM may extract;
+- fields that always require human review;
+- current policy blockers, such as event import writes disabled;
+- examples of false positives and false negatives.
+
+The admin UI should show:
+
+- each source mention with attribution and raw/source artifact link;
+- every deterministic key emitted for that mention;
+- candidate clusters and their scores;
+- why a cluster was auto-attached, queued for review, or sent to LLM;
+- LLM prompt version, model, input hash, output hash, cost estimate, and JSON
+  validation status;
+- human override controls: same event, separate event, attach source, split
+  cluster, suppress mention, edit canonical draft fields.
+
+Admin edits should write reviewed resolution decisions, not mutate canonical
+Firestore directly. The generator should then rebuild clusters and projection
+plans from those decisions.
+
+## Implementation Phases
+
+1. **Resolution artifact layer.** Add local/generated artifacts for
+   `sourceArtifacts`, `extractedMentions`, `resolutionCandidates`,
+   `resolutionClusters`, and `resolutionPolicy`.
+2. **Deterministic resolver.** Build blocking keys, pair scorecards, cluster
+   assembly, and review packet generation. Extend current event duplicate logic
+   beyond `normalizedEventKey`.
+3. **Admin visibility.** Add panels for source mentions, cluster scorecards,
+   policy config, LLM run audit, and human resolution decisions.
+4. **LLM extraction.** Add a backend/tool runner for editorial extraction with
+   cached input hashes and strict JSON validation. Keep it disabled by default
+   until sample fixtures pass.
+5. **LLM adjudication.** Add optional review for ambiguous small clusters only.
+   Never call it for hard-key matches or low-signal oversized blocks.
+6. **Projection preflight.** Convert reviewed clusters into canonical organizer
+   publication packets and external event import plans. Validate against
+   `contracts/firestore/clubs.schema.json`,
+   `contracts/callables/create_club_payload.schema.json`,
+   `contracts/firestore/events.schema.json`, and
+   `contracts/callables/create_event_payload.schema.json`.
+7. **Guarded writes.** Keep production writes behind explicit admin/export
+   steps. Programmatic organizers stay unclaimed/programmatic; external events
+   stay read-only/outbound unless the event import policy is separately
+   approved.
 
 ## Candidate Lifecycle
 

@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_viewport_curve_frame.dart';
@@ -24,11 +25,13 @@ class ClubHeroAppBar extends StatelessWidget {
     super.key,
     required this.club,
     required this.isHost,
+    this.locationLabel,
     this.onShareClub,
   });
 
   final Club club;
   final bool isHost;
+  final String? locationLabel;
   final ClubShareHandler? onShareClub;
 
   @override
@@ -38,12 +41,14 @@ class ClubHeroAppBar extends StatelessWidget {
     final topInset = MediaQuery.paddingOf(context).top;
     final hasCover = CatchDetailHeroBackdrop.hasImage(club.imageUrl);
     final mediaHeight = _heroMediaHeightFor(width, hasCover: hasCover);
-    final locationLabel = '${club.area}, ${cityLabel(club.location)}';
+    final resolvedLocationLabel = locationLabel ?? _clubLocationLabel(club);
+    final kickerLabel = _clubHeroKicker(club);
     final captionExtent = _heroCaptionExtentFor(
       context,
       width,
+      kickerLabel: kickerLabel,
       title: club.name,
-      locationLabel: locationLabel,
+      locationLabel: resolvedLocationLabel,
     );
     final moduleHeight =
         mediaHeight + (clubInteractionMediaInset * 2) + captionExtent;
@@ -58,6 +63,7 @@ class ClubHeroAppBar extends StatelessWidget {
       elevation: 0,
       centerTitle: false,
       titleSpacing: 0,
+      leadingWidth: CatchSpacing.s16,
       title: CatchCollapsedSliverTitle(
         title: club.name,
         textKey: const ValueKey('club-detail-collapsed-title'),
@@ -69,23 +75,24 @@ class ClubHeroAppBar extends StatelessWidget {
         ),
       ),
       leading: Padding(
-        padding: CatchInsets.iconChipContent,
+        padding: const EdgeInsets.only(
+          left: CatchSpacing.s5,
+          top: CatchSpacing.micro10,
+          bottom: CatchSpacing.micro6,
+        ),
         child: CatchTopBarIconAction(
           icon: CatchIcons.arrowBackIosNewRounded,
           tooltip: 'Back',
-          backgroundColor: CatchTokens.editorialDark.withValues(
-            alpha: CatchOpacity.eventHeroOverlayScrim,
-          ),
-          foregroundColor: CatchTokens.editorialLight,
+          variant: CatchIconButtonVariant.float,
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       actions: [
         Padding(
           padding: const EdgeInsets.only(
-            top: CatchSpacing.s2,
-            bottom: CatchSpacing.s2,
-            right: CatchSpacing.s2,
+            top: CatchSpacing.micro10,
+            bottom: CatchSpacing.micro6,
+            right: CatchSpacing.s5,
           ),
           child: Builder(
             builder: (buttonContext) => CatchTopBarIconAction(
@@ -93,10 +100,7 @@ class ClubHeroAppBar extends StatelessWidget {
                 platform: Theme.of(context).platform,
               ),
               tooltip: 'Share club',
-              backgroundColor: CatchTokens.editorialDark.withValues(
-                alpha: CatchOpacity.eventHeroOverlayScrim,
-              ),
-              foregroundColor: CatchTokens.editorialLight,
+              variant: CatchIconButtonVariant.float,
               onPressed: () => unawaited(
                 onShareClub != null
                     ? onShareClub!(buttonContext, club)
@@ -130,7 +134,8 @@ class ClubHeroAppBar extends StatelessWidget {
                   child: _ClubHeroModule(
                     club: club,
                     mediaHeight: mediaHeight,
-                    locationLabel: locationLabel,
+                    kickerLabel: kickerLabel,
+                    locationLabel: resolvedLocationLabel,
                   ),
                 ),
               ),
@@ -161,6 +166,7 @@ double _heroMediaHeightFor(double width, {required bool hasCover}) {
 double _heroCaptionExtentFor(
   BuildContext context,
   double width, {
+  required String kickerLabel,
   required String title,
   required String locationLabel,
 }) {
@@ -172,6 +178,16 @@ double _heroCaptionExtentFor(
     captionWidth,
   );
 
+  final kickerPainter = TextPainter(
+    text: TextSpan(
+      text: kickerLabel,
+      style: CatchTextStyles.monoLabelS(context, color: t.ink),
+    ),
+    maxLines: 1,
+    ellipsis: '...',
+    textDirection: textDirection,
+    textScaler: textScaler,
+  )..layout(maxWidth: captionWidth);
   final titlePainter = TextPainter(
     text: TextSpan(
       text: title,
@@ -202,6 +218,8 @@ double _heroCaptionExtentFor(
       : CatchIcon.md;
 
   return CatchLayout.clubDetailHeroTitleTopPadding +
+      kickerPainter.height +
+      CatchSpacing.s2 +
       titlePainter.height +
       CatchLayout.clubDetailHeroTitleLocationGap +
       locationRowHeight +
@@ -213,11 +231,13 @@ class _ClubHeroModule extends StatelessWidget {
   const _ClubHeroModule({
     required this.club,
     required this.mediaHeight,
+    required this.kickerLabel,
     required this.locationLabel,
   });
 
   final Club club;
   final double mediaHeight;
+  final String kickerLabel;
   final String locationLabel;
 
   @override
@@ -264,6 +284,13 @@ class _ClubHeroModule extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
+                  kickerLabel,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.monoLabelS(context, color: t.ink),
+                ),
+                gapH8,
+                Text(
                   club.name,
                   key: const ValueKey('club-detail-expanded-title'),
                   maxLines: 2,
@@ -304,6 +331,18 @@ class _ClubHeroModule extends StatelessWidget {
     );
   }
 }
+
+String _clubHeroKicker(Club club) {
+  final parts = [
+    club.area.trim(),
+    cityLabel(club.location).trim(),
+  ].where((part) => part.isNotEmpty).toList(growable: false);
+  if (parts.isEmpty) return 'CLUB';
+  return parts.join(' · ').toUpperCase();
+}
+
+String _clubLocationLabel(Club club) =>
+    '${club.area}, ${cityLabel(club.location)}';
 
 Future<void> shareClub(
   BuildContext context,

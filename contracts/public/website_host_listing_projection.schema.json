@@ -1,0 +1,393 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/public/website_host_listing_projection.schema.json",
+  "title": "WebsiteHostListingProjection",
+  "description": "Public organizer listing projection consumed by the marketing website and future shared web/app listing surfaces. It is generated from approved organizer, seed, or demo data and is not the canonical club document.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "website/scripts/generateOrganizerListings.mjs",
+  "required": [
+    "id",
+    "listingVariant",
+    "dataOrigin",
+    "name",
+    "slug",
+    "city",
+    "citySlug",
+    "region",
+    "country",
+    "path",
+    "category",
+    "status",
+    "indexing",
+    "sourceConfidence",
+    "headline",
+    "description",
+    "sourceSummary",
+    "logo",
+    "formats",
+    "facts",
+    "eventEvidence",
+    "reviews",
+    "fitNotes",
+    "missingEvidence",
+    "sources",
+    "claim",
+    "publicApi",
+    "lastVerifiedAt",
+    "searchText"
+  ],
+  "properties": {
+    "id": {"$ref": "#/definitions/nonEmptyString"},
+    "listingVariant": {
+      "type": "string",
+      "enum": ["unclaimedScraped", "appCreatedClub"]
+    },
+    "dataOrigin": {
+      "type": "string",
+      "enum": ["scrapedSeed", "catchDemo", "organizerIntake"]
+    },
+    "name": {"$ref": "#/definitions/nonEmptyString"},
+    "slug": {"$ref": "#/definitions/nonEmptyString"},
+    "city": {"$ref": "#/definitions/nonEmptyString"},
+    "citySlug": {"$ref": "#/definitions/nonEmptyString"},
+    "region": {"type": "string"},
+    "country": {"type": "string"},
+    "path": {"$ref": "#/definitions/routePath"},
+    "legacyPaths": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/routePath"},
+      "uniqueItems": true
+    },
+    "category": {"$ref": "#/definitions/nonEmptyString"},
+    "status": {"$ref": "#/definitions/nonEmptyString"},
+    "indexing": {
+      "type": "string",
+      "enum": ["index, follow", "noindex, follow"]
+    },
+    "sourceConfidence": {
+      "type": "string",
+      "enum": ["first_party", "high", "medium", "low"]
+    },
+    "headline": {"$ref": "#/definitions/nonEmptyString"},
+    "description": {"$ref": "#/definitions/nonEmptyString"},
+    "sourceSummary": {"$ref": "#/definitions/nonEmptyString"},
+    "logo": {"$ref": "#/definitions/logo"},
+    "formats": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/nonEmptyString"}
+    },
+    "facts": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/labelValue"}
+    },
+    "metrics": {"$ref": "#/definitions/metrics"},
+    "host": {"$ref": "#/definitions/host"},
+    "catchEvents": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/catchEvent"}
+    },
+    "externalEvents": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/externalEvent"}
+    },
+    "eventSuccessSummary": {
+      "anyOf": [
+        {"$ref": "#/definitions/eventSuccessSummary"},
+        {"type": "null"}
+      ]
+    },
+    "eventEvidence": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/eventEvidence"}
+    },
+    "reviews": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/publicReview"}
+    },
+    "fitNotes": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/nonEmptyString"}
+    },
+    "missingEvidence": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/nonEmptyString"}
+    },
+    "sources": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/source"}
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["href", "label"],
+      "properties": {
+        "href": {"$ref": "#/definitions/nonEmptyString"},
+        "label": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "publicApi": {"$ref": "#/definitions/publicApi"},
+    "lastVerifiedAt": {"$ref": "#/definitions/nonEmptyString"},
+    "searchText": {"$ref": "#/definitions/nonEmptyString"}
+  },
+  "definitions": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "routePath": {
+      "type": "string",
+      "pattern": "^/[^?#]*/$"
+    },
+    "urlOrNull": {
+      "type": ["string", "null"],
+      "format": "uri"
+    },
+    "labelValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "value"],
+      "properties": {
+        "label": {"$ref": "#/definitions/nonEmptyString"},
+        "value": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "logo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "text", "status"],
+      "properties": {
+        "mode": {"type": "string", "enum": ["monogram"]},
+        "text": {"$ref": "#/definitions/nonEmptyString"},
+        "status": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "memberCount": {"type": "integer", "minimum": 0},
+        "rating": {"type": "number", "minimum": 0, "maximum": 5},
+        "reviewCount": {"type": "integer", "minimum": 0},
+        "nextEventAt": {"type": ["string", "null"]},
+        "nextEventLabel": {"type": ["string", "null"]}
+      }
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "role", "avatarUrl"],
+      "properties": {
+        "name": {"$ref": "#/definitions/nonEmptyString"},
+        "role": {"$ref": "#/definitions/nonEmptyString"},
+        "avatarUrl": {"$ref": "#/definitions/urlOrNull"}
+      }
+    },
+    "catchEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "role",
+        "title",
+        "activityKind",
+        "timeline",
+        "startTime",
+        "endTime",
+        "date",
+        "location",
+        "summary",
+        "capacityLimit",
+        "bookedCount",
+        "checkedInCount",
+        "waitlistedCount",
+        "priceLabel"
+      ],
+      "properties": {
+        "id": {"$ref": "#/definitions/nonEmptyString"},
+        "role": {"$ref": "#/definitions/nonEmptyString"},
+        "title": {"$ref": "#/definitions/nonEmptyString"},
+        "activityKind": {"$ref": "#/definitions/nonEmptyString"},
+        "timeline": {"type": "string", "enum": ["upcoming", "past"]},
+        "startTime": {"$ref": "#/definitions/nonEmptyString"},
+        "endTime": {"$ref": "#/definitions/nonEmptyString"},
+        "date": {"$ref": "#/definitions/nonEmptyString"},
+        "location": {"$ref": "#/definitions/nonEmptyString"},
+        "summary": {"type": "string"},
+        "capacityLimit": {"type": "integer", "minimum": 0},
+        "bookedCount": {"type": "integer", "minimum": 0},
+        "checkedInCount": {"type": "integer", "minimum": 0},
+        "waitlistedCount": {"type": "integer", "minimum": 0},
+        "priceLabel": {"$ref": "#/definitions/nonEmptyString"},
+        "scorecard": {
+          "anyOf": [
+            {"type": "object", "additionalProperties": true},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "externalEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "activityKind",
+        "availability",
+        "startTime",
+        "endTime",
+        "date",
+        "location",
+        "summary",
+        "priceLabel",
+        "sourceLabel",
+        "sourceHref",
+        "externalLinkCount",
+        "dedupeKey"
+      ],
+      "properties": {
+        "id": {"$ref": "#/definitions/nonEmptyString"},
+        "title": {"$ref": "#/definitions/nonEmptyString"},
+        "activityKind": {"$ref": "#/definitions/nonEmptyString"},
+        "availability": {
+          "type": "string",
+          "enum": ["read_only_external"]
+        },
+        "startTime": {"$ref": "#/definitions/nonEmptyString"},
+        "endTime": {"type": ["string", "null"]},
+        "date": {"$ref": "#/definitions/nonEmptyString"},
+        "location": {"$ref": "#/definitions/nonEmptyString"},
+        "summary": {"type": "string"},
+        "priceLabel": {"$ref": "#/definitions/nonEmptyString"},
+        "sourceLabel": {"$ref": "#/definitions/nonEmptyString"},
+        "sourceHref": {"type": "string", "format": "uri"},
+        "externalLinkCount": {"type": "integer", "minimum": 1},
+        "dedupeKey": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "eventSuccessSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bookedCount",
+        "checkedInCount",
+        "mutualMatchCount",
+        "chatStartedCount",
+        "catchSentCount",
+        "safetyIncidentCount"
+      ],
+      "properties": {
+        "bookedCount": {"type": "integer", "minimum": 0},
+        "checkedInCount": {"type": "integer", "minimum": 0},
+        "mutualMatchCount": {"type": "integer", "minimum": 0},
+        "chatStartedCount": {"type": "integer", "minimum": 0},
+        "catchSentCount": {"type": "integer", "minimum": 0},
+        "safetyIncidentCount": {"type": "integer", "minimum": 0}
+      }
+    },
+    "eventEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "date",
+        "location",
+        "summary",
+        "facts",
+        "sourceLabel",
+        "sourceHref"
+      ],
+      "properties": {
+        "title": {"$ref": "#/definitions/nonEmptyString"},
+        "date": {"$ref": "#/definitions/nonEmptyString"},
+        "location": {"$ref": "#/definitions/nonEmptyString"},
+        "summary": {"type": "string"},
+        "facts": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/nonEmptyString"}
+        },
+        "sourceLabel": {"$ref": "#/definitions/nonEmptyString"},
+        "sourceHref": {"type": "string", "format": "uri"}
+      }
+    },
+    "publicReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "reviewerName",
+        "rating",
+        "comment",
+        "createdAt",
+        "verificationStatus",
+        "source",
+        "isAnonymous",
+        "ownerResponse"
+      ],
+      "properties": {
+        "id": {"type": ["string", "null"]},
+        "reviewerName": {"$ref": "#/definitions/nonEmptyString"},
+        "rating": {"type": "number", "minimum": 0, "maximum": 5},
+        "comment": {"type": "string"},
+        "createdAt": {"$ref": "#/definitions/nonEmptyString"},
+        "verificationStatus": {
+          "type": "string",
+          "enum": ["verified", "unverified"]
+        },
+        "source": {
+          "type": "string",
+          "enum": ["catchEvent", "publicListing"]
+        },
+        "isAnonymous": {"type": "boolean"},
+        "ownerResponse": {
+          "anyOf": [
+            {"$ref": "#/definitions/ownerResponse"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "ownerResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hostName", "hostAvatarUrl", "message", "updatedAt"],
+      "properties": {
+        "hostName": {"$ref": "#/definitions/nonEmptyString"},
+        "hostAvatarUrl": {"$ref": "#/definitions/urlOrNull"},
+        "message": {"type": "string"},
+        "updatedAt": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "publicApi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "reason", "claimTargetSyncStatus"],
+      "properties": {
+        "state": {"type": "string", "enum": ["enabled", "disabled"]},
+        "reason": {"$ref": "#/definitions/nonEmptyString"},
+        "claimTargetSyncStatus": {
+          "type": "string",
+          "enum": [
+            "in_sync",
+            "write_needed",
+            "static_fixture",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "label", "detail", "confidence"],
+      "properties": {
+        "type": {"$ref": "#/definitions/nonEmptyString"},
+        "label": {"$ref": "#/definitions/nonEmptyString"},
+        "detail": {"$ref": "#/definitions/nonEmptyString"},
+        "href": {"type": "string", "format": "uri"},
+        "confidence": {"type": "string", "enum": ["high", "medium", "low"]}
+      }
+    }
+  }
+}

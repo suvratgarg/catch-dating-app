@@ -16,10 +16,7 @@ const _outputDirArg = String.fromEnvironment(
   defaultValue: 'artifacts/ui-captures/review',
 );
 const _deviceIdArg = String.fromEnvironment('CAPTURE_DEVICE_ID');
-const _textScaleArg = String.fromEnvironment(
-  'CAPTURE_TEXT_SCALE',
-  defaultValue: '1.0',
-);
+const _textScaleArg = String.fromEnvironment('CAPTURE_TEXT_SCALE');
 const _pixelRatioArg = String.fromEnvironment(
   'CAPTURE_DPR',
   defaultValue: '1.0',
@@ -36,7 +33,7 @@ void main() {
       .where((id) => id.isNotEmpty)
       .toList(growable: false);
   final outputDirectory = Directory(_outputDirArg);
-  final textScale = double.tryParse(_textScaleArg) ?? 1.0;
+  final textScaleOverride = double.tryParse(_textScaleArg);
   final pixelRatio = double.tryParse(_pixelRatioArg) ?? 1.0;
   final outputLayout = CaptureOutputLayout.fromName(_outputLayoutArg);
 
@@ -52,7 +49,8 @@ void main() {
         builder: entry.builder,
         device: device,
         pixelRatio: pixelRatio,
-        textScale: textScale,
+        textScale: textScaleOverride ?? entry.textScale,
+        disableAnimations: entry.disableAnimations,
         outputLayout: outputLayout,
         outputDirectory: outputDirectory,
         precache: entry.precache,

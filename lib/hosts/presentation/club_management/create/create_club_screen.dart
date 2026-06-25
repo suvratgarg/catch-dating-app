@@ -10,12 +10,13 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
@@ -24,7 +25,6 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_details_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
@@ -34,16 +34,86 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 const _maxClubPhotos = 6;
 
 class CreateClubScreen extends ConsumerStatefulWidget {
-  const CreateClubScreen({super.key, this.initialClub});
+  const CreateClubScreen({
+    super.key,
+    this.initialClub,
+    this.initialDraft,
+    this.initialStep = 0,
+    this.restoreSavedDraft = true,
+    this.formAutovalidateMode = AutovalidateMode.disabled,
+    this.initialPickedClubPhotos = const <PickedClubPhoto>[],
+    this.initialProfileImage,
+  });
 
   final Club? initialClub;
+  final ClubDraft? initialDraft;
+  final int initialStep;
+  final bool restoreSavedDraft;
+  final AutovalidateMode formAutovalidateMode;
+  final List<PickedClubPhoto> initialPickedClubPhotos;
+  final PickedClubProfileImage? initialProfileImage;
 
   @override
   ConsumerState<CreateClubScreen> createState() => _CreateClubScreenState();
 }
 
+@immutable
+class HostClubCreateState {
+  const HostClubCreateState({
+    required this.isEditing,
+    required this.mediaOnly,
+    required this.currentStep,
+    required this.totalSteps,
+    required this.title,
+    required this.subtitle,
+    required this.showEditScaffold,
+    required this.canSaveDraft,
+    required this.lastStepLabel,
+    required this.isLoading,
+  });
+
+  final bool isEditing;
+  final bool mediaOnly;
+  final int currentStep;
+  final int totalSteps;
+  final String title;
+  final String? subtitle;
+  final bool showEditScaffold;
+  final bool canSaveDraft;
+  final String lastStepLabel;
+  final bool isLoading;
+
+  factory HostClubCreateState.resolve({
+    required bool isEditing,
+    required bool mediaOnly,
+    required int currentStep,
+    required List<CatchFormStepSpec> activeSteps,
+    required Club? initialClub,
+    required bool submitPending,
+    required bool saveDraftPending,
+  }) {
+    final clampedStep = currentStep.clamp(0, activeSteps.length - 1).toInt();
+    return HostClubCreateState(
+      isEditing: isEditing,
+      mediaOnly: mediaOnly,
+      currentStep: clampedStep,
+      totalSteps: activeSteps.length,
+      title: formTitleForStep(activeSteps, clampedStep),
+      subtitle: isEditing ? initialClub!.name : null,
+      showEditScaffold: isEditing && !mediaOnly,
+      canSaveDraft: !isEditing && !mediaOnly,
+      lastStepLabel: mediaOnly
+          ? 'Save photos'
+          : isEditing
+          ? 'Save changes'
+          : 'Create club',
+      isLoading: submitPending || saveDraftPending,
+    );
+  }
+}
+
 class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
-  final _pageController = PageController();
+  late final PageController _pageController;
   final _basicsFormKey = GlobalKey<FormState>();
   final _detailsFormKey = GlobalKey<FormState>();
   final _defaultsFormKey = GlobalKey<FormState>();
@@ -92,6 +162,10 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   @override
   void initState() {
     super.initState();
+    _currentStep = widget.initialStep.clamp(0, _activeSteps.length - 1).toInt();
+    _pageController = PageController(initialPage: _currentStep);
+    _seedInitialMedia();
+
     final club = widget.initialClub;
     if (club != null) {
       _nameController.text = club.name;
@@ -102,12 +176,24 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       _phoneController.text = club.phoneNumber ?? '';
       _emailController.text = club.email ?? '';
       _hostDefaults = club.hostDefaults;
-      _clubPhotos.addAll(
-        ([...club.clubPhotos]..sort((a, b) => a.position.compareTo(b.position)))
-            .map(_ExistingClubPhotoDraft.new),
-      );
+      if (_clubPhotos.isEmpty) {
+        _clubPhotos.addAll(
+          ([...club.clubPhotos]
+                ..sort((a, b) => a.position.compareTo(b.position)))
+              .map(_ExistingClubPhotoDraft.new),
+        );
+      }
       return;
     }
+
+    final initialDraft = widget.initialDraft;
+    if (initialDraft != null && !initialDraft.isEmpty) {
+      _restoreFromDraft(initialDraft);
+      _restoredDraft = true;
+      return;
+    }
+
+    if (!widget.restoreSavedDraft) return;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_checkedDraft) {
@@ -148,9 +234,18 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       _restoredDraft = true;
     });
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Restored your club draft')));
+    showCatchSnackBar(context, 'Restored your club draft');
+  }
+
+  void _seedInitialMedia() {
+    _profileImage = widget.initialProfileImage;
+    if (widget.initialPickedClubPhotos.isEmpty) return;
+    _clubPhotos.addAll(
+      widget.initialPickedClubPhotos.map(
+        (photo) => _PickedClubPhotoDraft(_nextPickedClubPhotoId++, photo),
+      ),
+    );
+    _clubPhotosTouched = true;
   }
 
   void _restoreFromDraft(ClubDraft draft) {
@@ -224,6 +319,43 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     });
   }
 
+  Future<CityOption?> _pickCityForEdit() async {
+    final picked = await showModalBottomSheet<CityOption>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        final maxHeight = MediaQuery.sizeOf(context).height * 0.6;
+        return CatchBottomSheetScaffold(
+          title: 'City',
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: maxHeight),
+            child: SingleChildScrollView(
+              child: CatchFieldGroup(
+                children: [
+                  for (final city in defaultCityOptions)
+                    CatchField(
+                      label: city.label,
+                      value: city.countryIsoCode,
+                      mode: CatchFieldMode.nav,
+                      icon: CatchIcons.locationCityOutlined,
+                      valid: city.name == _selectedCity,
+                      showChevron: true,
+                      onTap: () => Navigator.of(context).pop(city),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+    if (!mounted || picked == null) return null;
+    setState(() => _selectedCity = picked.name);
+    return picked;
+  }
+
   void _back() {
     if (_currentStep > 0) {
       _goToStep(_currentStep - 1);
@@ -287,17 +419,9 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     );
     if (!mounted || savedDraft == null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _restoredDraft ? 'Draft updated' : 'Draft saved',
-          style: CatchTextStyles.labelL(
-            context,
-            color: CatchTokens.of(context).bg,
-          ),
-        ),
-        duration: CatchMotion.snackbar,
-      ),
+    showCatchSnackBar(
+      context,
+      _restoredDraft ? 'Draft updated' : 'Draft saved',
     );
     _restoredDraft = true;
   }
@@ -346,8 +470,6 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     return [for (final photo in _clubPhotos) photo.input];
   }
 
-  String get _title => formTitleForStep(_activeSteps, _currentStep);
-
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
@@ -363,6 +485,15 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
         : saveDraftMutation.hasError
         ? mutationErrorMessage(saveDraftMutation)
         : null;
+    final screenState = HostClubCreateState.resolve(
+      isEditing: _isEditing,
+      mediaOnly: mediaOnly,
+      currentStep: _currentStep,
+      activeSteps: activeSteps,
+      initialClub: widget.initialClub,
+      submitPending: submitMutation.isPending,
+      saveDraftPending: saveDraftMutation.isPending,
+    );
 
     ref.listen(CreateClubController.submitMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
@@ -370,7 +501,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       }
     });
 
-    if (_isEditing && !mediaOnly) {
+    if (screenState.showEditScaffold) {
       return _buildEditClubScaffold(
         tokens: t,
         isSubmitting: submitMutation.isPending,
@@ -384,10 +515,10 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
         child: Column(
           children: [
             CatchStepFlowHeader(
-              title: _title,
-              subtitle: _isEditing ? widget.initialClub!.name : null,
-              currentStep: _currentStep,
-              totalSteps: activeSteps.length,
+              title: screenState.title,
+              subtitle: screenState.subtitle,
+              currentStep: screenState.currentStep,
+              totalSteps: screenState.totalSteps,
               onBack: _back,
             ),
             gapH4,
@@ -398,6 +529,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                 children: [
                   ClubBasicsStep(
                     formKey: _basicsFormKey,
+                    autovalidateMode: widget.formAutovalidateMode,
                     nameController: _nameController,
                     selectedCity: cityOptionByName(_selectedCity),
                     onCityChanged: (city) => setState(() {
@@ -452,16 +584,11 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
             ),
             if (mutationError != null) CatchErrorBanner(message: mutationError),
             StepperFooter(
-              isLastStep: _currentStep == activeSteps.length - 1,
-              isLoading:
-                  submitMutation.isPending || saveDraftMutation.isPending,
+              isLastStep: screenState.currentStep == activeSteps.length - 1,
+              isLoading: screenState.isLoading,
               onNext: _next,
-              onSaveDraft: _isEditing || mediaOnly ? null : _saveDraft,
-              lastStepLabel: mediaOnly
-                  ? 'Save photos'
-                  : _isEditing
-                  ? 'Save changes'
-                  : 'Create club',
+              onSaveDraft: screenState.canSaveDraft ? _saveDraft : null,
+              lastStepLabel: screenState.lastStepLabel,
             ),
           ],
         ),
@@ -476,14 +603,18 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   }) {
     return Scaffold(
       backgroundColor: tokens.bg,
-      appBar: const CatchTopBar(title: 'Edit club', border: true),
+      appBar: CatchTopBar(
+        title: 'Edit club',
+        leadingType: CatchTopBarLeading.back,
+        onBack: _back,
+      ),
       body: Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(
                 CatchSpacing.s5,
-                CatchSpacing.micro18,
+                CatchSpacing.s4,
                 CatchSpacing.s5,
                 CatchSpacing.s7,
               ),
@@ -494,8 +625,9 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     imageBytes: _profileImage?.bytes,
                     existingImageUrl: widget.initialClub?.profileImageUrl,
                     onTap: isSubmitting ? null : _pickProfileImage,
+                    variant: CreateClubProfileImagePickerVariant.editLogo,
                   ),
-                  gapH16,
+                  gapH20,
                   CreateClubPhotosPicker(
                     photos: _clubPhotoPreviews,
                     existingImageUrl: _clubPhotos.isEmpty
@@ -504,20 +636,22 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     onAddPhotos: isSubmitting ? null : _pickClubPhotos,
                     onRemovePhoto: isSubmitting ? null : _removeClubPhoto,
                     onReorderPhoto: isSubmitting ? null : _reorderClubPhoto,
+                    variant: CreateClubPhotosPickerVariant.editStrip,
                   ),
                   Form(
                     key: _basicsFormKey,
+                    autovalidateMode: widget.formAutovalidateMode,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         _EditClubSection(
                           label: 'Identity',
-                          child: Column(
+                          child: CatchFieldGroup(
                             children: [
-                              CatchTextField(
+                              CatchField(
                                 label: 'Club name',
                                 controller: _nameController,
-                                prefixIcon: Icon(CatchIcons.groupOutlined),
+                                icon: CatchIcons.groupOutlined,
                                 textCapitalization: TextCapitalization.words,
                                 textInputAction: TextInputAction.next,
                                 validator: (value) {
@@ -527,27 +661,17 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                                   return null;
                                 },
                               ),
-                              gapH16,
-                              CatchDropdownField<CityOption>(
-                                values: defaultCityOptions,
-                                label: 'City',
-                                prefixIcon: Icon(
-                                  CatchIcons.locationCityOutlined,
-                                ),
-                                value: cityOptionByName(_selectedCity),
-                                onChanged: (city) => setState(() {
-                                  _selectedCity = city?.name;
-                                }),
-                                validator: (_) => _selectedCity == null
-                                    ? 'Please select a city'
-                                    : null,
+                              _EditClubCityField(
+                                city: cityOptionByName(_selectedCity),
+                                rawCityName: _selectedCity,
+                                enabled: !isSubmitting,
+                                onPickCity: _pickCityForEdit,
                               ),
-                              gapH16,
-                              CatchTextField(
+                              CatchField(
                                 label: 'Area / neighbourhood',
                                 controller: _areaController,
-                                prefixIcon: Icon(CatchIcons.locationOnOutlined),
-                                hintText: 'e.g. Bandra, Koramangala',
+                                icon: CatchIcons.locationOnOutlined,
+                                placeholder: 'e.g. Bandra, Koramangala',
                                 textCapitalization: TextCapitalization.words,
                                 textInputAction: TextInputAction.next,
                                 validator: (value) {
@@ -557,12 +681,12 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                                   return null;
                                 },
                               ),
-                              gapH16,
-                              CatchTextField(
+                              CatchField(
                                 label: 'Description',
                                 controller: _descriptionController,
-                                prefixIcon: Icon(CatchIcons.editNoteOutlined),
+                                icon: CatchIcons.editNoteOutlined,
                                 maxLines: 4,
+                                minLines: 2,
                                 textCapitalization:
                                     TextCapitalization.sentences,
                                 textInputAction: TextInputAction.newline,
@@ -578,11 +702,30 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                         ),
                         _EditClubSection(
                           label: 'Contact',
-                          child: CreateClubContactFields(
-                            instagramController: _instagramController,
-                            phoneController: _phoneController,
-                            emailController: _emailController,
-                            showLabel: false,
+                          child: CatchFieldGroup(
+                            children: [
+                              CatchField(
+                                label: 'Instagram',
+                                controller: _instagramController,
+                                icon: CatchIcons.alternateEmailOutlined,
+                                leadingUnit: '@',
+                                textInputAction: TextInputAction.next,
+                              ),
+                              CatchField(
+                                label: 'Phone',
+                                controller: _phoneController,
+                                icon: CatchIcons.phoneOutlined,
+                                keyboardType: TextInputType.phone,
+                                textInputAction: TextInputAction.next,
+                              ),
+                              CatchField(
+                                label: 'Email',
+                                controller: _emailController,
+                                icon: CatchIcons.emailOutlined,
+                                keyboardType: TextInputType.emailAddress,
+                                textInputAction: TextInputAction.done,
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -659,6 +802,51 @@ class _EditClubSection extends StatelessWidget {
           child,
         ],
       ),
+    );
+  }
+}
+
+class _EditClubCityField extends StatelessWidget {
+  const _EditClubCityField({
+    required this.city,
+    required this.rawCityName,
+    required this.enabled,
+    required this.onPickCity,
+  });
+
+  final CityOption? city;
+  final String? rawCityName;
+  final bool enabled;
+  final Future<CityOption?> Function() onPickCity;
+
+  @override
+  Widget build(BuildContext context) {
+    return FormField<CityOption>(
+      initialValue: city,
+      validator: (_) {
+        final hasCity =
+            city != null || (rawCityName != null && rawCityName!.isNotEmpty);
+        return hasCity ? null : 'Please select a city';
+      },
+      builder: (field) {
+        final raw = rawCityName;
+        final value = city?.label ?? (raw == null || raw.isEmpty ? '' : raw);
+        return CatchField(
+          label: 'City',
+          value: value,
+          placeholder: 'Select city',
+          mode: CatchFieldMode.nav,
+          icon: CatchIcons.locationCityOutlined,
+          showChevron: enabled,
+          error: field.errorText,
+          onTap: enabled
+              ? () async {
+                  final picked = await onPickCity();
+                  if (picked != null) field.didChange(picked);
+                }
+              : null,
+        );
+      },
     );
   }
 }

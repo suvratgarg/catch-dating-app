@@ -7,6 +7,7 @@ const matrixPath = fromRepo("docs/design_parity/state_matrix.json");
 const routeInventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
 const catalogPath = fromRepo("test/ui_captures/catalog/screen_capture_catalog.dart");
 const componentRegistryPath = fromRepo("design/components/catch.components.json");
+const screenContractsPath = fromRepo("design/screens/catch.screens.json");
 
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
@@ -27,12 +28,14 @@ function checkMatrix({summary = false} = {}) {
   const matrix = readJson(matrixPath);
   const routeInventory = readJson(routeInventoryPath);
   const componentRegistry = readJson(componentRegistryPath);
+  const screenContracts = readJson(screenContractsPath);
   const captureCatalog = parseCaptureCatalog(fs.readFileSync(catalogPath, "utf8"));
 
   const errors = validateMatrix({
     matrix,
     routeInventory,
     componentRegistry,
+    screenContracts,
     captureCatalog,
   });
 
@@ -47,13 +50,44 @@ function checkMatrix({summary = false} = {}) {
   }
 }
 
-function validateMatrix({matrix, routeInventory, componentRegistry, captureCatalog}) {
+function validateMatrix({
+  matrix,
+  routeInventory,
+  componentRegistry,
+  screenContracts,
+  captureCatalog,
+}) {
   const errors = [];
   const routeIds = new Set((routeInventory.routes ?? []).map((route) => route.id));
   const captureIds = new Set(captureCatalog.map((entry) => entry.id));
   const componentIds = new Set((componentRegistry.components ?? []).map((entry) => entry.id));
+  const screenContractIds = new Set((screenContracts.screens ?? []).map((screen) => screen.id));
+  const screenContractStateIds = new Map(
+    (screenContracts.screens ?? []).map((screen) => [
+      screen.id,
+      new Set((screen.states ?? []).map((state) => state.id)),
+    ])
+  );
+  const screenContractCaptureIds = new Map(
+    (screenContracts.screens ?? []).map((screen) => [
+      screen.id,
+      new Set([
+        ...(screen.captures ?? []).map((capture) => capture.id),
+        ...(screen.states ?? []).flatMap((state) => state.captureIds ?? []),
+      ]),
+    ])
+  );
+  const routeToScreenContractId = new Map();
+  for (const screen of screenContracts.screens ?? []) {
+    for (const route of screen.routes ?? []) {
+      routeToScreenContractId.set(route.id, screen.id);
+    }
+  }
   const featureIds = new Set();
   const screenIds = new Set();
+  const matrixScreenContractIds = new Set();
+  const matrixStateIdsByContractId = new Map();
+  const matrixCaptureIdsByContractId = new Map();
   const allowedPriorities = new Set(["P1", "P2", "P3", "P4"]);
   const allowedFeatureStatuses = new Set(["planned", "in_progress", "ready", "blocked"]);
   const allowedStateStatuses = new Set([
@@ -103,6 +137,11 @@ function validateMatrix({matrix, routeInventory, componentRegistry, captureCatal
         featureLabel,
         screen,
         screenIds,
+        matrixScreenContractIds,
+        screenContractIds,
+        routeToScreenContractId,
+        matrixStateIdsByContractId,
+        matrixCaptureIdsByContractId,
         routeIds,
         captureIds,
         componentIds,
@@ -114,6 +153,22 @@ function validateMatrix({matrix, routeInventory, componentRegistry, captureCatal
     }
   }
 
+  for (const screenId of screenContractIds) {
+    if (!matrixScreenContractIds.has(screenId)) {
+      errors.push(
+        `${screenId}: screen contract is missing from docs/design_parity/state_matrix.json.`
+      );
+    }
+  }
+  validateScreenContractStateParity(errors, {
+    screenContractStateIds,
+    matrixStateIdsByContractId,
+  });
+  validateScreenContractCaptureParity(errors, {
+    screenContractCaptureIds,
+    matrixCaptureIdsByContractId,
+  });
+
   return errors;
 }
 
@@ -123,6 +178,11 @@ function validateScreen(
     featureLabel,
     screen,
     screenIds,
+    matrixScreenContractIds,
+    screenContractIds,
+    routeToScreenContractId,
+    matrixStateIdsByContractId,
+    matrixCaptureIdsByContractId,
     routeIds,
     captureIds,
     componentIds,
@@ -142,9 +202,20 @@ function validateScreen(
   if (!routeIds.has(screen?.routeId)) {
     errors.push(`${screenLabel}: unknown routeId ${screen?.routeId}.`);
   }
+  const explicitScreenContractId = `screen.${screen?.id}`;
+  const boundScreenContractId = routeToScreenContractId.get(screen?.routeId);
+  let screenContractId = null;
+  if (screenContractIds.has(explicitScreenContractId)) {
+    screenContractId = explicitScreenContractId;
+    matrixScreenContractIds.add(screenContractId);
+  } else if (boundScreenContractId) {
+    screenContractId = boundScreenContractId;
+    matrixScreenContractIds.add(screenContractId);
+  }
 
   validatePaths(errors, `${screenLabel}.implementationPaths`, screen.implementationPaths);
   validateIds(errors, `${screenLabel}.captureIds`, screen.captureIds, captureIds);
+  const screenCaptureIds = new Set(screen.captureIds ?? []);
   validateIds(errors, `${screenLabel}.componentIds`, screen.componentIds, componentIds);
   validateDesignRefs(errors, screenLabel, screen.designRefs, allowedDesignKinds, allowedDesignStatuses);
   validateGaps(errors, `${screenLabel}.gaps`, screen.gaps, allowedGapStatuses);
@@ -167,9 +238,58 @@ function validateScreen(
       errors.push(`${stateLabel}: invalid state status ${state.status}.`);
     }
     validateIds(errors, `${stateLabel}.captureIds`, state.captureIds, captureIds);
+    for (const captureId of state.captureIds ?? []) {
+      if (!screenCaptureIds.has(captureId)) {
+        errors.push(`${stateLabel}.captureIds: ${captureId} is missing from ${screenLabel}.captureIds.`);
+      }
+    }
     validatePaths(errors, `${stateLabel}.tests`, state.tests);
     if ((state.status === "captured" || state.status === "ready") && !state.captureIds?.length) {
       errors.push(`${stateLabel}: ${state.status} states must list captureIds.`);
+    }
+  }
+  if (screenContractId) {
+    const aggregateStateIds =
+      matrixStateIdsByContractId.get(screenContractId) ?? new Set();
+    for (const stateId of stateIds) aggregateStateIds.add(stateId);
+    matrixStateIdsByContractId.set(screenContractId, aggregateStateIds);
+
+    const aggregateCaptureIds =
+      matrixCaptureIdsByContractId.get(screenContractId) ?? new Set();
+    for (const captureId of screenCaptureIds) aggregateCaptureIds.add(captureId);
+    matrixCaptureIdsByContractId.set(screenContractId, aggregateCaptureIds);
+  }
+}
+
+function validateScreenContractStateParity(
+  errors,
+  {screenContractStateIds, matrixStateIdsByContractId}
+) {
+  for (const [screenId, contractStateIds] of screenContractStateIds.entries()) {
+    const matrixStateIds = matrixStateIdsByContractId.get(screenId) ?? new Set();
+    for (const stateId of contractStateIds) {
+      if (!matrixStateIds.has(stateId)) {
+        errors.push(`${screenId}.${stateId}: state is missing from design parity matrix.`);
+      }
+    }
+    for (const stateId of matrixStateIds) {
+      if (!contractStateIds.has(stateId)) {
+        errors.push(`${screenId}.${stateId}: state is not declared in catch.screens.json.`);
+      }
+    }
+  }
+}
+
+function validateScreenContractCaptureParity(
+  errors,
+  {screenContractCaptureIds, matrixCaptureIdsByContractId}
+) {
+  for (const [screenId, contractCaptureIds] of screenContractCaptureIds.entries()) {
+    const matrixCaptureIds = matrixCaptureIdsByContractId.get(screenId) ?? new Set();
+    for (const captureId of contractCaptureIds) {
+      if (!matrixCaptureIds.has(captureId)) {
+        errors.push(`${screenId}.${captureId}: capture is missing from design parity matrix.`);
+      }
     }
   }
 }

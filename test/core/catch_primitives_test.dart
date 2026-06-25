@@ -25,10 +25,12 @@ import 'package:catch_dating_app/core/widgets/catch_detail_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
 import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_expanding_search.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
@@ -39,6 +41,7 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
+import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_panel.dart';
@@ -50,6 +53,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_settings_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_strip.dart';
@@ -63,6 +67,7 @@ import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_viewport_curve_frame.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -251,7 +256,9 @@ void main() {
     expect(button.accentColor, accent);
   });
 
-  testWidgets('CatchIconButton renders handoff icon button variants', (tester) async {
+  testWidgets('CatchIconButton renders handoff icon button variants', (
+    tester,
+  ) async {
     var taps = 0;
 
     await tester.pumpWidget(
@@ -985,30 +992,31 @@ void main() {
     expect(find.byIcon(CatchIcons.checkRounded), findsOneWidget);
   });
 
-  testWidgets('CatchChipField required multi select keeps the last chip selected', (
-    tester,
-  ) async {
-    Set<CityOption> selected = {cityOptionByName('mumbai')!};
+  testWidgets(
+    'CatchChipField required multi select keeps the last chip selected',
+    (tester) async {
+      Set<CityOption> selected = {cityOptionByName('mumbai')!};
 
-    await tester.pumpWidget(
-      _wrap(
-        StatefulBuilder(
-          builder: (context, setState) => CatchChipField<CityOption>(
-            label: 'Cities',
-            values: defaultCityOptions.take(2).toList(),
-            selected: selected,
-            multiSelect: true,
-            onChanged: (next) => setState(() => selected = next),
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) => CatchChipField<CityOption>(
+              label: 'Cities',
+              values: defaultCityOptions.take(2).toList(),
+              selected: selected,
+              multiSelect: true,
+              onChanged: (next) => setState(() => selected = next),
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    await tester.tap(find.text(cityLabel('mumbai')));
-    await tester.pump();
+      await tester.tap(find.text(cityLabel('mumbai')));
+      await tester.pump();
 
-    expect(selected, {cityOptionByName('mumbai')!});
-  });
+      expect(selected, {cityOptionByName('mumbai')!});
+    },
+  );
 
   testWidgets('CatchBadge renders status tones and uppercase option', (
     tester,
@@ -1132,24 +1140,27 @@ void main() {
     expect(find.text('+1'), findsOneWidget);
   });
 
-  testWidgets('CatchActivityMapPin renders selected flag and activity pigment pin', (
+  testWidgets(
+    'CatchActivityMapPin renders selected flag and activity pigment pin',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const CatchActivityMapPin(
+            activityKind: ActivityKind.socialRun,
+            selected: true,
+            label: 'SOCIAL RUN · 6:30 AM',
+          ),
+        ),
+      );
+
+      expect(find.text('SOCIAL RUN · 6:30 AM'), findsOneWidget);
+      expect(find.byIcon(CatchIcons.pin), findsOneWidget);
+    },
+  );
+
+  testWidgets('CatchDistanceRing renders tappable map radius label', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      _wrap(
-        const CatchActivityMapPin(
-          activityKind: ActivityKind.socialRun,
-          selected: true,
-          label: 'SOCIAL RUN · 6:30 AM',
-        ),
-      ),
-    );
-
-    expect(find.text('SOCIAL RUN · 6:30 AM'), findsOneWidget);
-    expect(find.byIcon(CatchIcons.pin), findsOneWidget);
-  });
-
-  testWidgets('CatchDistanceRing renders tappable map radius label', (tester) async {
     var taps = 0;
 
     await tester.pumpWidget(
@@ -1164,26 +1175,29 @@ void main() {
     expect(taps, 1);
   });
 
-  testWidgets('CatchActivityArt renders generated activity backdrop with child', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        const SizedBox(
-          width: 220,
-          child: CatchActivityArt(
-            activityKind: ActivityKind.yoga,
-            dim: true,
-            child: Center(child: Text('Ticket meta')),
+  testWidgets(
+    'CatchActivityArt renders generated activity backdrop with child',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const SizedBox(
+            width: 220,
+            child: CatchActivityArt(
+              activityKind: ActivityKind.yoga,
+              dim: true,
+              child: Center(child: Text('Ticket meta')),
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    expect(find.text('Ticket meta'), findsOneWidget);
-  });
+      expect(find.text('Ticket meta'), findsOneWidget);
+    },
+  );
 
-  testWidgets('CatchStatStrip renders uppercase labeled data pairs', (tester) async {
+  testWidgets('CatchStatStrip renders uppercase labeled data pairs', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _wrap(
         const SizedBox(
@@ -1446,7 +1460,11 @@ void main() {
               gapH12,
               const CatchDetailRow(label: 'Payment ID', value: 'pay_123'),
               gapH12,
-              const CatchStatColumn(value: '24', label: 'members', center: true),
+              const CatchStatColumn(
+                value: '24',
+                label: 'members',
+                center: true,
+              ),
               gapH12,
               const CatchGradedImage(
                 enabled: false,
@@ -1826,6 +1844,55 @@ void main() {
     expect(find.text('load failed'), findsOneWidget);
   });
 
+  testWidgets('CatchAsyncValueView supports context-aware state builders', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchAsyncValueView<int>(
+          value: AsyncError<int>(StateError('load failed'), StackTrace.empty),
+          builder: (context, value) => Text('$value'),
+          loadingBuilder: (context) => const Text('Loading custom state'),
+          errorBuilder: (context, error, stackTrace) =>
+              Text('Custom error: $error'),
+        ),
+      ),
+    );
+
+    expect(find.textContaining('Custom error:'), findsOneWidget);
+    expect(find.byType(CatchErrorState), findsNothing);
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchAsyncValueView<int>(
+          value: const AsyncLoading<int>(),
+          data: (value) => Text('$value'),
+          loadingBuilder: (context) => const Text('Loading custom state'),
+        ),
+      ),
+    );
+
+    expect(find.text('Loading custom state'), findsOneWidget);
+  });
+
+  testWidgets('CatchAsyncScreenLoading uses shared screen body and skeletons', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_wrap(const CatchAsyncScreenLoading(count: 2)));
+
+    expect(find.byType(CatchScreenBody), findsOneWidget);
+    expect(find.byType(CatchSkeletonList), findsOneWidget);
+  });
+
+  testWidgets('CatchSkeleton.box renders a fixed-size skeleton piece', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_wrap(CatchSkeleton.box(width: 42, height: 24)));
+
+    expect(find.byType(CatchSkeleton), findsOneWidget);
+    expect(tester.getSize(find.byType(CatchSkeleton)), const Size(42, 24));
+  });
+
   testWidgets('showCatchErrorSnackBar maps errors to user copy', (
     tester,
   ) async {
@@ -1884,6 +1951,139 @@ void main() {
       expect(retryCount, 1);
     },
   );
+
+  testWidgets('CatchMutationErrorBanner renders mutation errors inline', (
+    tester,
+  ) async {
+    final mutation = Mutation<void>();
+    var retryCount = 0;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Consumer(
+              builder: (context, ref, _) {
+                final state = ref.watch(mutation);
+                return Column(
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        try {
+                          await mutation.run(ref, (_) async {
+                            throw const NetworkException(
+                              'timeout',
+                              'The request timed out. Please try again.',
+                            );
+                          });
+                        } catch (_) {}
+                      },
+                      child: const Text('Save'),
+                    ),
+                    CatchMutationErrorBanner(
+                      mutation: state,
+                      onRetry: () => retryCount++,
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(CatchErrorBanner), findsNothing);
+
+    await tester.tap(find.text('Save'));
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(CatchErrorBanner), findsOneWidget);
+    expect(
+      find.text('The request timed out. Please try again.'),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text('Try again'));
+    await pumpFeatureUi(tester);
+
+    expect(retryCount, 1);
+  });
+
+  testWidgets('CatchMutationErrorListeners handles multiple mutations', (
+    tester,
+  ) async {
+    final saveMutation = Mutation<void>();
+    final deleteMutation = Mutation<void>();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Consumer(
+              builder: (context, ref, _) => CatchMutationErrorListeners(
+                mutations: [saveMutation, deleteMutation],
+                child: Column(
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        try {
+                          await saveMutation.run(ref, (_) async {
+                            throw StateError('save failed');
+                          });
+                        } catch (_) {}
+                      },
+                      child: const Text('Save'),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        try {
+                          await deleteMutation.run(ref, (_) async {
+                            throw StateError('delete failed');
+                          });
+                        } catch (_) {}
+                      },
+                      child: const Text('Delete'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Delete'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('delete failed'), findsOneWidget);
+  });
+
+  testWidgets('CatchField can render control content expanded on first build', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchField(
+          label: 'Capacity',
+          value: '24 seats',
+          mode: CatchFieldMode.nav,
+          initiallyExpanded: true,
+          control: Text('Capacity choices'),
+        ),
+      ),
+    );
+
+    expect(find.text('Capacity choices'), findsOneWidget);
+
+    await tester.tap(find.byType(CatchField));
+    await tester.pump();
+
+    expect(find.text('Capacity choices'), findsNothing);
+  });
 
   testWidgets(
     'CatchTextField renders label, helper text, changes, and errors',

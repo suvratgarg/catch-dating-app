@@ -5,6 +5,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
@@ -318,6 +319,39 @@ void main() {
 
     expect(find.text('Live mode needs saved setup'), findsOneWidget);
     expect(find.text('Live host mode'), findsNothing);
+  });
+
+  testWidgets('host section renders tab-shaped skeleton while guide loads', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'event-loading-host-guide');
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWithValue(const AsyncLoading<EventSuccessPlan?>()),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SafeArea(
+              child: EventSuccessHostSection(
+                event: event,
+                initialTab: EventSuccessHostTab.live,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump();
+
+    expect(find.byType(EventSuccessHostSectionSkeleton), findsOneWidget);
+    expect(find.byType(CatchSkeleton), findsWidgets);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
   testWidgets('host report is hidden when host analytics is disabled', (
@@ -1469,9 +1503,9 @@ void main() {
       ),
     );
 
-    expect(find.text("What we'll guide you through"), findsOneWidget);
+    expect(find.text('What to expect'), findsOneWidget);
     expect(
-      find.text('Timed partner rotations during the event.'),
+      find.text('Timed partner rotations as the event unfolds.'),
       findsOneWidget,
     );
     expect(find.text('Social prompt'), findsNothing);
@@ -1827,6 +1861,54 @@ void main() {
     expect(find.text('Suggested first-message openers'), findsOneWidget);
     expect(find.textContaining('compare routes'), findsOneWidget);
   });
+
+  testWidgets(
+    'companion route keeps chrome with content skeleton while loading',
+    (tester) async {
+      final event = buildEvent(id: 'event-loading-companion');
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+            watchEventProvider(
+              event.id,
+            ).overrideWithValue(const AsyncLoading<Event?>()),
+            watchUserProfileProvider.overrideWithValue(AsyncData(buildUser())),
+            watchEventParticipationProvider(
+              event.id,
+              'runner-1',
+            ).overrideWithValue(
+              AsyncData<EventParticipation?>(
+                buildEventParticipation(
+                  event: event,
+                  uid: 'runner-1',
+                  status: EventParticipationStatus.attended,
+                ),
+              ),
+            ),
+            watchEventSuccessPlanProvider(event.id).overrideWithValue(
+              AsyncData(EventSuccessPlan.defaultForEvent(event)),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: EventSuccessCompanionRouteScreen(
+              clubId: event.clubId,
+              eventId: event.id,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pump();
+
+      expect(find.text('Event companion'), findsOneWidget);
+      expect(find.byType(EventSuccessCompanionLoadingBody), findsOneWidget);
+      expect(find.byType(CatchSkeleton), findsWidgets);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    },
+  );
 
   testWidgets(
     'companion screen shows post-event openers and feedback after attendance',

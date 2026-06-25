@@ -1,11 +1,20 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_event_preview.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_event_preview_screen.dart';
+import 'package:catch_dating_app/events/data/event_participation_repository.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart'
@@ -138,5 +147,43 @@ void main() {
       scrollable: findPrimaryScrollable(),
     );
     expect(find.text('Post-event host report'), findsOneWidget);
+  });
+
+  testWidgets('route renders preview-shaped skeleton while event loads', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'event-preview-loading');
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchEventProvider(
+            event.id,
+          ).overrideWithValue(const AsyncLoading<Event?>()),
+          fetchClubProvider(
+            event.clubId,
+          ).overrideWithValue(const AsyncData<Club?>(null)),
+          watchEventParticipationRosterProvider(
+            event.id,
+          ).overrideWithValue(AsyncData(EventParticipationRoster.empty())),
+          watchUserProfileProvider.overrideWithValue(
+            const AsyncData<UserProfile?>(null),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventSuccessEventPreviewRouteScreen(
+            clubId: event.clubId,
+            eventId: event.id,
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump();
+
+    expect(find.byType(EventSuccessEventPreviewLoadingScreen), findsOneWidget);
+    expect(find.byType(CatchSkeleton), findsWidgets);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 }

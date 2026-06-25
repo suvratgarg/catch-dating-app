@@ -76,6 +76,7 @@ Future<List<CaptureArtifact>> captureCatchWidget(
   CaptureDevice device = CaptureDevice.reviewPhone,
   double pixelRatio = 1.0,
   double textScale = 1.0,
+  bool disableAnimations = false,
   CaptureOutputLayout outputLayout = CaptureOutputLayout.captureFirst,
   List<CaptureTheme> themes = CaptureTheme.all,
   List<ImageProvider<Object>> precache = const <ImageProvider<Object>>[],
@@ -105,6 +106,7 @@ Future<List<CaptureArtifact>> captureCatchWidget(
         boundaryKey: boundaryKey,
         brightness: theme.brightness,
         textScale: textScale,
+        disableAnimations: disableAnimations,
         device: device,
         builder: builder,
         providerOverrides: providerOverrides,
@@ -173,6 +175,7 @@ Widget _frame({
   required GlobalKey boundaryKey,
   required Brightness brightness,
   required double textScale,
+  required bool disableAnimations,
   required CaptureDevice device,
   required WidgetBuilder builder,
   required Iterable providerOverrides,
@@ -181,8 +184,8 @@ Widget _frame({
     overrides: [...providerOverrides],
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      theme: _captureTheme(AppTheme.light),
+      darkTheme: _captureTheme(AppTheme.dark),
       themeMode: brightness == Brightness.dark
           ? ThemeMode.dark
           : ThemeMode.light,
@@ -194,6 +197,7 @@ Widget _frame({
               MediaQuery.of(context),
               device: device,
               textScale: textScale,
+              disableAnimations: disableAnimations,
             ),
             child: Scaffold(
               backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -206,14 +210,23 @@ Widget _frame({
   );
 }
 
+ThemeData _captureTheme(ThemeData theme) {
+  return theme.copyWith(
+    textTheme: theme.textTheme.apply(fontFamily: 'Inter'),
+    primaryTextTheme: theme.primaryTextTheme.apply(fontFamily: 'Inter'),
+  );
+}
+
 MediaQueryData _captureMediaQuery(
   MediaQueryData data, {
   required CaptureDevice device,
   required double textScale,
+  required bool disableAnimations,
 }) {
   return data.copyWith(
     padding: device.safeArea,
     viewPadding: device.safeArea,
     textScaler: TextScaler.linear(textScale),
+    disableAnimations: disableAnimations,
   );
 }

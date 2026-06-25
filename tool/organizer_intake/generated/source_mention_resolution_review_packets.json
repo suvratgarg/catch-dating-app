@@ -1,0 +1,20 @@
+{
+  "generatedFrom": {
+    "resolutionClusters": "tool/organizer_intake/generated/source_mention_resolution_clusters.json",
+    "resolutionPolicy": "tool/organizer_intake/generated/source_mention_resolution_policy.json"
+  },
+  "packets": [],
+  "policy": {
+    "autoAttachThreshold": 0.9,
+    "humanReviewThreshold": 0.45,
+    "llmStatus": "disabled"
+  },
+  "schemaVersion": 1,
+  "summary": {
+    "autoAttach": 0,
+    "humanReviewRequired": 0,
+    "llmReviewRecommended": 0,
+    "packets": 0,
+    "singleton": 0
+  }
+}

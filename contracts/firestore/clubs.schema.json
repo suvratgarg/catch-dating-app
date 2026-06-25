@@ -501,6 +501,48 @@
       },
       "x-catch-ownership": "server-only"
     },
+    "adminSearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Server-owned deterministic search projection used by admin organizer publishing. Rebuildable from canonical club fields; not consumed by the app.",
+      "required": [
+        "tokens",
+        "sortKey",
+        "updatedAt",
+        "updatedBySource"
+      ],
+      "properties": {
+        "tokens": {
+          "type": "array",
+          "maxItems": 120,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80,
+            "pattern": "^[a-z0-9-]+$"
+          }
+        },
+        "sortKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-z0-9-]+(?:-[a-z0-9-]+)*$"
+        },
+        "updatedAt": {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+        },
+        "updatedBySource": {
+          "type": "string",
+          "enum": [
+            "adminUpdateClubDetails",
+            "adminSetClubIndexStatus",
+            "adminOrganizerSearchBackfill"
+          ]
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
     "publicProfile": {
       "type": "object",
       "additionalProperties": false,

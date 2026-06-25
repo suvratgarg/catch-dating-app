@@ -117,6 +117,711 @@ class _CompanionStageScaffold extends StatelessWidget {
   }
 }
 
+class _CompanionPaperScaffold extends StatelessWidget {
+  const _CompanionPaperScaffold({
+    required this.event,
+    required this.plan,
+    required this.presentation,
+    required this.showSelfCheckIn,
+    required this.eventEnded,
+  });
+
+  final Event event;
+  final EventSuccessPlan plan;
+  final EventSuccessMomentPresentation presentation;
+  final bool showSelfCheckIn;
+  final bool eventEnded;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Scaffold(
+      key: const ValueKey('eventSuccessCompanionPaper'),
+      backgroundColor: t.bg,
+      bottomNavigationBar: showSelfCheckIn
+          ? SafeArea(
+              minimum: const EdgeInsets.fromLTRB(
+                CatchSpacing.screenPx,
+                CatchSpacing.s2,
+                CatchSpacing.screenPx,
+                CatchSpacing.s3,
+              ),
+              child: _PaperSelfCheckInBar(event: event),
+            )
+          : null,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
+                    maxWidth: CatchLayout.maxContentWidth,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      CatchSpacing.screenPx,
+                      CatchSpacing.s2,
+                      CatchSpacing.screenPx,
+                      CatchSpacing.s8,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _PaperCompanionNav(plan: plan),
+                        gapH20,
+                        _PaperCompanionTicket(event: event, plan: plan),
+                        gapH24,
+                        _PaperExpectationCard(
+                          event: event,
+                          plan: plan,
+                          showSelfCheckIn: showSelfCheckIn,
+                          eventEnded: eventEnded,
+                        ),
+                        if (!showSelfCheckIn) ...[
+                          gapH16,
+                          _PaperPrivacyCard(text: presentation.privacyLine),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _PaperCompanionNav extends StatelessWidget {
+  const _PaperCompanionNav({required this.plan});
+
+  final EventSuccessPlan plan;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final canPop = _companionCanPop(context);
+    final totalSteps = math.max(1, plan.playbook.runOfShow.length);
+    final activeStep = (plan.activeStepIndex + 1).clamp(1, totalSteps);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Tooltip(
+              message: MaterialLocalizations.of(context).backButtonTooltip,
+              child: CatchIconButton(
+                background: Colors.transparent,
+                onTap: canPop ? () => _popCompanion(context) : null,
+                child: Icon(
+                  CatchIcons.arrowBackRounded,
+                  size: CatchIcon.md,
+                  color: canPop ? t.ink3 : t.line2,
+                ),
+              ),
+            ),
+            gapW8,
+            Expanded(
+              child: Text(
+                'Event companion',
+                textAlign: TextAlign.center,
+                style: CatchTextStyles.titleS(context),
+              ),
+            ),
+            gapW8,
+            SizedBox(
+              width: CatchLayout.eventSuccessStageNavExtent,
+              child: Text(
+                '${activeStep.toString().padLeft(2, '0')} / $totalSteps',
+                textAlign: TextAlign.end,
+                style: CatchTextStyles.labelS(context, color: t.ink2),
+              ),
+            ),
+          ],
+        ),
+        gapH18,
+        _PaperProgressRail(active: activeStep, total: totalSteps),
+      ],
+    );
+  }
+}
+
+class _PaperProgressRail extends StatelessWidget {
+  const _PaperProgressRail({required this.active, required this.total});
+
+  final int active;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final count = total.clamp(1, 13);
+    return Row(
+      children: [
+        for (var index = 0; index < count; index++) ...[
+          Expanded(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: index < active ? t.primary : t.line2,
+                borderRadius: BorderRadius.circular(CatchRadius.pill),
+              ),
+              child: const SizedBox(height: CatchSpacing.micro3),
+            ),
+          ),
+          if (index != count - 1) gapW4,
+        ],
+      ],
+    );
+  }
+}
+
+class _PaperCompanionTicket extends StatelessWidget {
+  const _PaperCompanionTicket({required this.event, required this.plan});
+
+  final Event event;
+  final EventSuccessPlan plan;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final activitySwatch = ActivityPalette.of(
+      context,
+    ).forKind(event.activityKind);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'YOUR TICKET - TODAY',
+          style: CatchTextStyles.sectionTitle(context, color: t.ink2),
+        ),
+        gapH12,
+        CatchSurface(
+          padding: EdgeInsets.zero,
+          radius: CatchRadius.md,
+          backgroundColor: t.surface,
+          borderColor: t.line,
+          boxShadow: CatchElevation.card,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(CatchRadius.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _PaperTicketHeader(
+                  event: event,
+                  plan: plan,
+                  swatch: activitySwatch,
+                ),
+                Padding(
+                  padding: CatchInsets.contentDense,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _PaperTicketDetail(
+                          label: 'WHEN',
+                          value: _paperTicketTime(event),
+                        ),
+                      ),
+                      gapW12,
+                      Expanded(
+                        child: _PaperTicketDetail(
+                          label: 'WHERE',
+                          value: event.locationName,
+                        ),
+                      ),
+                      gapW12,
+                      Expanded(
+                        child: _PaperTicketDetail(
+                          label: 'ENTRY',
+                          value: event.isFree
+                              ? 'Free'
+                              : EventFormatters.priceInPaise(
+                                  event.priceInPaise,
+                                  currencyCode: event.currency,
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const _PaperTicketPerforation(),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    CatchSpacing.s4,
+                    CatchSpacing.s3,
+                    CatchSpacing.s4,
+                    CatchSpacing.s4,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(child: _PaperTicketSerial(event: event)),
+                      gapW16,
+                      const _PaperBarcode(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PaperTicketHeader extends StatelessWidget {
+  const _PaperTicketHeader({
+    required this.event,
+    required this.plan,
+    required this.swatch,
+  });
+
+  final Event event;
+  final EventSuccessPlan plan;
+  final ActivitySwatch swatch;
+
+  @override
+  Widget build(BuildContext context) {
+    final foreground = CatchTokens.editorialLight;
+    return CatchSurface(
+      radius: CatchRadius.none,
+      backgroundColor: swatch.deep,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _PaperTicketHeaderPainter(
+                lineColor: swatch.accent.withValues(alpha: 0.26),
+                markColor: foreground.withValues(alpha: 0.10),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.s4,
+              CatchSpacing.s9,
+              CatchSpacing.s4,
+              CatchSpacing.s4,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${plan.playbook.title} - ${event.locationName}'
+                      .toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.sectionTitle(
+                    context,
+                    color: foreground.withValues(alpha: 0.82),
+                  ),
+                ),
+                gapH6,
+                Text(
+                  event.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.titleL(context, color: foreground),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PaperTicketHeaderPainter extends CustomPainter {
+  const _PaperTicketHeaderPainter({
+    required this.lineColor,
+    required this.markColor,
+  });
+
+  final Color lineColor;
+  final Color markColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final linePaint = Paint()
+      ..color = lineColor
+      ..strokeWidth = 1.4
+      ..style = PaintingStyle.stroke;
+    for (var index = -2; index < 12; index++) {
+      final start = Offset(size.width * -0.2 + index * 34, size.height);
+      final end = Offset(start.dx + size.height, 0);
+      canvas.drawLine(start, end, linePaint);
+    }
+
+    final markPaint = Paint()
+      ..color = markColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 6;
+    final center = Offset(size.width * 0.82, size.height * 0.52);
+    canvas.drawCircle(center, 30, markPaint);
+    canvas.drawCircle(center.translate(22, -2), 30, markPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _PaperTicketHeaderPainter oldDelegate) =>
+      oldDelegate.lineColor != lineColor || oldDelegate.markColor != markColor;
+}
+
+class _PaperTicketDetail extends StatelessWidget {
+  const _PaperTicketDetail({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.sectionTitle(context, color: t.ink3),
+        ),
+        gapH6,
+        Text(
+          value,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.labelL(context),
+        ),
+      ],
+    );
+  }
+}
+
+class _PaperTicketPerforation extends StatelessWidget {
+  const _PaperTicketPerforation();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return SizedBox(
+      height: CatchSpacing.s3,
+      child: CustomPaint(
+        painter: _PaperTicketPerforationPainter(color: t.line2),
+      ),
+    );
+  }
+}
+
+class _PaperTicketPerforationPainter extends CustomPainter {
+  const _PaperTicketPerforationPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = CatchStroke.hairline
+      ..style = PaintingStyle.stroke;
+    const dashWidth = 6.0;
+    const gapWidth = 4.0;
+    var x = 0.0;
+    final y = size.height / 2;
+    while (x < size.width) {
+      canvas.drawLine(Offset(x, y), Offset(x + dashWidth, y), paint);
+      x += dashWidth + gapWidth;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _PaperTicketPerforationPainter oldDelegate) =>
+      oldDelegate.color != color;
+}
+
+class _PaperTicketSerial extends StatelessWidget {
+  const _PaperTicketSerial({required this.event});
+
+  final Event event;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final booked = event.bookedCount ?? 0;
+    final capacity = event.capacityLimit;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'ADMIT ONE - NO ${booked.toString().padLeft(2, '0')} / $capacity',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.sectionTitle(context, color: t.ink3),
+        ),
+        gapH6,
+        Text(
+          _paperTicketCode(event),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.labelL(context),
+        ),
+      ],
+    );
+  }
+}
+
+class _PaperBarcode extends StatelessWidget {
+  const _PaperBarcode();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return SizedBox(
+      width: CatchLayout.eventSuccessPaperBarcodeWidth,
+      height: CatchLayout.eventSuccessPaperBarcodeHeight,
+      child: CustomPaint(painter: _PaperBarcodePainter(color: t.ink)),
+    );
+  }
+}
+
+class _PaperBarcodePainter extends CustomPainter {
+  const _PaperBarcodePainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    const widths = [2.0, 1.0, 4.0, 1.0, 2.0, 3.0, 1.0, 1.0, 4.0, 2.0];
+    var x = 0.0;
+    var index = 0;
+    while (x < size.width) {
+      final width = widths[index % widths.length];
+      canvas.drawRect(Rect.fromLTWH(x, 0, width, size.height), paint);
+      x += width + (index.isEven ? 3 : 2);
+      index++;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _PaperBarcodePainter oldDelegate) =>
+      oldDelegate.color != color;
+}
+
+class _PaperExpectationCard extends StatelessWidget {
+  const _PaperExpectationCard({
+    required this.event,
+    required this.plan,
+    required this.showSelfCheckIn,
+    required this.eventEnded,
+  });
+
+  final Event event;
+  final EventSuccessPlan plan;
+  final bool showSelfCheckIn;
+  final bool eventEnded;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final items = _paperExpectationItems(
+      event: event,
+      plan: plan,
+      showSelfCheckIn: showSelfCheckIn,
+      eventEnded: eventEnded,
+    );
+    return CatchSurface(
+      radius: CatchRadius.md,
+      backgroundColor: t.surface,
+      borderColor: t.line,
+      padding: CatchInsets.content,
+      boxShadow: CatchElevation.card,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _StageSectionLabel(
+            icon: CatchIcons.eventAvailableRounded,
+            label: 'What to expect',
+            color: t.primary,
+          ),
+          gapH12,
+          for (final item in items) ...[
+            _PaperExpectationRow(item: item),
+            if (item != items.last) gapH12,
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _PaperExpectationRow extends StatelessWidget {
+  const _PaperExpectationRow({required this.item});
+
+  final _PaperExpectationItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: CatchSpacing.micro2),
+          child: Icon(item.icon, size: CatchIcon.sm, color: t.ink3),
+        ),
+        gapW12,
+        Expanded(
+          child: Text(item.label, style: CatchTextStyles.bodyM(context)),
+        ),
+      ],
+    );
+  }
+}
+
+class _PaperPrivacyCard extends StatelessWidget {
+  const _PaperPrivacyCard({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      radius: CatchRadius.sm,
+      backgroundColor: t.primarySoft,
+      borderWidth: 0,
+      padding: CatchInsets.contentDense,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            CatchIcons.lockOutlineRounded,
+            size: CatchIcon.sm,
+            color: t.ink2,
+          ),
+          gapW8,
+          Expanded(
+            child: Text(
+              text,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PaperSelfCheckInBar extends ConsumerWidget {
+  const _PaperSelfCheckInBar({required this.event});
+
+  final Event event;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mutation = ref.watch(EventBookingController.selfCheckInMutation);
+    return CatchButton(
+      label: "I'm here - check me in",
+      icon: Icon(CatchIcons.locationOnOutlined),
+      isLoading: mutation.isPending,
+      onPressed: mutation.isPending
+          ? null
+          : () => _performSelfCheckIn(ref, event),
+      fullWidth: true,
+      size: CatchButtonSize.lg,
+    );
+  }
+}
+
+class _PaperExpectationItem {
+  const _PaperExpectationItem({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+}
+
+List<_PaperExpectationItem> _paperExpectationItems({
+  required Event event,
+  required EventSuccessPlan plan,
+  required bool showSelfCheckIn,
+  required bool eventEnded,
+}) {
+  if (eventEnded) {
+    return [
+      _PaperExpectationItem(
+        icon: CatchIcons.favoriteBorderRounded,
+        label: 'Post-event follow-up opens after attendance is confirmed.',
+      ),
+      _PaperExpectationItem(
+        icon: CatchIcons.chatBubbleOutlineRounded,
+        label: 'Conversation starters stay private to your event context.',
+      ),
+    ];
+  }
+  return [
+    _PaperExpectationItem(
+      icon: showSelfCheckIn
+          ? CatchIcons.locationOnOutlined
+          : CatchIcons.groups2Outlined,
+      label: showSelfCheckIn
+          ? 'Check in when you reach ${event.locationName}.'
+          : 'A small starter group will form when arrivals open.',
+    ),
+    if (plan.hasModule(EventSuccessModuleCatalog.guidedRotations.id))
+      _PaperExpectationItem(
+        icon: CatchIcons.syncAltRounded,
+        label: 'Timed partner rotations as the event unfolds.',
+      )
+    else
+      _PaperExpectationItem(
+        icon: CatchIcons.forumOutlined,
+        label: 'Conversation cues appear when the room needs an easy opener.',
+      ),
+    if (plan.hasModule(EventSuccessModuleCatalog.liveReveal.id))
+      _PaperExpectationItem(
+        icon: CatchIcons.boltRounded,
+        label: 'One synchronized reveal - every phone at once.',
+      )
+    else
+      _PaperExpectationItem(
+        icon: CatchIcons.lockOutlineRounded,
+        label: 'Your guide stays private to your ticket and attendance.',
+      ),
+  ];
+}
+
+String _paperTicketTime(Event event) {
+  final day = AppTimeFormatters.shortWeekday(event.startTime);
+  final time = AppTimeFormatters.time(event.startTime);
+  return '$day - $time';
+}
+
+String _paperTicketCode(Event event) {
+  final compactId = event.id
+      .replaceAll(RegExp('[^A-Za-z0-9]'), '')
+      .toUpperCase()
+      .padRight(7, 'X');
+  return 'CTH-${compactId.substring(0, 4)}-${compactId.substring(4, 7)}';
+}
+
+void _performSelfCheckIn(WidgetRef ref, Event event) {
+  unawaited(
+    ref
+        .read(eventSuccessLiveEffectsControllerProvider)
+        .play(EventSuccessLiveEffectKind.liveEntry),
+  );
+  EventBookingController.selfCheckInMutation.run(
+    ref,
+    (tx) => tx
+        .get(eventBookingControllerProvider.notifier)
+        .selfCheckIn(eventId: event.id),
+  );
+}
+
 class _CompanionMomentStage extends StatelessWidget {
   const _CompanionMomentStage({
     required this.event,
@@ -1625,11 +2330,15 @@ class _LiveOthersInRoomLineState extends State<_LiveOthersInRoomLine>
                   color: t.primary,
                 ),
                 gapW6,
-                Text(
-                  count == 1
-                      ? '1 person is checked in alongside you'
-                      : '$count people in the room with you',
-                  style: CatchTextStyles.labelL(context, color: t.ink),
+                Flexible(
+                  child: Text(
+                    count == 1
+                        ? '1 person is checked in alongside you'
+                        : '$count people in the room with you',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.labelL(context, color: t.ink),
+                  ),
                 ),
               ],
             ),

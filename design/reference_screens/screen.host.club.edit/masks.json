@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "screenId": "screen.host.club.edit",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["prefilled_owner_edit"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template includes drawn phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "club_media",
+      "stateIds": ["prefilled_owner_edit"],
+      "rect": {
+        "x": 20,
+        "y": 136,
+        "width": 350,
+        "height": 198
+      },
+      "reason": "Club logo, photo placeholders, and selected cover thumbnails are fixture media."
+    },
+    {
+      "id": "club_dynamic_values",
+      "stateIds": ["prefilled_owner_edit"],
+      "rect": {
+        "x": 68,
+        "y": 436,
+        "width": 246,
+        "height": 224
+      },
+      "reason": "Club identity and description copy vary across edit fixtures while row structure remains comparable."
+    },
+    {
+      "id": "bottom_footer_safe_area",
+      "stateIds": ["prefilled_owner_edit"],
+      "rect": {
+        "x": 0,
+        "y": 728,
+        "width": 390,
+        "height": 84
+      },
+      "reason": "Save footer positioning and bottom safe-area treatment are still advisory while host form chrome is reconciled."
+    }
+  ]
+}

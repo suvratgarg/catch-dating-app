@@ -6,8 +6,11 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_discover_list.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -26,6 +29,7 @@ import '../test_pump_helpers.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
   group('Clubs flow', () {
     testWidgets('club taps navigate with the required route param', (
@@ -176,6 +180,31 @@ void main() {
     });
 
     testWidgets(
+      'detail screen shows club-shaped skeleton while live data loads',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              clubDetailViewModelProvider(
+                'club-loading',
+              ).overrideWithValue(const AsyncLoading<ClubDetailViewModel?>()),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const ClubDetailScreen(clubId: 'club-loading'),
+            ),
+          ),
+        );
+        await tester.pump();
+
+        expect(find.byType(ClubDetailLoadingBody), findsOneWidget);
+        expect(find.byType(CatchSkeleton), findsWidgets);
+        expect(find.byType(CircularProgressIndicator), findsNothing);
+        expect(find.text('Club not found'), findsNothing);
+      },
+    );
+
+    testWidgets(
       'detail screen can load from live data without navigation extra',
       (tester) async {
         final club = _buildClub();
@@ -209,6 +238,79 @@ void main() {
         expect(find.text('Club not found.'), findsNothing);
       },
     );
+
+    testWidgets('host detail schedule opens the host event detail route', (
+      tester,
+    ) async {
+      AppConfig.configureEntrypointRole(AppRole.host);
+      final club = _buildClub();
+      final event = _buildEvent(id: 'event-7', clubId: club.id);
+      final router = GoRouter(
+        initialLocation: Routes.hostClubDetailScreen.path.replaceFirst(
+          ':clubId',
+          club.id,
+        ),
+        routes: [
+          GoRoute(
+            path: Routes.hostClubDetailScreen.path,
+            name: Routes.hostClubDetailScreen.name,
+            builder: (_, state) =>
+                ClubDetailScreen(clubId: state.pathParameters['clubId']!),
+          ),
+          GoRoute(
+            path: Routes.hostAppEventDetailScreen.path,
+            name: Routes.hostAppEventDetailScreen.name,
+            builder: (_, state) => Text(
+              'Host event ${state.pathParameters['clubId']}/'
+              '${state.pathParameters['eventId']}',
+              textDirection: TextDirection.ltr,
+            ),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            clubDetailViewModelProvider(club.id).overrideWithValue(
+              AsyncData(
+                ClubDetailViewModel(
+                  club: club,
+                  isHost: true,
+                  isMember: false,
+                  upcomingEvents: [event],
+                  reviews: const <Review>[],
+                  userProfile: _buildUser(uid: 'host-1'),
+                  uid: 'host-1',
+                  isAuthenticated: true,
+                ),
+              ),
+            ),
+            uidProvider.overrideWith((ref) => Stream.value('host-1')),
+            watchUserProfileProvider.overrideWith(
+              (ref) => Stream.value(_buildUser(uid: 'host-1')),
+            ),
+            watchClubMembershipProvider(
+              club.id,
+              'host-1',
+            ).overrideWith((ref) => Stream.value(null)),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await _pumpClubFlow(tester);
+
+      await tester.scrollUntilVisible(find.text(event.title), 500);
+      await _pumpClubFlow(tester);
+      await tester.tap(find.text(event.title));
+      await _pumpClubFlow(tester);
+
+      expect(find.text('Host event ${club.id}/${event.id}'), findsOneWidget);
+    });
 
     testWidgets(
       'detail screen refreshes membership UI when the membership stream updates',
@@ -270,6 +372,22 @@ void main() {
 
 Future<void> _pumpClubFlow(WidgetTester tester) async {
   await pumpFeatureUi(tester);
+}
+
+Event _buildEvent({required String id, required String clubId}) {
+  final start = DateTime(2026, 1, 7, 8);
+  return Event(
+    id: id,
+    clubId: clubId,
+    startTime: start,
+    endTime: start.add(const Duration(hours: 1)),
+    meetingPoint: 'Start',
+    distanceKm: 5,
+    pace: PaceLevel.easy,
+    capacityLimit: 20,
+    description: 'Easy paced event.',
+    priceInPaise: 0,
+  );
 }
 
 Club _buildClub({String id = 'club-1', String hostUserId = 'host-1'}) {

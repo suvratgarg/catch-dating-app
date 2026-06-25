@@ -1,0 +1,1664 @@
+---
+doc_id: design_parity_comprehensive_todo
+version: 0.2.165
+updated: 2026-06-25
+owner: product_design_parity
+status: active
+---
+
+# Comprehensive Design Parity Todo
+
+This is the canonical execution checklist for migrating Catch screens toward
+the design contracts. Keep this file focused on what remains. Use the JSON
+ledgers as the source of truth when counts differ:
+
+- `design/screens/screen_coverage.json`
+- `design/screens/catch.screens.json`
+- `docs/design_parity/state_matrix.json`
+- `tool/ui_capture/capture_coverage.json`
+- `design/components/catch.components.json`
+- `docs/design_parity/claude_widgetbook_inventory.md`
+
+## Current Snapshot
+
+- Route inventory: 48 app routes.
+- Route coverage decisions: 40 contracted, 2 alias, 0 planned, 6 excluded.
+- Screen contracts: 35 contracted screens.
+- Screen priority spread: 18 P1, 12 P2, and 5 P3 contracted screens.
+- Contracted screen states: 602.
+- Contracted screen sections: 241.
+- Screen registry migration gaps: 84 open, 8 blocked, and 47 closed. These are
+  product migration gaps in `design/screens/catch.screens.json`, not
+  validation failures.
+- Contracted section states: 1,110.
+- Open screen-contract validation gaps: 0.
+- Design parity matrix: 12 feature groups, 36 screens, 602 matrix states, 88
+  open matrix gaps: 77 open screen-state gaps, 6
+  lint-candidate gaps, and 5 preview-plan gaps.
+- Matrix state status spread: 461 captured, 52 implemented, 17 planned, and
+  72 tested.
+- Capture coverage registry: 466 capture ids across 37 captured route entries,
+  5 alias route entries, 0 planned route entries, and 6 excluded route entries.
+- Component contracts: 18 reusable primitive/composite contracts with 97
+  contract states.
+- Widgetbook registry: 210 generated component entries, 225 generated use-case
+  builders, 18 formal primitive contract previews, and 1,369 referenced
+  preview ids.
+- Design references: 38 exported references are registered across 26 screens in
+  `design/reference_screens/manifest.json`; 9 contracted screens still have no
+  canonical exported reference. Host Settings has a found source awaiting a
+  stable export, while 8 of the no-reference screens are now explicitly
+  blocked on missing canonical screen sources in the local Claude bundle.
+- Host reference baselines are now refreshed in the manifest for 17 registered
+  host references. Within-threshold host baselines are both Host Home
+  references, all six registered Host Create Event references, all five
+  registered Host Event Manage references, Host Create Club basics, Host Edit
+  Club owner edit, Host Edit Event owner edit, Host Clubs Organizer, and Host
+  Club Detail public view. Remaining host reference work is state-specific
+  exports and captures, not a current registered-baseline pixel failure.
+- Non-host reference baselines are now refreshed in the manifest for 18
+  registered references. Within-threshold non-host baselines are Profile Self
+  edit tab, Auth Phone Entry, and Filters Preferences; all other compared
+  non-host baselines remain above advisory threshold and should drive the next
+  visual-edit batches.
+- Event Success Companion now uses a paper ticket shell for pre-arrival and
+  self-check-in moments, moving the default-live-guide advisory baseline from
+  75.47% mismatch / 117.85 meanDelta to 22.94% mismatch / 33.16 meanDelta.
+  The reference remains above threshold because activity palette/content and
+  stage-specific variants still diverge.
+- Explore Discovery now uses a production cover-story header for the populated
+  feed and the `member_event_discovery` capture fixture mirrors the Claude
+  Bandra/Khar pub-quiz scenario. The advisory baseline improved from 61.62%
+  mismatch / 90.26 meanDelta to 41.87% mismatch / 36.74 meanDelta, but remains
+  above threshold because generated event-title copy, ticket/card rhythm, map
+  interleave, status chrome, and bottom dock treatment still diverge.
+- Dashboard Home empty-start now uses a full-bleed first-run hero instead of
+  the standard dashboard title bar plus rounded card composition. The advisory
+  baseline improved from 58.50% mismatch / 76.91 meanDelta to 54.05% mismatch /
+  59.13 meanDelta, but remains above threshold because deterministic text
+  rendering, bottom dock/app-shell treatment, and journey-step copy rhythm still
+  diverge.
+- Public Profile now uses a deterministic Aanya portrait fixture plus shared
+  Sundowner 5K context for `public_profile_member`. The advisory baseline
+  improved from 40.49% mismatch / 44.89 meanDelta to 36.62% mismatch /
+  32.76 meanDelta, but remains above threshold because top-bar/status chrome,
+  profile-insight copy, confidence badge rhythm, and below-fold profile
+  sections still diverge.
+- Host Event Manage now matches all five registered Claude references within
+  advisory thresholds after the Guests split, shared segmented control,
+  compact setup action rows, cohort-waitlist full banner rule, and deterministic
+  Bandra Social fixture pass. Final metrics are setup `13.35% / 13.30`,
+  full/waitlist `14.49% / 15.54`, guests roster `12.68% / 15.43`, live
+  `10.05% / 4.69`, and report `12.61% / 15.52`.
+- Host Home now has distinct Today and Events compositions instead of aliasing
+  both references to the same event-list state. The Today branch renders a
+  provider-free `HostTodayDashboardSection` from `HostHomeTodayDashboardState`
+  using the Bandra Social trivia fixture, while Events remains explicit through
+  `HostHomeTab.events`. Final advisory metrics are Today `17.48% / 15.54` and
+  Events `6.76% / 12.26`, both within threshold.
+- Host Edit Club owner edit now uses a reference-specific Sunday sea-face
+  fixture, compact logo/photo-strip media variants, grouped `CatchField`
+  identity/contact sections, and a fixed `CatchField` edit-label layout. The
+  registered owner-edit advisory comparison moved from `15.31% / 19.08` to
+  `7.92% / 8.64`, within threshold. Remaining work is adapter ownership for
+  field/media/mutation callbacks and future state-specific references.
+- Host Edit Event owner edit was refreshed against the registered Claude
+  reference and now compares within threshold at `9.25% / 10.93`. Remaining
+  work is state-specific reference exports and adapter ownership for private
+  access, validation, location picker, mutation callbacks, and close
+  navigation, not first-pass owner-edit visual parity.
+- Host Club Detail public view now uses the floating hero chrome, scale-down
+  stat values, regular-weight About copy, and a split generic-tag wrap in the
+  shared public club detail body. After the hero-edge mask calibration, the
+  registered advisory comparison is within threshold at `15.82% / 15.22`,
+  improving from the original `28.94% / 44.44` and the pre-calibration
+  `17.87% / 19.52` follow-up.
+- Host Create Event success/manage now uses a tighter paper celebration rhythm
+  plus a deterministic Sundowner 5K reference fixture for
+  `host_create_success_manage`. The advisory baseline improved from 32.49%
+  mismatch / 55.05 meanDelta through 27.13% mismatch / 42.68 meanDelta to
+  11.40% mismatch / 13.70 meanDelta and is now within threshold after the
+  tokenized paper inset, detail-row, separator, and action-spacing pass.
+- Current operating rule: route and screen inventory are mostly solved. The
+  remaining work is state coverage, Widgetbook/capture coverage, adapter
+  composition, design-reference export, pixel comparison, token/component
+  reconciliation, and drift prevention.
+- Dashboard Home now has canonical Claude references and advisory pixel
+  comparison wiring under `design/reference_screens/`. Continue exporting
+  references for the remaining P1/P2/P3 surfaces before declaring visual
+  parity.
+- Async route-state consolidation has started: Payment History, Review History,
+  Activity, Payment Confirmation, Saved Events, Event Map, Event Location Map,
+  host create/edit club/event route gates, Host Operations/Clubs, Host Account,
+  Host Profile, Host Event Manage, host attendance/profile lookups, host
+  analytics, hosted-club event lists, `WhoIsGoing`, and Settings route gutters
+  now use shared async/layout primitives. Remaining direct async branches are
+  dashboard view-model transformations and an optional Event Detail plan
+  presence check; treat those as policy decisions before further migration.
+- Async UI policy is now explicit in `ASYNC-UI-001`: view-model
+  `AsyncValue.when` is allowed for non-widget display state, optional
+  enrichment can stay silent only when the primary surface remains correct,
+  fallback/initial data should render ahead of blocking skeletons, async errors
+  need retry unless impossible or unsafe, and loading skeletons should mirror
+  the eventual content shape. Skeleton passes are complete for Payment History,
+  Review History, Activity, Saved Events, Matches/Chat list and message
+  loading, Event Detail route loading without credible fallback data, and
+  Profile/Public Profile data loading. Calendar route and club-name enrichment
+  loading now preserve the calendar chrome and render calendar/agenda-shaped
+  skeletons. Filters, Catches event deck, and Event Recap loading now use
+  control/profile/recap-shaped skeletons. Club Detail no-fallback loading,
+  event map/location-map loading, Dashboard route loading, Event Success
+  host/companion/preview loading, and host route/profile/analytics/attendance
+  loading now use club-profile, map, dashboard, event-success, and
+  host-operations-shaped skeletons. Host draft-picker and Dashboard/Event
+  Success inline progress affordances now use compact skeleton placeholders
+  instead of spinners. The final broad app-wide loader audit converted Safety
+  blocked accounts, User Analytics, Launch Access, Payment Confirmation, and
+  profile-photo editor preview loading to content-shaped skeletons. Remaining
+  direct loader hits are documented as tiny inline mutation/media/search
+  progress, startup/platform loading, or core async primitive defaults.
+
+## Comprehensive To Do List
+
+This is the complete execution list from the current ledgers. Work top to
+bottom unless a dependency is blocked; within a priority band, take the screen
+with the largest state or gap count first.
+
+### Master Completion Checklist
+
+This section tracks the eight workstreams that must all close before the
+design-system migration goal is complete.
+
+- [x] `GOAL-DS-001` Finish loading-state parity.
+  - Status: complete for the current app-wide source audit. `ASYNC-UI-001` is active and the first
+    content-shaped skeleton batches are complete for Payment History, Review
+    History, Activity, Saved Events, Matches/Chat list and message loading, and
+    Event Detail route loading when no credible `initialEvent` fallback is
+    available. Profile and Public Profile data loading now render
+    content-shaped skeletons, with Public Profile preserving `initialProfile`
+    fallback data. Calendar data loading now renders a pinned date-header,
+    stats-strip, and agenda-row skeleton; club-name enrichment loading keeps
+    resolved calendar chrome visible and skeletonizes the agenda only.
+    Filters, Catches event deck, and Event Recap loading now render
+    control/profile/recap-shaped skeletons. Club Detail no-fallback loading,
+    event map/location-map loading, Dashboard route loading, Event Success
+    host/companion/preview loading, and host route/profile/analytics/attendance
+    loading now render club-profile, map, dashboard, setup/live/report,
+    companion, preview, and host-operations-shaped skeletons. Host draft-picker
+    inline loading plus Dashboard health/recommendation and Event Success
+    manual-QA inline progress now use compact skeleton placeholders. The broad
+    app-wide grep pass now also covers Safety blocked accounts, User Analytics,
+    Launch Access, Payment Confirmation, and profile-photo editor preview
+    loading with content-shaped skeletons. Remaining direct loader source hits
+    are documented exceptions: public-profile report/block overlay, photo-slot
+    upload overlay, chat composer/image/message media progress, Suvbot control
+    action progress, location-picker suffix search progress, club notification
+    toggle progress, Settings delete/sign-out mutation progress, startup
+    loading, and core async defaults.
+  - Acceptance: every contracted loading state either uses a content-shaped
+    skeleton, renders credible fallback data, or is documented as a tiny inline
+    metadata/platform-action exception.
+  - Known generic/full-content candidates from the current source grep: none.
+  - Documented loading exceptions: public-profile report/block mutation pending
+    still uses an overlay spinner over already-rendered content; profile photo
+    slot upload pending remains an inline media-slot action spinner; chat
+    composer sends, chat image loads, Suvbot actions, location search suffixes,
+    club notification toggles, and Settings destructive/auth mutations keep
+    bounded inline progress; startup and core async defaults remain platform
+    and primitive-level loaders.
+- [ ] `GOAL-DS-002` Finish screen composition migration.
+  - Status: in progress. Route inventory and many async boundaries are in
+    place, but several screens still need route-state adapters and
+    provider-free visual sections.
+  - Acceptance: screens orchestrate providers/controllers/navigation/state
+    selection only; sections receive immutable display data and typed
+    callbacks; no screen-local product decisions or raw layout values remain
+    without a stable exception.
+- [ ] `GOAL-DS-003` Finish provider-free Widgetbook section coverage.
+  - Status: in progress. Core primitives and many route states are covered;
+    section-level previews still trail the screen contracts.
+  - Acceptance: every contracted reusable section has meaningful Widgetbook
+    states for loading, populated, empty, error/access, mutation, long copy,
+    text scale, reduced motion, and light/dark where relevant.
+- [ ] `GOAL-DS-004` Finish deterministic captures and pixel comparison.
+  - Status: in progress. Capture and reference tooling exists, with 37
+    references across 26 screens, but several contracted screens and variants
+    still need exports, masks, captures, and advisory comparison proof.
+  - Acceptance: every contracted screen state needed for review has a capture
+    or intentional exclusion; every canonical visual reference has PNG, mask,
+    manifest, state-matrix, screen-contract, advisory comparison, and audit
+    proof.
+- [ ] `GOAL-DS-005` Finish Claude Design vs Flutter inventory reconciliation.
+  - Status: inventory exists, reconciliation remains open.
+  - Acceptance: every Claude primitive, Flutter primitive, component contract,
+    Widgetbook entry, token/foundation specimen, website/social-template value,
+    and local-only widget is classified as keep, rename, merge, deprecate,
+    reject, missing-in-Flutter, missing-in-Claude, or needs-design-review.
+- [ ] `GOAL-DS-006` Move remaining raw values into tokens/components.
+  - Status: in progress through advisory scanners and component passes.
+  - Acceptance: spacing, radius, color, typography, motion, icon sizing,
+    skeleton shape, and layout constants are owned by tokens/components or
+    documented exceptions.
+- [ ] `GOAL-DS-007` Promote stable drift prevention into CI/lints.
+  - Status: in progress. `npm run design:parity:check` is the aggregate gate;
+    several hygiene scanners remain advisory while false positives are reduced.
+  - Acceptance: high-signal invariants for async UI, retryable errors,
+    unresolved Widgetbook refs, screen-contract/capture drift, token drift, and
+    raw visual values are enforced in CI or analysis tooling with stable debt
+    ids for intentional exceptions.
+- [ ] `GOAL-DS-008` Resolve remaining policy classifications.
+  - Status: mostly resolved. View-model `AsyncValue.when` is allowed for
+    non-widget display state; optional enrichment can fail silently only when
+    the primary surface remains correct.
+  - Acceptance: Event Detail's optional Event Success plan branch and any other
+    optional enrichment are documented in code or screen contracts as optional,
+    or promoted into visible loading/error section states if they gate a
+    primary CTA, paid action, safety action, or host operation.
+  - Current classification: Event Detail's saved-plan companion lookup remains
+    an optional enrichment because failure/loading does not block the primary
+    detail body, booking CTA, paid action, safety action, or host operation.
+
+### P0. Source-Of-Truth Control
+
+- [ ] Keep `design/screens/screen_coverage.json`,
+  `design/screens/catch.screens.json`, `docs/design_parity/state_matrix.json`,
+  `tool/ui_capture/capture_coverage.json`, Widgetbook generated ids,
+  `docs/widget_catalog.md`, `design/reference_screens/manifest.json`, this
+  tracker, and audit receipts synchronized in every pass.
+- [ ] Keep route inventory generated from app routing, but keep rich design
+  metadata in the portable design ledgers so Flutter, Widgetbook, the website,
+  social templates, and design-tool exports can share it.
+- [ ] Revisit alias and excluded routes quarterly, or immediately when a lab,
+  manual-QA, or dev-only route becomes product-facing.
+- [ ] Close screen-registry and state-matrix gaps only when implementation,
+  capture or preview proof, tests, scanner proof, and audit proof exist.
+
+### P1. Reference Export And Pixel Baselines
+
+- [ ] Resolve the 9 screens with no canonical reference:
+  export `screen.host.settings` from the found `HostAccount.dc.html` source,
+  and unblock/obtain canonical screen sources for `screen.catches.hub`,
+  `screen.calendar.home`, `screen.saved_events.list`, `screen.event.recap`,
+  `screen.host.profile`, `screen.event.location_map`,
+  `screen.reviews.history`, and `screen.payments.history`.
+- [ ] Add missing P1 variant references after each first baseline:
+  Catches Event mutation/comment/offline/theme states, Event Success stage and
+  reveal states, Host Event Manage guest/private-access edge states,
+  Host Create Event draft/validation/submit/success states, Host Chat dedicated
+  host-thread states, and Matches/Profile interaction-heavy variants.
+- [ ] Add missing P2 variant references: Auth OTP, validation, resend, and
+  mutation states; Onboarding steps, photo gate, upload, and entry-mode states;
+  Start animated reel, reduced-motion, text-scale, and alternate theme states.
+- [ ] For every exported reference, add the PNG, `masks.json`, manifest entry,
+  `catch.screens.json` design ref, state-matrix ref, advisory compare run, and
+  audit pass receipt.
+- [ ] Keep pixel comparison advisory until repeated local and CI runs prove
+  masks, thresholds, fixture clocks, dynamic image sources, and export
+  dimensions are stable.
+
+### P2. Captures, Tests, And Interaction Proof
+
+- [ ] Move all 62 planned matrix states toward captured, tested, ready, or
+  intentionally excluded status with proof.
+- [ ] Prioritize feature gaps in this order: Host Operations, secondary
+  consumer surfaces, host secondary operations, utility surfaces,
+  Explore/Club Detail, Catches, Matches/Chat, Start/Auth/Onboarding, Profiles,
+  Event Success Companion, Event Detail, then Dashboard maintenance.
+- [ ] Add deterministic captures for loading, populated, empty, error, offline,
+  access/permission, mutation pending/failure, light/dark theme, text scale,
+  and reduced-motion states wherever meaningful.
+- [x] Replace remaining generic loading indicators/card stacks with
+  content-shaped skeletons that resemble the eventual screen or section UI
+  before treating a loading state as visually reviewed. The 2026-06-23
+  app-wide loader audit converted the remaining full-content candidates and
+  documented only bounded inline/startup/core exceptions.
+- [ ] Add interaction proof for states static captures cannot prove: send,
+  report, block, upload, delete, reorder, save, copy/share, destructive
+  dialogs, route navigation, keyboard composers, sheets, snackbars, and private
+  invite flows.
+- [ ] Reuse fixture builders between Widgetbook and route captures so review
+  states and capture states cannot drift independently.
+- [ ] Fix `test/events/event_detail_widgets_test.dart` guest-roster scroll
+  helper debt. Full-file verification currently passes the Event Detail route
+  loading/fallback branches and then fails later in `EventDetailBody renders
+  guest roster prompt and sign-in CTA` with `Bad state: No element` from
+  `_scrollEventDetailUntilVisible`; treat this as scroll-helper/test debt, not
+  loading-state parity debt.
+
+### P3. Screen Composition Migration
+
+- [ ] For each screen pass, inventory provider reads, controller ownership,
+  mutation owners, private widgets, reusable primitives, tests, captures,
+  Widgetbook entries, design refs, raw values, and open gaps before visual
+  edits.
+- [ ] Add or finish a route-level adapter/view-model seam before moving layout
+  pieces. Route widgets should orchestrate providers, navigation, state
+  selection, and section composition only.
+- [ ] Move repository writes, mutation branching, permission decisions,
+  product validation, denormalized lookup decisions, and platform side effects
+  into controllers, repositories, or feature-owned provider seams.
+- [ ] Keep visual sections provider-free where practical, receiving immutable
+  display data and typed callbacks.
+- [ ] Replace screen-local spacing, radius, color, typography, icon sizing,
+  motion, and magic layout values with tokens, theme roles, or registered
+  component APIs as each screen is migrated.
+
+### P4. Widgetbook Review Surface
+
+- [ ] Add provider-free Widgetbook previews for every contracted section with
+  meaningful visual states after its adapter seam exists.
+- [ ] Add shared fakes for loading, empty, error, offline, permission denied,
+  unauthorized, mutation pending, mutation failure, missing route params,
+  missing documents, deleted resources, partial data, long copy, text scale,
+  reduced motion, and light/dark themes.
+- [ ] Keep every `previewId` in `design/components/catch.components.json`,
+  `catch.screens.json`, and `state_matrix.json` resolvable in generated
+  Widgetbook directories.
+- [ ] Regenerate Widgetbook after annotated use cases change, then run the
+  Widgetbook contract-ref check before closing the pass.
+
+### P5. Tokens, Components, And Cross-Surface Design Data
+
+- [ ] Reconcile Claude Design primitives against Flutter source,
+  `design/components/catch.components.json`, Widgetbook, and
+  `docs/design_parity/claude_widgetbook_inventory.md`.
+- [ ] Classify every local Flutter-only primitive as keep, rename, deprecate,
+  reject, or needs-design-review.
+- [ ] Add foundation specimen pages for color, typography, spacing, radius,
+  elevation, stroke, opacity, motion, activity pigments, icon scale, and
+  photo-grade decisions.
+- [ ] Keep `design/tokens/catch.tokens.json` compatible with the Design Tokens
+  Community Group shape and generate Flutter, website, and social-template
+  outputs from that source instead of adding Flutter-only token categories.
+- [ ] Promote screen-local sections into shared component contracts only when
+  reuse or design-language stability justifies the contract.
+
+### P6. Drift Prevention And CI
+
+- [ ] Keep `npm run design:parity:check` as the aggregate gate for route
+  inventory, screen coverage, capture coverage, screen contracts, state
+  matrix, Widgetbook refs, component contracts, and advisory hygiene.
+  Flutter CI also checks token generation drift and design-context-pack drift
+  directly, while Tools CI now runs for design ledgers, context-pack artifacts,
+  and Widgetbook changes.
+- [ ] Keep route inventory semantic checks blocking so nested `GoRoute` child
+  segments cannot drift from `Routes.<id>.path`.
+- [ ] Tighten screen-contract hygiene scanners for raw Material controls,
+  one-off visual constants, unregistered sections, raw error surfaces, and
+  presentation widgets that own product behavior.
+- [ ] Promote stable, high-signal invariants into `packages/catch_ui_lints`
+  only after scanner false positives are understood.
+- [ ] Add website and social-template token checks before those surfaces carry
+  independent palette, typography, or event-scheme values.
+- [ ] Keep broad scanners advisory until violations are fixed, intentionally
+  allowed, or tracked with stable debt ids.
+
+### P7. Blocked Or Human-Dependent Work
+
+- [ ] Owner-side live Chats device pass, seeded-data proof, and thumbnail
+  backfill require a real device/live-account QA loop.
+- [ ] Strict pixel-diff blocking remains blocked on stable advisory evidence
+  across repeated local and CI runs.
+
+## Current Control Todo
+
+Use this section when choosing the next pass. The longer sections below keep
+the detail, acceptance criteria, and screen-by-screen state inventory.
+
+### Immediate Pass Order
+
+1. [x] `TODO-NEXT-LOADING-001` Close the remaining `GOAL-DS-001`
+   loading-state parity queue.
+   - Completed the remaining known full-content/generic loader candidates:
+     Club Detail, Filters, Swipe, Event Recap, Event Map/Location Map,
+     Dashboard maintenance loaders, Event Success route loaders, host inline
+     route/profile/analytics loaders, and the final app-wide loader batch for
+     Safety blocked accounts, User Analytics, Launch Access, Payment
+     Confirmation, and profile-photo editor preview loading.
+   - Acceptance: each loading state uses a content-shaped skeleton, credible
+     fallback data, or a documented tiny inline metadata/platform-action
+     exception; tests prove the behavior and the screen/state metadata no
+     longer describes stale spinner behavior.
+2. [ ] `TODO-NEXT-REF-P1-001` Finish the P1 design-reference export baseline.
+   - Export and wire Catches Hub and remaining Host Event Manage variants.
+     Catches Hub is blocked on a canonical design source/export: the local
+     Claude bundle contains the Catches Event Deck/post-run catch-window asset
+     but no distinct Catches Hub template. Catches Event Deck now has a first
+     active-profile baseline, Event Success
+     Companion now has a default live-guide baseline, and Host Chat now has a
+     shared Messaging-thread baseline; dedicated variants remain for all three.
+     Host Create Event basics/location/schedule/policy/guide and Host Event
+     Manage setup/guests/live/report now have scoped design-phone advisory
+     comparison proof recorded in `catch.screens.json` and `state_matrix.json`.
+   - Acceptance: PNG, mask, manifest entry, `catch.screens.json` design ref,
+     `state_matrix.json` state ref, advisory comparison output, and audit pass
+     receipt exist for every exported state.
+3. [ ] `TODO-NEXT-CAP-P1-001` Close highest-risk P1 capture and interaction
+   gaps.
+   - Cover Event Success stage changes, Catches mutation failures/offline
+     states, Matches send/report/block and keyboard states, Profile upload and
+     report flows, and Host Operations role/access/loading/error variants.
+   - Acceptance: deterministic route or interaction proof exists, capture ids
+     are registered, matrix states move out of planned, and fixtures are
+     reusable instead of one-off test data.
+4. [ ] `TODO-NEXT-ADAPTER-P1-001` Extract P1 route-state adapters before
+   visual polishing.
+   - Start with Event Detail, Explore/Club Detail, Event Success Companion,
+     Catches, Matches/Chat, Profiles, and Host Operations.
+   - Acceptance: route widgets orchestrate providers/navigation only, visual
+     sections receive immutable display data and typed callbacks, and adapter
+     tests cover branch selection.
+5. [ ] `TODO-NEXT-WB-SECTIONS-001` Add provider-free Widgetbook previews for
+   contracted sections after each adapter seam exists.
+   - Start with Host Home sections, Host Clubs editor/team/analytics sections,
+     Host Event Manage roster/private-access/action sections, and Host Chat
+     composer/safety sections.
+   - Acceptance: previews reuse shared fixture builders, generated Widgetbook
+     ids resolve, and component/section references are mirrored in the screen
+     contract or state matrix.
+6. [ ] `TODO-NEXT-REF-P2P3-001` Export remaining P2/P3 references once the P1
+   reference baseline is moving.
+   - Cover Auth OTP and mutation variants, deeper Onboarding steps, and Host
+     Settings. Host Settings has a direct
+     `explorations/archived-templates/host-account/HostAccount.dc.html`
+     source and matching route captures, but the attempted Chrome headless
+     export did not produce a PNG; rerun with a stable local exporter.
+     Calendar, Saved Events, Event Recap, Host Profile, Event Location Map,
+     Reviews History, and Payment History are blocked until design provides
+     canonical standalone screen sources; current Claude sources only expose
+     related primitives or adjacent flows.
+   - Acceptance: same reference/mask/manifest/screen/matrix/advisory proof as
+     P1, with dynamic regions masked before any diff threshold is trusted.
+7. [ ] `TODO-NEXT-DS-RECONCILE-001` Reconcile primitives, tokens, sections, and
+   cross-surface design data.
+   - Compare Claude Design, Flutter source, `catch.components.json`,
+     Widgetbook, portable tokens, website needs, and social-template needs.
+   - Acceptance: every local-only primitive is classified as keep, rename,
+     deprecate, reject, or needs-design-review; no new Flutter-only token
+     category is added without a cross-surface decision.
+8. [ ] `TODO-NEXT-DRIFT-001` Tighten drift prevention after advisory signals are
+   stable.
+   - Keep the aggregate design gate blocking, keep broad scanners advisory
+     until false positives are understood, then promote stable invariants into
+     lints or blocking scanners.
+   - Acceptance: failures are high-signal, documented debt ids exist for
+     intentional exceptions, and CI does not block on unstable pixel noise.
+
+### Per-Pass Required Updates
+
+- [ ] `TODO-PASS-001` Update all affected ledgers together:
+  `screen_coverage.json`, `catch.screens.json`, `state_matrix.json`,
+  `capture_coverage.json`, Widgetbook generated ids, `docs/widget_catalog.md`,
+  design-reference manifests, tracker docs, and audit registry receipts.
+- [ ] `TODO-PASS-002` Run the relevant proof stack:
+  `npm run design:parity:check`, focused Flutter tests, focused analyzer with
+  `--no-fatal-infos`, route/capture/reference checks, Widgetbook generation or
+  ref checks when use cases change, `git diff --check`, and relevant scanners.
+- [ ] `TODO-PASS-003` Stamp every completed pass in
+  `docs/audit_registry/passes.jsonl` and touched file entries in
+  `docs/audit_registry/files.jsonl`.
+- [ ] `TODO-PASS-004` Keep follow-up tasks here or in the JSON ledgers; do not
+  leave new design-parity work only in chat history.
+
+### Workstream Backlog
+
+### Loading-State Parity Queue
+
+- [x] Calendar route loading and club-name enrichment loading now use
+  content-shaped skeletons instead of full-content spinners.
+- [x] Filters loading now uses control-shaped age-slider, gender-chip, and
+  apply-dock skeletons.
+- [x] Catches event deck queue loading now uses the shared profile-surface
+  skeleton with deck overlay and pass-button placeholders.
+- [x] Event Recap loading now uses recap hero, attendee-grid, and CTA
+  skeletons.
+- [x] Club Detail no-fallback loading now uses club-profile-shaped hero,
+  stats, host, about, tag, and upcoming-section skeletons; credible
+  `initialClub` fallback still renders the real body.
+- [x] Event Map and Event Location Map loading now use map-shaped skeletons;
+  the route location map preserves floating controls and a directions-card
+  placeholder.
+- [x] Dashboard route loading now uses a dashboard-shaped skeleton shell with
+  header, notification, focus-card, stride-card, quick-action, and
+  recommendation placeholders.
+- [x] Event Success host, companion, and event-preview route loading now use
+  setup/live/report, companion-stage, and preview-section skeletons.
+- [x] Host route/profile/analytics/attendance loading states now use
+  `HostRouteLoadingBody`, `HostSettingsRowsSkeleton`,
+  `HostAnalyticsReportSkeleton`, `HostEventRowsSkeleton`, and
+  `HostRosterSkeleton`.
+- [x] Host draft-picker inline loading state now uses `HostInlineSkeletonIcon`.
+- [x] Classify Dashboard health/recommendation inline progress and Event
+  Success manual-QA action progress as either tiny inline exceptions or replace
+  them with content-shaped skeleton/progress treatments. Dashboard inline
+  actions and Event Success manual-QA store loading now use compact skeleton
+  placeholders.
+- [x] Re-run the loader grep after each pass and either close, queue, or
+  document every remaining spinner/generic placeholder as an exception. The
+  targeted grep is clean for dashboard, event-success, and host presentation
+  folders; run a broader app grep during the final parity closeout.
+- [x] Broad app-wide loader audit from the 2026-06-23 source grep. Converted
+  full-content/generic candidates to content-shaped skeletons in
+  `lib/image_uploads/presentation/profile_photo_editor_screen.dart`,
+  `lib/safety/presentation/settings_screen.dart`,
+  `lib/user_analytics/presentation/user_analytics_panel.dart`,
+  `lib/payments/presentation/payment_confirmation_screen.dart`, and
+  `lib/launch_access/presentation/launch_access_application_screen.dart`.
+  Documented remaining exceptions:
+  `lib/image_uploads/presentation/widgets/photo_slot.dart` media-slot upload
+  overlay, `lib/public_profile/presentation/public_profile_screen.dart`
+  report/block overlay over rendered content,
+  `lib/chats/presentation/widgets/suvbot_action_bar.dart`,
+  `lib/chats/presentation/widgets/chat_input_bar.dart`, and
+  `lib/chats/presentation/widgets/message_bubble.dart` inline action/media
+  progress, `lib/events/presentation/location_picker_screen.dart` search
+  suffix progress, `lib/clubs/presentation/detail/widgets/catch_club_dock.dart`
+  and `lib/clubs/presentation/detail/widgets/membership_button.dart`
+  notification-toggle progress, Settings delete/sign-out mutation progress,
+  `lib/core/widgets/catch_startup_loading_screen.dart` startup loading, and
+  `lib/core/widgets/catch_async_value_view.dart` core async primitive defaults.
+
+### Reference Export Queue
+
+- [ ] P1 references: Catches Hub plus remaining Host Create Event and Host
+  Event Manage variants. Catches Event Deck now has a first active-profile
+  baseline from the Claude website app screenshot asset; Event Success
+  Companion now has a default live-guide baseline; Host Chat now has a first
+  shared Messaging-thread baseline. Host Create Event basics/location/schedule/
+  policy/guide and Host Event Manage setup/guests/live/report now have scoped
+  design-phone advisory comparison proof. Remaining P1 reference work is
+  Catches Hub design-source handoff, dedicated Catches/Event Success/Host Chat
+  variants, Host Create Event draft/validation/submit/success variants, Host
+  Event Manage private-access edge variants, and any future Host Club Detail
+  hosted-schedule/share/contact/review or host-control variants that design
+  explicitly adds.
+- [ ] P2 references: Auth OTP and mutation variants, remaining Onboarding
+  steps, and Host Settings. Host Settings has a found `HostAccount.dc.html`
+  source and should be the next export once the local reference exporter is
+  stable. Calendar, Saved Events, Event Recap, and Host Profile are blocked on
+  missing standalone canonical screen sources. Auth Phone, Onboarding Welcome,
+  Filters, Host Club Create, Host Club Edit, and Host Event Edit now have first
+  baseline references; their remaining work is variant coverage.
+- [ ] P3 references: Event Location Map, Reviews History, and Payment History
+  are blocked on missing standalone canonical screen sources. Notifications
+  and Account Settings now have first baseline references; their remaining
+  work is variant coverage.
+- [ ] For every new reference: export PNGs, add masks, update
+  `design/reference_screens/manifest.json`, wire the `designRefs` in
+  `catch.screens.json`, mirror state refs in `state_matrix.json`, run advisory
+  comparison, and record the proof in an audit pass.
+
+### P1 Execution Queue
+
+- [ ] Finish Dashboard Home section seams: keep full/empty reference comparison
+  stable, split remaining full-body display data, and add section-level
+  Widgetbook coverage where the adapter seams already exist.
+- [ ] Finish Host Operations baseline: add missing captures/references for Host
+  Home, Host Clubs, Host Create Event, Host Event Manage, Host Inbox, Host
+  Chat, and any future Host Club Detail variants; then introduce route-state
+  adapters and provider-free section previews.
+- [ ] Finish Explore/Club Detail: complete feed/map/filter capture variants,
+  move map/list/filter/contact/host-message decisions into adapters, and
+  reconcile Club Detail and Host Club Detail shared section semantics.
+- [ ] Finish Catches: add the Hub reference, dedicated deck variant
+  references, mutation-failure and sheet interaction proof, stable clocks,
+  offline copy decisions, and provider-free hub/deck display adapters.
+- [ ] Finish Matches/Chat: add remaining empty/keyboard/share/report/block
+  references, interaction proof for send/report/block flows, and list/chat
+  route-state adapters.
+- [ ] Finish Profiles: add upload failure/delete/reorder, inline save
+  pending/error, settings navigation, selected report reason, snackbar proof,
+  and self/public profile adapters.
+- [ ] Finish Event Success Companion: add stage-by-stage captures/references,
+  masks for dynamic moments, and adapters that keep runtime decisions out of
+  visual widgets.
+- [ ] Finish Event Detail: close remaining adapter work for visibility,
+  host/companion lookup, booking dock state, role branches, unavailable/private
+  states, and section/component hardening.
+
+### P2 And P3 Execution Queue
+
+- [ ] Start/Auth/Onboarding: add phone/OTP, validation, resend cooldown,
+  onboarding-step, photo gate, upload, entry-mode, text-scale, reduced-motion,
+  and design-reference coverage.
+- [ ] Secondary consumer surfaces: add Calendar, Saved Events, Filters, and
+  Event Recap adapters, captures, Widgetbook states, and design references.
+- [ ] Host secondary operations: add Host Club Create/Edit, Host Event Edit,
+  remaining Host Settings/Profile variants, adapters, Widgetbook states, and
+  design references. Host Settings now has active, fallback, no-profile,
+  profile loading/error, clubs loading/error, text-scale, reduced-motion, and
+  paired light/dark route captures; Host Profile now has populated, loading,
+  error, missing-profile, text-scale, reduced-motion, and paired light/dark
+  route captures.
+- [ ] Utility surfaces: preserve first-pass Widgetbook coverage while adding
+  deterministic map, notifications, reviews, settings, and payment captures,
+  references, and masks.
+
+### Cross-Cutting Work
+
+- [ ] Keep the route inventory, screen coverage, capture coverage, screen
+  contracts, state matrix, component contracts, Widgetbook ids, widget catalog,
+  and audit registry synchronized in every pass.
+- [ ] Add provider-free Widgetbook previews for all meaningful contracted
+  sections once their screen adapters exist.
+- [ ] Reuse fixture data between Widgetbook and route captures so preview and
+  capture states cannot drift.
+- [ ] Reconcile Claude primitives, Flutter primitives, portable component
+  contracts, tokens, Widgetbook entries, and website/social-template design
+  needs before adding new token categories.
+- [ ] Tighten drift prevention only after false positives are understood:
+  aggregate design gate first, advisory scanners second, analyzer-plugin lints
+  only for stable high-signal invariants.
+
+### Exhaustive Screen Todo Index
+
+Use this as the control list when choosing the next parity pass. The counts are
+derived from `design/screens/catch.screens.json` and
+`design/reference_screens/manifest.json`; when this table drifts, refresh it
+from those ledgers rather than hand-editing counts.
+
+| Priority | Screen | States | Sections | Exported refs | Reference gap | Open registry gaps | Next todo |
+|---|---|---:|---:|---:|---|---|---|
+| P1 | `screen.catches.event` | 19 | 6 | 1 | None | `DS-CATCHES-EVENT-002`, `DS-CATCHES-EVENT-003`, `DS-CATCHES-EVENT-004` | Section Widgetbook coverage is now source-backed; add mutation, keyboard/comment sheet, empty/offline, accessibility, and theme references; keep the event-state adapter work moving. |
+| P1 | `screen.catches.hub` | 12 | 4 | 0 | Blocked: missing canonical design source | `DS-CATCHES-HUB-004` blocked | Hub route adapter and section Widgetbook coverage are closed; local Claude bundle has no distinct hub source, so export waits on design source handoff. |
+| P1 | `screen.club.detail` | 13 | 9 | 1 | None | `DS-CLUB-DETAIL-001`, `DS-CLUB-DETAIL-002`, `DS-CLUB-DETAIL-003`, `DS-CLUB-DETAIL-004` | Close registry gaps with adapters, previews, captures, or component registration. |
+| P1 | `screen.dashboard.home` | 19 | 9 | 2 | None | None | Keep as the reference-complete baseline; finish remaining full-body display-data cleanup. |
+| P1 | `screen.event_success.companion` | 26 | 11 | 1 | None | `DS-EVENT-SUCCESS-COMPANION-002`, `DS-EVENT-SUCCESS-COMPANION-003`, `DS-EVENT-SUCCESS-COMPANION-004` | Pre-arrival and self-check-in moments now use a paper ticket shell; default-live-guide advisory comparison improved from 75.47% to 22.94% mismatch but remains above threshold. Add runtime-stage captures/references, masks, palette/content fixture alignment, and adapter work. |
+| P1 | `screen.event.detail` | 15 | 14 | 1 | None | `DS-EVENT-DETAIL-001`, `DS-EVENT-DETAIL-003` | Booking, cancel, saved-event, and calendar fallback feedback now use the shared Catch snackbar helper. Close remaining registry gaps with adapters, previews, captures, or component registration. |
+| P1 | `screen.explore.discovery` | 16 | 8 | 1 | None | `DS-EXPLORE-001`, `DS-EXPLORE-003`, `DS-EXPLORE-004` | Close registry gaps with adapters, previews, captures, or component registration. |
+| P1 | `screen.host.chat` | 29 | 9 | 1 | None | `DS-HOST-CHAT-001`, `DS-HOST-CHAT-002`, `DS-HOST-CHAT-005` | `ChatRouteState` now owns the route provider watch wave and mutation-pending flags; `HostChatScreenState` owns typed retry targets, report/block pending state, and top-bar action intents; `ChatReadMarkerState` owns read-marker decision policy; `ChatThreadLookupState` owns profile/event/host lookup keys. Host Chat transient report/share/sheet-export feedback uses shared snackbar styling. The populated-thread reference baseline is within threshold against `host_chat_inquiry` (`12.71%` mismatch, meanDelta `5.28`). Continue scroll/read-marker execution and remaining navigation/share/safety side-effect extraction plus keyboard, safety, mutation, accessibility, and theme variants. |
+| P1 | `screen.host.club.detail` | 19 | 10 | 1 | None | `DS-HOST-CLUB-DETAIL-001` | Public-view parity pass aligned the Claude photo fixture, one-line title scale, next-event address, next-run banner, 4-up stats, section order, activity chips, capture font loading, asset prewarm, floating hero chrome, stat value fit, regular-weight About copy, split generic-tag wraps, and hero-edge mask calibration. Advisory comparison is now within threshold at 15.82% / 15.22 after improving from 28.94% / 44.44 and 17.87% / 19.52. Continue only distinct hosted schedule/share/contact/review variants if design requires them. Host controls are closed as public-preview-only for the current contract. |
+| P1 | `screen.host.clubs` | 25 | 13 | 1 | None | None | Captures now cover the default Organizer overview, signed-out, co-host, loading, error/offline, empty, analytics loading/error/offline/report, inline editor pending/error/offline, payout provider/action states, host-team mutation states, preview, text-scale, reduced-motion, and light/dark; Host Team sheet/dialog, analytics query, overview actions, and preview route-callback seams are typed. The Host Organizer advisory compare is now within threshold after compact Organizer header, payout callout, metric-row, and mask calibration work (`5.71%` mismatch, mean delta `3.53`). |
+| P1 | `screen.host.event.create` | 30 | 11 | 6 | Policy/draft-delete/unsaved/reference variants | `DS-HOST-EVENT-CREATE-001`, `DS-HOST-EVENT-CREATE-002`, `DS-HOST-EVENT-CREATE-004`, `DS-HOST-EVENT-CREATE-005` | Captures now cover route states, validation, custom activity, picked event photos, selected location, draft picker/restored, save-draft pending/error, submit pending/error/offline, success, wizard defaults, text-scale, reduced-motion, and light/dark. All six registered Host Create Event references are now within advisory thresholds; success/manage improved from 32.49% / 55.05 through 27.13% / 42.68 to 11.40% / 13.70 after the tokenized paper inset, detail-row, separator, and action-spacing pass. Continue schedule/policy variants, draft delete, unsaved changes captures, unauthorized policy, deeper map/draft/photo offline, and missing draft/validation/submit reference exports. |
+| P1 | `screen.host.event.manage` | 40 | 12 | 5 | Private-access edge variants | `DS-HOST-EVENT-MANAGE-001`, `DS-HOST-EVENT-MANAGE-002`, `DS-HOST-EVENT-MANAGE-004`, `DS-HOST-EVENT-MANAGE-005` | Route/access plus initial-event fallback, section picker, attendance loading/error/empty, attendee-profile loading/error, filtered roster empty, attendance mutation pending/error, private-access loading/error, private-link share pending/error, invite-link loading/error/empty, invite-link mutation pending/error, edit/cancel/delete actions, report export pending/error, full/waitlist apron, live ready/unavailable, report scorecard, cancelled, text-scale, reduced-motion, and light/dark captures now join the setup/guests/live/report references. All five registered Host Event Manage references are within advisory thresholds after the Guests split, shared `CatchSegmentedControl`, compact setup action rows, merged event/roster counts, cohort-waitlist full banner rule, and deterministic Bandra Social fixture pass. Continue Event Success substates, deeper offline, typed invite-link action adapters, and private-access/invite reference variants. |
+| P1 | `screen.host.home` | 18 | 7 | 2 | None | `DS-HOST-HOME-002`, `DS-HOST-HOME-004` | Route captures now cover signed-out, club loading/error/offline, empty clubs, nested event loading/error/offline, co-host empty events, text-scale, reduced-motion, and light/dark. `HostHomeRouteState` owns auth/loading/error/empty/loaded route selection, `HostHomeEventsSectionState` owns nested event loading/error/empty/populated selection, and `HostEventsClubSection` renders provider-free event rows from typed retry/create/manage callbacks. Continue single-owned-only capture/reference variants and state reference exports. |
+| P1 | `screen.host.inbox` | 23 | 8 | 1 | None | `DS-HOST-INBOX-001` | `HostInboxScreenState`, `ChatsListDisplayState`, typed retry intents, host-inquiry grouping policy, typed row route callbacks, Widgetbook states, and route captures now cover uid/matches loading, error/offline, empty, populated, unread, no-unread, search, new inquiry, text-scale, reduced-motion, and light/dark. The populated-query reference baseline is within threshold against `host_inbox_queries` after the host broadcast card and reference-safe-area capture pass (`8.64%` mismatch, meanDelta `14.81`). Continue only duplicate/grouping, long-count, keyboard, and future variant references if design requires them. |
+| P1 | `screen.matches.chat` | 23 | 8 | 1 | None | `DS-MATCHES-CHAT-002`, `DS-MATCHES-CHAT-003`, `DS-MATCHES-CHAT-004` | Close registry gaps with adapters, previews, captures, or component registration. |
+| P1 | `screen.matches.list` | 15 | 6 | 1 | None | `DS-MATCHES-LIST-002`, `DS-MATCHES-LIST-003`, `DS-MATCHES-LIST-004` | Close registry gaps with adapters, previews, captures, or component registration. |
+| P1 | `screen.profile.public` | 14 | 6 | 1 | None | `DS-PROFILE-PUBLIC-002`, `DS-PROFILE-PUBLIC-003` | Close registry gaps with adapters, previews, captures, or component registration. |
+| P1 | `screen.profile.self` | 16 | 8 | 2 | None | `DS-PROFILE-SELF-002`, `DS-PROFILE-SELF-003` | Close registry gaps with adapters, previews, captures, or component registration. |
+| P2 | `screen.auth.phone_entry` | 8 | 4 | 1 | `auth-handoff` | `DS-AUTH-001`, `DS-AUTH-002`, `DS-AUTH-003` | Export OTP, validation, mutation, resend, text-scale, and reduced-motion references. |
+| P2 | `screen.calendar.home` | 10 | 5 | 0 | Blocked: no standalone Calendar Home source; only `CalendarPrimitive.html`/`DateRangePicker` | `DS-CALENDAR-001`, `DS-CALENDAR-002`, `DS-CALENDAR-003`, `DS-CALENDAR-004` blocked | Continue adapter/capture/Widgetbook work; reference export waits on canonical screen source. |
+| P2 | `screen.event.recap` | 10 | 5 | 0 | Blocked: no standalone Event Recap source | `DS-EVENT-RECAP-001`, `DS-EVENT-RECAP-002`, `DS-EVENT-RECAP-003`, `DS-EVENT-RECAP-004` blocked | Continue adapter/capture/Widgetbook work; reference export waits on canonical recap source. |
+| P2 | `screen.filters.preferences` | 11 | 5 | 1 | None | `DS-FILTERS-001`, `DS-FILTERS-002`, `DS-FILTERS-003` | Widgetbook now covers route/content states for loading, error/offline, missing, default, dirty/reset, pending, text-scale, and reduced-motion; remaining work is save-error proof, captures, and the fuller adapter. |
+| P2 | `screen.host.club.create` | 17 | 6 | 1 | None | `DS-HOST-CLUB-CREATE-001`, `DS-HOST-CLUB-CREATE-002`, `DS-HOST-CLUB-CREATE-003`, `DS-HOST-CLUB-CREATE-004` | Widgetbook and route captures now cover the create wizard, validation, picked media, draft restore, save-draft pending/error, submit pending/error, offline submit failure, accessibility, and theme states. Draft restore/save feedback now uses the shared Catch snackbar helper. Continue references and adapter callbacks. |
+| P2 | `screen.host.club.edit` | 17 | 6 | 1 | None | `DS-HOST-CLUB-EDIT-001`, `DS-HOST-CLUB-EDIT-002`, `DS-HOST-CLUB-EDIT-003`, `DS-HOST-CLUB-EDIT-004` | Route captures now cover owner edit, validation, media replacement, submit pending/error, offline fetch failure, co-host mode, forbidden identity, accessibility, and theme states. Continue references and adapter callbacks. |
+| P2 | `screen.host.event.edit` | 21 | 6 | 1 | None | `DS-HOST-EVENT-EDIT-001`, `DS-HOST-EVENT-EDIT-002`, `DS-HOST-EVENT-EDIT-003`, `DS-HOST-EVENT-EDIT-004` | Captures now cover validation, selected-location, and offline states; save success and missing-location feedback now use the shared Catch snackbar helper. Continue reference-specific variants and the fuller edit-state adapter. |
+| P2 | `screen.host.profile` | 15 | 4 | 0 | Blocked: standalone Host Profile editor is called missing/at-risk by host manifests | `DS-HOST-PROFILE-001`, `DS-HOST-PROFILE-002`, `DS-HOST-PROFILE-003`, `DS-HOST-PROFILE-004` blocked | Widgetbook now covers route, form, field/status, missing, validation, pending, accessibility, and theme review; `HostProfileEditState` adapts route provider state and `HostProfileController` owns create/save mutations with tested snackbar failure proof plus deterministic create/save/offline captures. Host Profile save success feedback now uses the shared Catch snackbar helper. Remaining work is validation capture, any host-specific offline copy decision, stable reference export, and pixel comparison. |
+| P2 | `screen.host.settings` | 18 | 5 | 0 | Source found but exporter-blocked: `explorations/archived-templates/host-account/HostAccount.dc.html` | `DS-HOST-SETTINGS-001`, `DS-HOST-SETTINGS-002`, `DS-HOST-SETTINGS-003`, `DS-HOST-SETTINGS-004` | Widgetbook now covers route, profile summary, create-pending row, clubs section, tab rail, accessibility, and theme states; `HostSettingsState` adapts profile/club display state and `HostProfileController` owns profile create/save mutations with tested snackbar failure proof plus deterministic editor-sheet, mutation, sign-out, and offline captures. Host Settings create/save success feedback now uses the shared Catch snackbar helper. 2026-06-25 stable temp bundle, current runtime, CDP, and original-source Chrome attempts did not produce a valid PNG. Remaining work is source/runtime repair or alternate export path, payout/admin ownership, sign-out/account action policy, and pixel comparison. |
+| P2 | `screen.onboarding.flow` | 13 | 7 | 1 | `onboarding-handoff` | `DS-ONBOARDING-001`, `DS-ONBOARDING-002`, `DS-ONBOARDING-003`, `DS-ONBOARDING-004` | Photos upload-failure feedback now uses the shared Catch snackbar helper while preserving clear-before-show behavior. Export remaining onboarding steps, validation, upload, mutation, text-scale, and reduced-motion references. |
+| P2 | `screen.saved_events.list` | 9 | 4 | 0 | Blocked: no standalone Saved Events source | `DS-SAVED-EVENTS-001`, `DS-SAVED-EVENTS-002`, `DS-SAVED-EVENTS-003`, `DS-SAVED-EVENTS-004` blocked | Continue adapter/capture/Widgetbook work; reference export waits on canonical Saved Events source. |
+| P2 | `screen.start.welcome` | 6 | 3 | 1 | None | `DS-START-001`, `DS-START-002`, `DS-START-003` | Add animated reel, reduced-motion, text-scale, theme, preview, and adapter coverage. |
+| P3 | `screen.event.location_map` | 11 | 4 | 0 | Blocked: no standalone full-screen map source; map primitives only | `DP-EVENT-MAP-003`, `DP-EVENT-MAP-004` blocked | Continue route-state adapter and map-mask planning; reference export waits on canonical map route source. |
+| P3 | `screen.notifications.list` | 13 | 4 | 1 | None | None | Use the complete Notifications state/capture/adapter set during pixel comparison and future visual polish. |
+| P3 | `screen.payments.history` | 15 | 4 | 0 | Blocked: no standalone Payment History source; Booking moments only | `DP-PAYMENT-HISTORY-002`, `DP-PAYMENT-HISTORY-004` blocked | Preserve current capture/Widgetbook coverage; reference export waits on canonical payment-history source. |
+| P3 | `screen.reviews.history` | 12 | 4 | 0 | Blocked: no standalone Reviews History source; `ReviewRow` primitive only | `DP-REVIEWS-HISTORY-004` blocked | Preserve current capture/Widgetbook coverage; reference export waits on canonical reviews-history source. |
+| P3 | `screen.settings.account` | 19 | 6 | 1 | None | None | Use the complete Settings state capture set during pixel comparison and future visual polish. |
+
+### Currently Blocked Or User-Input Dependent
+
+- [ ] `TODO-BLOCKED-LIVE-QA-001` Owner-side live Chats device pass, seeded-data
+  proof, and thumbnail backfill remain owner-blocked because they require a
+  real device/live-account QA loop.
+- [ ] `TODO-BLOCKED-DESIGN-DECISION-001` Pixel comparisons remain advisory
+  until repeated local/CI runs prove masks, thresholds, fixture clocks, image
+  sources, and dynamic regions are stable enough to block merges.
+- [ ] `TODO-BLOCKED-DESIGN-SOURCE-002` Canonical reference export is blocked
+  for Catches Hub, Calendar Home, Saved Events, Event Recap, Host Profile,
+  Event Location Map, Reviews History, and Payment History until design
+  provides standalone screen sources. The local Claude bundle currently only
+  has related primitives or adjacent flows for those surfaces.
+
+## Master Execution Checklist
+
+This is the high-level backlog. A feature is not design-parity complete until
+each relevant layer below is done and the proof is recorded in the JSON ledgers,
+tests, captures, Widgetbook, and audit receipts.
+
+### 0. Ledger And Source-Of-Truth Hygiene
+
+- [ ] `TODO-MASTER-LEDGER-001` Keep route inventory, screen coverage, capture
+  coverage, screen contracts, state matrix, Widgetbook ids, component
+  contracts, widget catalog, and audit receipts synchronized in the same pass.
+- [ ] `TODO-MASTER-LEDGER-002` When a route is added, removed, renamed, or
+  aliased, update `tool/ui_capture/route_inventory.json`,
+  `design/screens/screen_coverage.json`,
+  `tool/ui_capture/capture_coverage.json`, `design/screens/catch.screens.json`,
+  and `docs/design_parity/state_matrix.json` before visual work.
+- [ ] `TODO-MASTER-LEDGER-003` Keep gap closure explicit: close the gap in the
+  screen registry or state matrix only when implementation, preview/capture,
+  test, and scanner proof exist or the gap is intentionally excluded.
+- [ ] `TODO-MASTER-LEDGER-004` Do not create duplicate backlog docs. Add new
+  design-parity work here, in `design_parity_todo.md` for detailed evidence, or
+  in the relevant JSON registry.
+
+### 1. Design References And Pixel Comparison
+
+- [ ] `TODO-MASTER-REF-001` Export canonical Claude/Figma references for every
+  P1 screen and every accepted primitive/compound before declaring visual
+  parity.
+- [ ] `TODO-MASTER-REF-002` Store exported references under
+  `design/reference_screens/<screen-or-component>/<state>.png` with a manifest
+  that records source, viewport, theme, text scale, and export date.
+- [ ] `TODO-MASTER-REF-003` Define masks for dynamic regions: status bars, safe
+  areas, maps, timestamps, remote photos, generated counters, live counts,
+  keyboards, snackbars, sheets, dialogs, and animation frames.
+- [ ] `TODO-MASTER-REF-004` Add advisory pixel comparison between deterministic
+  route/Widgetbook captures and exported design references.
+- [ ] `TODO-MASTER-REF-005` Promote pixel comparison to blocking only after the
+  advisory run is stable across repeated CI/local runs.
+
+### 2. Tokens, Primitives, And Component Contracts
+
+- [ ] `TODO-MASTER-DS-001` Reconcile the Claude Design inventory against
+  `design/components/catch.components.json`, Widgetbook, Flutter source, and
+  `docs/design_parity/claude_widgetbook_inventory.md`.
+- [ ] `TODO-MASTER-DS-002` Classify each local Flutter primitive absent from
+  Claude Design as keep, rename, deprecate, reject, or needs-design-review.
+- [ ] `TODO-MASTER-DS-003` Expand component contracts beyond the 18 formal core
+  contracts only when the component is reusable, appears in the design system,
+  or blocks screen composition.
+- [ ] `TODO-MASTER-DS-004` Add foundation specimen pages for color, typography,
+  spacing, radius, elevation, stroke, opacity, motion, activity pigments, icon
+  scale, and photo-grade decisions.
+- [ ] `TODO-MASTER-DS-005` Keep `design/tokens/catch.tokens.json` compatible
+  with the Design Tokens Community Group shape and keep Flutter, website, and
+  social-template outputs generated from that source.
+- [ ] `TODO-MASTER-DS-006` Replace screen-local raw values with tokens,
+  semantic roles, or registered component APIs as each screen is migrated.
+
+### 3. Widgetbook Review Surface
+
+- [ ] `TODO-MASTER-WB-001` Add Widgetbook entries for every contracted screen
+  section that has meaningful local visual states.
+- [ ] `TODO-MASTER-WB-002` Add shared fixture fakes for loading, empty, error,
+  offline, permission denied, unauthorized, mutation pending, mutation failure,
+  missing route params, missing documents, deleted resources, partial data,
+  long copy, text scale, reduced motion, and light/dark themes.
+- [ ] `TODO-MASTER-WB-003` Reuse fixture data between Widgetbook and route
+  captures wherever practical so review states do not diverge.
+- [ ] `TODO-MASTER-WB-004` Run Widgetbook build generation whenever annotated
+  use cases change, then verify contract preview ids resolve.
+- [ ] `TODO-MASTER-WB-005` Prefer provider-free section previews after a route
+  screen has an adapter/view-model seam; use full route previews only when the
+  provider wiring itself is the thing under review.
+
+### 4. Captures, Tests, And State Proof
+
+- [ ] `TODO-MASTER-PROOF-001` For every contracted state, record whether it is
+  planned, implemented, previewed, captured, tested, ready, blocked, or
+  intentionally excluded.
+- [ ] `TODO-MASTER-PROOF-002` Add deterministic route captures for P1 loading,
+  populated, empty, error, offline, access/permission, mutation, text-scale,
+  reduced-motion, and paired theme states.
+- [ ] `TODO-MASTER-PROOF-003` Add focused tests for route-state adapters,
+  mutation error surfacing, typed callbacks, access branches, and fixture seams.
+- [ ] `TODO-MASTER-PROOF-004` Add interaction proof for states that static
+  captures cannot prove: send/report/block, upload/delete/reorder, private
+  invite links, copy/share, destructive dialogs, route navigation, keyboard
+  composer states, and snackbars.
+- [ ] `TODO-MASTER-PROOF-005` Keep captures deterministic by injecting clocks,
+  fixture data, reduced-motion behavior, and stable image sources where needed.
+
+### 5. Screen Composition Migration
+
+- [ ] `TODO-MASTER-COMP-001` For each selected screen, inventory route widget,
+  provider reads, controllers, mutation owners, private widgets, existing
+  sections, tests, captures, Widgetbook entries, design references, raw values,
+  and open registry gaps before visual edits.
+- [ ] `TODO-MASTER-COMP-002` Introduce or finish a route-level screen state
+  adapter/view model before moving layout pieces around.
+- [ ] `TODO-MASTER-COMP-003` Keep route widgets responsible for provider
+  orchestration, state selection, navigation wiring, and section composition
+  only.
+- [ ] `TODO-MASTER-COMP-004` Move repository writes, mutation branching,
+  permission decisions, product validation, and platform side effects into
+  controllers, repositories, or feature-owned provider seams.
+- [ ] `TODO-MASTER-COMP-005` Keep visual sections provider-free where practical;
+  pass immutable display data and typed callbacks.
+- [ ] `TODO-MASTER-COMP-006` Register missing sections/components as they are
+  discovered, but keep one-screen layout glue private until reuse or design
+  language requires a named contract.
+- [ ] `TODO-MASTER-COMP-007` Use batched feature seams for list/profile/event
+  display data instead of per-tile provider streams or sequential reads.
+
+### 6. Drift Prevention And CI
+
+- [ ] `TODO-MASTER-DRIFT-001` Keep `npm run design:parity:check` as the
+  aggregate gate for route inventory, capture coverage, screen coverage,
+  screen contracts, Widgetbook refs, component contracts, matrix entries, and
+  advisory hygiene.
+- [ ] `TODO-MASTER-DRIFT-002` Tighten screen-contract hygiene scanners around
+  raw Material controls, one-off visual constants, unregistered sections, and
+  presentation widgets that own product behavior.
+- [ ] `TODO-MASTER-DRIFT-003` Promote stable UI invariants into
+  `packages/catch_ui_lints` only after scanner false positives are understood.
+- [ ] `TODO-MASTER-DRIFT-004` Keep broad scanners advisory until violations are
+  fixed, intentionally allowed, or documented with stable debt ids.
+- [ ] `TODO-MASTER-DRIFT-005` Add website/social-template token checks before
+  those surfaces start carrying independent palette, typography, or event
+  scheme values.
+
+### 7. Recommended Execution Order
+
+- [ ] `TODO-MASTER-ORDER-001` Finish the narrow Dashboard Home composition
+  cleanup already in progress, including remaining display-data seams and
+  design-reference export. EventFocusRail now receives typed
+  `EventFocusActions` and a display-only check-in state from the composing
+  Dashboard body. DashboardStrideSection now receives typed stride actions and
+  display-only action state from the composing Dashboard body.
+- [ ] `TODO-MASTER-ORDER-002` Complete the P1 capture/design-reference loop for
+  Event Detail, Explore/Club Detail, Event Success Companion, Catches,
+  Matches/Chat, Profiles, and Host Operations.
+- [ ] `TODO-MASTER-ORDER-003` For each P1 screen, migrate composition only after
+  state inventory and fixture seams are clear.
+- [ ] `TODO-MASTER-ORDER-004` Move to P2 Start/Auth/Onboarding, secondary
+  consumer surfaces, and host secondary operations after P1 routes have
+  capture/reference/advisory-diff baselines.
+- [ ] `TODO-MASTER-ORDER-005` Preserve P3 utility Widgetbook coverage and close
+  utility capture/reference gaps opportunistically when related primitives or
+  sheets are touched.
+
+## Immediate Queue
+
+1. [ ] `TODO-NEXT-001` Finish the P1 design-reference export baseline.
+   - Already done: Dashboard Home full/empty, Event Detail member, Explore
+     feed, Club Detail member, Matches list/thread, Profile self edit/preview,
+     Public Profile, Host Home Today, Host Clubs Organizer, Host Inbox, Host
+     Create Event basics/location/schedule/policy/guide, and Host Event Manage
+     setup/private-access/live/report, Host Club Create basics, Host Club Edit
+     owner edit, Host Event Edit prefilled event, Notifications Activity, and
+     Settings Account references are exported, masked, manifest-registered, and
+     wired into advisory comparison. Auth Phone, Onboarding Welcome, and
+     Filters default references are also exported, masked, and
+     manifest-registered; Auth and Onboarding still need deeper variant exports.
+     Host Club Detail owner/public-view is exported, masked,
+     manifest-registered, wired to `host_club_detail_public`, and within the
+     advisory threshold after the hero-edge mask calibration.
+   - Also exported but not manifest-registered yet: Host Events tab, because a
+     matching route capture id is not in place.
+   - Catches Event Deck active profile now has a Claude website app screenshot
+     reference normalized, masked, manifest-registered, and wired to
+     `post_run_catch_window`; mutation, keyboard/comment sheet, empty/offline,
+     accessibility, and theme variants remain.
+   - Start Welcome landed direct now has the splash/welcome handoff reference
+     exported, masked, manifest-registered, and wired to `start_welcome`;
+     animated reel, reduced-motion, text-scale, and alternate theme variants
+     remain.
+   - Event Success Companion default live guide now has a Claude Event
+     Companion reference exported, masked, manifest-registered, and wired to
+     `event_success_companion`; the production default/pre-arrival shell now
+     matches the ticket-first structure and improves the advisory comparison
+     from 75.47% to 22.94% mismatch. Stage, reveal, afterglow, feedback,
+     activity palette/content, and accessibility/theme variants remain.
+   - Host Chat populated thread now has a shared Messaging-thread baseline
+     reference exported, masked, manifest-registered, and wired to
+     `host_chat_inquiry`; dedicated professional host-chat variants remain.
+   - Latest pass: Host Create Event basics/location/schedule/policy/guide and
+     Host Event Manage setup/guests/live/report references were re-compared
+     against design-phone captures and the advisory numbers were mirrored into
+     `catch.screens.json` and `state_matrix.json`.
+   - Catches Hub is now classified as blocked on missing canonical design
+     source/export; the local Claude bundle only exposes the already-registered
+     Catches Event Deck/post-run catch-window asset.
+   - Next exports: Host Settings from the found `HostAccount.dc.html` source,
+     remaining Auth/Onboarding variants, Host Create Event
+     draft/validation/submit/success, and Host Event Manage private-access
+     edge variants. Host Profile, Calendar, Saved Events, Event Recap, Event
+     Location Map, Reviews History, and Payment History are blocked on
+     canonical standalone screen sources.
+   - Start with references that already have local Claude templates:
+     Host Create Event and Host Manage remaining variants where matching
+     capture ids exist or can be added in the same pass.
+   - For each export, add `design/reference_screens/<screen>/<state>.png`, a
+     `masks.json`, manifest entries, screen-registry refs, state-matrix refs,
+     and an advisory `check_reference_screens.mjs --compare` run.
+2. [ ] `TODO-NEXT-002` Close remaining P1 deterministic capture and
+   interaction-proof gaps.
+   - Event Success Companion: first-pass route loading/access/error/offline
+     and runtime moments are captured and linked to Widgetbook; remaining work
+     is mutation pending/failure adapters plus deeper reference exports.
+   - Catches: mutation failure/interactions, cached-offline preservation,
+     keyboard/comment sheet regions, and explicit hub offline copy if needed.
+   - Matches/Chat: send/report/block mutation proof, keyboard-open snapshots,
+     and owner-blocked live Chats QA.
+   - Profiles: upload failure/delete/reorder, inline save pending/error
+     drawers, settings navigation, selected report reason, and
+     success/failure snackbar proof.
+   - Host Operations: remaining loading/error/empty/offline/access,
+     text-scale, reduced-motion, light/dark, role, analytics, roster, private
+     access, and host chat variants.
+3. [ ] `TODO-NEXT-003` Add provider-free section-level Widgetbook previews
+   after the relevant screen adapters exist.
+   - Start with Host Home sections, then Host Clubs editors/team/analytics,
+     Host Event Manage roster/private access/actions, and Host Chat
+     composer/safety states.
+   - Keep broad route previews only where provider wiring itself is the review
+     target; prefer immutable display data plus typed callbacks for reusable
+     sections.
+4. [ ] `TODO-NEXT-004` Extract screen adapters for the P1 routes with the
+   highest remaining product-state risk.
+   - Event Detail: move host lookup, companion lookup, visibility derivation,
+     and booking dock mode derivation out of visual sections.
+   - Explore/Club Detail: move filtering, map/list mode, host messaging,
+     contact launching, and dock-mode decisions into route state.
+   - Event Success Companion: keep runtime decisions in `EventSuccessRuntime`
+     and route-specific display derivation outside visual widgets.
+   - Catches, Matches/Chat, Profiles, and Host Operations: move provider waves,
+     mutations, route callbacks, side effects, and access decisions into
+     feature-owned adapters/controllers.
+5. [ ] `TODO-NEXT-005` Reconcile component and token inventory while screen
+   work exposes gaps.
+   - Reconcile every Claude Design primitive against
+     `design/components/catch.components.json`, Widgetbook, Flutter source,
+     and `docs/design_parity/claude_widgetbook_inventory.md`.
+   - Classify local-only Flutter primitives as keep, rename, deprecate, reject,
+     or needs-design-review.
+   - Add foundation specimen pages for color, type, spacing, radius, elevation,
+     stroke, opacity, motion, activity pigments, icon scale, and photo-grade
+     decisions.
+6. [ ] `TODO-NEXT-006` Tighten drift prevention only after the advisory signal
+   is stable.
+   - Keep `npm run design:parity:check` as the aggregate gate.
+   - Promote only high-signal UI invariants into `packages/catch_ui_lints`.
+   - Keep broad scanners advisory until violations are fixed, intentionally
+     allowed, or documented with stable debt ids.
+
+## Matrix Gap Queue
+
+| Priority | Feature | Screens | States | Screen Gaps | Lint Gaps | Preview Gaps | Total Open | Next Pass |
+|---|---|---:|---:|---:|---:|---:|---:|---|
+| P1 | `host_operations` | 7 | 180 | 24 | 0 | 1 | 25 | `host-operations-captures-01` |
+| P2 | `secondary_consumer_surfaces` | 4 | 39 | 12 | 1 | 1 | 14 | `secondary-consumer-surfaces-design-parity-01` |
+| P2 | `host_secondary_operations` | 5 | 88 | 10 | 1 | 0 | 11 | `host-secondary-operations-design-parity-01` |
+| P3 | `utility_surfaces` | 5 | 67 | 9 | 1 | 1 | 11 | `utility-surfaces-design-parity-01` |
+| P2 | `start_auth_onboarding` | 3 | 15 | 6 | 1 | 1 | 8 | `start-auth-onboarding-design-parity-01` |
+| P1 | `explore_discovery` | 3 | 34 | 6 | 1 | 1 | 8 | `explore-discovery-composition-01` |
+| P1 | `catches` | 2 | 31 | 6 | 0 | 0 | 6 | `catches-captures-01` |
+| P1 | `matches_chat` | 2 | 38 | 6 | 0 | 0 | 6 | `matches-chat-captures-01` |
+| P1 | `profiles` | 2 | 30 | 4 | 0 | 0 | 4 | `profile-captures-01` |
+| P1 | `event_success_companion` | 1 | 26 | 3 | 0 | 0 | 3 | `event-success-companion-composition-01` |
+| P1 | `events_discovery_booking` | 1 | 15 | 2 | 1 | 0 | 3 | `event-detail-composition-01` |
+| P1 | `dashboard_home` | 1 | 19 | 0 | 0 | 0 | 0 | `dashboard-full-body-display-data-01` |
+
+## A. Sources Of Truth And Gates
+
+- [x] `TODO-SOT-001` Generate route inventory from app routing.
+- [x] `TODO-SOT-002` Require every generated route to have a coverage decision:
+  contracted, alias, planned, or excluded.
+- [x] `TODO-SOT-003` Validate contracted routes against
+  `design/screens/catch.screens.json`.
+- [x] `TODO-SOT-004` Validate screen contracts against route inventory, source
+  files, Dart symbols, captures, components, and Widgetbook refs.
+- [x] `TODO-SOT-005` Keep `npm run design:parity:check` as the aggregate local
+  design gate.
+- [x] `TODO-SOT-006` Add a route-coverage review note/check to the new-route
+  workflow so new routes cannot ship without a coverage decision.
+  - Proof: `docs/design_parity/README.md` now documents the new-route workflow,
+    Flutter CI runs `npm run design:parity:check`, and the gate fails if route
+    inventory, screen coverage, capture coverage, screen contracts, or matrix
+    entries drift.
+- [x] `TODO-SOT-007` Decide whether generated route inventory is sufficient or
+  whether the router/AppRoute source should carry richer design metadata.
+  - Decision: keep the router as the path inventory source only. Rich design
+    metadata stays in the portable `design/screens` and `docs/design_parity`
+    ledgers so Flutter, Widgetbook, website/social templates, and design-tool
+    exports can share the same contracts.
+- [ ] `TODO-SOT-008` Keep `screen_coverage.json`, `catch.screens.json`,
+  `state_matrix.json`, `capture_coverage.json`, generated Widgetbook ids,
+  `docs/widget_catalog.md`, this tracker, and audit receipts synchronized in
+  every parity pass.
+- [ ] `TODO-SOT-009` Revisit alias and excluded routes quarterly, or whenever a
+  dev/lab/manual-QA route becomes product-facing.
+
+## B. State Contracts
+
+- [ ] `TODO-STATE-001` For every contracted screen, enumerate default,
+  populated, loading, empty, error, offline, permission/access, mutation,
+  light/dark theme, text-scale, and reduced-motion states where meaningful.
+- [ ] `TODO-STATE-002` For every detail route, explicitly record missing route
+  params, missing documents, deleted resources, unauthorized access, and
+  initial-data fallback states.
+- [ ] `TODO-STATE-003` For chat-like surfaces, record keyboard, composer,
+  message loading/error, send pending/failure, attachment, blocked, report,
+  safety, read-marker, and empty-thread states.
+- [ ] `TODO-STATE-004` For create/edit surfaces, record validation,
+  disabled-submit, draft, image/file picker, mutation pending/failure, success,
+  cancel/exit, and permission states.
+- [ ] `TODO-STATE-005` For host/member/guest/owner/private variants, record
+  role-specific copy, data, and behavior.
+- [ ] `TODO-STATE-006` Mark every state as planned, implemented, previewed,
+  captured, tested, ready, blocked, or intentionally excluded with proof refs.
+
+## C. Widgetbook
+
+- [x] `TODO-WB-001` Set up Widgetbook as the review surface for Catch
+  primitives and hard-to-reach states.
+- [x] `TODO-WB-002` Add first-pass Widgetbook coverage for the core component
+  catalog and generated contract refs.
+- [x] `TODO-WB-003` Add first-pass P3 utility Widgetbook coverage for Event
+  Location Map, Notifications, Reviews History, Settings, and Payment History.
+- [x] `TODO-WB-004` Add first-pass Widgetbook coverage for Dashboard Home,
+  Event Success Companion, Catches hub/event deck, Matches list/chat,
+  Profile/Public Profile, and Host Operations routes.
+- [x] `TODO-WB-005` Represent every reusable primitive/composite in
+  `design/components/catch.components.json` with every meaningful contract
+  state in Widgetbook:
+  - `catch.badge`
+  - `catch.button`
+  - `catch.chip`
+  - `catch.field`
+  - `catch.field_group`
+  - `catch.icon_button`
+  - `catch.journey_steps`
+  - `catch.option_card`
+  - `catch.privacy_badge`
+  - `catch.roster_row`
+  - `catch.roster_table`
+  - `catch.roster_tiles`
+  - `catch.screen_body`
+  - `catch.section_stack`
+  - `catch.segmented_control`
+  - `catch.surface`
+  - `catch.text_field`
+  - `catch.top_bar`
+  - Proof: `widgetbook/lib/primitives/primitive_contract_use_cases.dart`
+    contains formal previews for all 18 component contracts, and
+    `tool/design/check_widgetbook_contract_refs.mjs` now fails if a preview's
+    declared states drift from `design/components/catch.components.json`.
+- [ ] `TODO-WB-006` Add Widgetbook entries for every contracted screen section
+  with meaningful local visual states.
+- [ ] `TODO-WB-007` Add shared fakes for loading, empty, error, offline,
+  permission denied, unauthorized, mutation pending, mutation failure, missing
+  route params, missing documents, deleted resources, and partial data.
+- [ ] `TODO-WB-008` Reuse fixture data between Widgetbook and route captures
+  where practical.
+- [ ] `TODO-WB-009` Keep generated Widgetbook directories synchronized after
+  adding, renaming, or deleting use cases.
+- [ ] `TODO-WB-010` Keep contract `previewIds` resolvable in generated
+  Widgetbook directories.
+- [ ] `TODO-WB-011` Add text-scale, reduced-motion, and light/dark review
+  coverage for high-risk primitives, animated surfaces, maps, and all P1
+  sections.
+
+## D. Captures And Pixel Comparison
+
+- [x] `TODO-CAP-001` Keep capture coverage separate from screen contract
+  status.
+- [x] `TODO-CAP-002` Register route, screen, capture, Widgetbook, component,
+  and matrix checks in the aggregate parity gate.
+- [x] `TODO-CAP-003` Keep `tool/ui_capture/capture_coverage.json` exhaustive
+  for every generated route.
+  - Proof: `node tool/ui_capture/check_capture_coverage.mjs --check --summary`
+    validates all 48 generated routes have a capture decision: captured, alias,
+    planned, or excluded.
+- [ ] `TODO-CAP-004` Add deterministic captures for P1 loading, populated,
+  empty, error, offline, access/permission, mutation, text-scale,
+  reduced-motion, and paired theme states.
+- [ ] `TODO-CAP-005` Add P2/P3 captures when states are hard to reach manually
+  or likely to drift.
+- [ ] `TODO-CAP-006` Store canonical design references under
+  `design/reference_screens/`.
+- [ ] `TODO-CAP-007` Define masks for status bars, safe areas, maps,
+  timestamps, remote photos, generated counters, live counts, dynamic
+  recommendations, keyboards, snackbars, sheets, dialogs, and animation frames.
+- [ ] `TODO-CAP-008` Add advisory pixel comparison between local captures and
+  exported design references.
+- [ ] `TODO-CAP-009` Promote selected pixel checks to blocking only after
+  repeated advisory runs prove fixtures, masks, image sources, and thresholds
+  are stable.
+
+## E. Composition Migration
+
+- [ ] `TODO-COMP-001` For every screen pass, identify route widget, provider
+  reads, controller ownership, mutation owners, private widgets, tests,
+  captures, Widgetbook entries, and contract gaps before visual edits.
+- [ ] `TODO-COMP-002` Add a route-level screen state adapter/view model before
+  visual refactors.
+- [ ] `TODO-COMP-003` Keep route widgets responsible for routing, provider
+  orchestration, state selection, and section composition only.
+- [ ] `TODO-COMP-004` Move repository writes, mutation branching, permission
+  decisions, product validation, and side effects into controllers or
+  feature-owned providers.
+- [ ] `TODO-COMP-005` Keep visual sections provider-free where practical; pass
+  immutable display data and typed callbacks.
+- [ ] `TODO-COMP-006` Keep list/profile/event/club display data behind batched
+  feature seams rather than per-tile streams or sequential reads.
+- [ ] `TODO-COMP-007` Promote private widgets to reusable sections/components
+  only after reuse is proven by a second surface or the design language needs a
+  stable named role.
+- [ ] `TODO-COMP-008` Keep one-screen layout glue private when it is not a
+  design primitive.
+
+## F. Components, Tokens, And Cross-Surface Design Data
+
+- [x] `TODO-DS-001` Keep reusable component contracts in
+  `design/components/catch.components.json`.
+- [x] `TODO-DS-002` Keep portable foundation tokens in
+  `design/tokens/catch.tokens.json`.
+- [x] `TODO-DS-003` Keep Flutter implementation of tokens/theme under
+  `lib/core/theme`.
+- [ ] `TODO-DS-004` Reconcile every Claude Design primitive against Flutter
+  source, component contracts, Widgetbook entries, and
+  `docs/design_parity/claude_widgetbook_inventory.md`.
+  - Foundation-token Widgetbook specimens now cover color roles, activity
+    pigments/glyphs, spacing/gaps/insets, radius, elevation, opacity,
+    typography roles, icon scale, aspect ratios, stroke widths, motion
+    durations/curves, data-pair examples, photo-grade decisions, and the
+    typographic Archivo wordmark. `check_widgetbook_contract_refs.mjs` now
+    gates the eight required foundation specimen pages. Remaining foundation
+    reconciliation is detailed visual/value review against the Claude
+    specimens plus local-only token classification.
+  - Core catalog Widgetbook entries now expose source-backed standalone review
+    pages for `CatchFieldGroup`, `CatchJourneySteps`, `CatchPrivacyBadge`,
+    `CatchScreenBody`, and `CatchSectionStack`, closing those Claude primitive
+    inventory rows from "source candidate but no standalone entry."
+  - Host roster primitives now expose source-backed standalone Widgetbook
+    review pages for `CatchRosterTiles`, `CatchRosterRow`, and
+    `CatchRosterTable` under `[Core catalog]/Host operations`, closing those
+    Claude primitive inventory rows from "source candidate but no standalone
+    entry."
+  - The Claude-vs-Widgetbook inventory now treats source-backed generated
+    entries as represented rather than missing. Existing generated entries for
+    `CatchCountPill`, `CatchCoverStory`, `CatchCrossPathsCard`,
+    `EventBookingDock`, `EventDetailHintList`, `EventDetailHostCard`,
+    `EventDetailItinerary`, `EventDetailMapCard`,
+    `EventDetailMechanismList`, `EventDetailPhotoStrip`,
+    `EventDetailTicketStubBand`, `NotificationRow`, and `CatchConfirmDialog`
+    are recorded as represented; remaining unresolved rows stay in the
+    no-clear-match bucket for future product/API decisions.
+  - `CatchRosterTiles`, `CatchRosterRow`, and `CatchRosterTable` are now formal
+    component contracts (`catch.roster_tiles`, `catch.roster_row`, and
+    `catch.roster_table`) with matching contract-state Widgetbook previews.
+  - `CatchFieldGroup`, `CatchJourneySteps`, `CatchPrivacyBadge`,
+    `CatchScreenBody`, and `CatchSectionStack` are now formal component
+    contracts with matching contract-state Widgetbook previews, moving the
+    reusable handoff composition layer from broad catalog-only coverage into
+    the cross-tool contract registry.
+  - Dashboard, messaging, and event-detail sheet sections now have standalone
+    source-backed Widgetbook review entries for `QuickActions`,
+    `DashboardStrideSection`, `RecommendCard`, `ChatTopBar`,
+    `ChatEventContextHeader`, `MessageBubble`, `ChatInputBar`,
+    `ChatListTile`, and `BookingConflictSheet`.
+  - The inventory now classifies additional source-backed Claude aliases that
+    are not yet standalone/formal contracts: `CheckoutSheet`, `ClubDock`,
+    `ClubHero`, `ClubPolaroid`, `ContactRow`, `LiveConsole`, `MetricGrid`,
+    `PhotoGrid`, `ProfilePhoto`, `ProfilePrompt`, and `RotationCard`.
+- [ ] `TODO-DS-005` Classify every local Flutter primitive absent from Claude
+  Design as keep, rename, deprecate, or needs-design-review.
+- [ ] `TODO-DS-006` Replace screen-local hard-coded spacing, color, radius,
+  typography, icon sizing, motion, and layout constants with tokens, theme
+  roles, or registered component APIs.
+- [ ] `TODO-DS-007` Decide website and social-template token export needs before
+  adding Flutter-only token categories.
+- [ ] `TODO-DS-008` Evaluate DTCG/W3C design-token compatibility before adding a
+  parallel token pipeline or generator.
+- [ ] `TODO-DS-009` Create `design/sections/catch.sections.json` only if
+  repeated cross-screen section contracts outgrow screen-local sections.
+
+## G. Feature Queues
+
+- [ ] `TODO-P1-001` Event Detail: use the exported member reference/advisory
+  diff baseline, then add final capture variants, adapter cleanup, and
+  section/component hardening for booking, role, unavailable, private,
+  mutation, and host-entry states.
+- [ ] `TODO-P1-002` Explore Discovery: cover-header and fixture alignment pass
+  complete; advisory baseline improved from 61.62% mismatch / 90.26 meanDelta
+  to 41.87% mismatch / 36.74 meanDelta. Next split the mixed feed into
+  registered sections, resolve generated title/card rhythm/map interleave/
+  status chrome/bottom dock divergence, add final feed/map/filter captures, and
+  add drift checks around filter rails and map/list parity.
+- [ ] `TODO-P1-003` Dashboard Home: empty-start hero-shell pass complete;
+  advisory baseline improved from 58.50% mismatch / 76.91 meanDelta to 54.05%
+  mismatch / 59.13 meanDelta. Keep first-pass Widgetbook states and
+  deterministic captures current, then finish remaining provider-free section
+  display-data seams. Baseline full and empty Claude references now live under
+  `design/reference_screens/screen.dashboard.home`, and
+  `tool/design/check_reference_screens.mjs` wires advisory comparison against
+  `dashboard_home` and `dashboard_home_empty_start`. Resolve the remaining
+  empty-start text rendering, bottom dock/app-shell, and journey-step rhythm
+  divergence, then run the populated Dashboard pass. The
+  joined-clubs rail no longer performs per-club provider reads; it uses the
+  batched `watchClubsByIdsProvider` seam.
+  QuickActions now receives typed `DashboardQuickAction` callbacks from the
+  composing Dashboard body instead of owning route pushes.
+  EventFocusRail now receives typed `EventFocusActions` plus
+  `EventFocusCheckInState` from `DashboardFullSliverBody`, so the visual rail no
+  longer imports routing, Riverpod providers, external links, calendar launchers,
+  check-in controllers, event-success launchers, or review sheets.
+  DashboardStrideSection now receives `DashboardStrideSectionActions` and
+  `DashboardStrideActionState`; `DashboardFullSliverBody` owns retry,
+  permission, install, refresh, snackbar, and busy-state wiring.
+- [ ] `TODO-P1-004` Event Success Companion: keep first-pass Widgetbook route
+  and screen states current, add deterministic captures for every attendee
+  stage, keep runtime decisions in `EventSuccessRuntime`, add a route adapter,
+  and mask countdowns/animations/profile imagery.
+- [ ] `TODO-P1-005` Catches hub/event deck: add Widgetbook/capture states for
+  hub windows, deck queue, reactions, comment sheet, access states, mutation
+  failures, clocks, and profile imagery.
+- [ ] `TODO-P1-006` Matches list/chat: preserve first-pass Widgetbook states,
+  then add captures for list filters, unread/new matches, thread
+  loading/error, composer, send failures, blocked/report flows, keyboard, and
+  chat-specific adapters.
+- [ ] `TODO-P1-007` Profile/self and Public Profile: preserve first-pass
+  Widgetbook states and deterministic route captures, then add remaining
+  interaction captures for upload failure/delete/reorder, inline save
+  pending/error drawers, settings navigation, selected report reason, mutation
+  success/failure snackbars, profile adapters, and visual parity for the
+  remaining public-profile top chrome/insight-copy/profile-section deltas.
+- [ ] `TODO-P1-008` Host Operations: finish registered baseline captures, add
+  provider-free section previews, add adapters for Home/Clubs/Club Detail/Create
+  Event/Event Manage/Inbox/Chat, and close private-access, roster, host chat,
+  analytics, setup, mutation, and role-state gaps. Host Event Manage live has
+  had its first compact-workspace pass; next decide the compact step-count/
+  playbook semantics, then continue setup/apron/report visual passes.
+- [ ] `TODO-P2-001` Start/Auth/Onboarding: add Widgetbook/capture states for
+  reel variants, phone/OTP flows, validation, resend cooldown, onboarding
+  steps, photo gates, upload mutations, flow-entry modes, and design refs.
+- [ ] `TODO-P2-002` Calendar/Saved Events/Filters/Event Recap: add
+  Widgetbook/capture states for provider waves, empty/error/offline states,
+  draft/selection state, save mutations, partial lookup failures, and adapters.
+- [ ] `TODO-P2-003` Host create/edit club, edit event, host settings, and host
+  profile: add Widgetbook/capture states for form validation, image
+  replacement, unauthorized/missing resources, payouts/admin placeholders,
+  profile mutation flows, and adapters.
+- [ ] `TODO-P3-001` Event Location Map: preserve first-pass Widgetbook coverage,
+  keep deterministic capture variants current, add exported pixel masks for
+  map tiles and coordinate/no-coordinate states, introduce the route-state
+  adapter, and keep map failures branded.
+- [ ] `TODO-P3-002` Notifications: preserve route/row Widgetbook coverage, add
+  deterministic captures for read/unread/deep-link/error states, and reuse
+  shared activity fixtures.
+- [ ] `TODO-P3-003` Reviews History: preserve route and `WriteReviewSheet`
+  Widgetbook coverage, add deterministic captures for list/empty/error/missing
+  event/edit states, and keep review sheet provider-free.
+- [ ] `TODO-P3-004` Settings: preserve account/preferences/privacy/blocked and
+  mutation Widgetbook coverage, add deterministic captures for destructive
+  dialogs and pending/error paths, and keep safety/account actions controller
+  owned.
+- [ ] `TODO-P3-005` Payment History: preserve route and receipt Widgetbook
+  coverage, add deterministic captures for status rows, empty/error states,
+  failed-signup help, and receipt sheet variants.
+
+## H. Drift Prevention And CI
+
+- [x] `TODO-DRIFT-001` Validate route inventory, capture coverage, screen
+  coverage, screen contracts, state matrix, Widgetbook refs, component
+  contracts, and advisory hygiene in one local gate.
+- [x] `TODO-DRIFT-002` Add scanners for screen-contract hygiene, Widgetbook ref
+  resolution, and component-contract/Widgetbook parity.
+- [x] `TODO-DRIFT-003` Fail on new product routes without screen and capture
+  coverage decisions.
+  - Proof: `.github/workflows/flutter-ci.yml` now runs the aggregate design
+    parity gate on every pull request and push to `main`.
+- [x] `TODO-DRIFT-004` Compare component contracts against generated Widgetbook
+  use cases and fail once the baseline is stable.
+  - Proof: `npm run design:parity:check` runs
+    `tool/design/check_widgetbook_contract_refs.mjs`, which now validates
+    component contract symbols, formal primitive preview contract ids,
+    contract-state parity, and all referenced Widgetbook preview ids.
+- [x] `TODO-DRIFT-007` Block enum-versus-runtime route path drift.
+  - Proof: `tool/ui_capture/check_route_inventory.mjs` now composes nested
+    `GoRoute` paths, fails if any route lacks `name: Routes.<id>.name`, records
+    `runtimePath`, `runtimeParentId`, and `runtimePathExpression` in
+    `tool/ui_capture/route_inventory.json`, and fails if a composed runtime
+    path differs from `Routes.<id>.path`.
+- [x] `TODO-DRIFT-008` Keep token and design-context-pack drift covered by CI.
+  - Proof: `.github/workflows/flutter-ci.yml` now runs
+    `dart run tool/design_tokens.dart --check` and
+    `node tool/design/build_context_pack.mjs --check` after the design parity
+    gate. `.github/workflows/tools-ci.yml` now triggers for `design/**`,
+    `design_context_pack/**`, `docs/design_parity/**`, `widgetbook/**`,
+    root package lockfiles, and Flutter pubspec changes so the full tool
+    manifest design category runs when those artifacts move.
+- [ ] `TODO-DRIFT-005` Add or tighten advisory checks for contracted screens
+  that import raw Material controls or add one-off visual constants.
+- [ ] `TODO-DRIFT-006` Promote high-signal UI invariants into
+  `packages/catch_ui_lints` after known false positives are resolved.
+- [ ] `TODO-DRIFT-007` Keep broad scanners advisory until existing violations
+  are fixed, intentionally allowed, or documented with stable ids.
+
+## I. Per-Pass Cadence
+
+- [ ] `TODO-CADENCE-001` Work one feature pair or one host surface at a time.
+- [ ] `TODO-CADENCE-002` Read route source, providers/controllers, tests,
+  captures, Widgetbook entries, design references, and current contract gaps
+  before editing visuals.
+- [ ] `TODO-CADENCE-003` Update coverage JSON, screen contracts, state matrix,
+  Widgetbook/capture entries, docs, tests, and audit receipts together.
+- [ ] `TODO-CADENCE-004` Run Widgetbook code generation whenever annotated
+  Widgetbook use cases change.
+- [ ] `TODO-CADENCE-005` Verify each pass with `npm run design:parity:check`,
+  focused Flutter tests, focused analyzer with `--no-fatal-infos`, JSON syntax
+  checks where relevant, `git diff --check`, relevant scanners, and audit
+  stamping.
+- [ ] `TODO-CADENCE-006` Keep follow-up gaps in this tracker, not chat history.
+
+## J. Screen-By-Screen To-Do Index
+
+This index is generated from `docs/design_parity/state_matrix.json` and is the
+practical checklist for what remains per screen. `ready` states are omitted.
+`captured`, `tested`, and `implemented` states still need whatever final proof
+is missing before they can be promoted to ready: design reference, pixel
+comparison, interaction proof, adapter extraction, or scanner/test proof.
+
+### P2 start_auth_onboarding
+
+- [ ] `start.welcome` (4 state follow-ups, 2 open gaps)
+  - planned: `text_scale_2`
+  - implemented: `animated_reel`
+  - tested: `reduced_motion`
+  - captured: `landed_direct`, `light_dark`
+  - DP-START-001: Landed direct Start Welcome reference and masks are registered; export animated reel samples, reduced-motion, text-scale, and any alternate theme references before strict visual comparison.
+  - DP-START-002: Add a preview/story for animated, skipped, direct, reduced-motion, and text-scale states.
+- [ ] `auth.phone_entry` (5 state follow-ups, 2 open gaps)
+  - planned: `otp_entry`, `submit_mutation`, `text_scale_2`
+  - tested: `validation_error`
+  - captured: `phone_entry`
+  - DP-AUTH-001: Auth phone-entry reference and masks are exported and registered. Add auth OTP, mutation loading, and mutation error captures or previews.
+  - DP-AUTH-002: Verify auth fields and validation banners against component contracts before visual polish.
+- [ ] `onboarding.flow` (5 state follow-ups, 2 open gaps)
+  - planned: `text_scale_2`
+  - tested: `required_field_errors`, `saved_draft`, `photo_gate`, `shared_upload_feedback`
+  - captured: `welcome_entry`
+  - DP-ONBOARDING-001: Onboarding welcome reference and masks are exported and registered. Add captures/previews for each remaining onboarding step, including validation and disabled CTA states.
+  - DP-ONBOARDING-002: Catalogue repeated step layouts and promote only genuinely shared patterns to component contracts.
+- [ ] Feature-level drift/previews
+  - DP-LINT-002: Add an advisory rule/check that new shared primitives need a component contract and preview/story entry.
+  - DP-PREVIEW-002: Add Start/Auth/Onboarding screen-state Widgetbook use cases after the primitive catalog review.
+
+### P1 events_discovery_booking
+
+- [ ] `event.detail` (15 state follow-ups, 2 open gaps)
+  - tested: `booking_pending`, `booking_failed`, `shared_snackbar_feedback`
+  - captured: `loading`, `not_found`, `fatal_error`, `member_default`, `member_ticket`, `member_spotlight_dark`, `guest`, `host_app`, `booking_signed_up`, `waitlist_sold_out_cancelled_past`, `offline`, `text_scale_2`, `reduced_motion`
+  - DP-EVENT-DETAIL-001: Event Detail route and section Widgetbook states are registered for loading, not-found, fatal error, member, guest, host app, offline, text-scale, reduced-motion, ticket, spotlight, booking, and prompt states. Remaining work is formal component/section registry coverage for Event Detail compounds.
+  - DP-EVENT-DETAIL-002: Move visibility and section-data derivation out of EventDetailBody into adapter/controller state.
+- [ ] Feature-level drift/previews
+  - DP-EVENT-LINT-001: Add an advisory scanner for feature screens that import raw Material controls or hand-roll visual values outside registered sections/components.
+
+### P1 explore_discovery
+
+- [ ] `explore.discovery` (16 state follow-ups, 3 open gaps)
+  - planned: `offline`
+  - tested: `unclaimed_host_projection`
+  - captured: `loading`, `club_source_error`, `event_feed_error`, `empty_city`, `no_search_results`, `discovery_feed`, `search_query`, `filters_active`, `anonymous_guest`, `map_route`, `map_loading`, `map_error`, `text_scale_2`, `reduced_motion`
+  - DP-EXPLORE-001: Register Explore compound/section contracts; Widgetbook states now cover browse chrome, filters, mixed feed, map pill, map route, activity grid, and empty/error states.
+  - DP-EXPLORE-002: Remaining capture work: signed-in joined clubs, filter-empty/no-filter results, explicit offline copy, unclaimed host projection, selected-pin/distance-ring map variants, and design-reference pixel comparison. Loading, error, empty, search, filters-active, text-scale, reduced-motion, and map loading/error captures are now registered.
+  - DP-EXPLORE-003: Claude Explore discovery-feed reference is now wired to `member_event_discovery`; refresh the advisory pixel baseline after the manifest/capture bookkeeping correction.
+- [ ] `club.detail` (13 state follow-ups, 4 open gaps)
+  - implemented: `empty_schedule`
+  - tested: `loading`
+  - captured: `not_found`, `fatal_error`, `member_default`, `visitor_not_member`, `guest_join`, `host_public_view`, `join_leave_pending`, `join_leave_failed`, `offline`, `text_scale_2`, `reduced_motion`
+  - DP-CLUB-DETAIL-001: Keep Club Detail sections screen-local until another product screen proves reuse; revisit provider-free CatchClubDock when hostClubDetailScreen is contracted.
+  - DP-CLUB-DETAIL-002: Move host messaging, contact launching, route selection, review visibility, and dock mode derivation into adapter/controller state.
+  - DP-CLUB-DETAIL-003: Add remaining loading and empty-schedule captures, then export Claude references for visual comparison.
+  - DP-CLUB-DETAIL-004: Closed by advisory comparison of `club_detail_member` against the Claude Club Detail V2 member-default reference; divergence is concentrated in hero media/chrome, next-event/stat-strip treatment, and below-fold schedule/dock composition.
+- [ ] `explore.map` (5 state follow-ups, 1 open gaps)
+  - implemented: `map_loading`, `map_error`
+  - tested: `pins_ready`, `selected_pin`, `large_pan_scope`
+  - DP-EXPLORE-MAP-002: Register map summary, selected event lead, and peek-rail states in Widgetbook.
+- [ ] Feature-level drift/previews
+  - DP-EXPLORE-LINT-001: Add or extend scanners so P1 routes cannot remain planned in screen_coverage.json after a screen contract exists.
+  - DP-EXPLORE-PREVIEW-001: Create Widgetbook use cases for Explore browse chrome, filter rail/sheet, CoverStory, mixed feed cards, map pill, empty/error states, and map route adapters.
+
+### P1 dashboard_home
+
+- [ ] `dashboard.home` (14 state follow-ups, 0 open gaps)
+  - tested: `self_check_in_mutation`, `after_event_swipe_review`
+  - captured: `loading`, `profile_error`, `memberships_error`, `booked_events_error`, `empty_start`, `full_dashboard`, `event_focus_upcoming`, `self_check_in_mutation`, `after_event_swipe_review`, `notifications_unread`, `joined_clubs_rail`, `weekly_activity_permission`, `recommendations_ready`, `recommendations_loading`, `recommendations_error`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DP-DASHBOARD-004: Closed by Dashboard full/empty reference PNG export and advisory comparison tooling.
+
+### P1 event_success_companion
+
+- [ ] `event_success.companion` (26 state follow-ups, 3 open gaps)
+  - planned: `light_dark`
+  - tested: `auto_launch`, `shared_live_controls`
+  - captured: `route_loading`, `event_not_found`, `sign_in_required`, `no_booking`, `plan_missing`, `data_load_error`, `default_live_guide`, `pre_arrival_planning`, `self_check_in`, `first_hello_start`, `first_hello_assigned`, `compatibility_questionnaire`, `live_step_context`, `conversation_cues`, `micro_pod_assignment`, `rotation_schedule`, `live_reveal_countdown`, `live_reveal_unlocked`, `wingman_request`, `post_event_afterglow_feedback`, `opt_out_assignments`, `offline`, `text_scale_2`, `reduced_motion`
+  - DP-EVENT-SUCCESS-COMPANION-002: Companion route loading/error/access/offline states, runtime moments, self-check-in, text scale, and reduced motion are captured and linked to first-pass Widgetbook previews. Remaining capture work is paired light/dark plus deeper mutation pending/failure variants after provider-free adapters land.
+  - DP-EVENT-SUCCESS-COMPANION-003: Move moment widget data derivation, effects, local form state, and mutation display into provider-free adapters before visual refactors.
+  - DP-EVENT-SUCCESS-COMPANION-004: Default live-guide companion reference and masks are registered; export remaining runtime-stage references and mask dynamic countdown, animation, profile, copied-opener, reveal, afterglow, feedback, accessibility, and theme regions.
+
+### P1 catches
+
+- [ ] `catches.hub` (12 state follow-ups, 1 open gap)
+  - captured: `uid_loading`, `uid_error`, `signed_out_hidden`, `attended_events_loading`, `attended_events_error`, `active_windows`, `no_active_windows`, `dark_intro_cta`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DP-CATCHES-HUB-004: Blocked on a canonical Catches Hub design source/export. The local Claude bundle only contains the already-registered Catches Event Deck/post-run catch-window asset; once design provides a hub reference, export the PNG and add masks for dynamic countdown and attendee-count regions.
+- [ ] `catches.event` (19 state follow-ups, 3 open gaps)
+  - implemented: `write_failure`
+  - tested: `pass_mutation`, `reaction_mutation`, `duplicate_pending`, `cached_offline`
+  - captured: `queue_loading`, `queue_error`, `active_profile`, `empty_queue`, `event_missing`, `sign_in_required`, `event_in_progress`, `did_not_attend`, `window_closed`, `offline`, `filters_action`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DP-CATCHES-EVENT-002: Remaining deck capture work: mutation failure/interactions, cached-offline data preservation, keyboard/comment sheet regions, and design-reference pixel comparison. Queue loading/error/offline, empty, missing event, signed-out, in-progress, did-not-attend, closed-window, text-scale, reduced-motion, and paired light/dark captures are now registered.
+  - DP-CATCHES-EVENT-003: Move queue/event/user/participation derivation into CatchesEventScreenState and keep visual sections provider-free.
+  - DP-CATCHES-EVENT-004: First active-profile deck reference and masks are registered; export dedicated mutation, keyboard/comment sheet, empty/offline, accessibility, and theme references and refine masks for profile imagery, queue counts, and dynamic copy.
+
+### P1 matches_chat
+
+- [ ] `matches.list` (15 state follow-ups, 3 open gaps)
+  - captured: `uid_or_matches_loading`, `matches_error`, `populated_threads`, `new_matches`, `search_open`, `search_empty`, `no_matches_empty`, `duplicate_collapsed`, `unread_state`, `host_inbox_filter`, `match_celebration`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DP-MATCHES-LIST-002: List captures and a canonical Messaging inbox reference now cover the populated baseline. Remaining work is adapter extraction, interaction-specific search/filter coverage if externalized, additional empty/search refs if needed, and ongoing advisory pixel comparison.
+  - DP-MATCHES-LIST-003: Move search/filter/celebration side effects and visible thread derivation into a route adapter.
+  - DP-MATCHES-LIST-004: Resolve the unused ChatNewMatchesRail against the desired new-match design language.
+- [ ] `matches.chat` (23 state follow-ups, 3 open gaps)
+  - implemented: `safety_report_block`
+  - tested: `send_message_mutation`, `send_failure`, `send_image_mutation`, `image_send_failure_cleanup`, `read_receipt_reset`
+  - captured: `messages_loading`, `messages_error`, `populated_thread`, `empty_thread`, `event_context_ready`, `event_context_fallback`, `chat_unavailable`, `blocked_chat`, `top_bar_actions`, `share_card`, `suvbot_controls`, `suvbot_action_mutation`, `keyboard_composer`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DP-MATCHES-CHAT-002: Add deterministic captures for loading, errors, empty, missing/blocked chat, mutation failures, share/report/block, Suvbot, offline, keyboard, text scale, reduced motion, and light/dark.
+  - DP-MATCHES-CHAT-003: Move provider waves, read-marker effects, action availability, and disabled composer copy into a MatchChatScreenState/effect adapter.
+  - DP-MATCHES-CHAT-004: Populated Messaging thread reference and masks are exported and registered. Remaining references are empty/new-match, keyboard-open, share-card, report/block dialog, and dynamic message-time variants.
+
+### P1 profiles
+
+- [ ] `profile.self` (16 state follow-ups, 3 open gaps)
+  - tested: `photo_grid`, `inline_text_edit`, `inline_choice_edit`, `inline_save_pending`, `inline_save_error`
+  - captured: `profile_loading`, `profile_error`, `profile_unavailable`, `edit_tab_default`, `photo_upload_mutation`, `preview_tab_default`, `settings_action`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DP-PROFILE-SELF-002: Deterministic full-route captures are now registered for loading, error, offline, unavailable, edit tab, preview tab, upload pending, text scale, reduced motion, and paired light/dark. Remaining capture work is upload failure/delete/reorder, inline save pending/error drawers, settings navigation proof, and advisory pixel comparison.
+  - DP-PROFILE-SELF-003: Move profile provider waves, row derivation, preview projection, upload/save mutation modes, and route callbacks into SelfProfileScreenState.
+  - DP-PROFILE-SELF-004: Closed by exported self-profile edit and preview references plus masks in `design/reference_screens/screen.profile.self`.
+- [ ] `profile.public` (14 state follow-ups, 3 open gaps)
+  - tested: `report_mutation`, `shared_snackbar_feedback`
+  - captured: `loading_without_initial_profile`, `loading_with_initial_profile`, `load_error`, `profile_unavailable`, `public_profile`, `viewer_context`, `report_sheet`, `block_confirmation`, `block_mutation`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DP-PROFILE-PUBLIC-002: Deterministic captures are now registered for loading, initial-profile fallback, error, offline, unavailable, own profile, shared-event context, pending overlay, report sheet, block confirmation, text scale, reduced motion, and paired light/dark. Report/block success feedback now uses the shared Catch snackbar helper. Advisory comparison is wired and currently above threshold at 36.62% mismatch / 32.76 meanDelta; remaining work is selected report reason, mutation success/failure snackbar proof, and visual parity for top chrome/insight copy/profile sections.
+  - DP-PROFILE-PUBLIC-003: Move target-profile, viewer-context, initial-data fallback, safety action availability, retry, and mutation overlay state into PublicProfileScreenState.
+  - DP-PROFILE-PUBLIC-004: Closed by exported public-profile reference plus masks in `design/reference_screens/screen.profile.public`.
+
+### P1 host_operations
+
+- [ ] `host.home` (18 state follow-ups, 3 open gaps)
+  - planned: `single_owned_only_if_distinct`, `callback_controller_seams`, `reference_variants`
+  - implemented: `create_event_action`, `manage_event_navigation`, `host_home_section_widgetbook_previews`
+  - tested: `one_owned_club`, `multiple_clubs_switcher`, `cohost_role`, `create_event_action`, `manage_event_navigation`
+  - captured: `uid_missing`, `host_clubs_loading`, `host_clubs_error`, `host_clubs_offline`, `no_host_clubs`, `club_events_loading`, `club_events_error`, `club_events_offline`, `cohost_role`, `empty_events`, `upcoming_events`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DP-HOST-HOME-002: Captured signed-out/access, club loading/error/offline, no clubs, Today dashboard, co-host empty events, Events loading/error/offline, text-scale, reduced-motion, and light/dark. Remaining captures are single-owned-only if visually distinct and additional pixel-reference variants.
+  - DP-HOST-HOME-003: Closed. `HostHomeRouteState` now maps uid plus host-club async state into auth-required, loading, error, empty, or loaded branches before `HostOperationsHomeScreen` composes the shell. `HostHomeScreenState` owns selected club and `HostHomeTab`; `HostHomeTodayDashboardState` maps the selected-club event async state into Today loading/error/empty/content branches; `HostHomeEventsSectionState` maps the Events list loading/error/empty/populated branches; and provider-free sections render Today cards, event rows, Add event, empty copy, and retry/create/manage callbacks while adapters stay narrow.
+  - DP-HOST-HOME-004: Host Today and Host Events-list references and masks are exported and registered. The current registered references are both within advisory threshold: Today `17.48% / 15.54`, Events `6.76% / 12.26`. Claude references are still needed for loading, empty, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and additional event-list variants.
+- [x] `host.clubs` (25 state follow-ups, 0 open gaps)
+  - planned: `blocked_reference_variants`
+  - implemented: `host_clubs_organizer_overview_default`, `host_clubs_compact_reference_alignment`, `host_clubs_reference_mask_calibration`, `inline_choice_edit`, `age_range_edit`, `host_team_add_sheet_widgetbook`, `host_team_confirm_dialog_widgetbook`, `host_club_insights_state`, `host_clubs_preview_route_callback`, `pixel_comparison_advisory_baseline`
+  - tested: `cohost_club_edit_limited`, `multiple_clubs_switcher`, `inline_text_edit`, `payouts_not_setup`, `host_team_add_sheet`, `host_team_confirm_dialogs`, `host_team_controller_mutations`, `host_club_insights_state`, `preview_route_callback`, `preview_tab`
+  - captured: `uid_missing`, `organizer_overview`, `host_clubs_loading`, `host_clubs_error`, `host_clubs_offline`, `no_host_clubs`, `cohost_club_edit_limited`, `inline_text_edit`, `update_club_pending`, `update_club_error`, `payouts_ready_or_restricted`, `payout_mutation`, `host_team`, `host_team_mutation`, `insights_loading`, `insights_report`, `insights_error`, `preview_tab`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DS-HOST-CLUBS-001: Closed. Signed-out, default organizer overview, co-host, empty, loading, generic/offline load errors, analytics loading/error/offline/report, payout provider loading/ready/restricted/error/offline, inline editor pending/error/offline, payout action pending/error/offline, host-team mutation pending/error/offline, text-scale, reduced-motion, light/dark, and preview tab variants are captured. Additional pixel variants depend on future Claude exports because the local bundle exposes only the organizer baseline for this screen.
+  - DS-HOST-CLUBS-002: Closed. `HostClubsScreenState` owns selected club, selected tab, owner/co-host role capability, and deterministic initial expanded editor state. `_HostClubsScaffold` defaults to the Organizer overview and routes its public preview, payout, settings, edit, and insights actions into existing typed callbacks/tabs. Inline edit and payout actions now have controller mutations; `HostTeamAddHostSheet` is public and Widgetbook covers ready, pending, error, and offline add-host states; `HostTeamHostActionDialog` is public and Widgetbook covers remove-host and transfer-ownership confirmations; `HostClubInsightsState` owns analytics query derivation, custom date bounds, event scope, and retry target identity.
+  - DS-HOST-CLUBS-004: Closed. Host Organizer reference and masks are exported and registered. After the compact Organizer header, payout callout, metric-row treatment, and mask calibration, the 2026-06-25 advisory compare against `host_clubs_management` is within threshold: mismatch 5.71%, mean delta 3.53, max delta 34, masked 286220. Extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons depend on future Claude reference exports.
+- [ ] `host.club.detail` (19 state follow-ups, 1 open gap)
+  - planned: `distinct_hosted_schedule_rows_if_needed`, `host_control_reference_variants_if_design_changes`, `pixel_comparison`, `retry_intent_typing_optional`
+  - implemented: `HostClubDetailScreenState`, `state_adapter_branching`, `retry_intent`, `reviews_authenticated`, `contact_links`, `share_action`, `host_controls_public_preview_policy`, `public_view_reference_alignment`
+  - tested: `event_navigation_host_route`, `loading_with_initial_club`, `load_error`, `club_not_found`, `host_public_view`, `host_schedule_hosted`, `membership_dock_suppressed`, `share_action`, `state_adapter_branching`
+  - captured: `host_public_view`, `loading_without_initial_club`, `loading_with_initial_club`, `load_error`, `offline`, `club_not_found`, `host_not_on_team`, `host_signed_out`, `host_schedule_empty`, `host_schedule_hosted`, `host_controls_missing`, `reviews_authenticated`, `contact_links`, `share_action`, `membership_dock_suppressed`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DS-HOST-CLUB-DETAIL-001: Flutter captures now cover public preview, initial fallback loading, full loading, generic error, offline, not-found, non-host-team preview, signed-out preview, empty schedule, text-scale, reduced-motion, and light/dark. Remaining capture work is only distinct hosted schedule/share/contact/review variants and pixel-reference variants if design requires them.
+  - DS-HOST-CLUB-DETAIL-002: Closed. `HostClubDetailScreenState` owns branch selection, initial data fallback, host ownership/public-preview mode, dock suppression, and load-error retry intent typing. `HostClubDetailError` carries `HostClubDetailRetryIntent.reloadDetail`, and `ClubDetailScreen` executes that typed retry through `_retryHostClubDetail` before invalidating `clubDetailViewModelProvider`. The screen also wires typed callbacks for schedule routing, host profile/message actions, contact launches, and share side effects.
+  - DS-HOST-CLUB-DETAIL-003: Closed for the current contract: Host Club Detail remains public-preview-only, while Edit club, Add event, payouts, and host-team controls remain in Host Home and Host Clubs. Reopen only if the design contract adds a dedicated host-controls variant.
+  - DS-HOST-CLUB-DETAIL-004: Closed. Host Club Detail owner/public-view reference and masks are exported and registered; Flutter state captures now exist for the main route variants. Public-view visual parity improved from 28.94% / 44.44 to 17.87% / 19.52 after fixture, hero, stats, section-order, capture-font, asset-prewarm, floating hero chrome, stat value fit, regular-weight About copy, and split generic-tag wrap work, then the hero-edge mask calibration moved the registered comparison within threshold at 15.82% mismatch / 15.22 meanDelta, maxDelta 240, masked 180280. Add host-control references only if the design contract moves operations onto this route.
+- [ ] `host.event.create` (30 state follow-ups, 4 open gaps)
+  - planned: `unauthorized_host`
+  - implemented: `initial_club_extra`, `same_day_time_error`, `invite_only_policy`, `dynamic_pricing_policy`
+  - tested: `policy_age_validation`, `cohort_caps_policy`, `draft_delete`, `unsaved_changes`
+  - captured: `club_fetch_loading`, `club_fetch_error`, `club_not_found`, `basics_default`, `basics_validation`, `event_photos`, `custom_activity`, `where_step_default`, `location_picker_selected`, `when_step_default`, `policy_default`, `event_success_step`, `submit_pending`, `submit_error`, `success_manage`, `draft_picker_restore`, `draft_save_update`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - previewed: route loading/error/offline/missing, validation, custom activity, picked event photos, draft picker/restored, save-draft pending/error, submit pending/error/offline, every wizard step, text scale, reduced motion, dark theme, and success screen.
+  - DS-HOST-EVENT-CREATE-001: Create remaining deterministic captures for schedule validation, policy age/invite/cohort/dynamic-pricing variants, draft delete, unsaved changes, unauthorized policy, deeper map/draft/photo offline variants, and reference-specific variants.
+  - DS-HOST-EVENT-CREATE-002: Introduce HostCreateEventScreenState/CreateEventWizardState so local form draft, validation, mutations, pickers, and navigation callbacks are explicit outside visual sections.
+  - DS-HOST-EVENT-CREATE-004: Host Create Event basics, location, schedule, policy, Event Success guide, and success/manage references are exported, masked, manifest-registered, and compared. All six registered references are within advisory thresholds as of the 2026-06-25 paper celebration pass; success/manage is now 11.40% mismatch / 13.70 meanDelta, maxDelta 240, after improving from the original 32.49% / 55.05 and intermediate 27.13% / 42.68 baselines. Export draft, validation, submit, and remaining policy/state references; define masks for maps, dates/times, generated draft timestamps, photo previews, celebration effects, snackbars, and dynamic event ids.
+  - DS-HOST-EVENT-CREATE-005: Decide whether HostCreateEventRouteScreen needs a host-team unauthorized state before CreateEventScreen renders, instead of relying only on repository/security-rule failures.
+- [ ] `host.event.manage` (40 state follow-ups, 4 open gaps)
+  - planned: None
+  - implemented: `shared_snackbar_feedback`, `shared_form_dialog`
+  - tested: `host_manage_widget_flows`, `host_event_manage_controller`
+  - captured: `uid_loading`, `club_fetch_loading`, `event_stream_loading`, `initial_event_extra`, `section_picker`, `route_error`, `event_or_club_not_found`, `unauthorized_host`, `setup_workspace`, `attendance_setup_roster`, `attendance_loading`, `attendance_error`, `attendance_empty`, `attendee_profiles_loading`, `attendee_profiles_error`, `filtered_roster_empty`, `attendance_mutation_pending`, `attendance_mutation_error`, `full_event_waitlist_apron`, `live_workspace`, `live_event_success_unavailable`, `live_event_success_ready`, `report_workspace`, `report_export`, `report_scorecard`, `private_access_loading`, `private_access_error`, `invite_private_link`, `invite_links_loading`, `invite_links_error`, `invite_links_empty`, `invite_link_create_disable`, `edit_event_action`, `cancel_event_pending_error`, `delete_unused_event`, `cancelled_event`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - previewed: route loading/error/offline/missing, initial event fallback, unauthorized user, setup/private access, section picker selected states, live, report, attendance loading/error/empty, attendee profile loading/error, filtered roster empty, attendance mutation pending/error, full/waitlist apron, private-access loading/error, private-link share pending/error, invite-link loading/error/empty, invite-link mutation pending/error, edit/cancel/delete host actions, report export pending/error, live unavailable, saved live guide, report scorecard, cancelled, text scale, reduced motion, and dark theme.
+  - DP-HOST-EVENT-MANAGE-001: Add remaining deterministic Host Event Manage captures for Event Success live/report substates, deeper section-level offline variants, and reference-specific variants.
+  - DP-HOST-EVENT-MANAGE-002: Introduce HostEventManageScreenState or equivalent adapters for selected section, roster display data, private access/link state, Event Success host state, host action display state, retry intents, and typed callbacks now that route loading/access/error states have capture coverage. Setup now leads with compact action rows driven by screen-owned callbacks and mutation state.
+  - DP-HOST-EVENT-MANAGE-004: Private invite-link create/copy/disable/share effects and cancel/delete writes plus invalidation now route through controller seams with mutation capture coverage. HostEventManageScreen owns edit navigation, cancel/delete confirmation dialogs, shared Catch dialog/snackbar feedback, action mutation state, and compact action-row display policy; remaining side-effect work is any future typed action adapter that centralizes display policy.
+  - DP-HOST-EVENT-MANAGE-005: Setup/private-access, full/waitlist apron, attendance roster, live console, and post-event report references are exported, masked, manifest-registered, and compared within advisory thresholds; remaining work is private-access/invite edge variants and masks for additional dynamic host data.
+- [ ] `host.inbox` (23 state follow-ups, 2 open gaps)
+  - planned: `long_count_99_plus_if_possible`, `keyboard_reference_variant`, `pixel_comparison`
+  - implemented: `HostInboxScreenState`, `ChatsListDisplayState`, `profile_loading_fallback`, `route_to_host_chat`, `retry_intent`, `host_inquiry_grouping_policy`, `host_broadcast_card`, `host_broadcast_review_sheet`
+  - tested: `host_query_filtering`, `host_header`, `host_broadcast_card`, `host_broadcast_review_sheet`, `host_unread_filter`, `search_collapsed`, `search_active`, `search_empty`, `conversation_rows`, `unread_rows`, `duplicate_match_collapse`, `host_duplicate_inquiry_grouping`, `adapter_loading_error_empty`
+  - captured: `uid_loading_or_missing`, `matches_loading`, `matches_error`, `offline`, `empty_host_queries`, `populated_queries`, `host_broadcast_card`, `host_unread_filter`, `no_unread_queries`, `search_active`, `search_empty`, `new_inquiry_without_messages`, `conversation_rows`, `unread_rows`, `host_inquiry_avatar_shape`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DP-HOST-INBOX-001: Flutter captures now cover uid loading, matches loading, generic error, offline, empty, populated, unread-filter rows, no-unread empty, search active, search empty, new inquiry, text-scale, reduced-motion, and light/dark. Remaining capture work is only duplicate/grouping, long-count, keyboard, and pixel-reference variants if design requires them.
+  - DP-HOST-INBOX-002: Closed. `HostInboxScreenState` and `ChatsListDisplayState` own host filter state, unread count, search-action visibility, loading/error/content/empty mapping, unread filtering, empty-state selection, and display-error retry intents through `ChatsListRetryIntent.reloadViewModel`. `ChatsListScreen` owns typed host/consumer chat route callbacks and `ChatConversationsList` is provider/router-free. `collapseMatchesByOtherUser` has host-inquiry grouping policy coverage proving duplicate host inquiries collapse by club plus attendee instead of merging all attendee threads together.
+  - DP-HOST-INBOX-004: Closed. Host Inbox populated reference and masks are exported and registered; the advisory comparison against `host_inbox_queries` is within threshold after adding the host broadcast card, route-owned broadcast review sheet, and reference-safe-area capture wrapper: mismatch 8.64%, meanDelta 14.81, maxDelta 240, masked 60276. Remaining work is backend send wiring plus any future loading, empty, unread/no-unread, search, offline/error, text-scale, reduced-motion, and light/dark reference variants.
+- [ ] `host.chat` (29 state follow-ups, 3 open gaps)
+  - planned: `keyboard_composer`
+  - implemented: `uid_loading`, `chat_route_state`, `typed_top_bar_actions`, `top_bar_action_intents`, `retry_intents`, `route_error_retry`, `safety_action_pending`, `report_user_mutation`, `block_user_mutation`, `mutation_error_listener`, `shared_snackbar_feedback`, `read_marker_state`, `chat_thread_lookup_state`
+  - captured: `match_loading`, `match_error`, `match_not_found`, `host_inquiry_identity`, `event_context_fallback`, `messages_loading`, `messages_error`, `empty_thread`, `populated_thread`, `composer_enabled`, `composer_disabled_loading`, `blocked_chat`, `send_message_pending`, `send_image_pending`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - tested: `host_profile_navigation_disabled`, `host_share_card_disabled`, `event_context_ready`, `auto_scroll_read_marker`, `read_marker_state`, `chat_thread_lookup_state`, `chat_route_state`, `send_failure`, `top_bar_typed_actions`, `top_bar_action_intents`, `disabled_top_bar_actions`, `share_empty_feedback`, `route_retry_intents`, `message_retry`, `suvbot_retry`, `blocked_host_chat`, `report_block_menu_success`, `report_block_failure_feedback`
+  - DP-HOST-CHAT-001: Host Chat captures now cover match loading/error/missing, message loading/error/offline, empty, populated, event fallback, blocked, composer pending/disabled, text-scale, reduced-motion, and light/dark states. Remaining deterministic captures are keyboard-open safe-area, report/block mutation snackbar/dialog surfaces, provider-specific profile/club/event offline branches, image/day-separator variants, and pixel-reference variants.
+  - DP-HOST-CHAT-002: `ChatRouteState` now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before `_ChatContent` renders. `HostChatScreenState` owns host inquiry identity, top-bar typed action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. `ChatReadMarkerState` owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks, while `_ChatContent` still executes the `ConversationReadMarker.markRead` side effect. `ChatThreadLookupState` owns other-participant, host-inquiry club, host profile, public-profile, and event lookup decisions before `ChatRouteState` performs the provider watches. Match-stream failures render the shared branded chat error state and execute `HostChatRetryIntent.reloadMatch`; message-list and Suvbot-control errors route through typed retry targets before invalidating their providers. `ChatTopBar` is router/provider-free and supports disabled menu actions, and Host Chat report/share/sheet-export transient feedback routes through `showCatchSnackBar`. `_ChatContent` still owns profile navigation, share-card presentation, scroll behavior, and report/block/share effect execution from typed intents. Continue moving remaining mark-read execution, scroll effects, and side-effect execution into this adapter/controller seam.
+  - DP-HOST-CHAT-004: Closed. Host-specific tests now cover `ChatRouteState` provider composition, `HostChatScreenState` identity fallbacks, top-bar typed actions, disabled pending top-bar actions, route/message/Suvbot retry intents, match-route retry invalidation, message retry invalidation, Suvbot retry invalidation, blocked host chat composer behavior, profile navigation/share-card disabled behavior, report/block success behavior, and report/block failure feedback through the shared chat mutation listener.
+  - DP-HOST-CHAT-005: Baseline shared Messaging-thread Host Chat reference and masks are registered; the advisory comparison against `host_chat_inquiry` is within threshold at 12.71% mismatch, meanDelta 5.28, maxDelta 240, masked 228552. Add dedicated Host Chat references for keyboard/safe-area, timestamps, remote photos, generated share-card rasterization if retained, dynamic message times, unread/read markers, host-shell chrome, accessibility, and theme states.
+- [ ] Feature-level drift/previews
+  - DP-HOST-HOME-PREVIEW-001: Host Home section Widgetbook use cases now cover `HostOperationsTopBar`, `HostMetaRow`, `HostEventRow`, and `HostEventsClubCard` content/loading/error/offline/empty/cancelled-filtered states. Remaining hard-to-reach host-shell previews are long club names, owner/co-host switcher combinations beyond the route preview, and any keyboard/safe-area or pixel-reference variants design requires.
+
+### P2 host_secondary_operations
+
+- [ ] `host.club.create` (17 state follow-ups, 2 open gaps)
+  - planned: None
+  - implemented: `route_entry`, `uid_missing_submit`, `initial_step_preview_knob`, `initial_draft_preview_knob`
+  - tested: `host_club_create_state_adapter`, `success_pop`, `shared_draft_feedback`
+  - captured: `basics_default`, `basics_validation`, `club_photos`, `draft_restore`, `details_step`, `host_defaults_step`, `event_success_defaults_step`, `save_draft_pending_error`, `submit_pending`, `submit_error`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - previewed: route entry, basics validation, picked media, restored draft, basics, details, host defaults, Event Success defaults, save-draft pending/error, submit pending/error, offline submit failure, text scale, reduced motion, and dark theme.
+  - DP-HOST-CLUB-CREATE-001: Widgetbook and deterministic captures now cover route entry, validation, picked media, restored draft, all wizard steps, save-draft pending/error, submit pending/error, offline submit failure, text-scale, reduced-motion, and dark theme. Remaining variants are reference-specific pixel states.
+  - DP-HOST-CLUB-CREATE-002: Host Create Club basics reference and masks are exported and registered. `HostClubCreateState` now owns header/footer display state and preview hooks make draft/step/media/mutation states deterministic; continue moving retry intents and typed route callbacks into the adapter before visual parity edits.
+- [ ] `host.club.edit` (17 state follow-ups, 2 open gaps)
+  - planned: None
+  - implemented: `initial_club_extra`
+  - tested: `host_club_edit_state_adapter`, `forbidden_route_access`, `optional_contact_clearing`, `success_pop`
+  - captured: `prefilled_owner_edit`, `club_fetch_loading`, `club_fetch_error`, `offline`, `club_not_found`, `media_only_cohost_edit`, `image_replacement`, `validation_error`, `submit_pending`, `submit_error`, `unauthorized_host_or_owner`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - previewed: route loading/error/offline/not-found, owner full edit, owner validation, media replacement, submit pending/error, co-host media-only edit, forbidden identity, text scale, reduced motion, and dark theme.
+  - DP-HOST-CLUB-EDIT-001: Widgetbook and deterministic captures now cover route loading/error/offline/not-found, owner edit, validation, media replacement, submit pending/error, co-host media-only mode, forbidden identity, text-scale, reduced-motion, and light/dark. The owner edit capture now uses the Sunday sea-face reference fixture and compact edit media variants; remaining variants are additional state-specific pixel references if design exports them.
+  - DP-HOST-CLUB-EDIT-002: Host Edit Club owner-edit reference and masks are exported, registered, and compared within threshold at `7.92% / 8.64` after the grouped-field/media pass. `HostClubEditState` owns route identity/access mode and blocks non-host deep links; continue moving field/media/mutation callbacks and close navigation into the adapter before considering the architecture gap closed.
+- [ ] `host.event.edit` (21 state follow-ups, 2 open gaps)
+  - planned: None
+  - implemented: None
+  - tested: `host_event_edit_state_adapter`, `schedule_locked`, `success_pop`, `shared_snackbar_feedback`
+  - captured: `uid_loading`, `route_loading`, `route_error`, `offline`, `event_not_found`, `unauthorized_host`, `prefilled_event`, `schedule_editable`, `schedule_locked`, `policy_editable`, `policy_locked`, `location_picker`, `validation_error`, `private_access_loading`, `submit_pending`, `submit_error`, `cancelled_event_disabled`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - previewed: route loading/error/offline/not-found/unauthorized, editable prefilled form, schedule locked form, cancelled disabled form, private-access loading, validation errors, selected location, text scale, reduced motion, and dark theme.
+  - DP-HOST-EVENT-EDIT-001: Widgetbook and deterministic captures now cover route loading/error/offline/not-found, unauthorized host, prefilled editable form, schedule/policy locked form, private-access loading, validation, selected-location, submit pending/error, cancelled disabled form, text-scale, reduced-motion, and light/dark. Remaining variants are reference-specific pixel states.
+  - DP-HOST-EVENT-EDIT-002: Host Edit Event prefilled reference and masks are exported, registered, and compared within threshold at `9.25% / 10.93` after the reference refresh. `HostEventEditState` now owns route provider waves plus route access and schedule/policy lock rules; continue moving private-access, validation, location picker, mutation callbacks, and close navigation into the adapter before considering the architecture gap closed.
+- [ ] `host.settings` (18 state follow-ups, 2 open gaps)
+  - implemented: `uid_missing`, `profile_loading`, `profile_error`, `no_profile`, `profile_fallback_adapter`, `settings_state_adapter`, `profile_controller_mutations`, `edit_preview_tabs`, `clubs_loading`, `clubs_error`, `clubs_section`
+  - tested: `fallback_profile_from_club`, `active_profile`, `create_profile_pending`, `create_profile_error`, `save_profile_error`, `sign_out_error`
+  - captured: `profile_offline`, `create_profile_mutation`, `save_profile_mutation`, `profile_editor_sheet`, `clubs_offline`, `sign_out_action`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - previewed: route auth/profile/clubs states, profile summary rows including create-pending, clubs loading/error/empty/populated rows, Edit/Preview tab rail, text scale, reduced motion, and dark theme.
+  - DP-HOST-SETTINGS-001: Deterministic captures now cover editor sheet, create/save mutation pending/error/offline, sign-out error/offline, and profile/club offline provider states. Direct HostAccount.dc.html source is found, but the 2026-06-25 stable temp bundle, current runtime, CDP, and original-source Chrome attempts either produced placeholder boxes or hung before a valid PNG. Remaining: source/runtime repair or alternate export path, masks, and pixel comparison.
+  - DP-HOST-SETTINGS-002: `HostSettingsState`, `HostSettingsProfileState`, and `HostSettingsClubsState` now adapt profile/club provider waves, club-backed fallback identity, loading, error, missing, empty, and content branches before `HostSettingsProfileSection` and `HostSettingsClubsSection` render. `HostProfileController` owns profile create/save mutations shared with Host Profile. Remaining: decide payout/admin placeholder ownership, sign-out/account action policy, any host-specific offline copy decision, and reference-backed comparison.
+- [ ] `host.profile` (15 state follow-ups, 2 open gaps)
+  - implemented: `uid_missing`, `profile_loading`, `profile_error`, `profile_edit_state_adapter`, `profile_controller_mutations`, `missing_profile`, `populated_profile`, `validation_error`, `save_success`, `status_variants`
+  - tested: `create_profile_mutation`, `create_profile_error`, `save_error`
+  - captured: `profile_offline`, `validation_error`, `create_profile_mutation`, `save_pending`, `save_error`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - previewed: route loading/error/auth/missing/populated, provider-free form status variants, validation, save pending, missing/create pending, text scale, reduced motion, and dark theme.
+  - DP-HOST-PROFILE-001: Deterministic captures now cover validation, create/save mutation pending/error/offline, profile offline, text-scale, reduced-motion, and light/dark states. Remaining: canonical reference export and pixel comparison.
+  - DP-HOST-PROFILE-002: `HostProfileEditState` now adapts direct Host Profile auth/loading/error/missing/content provider state before `HostProfileForm` and `HostProfileMissingState` render, `HostProfileController` owns create/save orchestration shared with the Host Settings editor sheet, and the route exposes a default-disabled validation mode for deterministic captures. Remaining: any host-specific offline copy decision and reference-backed comparison.
+- [ ] Feature-level drift/previews
+  - DP-HOST-SECONDARY-LINT-001: Promote stable host form composition invariants into scanner/lint rules after create/edit/profile adapter boundaries exist.
+  - [x] DP-HOST-SECONDARY-PREVIEW-001: Widgetbook entries now exist for host club create/edit, host event edit, Host Settings route/sections, and Host Profile route/form/field/missing states.
+
+### P2 secondary_consumer_surfaces
+
+- [ ] `calendar.home` (10 state follow-ups, 3 open gaps)
+  - planned: `text_scale_2`, `reduced_motion`
+  - implemented: `uid_missing`, `events_loading`, `events_error`, `club_names_loading_error`
+  - tested: `empty_calendar`, `expanded_month_header`, `event_detail_navigation`
+  - captured: `planned_events`
+  - DP-CALENDAR-001: Add Widgetbook states for collapsed/expanded header, stats, agenda rows, loading, empty, provider error, club-name error, text scale, reduced motion, and theme variants.
+  - DP-CALENDAR-002: Add deterministic Calendar captures for loading, empty, provider error, club-name loading/error, expanded month, selected-day scroll, text scale, reduced motion, and light/dark.
+  - DP-CALENDAR-003: Introduce CalendarHomeState or equivalent adapter for provider waves, event summary, selected date, header mode, retry intents, and route callbacks.
+- [ ] `saved_events.list` (9 state follow-ups, 3 open gaps)
+  - planned: `text_scale_2`, `light_dark`
+  - implemented: `uid_missing`, `saved_events_loading`, `saved_events_error`, `club_names_loading_error`
+  - tested: `empty_saved_events`, `detail_navigation`
+  - captured: `populated_saved_events`
+  - DP-SAVED-EVENTS-001: Add Saved Events Widgetbook states for populated rows, empty, loading, stream error, club-name loading/error, past/saved row statuses, text scale, and theme variants.
+  - DP-SAVED-EVENTS-002: Add deterministic Saved Events captures for empty, loading, error, club-name loading/error, past-only, removed/deleted event, text scale, and light/dark.
+  - DP-SAVED-EVENTS-003: Introduce SavedEventsListState or equivalent adapter for uid, stream state, event ordering, club names, retry intents, and detail navigation callbacks.
+- [ ] `filters.preferences` (10 state follow-ups, 3 open gaps)
+  - planned: `text_scale_2`
+  - implemented: `profile_loading`, `profile_error`, `profile_missing`, `reset_preferences`, `save_pending`, `save_error`
+  - tested: `edited_preferences`, `save_success_exit`
+  - captured: `default_preferences`
+  - DP-FILTERS-001: Add Filters Widgetbook states for default, dirty edits, reset, loading, profile error, missing profile, save pending/error, text scale, reduced motion, and theme variants.
+  - DP-FILTERS-002: Filters default-preferences reference and masks are exported and registered. Add deterministic Filters captures for loading, error, missing profile, dirty edit, reset, save pending/error, text scale, and light/dark.
+  - DP-FILTERS-003: Introduce FiltersPreferencesState or equivalent adapter for profile state, draft values, dirty/reset/apply availability, mutation state, and typed callbacks.
+- [ ] `event.recap` (10 state follow-ups, 3 open gaps)
+  - planned: `text_scale_2`, `reduced_motion`
+  - implemented: `recap_loading`, `recap_error`, `event_not_found`, `empty_roster`, `profile_lookup_fallback`, `vibe_selection`, `open_catches_deck`
+  - captured: `populated_attendees`
+  - DP-EVENT-RECAP-001: Add Event Recap Widgetbook states for loading, error, missing event, populated attendees, empty roster, partial profile lookup, selected vibe tiles, closed/open catch window, text scale, reduced motion, and theme variants.
+  - DP-EVENT-RECAP-002: Add deterministic Event Recap captures for loading, error, missing event, empty roster, partial profile fallback, selected tiles, keyboard/safe-area if needed, text scale, and reduced motion.
+  - DP-EVENT-RECAP-003: Introduce EventRecapScreenState or equivalent adapter for event/view-model state, attendee/profile rows, selected ids, hero/window copy, retry intents, and open-deck callback.
+- [ ] Feature-level drift/previews
+  - DP-SECONDARY-LINT-001: Add an advisory check that P2 captured routes cannot remain planned in screen_coverage.json after a contract exists.
+  - DP-SECONDARY-PREVIEW-001: Add Widgetbook states for Calendar, Saved Events, Filters, and Event Recap sections before visual parity edits.
+
+### P3 utility_surfaces
+
+- [ ] `event.location_map` (11 state follow-ups, 1 open gap)
+  - planned: `map_masking`
+  - captured: `route_loading`, `route_error`, `event_not_found`, `no_exact_coordinate`, `pinned_location`, `network_tiles_disabled_capture`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - tested: `directions_action`
+  - DP-EVENT-MAP-003: Introduce EventLocationMapState and exported map masks before advisory pixel comparison.
+- [ ] `notifications.list` (13 state follow-ups, 0 open gaps)
+  - tested: `read_unread_rows`, `row_navigation_targets`
+  - captured: `uid_loading`, `signed_out`, `activity_loading`, `activity_error`, `empty_activity`, `notifications_activity`, `mark_all_read`, `deep_link_failures`, `text_scale_2`, `reduced_motion`, `light_dark`
+- [ ] `reviews.history` (12 state follow-ups, 0 open gaps)
+  - tested: `edit_review_sheet`
+  - captured: `uid_missing`, `profile_loading`, `profile_error`, `reviews_loading`, `reviews_error`, `empty_reviews`, `reviews_history_list`, `event_context_missing`, `text_scale_2`, `reduced_motion`, `light_dark`
+- [ ] `settings.account` (19 state follow-ups, 0 open gaps)
+  - tested: `history_navigation_rows`, `host_app_handoff`, `shared_unblock_feedback`
+  - captured: `profile_backed_account`, `profile_loading`, `profile_error`, `profile_missing`, `notification_preferences`, `preference_save_error`, `privacy_safety_defaults`, `blocked_accounts_loading_error`, `blocked_accounts_empty`, `blocked_accounts_list`, `unblock_mutation`, `delete_account_flow`, `sign_out_action`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DP-SETTINGS-ACCOUNT-002: closed; Settings Account route captures now cover profile loading/error/offline/missing, blocked-user loading/error/offline/list, preference/delete/sign-out/unblock mutation pending/error/offline, text scale, reduced motion, and light/dark. Unblock success feedback now uses the shared Catch snackbar helper. Settings intentionally uses the shared offline provider/mutation error copy instead of Settings-specific copy.
+- [ ] `payments.history` (15 state follow-ups, 1 open gap)
+  - tested: `status_variants`
+  - captured: `uid_loading`, `uid_error`, `signed_out`, `payments_loading`, `payments_error`, `payment_history_empty`, `populated_payments`, `detail_sheet`, `failed_signup_help`, `event_title_loading_missing`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DP-PAYMENT-HISTORY-002: Payment History route captures now cover access, provider waves, empty, populated rows, receipt sheet, failed sign-up help sheet, support snackbar, missing event-title fallback, offline provider errors, text scale, reduced motion, and light/dark. The support snackbar now uses the shared Catch snackbar helper. Remaining work: export the canonical reference baseline, add receipt-id masks, and compare pixels.
+- [ ] Feature-level drift/previews
+  - DP-UTILITY-LINT-001: After adapter boundaries exist, extend contracted-screen hygiene checks for utility routes that add raw Material controls or one-off visual constants.
+  - DP-UTILITY-PREVIEW-001: Add Widgetbook states and deterministic captures for map, notifications, reviews, settings, and payments utility surfaces before pixel comparison.
+
+## Definition Of Done
+
+A screen is done when all of these are true:
+
+- [ ] Route is present in `design/screens/screen_coverage.json` with the
+  correct status, priority, screen id, and reason.
+- [ ] Screen is present in `design/screens/catch.screens.json` with routes,
+  owner, priority, source, controller/state ownership, states, captures,
+  composition sections, dependencies, and open gaps.
+- [ ] Screen states cover meaningful loading, populated, empty, error, offline,
+  permission/access, mutation pending/failure, theme, text scale, reduced
+  motion, and role-specific variants.
+- [ ] Route widget owns navigation and state orchestration only.
+- [ ] Visual structure is delegated to predefined sections/components.
+- [ ] Sections depend on registered primitives/tokens instead of raw Material
+  controls or one-off visual values.
+- [ ] Widgetbook includes useful primitive/section previews for hard-to-reach
+  states and all contract `previewIds` resolve.
+- [ ] UI capture catalog includes deterministic full-screen captures for the
+  highest-risk states.
+- [ ] Tests cover controller/adapters and critical UI state transitions.
+- [ ] Pixel comparison is advisory or ready once exported references and masks
+  exist.
+- [ ] Drift-prevention scanners pass or record stable, intentional advisory
+  findings.
+- [ ] `docs/widget_catalog.md`, design parity docs, and audit registry receipts
+  are updated in the same pass.

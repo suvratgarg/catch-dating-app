@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
+import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -15,6 +16,7 @@ import 'package:catch_dating_app/notifications/data/activity_notification_reposi
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class ActivityScreen extends ConsumerStatefulWidget {
   const ActivityScreen({super.key});
@@ -29,17 +31,17 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
     final t = CatchTokens.of(context);
     final uidAsync = ref.watch(uidProvider);
     final uid = uidAsync.asData?.value;
-    final visibleNotifications = uid == null
-        ? const <ActivityNotification>[]
-        : ref
-                  .watch(watchActivityNotificationsProvider(uid))
-                  .asData
-                  ?.value
-                  .where((notification) => notification.isVisibleInActivity)
-                  .toList(growable: false) ??
-              const <ActivityNotification>[];
-    final hasUnread = visibleNotifications.any(
-      (notification) => notification.isUnread,
+    final notificationsAsync = uid == null
+        ? null
+        : ref.watch(watchActivityNotificationsProvider(uid));
+    final markAllReadMutation = ref.watch(
+      ActivityController.markAllReadMutation,
+    );
+    final state = buildNotificationsListState(
+      uid: uidAsync,
+      notifications: notificationsAsync,
+      now: DateTime.now(),
+      markAllReadPending: markAllReadMutation.isPending,
     );
 
     return Scaffold(
@@ -47,24 +49,48 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
       appBar: CatchTopBar(
         title: 'Activity',
         actions: [
-          if (uid != null && hasUnread)
+          if (state.showMarkAllReadAction)
             CatchTextButton(
-              label: 'Mark all read',
-              onPressed: () => unawaited(
-                _markAllRead(uid: uid, notifications: visibleNotifications),
-              ),
+              label: state.markAllReadLabel,
+              onPressed: state.canMarkAllRead
+                  ? () => unawaited(
+                      _markAllRead(
+                        uid: state.uid!,
+                        notifications: state.unreadNotifications,
+                      ),
+                    )
+                  : null,
             ),
         ],
       ),
-      body: uidAsync.when(
-        loading: () => const CatchLoadingIndicator(),
-        error: (error, stackTrace) => const ActivitySignedOutState(),
-        data: (uid) {
+      body: CatchAsyncValueView<String?>(
+        value: uidAsync,
+        loadingBuilder: (_) => const _ActivityScreenLoading(),
+        errorBuilder: (_, _, _) => const ActivitySignedOutState(),
+        builder: (context, uid) {
           if (uid == null) return const ActivitySignedOutState();
-
-          return ListView(
-            padding: CatchInsets.pageBodyUnderHeader,
-            children: [ActivitySection(uid: uid, showMarkAllReadAction: false)],
+          return CatchAsyncValueView<List<ActivityNotification>>(
+            value:
+                notificationsAsync ??
+                const AsyncLoading<List<ActivityNotification>>(),
+            loadingBuilder: (_) => const _ActivityScreenLoading(),
+            errorBuilder: (context, error, _) => _ActivityScreenBody(
+              state: NotificationsActivityError(uid: uid, error: error),
+              onRetry: () =>
+                  ref.invalidate(watchActivityNotificationsProvider(uid)),
+              onOpenRoute: _openNotificationRoute,
+            ),
+            builder: (context, _) => _ActivityScreenBody(
+              state: state,
+              onRetry: state.uid == null
+                  ? null
+                  : () {
+                      ref.invalidate(
+                        watchActivityNotificationsProvider(state.uid!),
+                      );
+                    },
+              onOpenRoute: _openNotificationRoute,
+            ),
           );
         },
       ),
@@ -80,9 +106,12 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
         .toList(growable: false);
     if (unread.isEmpty) return;
     try {
-      await ref
-          .read(activityControllerProvider.notifier)
-          .markAllRead(notifications: unread, uid: uid);
+      await ActivityController.markAllReadMutation.run(
+        ref,
+        (tx) async => tx
+            .get(activityControllerProvider.notifier)
+            .markAllRead(notifications: unread, uid: uid),
+      );
     } catch (error, stackTrace) {
       ref
           .read(errorLoggerProvider)
@@ -99,5 +128,68 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
           );
       if (mounted) showCatchErrorSnackBar(context, error);
     }
+  }
+
+  void _openNotificationRoute(String route) {
+    try {
+      unawaited(
+        context.push(route).catchError((Object error, StackTrace stackTrace) {
+          if (!mounted) return null;
+          _showNotificationRouteError(error, stackTrace);
+          return null;
+        }),
+      );
+    } on Object catch (error, stackTrace) {
+      _showNotificationRouteError(error, stackTrace);
+    }
+  }
+
+  void _showNotificationRouteError(Object error, StackTrace stackTrace) {
+    showCatchErrorSnackBar(
+      context,
+      ExternalActionException(
+        'Could not open this activity update.',
+        cause: error,
+        stackTrace: stackTrace,
+      ),
+    );
+  }
+}
+
+class _ActivityScreenLoading extends StatelessWidget {
+  const _ActivityScreenLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: CatchInsets.pageBodyUnderHeader,
+      children: const [ActivitySectionSkeleton()],
+    );
+  }
+}
+
+class _ActivityScreenBody extends StatelessWidget {
+  const _ActivityScreenBody({
+    required this.state,
+    required this.onRetry,
+    required this.onOpenRoute,
+  });
+
+  final NotificationsListState state;
+  final VoidCallback? onRetry;
+  final ValueChanged<String> onOpenRoute;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: CatchInsets.pageBodyUnderHeader,
+      children: [
+        ActivitySection.fromState(
+          state: state,
+          onRetry: onRetry,
+          onOpenRoute: onOpenRoute,
+        ),
+      ],
+    );
   }
 }

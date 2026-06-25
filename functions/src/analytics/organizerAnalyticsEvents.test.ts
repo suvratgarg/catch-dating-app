@@ -24,6 +24,10 @@ class FakeSnapshot {
   get(field: string): unknown {
     return this.value?.[field];
   }
+
+  data(): FakeData | undefined {
+    return this.value === undefined ? undefined : clone(this.value);
+  }
 }
 
 class FakeCollectionRef {
@@ -131,6 +135,63 @@ test("recordOrganizerAnalyticsEvent rejects mismatched scope", async () => {
   );
 });
 
+test("recordOrganizerAnalyticsEvent rejects unpublished pages", async () => {
+  await assert.rejects(
+    () => recordOrganizerAnalyticsEventHandler(
+      callableRequest({
+        clubId: "club-1",
+        eventName: "listingView",
+        pagePath: "/organizers/saket-run-club/",
+      }),
+      deps(new FakeFirestore({
+        ...baseDocs(),
+        "clubs/club-1": clubDoc({
+          publishStatus: "qa",
+          robots: "noindex, follow",
+        }),
+      }), new FakeBigQuery())
+    ),
+    (error: unknown) =>
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "failed-precondition"
+  );
+});
+
+test("recordOrganizerAnalyticsEvent rejects noncanonical paths", async () => {
+  await assert.rejects(
+    () => recordOrganizerAnalyticsEventHandler(
+      callableRequest({
+        clubId: "club-1",
+        eventName: "listingView",
+        pagePath: "/organizers/other-club/",
+      }),
+      deps(new FakeFirestore(baseDocs()), new FakeBigQuery())
+    ),
+    (error: unknown) =>
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "invalid-argument"
+  );
+});
+
+test("recordOrganizerAnalyticsEvent accepts search appearances", async () => {
+  const bigQuery = new FakeBigQuery();
+
+  await recordOrganizerAnalyticsEventHandler(
+    callableRequest({
+      clubId: "club-1",
+      eventName: "searchAppearance",
+      pagePath: "/organizers/?q=saket",
+    }),
+    deps(new FakeFirestore(baseDocs()), bigQuery)
+  );
+
+  assert.equal(bigQuery.inserted.length, 1);
+});
+
 test("recordOrganizerAnalyticsEvent rejects rate-limited clients", async () => {
   await assert.rejects(
     () => recordOrganizerAnalyticsEventHandler(
@@ -166,8 +227,33 @@ function deps(
 
 function baseDocs(): Record<string, FakeData> {
   return {
-    "clubs/club-1": {name: "Saket Run Club"},
+    "clubs/club-1": clubDoc(),
     "events/event-1": {clubId: "club-1"},
+  };
+}
+
+function clubDoc(publicPageOverrides: FakeData = {}): FakeData {
+  return {
+    name: "Saket Run Club",
+    status: "active",
+    archived: false,
+    claim: {
+      state: "unclaimed",
+      claimHref: "/host/#founding-hosts",
+      lastClaimRequestId: null,
+    },
+    publicPage: {
+      slug: "saket-run-club",
+      citySlug: "delhi",
+      canonicalPath: "/organizers/saket-run-club/",
+      publishStatus: "published",
+      indexStatus: "indexReady",
+      robots: "index, follow",
+      seoTitle: null,
+      seoDescription: null,
+      lastRenderedAt: null,
+      ...publicPageOverrides,
+    },
   };
 }
 

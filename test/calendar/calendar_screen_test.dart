@@ -4,7 +4,9 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
@@ -42,8 +44,39 @@ void main() {
         ],
       );
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(CatchSkeleton), findsWidgets);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.text('Calendar'), findsOneWidget);
       expect(find.text('No planned events yet'), findsNothing);
+    });
+
+    testWidgets('keeps calendar chrome visible while club names load', (
+      tester,
+    ) async {
+      final clubNames = Completer<Map<String, String>>();
+      final event = buildEvent(
+        id: 'club-name-loading-event',
+        startTime: DateTime.now().add(const Duration(days: 1, hours: 7)),
+        meetingPoint: 'Pending Club Start',
+      );
+
+      await _pumpCalendar(
+        tester,
+        overrides: [
+          watchSignedUpEventsProvider(
+            'runner-1',
+          ).overrideWithValue(AsyncData<List<Event>>([event])),
+          clubNameLookupProvider(
+            ClubNameLookupQuery([event.clubId]),
+          ).overrideWith((ref) => clubNames.future),
+        ],
+      );
+
+      expect(find.text('Calendar'), findsOneWidget);
+      expect(find.text('Planned'), findsOneWidget);
+      expect(find.byType(CatchSkeleton), findsWidgets);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.text(event.title), findsNothing);
     });
 
     testWidgets(

@@ -10,6 +10,7 @@ analyzer:
     - build/**
     - packages/**/build/**
     - packages/phosphor_flutter/example/**
+    - widgetbook/**
     - '**/*.g.dart'
     - '**/*.freezed.dart'
 

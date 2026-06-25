@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "screenId": "screen.host.event.edit",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["prefilled_event"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template includes drawn phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "notice_copy",
+      "stateIds": ["prefilled_event"],
+      "rect": {
+        "x": 68,
+        "y": 128,
+        "width": 280,
+        "height": 74
+      },
+      "reason": "Edit-scope notice copy changes with booking/waitlist lock state."
+    },
+    {
+      "id": "schedule_values",
+      "stateIds": ["prefilled_event"],
+      "rect": {
+        "x": 68,
+        "y": 286,
+        "width": 228,
+        "height": 86
+      },
+      "reason": "Date, time, and duration values depend on the hosted-event fixture clock."
+    },
+    {
+      "id": "location_and_map_values",
+      "stateIds": ["prefilled_event"],
+      "rect": {
+        "x": 20,
+        "y": 528,
+        "width": 350,
+        "height": 200
+      },
+      "reason": "Location name, map placeholder, and pin rendering are event fixture and map-state data."
+    },
+    {
+      "id": "bottom_footer_safe_area",
+      "stateIds": ["prefilled_event"],
+      "rect": {
+        "x": 0,
+        "y": 728,
+        "width": 390,
+        "height": 84
+      },
+      "reason": "Save footer positioning and bottom safe-area treatment are still advisory while host edit-event chrome is reconciled."
+    }
+  ]
+}

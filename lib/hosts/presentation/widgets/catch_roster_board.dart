@@ -13,8 +13,9 @@ Color _rosterToneColor(CatchTokens t, CatchBadgeTone tone) => switch (tone) {
   CatchBadgeTone.danger => t.danger,
   CatchBadgeTone.gold => t.gold,
   CatchBadgeTone.solid => t.ink,
-  CatchBadgeTone.neutral || CatchBadgeTone.brand || CatchBadgeTone.live =>
-    t.ink2,
+  CatchBadgeTone.neutral ||
+  CatchBadgeTone.brand ||
+  CatchBadgeTone.live => t.ink2,
 };
 
 /// One count tile in a [CatchRosterTiles] row.
@@ -124,9 +125,7 @@ class _Tile extends StatelessWidget {
                 style: CatchTextStyles.monoLabel(
                   context,
                   color: selected
-                      ? t.primaryInk.withValues(
-                          alpha: CatchOpacity.onFillMuted,
-                        )
+                      ? t.primaryInk.withValues(alpha: CatchOpacity.onFillMuted)
                       : t.ink2,
                 ).copyWith(fontSize: 8.5),
               ),
@@ -305,7 +304,9 @@ class _ActionCell extends StatelessWidget {
       null => const SizedBox.shrink(),
       CatchRosterTextAction(:final value) => Text(
         value,
-        style: CatchTextStyles.mono(context).copyWith(fontWeight: FontWeight.w700),
+        style: CatchTextStyles.mono(
+          context,
+        ).copyWith(fontWeight: FontWeight.w700),
       ),
       CatchRosterBadgeAction(:final label, :final tone) => CatchBadge(
         label: label,
@@ -465,6 +466,8 @@ class CatchRosterTable extends StatelessWidget {
                       ),
                       child: Text(
                         columns.isNotEmpty ? columns[0].toUpperCase() : '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: headerStyle,
                       ),
                     ),
@@ -474,6 +477,8 @@ class CatchRosterTable extends StatelessWidget {
                     flex: 3,
                     child: Text(
                       columns.length > 1 ? columns[1].toUpperCase() : '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: headerStyle,
                     ),
                   ),
@@ -482,6 +487,8 @@ class CatchRosterTable extends StatelessWidget {
                     flex: 3,
                     child: Text(
                       columns.length > 2 ? columns[2].toUpperCase() : '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.right,
                       style: headerStyle,
                     ),
@@ -504,11 +511,7 @@ class CatchRosterTable extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        CatchIcons.group,
-                        size: CatchIcon.md,
-                        color: t.ink3,
-                      ),
+                      Icon(CatchIcons.group, size: CatchIcon.md, color: t.ink3),
                       const SizedBox(width: CatchSpacing.micro10),
                       Expanded(
                         child: Column(

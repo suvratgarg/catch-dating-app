@@ -471,7 +471,11 @@ class _IncludeMeToggle extends StatelessWidget {
             style: CatchTextStyles.labelL(context, color: t.surface),
           ),
         ),
-        Switch.adaptive(value: included, onChanged: busy ? null : onChanged),
+        CatchToggle(
+          value: included,
+          semanticLabel: label,
+          onChanged: busy ? null : onChanged,
+        ),
       ],
     );
   }
@@ -819,18 +823,11 @@ class _StageCueLine extends StatelessWidget {
   ) async {
     await Clipboard.setData(ClipboardData(text: cue.body));
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          cue.moment == EventSuccessConversationCueMoment.postEvent
-              ? 'Opener copied.'
-              : 'Cue copied.',
-          style: CatchTextStyles.labelL(
-            context,
-            color: CatchTokens.of(context).bg,
-          ),
-        ),
-      ),
+    showCatchSnackBar(
+      context,
+      cue.moment == EventSuccessConversationCueMoment.postEvent
+          ? 'Opener copied.'
+          : 'Cue copied.',
     );
   }
 }

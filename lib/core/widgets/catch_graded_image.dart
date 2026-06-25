@@ -126,15 +126,17 @@ class CatchGradedImage extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!enabled) return child;
     final grade = CatchGrade.of(context);
+    final warmShadow = _multiplyTintColor(grade.warmShadow);
+    final warmHighlight = _screenTintColor(grade.warmHighlight);
 
     // Desaturate + matte, then warm the shadows (multiply) and highlights
-    // (screen). ColorFilter.mode is luminance-agnostic, but multiply lands in
-    // the darks and screen in the lights — a reliable pseudo split-tone with no
-    // backdrop-blend pitfalls.
+    // (screen). ColorFilter.mode does not behave like a low-alpha CSS overlay,
+    // so tint strength is baked into the blend color by lerping from each
+    // blend mode's no-op color.
     Widget graded = ColorFiltered(
-      colorFilter: ColorFilter.mode(grade.warmHighlight, BlendMode.screen),
+      colorFilter: ColorFilter.mode(warmHighlight, BlendMode.screen),
       child: ColorFiltered(
-        colorFilter: ColorFilter.mode(grade.warmShadow, BlendMode.multiply),
+        colorFilter: ColorFilter.mode(warmShadow, BlendMode.multiply),
         child: ColorFiltered(
           colorFilter: ColorFilter.matrix(grade.toMatrix()),
           child: child,
@@ -155,6 +157,16 @@ class CatchGradedImage extends StatelessWidget {
       );
     }
     return graded;
+  }
+
+  static Color _multiplyTintColor(Color color) {
+    final strength = color.a.clamp(0.0, 1.0).toDouble();
+    return Color.lerp(Colors.white, color.withValues(alpha: 1), strength)!;
+  }
+
+  static Color _screenTintColor(Color color) {
+    final strength = color.a.clamp(0.0, 1.0).toDouble();
+    return Color.lerp(Colors.black, color.withValues(alpha: 1), strength)!;
   }
 }
 

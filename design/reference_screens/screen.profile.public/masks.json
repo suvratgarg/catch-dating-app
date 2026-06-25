@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "screenId": "screen.profile.public",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["public_profile"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template includes drawn phone chrome while Flutter route captures use the design-phone safe area contract."
+    },
+    {
+      "id": "hero_photo",
+      "stateIds": ["public_profile"],
+      "rect": {
+        "x": 0,
+        "y": 136,
+        "width": 390,
+        "height": 445
+      },
+      "reason": "Public profile hero imagery is user media and should be masked until fixture image parity is deliberate."
+    },
+    {
+      "id": "bottom_safe_area",
+      "stateIds": ["public_profile"],
+      "rect": {
+        "x": 0,
+        "y": 780,
+        "width": 390,
+        "height": 32
+      },
+      "reason": "Bottom safe-area rounding and scroll extent can vary while screen layout parity is still advisory."
+    }
+  ]
+}

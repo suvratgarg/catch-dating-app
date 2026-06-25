@@ -96,6 +96,70 @@ void main() {
     expect(saved, isTrue);
   });
 
+  testWidgets('CatchTopBar constrains text actions at large text scale', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrapWithTextScale(
+        CatchTopBar(
+          title: 'Activity',
+          showBackButton: false,
+          actions: [
+            CatchTopBarTextAction(label: 'Mark all read', onPressed: () {}),
+          ],
+        ),
+        textScale: 2,
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Activity'), findsOneWidget);
+    expect(find.text('Mark all read'), findsOneWidget);
+  });
+
+  testWidgets('CatchTopBar constrains compact subtitle at large text scale', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrapWithTextScale(
+        const CatchTopBar(
+          title: 'Professional profile',
+          subtitle: 'Active professional profile',
+          showBackButton: false,
+        ),
+        textScale: 2,
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Professional profile'), findsOneWidget);
+    expect(find.text('Active professional profile'), findsNothing);
+  });
+
+  testWidgets('CatchTopBar constrains large subtitle at large text scale', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrapWithTextScale(
+        const CatchTopBar(
+          title: 'Create event',
+          subtitle: 'Add the details guests need before they book',
+          kicker: 'Host event',
+          showBackButton: false,
+        ),
+        textScale: 2,
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('HOST EVENT'), findsNothing);
+    expect(find.text('Create event'), findsOneWidget);
+    expect(
+      find.text('Add the details guests need before they book'),
+      findsNothing,
+    );
+  });
+
   testWidgets('CatchTopBar renders the large handoff AppBar header', (
     tester,
   ) async {
@@ -317,6 +381,25 @@ Widget _wrap(PreferredSizeWidget appBar) {
   return MaterialApp(
     theme: AppTheme.light,
     home: Scaffold(appBar: appBar, body: const SizedBox.shrink()),
+  );
+}
+
+Widget _wrapWithTextScale(
+  PreferredSizeWidget appBar, {
+  required double textScale,
+}) {
+  return MaterialApp(
+    theme: AppTheme.light,
+    home: MediaQuery(
+      data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
+      child: Center(
+        child: SizedBox(
+          width: 390,
+          height: 812,
+          child: Scaffold(appBar: appBar, body: const SizedBox.shrink()),
+        ),
+      ),
+    ),
   );
 }
 

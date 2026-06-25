@@ -245,6 +245,24 @@ export interface EventDocument {
   discoveryMinAge?: number;
   discoveryMaxAge?: number;
   /**
+   * Server-owned deterministic search projection used by admin event publishing. Rebuildable from canonical event and organizer fields; not consumed by the app.
+   */
+  adminSearch?: {
+    /**
+     * @maxItems 120
+     */
+    tokens: string[];
+    sortKey: string;
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    updatedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    updatedBySource: "adminUpdateEventDetails" | "adminEventSearchBackfill";
+  };
+  /**
    * Internal demo seed marker used for cleanup and diagnostics.
    */
   synthetic?: boolean;

@@ -34,6 +34,7 @@ class CatchField extends StatefulWidget {
     this.toggled = false,
     this.onToggle,
     this.control,
+    this.initiallyExpanded = false,
     this.add = false,
     this.error,
     this.valid = false,
@@ -51,6 +52,8 @@ class CatchField extends StatefulWidget {
     this.inputFormatters,
     this.autofillHints,
     this.obscureText = false,
+    this.maxLines = 1,
+    this.minLines,
     this.readOnly = false,
     this.autofocus = false,
     this.enabled = true,
@@ -72,6 +75,7 @@ class CatchField extends StatefulWidget {
   /// A control (Stepper / Chips / OptionCards) revealed on tap; the value shows
   /// as text at rest.
   final Widget? control;
+  final bool initiallyExpanded;
   final bool add;
   final String? error;
   final bool valid;
@@ -89,6 +93,8 @@ class CatchField extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final Iterable<String>? autofillHints;
   final bool obscureText;
+  final int? maxLines;
+  final int? minLines;
   final bool readOnly;
   final bool autofocus;
   final bool enabled;
@@ -99,7 +105,21 @@ class CatchField extends StatefulWidget {
 
 class _CatchFieldState extends State<CatchField> {
   bool _focused = false;
-  bool _open = false;
+  late bool _open;
+
+  @override
+  void initState() {
+    super.initState();
+    _open = widget.initiallyExpanded && widget.control != null;
+  }
+
+  @override
+  void didUpdateWidget(covariant CatchField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.control != widget.control && widget.control == null) {
+      _open = false;
+    }
+  }
 
   CatchFieldMode get _mode =>
       widget.mode ??
@@ -203,7 +223,11 @@ class _CatchFieldState extends State<CatchField> {
         ),
         child: Row(
           children: [
-            Icon(widget.icon ?? CatchIcons.add, size: CatchIcon.md, color: t.primary),
+            Icon(
+              widget.icon ?? CatchIcons.add,
+              size: CatchIcon.md,
+              color: t.primary,
+            ),
             const SizedBox(width: CatchSpacing.s3),
             Text(
               widget.label ?? '',
@@ -306,40 +330,49 @@ class _CatchFieldState extends State<CatchField> {
 
   Widget _buildContent(CatchTokens t) {
     if (_isEdit) {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
-        children: [
-          if (widget.leadingUnit != null) ...[
-            Text(
-              widget.leadingUnit!,
-              style: CatchTextStyles.titleS(context, color: t.ink2),
+      return Padding(
+        padding: EdgeInsets.only(
+          top: widget.label == null || widget.label!.isEmpty
+              ? 0
+              : CatchSpacing.s8,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            if (widget.leadingUnit != null) ...[
+              Text(
+                widget.leadingUnit!,
+                style: CatchTextStyles.titleS(context, color: t.ink2),
+              ),
+              const SizedBox(width: CatchSpacing.s1),
+            ],
+            Expanded(
+              child: CatchTextField(
+                label: widget.label ?? '',
+                showLabel: false,
+                variant: CatchTextFieldVariant.bare,
+                controller: widget.controller,
+                initialValue: widget.initialValue,
+                hintText: widget.placeholder,
+                onChanged: widget.onChanged,
+                onFocusChanged: (f) => setState(() => _focused = f),
+                validator: widget.validator,
+                keyboardType: widget.keyboardType,
+                textInputAction: widget.textInputAction,
+                textCapitalization: widget.textCapitalization,
+                inputFormatters: widget.inputFormatters,
+                autofillHints: widget.autofillHints,
+                obscureText: widget.obscureText,
+                maxLines: widget.maxLines,
+                minLines: widget.minLines,
+                readOnly: widget.readOnly,
+                autofocus: widget.autofocus,
+                enabled: widget.enabled,
+              ),
             ),
-            const SizedBox(width: CatchSpacing.s1),
           ],
-          Expanded(
-            child: CatchTextField(
-              label: widget.label ?? '',
-              showLabel: false,
-              variant: CatchTextFieldVariant.bare,
-              controller: widget.controller,
-              initialValue: widget.initialValue,
-              hintText: widget.placeholder,
-              onChanged: widget.onChanged,
-              onFocusChanged: (f) => setState(() => _focused = f),
-              validator: widget.validator,
-              keyboardType: widget.keyboardType,
-              textInputAction: widget.textInputAction,
-              textCapitalization: widget.textCapitalization,
-              inputFormatters: widget.inputFormatters,
-              autofillHints: widget.autofillHints,
-              obscureText: widget.obscureText,
-              readOnly: widget.readOnly,
-              autofocus: widget.autofocus,
-              enabled: widget.enabled,
-            ),
-          ),
-        ],
+        ),
       );
     }
 

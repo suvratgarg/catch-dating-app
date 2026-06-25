@@ -1707,6 +1707,65 @@ const schemaClubDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'server-only',
     },
+    'adminSearch': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Server-owned deterministic search projection used by admin organizer publishing. Rebuildable from canonical club fields; not consumed by the app.',
+      'required': <Object?>[
+        'tokens',
+        'sortKey',
+        'updatedAt',
+        'updatedBySource',
+      ],
+      'properties': <String, Object?>{
+        'tokens': <String, Object?>{
+          'type': 'array',
+          'maxItems': 120,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 2,
+            'maxLength': 80,
+            'pattern': '^[a-z0-9-]+\$',
+          },
+        },
+        'sortKey': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[a-z0-9-]+(?:-[a-z0-9-]+)*\$',
+        },
+        'updatedAt': <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        'updatedBySource': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'adminUpdateClubDetails',
+            'adminSetClubIndexStatus',
+            'adminOrganizerSearchBackfill',
+          ],
+        },
+      },
+      'x-catch-ownership': 'server-only',
+    },
     'publicProfile': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,

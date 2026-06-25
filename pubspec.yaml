@@ -159,6 +159,8 @@ flutter:
     - assets/branding/catch_icon_square.png
     - assets/branding/catch_hosts_icon.png
     - assets/branding/catch_hosts_logo.png
+    - assets/fixtures/club_hero_portrait.jpg
+    - assets/fixtures/profile_portrait.jpg
     - assets/audio/event_success/
     - assets/audio/celebration/
     - tool/demo/demo_seed/scenarios/host-demo.json

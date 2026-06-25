@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -203,6 +203,7 @@ void main() {
     expect(revenueCsv, contains('TOTAL_ESTIMATED_ACTIVE_REVENUE'));
     expect(revenueCsv, contains('Asha,runner-1,attended,checked_in'));
     expect(revenueCsv, contains('Meera,runner-3,cancelled,cancelled'));
+    expect(find.text('Revenue CSV ready.'), findsOneWidget);
 
     await tester.tap(find.text('Ops CSV'));
     await _settleAttendanceSheet(tester);
@@ -235,7 +236,8 @@ void main() {
       ],
     );
 
-    expect(find.byType(CatchLoadingIndicator), findsOneWidget);
+    expect(find.byType(HostRosterSkeleton), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
   testWidgets('shows branded error when attendance data fails', (tester) async {

@@ -179,11 +179,21 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "state", "detail"],
+        "required": [
+          "id",
+          "state",
+          "detail",
+          "owner",
+          "runbook",
+          "nextAction"
+        ],
         "properties": {
           "id": {"type": "string", "minLength": 1, "maxLength": 80},
           "state": {"type": "string", "enum": ["ok", "partial", "missing"]},
-          "detail": {"type": "string", "minLength": 1, "maxLength": 240}
+          "detail": {"type": "string", "minLength": 1, "maxLength": 240},
+          "owner": {"type": "string", "minLength": 1, "maxLength": 80},
+          "runbook": {"type": "string", "minLength": 1, "maxLength": 200},
+          "nextAction": {"type": "string", "minLength": 1, "maxLength": 240}
         }
       }
     }

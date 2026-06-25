@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "Catch Host",
+    "appleAppId": "6778927317",
+    "bundleId": "com.catchdates.host",
+    "sku": "catch-host-ios",
+    "primaryLanguage": "English (U.S.)"
+  },
+  "preparedAt": "2026-06-22",
+  "status": "draft_assets_prepared",
+  "icon": {
+    "path": "docs/store/catch_host/icon/app-icon-1024.png",
+    "sourcePath": "ios/Runner/Assets.xcassets/AppIcon-host-prod.appiconset/Icon-App-host-prod-1024x1024@1x.png",
+    "dimensions": {
+      "width": 1024,
+      "height": 1024
+    },
+    "status": "ready"
+  },
+  "metadata": {
+    "path": "docs/store/catch_host/metadata.md",
+    "subtitle": "Tools for event hosts",
+    "subtitleCharacters": 21,
+    "promotionalTextCharacters": 109,
+    "keywordsBytes": 84,
+    "privacyPolicyUrl": "https://catchdates.com/privacy",
+    "supportUrl": "https://catchdates.com/help",
+    "termsUrl": "https://catchdates.com/terms",
+    "marketingUrl": "https://catchdates.com/host/"
+  },
+  "screenshots": [
+    {
+      "path": "docs/store/catch_host/screenshots/iphone_6_9/01-event-setup.png",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-create-basics.png",
+      "device": "iPhone 6.9-inch",
+      "dimensions": {
+        "width": 1320,
+        "height": 2868
+      },
+      "headline": "Build your host profile",
+      "status": "ready_from_demo_capture"
+    },
+    {
+      "path": "docs/store/catch_host/screenshots/iphone_6_9/02-admission-rules.png",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-create-policy.png",
+      "device": "iPhone 6.9-inch",
+      "dimensions": {
+        "width": 1320,
+        "height": 2868
+      },
+      "headline": "Control admission",
+      "status": "ready_from_demo_capture"
+    },
+    {
+      "path": "docs/store/catch_host/screenshots/iphone_6_9/03-live-event-flow.png",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-console.png",
+      "device": "iPhone 6.9-inch",
+      "dimensions": {
+        "width": 1320,
+        "height": 2868
+      },
+      "headline": "Run live event flow",
+      "status": "ready_from_demo_capture"
+    },
+    {
+      "path": "docs/store/catch_host/screenshots/iphone_6_9/04-post-event-report.png",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-post-event-report.png",
+      "device": "iPhone 6.9-inch",
+      "dimensions": {
+        "width": 1320,
+        "height": 2868
+      },
+      "headline": "Review the outcome",
+      "status": "ready_from_demo_capture"
+    },
+    {
+      "path": "docs/store/catch_host/screenshots/iphone_6_9/05-guest-details.png",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-create-location.png",
+      "device": "iPhone 6.9-inch",
+      "dimensions": {
+        "width": 1320,
+        "height": 2868
+      },
+      "headline": "Plan guest details",
+      "status": "ready_from_demo_capture"
+    }
+  ],
+  "remainingBlockers": [
+    "Host TestFlight archive/upload and smoke proof",
+    "Reviewer credentials and seeded Host account",
+    "Legal/product privacy label confirmation",
+    "Age rating questionnaire confirmation",
+    "Category and copyright owner confirmation"
+  ]
+}

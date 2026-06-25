@@ -5,9 +5,9 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
 import 'package:catch_dating_app/user_analytics/presentation/user_analytics_copy.dart';
@@ -63,14 +63,9 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
           ),
           gapH16,
           reportAsync.when(
-            loading: () => Padding(
-              padding: CatchInsets.tileVertical,
-              child: Center(
-                child: Semantics(
-                  label: UserAnalyticsCopy.loadingLabel,
-                  child: const CatchLoadingIndicator(),
-                ),
-              ),
+            loading: () => Semantics(
+              label: UserAnalyticsCopy.loadingLabel,
+              child: const _UserAnalyticsReportSkeleton(),
             ),
             error: (error, _) => CatchErrorState.fromError(
               error,
@@ -147,6 +142,166 @@ class _UserAnalyticsEmptyState extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _UserAnalyticsReportSkeleton extends StatelessWidget {
+  const _UserAnalyticsReportSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final itemWidth = (constraints.maxWidth - CatchSpacing.s3) / 2;
+            return Wrap(
+              spacing: CatchSpacing.s3,
+              runSpacing: CatchSpacing.s3,
+              children: [
+                for (var index = 0; index < 4; index++)
+                  SizedBox(
+                    width: itemWidth,
+                    child: CatchSurface(
+                      padding: CatchInsets.content,
+                      borderColor: CatchTokens.of(context).line,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              CatchSkeleton.box(
+                                width: CatchIcon.sm,
+                                height: CatchIcon.sm,
+                              ),
+                              const Spacer(),
+                              CatchSkeleton.box(
+                                width: CatchSpacing.s8,
+                                height: CatchIcon.sm,
+                                radius: CatchRadius.pill,
+                              ),
+                            ],
+                          ),
+                          gapH12,
+                          CatchSkeleton.text(
+                            width: index.isEven
+                                ? CatchLayout.skeletonTextShortWidth
+                                : CatchLayout.skeletonTextTitleWidth,
+                          ),
+                          gapH8,
+                          CatchSkeleton.text(
+                            width: CatchLayout.skeletonTextShortWidth,
+                          ),
+                          gapH8,
+                          CatchSkeleton.textBlock(lines: 2),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+        gapH20,
+        _UserAnalyticsSection(
+          label: UserAnalyticsCopy.trendTitle,
+          child: CatchSurface(
+            padding: CatchInsets.content,
+            borderColor: CatchTokens.of(context).line,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: CatchSkeleton.textBlock(lines: 2)),
+                    gapW16,
+                    Expanded(child: CatchSkeleton.textBlock(lines: 2)),
+                  ],
+                ),
+                gapH16,
+                SizedBox(
+                  height: CatchSpacing.s16,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      for (var index = 0; index < 12; index++) ...[
+                        if (index > 0)
+                          const SizedBox(width: CatchSpacing.micro6),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: FractionallySizedBox(
+                              heightFactor: 0.2 + ((index % 5) * 0.15),
+                              child: CatchSkeleton.box(height: double.infinity),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        gapH20,
+        _UserAnalyticsSection(
+          label: UserAnalyticsCopy.tipsTitle,
+          child: CatchSurface(
+            padding: CatchInsets.content,
+            borderColor: CatchTokens.of(context).line,
+            child: Column(
+              children: [
+                for (var index = 0; index < 2; index++) ...[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CatchSkeleton.box(
+                        width: CatchIcon.sm,
+                        height: CatchIcon.sm,
+                      ),
+                      gapW12,
+                      Expanded(child: CatchSkeleton.textBlock(lines: 2)),
+                    ],
+                  ),
+                  if (index == 0) gapH16,
+                ],
+              ],
+            ),
+          ),
+        ),
+        gapH20,
+        _UserAnalyticsSection(
+          label: UserAnalyticsCopy.dataQualityTitle,
+          child: CatchSurface(
+            padding: CatchInsets.content,
+            borderColor: CatchTokens.of(context).line,
+            child: Column(
+              children: [
+                for (var index = 0; index < 2; index++) ...[
+                  Row(
+                    children: [
+                      CatchSkeleton.box(
+                        width: CatchIcon.sm,
+                        height: CatchIcon.sm,
+                      ),
+                      gapW12,
+                      Expanded(child: CatchSkeleton.text()),
+                    ],
+                  ),
+                  if (index == 0) ...[
+                    gapH12,
+                    Divider(color: CatchTokens.of(context).line),
+                    gapH12,
+                  ],
+                ],
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

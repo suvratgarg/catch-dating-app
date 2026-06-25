@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "screenId": "screen.profile.self",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": [
+        "edit_tab_default",
+        "preview_tab_default"
+      ],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template includes drawn phone chrome while Flutter route captures use the design-phone safe area contract."
+    },
+    {
+      "id": "preview_hero_photo",
+      "stateIds": [
+        "preview_tab_default"
+      ],
+      "rect": {
+        "x": 0,
+        "y": 137,
+        "width": 390,
+        "height": 487
+      },
+      "reason": "Profile photos are dynamic user media and should not dominate advisory diffs."
+    },
+    {
+      "id": "edit_photo_grid",
+      "stateIds": [
+        "edit_tab_default"
+      ],
+      "rect": {
+        "x": 20,
+        "y": 182,
+        "width": 350,
+        "height": 300
+      },
+      "reason": "The edit photo grid contains user photos and placeholder imagery that may differ between design and capture fixtures."
+    },
+    {
+      "id": "bottom_safe_area",
+      "stateIds": [
+        "edit_tab_default",
+        "preview_tab_default"
+      ],
+      "rect": {
+        "x": 0,
+        "y": 780,
+        "width": 390,
+        "height": 32
+      },
+      "reason": "Bottom safe-area rounding and scroll extent can vary while screen layout parity is still advisory."
+    }
+  ]
+}

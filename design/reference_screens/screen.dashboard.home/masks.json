@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "screenId": "screen.dashboard.home",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["full_dashboard", "empty_start"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template draws a fake status bar while Flutter captures may use a test safe area or real device chrome."
+    },
+    {
+      "id": "tab_dock_safe_area",
+      "stateIds": ["full_dashboard", "empty_start"],
+      "rect": {
+        "x": 0,
+        "y": 748,
+        "width": 390,
+        "height": 64
+      },
+      "reason": "Bottom navigation and safe-area treatment vary across route capture devices until the app and design reference share one phone chrome contract."
+    },
+    {
+      "id": "live_event_counts",
+      "stateIds": ["full_dashboard"],
+      "rect": {
+        "x": 40,
+        "y": 280,
+        "width": 120,
+        "height": 28
+      },
+      "reason": "Attendance counts are dynamic product data and should not dominate early advisory diffs."
+    }
+  ]
+}

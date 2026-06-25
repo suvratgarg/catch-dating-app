@@ -9,26 +9,35 @@ class DashboardEmptySliverBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: CatchLayout.maxContentWidth,
-          ),
-          child: const CatchSectionStack(
-            padding: CatchInsets.pageBodyUnderHeader,
-            children: [
-              EmptyHeroCard(),
-              CatchDesignSection(
-                kicker: 'How Catch works',
-                first: true,
-                bodyGap: CatchSpacing.s4,
-                child: CatchJourneySteps(steps: _howCatchWorksSteps),
+    return SliverMainAxisGroup(
+      slivers: [
+        const SliverToBoxAdapter(child: EmptyHeroCard(fullBleed: true)),
+        SliverToBoxAdapter(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: CatchLayout.maxContentWidth,
               ),
-            ],
+              child: const CatchSectionStack(
+                padding: EdgeInsets.fromLTRB(
+                  CatchSpacing.s5,
+                  CatchSpacing.s5,
+                  CatchSpacing.s5,
+                  CatchSpacing.screenPb,
+                ),
+                children: [
+                  CatchDesignSection(
+                    kicker: 'How Catch works',
+                    first: true,
+                    bodyGap: CatchSpacing.s4,
+                    child: CatchJourneySteps(steps: _howCatchWorksSteps),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 }

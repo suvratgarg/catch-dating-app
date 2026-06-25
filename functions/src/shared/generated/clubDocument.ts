@@ -322,6 +322,27 @@ export interface ClubDocument {
     } | null;
   };
   /**
+   * Server-owned deterministic search projection used by admin organizer publishing. Rebuildable from canonical club fields; not consumed by the app.
+   */
+  adminSearch?: {
+    /**
+     * @maxItems 120
+     */
+    tokens: string[];
+    sortKey: string;
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    updatedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    updatedBySource:
+      | "adminUpdateClubDetails"
+      | "adminSetClubIndexStatus"
+      | "adminOrganizerSearchBackfill";
+  };
+  /**
    * Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.
    */
   publicProfile?: {

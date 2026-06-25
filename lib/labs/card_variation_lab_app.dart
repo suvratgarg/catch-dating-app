@@ -469,7 +469,6 @@ class _CardVariationLabScreen extends StatelessWidget {
                   maxWidth: 500,
                   child: EventFocusRail(
                     upcomingEvents: [fixtures.checkInEvent, fixtures.dinner],
-                    reviewer: fixtures.viewer,
                     arrivalAction: EventArrivalAction(
                       kind: EventArrivalActionKind.selfCheckIn,
                       event: fixtures.checkInEvent,
@@ -477,6 +476,15 @@ class _CardVariationLabScreen extends StatelessWidget {
                     activeSwipeEvent: fixtures.pastEvent,
                     pendingReviewEvent: fixtures.pastEvent,
                     clubNameBuilder: fixtures.clubNameFor,
+                    actions: EventFocusActions(
+                      onViewEvent: (_) {},
+                      onCheckIn: (_) {},
+                      onOpenSwipe: (_) {},
+                      onWriteReview: (_) {},
+                      onOpenDirections: (_) {},
+                      onAddToCalendar: (_) {},
+                      onResetCheckInError: () {},
+                    ),
                   ),
                 ),
                 _LabSample(

@@ -33,6 +33,7 @@ const trackedPaths = [
   'functions/test',
   'tool',
   'website',
+  'widgetbook',
   'docs',
   'firestore.rules',
   'firestore.indexes.json',

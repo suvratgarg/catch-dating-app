@@ -7,12 +7,12 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -52,11 +52,15 @@ class CreateEventScreen extends ConsumerStatefulWidget {
     this.now = _systemNow,
     this.initialDraft,
     this.initialStep = 0,
+    this.formAutovalidateMode = AutovalidateMode.disabled,
+    this.initialPickedEventPhotos = const <PickedEventPhoto>[],
   });
 
   final Club club;
   final EventDraft? initialDraft;
   final int initialStep;
+  final AutovalidateMode formAutovalidateMode;
+  final List<PickedEventPhoto> initialPickedEventPhotos;
 
   /// Tests can disable network tiles while still exercising map callbacks.
   final bool loadMapTiles;
@@ -224,6 +228,13 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       _activeDraftId = initialDraft.id;
       _applyDraftValues(initialDraft);
       _lastSavedDraftSignature = _currentDraftContentSignature;
+    }
+    if (widget.initialPickedEventPhotos.isNotEmpty) {
+      _eventPhotos.addAll(
+        widget.initialPickedEventPhotos.map(
+          (photo) => _PickedEventPhotoDraft(_nextPickedEventPhotoId++, photo),
+        ),
+      );
     }
     _initialDraftContentSignature = _currentDraftContentSignature;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -704,18 +715,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _lastSavedDraftSignature = _currentDraftContentSignature;
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          wasUpdate ? 'Draft updated' : 'Draft saved',
-          style: CatchTextStyles.labelL(
-            context,
-            color: CatchTokens.of(context).bg,
-          ),
-        ),
-        duration: CatchMotion.snackbar,
-      ),
-    );
+    showCatchSnackBar(context, wasUpdate ? 'Draft updated' : 'Draft saved');
   }
 
   void _showUnsavedChangesDialog() {
@@ -918,6 +918,17 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final submitMutation = ref.watch(CreateEventController.submitMutation);
+    final saveDraftMutation = ref.watch(
+      CreateEventDraftController.saveDraftMutation,
+    );
+    final mutationError = submitMutation.hasError
+        ? mutationErrorMessage(submitMutation, context: AppErrorContext.event)
+        : saveDraftMutation.hasError
+        ? mutationErrorMessage(
+            saveDraftMutation,
+            context: AppErrorContext.event,
+          )
+        : null;
 
     final createdEvent = _createdEvent;
     if (createdEvent != null) {
@@ -957,6 +968,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 children: [
                   EventDetailsStep(
                     formKey: _eventDetailsFormKey,
+                    autovalidateMode: widget.formAutovalidateMode,
                     photoPreviews: _eventPhotoPreviews,
                     onPickPhotos: _pickEventPhotos,
                     onRemovePhoto: _removeEventPhoto,
@@ -995,6 +1007,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   ),
                   WhereStep(
                     formKey: _whereFormKey,
+                    autovalidateMode: widget.formAutovalidateMode,
                     meetingPointController: _meetingPointController,
                     locationDetailsController: _locationDetailsController,
                     startingPoint: _startingPoint,
@@ -1003,6 +1016,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   ),
                   WhenStep(
                     formKey: _whenFormKey,
+                    autovalidateMode: widget.formAutovalidateMode,
                     dateController: _dateController,
                     startTimeController: _startTimeController,
                     durationMinutes: _durationMinutes,
@@ -1015,6 +1029,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   ),
                   EventPolicyStep(
                     formKey: _eventPolicyFormKey,
+                    autovalidateMode: widget.formAutovalidateMode,
                     capacityController: _capacityController,
                     priceController: _priceController,
                     currencyCode: _eventCurrencyCode,
@@ -1057,16 +1072,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 ],
               ),
             ),
-            if (submitMutation.hasError)
-              CatchErrorBanner(
-                message: mutationErrorMessage(
-                  submitMutation,
-                  context: AppErrorContext.event,
-                ),
-              ),
+            if (mutationError != null) CatchErrorBanner(message: mutationError),
             StepperFooter(
               isLastStep: _currentStep == _stepSpecs.length - 1,
-              isLoading: submitMutation.isPending,
+              isLoading:
+                  submitMutation.isPending || saveDraftMutation.isPending,
               onNext: _next,
               onSaveDraft: _saveDraft,
             ),

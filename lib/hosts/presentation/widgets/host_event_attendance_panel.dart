@@ -1,15 +1,15 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
@@ -20,10 +20,10 @@ import 'package:catch_dating_app/events/presentation/attendance_sheet_view_model
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
-import 'package:catch_dating_app/hosts/domain/host_report_export.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_action_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,11 +37,13 @@ class HostEventAttendancePanel extends StatelessWidget {
     required this.eventId,
     this.scrollable = false,
     this.showSummaryHeader = true,
+    this.initialSearchQuery = '',
   });
 
   final String eventId;
   final bool scrollable;
   final bool showSummaryHeader;
+  final String initialSearchQuery;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +52,7 @@ class HostEventAttendancePanel extends StatelessWidget {
       mode: HostEventParticipantsMode.live,
       scrollable: scrollable,
       showSummaryHeader: showSummaryHeader,
+      initialSearchQuery: initialSearchQuery,
     );
   }
 }
@@ -61,12 +64,14 @@ class HostEventParticipantsPanel extends ConsumerWidget {
     required this.mode,
     this.scrollable = false,
     this.showSummaryHeader = true,
+    this.initialSearchQuery = '',
   });
 
   final String eventId;
   final HostEventParticipantsMode mode;
   final bool scrollable;
   final bool showSummaryHeader;
+  final String initialSearchQuery;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -74,15 +79,13 @@ class HostEventParticipantsPanel extends ConsumerWidget {
       attendanceSheetViewModelProvider(eventId),
     );
 
-    return attendanceAsync.when(
-      loading: () => const Padding(
-        padding: CatchInsets.contentVerticalSpacious,
-        child: Center(child: CatchLoadingIndicator()),
-      ),
-      error: (e, _) => Padding(
+    return CatchAsyncValueView<AttendanceSheetViewModel?>(
+      value: attendanceAsync,
+      loadingBuilder: (_) => const HostRosterSkeleton(),
+      errorBuilder: (_, error, _) => Padding(
         padding: CatchInsets.content,
         child: CatchInlineErrorState.fromError(
-          e,
+          error,
           context: AppErrorContext.event,
           onRetry: () {
             ref.invalidate(watchEventProvider(eventId));
@@ -91,7 +94,7 @@ class HostEventParticipantsPanel extends ConsumerWidget {
           },
         ),
       ),
-      data: (viewModel) {
+      builder: (context, viewModel) {
         if (viewModel == null) {
           return Padding(
             padding: CatchInsets.contentVerticalRelaxed,
@@ -107,6 +110,7 @@ class HostEventParticipantsPanel extends ConsumerWidget {
           mode: mode,
           scrollable: scrollable,
           showSummaryHeader: showSummaryHeader,
+          initialSearchQuery: initialSearchQuery,
         );
       },
     );
@@ -119,12 +123,14 @@ class _ParticipantsList extends ConsumerStatefulWidget {
     required this.mode,
     required this.scrollable,
     required this.showSummaryHeader,
+    required this.initialSearchQuery,
   });
 
   final AttendanceSheetViewModel viewModel;
   final HostEventParticipantsMode mode;
   final bool scrollable;
   final bool showSummaryHeader;
+  final String initialSearchQuery;
 
   @override
   ConsumerState<_ParticipantsList> createState() => _ParticipantsListState();
@@ -157,7 +163,7 @@ class _RosterFilterSpec {
 }
 
 class _ParticipantsListState extends ConsumerState<_ParticipantsList> {
-  var _searchQuery = '';
+  late var _searchQuery = widget.initialSearchQuery;
   var _selectedFilter = _RosterFilter.all;
 
   @override
@@ -165,6 +171,9 @@ class _ParticipantsListState extends ConsumerState<_ParticipantsList> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.mode != widget.mode) {
       _selectedFilter = _RosterFilter.all;
+    }
+    if (oldWidget.initialSearchQuery != widget.initialSearchQuery) {
+      _searchQuery = widget.initialSearchQuery;
     }
   }
 
@@ -203,10 +212,8 @@ class _ParticipantsListState extends ConsumerState<_ParticipantsList> {
     final profilesAsync = profileIds.isEmpty
         ? null
         : ref.watch(attendeeProfilesProvider(profileIds));
-    final Map<String, (String, String?)> profiles =
-        profilesAsync?.asData?.value ?? const <String, (String, String?)>{};
-    final Widget rows = switch (profilesAsync) {
-      null => _ParticipationLifecycleBoard(
+    Widget buildBoard(Map<String, (String, String?)> profiles) {
+      return _ParticipationLifecycleBoard(
         viewModel: widget.viewModel,
         mode: widget.mode,
         profiles: profiles,
@@ -217,32 +224,25 @@ class _ParticipantsListState extends ConsumerState<_ParticipantsList> {
         selectedFilter: _selectedFilter,
         onSearchChanged: (value) => setState(() => _searchQuery = value),
         onFilterChanged: (value) => setState(() => _selectedFilter = value),
-      ),
-      AsyncValue(isLoading: true) => const Padding(
-        padding: CatchInsets.contentVerticalSpacious,
-        child: Center(child: CatchLoadingIndicator()),
-      ),
-      AsyncValue(hasError: true) => Padding(
-        padding: CatchInsets.content,
-        child: CatchInlineErrorState.fromError(
-          profilesAsync.error!,
-          context: AppErrorContext.event,
-          onRetry: () => ref.invalidate(attendeeProfilesProvider(profileIds)),
-        ),
-      ),
-      _ => _ParticipationLifecycleBoard(
-        viewModel: widget.viewModel,
-        mode: widget.mode,
-        profiles: profiles,
-        scrollable: widget.scrollable,
-        showHeader: widget.showSummaryHeader,
-        usesRequestApproval: usesRequestApproval,
-        searchQuery: _searchQuery,
-        selectedFilter: _selectedFilter,
-        onSearchChanged: (value) => setState(() => _searchQuery = value),
-        onFilterChanged: (value) => setState(() => _selectedFilter = value),
-      ),
-    };
+      );
+    }
+
+    final Widget rows = profilesAsync == null
+        ? buildBoard(const <String, (String, String?)>{})
+        : CatchAsyncValueView<Map<String, (String, String?)>>(
+            value: profilesAsync,
+            loadingBuilder: (_) => const HostRosterSkeleton(),
+            errorBuilder: (_, error, _) => Padding(
+              padding: CatchInsets.content,
+              child: CatchInlineErrorState.fromError(
+                error,
+                context: AppErrorContext.event,
+                onRetry: () =>
+                    ref.invalidate(attendeeProfilesProvider(profileIds)),
+              ),
+            ),
+            builder: (context, profiles) => buildBoard(profiles),
+          );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -543,6 +543,17 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
 
   List<Widget> _reportChildren(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
+    final opsExportMutation = ref.watch(
+      HostEventManageController.shareOpsReportMutation,
+    );
+    final revenueExportMutation = ref.watch(
+      HostEventManageController.shareRevenueReportMutation,
+    );
+    final exportErrorMutation = [opsExportMutation, revenueExportMutation]
+        .firstWhere(
+          (mutation) => mutation.hasError,
+          orElse: () => opsExportMutation,
+        );
     final checkedInCount = viewModel.checkedInCount;
     final noShowCount = viewModel.totalCount - checkedInCount;
     final grossEstimate = viewModel.totalCount * viewModel.event.priceInPaise;
@@ -632,11 +643,19 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
         ),
       ),
       gapH12,
+      if (exportErrorMutation.hasError) ...[
+        CatchMutationErrorBanner(
+          mutation: exportErrorMutation,
+          errorContext: AppErrorContext.event,
+        ),
+        gapH12,
+      ],
       Row(
         children: [
           Expanded(
             child: _ExportReportButton(
               label: 'Ops CSV',
+              isExporting: opsExportMutation.isPending,
               onExport: () => _shareOpsReport(context, ref),
             ),
           ),
@@ -645,6 +664,7 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
             child: _ExportReportButton(
               label: 'Revenue CSV',
               primary: true,
+              isExporting: revenueExportMutation.isPending,
               onExport: () => _shareRevenueReport(context, ref),
             ),
           ),
@@ -677,8 +697,7 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
             ? null
             : () => _declineJoinRequest(ref, uid),
       );
-    } else if (participation?.status ==
-        EventParticipationStatus.waitlisted) {
+    } else if (participation?.status == EventParticipationStatus.waitlisted) {
       action = _waitlistOfferAction(
         ref,
         uid,
@@ -788,7 +807,9 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
     }
     return CatchRosterButtonAction(
       label: 'Offer',
-      onPressed: offerActionPending ? null : () => _createWaitlistOffer(ref, uid),
+      onPressed: offerActionPending
+          ? null
+          : () => _createWaitlistOffer(ref, uid),
       disabled: offerActionPending,
     );
   }
@@ -879,61 +900,38 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
 
   Future<void> _shareRevenueReport(BuildContext context, WidgetRef ref) async {
     final origin = _shareOrigin(context);
-    final reportData = await _loadExportData(ref);
-    final export = buildHostRevenueReportExport(
-      event: viewModel.event,
-      participations: reportData.participations,
-      namesByUid: reportData.namesByUid,
-    );
-    await _shareExport(ref: ref, export: export, origin: origin);
+    try {
+      await HostEventManageController.shareRevenueReportMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostEventManageActionsProvider)
+            .shareRevenueReport(
+              viewModel: viewModel,
+              profiles: profiles,
+              origin: origin,
+            ),
+      );
+      if (!context.mounted) return;
+      showCatchSnackBar(context, 'Revenue CSV ready.');
+    } catch (_) {}
   }
 
   Future<void> _shareOpsReport(BuildContext context, WidgetRef ref) async {
     final origin = _shareOrigin(context);
-    final reportData = await _loadExportData(ref);
-    final export = buildHostOpsReportExport(
-      event: viewModel.event,
-      participations: reportData.participations,
-      namesByUid: reportData.namesByUid,
-    );
-    await _shareExport(ref: ref, export: export, origin: origin);
-  }
-
-  Future<
-    ({List<EventParticipation> participations, Map<String, String> namesByUid})
-  >
-  _loadExportData(WidgetRef ref) async {
-    final participations = await ref
-        .read(eventParticipationRepositoryProvider)
-        .fetchHostReportParticipationsForEvent(eventId: viewModel.event.id);
-    final profileIds = _uniqueOrdered([
-      ...participations.map((participation) => participation.uid),
-      ...profiles.keys,
-    ]);
-    final exportProfiles = await ref
-        .read(publicProfileRepositoryProvider)
-        .fetchPublicProfiles(profileIds);
-    final namesByUid = <String, String>{
-      for (final entry in profiles.entries) entry.key: entry.value.$1,
-      for (final profile in exportProfiles) profile.uid: profile.name,
-    };
-    return (participations: participations, namesByUid: namesByUid);
-  }
-
-  Future<void> _shareExport({
-    required WidgetRef ref,
-    required HostReportExport export,
-    required Rect? origin,
-  }) async {
-    await ref
-        .read(externalShareControllerProvider)
-        .shareCsvFile(
-          csv: export.csv,
-          fileName: export.fileName,
-          subject: export.subject,
-          text: export.subject,
-          origin: origin,
-        );
+    try {
+      await HostEventManageController.shareOpsReportMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostEventManageActionsProvider)
+            .shareOpsReport(
+              viewModel: viewModel,
+              profiles: profiles,
+              origin: origin,
+            ),
+      );
+      if (!context.mounted) return;
+      showCatchSnackBar(context, 'Ops CSV ready.');
+    } catch (_) {}
   }
 
   Rect? _shareOrigin(BuildContext context) {
@@ -993,14 +991,6 @@ String _reportEmptyMessage(_RosterFilter filter) {
     _ =>
       'Attendance and waitlist history will appear here once people sign up.',
   };
-}
-
-List<String> _uniqueOrdered(Iterable<String> ids) {
-  final seen = <String>{};
-  return [
-    for (final id in ids)
-      if (seen.add(id)) id,
-  ];
 }
 
 class _RosterSearchBar extends StatelessWidget {
@@ -1107,44 +1097,64 @@ class _WaitlistBulkOfferAction extends StatelessWidget {
       borderColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
       radius: CatchRadius.md,
       backgroundColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
-      child: Row(
-        children: [
-          Icon(
-            CatchIcons.groupAddOutlined,
-            color: t.warning,
-            size: CatchIcon.md,
-          ),
-          gapW10,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Waitlist movement',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.labelL(context, color: t.ink),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final summary = Row(
+            children: [
+              Icon(
+                CatchIcons.groupAddOutlined,
+                color: t.warning,
+                size: CatchIcon.md,
+              ),
+              gapW10,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Waitlist movement',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.labelL(context, color: t.ink),
+                    ),
+                    Text(
+                      detail,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                    ),
+                  ],
                 ),
-                Text(
-                  detail,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-              ],
-            ),
-          ),
-          gapW10,
-          CatchButton(
+              ),
+            ],
+          );
+          final button = CatchButton(
             label: 'Offer next $count',
             size: CatchButtonSize.sm,
             variant: CatchButtonVariant.secondary,
             icon: Icon(CatchIcons.sendRounded),
             isLoading: isPending,
             onPressed: isPending ? null : onOffer,
-          ),
-        ],
+          );
+          if (constraints.maxWidth < 340) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                summary,
+                gapH10,
+                Align(alignment: Alignment.centerLeft, child: button),
+              ],
+            );
+          }
+          return Row(
+            children: [
+              Expanded(child: summary),
+              gapW10,
+              button,
+            ],
+          );
+        },
       ),
     );
   }
@@ -1300,31 +1310,26 @@ String _reportMeta(EventParticipation? participation) {
   };
 }
 
-class _ExportReportButton extends StatefulWidget {
+class _ExportReportButton extends StatelessWidget {
   const _ExportReportButton({
     required this.label,
     required this.onExport,
+    required this.isExporting,
     this.primary = false,
   });
 
   final String label;
   final Future<void> Function() onExport;
+  final bool isExporting;
   final bool primary;
-
-  @override
-  State<_ExportReportButton> createState() => _ExportReportButtonState();
-}
-
-class _ExportReportButtonState extends State<_ExportReportButton> {
-  var _isExporting = false;
 
   @override
   Widget build(BuildContext context) {
     return CatchButton(
-      label: widget.label,
-      onPressed: _isExporting ? null : _export,
-      isLoading: _isExporting,
-      variant: widget.primary
+      label: label,
+      onPressed: isExporting ? null : () => onExport(),
+      isLoading: isExporting,
+      variant: primary
           ? CatchButtonVariant.primary
           : CatchButtonVariant.secondary,
       icon: Icon(
@@ -1332,26 +1337,6 @@ class _ExportReportButtonState extends State<_ExportReportButton> {
       ),
       fullWidth: true,
     );
-  }
-
-  Future<void> _export() async {
-    setState(() => _isExporting = true);
-    try {
-      await widget.onExport();
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${widget.label} ready.')));
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not export ${widget.label}.')),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _isExporting = false);
-      }
-    }
   }
 }
 

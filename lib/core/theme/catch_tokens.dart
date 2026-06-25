@@ -1453,15 +1453,15 @@ abstract final class CatchLayout {
   );
 
   /// Club detail hero media and caption sizing.
-  static const double clubDetailHeroCoverHeightRatio = 3 / 4;
+  static const double clubDetailHeroCoverHeightRatio = 0.61;
   static const double clubDetailHeroNoCoverPhoneHeight = 220.0;
   static const double clubDetailHeroNoCoverWideHeight = 164.0;
   static const double clubDetailHeroCoverWideMinHeight = 164.0;
   static const double clubDetailHeroCoverWideMaxHeight = 260.0;
-  static const double clubDetailHeroTitleTopPadding = CatchSpacing.s5;
+  static const double clubDetailHeroTitleTopPadding = CatchSpacing.s3;
   static const double clubDetailHeroTitleBottomPadding = CatchSpacing.s3;
   static const double clubDetailHeroTitleLocationGap = CatchSpacing.s2;
-  static const double clubDetailHeroExpandedTitleSize = 42.0;
+  static const double clubDetailHeroExpandedTitleSize = 34.0;
   static const double clubDetailHeroExpandedTitleLineHeight = 0.96;
   static const double clubDetailHeroCollapsedTitleSize = 28.0;
   static const double clubDetailHeroCollapsedTitleLineHeight = 0.96;
@@ -1508,6 +1508,15 @@ abstract final class CatchLayout {
   static const double catchesHubBackgroundIconTopOffset = -42.0;
   static const double celebrationViewportVerticalPadding =
       CatchSpacing.s4 + CatchSpacing.s5;
+  static const double celebrationPaperTopPadding =
+      CatchSpacing.s12 + CatchSpacing.s6;
+  static const double celebrationPaperBottomPadding = CatchSpacing.s6;
+  static const double celebrationPaperViewportVerticalPadding =
+      celebrationPaperTopPadding + celebrationPaperBottomPadding;
+  static const double celebrationPaperDetailRowVerticalPadding =
+      CatchSpacing.micro14;
+  static const double celebrationPaperActionTopGap = CatchSpacing.s6;
+  static const double celebrationDetailLabelWidth = 78.0;
   static const double bottomActionScrimHeight = 128.0;
   static const double floatingControlExtent = 48.0;
   static const double selectionBadgeRadius = 14.0;
@@ -1652,6 +1661,9 @@ abstract final class CatchLayout {
   static const double eventDetailItineraryDotExtent = 9.0;
   // JourneySteps (design-system components/events/JourneySteps) — numbered
   // node-rail sequence shared by the first-run dashboard and onboarding.
+  static const double dashboardEmptyHeroHeight = 370.0;
+  static const double dashboardQuickActionSkeletonHeight = 76.0;
+  static const double dashboardRecommendedEventSkeletonHeight = 112.0;
   static const double journeyStepsIndexColumnWidth = 30.0;
   static const double journeyStepsRailColumnWidth = 20.0;
   static const double journeyStepsNodeExtent = 11.0;
@@ -1663,6 +1675,7 @@ abstract final class CatchLayout {
   static const double crossPathsHeartExtent = 34.0;
   static const double crossPathsPolaroidTilt = 0.0349; // 2° in radians
   // CoverStory (design-system components/explore/CoverStory).
+  static const double exploreDiscoveryCoverHeight = 316.0;
   static const double coverStoryGhostGlyphSize = 210.0;
   static const double coverStorySearchExtent = 38.0;
   static const double coverStoryGhostRightInset = 34.0;
@@ -1683,6 +1696,8 @@ abstract final class CatchLayout {
   static const double eventSuccessArrivalRingExtent = 140.0;
   static const double eventSuccessArrivalRingInnerPadding = CatchSpacing.micro6;
   static const double eventSuccessBouncyGlowBlur = 22.0;
+  static const double eventSuccessPaperBarcodeWidth = 92.0;
+  static const double eventSuccessPaperBarcodeHeight = 34.0;
   static const double frameworkErrorMaxWidth = 460.0;
   static const double errorIconExtent = CatchSpacing.s16;
   static const double errorIconSize = 30.0;
@@ -1721,6 +1736,43 @@ abstract final class CatchLayout {
   static const double skeletonCardCompactHeight = 96.0;
   static const double skeletonTextHeight = CatchIcon.sm;
   static const double skeletonCircleExtent = CatchSpacing.s12;
+  static const double skeletonAvatarCompactExtent = 42.0;
+  static const double skeletonMediaTileExtent = 52.0;
+  static const double skeletonTextMicroWidth = 22.0;
+  static const double skeletonTextTinyWidth = CatchSpacing.s3;
+  static const double skeletonTextDateWidth = 30.0;
+  static const double skeletonTextTimeWidth = 42.0;
+  static const double skeletonTextValueWidth = CatchSpacing.s12;
+  static const double skeletonTextChipWidth = 54.0;
+  static const double skeletonTextStatusWidth = 72.0;
+  static const double skeletonTextActionWidth = 76.0;
+  static const double skeletonTextMetaLabelWidth = 78.0;
+  static const double skeletonTextEyebrowWidth = 86.0;
+  static const double skeletonTextLabelWidth = 92.0;
+  static const double skeletonTextCompactWidth = 104.0;
+  static const double skeletonTextBodyWidth = 112.0;
+  static const double skeletonTextPillWidth = 118.0;
+  static const double skeletonTextSecondaryWidth = 126.0;
+  static const double skeletonTextTertiaryWidth = 128.0;
+  static const double skeletonTextRowWidth = 130.0;
+  static const double skeletonTextSectionWidth = 136.0;
+  static const double skeletonTextBodyWideWidth = 138.0;
+  static const double skeletonTextSectionWideWidth = 146.0;
+  static const double skeletonTextInlineTitleWidth = 148.0;
+  static const double skeletonTextWideWidth = 150.0;
+  static const double skeletonTextDetailWidth = 154.0;
+  static const double skeletonTextDetailWideWidth = 156.0;
+  static const double skeletonTextActionLabelWidth = 168.0;
+  static const double skeletonTextHeadlineWidth = 178.0;
+  static const double skeletonTextCardTitleWidth = 180.0;
+  static const double skeletonTextBodyLongWidth = 188.0;
+  static const double skeletonTextLongWidth = 190.0;
+  static const double skeletonTextFeatureWidth = 216.0;
+  static const double skeletonTextHeroWidth = 220.0;
+  static const double skeletonTextHeroWideWidth = 230.0;
+  static const double skeletonTextPageTitleWidth = 232.0;
+  static const double skeletonTextBannerWidth = 240.0;
+  static const double skeletonStatusPillWidth = 82.0;
   static const double startupLogoExtent = 96.0;
   static const double startupIndicatorExtent = CatchSpacing.s7;
   static const double stepHeaderProgressHeight = 2.0;
@@ -1742,6 +1794,7 @@ abstract final class CatchLayout {
   static const double topBarTabHeight = CatchSpacing.s12;
   static const double topBarCollapsedFadeExtent = 72.0;
   static const double topBarCompactSearchBottomHeight = 68.0;
+  static const double topBarTrailingMaxRatio = 0.58;
   static const double exploreSheetPeekSize = 0.11;
   static const double exploreSheetMapSize = 0.70;
   static const double exploreSheetFullSize = 1.0;
@@ -1834,6 +1887,13 @@ abstract final class CatchLayout {
   static const double appShellNavigationBadgeHeight = 30.0;
   static const double eventSuccessResetButtonMinWidth = 40.0;
   static const double eventSuccessResetButtonMinHeight = 32.0;
+  static const double hostPayoutSetupButtonWidth = 120.0;
+  static const double hostOrganizerMetricRowHeight = 78.0;
+  static const double hostOrganizerTeamDividerInset = 54.0;
+  static const double hostOrganizerTrendChartHeight = 76.0;
+  static const double hostPaymentActionSkeletonHeight = 44.0;
+  static const double hostChartSkeletonHeight = 132.0;
+  static const double hostCreateEventRouteFormSkeletonHeight = 192.0;
   static const double afterglowBeatSlideOffset = 14.0;
   static const double suvbotCircleActionExtent = 34.0;
   static const double suvbotLoadingControlsHeight = 84.0;
@@ -1850,13 +1910,14 @@ abstract final class CatchLayout {
   static const double chatShareCardAspectRatio = 4 / 5;
   static const double chatShareCardPixelRatio = 3.0;
   static const double chatShareCardHeaderIconExtent = 40.0;
-  static const int chatShareCardMaxMessages = 5;
+  static const int chatShareCardMaxMessages = 3;
   static const double richShareCardWidth = 360.0;
   static const double richShareCardAspectRatio = 4 / 5;
   static const double richShareCardPixelRatio = 3.0;
   static const double richShareCardHeaderIconExtent = 40.0;
   static const int richShareCardMaxTags = 3;
   static const double chatUnreadStripWidth = 4.0;
+  static const double chatUnreadPillWidth = CatchSpacing.s6;
   static const double celebrationIconExtent = 86.0;
   static const double questionnaireDotExtent = 28.0;
   static const double eventTicketDividerHeight = 20.0;

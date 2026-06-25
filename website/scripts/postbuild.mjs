@@ -42,6 +42,14 @@ const routeMetas = {
     twitterDescription: "Search Catch organizer and club profiles.",
     robots: "noindex, follow",
   },
+  "/claim/": {
+    title: "Claim your organizer listing | Catch",
+    description:
+      "Find an unclaimed organizer profile, verify ownership, and request access to Catch host tools.",
+    canonical: `${baseUrl}/claim/`,
+    twitterDescription: "Claim an organizer profile and unlock Catch host tools.",
+    robots: "noindex, follow",
+  },
 };
 
 const rootHtmlPath = path.join(distRoot, "index.html");
@@ -51,6 +59,7 @@ writeRoute("/", routeMetas["/"]);
 
 writeRoute("/host/", routeMetas["/host/"]);
 writeRoute("/organizers/", routeMetas["/organizers/"]);
+writeRoute("/claim/", routeMetas["/claim/"]);
 
 for (const listing of hostListings) {
   const listingMeta = {

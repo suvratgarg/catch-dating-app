@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -19,6 +20,7 @@ import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HostTeamManagementSection extends ConsumerWidget {
@@ -35,16 +37,22 @@ class HostTeamManagementSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final hosts = club.displayHostProfiles;
-    final addPending = ref
-        .watch(HostTeamManagementController.addHostMutation)
-        .isPending;
-    final removePending = ref
-        .watch(HostTeamManagementController.removeHostMutation)
-        .isPending;
-    final transferPending = ref
-        .watch(HostTeamManagementController.transferOwnershipMutation)
-        .isPending;
+    final addMutation = ref.watch(HostTeamManagementController.addHostMutation);
+    final removeMutation = ref.watch(
+      HostTeamManagementController.removeHostMutation,
+    );
+    final transferMutation = ref.watch(
+      HostTeamManagementController.transferOwnershipMutation,
+    );
+    final addPending = addMutation.isPending;
+    final removePending = removeMutation.isPending;
+    final transferPending = transferMutation.isPending;
     final actionPending = addPending || removePending || transferPending;
+    final actionError = _firstErrorMutation([
+      addMutation,
+      removeMutation,
+      transferMutation,
+    ]);
 
     return CatchSurface(
       borderColor: t.line,
@@ -71,6 +79,15 @@ class HostTeamManagementSection extends ConsumerWidget {
             ],
           ),
           gapH12,
+          if (actionError != null) ...[
+            CatchErrorBanner(
+              message: mutationErrorMessage(
+                actionError,
+                context: AppErrorContext.club,
+              ),
+            ),
+            gapH12,
+          ],
           for (final host in hosts) ...[
             _OwnerHostRow(
               host: host,
@@ -90,12 +107,10 @@ class HostTeamManagementSection extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      builder: (_) => _AddHostSheet(clubId: club.id),
+      builder: (_) => HostTeamAddHostSheet(clubId: club.id),
     );
     if (added == true && context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Host added.')));
+      showCatchSnackBar(context, 'Host added.');
     }
   }
 
@@ -103,67 +118,141 @@ class HostTeamManagementSection extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     ClubHostProfile host,
-  ) async {
-    final confirmed = await showCatchAdaptiveDialog<bool>(
-      context: context,
-      title: 'Remove host?',
-      message:
-          '${host.displayName} will stay a club member but will lose host tools.',
-      actions: const [
-        CatchDialogAction(label: 'Cancel', value: false),
-        CatchDialogAction(label: 'Remove', value: true, isDestructive: true),
-      ],
-    );
-    if (confirmed != true) return;
-
-    try {
-      await HostTeamManagementController.removeHostMutation.run(
-        ref,
-        (tx) => tx
-            .get(hostTeamManagementControllerProvider.notifier)
-            .removeHost(clubId: club.id, uid: host.uid),
-      );
-    } catch (error) {
-      if (context.mounted) showCatchErrorSnackBar(context, error);
-      return;
-    }
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('${host.displayName} removed.')));
+  ) {
+    return _confirmHostAction(context, ref, HostTeamHostAction.remove, host);
   }
 
   Future<void> _confirmTransfer(
     BuildContext context,
     WidgetRef ref,
     ClubHostProfile host,
+  ) {
+    return _confirmHostAction(
+      context,
+      ref,
+      HostTeamHostAction.transferOwnership,
+      host,
+    );
+  }
+
+  Future<void> _confirmHostAction(
+    BuildContext context,
+    WidgetRef ref,
+    HostTeamHostAction action,
+    ClubHostProfile host,
   ) async {
-    final confirmed = await showCatchAdaptiveDialog<bool>(
+    final confirmation = HostTeamHostActionConfirmation(
+      action: action,
+      host: host,
+    );
+    final confirmed = await showHostTeamHostActionDialog(
       context: context,
-      title: 'Transfer ownership?',
-      message:
-          '${host.displayName} will become the club owner. You will remain a host.',
-      actions: const [
-        CatchDialogAction(label: 'Cancel', value: false),
-        CatchDialogAction(label: 'Transfer', value: true, isDefault: true),
-      ],
+      confirmation: confirmation,
     );
     if (confirmed != true) return;
 
     try {
-      await HostTeamManagementController.transferOwnershipMutation.run(
-        ref,
-        (tx) => tx
-            .get(hostTeamManagementControllerProvider.notifier)
-            .transferOwnership(clubId: club.id, uid: host.uid),
-      );
-    } catch (error) {
-      if (context.mounted) showCatchErrorSnackBar(context, error);
+      switch (action) {
+        case HostTeamHostAction.remove:
+          await HostTeamManagementController.removeHostMutation.run(
+            ref,
+            (tx) => tx
+                .get(hostTeamManagementControllerProvider.notifier)
+                .removeHost(clubId: club.id, uid: host.uid),
+          );
+        case HostTeamHostAction.transferOwnership:
+          await HostTeamManagementController.transferOwnershipMutation.run(
+            ref,
+            (tx) => tx
+                .get(hostTeamManagementControllerProvider.notifier)
+                .transferOwnership(clubId: club.id, uid: host.uid),
+          );
+      }
+    } catch (_) {
       return;
     }
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Ownership transferred to ${host.displayName}.')),
+    showCatchSnackBar(context, confirmation.successMessage);
+  }
+}
+
+enum HostTeamHostAction { remove, transferOwnership }
+
+class HostTeamHostActionConfirmation {
+  const HostTeamHostActionConfirmation({
+    required this.action,
+    required this.host,
+  });
+
+  final HostTeamHostAction action;
+  final ClubHostProfile host;
+
+  String get title {
+    return switch (action) {
+      HostTeamHostAction.remove => 'Remove host?',
+      HostTeamHostAction.transferOwnership => 'Transfer ownership?',
+    };
+  }
+
+  String get message {
+    return switch (action) {
+      HostTeamHostAction.remove =>
+        '${host.displayName} will stay a club member but will lose host tools.',
+      HostTeamHostAction.transferOwnership =>
+        '${host.displayName} will become the club owner. You will remain a host.',
+    };
+  }
+
+  List<CatchDialogAction<bool>> get actions {
+    return [
+      const CatchDialogAction(label: 'Cancel', value: false),
+      switch (action) {
+        HostTeamHostAction.remove => const CatchDialogAction(
+          label: 'Remove',
+          value: true,
+          isDestructive: true,
+        ),
+        HostTeamHostAction.transferOwnership => const CatchDialogAction(
+          label: 'Transfer',
+          value: true,
+          isDefault: true,
+        ),
+      },
+    ];
+  }
+
+  String get successMessage {
+    return switch (action) {
+      HostTeamHostAction.remove => '${host.displayName} removed.',
+      HostTeamHostAction.transferOwnership =>
+        'Ownership transferred to ${host.displayName}.',
+    };
+  }
+}
+
+Future<bool?> showHostTeamHostActionDialog({
+  required BuildContext context,
+  required HostTeamHostActionConfirmation confirmation,
+}) {
+  return showCatchAdaptiveDialog<bool>(
+    context: context,
+    title: confirmation.title,
+    message: confirmation.message,
+    actions: confirmation.actions,
+  );
+}
+
+class HostTeamHostActionDialog extends StatelessWidget {
+  const HostTeamHostActionDialog({super.key, required this.confirmation});
+
+  final HostTeamHostActionConfirmation confirmation;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchConfirmDialog<bool>(
+      title: confirmation.title,
+      message: confirmation.message,
+      actions: confirmation.actions,
     );
   }
 }
@@ -207,6 +296,7 @@ class _OwnerHostRow extends StatelessWidget {
           ),
         ),
         CatchActionMenu<String>(
+          key: ValueKey('host-team-actions-${host.uid}'),
           tooltip: 'Host actions',
           enabled: canManage,
           icon: CatchIcons.moreHorizRounded,
@@ -233,16 +323,17 @@ class _OwnerHostRow extends StatelessWidget {
   }
 }
 
-class _AddHostSheet extends ConsumerStatefulWidget {
-  const _AddHostSheet({required this.clubId});
+class HostTeamAddHostSheet extends ConsumerStatefulWidget {
+  const HostTeamAddHostSheet({super.key, required this.clubId});
 
   final String clubId;
 
   @override
-  ConsumerState<_AddHostSheet> createState() => _AddHostSheetState();
+  ConsumerState<HostTeamAddHostSheet> createState() =>
+      _HostTeamAddHostSheetState();
 }
 
-class _AddHostSheetState extends ConsumerState<_AddHostSheet> {
+class _HostTeamAddHostSheetState extends ConsumerState<HostTeamAddHostSheet> {
   final _controller = TextEditingController();
 
   @override
@@ -254,12 +345,16 @@ class _AddHostSheetState extends ConsumerState<_AddHostSheet> {
   Future<void> _submit() async {
     final phone = _controller.text.trim();
     if (phone.isEmpty) return;
-    await HostTeamManagementController.addHostMutation.run(
-      ref,
-      (tx) => tx
-          .get(hostTeamManagementControllerProvider.notifier)
-          .addHostByPhone(clubId: widget.clubId, phoneNumber: phone),
-    );
+    try {
+      await HostTeamManagementController.addHostMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostTeamManagementControllerProvider.notifier)
+            .addHostByPhone(clubId: widget.clubId, phoneNumber: phone),
+      );
+    } catch (_) {
+      return;
+    }
     if (!mounted) return;
     Navigator.of(context).pop(true);
   }
@@ -298,4 +393,11 @@ class _AddHostSheetState extends ConsumerState<_AddHostSheet> {
       ),
     );
   }
+}
+
+MutationState? _firstErrorMutation(Iterable<MutationState> mutations) {
+  for (final mutation in mutations) {
+    if (mutation.hasError) return mutation;
+  }
+  return null;
 }

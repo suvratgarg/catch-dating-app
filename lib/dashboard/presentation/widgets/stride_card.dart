@@ -5,33 +5,50 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
-import 'package:catch_dating_app/dashboard/presentation/dashboard_stride_actions.dart';
-import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DashboardStrideSection extends ConsumerStatefulWidget {
-  const DashboardStrideSection({super.key, required this.section});
+class DashboardStrideSectionActions {
+  const DashboardStrideSectionActions({
+    required this.onRetry,
+    required this.onConnect,
+    required this.onInstallHealthConnect,
+  });
 
-  final DashboardSectionModel<WeeklyActivitySnapshot> section;
-
-  @override
-  ConsumerState<DashboardStrideSection> createState() =>
-      _DashboardStrideSectionState();
+  final VoidCallback onRetry;
+  final VoidCallback onConnect;
+  final VoidCallback onInstallHealthConnect;
 }
 
-class _DashboardStrideSectionState
-    extends ConsumerState<DashboardStrideSection> {
-  bool _isConnecting = false;
-  bool _isInstallingHealthConnect = false;
+class DashboardStrideActionState {
+  const DashboardStrideActionState({
+    this.isConnecting = false,
+    this.isInstallingHealthConnect = false,
+  });
+
+  static const idle = DashboardStrideActionState();
+
+  final bool isConnecting;
+  final bool isInstallingHealthConnect;
+}
+
+class DashboardStrideSection extends StatelessWidget {
+  const DashboardStrideSection({
+    super.key,
+    required this.section,
+    required this.actions,
+    this.actionState = DashboardStrideActionState.idle,
+  });
+
+  final DashboardSectionModel<WeeklyActivitySnapshot> section;
+  final DashboardStrideSectionActions actions;
+  final DashboardStrideActionState actionState;
 
   @override
   Widget build(BuildContext context) {
-    final section = widget.section;
     if (section.isLoading) {
       return _StrideSectionStateCard(
         message: section.message ?? 'Loading your weekly running activity...',
@@ -44,44 +61,20 @@ class _DashboardStrideSectionState
         error,
         context: AppErrorContext.dashboard,
         compact: true,
-        onRetry: () => ref.invalidate(weeklyActivityProvider),
+        onRetry: actions.onRetry,
       );
     }
 
+    final snapshot = section.data!;
     return StrideCard(
-      snapshot: section.data!,
-      isConnecting: _isConnecting,
-      isInstallingHealthConnect: _isInstallingHealthConnect,
-      onConnect: section.data!.canRequestPermission ? _connect : null,
-      onInstallHealthConnect: section.data!.canInstallHealthConnect
-          ? _installHealthConnect
+      snapshot: snapshot,
+      isConnecting: actionState.isConnecting,
+      isInstallingHealthConnect: actionState.isInstallingHealthConnect,
+      onConnect: snapshot.canRequestPermission ? actions.onConnect : null,
+      onInstallHealthConnect: snapshot.canInstallHealthConnect
+          ? actions.onInstallHealthConnect
           : null,
     );
-  }
-
-  Future<void> _connect() async {
-    if (_isConnecting) return;
-    setState(() => _isConnecting = true);
-    final actions = ref.read(dashboardStrideActionsProvider);
-    final granted = await actions.requestActivityReadPermission();
-    actions.refreshWeeklyActivity();
-    if (!mounted) return;
-    setState(() => _isConnecting = false);
-    if (!granted) {
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-        const SnackBar(content: Text('Health access was not granted.')),
-      );
-    }
-  }
-
-  Future<void> _installHealthConnect() async {
-    if (_isInstallingHealthConnect) return;
-    setState(() => _isInstallingHealthConnect = true);
-    final actions = ref.read(dashboardStrideActionsProvider);
-    await actions.installHealthConnect();
-    actions.refreshWeeklyActivity();
-    if (!mounted) return;
-    setState(() => _isInstallingHealthConnect = false);
   }
 }
 
@@ -294,10 +287,7 @@ class _StrideActionButton extends StatelessWidget {
       label: label,
       onPressed: onPressed,
       icon: isBusy
-          ? const SizedBox.square(
-              dimension: CatchIcon.xs,
-              child: CatchLoadingIndicator(strokeWidth: 2),
-            )
+          ? CatchSkeleton.box(width: CatchIcon.xs, height: CatchIcon.xs)
           : Icon(icon, size: CatchIcon.xs),
       variant: CatchButtonVariant.ghost,
       size: CatchButtonSize.sm,
@@ -324,9 +314,10 @@ class _StrideSectionStateCard extends StatelessWidget {
       child: Row(
         children: [
           if (isLoading)
-            const SizedBox.square(
-              dimension: CatchIcon.md,
-              child: CatchLoadingIndicator(strokeWidth: 2),
+            CatchSkeleton.box(
+              width: CatchIcon.md,
+              height: CatchIcon.md,
+              radius: CatchRadius.sm,
             )
           else
             Icon(

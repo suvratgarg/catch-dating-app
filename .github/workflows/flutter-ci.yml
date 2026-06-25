@@ -14,9 +14,29 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
       - uses: ./.github/actions/setup-flutter
 
+      - run: npm ci
+
       - run: flutter pub get
+
+      - name: Design parity gate
+        run: npm run design:parity:check
+
+      - name: Design token drift check
+        run: dart run tool/design_tokens.dart --check
+
+      - name: Design context pack drift check
+        run: node tool/design/build_context_pack.mjs --check
 
       - name: Static analysis
         run: flutter analyze --no-fatal-infos

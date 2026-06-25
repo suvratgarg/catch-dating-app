@@ -32,9 +32,9 @@
     "healthStatus": "p0_action_required",
     "highestPriority": "p0",
     "idleWorkstreams": 2,
-    "operatorActions": 3,
+    "operatorActions": 4,
     "policyBlockedWorkstreams": 2,
-    "policyInputsRequired": 3,
+    "policyInputsRequired": 4,
     "readyWorkstreams": 2,
     "waitingActions": 0,
     "waitingWorkstreams": 0,
@@ -65,29 +65,35 @@
       "blockers": [
         "tool/organizer_intake/generated/event_crawl_plan.json",
         "tool/organizer_intake/generated/external_event_import_plan.json",
-        "tool/organizer_intake/generated/external_event_location_resolution_queue.json"
+        "tool/organizer_intake/generated/external_event_location_resolution_queue.json",
+        "tool/organizer_intake/generated/source_mention_resolution_clusters.json",
+        "tool/organizer_intake/generated/source_mention_resolution_policy.json",
+        "tool/organizer_intake/generated/source_mention_resolution_review_packets.json",
+        "tool/organizer_intake/llm_source_resolution.mjs"
       ],
       "commands": [
         "node tool/organizer_intake/policy_gap_decision.mjs draft recurring_event_crawl_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
         "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_defaults_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
-        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_location_provider_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_location_provider_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
+        "node tool/organizer_intake/policy_gap_decision.mjs draft source_mention_resolution_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
       ],
       "id": "policy_decisions",
       "label": "Policy Decisions",
       "metrics": {
         "accepted": 2,
-        "decisionRequired": 5,
-        "gaps": 5,
+        "decisionRequired": 6,
+        "gaps": 6,
         "held": 3,
-        "packets": 5,
-        "questions": 25,
+        "packets": 6,
+        "questions": 31,
         "rejected": 0,
-        "unansweredQuestions": 15
+        "unansweredQuestions": 21
       },
       "nextActions": [
         "Choose platform order, frequency, budget cap, and owner-safety rules before enabling scheduled crawls.",
         "Choose default capacity, admission, pricing, and activity-field policy before enabling imports.",
-        "Keep manual resolution as the default until provider, confidence, retention, and spend caps are approved."
+        "Keep manual resolution as the default until provider, confidence, retention, and spend caps are approved.",
+        "Review resolver thresholds, blocking keys, provider hard-key policy, and LLM cost caps before enabling model adjudication."
       ],
       "priority": "p0",
       "sourceArtifacts": [

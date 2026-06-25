@@ -799,6 +799,11 @@ function dataQualityRows(
       detail: rows.length === 0 ?
         "No BigQuery host analytics mart rows were returned for this scope." :
         "Host analytics are served from BigQuery mart rows.",
+      owner: "Analytics ops",
+      runbook: "docs/release_operations.md",
+      nextAction: rows.length === 0 ?
+        "Check host analytics export freshness before trusting this scope." :
+        "No action; mart rows are available for this scope.",
     },
     {
       id: "client-behavior-events",
@@ -806,6 +811,12 @@ function dataQualityRows(
       detail:
         "Listing views, search appearances, event views, saves, and clicks " +
         "come from GA4/direct BigQuery host analytics events.",
+      owner: "Data/platform ops",
+      runbook: "docs/release_operations.md",
+      nextAction: discoveryRows === 0 ?
+        "Check GA4/direct event export freshness for public discovery " +
+        "signals." :
+        "No action; client behavior events are present in the mart.",
     },
     {
       id: "server-business-facts",
@@ -813,6 +824,11 @@ function dataQualityRows(
       detail:
         "Bookings, payments, attendance, reviews, matches, and chats come " +
         "from BigQuery marts derived from server-owned business facts.",
+      owner: "Analytics ops",
+      runbook: "docs/data_contracts.md",
+      nextAction: businessRows === 0 ?
+        "Check server fact exports before using business performance metrics." :
+        "No action; server business facts are present in the mart.",
     },
     {
       id: "firestore-cache",
@@ -821,6 +837,11 @@ function dataQualityRows(
         "Firestore is used only for host authorization and optional " +
         "snapshots; " +
         "it is not the analytics source of truth.",
+      owner: "Admin platform",
+      runbook: "functions/src/analytics/hostAnalytics.ts",
+      nextAction:
+        "No action; keep Firestore reads limited to authorization and " +
+        "scope labels.",
     },
   ];
 }

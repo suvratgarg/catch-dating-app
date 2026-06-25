@@ -9,6 +9,14 @@ import {
   User,
 } from "firebase/auth";
 import {getFunctions, httpsCallable} from "firebase/functions";
+import type {CreatePublicClubReviewCallablePayload} from "../../functions/src/shared/generated/createPublicClubReviewCallablePayload";
+import type {CreatePublicClubReviewCallableResponse} from "../../functions/src/shared/generated/createPublicClubReviewCallableResponse";
+import type {ListPublicClubReviewsCallablePayload} from "../../functions/src/shared/generated/listPublicClubReviewsCallablePayload";
+import type {ListPublicClubReviewsCallableResponse} from "../../functions/src/shared/generated/listPublicClubReviewsCallableResponse";
+import type {RecordOrganizerAnalyticsEventCallablePayload} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload";
+import type {RecordOrganizerAnalyticsEventCallableResponse} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallableResponse";
+import type {RequestClubClaimCallablePayload} from "../../functions/src/shared/generated/requestClubClaimCallablePayload";
+import type {RequestClubClaimCallableResponse} from "../../functions/src/shared/generated/requestClubClaimCallableResponse";
 
 const devFirebaseConfig = {
   apiKey: "AIzaSyAl271K9YGiYZOEcNgoEwZiOQV0ydpWfrg",
@@ -30,91 +38,24 @@ interface FirebaseConfig {
   measurementId?: string;
 }
 
-export type ClubClaimRole =
-  "owner" |
-  "founder" |
-  "manager" |
-  "marketer" |
-  "venueManager" |
-  "other";
+export type RequestClubClaimPayload = RequestClubClaimCallablePayload;
+export type ClubClaimRole = RequestClubClaimPayload["requesterRole"];
+export type RequestClubClaimResponse = RequestClubClaimCallableResponse;
+export type PublicClubReview = CreatePublicClubReviewCallableResponse["review"];
 
-export interface RequestClubClaimPayload {
-  clubId: string;
-  requesterName: string;
-  requesterRole: ClubClaimRole;
-  businessEmail: string | null;
-  businessPhone: string | null;
-  proofUrls: string[];
-  message: string | null;
-}
+export type CreatePublicClubReviewPayload =
+  CreatePublicClubReviewCallablePayload;
+export type CreatePublicClubReviewResponse =
+  CreatePublicClubReviewCallableResponse;
 
-export interface RequestClubClaimResponse {
-  requestId: string;
-  status: "pending";
-}
+export type ListPublicClubReviewsPayload = ListPublicClubReviewsCallablePayload;
+export type ListPublicClubReviewsResponse =
+  ListPublicClubReviewsCallableResponse;
 
-export interface PublicClubReview {
-  id: string;
-  reviewerName: string;
-  rating: number;
-  comment: string;
-  createdAt: string;
-  verificationStatus: "verified" | "unverified";
-  source: "catchEvent" | "publicListing";
-  isAnonymous: boolean;
-  ownerResponse: {
-    hostName: string;
-    hostAvatarUrl: string | null;
-    message: string;
-    updatedAt: string;
-  } | null;
-}
-
-export interface CreatePublicClubReviewPayload {
-  clubId: string;
-  rating: number;
-  comment: string;
-  reviewerName: string;
-  isAnonymous: boolean;
-  submittedFromPath: string | null;
-}
-
-export interface CreatePublicClubReviewResponse {
-  reviewId: string;
-  review: PublicClubReview;
-}
-
-export interface ListPublicClubReviewsPayload {
-  clubId: string;
-}
-
-export interface ListPublicClubReviewsResponse {
-  reviews: PublicClubReview[];
-}
-
-export type OrganizerAnalyticsEventName =
-  | "listingView"
-  | "searchAppearance"
-  | "eventView"
-  | "organizerSave"
-  | "eventSave"
-  | "contactClick"
-  | "claimClick"
-  | "outboundClick";
-
-export interface RecordOrganizerAnalyticsEventPayload {
-  clubId: string;
-  eventId?: string | null;
-  eventName: OrganizerAnalyticsEventName;
-  pagePath: string;
-  source?: string | null;
-  sessionId?: string | null;
-  platform?: string | null;
-}
-
-export interface RecordOrganizerAnalyticsEventResponse {
-  accepted: boolean;
-}
+export type RecordOrganizerAnalyticsEventPayload =
+  RecordOrganizerAnalyticsEventCallablePayload;
+export type RecordOrganizerAnalyticsEventResponse =
+  RecordOrganizerAnalyticsEventCallableResponse;
 
 const config = resolveFirebaseConfig();
 const app = config ? initializeApp(config) : null;

@@ -436,30 +436,114 @@
         "schema/backfill plan exists for legacy Club compatibility",
         "public website, admin, Flutter app, and backend copy migration is sequenced"
       ]
+    },
+    {
+      "area": "source_resolution",
+      "blockedArtifacts": [
+        "tool/organizer_intake/generated/source_mention_resolution_policy.json",
+        "tool/organizer_intake/generated/source_mention_resolution_clusters.json",
+        "tool/organizer_intake/generated/source_mention_resolution_review_packets.json",
+        "tool/organizer_intake/llm_source_resolution.mjs"
+      ],
+      "currentState": "0 source mention candidate(s), 0 candidate pair(s), 0 human-review cluster(s); LLM adjudication disabled.",
+      "decisionOwner": "product_ops",
+      "decisionPrompt": "Review resolver thresholds, blocking keys, provider hard-key policy, and LLM cost caps before enabling model adjudication.",
+      "decisionStatus": "not_reviewed",
+      "gapId": "source_mention_resolution_policy",
+      "implementationGate": "source mention resolution policy.llm.status is enabled only after cost caps are encoded; prompt payload generation remains backend/tooling only and never runs from React; source mention review packets are resolved before canonical organizer or event projection; accepted policy is encoded in repo-backed resolver config and bridge checks pass",
+      "nextAction": "Review resolver thresholds, blocking keys, provider hard-key policy, and LLM cost caps before enabling model adjudication.",
+      "packetId": "policy-packet-source_mention_resolution_policy",
+      "questions": [
+        {
+          "answerState": "needs_input",
+          "currentDefault": "disabled_until_policy_approved",
+          "input": "blocking-key allowlist and known stable provider platforms",
+          "prompt": "blocking-key allowlist and known stable provider platforms for source resolution.",
+          "questionId": "source_mention_resolution_policy:blocking-key-allowlist-and-known-stable-provider-platforms",
+          "recommendedSafeDefault": "disabled_until_policy_approved",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "disabled_until_policy_approved",
+          "input": "thresholds for auto-attach, probable duplicate, and human review",
+          "prompt": "thresholds for auto-attach, probable duplicate, and human review for source resolution.",
+          "questionId": "source_mention_resolution_policy:thresholds-for-auto-attach-probable-duplicate-and-human-review",
+          "recommendedSafeDefault": "disabled_until_policy_approved",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "disabled_until_policy_approved",
+          "input": "maximum cluster size and pair cap before LLM adjudication",
+          "prompt": "maximum cluster size and pair cap before LLM adjudication for source resolution.",
+          "questionId": "source_mention_resolution_policy:maximum-cluster-size-and-pair-cap-before-llm-adjudication",
+          "recommendedSafeDefault": "disabled_until_policy_approved",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "disabled_until_policy_approved",
+          "input": "LLM model, JSON schema, prompt version, and cache invalidation policy",
+          "prompt": "LLM model, JSON schema, prompt version, and cache invalidation policy for source resolution.",
+          "questionId": "source_mention_resolution_policy:llm-model-json-schema-prompt-version-and-cache-invalidation-policy",
+          "recommendedSafeDefault": "disabled_until_policy_approved",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "disabled_until_policy_approved",
+          "input": "monthly LLM spend cap and per-run request cap",
+          "prompt": "monthly LLM spend cap and per-run request cap for source resolution.",
+          "questionId": "source_mention_resolution_policy:monthly-llm-spend-cap-and-per-run-request-cap",
+          "recommendedSafeDefault": "disabled_until_policy_approved",
+          "requiredForAcceptance": true
+        },
+        {
+          "answerState": "needs_input",
+          "currentDefault": "disabled_until_policy_approved",
+          "input": "admin override workflow for same, split, suppress, and attach decisions",
+          "prompt": "admin override workflow for same, split, suppress, and attach decisions for source resolution.",
+          "questionId": "source_mention_resolution_policy:admin-override-workflow-for-same-split-suppress-and-attach-decisions",
+          "recommendedSafeDefault": "disabled_until_policy_approved",
+          "requiredForAcceptance": true
+        }
+      ],
+      "reviewDecision": null,
+      "safeDefaultAction": "disabled_until_policy_approved",
+      "severity": "medium",
+      "status": "decision_required",
+      "unblockCriteria": [
+        "source mention resolution policy.llm.status is enabled only after cost caps are encoded",
+        "prompt payload generation remains backend/tooling only and never runs from React",
+        "source mention review packets are resolved before canonical organizer or event projection",
+        "accepted policy is encoded in repo-backed resolver config and bridge checks pass"
+      ]
     }
   ],
   "schemaVersion": 1,
   "summary": {
     "accepted": 2,
-    "decisionRequired": 5,
+    "decisionRequired": 6,
     "held": 3,
     "invalid": 0,
-    "notReviewed": 0,
-    "packets": 5,
-    "questions": 25,
+    "notReviewed": 1,
+    "packets": 6,
+    "questions": 31,
     "questionsByAnswerState": {
-      "needs_input": 15,
+      "needs_input": 21,
       "reviewed": 10
     },
     "questionsByArea": {
       "crawl": 1,
       "event_import": 2,
       "location_resolution": 1,
-      "naming": 1
+      "naming": 1,
+      "source_resolution": 1
     },
     "ready": 0,
     "rejected": 0,
-    "requiredQuestions": 25,
-    "unansweredQuestions": 15
+    "requiredQuestions": 31,
+    "unansweredQuestions": 21
   }
 }

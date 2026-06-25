@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "screenId": "screen.host.home",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["upcoming_events"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template includes drawn phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "host_identity",
+      "stateIds": ["upcoming_events"],
+      "rect": {
+        "x": 16,
+        "y": 72,
+        "width": 358,
+        "height": 64
+      },
+      "reason": "Greeting, organizer name, and selected club label are dynamic host fixture data."
+    },
+    {
+      "id": "event_counts_and_time",
+      "stateIds": ["upcoming_events"],
+      "rect": {
+        "x": 18,
+        "y": 154,
+        "width": 354,
+        "height": 248
+      },
+      "reason": "Next-up event title, start countdown, counts, and avatars vary by fixture."
+    },
+    {
+      "id": "host_tab_bar",
+      "stateIds": ["upcoming_events"],
+      "rect": {
+        "x": 0,
+        "y": 768,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "Host shell tab chrome and safe-area treatment are still advisory while host IA is being reconciled."
+    }
+  ]
+}

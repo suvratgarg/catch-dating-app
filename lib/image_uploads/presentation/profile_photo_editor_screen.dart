@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
@@ -330,7 +331,12 @@ class _PhotoEditorPreview extends StatelessWidget {
     final existingUrl = url;
 
     if (loading) {
-      return const Center(child: CircularProgressIndicator());
+      return CatchSkeleton.custom(
+        child: const ColoredBox(
+          color: CatchTokens.editorialLight,
+          child: SizedBox.expand(),
+        ),
+      );
     }
     if (imageBytes != null) {
       return RepaintBoundary(

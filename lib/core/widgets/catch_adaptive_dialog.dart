@@ -135,6 +135,56 @@ class CatchConfirmDialog<T> extends StatelessWidget {
   }
 }
 
+class CatchFormDialog extends StatelessWidget {
+  const CatchFormDialog({
+    super.key,
+    required this.title,
+    required this.child,
+    required this.actions,
+  });
+
+  final String title;
+  final Widget child;
+  final List<Widget> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Dialog(
+      elevation: 0,
+      insetPadding: const EdgeInsets.all(CatchLayout.confirmDialogInset),
+      backgroundColor: Colors.transparent,
+      child: CatchSurface(
+        elevation: CatchSurfaceElevation.overlay,
+        borderWidth: 0,
+        padding: CatchInsets.confirmDialogCard,
+        width: CatchLayout.confirmDialogMaxWidth,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(title, style: CatchTextStyles.titleL(context, color: t.ink)),
+            gapH16,
+            child,
+            if (actions.isNotEmpty) ...[
+              gapH20,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  for (final indexed in actions.indexed) ...[
+                    if (indexed.$1 > 0) gapW8,
+                    indexed.$2,
+                  ],
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _DialogActions<T> extends StatelessWidget {
   const _DialogActions({required this.actions});
 

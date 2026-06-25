@@ -8,6 +8,7 @@ import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_keys.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
+import 'package:catch_dating_app/payments/presentation/payment_history_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -173,6 +174,39 @@ void main() {
       expect(find.text('Failed'), findsOneWidget);
       expect(find.text('Pending'), findsOneWidget);
     });
+
+    testWidgets('uses batched event titles with missing-title fallback', (
+      tester,
+    ) async {
+      final resolvedEvent = buildEvent(
+        id: 'event-resolved',
+        startTime: DateTime(2025, 4, 7, 7),
+      );
+
+      await _pumpPaymentHistory(
+        tester,
+        payments: [
+          _payment(
+            id: 'pay-resolved',
+            orderId: 'order-resolved',
+            eventId: resolvedEvent.id,
+            status: PaymentStatus.completed,
+            createdAt: DateTime(2025, 4, 8),
+          ),
+          _payment(
+            id: 'pay-missing',
+            orderId: 'order-missing',
+            eventId: 'event-missing',
+            status: PaymentStatus.completed,
+            createdAt: DateTime(2025, 4, 7),
+          ),
+        ],
+        events: {resolvedEvent.id: resolvedEvent},
+      );
+
+      expect(find.text(resolvedEvent.title), findsOneWidget);
+      expect(find.text(paymentHistoryFallbackEventTitle), findsOneWidget);
+    });
   });
 }
 
@@ -196,6 +230,8 @@ Future<void> _pumpPaymentHistory(
   required List<Payment> payments,
   required Map<String, Event> events,
 }) async {
+  final eventIds = {for (final payment in payments) payment.eventId};
+
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
@@ -203,16 +239,15 @@ Future<void> _pumpPaymentHistory(
         watchPaymentsForUserProvider(
           'runner-1',
         ).overrideWith((ref) => Stream.value(payments)),
-        for (final entry in events.entries)
-          watchEventProvider(
-            entry.key,
-          ).overrideWith((ref) => Stream.value(entry.value)),
+        if (eventIds.isNotEmpty)
+          watchEventsByIdsProvider(
+            EventsByIdQuery(eventIds),
+          ).overrideWith((ref) => Stream.value(events.values.toList())),
       ],
       child: _wrapPhoneSized(const PaymentHistoryScreen()),
     ),
   );
-  await tester.pump();
-  await tester.pump();
+  await pumpFeatureUi(tester);
 }
 
 Payment _payment({

@@ -269,6 +269,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/functionEventReceiptDocument.ts",
   },
   {
+    name: "PublicRouteReservationDocument",
+    source: "firestore/public_route_reservations.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/publicRouteReservationDocument.ts",
+  },
+  {
     name: "SeedEventManifestDocument",
     source: "firestore/seed_events.schema.json",
     typeOutput: "functions/src/shared/generated/seedEventManifestDocument.ts",
@@ -278,6 +284,12 @@ const schemaSpecs = [
     source: "firestore/organizer_intake_review_decisions.schema.json",
     typeOutput:
       "functions/src/shared/generated/organizerIntakeReviewDecisionDocument.ts",
+  },
+  {
+    name: "EventIntakeReviewDecisionDocument",
+    source: "firestore/event_intake_review_decisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventIntakeReviewDecisionDocument.ts",
   },
   {
     name: "OrganizerIntakeCurationDecisionDocument",
@@ -377,6 +389,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/requestClubClaimCallablePayload.ts",
   },
   {
+    name: "RequestClubClaimCallableResponse",
+    source: "callable_responses/request_club_claim_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/requestClubClaimCallableResponse.ts",
+  },
+  {
     name: "AdminDecideClubClaimCallablePayload",
     source: "callables/admin_decide_club_claim_payload.schema.json",
     typeOutput:
@@ -393,6 +411,13 @@ const schemaSpecs = [
     source: "callables/admin_record_organizer_curation_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/adminRecordOrganizerCurationCallablePayload.ts",
+  },
+  {
+    name: "AdminRecordEventIntakeReviewDecisionCallablePayload",
+    source:
+      "callables/admin_record_event_intake_review_decision_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminRecordEventIntakeReviewDecisionCallablePayload.ts",
   },
   {
     name: "AdminDecideOrganizerEventCandidateCallablePayload",
@@ -426,10 +451,48 @@ const schemaSpecs = [
       "functions/src/shared/generated/adminGetClubDetailsCallablePayload.ts",
   },
   {
+    name: "AdminListClubDetailsCallablePayload",
+    source: "callables/admin_list_club_details_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListClubDetailsCallablePayload.ts",
+  },
+  {
     name: "AdminUpdateClubDetailsCallablePayload",
     source: "callables/admin_update_club_details_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/adminUpdateClubDetailsCallablePayload.ts",
+  },
+  {
+    name: "AdminGetEventDetailsCallablePayload",
+    source: "callables/admin_get_event_details_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetEventDetailsCallablePayload.ts",
+  },
+  {
+    name: "AdminListEventDetailsCallablePayload",
+    source: "callables/admin_list_event_details_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListEventDetailsCallablePayload.ts",
+  },
+  {
+    name: "AdminListExternalEventDetailsCallablePayload",
+    source:
+      "callables/admin_list_external_event_details_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminListExternalEventDetailsCallablePayload.ts",
+  },
+  {
+    name: "AdminUpdateEventDetailsCallablePayload",
+    source: "callables/admin_update_event_details_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminUpdateEventDetailsCallablePayload.ts",
+  },
+  {
+    name: "AdminPublishExternalEventCallablePayload",
+    source: "callables/admin_publish_external_event_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminPublishExternalEventCallablePayload.ts",
   },
   {
     name: "StartClubHostConversationCallablePayload",
@@ -523,6 +586,14 @@ const schemaSpecs = [
       "recordOrganizerAnalyticsEventCallablePayload.ts",
   },
   {
+    name: "RecordOrganizerAnalyticsEventCallableResponse",
+    source:
+      "callable_responses/record_organizer_analytics_event_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "recordOrganizerAnalyticsEventCallableResponse.ts",
+  },
+  {
     name: "MarkEventAttendanceCallablePayload",
     source: "callables/mark_event_attendance_payload.schema.json",
     typeOutput:
@@ -598,10 +669,22 @@ const schemaSpecs = [
       "functions/src/shared/generated/createPublicClubReviewCallablePayload.ts",
   },
   {
+    name: "CreatePublicClubReviewCallableResponse",
+    source: "callable_responses/create_public_club_review_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createPublicClubReviewCallableResponse.ts",
+  },
+  {
     name: "ListPublicClubReviewsCallablePayload",
     source: "callables/list_public_club_reviews_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/listPublicClubReviewsCallablePayload.ts",
+  },
+  {
+    name: "ListPublicClubReviewsCallableResponse",
+    source: "callable_responses/list_public_club_reviews_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listPublicClubReviewsCallableResponse.ts",
   },
   {
     name: "UpdateEventReviewCallablePayload",
@@ -745,6 +828,12 @@ const schemaSpecs = [
     source: "callable_responses/explore_search_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/exploreSearchCallableResponse.ts",
+  },
+  {
+    name: "WebsiteHostListingProjection",
+    source: "public/website_host_listing_projection.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/websiteHostListingProjection.ts",
   },
   {
     name: "FetchEventSuccessWingmanCandidatesCallableResponse",
@@ -1556,11 +1645,24 @@ import {
 ${schemaImports}
 } from "./schema_contract_registry.mjs";
 
+const requireFromRepo = createRequire(
+  new URL("../../../package.json", import.meta.url)
+);
 const requireFromFunctions = createRequire(
   new URL("../../../functions/package.json", import.meta.url)
 );
-const Ajv = requireFromFunctions("ajv");
-const addFormats = requireFromFunctions("ajv-formats");
+
+function requireContractDependency(name) {
+  try {
+    return requireFromRepo(name);
+  } catch (error) {
+    if (error?.code !== "MODULE_NOT_FOUND") throw error;
+    return requireFromFunctions(name);
+  }
+}
+
+const Ajv = requireContractDependency("ajv");
+const addFormats = requireContractDependency("ajv-formats");
 
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);

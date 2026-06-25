@@ -12,9 +12,8 @@ import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
+import 'package:catch_dating_app/swipes/presentation/catches_hub_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/attended_event_tile.dart';
 import 'package:flutter/material.dart';
@@ -22,61 +21,82 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class SwipeHubScreen extends ConsumerWidget {
-  const SwipeHubScreen({super.key});
+  const SwipeHubScreen({super.key, this.now});
+
+  final DateTime? now;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
+    final referenceNow = now ?? DateTime.now();
+    final userId = uidAsync.asData?.value;
+    final eventsAsync = userId == null
+        ? null
+        : ref.watch(watchAttendedEventsProvider(userId));
+    final state = buildCatchesHubScreenState(
+      uid: uidAsync,
+      attendedEvents: eventsAsync,
+      now: referenceNow,
+    );
 
     return Scaffold(
       backgroundColor: CatchTokens.of(context).bg,
-      body: uidAsync.when(
-        loading: () => const CatchSkeletonList(),
-        error: (e, _) => CatchErrorState.fromError(
-          e,
-          context: AppErrorContext.auth,
-          onRetry: () => ref.invalidate(uidProvider),
-        ),
-        data: (uid) {
-          if (uid == null) return const SizedBox.shrink();
-
-          final eventsAsync = ref.watch(watchAttendedEventsProvider(uid));
-
-          return eventsAsync.when(
-            loading: () => const CatchSkeletonList(),
-            error: (e, _) => CatchErrorState.fromError(
-              e,
-              context: AppErrorContext.event,
-              onRetry: () => ref.invalidate(watchAttendedEventsProvider(uid)),
-            ),
-            data: (events) {
-              final activeEvents = eventsWithOpenSwipeWindow(events);
-
-              if (activeEvents.isEmpty) {
-                return const _CatchesEmptyState();
-              }
-
-              return _CatchesHubContent(activeEvents: activeEvents);
-            },
-          );
-        },
-      ),
+      body: _CatchesHubStateView(state: state, ref: ref),
     );
   }
 }
 
-class _CatchesHubContent extends StatelessWidget {
-  const _CatchesHubContent({required this.activeEvents});
+class _CatchesHubStateView extends StatelessWidget {
+  const _CatchesHubStateView({required this.state, required this.ref});
 
-  final List<Event> activeEvents;
+  final CatchesHubScreenState state;
+  final WidgetRef ref;
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (state) {
+      CatchesHubAccessLoading() => const CatchSkeletonList(),
+      CatchesHubAccessError(:final error) => CatchErrorState.fromError(
+        error,
+        context: AppErrorContext.auth,
+        onRetry: () => ref.invalidate(uidProvider),
+      ),
+      CatchesHubSignedOut() => const SizedBox.shrink(),
+      CatchesHubEventsLoading() => const CatchSkeletonList(),
+      CatchesHubEventsError(:final uid, :final error) =>
+        CatchErrorState.fromError(
+          error,
+          context: AppErrorContext.event,
+          onRetry: () => ref.invalidate(watchAttendedEventsProvider(uid)),
+        ),
+      CatchesHubEmpty() => CatchesHubEmptyState(
+        onFindEvent: () => context.go(Routes.exploreScreen.path),
+      ),
+      final CatchesHubReady ready => CatchesHubContent(
+        state: ready,
+        onOpenCatch: (row) => context.push(row.openCatchRoute),
+        onOpenRecap: (row) => context.push(row.recapRoute),
+      ),
+    };
+  }
+}
+
+class CatchesHubContent extends StatelessWidget {
+  const CatchesHubContent({
+    super.key,
+    required this.state,
+    required this.onOpenCatch,
+    required this.onOpenRecap,
+  });
+
+  final CatchesHubReady state;
+  final ValueChanged<CatchesHubEventRow> onOpenCatch;
+  final ValueChanged<CatchesHubEventRow> onOpenRecap;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final featuredRun = activeEvents.first;
-    final remaining = swipeWindowClosesAt(
-      featuredRun,
-    ).difference(DateTime.now());
+    final featuredRun = state.featuredRow;
 
     return SafeArea(
       child: ListView(
@@ -90,15 +110,11 @@ class _CatchesHubContent extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const _CatchesHeader(),
+                  const CatchesHubHeader(),
                   gapH16,
-                  _CatchesIntroCard(
-                    event: featuredRun,
-                    remaining: remaining,
-                    onTap: () => context.pushNamed(
-                      Routes.swipeEventScreen.name,
-                      pathParameters: {'eventId': featuredRun.id},
-                    ),
+                  CatchesIntroCard(
+                    row: featuredRun,
+                    onTap: () => onOpenCatch(featuredRun),
                   ),
                   gapH24,
                   Row(
@@ -110,15 +126,19 @@ class _CatchesHubContent extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '${activeEvents.length}',
+                        '${state.rows.length}',
                         style: CatchTextStyles.mono(context, color: t.primary),
                       ),
                     ],
                   ),
                   gapH12,
-                  for (final event in activeEvents) ...[
-                    AttendedEventTile(event: event),
-                    if (event != activeEvents.last) gapH12,
+                  for (final row in state.rows) ...[
+                    AttendedEventTile(
+                      row: row,
+                      onOpenCatch: () => onOpenCatch(row),
+                      onOpenRecap: () => onOpenRecap(row),
+                    ),
+                    if (row != state.rows.last) gapH12,
                   ],
                 ],
               ),
@@ -130,8 +150,8 @@ class _CatchesHubContent extends StatelessWidget {
   }
 }
 
-class _CatchesHeader extends StatelessWidget {
-  const _CatchesHeader();
+class CatchesHubHeader extends StatelessWidget {
+  const CatchesHubHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -161,15 +181,10 @@ class _CatchesHeader extends StatelessWidget {
   }
 }
 
-class _CatchesIntroCard extends StatelessWidget {
-  const _CatchesIntroCard({
-    required this.event,
-    required this.remaining,
-    required this.onTap,
-  });
+class CatchesIntroCard extends StatelessWidget {
+  const CatchesIntroCard({super.key, required this.row, required this.onTap});
 
-  final Event event;
-  final Duration remaining;
+  final CatchesHubEventRow row;
   final VoidCallback onTap;
 
   @override
@@ -208,7 +223,7 @@ class _CatchesIntroCard extends StatelessWidget {
               ),
               gapH10,
               Text(
-                'Only checked-in attendees from ${event.title} are here.',
+                row.introSubtitle,
                 style: CatchTextStyles.proseM(
                   context,
                   color: t.ink.withValues(
@@ -219,12 +234,9 @@ class _CatchesIntroCard extends StatelessWidget {
               gapH18,
               Row(
                 children: [
-                  _PillStat(
-                    label: 'Closes in',
-                    value: _formatCountdown(remaining),
-                  ),
+                  _PillStat(label: 'Closes in', value: row.introCountdownLabel),
                   gapW10,
-                  _PillStat(label: 'Roster', value: '${event.attendedCount}'),
+                  _PillStat(label: 'Roster', value: row.attendedCountLabel),
                 ],
               ),
               gapH18,
@@ -240,13 +252,6 @@ class _CatchesIntroCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  static String _formatCountdown(Duration remaining) {
-    if (remaining.isNegative) return 'Closed';
-    final hours = remaining.inHours;
-    final minutes = remaining.inMinutes.remainder(60);
-    return '${hours}h ${minutes.toString().padLeft(2, '0')}m';
   }
 }
 
@@ -291,8 +296,10 @@ class _PillStat extends StatelessWidget {
   }
 }
 
-class _CatchesEmptyState extends StatelessWidget {
-  const _CatchesEmptyState();
+class CatchesHubEmptyState extends StatelessWidget {
+  const CatchesHubEmptyState({super.key, required this.onFindEvent});
+
+  final VoidCallback onFindEvent;
 
   @override
   Widget build(BuildContext context) {
@@ -310,7 +317,7 @@ class _CatchesEmptyState extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const _CatchesHeader(),
+                  const CatchesHubHeader(),
                   gapH40,
                   CatchEmptyState(
                     icon: CatchIcons.directionsRunRounded,
@@ -319,7 +326,7 @@ class _CatchesEmptyState extends StatelessWidget {
                         'Book a group event, show up, and your 24-hour catch window opens here after check-in.',
                     action: CatchButton(
                       label: 'Find an event',
-                      onPressed: () => context.go(Routes.exploreScreen.path),
+                      onPressed: onFindEvent,
                       variant: CatchButtonVariant.secondary,
                     ),
                   ),

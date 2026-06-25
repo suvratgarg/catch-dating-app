@@ -3,6 +3,9 @@ interface CatchReactViteOptions {
   publicDir?: string | false;
 }
 
+const publicSourcemapsEnabled =
+  process.env.CATCH_WEB_PUBLIC_SOURCEMAPS === "true";
+
 export function createCatchReactViteConfig({
   plugins = [],
   publicDir,
@@ -12,7 +15,7 @@ export function createCatchReactViteConfig({
     ...(publicDir === undefined ? {} : {publicDir}),
     build: {
       outDir: "dist",
-      sourcemap: true,
+      sourcemap: publicSourcemapsEnabled,
     },
     server: {
       fs: {

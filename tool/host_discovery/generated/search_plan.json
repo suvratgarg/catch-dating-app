@@ -13,7 +13,7 @@
     "searchMatrix": "tool/host_discovery/search_matrix.json",
     "targetCategories": "tool/host_discovery/target_categories.json"
   },
-  "inputHash": "26a824bccc6456700533ab48c048c88fc697ccf3762b1b873f796bcedca28229",
+  "inputHash": "963f05221c21244f88a36c505d40f73dd057ace26e564facdfd199291bf28375",
   "planned": [
     {
       "candidateId": null,
@@ -718,6 +718,62 @@
     {
       "candidateId": null,
       "candidateName": null,
+      "categoryId": "singles_event_operator",
+      "city": "Indore",
+      "citySlug": "indore",
+      "planKind": "generic_city_category",
+      "queryTemplate": "singles events {city}",
+      "queryTemplateId": "singles_events_city_v1",
+      "renderedQuery": "singles events Indore",
+      "resultFingerprint": "7ba2b27d2814b743",
+      "runKey": "web_search|singles events indore|indore|singles_event_operator|generic",
+      "source": "web_search"
+    },
+    {
+      "candidateId": null,
+      "candidateName": null,
+      "categoryId": "singles_event_operator",
+      "city": "Indore",
+      "citySlug": "indore",
+      "planKind": "generic_city_category",
+      "queryTemplate": "speed dating {city}",
+      "queryTemplateId": "singles_events_city_v1",
+      "renderedQuery": "speed dating Indore",
+      "resultFingerprint": "3aa7ea3f06d3a79b",
+      "runKey": "web_search|speed dating indore|indore|singles_event_operator|generic",
+      "source": "web_search"
+    },
+    {
+      "candidateId": null,
+      "candidateName": null,
+      "categoryId": "singles_event_operator",
+      "city": "Indore",
+      "citySlug": "indore",
+      "planKind": "generic_city_category",
+      "queryTemplate": "singles mixer {city}",
+      "queryTemplateId": "singles_events_city_v1",
+      "renderedQuery": "singles mixer Indore",
+      "resultFingerprint": "4149c30a16bf3a6e",
+      "runKey": "web_search|singles mixer indore|indore|singles_event_operator|generic",
+      "source": "web_search"
+    },
+    {
+      "candidateId": null,
+      "candidateName": null,
+      "categoryId": "singles_event_operator",
+      "city": "Indore",
+      "citySlug": "indore",
+      "planKind": "generic_city_category",
+      "queryTemplate": "curated singles dinner {city}",
+      "queryTemplateId": "singles_events_city_v1",
+      "renderedQuery": "curated singles dinner Indore",
+      "resultFingerprint": "1e55766f3011f17f",
+      "runKey": "web_search|curated singles dinner indore|indore|singles_event_operator|generic",
+      "source": "web_search"
+    },
+    {
+      "candidateId": null,
+      "candidateName": null,
       "categoryId": "racket_sport_social",
       "city": "Delhi NCR",
       "citySlug": "delhi-ncr",
@@ -993,6 +1049,62 @@
       "renderedQuery": "badminton social Hyderabad",
       "resultFingerprint": "4ac10678b5d2b866",
       "runKey": "web_search|badminton social hyderabad|hyderabad|racket_sport_social|generic",
+      "source": "web_search"
+    },
+    {
+      "candidateId": null,
+      "candidateName": null,
+      "categoryId": "racket_sport_social",
+      "city": "Indore",
+      "citySlug": "indore",
+      "planKind": "generic_city_category",
+      "queryTemplate": "pickleball social {city}",
+      "queryTemplateId": "racket_social_city_v1",
+      "renderedQuery": "pickleball social Indore",
+      "resultFingerprint": "c1d591022331207f",
+      "runKey": "web_search|pickleball social indore|indore|racket_sport_social|generic",
+      "source": "web_search"
+    },
+    {
+      "candidateId": null,
+      "candidateName": null,
+      "categoryId": "racket_sport_social",
+      "city": "Indore",
+      "citySlug": "indore",
+      "planKind": "generic_city_category",
+      "queryTemplate": "padel social {city}",
+      "queryTemplateId": "racket_social_city_v1",
+      "renderedQuery": "padel social Indore",
+      "resultFingerprint": "e1a500ad5ec8c3df",
+      "runKey": "web_search|padel social indore|indore|racket_sport_social|generic",
+      "source": "web_search"
+    },
+    {
+      "candidateId": null,
+      "candidateName": null,
+      "categoryId": "racket_sport_social",
+      "city": "Indore",
+      "citySlug": "indore",
+      "planKind": "generic_city_category",
+      "queryTemplate": "tennis mixer {city}",
+      "queryTemplateId": "racket_social_city_v1",
+      "renderedQuery": "tennis mixer Indore",
+      "resultFingerprint": "d716496ade194808",
+      "runKey": "web_search|tennis mixer indore|indore|racket_sport_social|generic",
+      "source": "web_search"
+    },
+    {
+      "candidateId": null,
+      "candidateName": null,
+      "categoryId": "racket_sport_social",
+      "city": "Indore",
+      "citySlug": "indore",
+      "planKind": "generic_city_category",
+      "queryTemplate": "badminton social {city}",
+      "queryTemplateId": "racket_social_city_v1",
+      "renderedQuery": "badminton social Indore",
+      "resultFingerprint": "4b5dd39d01654443",
+      "runKey": "web_search|badminton social indore|indore|racket_sport_social|generic",
       "source": "web_search"
     },
     {
@@ -3166,7 +3278,7 @@
       "source": "web_search"
     }
   ],
-  "plannedCount": 225,
+  "plannedCount": 233,
   "schemaVersion": 1,
   "skippedFresh": [
     {

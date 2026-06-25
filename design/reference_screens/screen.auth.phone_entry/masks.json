@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "screenId": "screen.auth.phone_entry",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["phone_entry"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template includes drawn phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "phone_fixture_value",
+      "stateIds": ["phone_entry"],
+      "rect": {
+        "x": 20,
+        "y": 194,
+        "width": 256,
+        "height": 58
+      },
+      "reason": "Country code, phone number, caret, and keyboard-focus treatment are auth fixture data."
+    },
+    {
+      "id": "bottom_safe_area",
+      "stateIds": ["phone_entry"],
+      "rect": {
+        "x": 0,
+        "y": 772,
+        "width": 390,
+        "height": 40
+      },
+      "reason": "The onboarding template uses a taller 390x844 phone frame; the 390x812 reference crop leaves bottom safe-area treatment advisory."
+    }
+  ]
+}

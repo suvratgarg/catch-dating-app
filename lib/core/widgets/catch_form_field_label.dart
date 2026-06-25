@@ -19,16 +19,20 @@ class CatchFormFieldLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final showOptionalBadge =
+        isOptional && MediaQuery.textScalerOf(context).scale(1) < 1.5;
     final labelStyle = large
         ? CatchTextStyles.labelL(context, color: hasError ? t.danger : t.ink2)
         // `.t-field-label` — 11.5 / w500 / ink3 (sentence case, not mono).
-        : CatchTextStyles.fieldLabel(context, color: hasError ? t.danger : null);
+        : CatchTextStyles.fieldLabel(
+            context,
+            color: hasError ? t.danger : null,
+          );
 
     return Semantics(
       label: isOptional ? '$label, optional' : label,
       excludeSemantics: true,
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
           Flexible(
             child: Text(
@@ -37,7 +41,7 @@ class CatchFormFieldLabel extends StatelessWidget {
               style: labelStyle,
             ),
           ),
-          if (isOptional) ...[
+          if (showOptionalBadge) ...[
             const SizedBox(width: CatchSpacing.s2),
             _OptionalBadge(hasError: hasError),
           ],

@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import {trackMarketingEvent} from "../analytics";
+import {ButtonLink, InlineInputField, PlainButton, PlainLink} from "../shared/ui/primitives";
 
 export interface SiteNavItem {
   href: string;
@@ -59,9 +60,12 @@ export interface PublicEventCardModel {
   date: string;
   location: string;
   priceLabel: string;
-  bookedCount: number;
-  capacityLimit: number;
-  waitlistedCount: number;
+  bookedCount?: number;
+  capacityLimit?: number;
+  waitlistedCount?: number;
+  sourceLabel?: string;
+  externalLinkCount?: number;
+  readOnlyLabel?: string;
   summary: string;
 }
 
@@ -150,33 +154,34 @@ export function SiteHeader({
 
   return (
     <header className={`site-header ${isScrolled ? "is-scrolled" : ""}`}>
-      <a className="brand" href={brandHref} aria-label="Catch home">
+      <PlainLink className="brand" href={brandHref} aria-label="Catch home">
         <span className="brand__mark" aria-hidden="true">C</span>
         <span className="brand__word">Catch</span>
-      </a>
+      </PlainLink>
 
       <nav className="site-nav" aria-label="Primary">
         {nav.map((item) => (
-          <a
+          <PlainLink
             href={item.href}
             key={`${item.href}-${item.label}`}
             onClick={() => trackCtaClick(`nav_${slugForTracking(item.label)}`, item.href)}
           >
             {item.label}
-          </a>
+          </PlainLink>
         ))}
       </nav>
 
       <div className="site-header__actions">
         {headerActions.map((action) => (
-          <a
-            className={`button button--small ${action.variant === "secondary" ? "button--ghost" : ""}`.trim()}
+          <ButtonLink
             href={action.href}
             key={`${action.href}-${action.label}`}
             onClick={() => trackCtaClick(`header_${slugForTracking(action.label)}`, action.href)}
+            size="small"
+            variant={action.variant === "secondary" ? "ghost" : "primary"}
           >
             {action.label}
-          </a>
+          </ButtonLink>
         ))}
       </div>
     </header>
@@ -194,20 +199,20 @@ export function SiteFooter({
 }) {
   return (
     <footer className="site-footer">
-      <a className="brand" href={brandHref} aria-label="Catch home">
+      <PlainLink className="brand" href={brandHref} aria-label="Catch home">
         <span className="brand__mark" aria-hidden="true">C</span>
         <span className="brand__word">Catch</span>
-      </a>
+      </PlainLink>
       <p>{body}</p>
       <nav aria-label="Footer">
         {links.map((link) => (
-          <a
+          <PlainLink
             href={link.href}
             key={`${link.href}-${link.label}`}
             onClick={() => trackCtaClick(`footer_${slugForTracking(link.label)}`, link.href)}
           >
             {link.label}
-          </a>
+          </PlainLink>
         ))}
       </nav>
     </footer>
@@ -358,7 +363,7 @@ export function PublicSearchBar({
 
   return (
     <form className="public-search" data-reveal onSubmit={submitSearch} ref={rootRef}>
-      <button
+      <PlainButton
         className="public-search__city"
         type="button"
         onClick={() => {
@@ -367,24 +372,23 @@ export function PublicSearchBar({
         }}
       >
         {cityName}
-      </button>
-      <label className="public-search__input">
-        <span>Search Catch</span>
-        <input
-          value={query}
-          placeholder={placeholder}
-          onChange={(event) => {
-            setQuery(event.currentTarget.value);
-            setOpen(true);
-          }}
-          onFocus={() => setOpen(true)}
-        />
-      </label>
-      <button className="public-search__go" type="submit">Search</button>
+      </PlainButton>
+      <InlineInputField
+        className="public-search__input"
+        label="Search Catch"
+        value={query}
+        placeholder={placeholder}
+        onChange={(event) => {
+          setQuery(event.currentTarget.value);
+          setOpen(true);
+        }}
+        onFocus={() => setOpen(true)}
+      />
+      <PlainButton className="public-search__go" type="submit">Search</PlainButton>
       {open && results.length ? (
         <div className="public-search__results">
           {results.map((item) => (
-            <a
+            <PlainLink
               href={item.href}
               key={item.id}
               onClick={() => trackCtaClick(`public_search_${item.type}`, item.href)}
@@ -398,7 +402,7 @@ export function PublicSearchBar({
                 <small>{item.meta}</small>
               </span>
               <em>{item.type}</em>
-            </a>
+            </PlainLink>
           ))}
         </div>
       ) : null}
@@ -407,11 +411,13 @@ export function PublicSearchBar({
 }
 
 export function PublicEventCard({event}: {event: PublicEventCardModel}) {
-  const capacityLabel = event.capacityLimit > 0
-    ? `${event.bookedCount}/${event.capacityLimit} booked`
-    : `${event.bookedCount} booked`;
+  const capacityLabel = typeof event.bookedCount === "number"
+    ? event.capacityLimit && event.capacityLimit > 0
+      ? `${event.bookedCount}/${event.capacityLimit} booked`
+      : `${event.bookedCount} booked`
+    : null;
   return (
-    <a
+    <PlainLink
       className="public-event-card"
       href={event.href}
       data-reveal
@@ -432,11 +438,16 @@ export function PublicEventCard({event}: {event: PublicEventCardModel}) {
           <span>{event.hostName}</span>
           <span>{event.location}</span>
           <span>{event.priceLabel}</span>
-          <span>{capacityLabel}</span>
+          {capacityLabel ? <span>{capacityLabel}</span> : null}
           {event.waitlistedCount ? <span>{event.waitlistedCount} waitlisted</span> : null}
+          {event.sourceLabel ? <span>{event.sourceLabel}</span> : null}
+          {event.externalLinkCount ? (
+            <span>{event.externalLinkCount} external {event.externalLinkCount === 1 ? "link" : "links"}</span>
+          ) : null}
+          {event.readOnlyLabel ? <span>{event.readOnlyLabel}</span> : null}
         </div>
       </div>
-    </a>
+    </PlainLink>
   );
 }
 
@@ -461,29 +472,31 @@ export function EventActionCard({event}: {event: EventActionCardModel}) {
           </div>
         ))}
       </dl>
-      <div className="event-action-card__counts" aria-label={`${event.title} event counts`}>
-        {event.counts.map((item) => (
-          <span key={`${item.label}-${item.value}`}>
-            <strong>{item.value}</strong>
-            {item.label}
-          </span>
-        ))}
-      </div>
+      {event.counts.length ? (
+        <div className="event-action-card__counts" aria-label={`${event.title} event counts`}>
+          {event.counts.map((item) => (
+            <span key={`${item.label}-${item.value}`}>
+              <strong>{item.value}</strong>
+              {item.label}
+            </span>
+          ))}
+        </div>
+      ) : null}
       <div className="event-action-card__actions">
         {event.actions.map((action) => (
-          <a
-            className={action.variant === "secondary" ? "button button--ghost" : "button"}
+          <ButtonLink
             href={action.href}
             key={`${action.href}-${action.label}`}
             target={action.target}
             rel={action.rel}
+            variant={action.variant === "secondary" ? "ghost" : "primary"}
             onClick={() => {
               trackCtaClick(action.trackingLabel ?? "event_action", action.href);
               action.onClick?.();
             }}
           >
             {action.label}
-          </a>
+          </ButtonLink>
         ))}
       </div>
     </article>
@@ -587,13 +600,13 @@ export function OwnerResponsePrompt({
         ))}
       </div>
       {ctaHref && ctaLabel ? (
-        <a
-          className="button button--ghost"
+        <ButtonLink
           href={ctaHref}
+          variant="ghost"
           onClick={() => trackCtaClick("owner_response_prompt", ctaHref)}
         >
           {ctaLabel}
-        </a>
+        </ButtonLink>
       ) : null}
     </aside>
   );
@@ -636,14 +649,14 @@ export function ProcessStatusPanel({
       </div>
       <div className="process-status-panel__actions">
         {actions.map((action) => (
-          <a
-            className={action.variant === "secondary" ? "button button--ghost" : "button"}
+          <ButtonLink
             href={action.href}
             key={`${action.href}-${action.label}`}
+            variant={action.variant === "secondary" ? "ghost" : "primary"}
             onClick={() => trackCtaClick(action.trackingLabel ?? "process_status_action", action.href)}
           >
             {action.label}
-          </a>
+          </ButtonLink>
         ))}
       </div>
     </section>

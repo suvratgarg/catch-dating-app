@@ -8,6 +8,8 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 /// if (mutation.hasError)
 ///   CatchErrorBanner(message: mutationErrorMessage(mutation)),
 /// ```
+///
+/// Prefer `CatchMutationErrorBanner` for new inline mutation error surfaces.
 String mutationErrorMessage(
   MutationState mutation, {
   AppErrorContext context = AppErrorContext.generic,

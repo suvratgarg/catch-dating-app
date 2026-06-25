@@ -8,8 +8,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -53,7 +53,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
         ),
       ),
       body: recapAsync.when(
-        loading: () => const CatchLoadingIndicator(),
+        loading: () => const EventRecapLoadingBody(),
         error: (error, _) => CatchErrorState.fromError(
           error,
           context: AppErrorContext.event,
@@ -165,6 +165,127 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
           );
         },
       ),
+    );
+  }
+}
+
+class EventRecapLoadingBody extends StatelessWidget {
+  const EventRecapLoadingBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return ListView(
+      padding: CatchInsets.pageBodyTight,
+      children: [
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: CatchLayout.maxContentWidth,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const _RecapHeroSkeleton(),
+                gapH24,
+                CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+                gapH8,
+                FractionallySizedBox(
+                  widthFactor: 0.88,
+                  alignment: Alignment.centerLeft,
+                  child: CatchSkeleton.text(),
+                ),
+                gapH14,
+                const _VibeGridSkeleton(),
+                gapH24,
+                CatchSkeleton.box(
+                  width: double.infinity,
+                  height: CatchLayout.buttonLgHeight,
+                  radius: CatchRadius.pill,
+                  borderColor: t.line,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _RecapHeroSkeleton extends StatelessWidget {
+  const _RecapHeroSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      padding: CatchInsets.contentRelaxed,
+      backgroundColor: t.ink,
+      borderWidth: 0,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+          gapH10,
+          CatchSkeleton.text(width: CatchSpacing.s16 * 2),
+          gapH4,
+          CatchSkeleton.text(width: CatchSpacing.s16 * 3),
+          gapH18,
+          const Row(
+            children: [
+              Expanded(child: _RecapStatSkeleton()),
+              Expanded(child: _RecapStatSkeleton()),
+              Expanded(child: _RecapStatSkeleton()),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RecapStatSkeleton extends StatelessWidget {
+  const _RecapStatSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: CatchLayout.eventRecapStatInset),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+          gapH6,
+          CatchSkeleton.text(width: CatchSpacing.s12),
+        ],
+      ),
+    );
+  }
+}
+
+class _VibeGridSkeleton extends StatelessWidget {
+  const _VibeGridSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      crossAxisCount: responsiveGridCount(MediaQuery.of(context).size.width),
+      crossAxisSpacing: CatchLayout.eventRecapGridGap,
+      mainAxisSpacing: CatchLayout.eventRecapGridGap,
+      childAspectRatio: CatchAspectRatio.eventRecapVibeTile,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        for (var i = 0; i < 6; i++)
+          CatchSkeleton.box(
+            height: double.infinity,
+            radius: CatchRadius.md,
+            borderColor: CatchTokens.of(context).line,
+          ),
+      ],
     );
   }
 }

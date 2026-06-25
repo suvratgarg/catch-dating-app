@@ -1,6 +1,4 @@
-import 'dart:async';
-
-import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -8,35 +6,56 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_page_dots.dart';
-import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
-import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
-import 'package:catch_dating_app/events/presentation/event_check_in_celebration_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/event_location_links.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
-import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/experimental/mutation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 typedef EventFocusClubNameBuilder = String? Function(Event event);
+typedef EventFocusEventCallback = void Function(Event event);
 
-class EventFocusRail extends ConsumerStatefulWidget {
+class EventFocusActions {
+  const EventFocusActions({
+    required this.onViewEvent,
+    required this.onCheckIn,
+    required this.onOpenSwipe,
+    required this.onWriteReview,
+    required this.onOpenDirections,
+    required this.onAddToCalendar,
+    required this.onResetCheckInError,
+  });
+
+  final EventFocusEventCallback onViewEvent;
+  final EventFocusEventCallback onCheckIn;
+  final EventFocusEventCallback onOpenSwipe;
+  final EventFocusEventCallback onWriteReview;
+  final EventFocusEventCallback onOpenDirections;
+  final EventFocusEventCallback onAddToCalendar;
+  final VoidCallback onResetCheckInError;
+}
+
+class EventFocusCheckInState {
+  const EventFocusCheckInState({this.isPending = false, this.error});
+
+  static const idle = EventFocusCheckInState();
+
+  final bool isPending;
+  final Object? error;
+}
+
+class EventFocusRail extends StatefulWidget {
   const EventFocusRail({
     super.key,
     required this.upcomingEvents,
-    required this.reviewer,
+    required this.actions,
+    this.checkInState = EventFocusCheckInState.idle,
     this.arrivalAction,
     this.activeSwipeEvent,
     this.pendingReviewEvent,
@@ -49,17 +68,18 @@ class EventFocusRail extends ConsumerStatefulWidget {
       ValueKey('dashboard-event-focus-action-$actionName');
 
   final List<Event> upcomingEvents;
-  final UserProfile reviewer;
+  final EventFocusActions actions;
+  final EventFocusCheckInState checkInState;
   final EventArrivalAction? arrivalAction;
   final Event? activeSwipeEvent;
   final Event? pendingReviewEvent;
   final EventFocusClubNameBuilder? clubNameBuilder;
 
   @override
-  ConsumerState<EventFocusRail> createState() => _EventFocusRailState();
+  State<EventFocusRail> createState() => _EventFocusRailState();
 }
 
-class _EventFocusRailState extends ConsumerState<EventFocusRail> {
+class _EventFocusRailState extends State<EventFocusRail> {
   static const _minimumSwipeDistance = 56.0;
   static const _minimumSwipeVelocity = 360.0;
 
@@ -81,9 +101,6 @@ class _EventFocusRailState extends ConsumerState<EventFocusRail> {
     if (items.isEmpty) return const SizedBox.shrink();
     if (_selectedIndex >= items.length) _selectedIndex = items.length - 1;
 
-    final checkInMutation = ref.watch(
-      EventBookingController.selfCheckInMutation,
-    );
     final cardCountLabel = items.length == 1
         ? '1 event'
         : '${items.length} events';
@@ -158,9 +175,9 @@ class _EventFocusRailState extends ConsumerState<EventFocusRail> {
                       item: selectedItem,
                       cardIndex: _selectedIndex,
                       cardCount: items.length,
-                      checkInMutation: checkInMutation,
+                      checkInState: widget.checkInState,
                       onActionPressed: (action) =>
-                          _handleAction(context, ref, selectedItem, action),
+                          _handleAction(selectedItem, action),
                     ),
                   ),
                 ),
@@ -176,6 +193,12 @@ class _EventFocusRailState extends ConsumerState<EventFocusRail> {
             itemCount: items.length,
           ),
         ],
+        if (widget.checkInState.error != null)
+          CatchErrorBanner.fromError(
+            widget.checkInState.error!,
+            context: AppErrorContext.dashboard,
+            onRetry: widget.actions.onResetCheckInError,
+          ),
       ],
     );
   }
@@ -262,101 +285,21 @@ class _EventFocusRailState extends ConsumerState<EventFocusRail> {
     setState(() => _selectedIndex = nextIndex);
   }
 
-  void _handleAction(
-    BuildContext context,
-    WidgetRef ref,
-    _EventFocusItem item,
-    _EventFocusAction action,
-  ) {
+  void _handleAction(_EventFocusItem item, _EventFocusAction action) {
     switch (action) {
       case _EventFocusAction.viewEvent:
-        _openEvent(context, item.event);
+        widget.actions.onViewEvent(item.event);
       case _EventFocusAction.checkIn:
-        _checkIn(context, ref, item.event);
+        widget.actions.onCheckIn(item.event);
       case _EventFocusAction.swipe:
-        _openSwipe(context, item.event);
+        widget.actions.onOpenSwipe(item.event);
       case _EventFocusAction.review:
-        _writeReview(context, item.event);
+        widget.actions.onWriteReview(item.event);
       case _EventFocusAction.directions:
-        _openDirections(ref, item.event);
+        widget.actions.onOpenDirections(item.event);
       case _EventFocusAction.addToCalendar:
-        _addToCalendar(ref, item.event);
+        widget.actions.onAddToCalendar(item.event);
     }
-  }
-
-  void _openEvent(BuildContext context, Event event) {
-    context.pushNamed(
-      Routes.dashboardEventDetailScreen.name,
-      pathParameters: {'clubId': event.clubId, 'eventId': event.id},
-      extra: event,
-    );
-  }
-
-  void _openDirections(WidgetRef ref, Event event) {
-    unawaited(
-      ref
-          .read(externalLinkControllerProvider)
-          .openExternal(directionsUriForEvent(event)),
-    );
-  }
-
-  void _addToCalendar(WidgetRef ref, Event event) {
-    unawaited(ref.read(eventCalendarControllerProvider).addToCalendar(event));
-  }
-
-  void _openSwipe(BuildContext context, Event event) {
-    context.pushNamed(
-      Routes.swipeEventScreen.name,
-      pathParameters: {'eventId': event.id},
-    );
-  }
-
-  void _writeReview(BuildContext context, Event event) {
-    showWriteReviewSheet(
-      context: context,
-      clubId: event.clubId,
-      eventId: event.id,
-      reviewer: widget.reviewer,
-    );
-  }
-
-  void _checkIn(BuildContext context, WidgetRef ref, Event event) {
-    EventBookingController.selfCheckInMutation.run(ref, (tx) async {
-      await tx
-          .get(eventBookingControllerProvider.notifier)
-          .selfCheckIn(eventId: event.id);
-      if (!context.mounted) return;
-      final launchResult = await launchEventSuccessCompanionIfAvailable(
-        context: context,
-        ref: ref,
-        uid: widget.reviewer.uid,
-        event: event,
-      );
-      if (!context.mounted ||
-          launchResult != EventSuccessCompanionLaunchResult.unavailable) {
-        return;
-      }
-      await Navigator.of(context, rootNavigator: true).push(
-        MaterialPageRoute<void>(
-          fullscreenDialog: true,
-          builder: (routeContext) => EventCheckInCelebrationScreen(
-            event: event,
-            onViewEvent: () {
-              Navigator.of(routeContext).pop();
-              GoRouter.of(context).goNamed(
-                Routes.eventDetailScreen.name,
-                pathParameters: {'clubId': event.clubId, 'eventId': event.id},
-                extra: event,
-              );
-            },
-            onBackHome: () {
-              Navigator.of(routeContext).pop();
-              GoRouter.of(context).goNamed(Routes.dashboardScreen.name);
-            },
-          ),
-        ),
-      );
-    });
   }
 }
 
@@ -388,14 +331,14 @@ class _EventFocusCard extends StatelessWidget {
     required this.item,
     required this.cardIndex,
     required this.cardCount,
-    required this.checkInMutation,
+    required this.checkInState,
     required this.onActionPressed,
   });
 
   final _EventFocusItem item;
   final int cardIndex;
   final int cardCount;
-  final MutationState checkInMutation;
+  final EventFocusCheckInState checkInState;
   final ValueChanged<_EventFocusAction> onActionPressed;
 
   @override
@@ -468,11 +411,11 @@ class _EventFocusCard extends StatelessWidget {
             isLoading:
                 index == 0 &&
                 item.primaryAction == _EventFocusAction.checkIn &&
-                checkInMutation.isPending,
+                checkInState.isPending,
             onPressed:
                 index == 0 &&
                     item.primaryAction == _EventFocusAction.checkIn &&
-                    checkInMutation.isPending
+                    checkInState.isPending
                 ? null
                 : () => onActionPressed(actions[index]),
           ),

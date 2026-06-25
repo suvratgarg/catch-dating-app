@@ -51,8 +51,10 @@ import {ModerationFlagDocument} from "./moderationFlagDocument";
 import {DeletedUserTombstoneDocument} from "./deletedUserTombstoneDocument";
 import {RateLimitDocument} from "./rateLimitDocument";
 import {FunctionEventReceiptDocument} from "./functionEventReceiptDocument";
+import {PublicRouteReservationDocument} from "./publicRouteReservationDocument";
 import {SeedEventManifestDocument} from "./seedEventManifestDocument";
 import {OrganizerIntakeReviewDecisionDocument} from "./organizerIntakeReviewDecisionDocument";
+import {EventIntakeReviewDecisionDocument} from "./eventIntakeReviewDecisionDocument";
 import {OrganizerIntakeCurationDecisionDocument} from "./organizerIntakeCurationDecisionDocument";
 import {OrganizerEventCandidateReviewDecisionDocument} from "./organizerEventCandidateReviewDecisionDocument";
 import {OrganizerEventLocationResolutionDecisionDocument} from "./organizerEventLocationResolutionDecisionDocument";
@@ -69,15 +71,23 @@ import {AddClubHostCallablePayload} from "./addClubHostCallablePayload";
 import {RemoveClubHostCallablePayload} from "./removeClubHostCallablePayload";
 import {TransferClubOwnershipCallablePayload} from "./transferClubOwnershipCallablePayload";
 import {RequestClubClaimCallablePayload} from "./requestClubClaimCallablePayload";
+import {RequestClubClaimCallableResponse} from "./requestClubClaimCallableResponse";
 import {AdminDecideClubClaimCallablePayload} from "./adminDecideClubClaimCallablePayload";
 import {AdminDecideOrganizerIntakeCallablePayload} from "./adminDecideOrganizerIntakeCallablePayload";
 import {AdminRecordOrganizerCurationCallablePayload} from "./adminRecordOrganizerCurationCallablePayload";
+import {AdminRecordEventIntakeReviewDecisionCallablePayload} from "./adminRecordEventIntakeReviewDecisionCallablePayload";
 import {AdminDecideOrganizerEventCandidateCallablePayload} from "./adminDecideOrganizerEventCandidateCallablePayload";
 import {AdminDecideOrganizerPolicyGapCallablePayload} from "./adminDecideOrganizerPolicyGapCallablePayload";
 import {AdminResolveOrganizerEventLocationCallablePayload} from "./adminResolveOrganizerEventLocationCallablePayload";
 import {AdminSetClubIndexStatusCallablePayload} from "./adminSetClubIndexStatusCallablePayload";
 import {AdminGetClubDetailsCallablePayload} from "./adminGetClubDetailsCallablePayload";
+import {AdminListClubDetailsCallablePayload} from "./adminListClubDetailsCallablePayload";
 import {AdminUpdateClubDetailsCallablePayload} from "./adminUpdateClubDetailsCallablePayload";
+import {AdminGetEventDetailsCallablePayload} from "./adminGetEventDetailsCallablePayload";
+import {AdminListEventDetailsCallablePayload} from "./adminListEventDetailsCallablePayload";
+import {AdminListExternalEventDetailsCallablePayload} from "./adminListExternalEventDetailsCallablePayload";
+import {AdminUpdateEventDetailsCallablePayload} from "./adminUpdateEventDetailsCallablePayload";
+import {AdminPublishExternalEventCallablePayload} from "./adminPublishExternalEventCallablePayload";
 import {StartClubHostConversationCallablePayload} from "./startClubHostConversationCallablePayload";
 import {ArchiveClubCallablePayload} from "./archiveClubCallablePayload";
 import {DeleteClubCallablePayload} from "./deleteClubCallablePayload";
@@ -93,6 +103,7 @@ import {CreateEventInviteLinkCallablePayload} from "./createEventInviteLinkCalla
 import {DisableEventInviteLinkCallablePayload} from "./disableEventInviteLinkCallablePayload";
 import {RecordEventInviteLinkOpenCallablePayload} from "./recordEventInviteLinkOpenCallablePayload";
 import {RecordOrganizerAnalyticsEventCallablePayload} from "./recordOrganizerAnalyticsEventCallablePayload";
+import {RecordOrganizerAnalyticsEventCallableResponse} from "./recordOrganizerAnalyticsEventCallableResponse";
 import {MarkEventAttendanceCallablePayload} from "./markEventAttendanceCallablePayload";
 import {EventJoinRequestDecisionCallablePayload} from "./eventJoinRequestDecisionCallablePayload";
 import {OverrideEventSuccessRotationsCallablePayload} from "./overrideEventSuccessRotationsCallablePayload";
@@ -104,7 +115,9 @@ import {MarkEventAttendanceCallableResponse} from "./markEventAttendanceCallable
 import {SelfCheckInAttendanceCallablePayload} from "./selfCheckInAttendanceCallablePayload";
 import {CreateEventReviewCallablePayload} from "./createEventReviewCallablePayload";
 import {CreatePublicClubReviewCallablePayload} from "./createPublicClubReviewCallablePayload";
+import {CreatePublicClubReviewCallableResponse} from "./createPublicClubReviewCallableResponse";
 import {ListPublicClubReviewsCallablePayload} from "./listPublicClubReviewsCallablePayload";
+import {ListPublicClubReviewsCallableResponse} from "./listPublicClubReviewsCallableResponse";
 import {UpdateEventReviewCallablePayload} from "./updateEventReviewCallablePayload";
 import {DeleteEventReviewCallablePayload} from "./deleteEventReviewCallablePayload";
 import {SetReviewResponseCallablePayload} from "./setReviewResponseCallablePayload";
@@ -128,6 +141,7 @@ import {PlaceDetailsCallablePayload} from "./placeDetailsCallablePayload";
 import {PlaceDetailsCallableResponse} from "./placeDetailsCallableResponse";
 import {ExploreSearchCallablePayload} from "./exploreSearchCallablePayload";
 import {ExploreSearchCallableResponse} from "./exploreSearchCallableResponse";
+import {WebsiteHostListingProjection} from "./websiteHostListingProjection";
 import {FetchEventSuccessWingmanCandidatesCallableResponse} from "./fetchEventSuccessWingmanCandidatesCallableResponse";
 import {CreateProfileDecisionClientWrite} from "./createProfileDecisionClientWrite";
 import {CreateChatMessageClientWrite} from "./createChatMessageClientWrite";
@@ -183,8 +197,10 @@ import {
   deletedUserTombstoneDocumentSchema,
   rateLimitDocumentSchema,
   functionEventReceiptDocumentSchema,
+  publicRouteReservationDocumentSchema,
   seedEventManifestDocumentSchema,
   organizerIntakeReviewDecisionDocumentSchema,
+  eventIntakeReviewDecisionDocumentSchema,
   organizerIntakeCurationDecisionDocumentSchema,
   organizerEventCandidateReviewDecisionDocumentSchema,
   organizerEventLocationResolutionDecisionDocumentSchema,
@@ -201,15 +217,23 @@ import {
   removeClubHostCallablePayloadSchema,
   transferClubOwnershipCallablePayloadSchema,
   requestClubClaimCallablePayloadSchema,
+  requestClubClaimCallableResponseSchema,
   adminDecideClubClaimCallablePayloadSchema,
   adminDecideOrganizerIntakeCallablePayloadSchema,
   adminRecordOrganizerCurationCallablePayloadSchema,
+  adminRecordEventIntakeReviewDecisionCallablePayloadSchema,
   adminDecideOrganizerEventCandidateCallablePayloadSchema,
   adminDecideOrganizerPolicyGapCallablePayloadSchema,
   adminResolveOrganizerEventLocationCallablePayloadSchema,
   adminSetClubIndexStatusCallablePayloadSchema,
   adminGetClubDetailsCallablePayloadSchema,
+  adminListClubDetailsCallablePayloadSchema,
   adminUpdateClubDetailsCallablePayloadSchema,
+  adminGetEventDetailsCallablePayloadSchema,
+  adminListEventDetailsCallablePayloadSchema,
+  adminListExternalEventDetailsCallablePayloadSchema,
+  adminUpdateEventDetailsCallablePayloadSchema,
+  adminPublishExternalEventCallablePayloadSchema,
   startClubHostConversationCallablePayloadSchema,
   archiveClubCallablePayloadSchema,
   deleteClubCallablePayloadSchema,
@@ -225,6 +249,7 @@ import {
   disableEventInviteLinkCallablePayloadSchema,
   recordEventInviteLinkOpenCallablePayloadSchema,
   recordOrganizerAnalyticsEventCallablePayloadSchema,
+  recordOrganizerAnalyticsEventCallableResponseSchema,
   markEventAttendanceCallablePayloadSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
@@ -236,7 +261,9 @@ import {
   selfCheckInAttendanceCallablePayloadSchema,
   createEventReviewCallablePayloadSchema,
   createPublicClubReviewCallablePayloadSchema,
+  createPublicClubReviewCallableResponseSchema,
   listPublicClubReviewsCallablePayloadSchema,
+  listPublicClubReviewsCallableResponseSchema,
   updateEventReviewCallablePayloadSchema,
   deleteEventReviewCallablePayloadSchema,
   setReviewResponseCallablePayloadSchema,
@@ -260,6 +287,7 @@ import {
   placeDetailsCallableResponseSchema,
   exploreSearchCallablePayloadSchema,
   exploreSearchCallableResponseSchema,
+  websiteHostListingProjectionSchema,
   fetchEventSuccessWingmanCandidatesCallableResponseSchema,
   createProfileDecisionClientWriteSchema,
   createChatMessageClientWriteSchema,
@@ -460,6 +488,10 @@ export const validateFunctionEventReceiptDocument:
   ValidateFunction<FunctionEventReceiptDocument> =
     ajv.compile(functionEventReceiptDocumentSchema) as
       ValidateFunction<FunctionEventReceiptDocument>;
+export const validatePublicRouteReservationDocument:
+  ValidateFunction<PublicRouteReservationDocument> =
+    ajv.compile(publicRouteReservationDocumentSchema) as
+      ValidateFunction<PublicRouteReservationDocument>;
 export const validateSeedEventManifestDocument:
   ValidateFunction<SeedEventManifestDocument> =
     ajv.compile(seedEventManifestDocumentSchema) as
@@ -468,6 +500,10 @@ export const validateOrganizerIntakeReviewDecisionDocument:
   ValidateFunction<OrganizerIntakeReviewDecisionDocument> =
     ajv.compile(organizerIntakeReviewDecisionDocumentSchema) as
       ValidateFunction<OrganizerIntakeReviewDecisionDocument>;
+export const validateEventIntakeReviewDecisionDocument:
+  ValidateFunction<EventIntakeReviewDecisionDocument> =
+    ajv.compile(eventIntakeReviewDecisionDocumentSchema) as
+      ValidateFunction<EventIntakeReviewDecisionDocument>;
 export const validateOrganizerIntakeCurationDecisionDocument:
   ValidateFunction<OrganizerIntakeCurationDecisionDocument> =
     ajv.compile(organizerIntakeCurationDecisionDocumentSchema) as
@@ -532,6 +568,10 @@ export const validateRequestClubClaimCallablePayload:
   ValidateFunction<RequestClubClaimCallablePayload> =
     ajv.compile(requestClubClaimCallablePayloadSchema) as
       ValidateFunction<RequestClubClaimCallablePayload>;
+export const validateRequestClubClaimCallableResponse:
+  ValidateFunction<RequestClubClaimCallableResponse> =
+    ajv.compile(requestClubClaimCallableResponseSchema) as
+      ValidateFunction<RequestClubClaimCallableResponse>;
 export const validateAdminDecideClubClaimCallablePayload:
   ValidateFunction<AdminDecideClubClaimCallablePayload> =
     ajv.compile(adminDecideClubClaimCallablePayloadSchema) as
@@ -544,6 +584,10 @@ export const validateAdminRecordOrganizerCurationCallablePayload:
   ValidateFunction<AdminRecordOrganizerCurationCallablePayload> =
     ajv.compile(adminRecordOrganizerCurationCallablePayloadSchema) as
       ValidateFunction<AdminRecordOrganizerCurationCallablePayload>;
+export const validateAdminRecordEventIntakeReviewDecisionCallablePayload:
+  ValidateFunction<AdminRecordEventIntakeReviewDecisionCallablePayload> =
+    ajv.compile(adminRecordEventIntakeReviewDecisionCallablePayloadSchema) as
+      ValidateFunction<AdminRecordEventIntakeReviewDecisionCallablePayload>;
 export const validateAdminDecideOrganizerEventCandidateCallablePayload:
   ValidateFunction<AdminDecideOrganizerEventCandidateCallablePayload> =
     ajv.compile(adminDecideOrganizerEventCandidateCallablePayloadSchema) as
@@ -564,10 +608,34 @@ export const validateAdminGetClubDetailsCallablePayload:
   ValidateFunction<AdminGetClubDetailsCallablePayload> =
     ajv.compile(adminGetClubDetailsCallablePayloadSchema) as
       ValidateFunction<AdminGetClubDetailsCallablePayload>;
+export const validateAdminListClubDetailsCallablePayload:
+  ValidateFunction<AdminListClubDetailsCallablePayload> =
+    ajv.compile(adminListClubDetailsCallablePayloadSchema) as
+      ValidateFunction<AdminListClubDetailsCallablePayload>;
 export const validateAdminUpdateClubDetailsCallablePayload:
   ValidateFunction<AdminUpdateClubDetailsCallablePayload> =
     ajv.compile(adminUpdateClubDetailsCallablePayloadSchema) as
       ValidateFunction<AdminUpdateClubDetailsCallablePayload>;
+export const validateAdminGetEventDetailsCallablePayload:
+  ValidateFunction<AdminGetEventDetailsCallablePayload> =
+    ajv.compile(adminGetEventDetailsCallablePayloadSchema) as
+      ValidateFunction<AdminGetEventDetailsCallablePayload>;
+export const validateAdminListEventDetailsCallablePayload:
+  ValidateFunction<AdminListEventDetailsCallablePayload> =
+    ajv.compile(adminListEventDetailsCallablePayloadSchema) as
+      ValidateFunction<AdminListEventDetailsCallablePayload>;
+export const validateAdminListExternalEventDetailsCallablePayload:
+  ValidateFunction<AdminListExternalEventDetailsCallablePayload> =
+    ajv.compile(adminListExternalEventDetailsCallablePayloadSchema) as
+      ValidateFunction<AdminListExternalEventDetailsCallablePayload>;
+export const validateAdminUpdateEventDetailsCallablePayload:
+  ValidateFunction<AdminUpdateEventDetailsCallablePayload> =
+    ajv.compile(adminUpdateEventDetailsCallablePayloadSchema) as
+      ValidateFunction<AdminUpdateEventDetailsCallablePayload>;
+export const validateAdminPublishExternalEventCallablePayload:
+  ValidateFunction<AdminPublishExternalEventCallablePayload> =
+    ajv.compile(adminPublishExternalEventCallablePayloadSchema) as
+      ValidateFunction<AdminPublishExternalEventCallablePayload>;
 export const validateStartClubHostConversationCallablePayload:
   ValidateFunction<StartClubHostConversationCallablePayload> =
     ajv.compile(startClubHostConversationCallablePayloadSchema) as
@@ -628,6 +696,10 @@ export const validateRecordOrganizerAnalyticsEventCallablePayload:
   ValidateFunction<RecordOrganizerAnalyticsEventCallablePayload> =
     ajv.compile(recordOrganizerAnalyticsEventCallablePayloadSchema) as
       ValidateFunction<RecordOrganizerAnalyticsEventCallablePayload>;
+export const validateRecordOrganizerAnalyticsEventCallableResponse:
+  ValidateFunction<RecordOrganizerAnalyticsEventCallableResponse> =
+    ajv.compile(recordOrganizerAnalyticsEventCallableResponseSchema) as
+      ValidateFunction<RecordOrganizerAnalyticsEventCallableResponse>;
 export const validateMarkEventAttendanceCallablePayload:
   ValidateFunction<MarkEventAttendanceCallablePayload> =
     ajv.compile(markEventAttendanceCallablePayloadSchema) as
@@ -672,10 +744,18 @@ export const validateCreatePublicClubReviewCallablePayload:
   ValidateFunction<CreatePublicClubReviewCallablePayload> =
     ajv.compile(createPublicClubReviewCallablePayloadSchema) as
       ValidateFunction<CreatePublicClubReviewCallablePayload>;
+export const validateCreatePublicClubReviewCallableResponse:
+  ValidateFunction<CreatePublicClubReviewCallableResponse> =
+    ajv.compile(createPublicClubReviewCallableResponseSchema) as
+      ValidateFunction<CreatePublicClubReviewCallableResponse>;
 export const validateListPublicClubReviewsCallablePayload:
   ValidateFunction<ListPublicClubReviewsCallablePayload> =
     ajv.compile(listPublicClubReviewsCallablePayloadSchema) as
       ValidateFunction<ListPublicClubReviewsCallablePayload>;
+export const validateListPublicClubReviewsCallableResponse:
+  ValidateFunction<ListPublicClubReviewsCallableResponse> =
+    ajv.compile(listPublicClubReviewsCallableResponseSchema) as
+      ValidateFunction<ListPublicClubReviewsCallableResponse>;
 export const validateUpdateEventReviewCallablePayload:
   ValidateFunction<UpdateEventReviewCallablePayload> =
     ajv.compile(updateEventReviewCallablePayloadSchema) as
@@ -768,6 +848,10 @@ export const validateExploreSearchCallableResponse:
   ValidateFunction<ExploreSearchCallableResponse> =
     ajv.compile(exploreSearchCallableResponseSchema) as
       ValidateFunction<ExploreSearchCallableResponse>;
+export const validateWebsiteHostListingProjection:
+  ValidateFunction<WebsiteHostListingProjection> =
+    ajv.compile(websiteHostListingProjectionSchema) as
+      ValidateFunction<WebsiteHostListingProjection>;
 export const validateFetchEventSuccessWingmanCandidatesCallableResponse:
   ValidateFunction<FetchEventSuccessWingmanCandidatesCallableResponse> =
     ajv.compile(fetchEventSuccessWingmanCandidatesCallableResponseSchema) as

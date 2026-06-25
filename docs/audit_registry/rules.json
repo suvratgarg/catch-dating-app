@@ -91,6 +91,24 @@
         "Widget catalog shows no repeated local shells outside intentional feature-specific UI"
       ]
     },
+    "ASYNC-UI-001": {
+      "title": "Async presentation states use shared boundaries and content-shaped skeletons",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "audit_rules",
+        "version": "2.5.8"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/core/widgets/**",
+        "test/**"
+      ],
+      "instruction": "Presentation widgets should route AsyncValue, Future, and Stream loading/error branches through CatchAsyncValueView, CatchAsyncValueSliver, or a feature-owned typed display-state adapter. View-models may call AsyncValue.when when they return non-widget display state. Empty states stay in successful data callbacks. Optional enrichment may fail silently only when the primary surface remains correct and no primary CTA, paid action, safety action, or host operation depends on it. Initial or fallback data should render ahead of blocking loading skeletons when credible data is available. Data-load errors must use Catch error primitives with retry unless retry is impossible or unsafe. Loading states should use skeletons that resemble the eventual UI shape when that shape is known; use compact spinners or loading copy only for tiny inline metadata, unknown one-off work, or platform/plugin actions.",
+      "sunset_when": [
+        "Analyzer or scanner coverage enforces raw async UI branches, retryable data-load errors, and generic skeleton drift",
+        "Widgetbook and captures include content-shaped loading states for every contracted screen"
+      ]
+    },
     "WIDGET-CATALOG-001": {
       "title": "Keep widget catalog current when widget architecture changes",
       "status": "active",

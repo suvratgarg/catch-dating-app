@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
@@ -6,6 +8,7 @@ import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.d
 import 'package:catch_dating_app/clubs/presentation/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -19,6 +22,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
@@ -148,7 +152,10 @@ List<Widget> _exploreContentSlivers(
   );
   final layoutViewModel = identical(effectiveItems, viewModel.items)
       ? viewModel
-      : ExploreFeedViewModel(items: effectiveItems);
+      : ExploreFeedViewModel(
+          items: effectiveItems,
+          externalItems: viewModel.externalItems,
+        );
   final candidateThisWeekItems = showThisWeekList
       ? _topThisWeekRecommendations(effectiveItems)
       : const <ExploreEventItem>[];
@@ -208,6 +215,9 @@ List<Widget> _exploreContentSlivers(
         itemBuilder: (context, index) {
           return switch (cards[index]) {
             _MixedEventRowCard(:final item) => _ExploreFeedEventRow(item: item),
+            _MixedExternalEventRowCard(:final item) => _ExploreExternalEventRow(
+              item: item,
+            ),
             _MixedEventSpotlightCard(:final item) => _ExploreHero(item: item),
             _MixedClubSpotlightCard(:final club) => _ExploreClubPolaroidCard(
               club: club,
@@ -242,10 +252,14 @@ List<_MixedExploreCard> _buildMixedFeedCards({
       .where((item) => item != featured)
       .where((item) => !excludeEventIds.contains(item.event.id))
       .toList(growable: true);
+  final externalRows = viewModel.externalItems.take(8).toList();
   final cards = <_MixedExploreCard>[];
 
   if (eventRows.isEmpty) {
     if (spotlight != null) cards.add(_MixedEventSpotlightCard(spotlight));
+    for (final item in externalRows) {
+      cards.add(_MixedExternalEventRowCard(item));
+    }
     if (firstClub != null) cards.add(_MixedClubSpotlightCard(firstClub));
     if (secondClub != null) cards.add(_MixedClubRowCard(secondClub));
     return cards;
@@ -263,6 +277,9 @@ List<_MixedExploreCard> _buildMixedFeedCards({
     if (i == 1 && secondClub != null) {
       cards.add(_MixedClubRowCard(secondClub));
     }
+  }
+  for (final item in externalRows) {
+    cards.add(_MixedExternalEventRowCard(item));
   }
   return cards;
 }
@@ -306,6 +323,12 @@ class _MixedEventRowCard extends _MixedExploreCard {
   final ExploreEventItem item;
 }
 
+class _MixedExternalEventRowCard extends _MixedExploreCard {
+  const _MixedExternalEventRowCard(this.item);
+
+  final ExploreExternalEventItem item;
+}
+
 class _MixedEventSpotlightCard extends _MixedExploreCard {
   const _MixedEventSpotlightCard(this.item);
 
@@ -338,14 +361,17 @@ class _ExploreResultCountLine extends StatelessWidget {
 String _exploreResultCountLine(ExploreFeedViewModel viewModel) {
   final count = viewModel.count;
   final noun = count == 1 ? 'PLAN' : 'PLANS';
-  final dateSpan = _exploreDateSpanLabel(viewModel.items);
+  final dateSpan = _exploreDateSpanLabel(viewModel);
   if (dateSpan == null) return '$count $noun';
   return '$count $noun · $dateSpan';
 }
 
-String? _exploreDateSpanLabel(List<ExploreEventItem> items) {
-  if (items.isEmpty) return null;
-  final starts = items.map((item) => item.event.startTime).toList()..sort();
+String? _exploreDateSpanLabel(ExploreFeedViewModel viewModel) {
+  if (viewModel.isEmpty) return null;
+  final starts = [
+    for (final item in viewModel.items) item.event.startTime,
+    for (final item in viewModel.externalItems) item.event.startTime,
+  ]..sort();
   final first = starts.first;
   final last = starts.last;
   final sameDay =
@@ -419,6 +445,105 @@ class _ExploreFeedEventRow extends ConsumerWidget {
       onTap: _isSyntheticExploreItem(item)
           ? null
           : () => _openEvent(context, ref, item, analyticsSource),
+    );
+  }
+}
+
+class _ExploreExternalEventRow extends ConsumerWidget {
+  const _ExploreExternalEventRow({required this.item});
+
+  final ExploreExternalEventItem item;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final event = item.event;
+    final t = CatchTokens.of(context);
+    final visual = eventActivityVisual(event.activityKind, context: context);
+    final uri = event.primaryExternalUri;
+    return CatchSurface(
+      radius: CatchRadius.md,
+      borderColor: t.line2,
+      elevation: CatchSurfaceElevation.card,
+      padding: CatchInsets.content,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              EventActivityStamp(
+                visual: visual,
+                size: 26,
+                iconSize: CatchIcon.sm,
+              ),
+              gapW8,
+              Expanded(
+                child: _ExploreMonoLabel(
+                  'FROM ${event.platformLabel.toUpperCase()}',
+                  color: t.ink3,
+                ),
+              ),
+              gapW8,
+              EventStatusPill(label: 'External', color: visual.accent),
+            ],
+          ),
+          gapH8,
+          Text(
+            event.title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.eventDisplay(
+              context,
+              size: 25,
+              height: 1.02,
+            ),
+          ),
+          gapH4,
+          Text(
+            _externalEventSupportingLabel(item),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
+          gapH10,
+          Row(
+            children: [
+              EventClockMark(
+                accent: visual.accent,
+                time: TimeOfDay.fromDateTime(event.startTime),
+                size: 17,
+              ),
+              gapW8,
+              Expanded(
+                child: Text(
+                  '${EventFormatters.time(event.startTime)} · ${event.priceLabel}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.mono(context, color: t.ink2),
+                ),
+              ),
+              gapW12,
+              CatchButton(
+                label: uri == null ? 'No link' : 'Open',
+                icon: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
+                size: CatchButtonSize.sm,
+                variant: CatchButtonVariant.secondary,
+                onPressed: uri == null
+                    ? null
+                    : () => _openExternalEvent(ref, item),
+                semanticsLabel: uri == null
+                    ? 'External event link unavailable'
+                    : 'Open external event source',
+              ),
+            ],
+          ),
+          gapH8,
+          _ExploreMonoLabel(
+            'READ-ONLY SUPPLY · NO CATCH BOOKING',
+            color: t.ink3,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -672,6 +797,23 @@ String _clubSupportingLabel(Club club) {
   final area = club.area.trim();
   if (area.isNotEmpty) return '${clubMemberCountLabel(club)} - $area';
   return clubMemberCountLabel(club);
+}
+
+String _externalEventSupportingLabel(ExploreExternalEventItem item) {
+  final event = item.event;
+  return _joinExploreLabels([
+    event.activityKind.label,
+    event.meetingPoint,
+    item.distanceFromUserLabel,
+  ]);
+}
+
+String _joinExploreLabels(Iterable<String?> labels) {
+  return labels
+      .whereType<String>()
+      .map((label) => label.trim())
+      .where((label) => label.isNotEmpty)
+      .join(' · ');
 }
 
 void _openClub(BuildContext context, Club club) {
@@ -1297,6 +1439,13 @@ void _openCoverStoryEvent(
   );
 }
 
+void _openExternalEvent(WidgetRef ref, ExploreExternalEventItem item) {
+  final uri = item.event.primaryExternalUri;
+  if (uri == null) return;
+  _logExploreExternalEventOpened(ref, item);
+  unawaited(ref.read(externalLinkControllerProvider).openExternal(uri));
+}
+
 void _logExploreEventOpened(
   WidgetRef ref,
   ExploreEventItem item,
@@ -1313,6 +1462,27 @@ void _logExploreEventOpened(
           AnalyticsParameters.activityKind: item.event.activityKind.name,
           AnalyticsParameters.availabilityStatus:
               item.availability?.status.name,
+          AnalyticsParameters.distanceKm: item.distanceFromUserKm == null
+              ? null
+              : double.parse(item.distanceFromUserKm!.toStringAsFixed(2)),
+        },
+      );
+}
+
+void _logExploreExternalEventOpened(
+  WidgetRef ref,
+  ExploreExternalEventItem item,
+) {
+  ref
+      .read(appAnalyticsProvider)
+      .logEvent(
+        AnalyticsEvents.exploreEventOpened,
+        parameters: {
+          AnalyticsParameters.eventId: item.event.id,
+          AnalyticsParameters.exploreSource: 'external_supply',
+          AnalyticsParameters.activityKind: item.event.activityKind.name,
+          AnalyticsParameters.availabilityStatus: 'external_outbound',
+          'external_platform': item.event.platformLabel,
           AnalyticsParameters.distanceKm: item.distanceFromUserKm == null
               ? null
               : double.parse(item.distanceFromUserKm!.toStringAsFixed(2)),

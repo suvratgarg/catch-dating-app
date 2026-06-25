@@ -13,6 +13,8 @@ import {
 } from "../shared/generated/firestoreAdminTypes";
 import {RequestClubClaimCallablePayload} from
   "../shared/generated/requestClubClaimCallablePayload";
+import {RequestClubClaimCallableResponse} from
+  "../shared/generated/requestClubClaimCallableResponse";
 import {AdminDecideClubClaimCallablePayload} from
   "../shared/generated/adminDecideClubClaimCallablePayload";
 import {
@@ -49,11 +51,6 @@ const defaultDeps: ClubClaimDeps = {
   checkRateLimit: defaultCheckRateLimit,
 };
 
-export interface RequestClubClaimResponse {
-  requestId: string;
-  status: "pending";
-}
-
 export interface AdminDecideClubClaimResponse {
   requestId: string;
   clubId: string;
@@ -65,12 +62,12 @@ export interface AdminDecideClubClaimResponse {
  * Creates or reuses a pending organizer claim request for an unclaimed club.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {ClubClaimDeps} deps Injectable dependencies.
- * @return {Promise<RequestClubClaimResponse>} Claim request status.
+ * @return {Promise<RequestClubClaimCallableResponse>} Claim request status.
  */
 export async function requestClubClaimHandler(
   request: CallableRequest<unknown>,
   deps: ClubClaimDeps = defaultDeps
-): Promise<RequestClubClaimResponse> {
+): Promise<RequestClubClaimCallableResponse> {
   const requesterUid = requireAuth(request);
   const data = validateCallableWithAjv<RequestClubClaimCallablePayload>(
     request,

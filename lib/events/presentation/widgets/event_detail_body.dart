@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
@@ -105,16 +106,12 @@ class EventDetailBody extends ConsumerWidget {
     if (isAuthenticated) {
       ref.listen(EventBookingController.bookMutation, (prev, next) {
         if (prev?.isPending == true && next.isSuccess) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Booking confirmed!')));
+          showCatchSnackBar(context, 'Booking confirmed!');
         }
       });
       ref.listen(EventBookingController.cancelMutation, (prev, next) {
         if (prev?.isPending == true && next.isSuccess) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Booking cancelled.')));
+          showCatchSnackBar(context, 'Booking cancelled.');
         }
       });
     }
@@ -455,9 +452,7 @@ void _toggleSavedEvent(
           isSaved: isSaved,
         );
     if (!context.mounted) return nowSaved;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(nowSaved ? 'Event saved.' : 'Event removed.')),
-    );
+    showCatchSnackBar(context, nowSaved ? 'Event saved.' : 'Event removed.');
     return nowSaved;
   });
 }
@@ -486,9 +481,7 @@ Future<void> _addEventToCalendar(
   try {
     final opened = await calendar.addToCalendar(event);
     if (!context.mounted || opened) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Could not open calendar.')));
+    showCatchSnackBar(context, 'Could not open calendar.');
   } on Object catch (error, stackTrace) {
     final actionError = ExternalActionException(
       'Failed to add event to calendar',
@@ -511,9 +504,7 @@ Future<void> _addEventToCalendar(
             ),
           );
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Could not open calendar.')));
+      showCatchSnackBar(context, 'Could not open calendar.');
     }
   }
 }

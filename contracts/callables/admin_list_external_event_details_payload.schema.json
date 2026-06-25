@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_external_event_details_payload.schema.json",
+  "title": "AdminListExternalEventDetailsCallablePayload",
+  "description": "Callable payload accepted by adminListExternalEventDetails. This lists read-only externalEvents/{eventId} rows for the admin event supply workspace.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "query": {"type": ["string", "null"], "maxLength": 160},
+    "citySlug": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/citySlug"},
+        {"type": "null"}
+      ]
+    },
+    "citySlugs": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "$ref": "../shared/event_common.schema.json#/definitions/citySlug"
+          },
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true
+        },
+        {"type": "null"}
+      ]
+    },
+    "publicationStatus": {
+      "type": ["string", "null"],
+      "enum": ["draft", "public", "archived", "removed", null]
+    },
+    "status": {
+      "type": ["string", "null"],
+      "enum": ["active", "cancelled", null]
+    },
+    "timeWindow": {
+      "type": ["string", "null"],
+      "enum": ["upcoming", "past", "all", null],
+      "description": "Optional server-side startTime window used by admin external event lists. Upcoming and past are evaluated against callable server time."
+    },
+    "limit": {"type": "integer", "minimum": 1, "maximum": 100}
+  }
+}

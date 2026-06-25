@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_update_event_details_payload.schema.json",
+  "title": "AdminUpdateEventDetailsCallablePayload",
+  "description": "Callable payload accepted by adminUpdateEventDetails. This edits low-risk app-facing canonical event fields through an audited admin callable.",
+  "x-callable-shape": "patch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "fields"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "reviewNote": {"type": ["string", "null"], "maxLength": 1000},
+    "fields": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "description": {"type": "string", "maxLength": 2000},
+        "photoUrl": {"$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"},
+        "distanceKm": {"type": "number", "minimum": 0, "maximum": 100},
+        "pace": {"$ref": "../shared/event_common.schema.json#/definitions/paceLevel"},
+        "eventFormat": {
+          "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
+        }
+      }
+    }
+  }
+}

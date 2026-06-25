@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
@@ -36,7 +35,11 @@ void main() {
     expect(find.text('Attendee moment'), findsNothing);
     expect(find.text('Attendee choices'), findsOneWidget);
     expect(find.text('Host Manage'), findsOneWidget);
-    expect(find.text('HOST MANAGE'), findsOneWidget);
+    expect(find.text('SETUP'), findsOneWidget);
+    expect(find.text('GUESTS'), findsOneWidget);
+    expect(find.text('LIVE'), findsOneWidget);
+    expect(find.text('REPORT'), findsOneWidget);
+    await _tapHostSection(tester, 'Guests');
     await _scrollHostManageUntilVisible(tester, 'Participation');
     expect(find.text('Participation'), findsOneWidget);
     expect(find.text('GUEST'), findsOneWidget);
@@ -68,50 +71,33 @@ void main() {
     await _tapHostSection(tester, 'Live');
 
     expect(find.text('LIVE NOW'), findsOneWidget);
+    expect(find.textContaining('Step 1/4'), findsWidgets);
+    expect(find.text('Check in and skill confirm'), findsWidgets);
     expect(
-      find.textContaining('Step 1/4: Check in and skill confirm'),
+      find.textContaining('Know your first court and partner.'),
       findsWidgets,
     );
-    expect(find.text('Know your first court and partner.'), findsWidgets);
 
     await _tapHostNext(tester);
 
     expect(find.textContaining('Fixture host step advanced'), findsNothing);
+    expect(find.textContaining('Step 2/4'), findsWidgets);
+    expect(find.textContaining('Rules and first rotation'), findsWidgets);
     expect(
-      find.textContaining('Step 2/4: Rules and first rotation'),
-      findsWidgets,
+      find.textContaining('Know your first court and partner.'),
+      findsNothing,
     );
-    expect(find.text('Know your first court and partner.'), findsNothing);
-    expect(find.text('Social prompt'), findsOneWidget);
 
     await _tapHostNext(tester);
 
-    expect(find.textContaining('Step 3/4: Timed partner rounds'), findsWidgets);
-    expect(
-      find.text('Play with several people at a matched skill level.'),
-      findsWidgets,
-    );
-    expect(find.text('Waiting for the host reveal'), findsNothing);
-
-    await _tapHostButton(tester, 'Drop 15s countdown');
-
-    expect(find.text('countingDown'), findsWidgets);
-    expect(find.text('Next reveal in 15s'), findsWidgets);
-
-    await pumpFeatureUiFor(tester, const Duration(seconds: 2));
-
-    expect(find.text('Next reveal in 13s'), findsWidgets);
-
-    await _tapHostButton(tester, 'Reveal now');
-
-    expect(find.text('revealed'), findsWidgets);
+    expect(find.textContaining('Step 3/4'), findsWidgets);
+    expect(find.textContaining('Timed partner rounds'), findsWidgets);
     expect(find.text('Sign in required'), findsNothing);
 
     await tester.tap(find.bySemanticsLabel('Rotations opt-out'));
     await tester.pump();
 
     expect(find.text('rotations opted out'), findsOneWidget);
-    expect(find.text('Rotations paused for you'), findsWidgets);
   });
 
   testWidgets('manual QA saves attendee questionnaire through fixture store', (
@@ -162,7 +148,7 @@ void main() {
     expect(find.text('Sign in required'), findsNothing);
   });
 
-  testWidgets('manual QA host manage live includes participant table', (
+  testWidgets('manual QA host manage guests includes participant table', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -173,21 +159,20 @@ void main() {
     await tester.pumpWidget(_manualQaTestHarness());
     await _pumpManualQaReady(tester);
 
-    await _tapHostSection(tester, 'Live');
+    await _tapHostSection(tester, 'Guests');
     await _scrollHostManageUntilVisible(tester, 'GUEST');
 
     expect(find.text('ALL'), findsWidgets);
-    expect(find.text('DUE'), findsWidgets);
-    expect(find.text('IN'), findsWidgets);
+    expect(find.text('BOOKED'), findsWidgets);
     expect(find.text('WAITLIST'), findsWidgets);
+    expect(find.text('SLOTS'), findsWidgets);
     expect(find.text('GUEST'), findsOneWidget);
-    expect(find.text('STATUS'), findsOneWidget);
+    expect(find.text('SIGNAL'), findsOneWidget);
     expect(find.text('HOST ACTION'), findsOneWidget);
     expect(
       find.text('Signed-up participants will appear here when they book.'),
       findsNothing,
     );
-    expect(find.text('LIVE NOW'), findsOneWidget);
     expect(find.text('Sign in required'), findsNothing);
   });
 
@@ -208,26 +193,16 @@ void main() {
 
     await _tapHostSection(tester, 'Live');
 
-    expect(find.textContaining('Step 1/4: Quick questions'), findsWidgets);
+    expect(find.textContaining('Step 1/4'), findsWidgets);
+    expect(find.text('Quick questions'), findsWidgets);
 
     await _tapHostNext(tester);
-    expect(
-      find.textContaining('Step 2/4: Check in and clue card'),
-      findsWidgets,
-    );
+    expect(find.textContaining('Step 2/4'), findsWidgets);
+    expect(find.textContaining('Check in and clue card'), findsWidgets);
 
     await _tapHostNext(tester);
-    expect(find.textContaining('Step 3/4: Rounds and reveal'), findsWidgets);
-    expect(
-      find.text('Meet people before seeing suggested matches.'),
-      findsWidgets,
-    );
-
-    await _tapHostButton(tester, 'Drop 10s countdown');
-    expect(find.text('countingDown'), findsWidgets);
-
-    await _tapHostButton(tester, 'Reveal now');
-    expect(find.text('revealed'), findsWidgets);
+    expect(find.textContaining('Step 3/4'), findsWidgets);
+    expect(find.textContaining('Rounds and reveal'), findsWidgets);
     expect(find.text('Sign in required'), findsNothing);
   });
 }
@@ -296,11 +271,8 @@ Future<void> _tapHostSection(WidgetTester tester, String label) async {
       .descendant(of: hostManage, matching: find.byType(Scrollable))
       .first;
   final section = find.descendant(
-    of: find.descendant(
-      of: hostManage,
-      matching: find.byType(CatchOptionGroup<HostEventManageSection>),
-    ),
-    matching: find.text(label),
+    of: hostManage,
+    matching: find.text(label.toUpperCase()),
   );
   for (var i = 0; i < 12 && section.evaluate().isEmpty; i += 1) {
     await tester.drag(scrollable, const Offset(0, 180));
@@ -343,14 +315,6 @@ Future<void> _scrollHostManageFinderUntilVisible(
     await tester.pump();
   }
   expect(target, findsWidgets);
-  await tester.pump();
-}
-
-Future<void> _tapHostButton(WidgetTester tester, String label) async {
-  final nextButton = find.widgetWithText(CatchButton, label);
-  await _scrollHostManageFinderUntilVisible(tester, nextButton);
-  await tester.pump();
-  _pressCatchButton(tester, nextButton);
   await tester.pump();
 }
 

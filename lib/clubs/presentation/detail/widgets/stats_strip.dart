@@ -17,12 +17,33 @@ class StatsStrip extends StatelessWidget {
     return CatchStatStrip(
       items: [
         CatchStatStripItem(value: '${club.memberCount}', label: 'Members'),
-        CatchStatStripItem(value: '$upcomingCount', label: 'Upcoming'),
         CatchStatStripItem(
           value: club.rating > 0 ? club.rating.toStringAsFixed(1) : '—',
           label: 'Rating',
         ),
+        CatchStatStripItem(value: '${club.reviewCount}', label: 'Reviews'),
+        CatchStatStripItem(value: _establishedLabel(club), label: 'Est.'),
       ],
     );
   }
+}
+
+String _establishedLabel(Club club) {
+  const months = <String>[
+    'JAN',
+    'FEB',
+    'MAR',
+    'APR',
+    'MAY',
+    'JUN',
+    'JUL',
+    'AUG',
+    'SEP',
+    'OCT',
+    'NOV',
+    'DEC',
+  ];
+  final month = months[(club.createdAt.month - 1).clamp(0, 11)];
+  final year = (club.createdAt.year % 100).toString().padLeft(2, '0');
+  return '$month \'$year';
 }

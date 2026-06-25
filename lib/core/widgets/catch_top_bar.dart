@@ -179,13 +179,29 @@ class _CatchTopBarState extends State<CatchTopBar> {
 
   Widget _buildTitleBlock(BuildContext context) {
     final t = CatchTokens.of(context);
+    final hasKicker = widget.kicker != null && widget.kicker!.isNotEmpty;
+    final hasSubtitle = widget.subtitle != null && widget.subtitle!.isNotEmpty;
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final collapseSupplementalText = widget.isLarge && textScale >= 1.4;
+    final showKicker = hasKicker && !collapseSupplementalText;
+    final showSubtitle = hasSubtitle && textScale < 1.4;
+    final hiddenTextLabel =
+        widget.title != null &&
+            ((hasKicker && !showKicker) || (hasSubtitle && !showSubtitle))
+        ? [
+            if (hasKicker && !showKicker) widget.kicker!,
+            widget.title!,
+            if (hasSubtitle && !showSubtitle) widget.subtitle!,
+          ].join('. ')
+        : null;
     final titleWidget =
         widget.titleWidget ??
         (widget.title == null || widget.title!.isEmpty
             ? const SizedBox.shrink()
             : Text(
                 widget.title!,
-                maxLines: widget.isLarge ? 2 : 1,
+                semanticsLabel: hiddenTextLabel,
+                maxLines: widget.isLarge && !collapseSupplementalText ? 2 : 1,
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.titleL(context, color: t.ink),
               ));
@@ -194,16 +210,13 @@ class _CatchTopBarState extends State<CatchTopBar> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (widget.kicker != null && widget.kicker!.isNotEmpty) ...[
-          CatchKicker(label: widget.kicker!),
-          gapH6,
-        ],
+        if (showKicker) ...[CatchKicker(label: widget.kicker!), gapH6],
         titleWidget,
-        if (widget.subtitle != null && widget.subtitle!.isNotEmpty) ...[
+        if (showSubtitle) ...[
           gapH3,
           Text(
             widget.subtitle!,
-            maxLines: 2,
+            maxLines: widget.isLarge ? 2 : 1,
             overflow: TextOverflow.ellipsis,
             style: CatchTextStyles.appBarSubtitle(context, color: t.ink2),
           ),
@@ -283,26 +296,30 @@ class _CompactTopBarFrame extends StatelessWidget {
             ? Border(bottom: BorderSide(color: t.line))
             : const Border(),
       ),
-      child: Row(
-        children: [
-          if (leading != null) ...[leading!, gapW12],
-          if (searchOpen)
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) =>
-                    search(constraints.maxWidth) ?? const SizedBox.shrink(),
+      child: LayoutBuilder(
+        builder: (context, constraints) => Row(
+          children: [
+            if (leading != null) ...[leading!, gapW12],
+            if (searchOpen)
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) =>
+                      search(constraints.maxWidth) ?? const SizedBox.shrink(),
+                ),
+              )
+            else ...[
+              Expanded(
+                child: Align(alignment: Alignment.centerLeft, child: title),
               ),
-            )
-          else ...[
-            Expanded(
-              child: Align(alignment: Alignment.centerLeft, child: title),
-            ),
-            _TopBarTrailingEdge(
-              search: search(CatchIconButton.navSize),
-              trailing: trailing,
-            ),
+              _TopBarTrailingEdge(
+                maxWidth:
+                    constraints.maxWidth * CatchLayout.topBarTrailingMaxRatio,
+                search: search(CatchIconButton.navSize),
+                trailing: trailing,
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -345,46 +362,58 @@ class _LargeTopBarFrame extends StatelessWidget {
             ? Border(bottom: BorderSide(color: t.line))
             : const Border(),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (leading != null) ...[leading!, gapW12],
-          if (searchOpen)
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) =>
-                    search(constraints.maxWidth) ?? const SizedBox.shrink(),
+      child: LayoutBuilder(
+        builder: (context, constraints) => Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (leading != null) ...[leading!, gapW12],
+            if (searchOpen)
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) =>
+                      search(constraints.maxWidth) ?? const SizedBox.shrink(),
+                ),
+              )
+            else ...[
+              Expanded(child: title),
+              _TopBarTrailingEdge(
+                maxWidth:
+                    constraints.maxWidth * CatchLayout.topBarTrailingMaxRatio,
+                search: search(CatchIconButton.navSize),
+                trailing: trailing,
               ),
-            )
-          else ...[
-            Expanded(child: title),
-            _TopBarTrailingEdge(
-              search: search(CatchIconButton.navSize),
-              trailing: trailing,
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
 }
 
 class _TopBarTrailingEdge extends StatelessWidget {
-  const _TopBarTrailingEdge({required this.search, required this.trailing});
+  const _TopBarTrailingEdge({
+    required this.maxWidth,
+    required this.search,
+    required this.trailing,
+  });
 
+  final double maxWidth;
   final Widget? search;
   final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
     if (search == null && trailing == null) return const SizedBox.shrink();
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ?search,
-        if (search != null && trailing != null) gapW4,
-        ?trailing,
-      ],
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxWidth),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ?search,
+          if (search != null && trailing != null) gapW4,
+          if (trailing != null) Flexible(child: trailing!),
+        ],
+      ),
     );
   }
 }
@@ -400,7 +429,7 @@ class _TopBarActionRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         for (var index = 0; index < actions.length; index++) ...[
-          actions[index],
+          Flexible(child: actions[index]),
           if (index != actions.length - 1) gapW8,
         ],
       ],

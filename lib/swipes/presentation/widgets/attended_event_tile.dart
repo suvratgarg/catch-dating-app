@@ -2,35 +2,32 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
+import 'package:catch_dating_app/swipes/presentation/catches_hub_screen_state.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class AttendedEventTile extends StatelessWidget {
-  const AttendedEventTile({super.key, required this.event});
+  const AttendedEventTile({
+    super.key,
+    required this.row,
+    required this.onOpenCatch,
+    required this.onOpenRecap,
+  });
 
-  final Event event;
+  final CatchesHubEventRow row;
+  final VoidCallback onOpenCatch;
+  final VoidCallback onOpenRecap;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final dateStr = AppTimeFormatters.weekdayDayMonth(event.startTime);
-    final remaining = swipeWindowClosesAt(event).difference(DateTime.now());
-    final countdown = _formatCountdown(remaining);
 
     return CatchSurface(
       padding: CatchInsets.content,
       borderColor: t.line,
-      onTap: () => context.pushNamed(
-        Routes.swipeEventScreen.name,
-        pathParameters: {'eventId': event.id},
-      ),
+      onTap: onOpenCatch,
       child: Row(
         children: [
           CatchSurface(
@@ -52,14 +49,14 @@ class AttendedEventTile extends StatelessWidget {
                 ),
                 gapH4,
                 Text(
-                  event.title,
+                  row.title,
                   style: CatchTextStyles.titleL(context),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 gapH4,
                 Text(
-                  '$dateStr · ${event.attendedCount} attendees checked in',
+                  row.dateAttendeeLabel,
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -72,16 +69,13 @@ class AttendedEventTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                countdown,
+                row.tileCountdownLabel,
                 style: CatchTextStyles.mono(context, color: t.ink),
               ),
               gapH4,
               CatchButton(
                 label: 'Recap',
-                onPressed: () => context.pushNamed(
-                  Routes.eventRecapScreen.name,
-                  pathParameters: {'eventId': event.id},
-                ),
+                onPressed: onOpenRecap,
                 variant: CatchButtonVariant.ghost,
                 size: CatchButtonSize.sm,
                 foregroundColor: t.primary,
@@ -97,13 +91,5 @@ class AttendedEventTile extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  static String _formatCountdown(Duration remaining) {
-    if (remaining.isNegative) return 'CLOSED';
-    final hours = remaining.inHours;
-    final minutes = remaining.inMinutes.remainder(60);
-    if (hours > 0) return '${hours}H ${minutes.toString().padLeft(2, '0')}M';
-    return '${minutes.clamp(0, 59)}M';
   }
 }

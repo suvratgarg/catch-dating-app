@@ -6,9 +6,9 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
@@ -17,7 +17,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({super.key, this.initialTabIndex = 0})
+    : assert(initialTabIndex >= 0 && initialTabIndex < 2);
+
+  final int initialTabIndex;
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
@@ -32,7 +35,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(
+      length: 2,
+      initialIndex: widget.initialTabIndex,
+      vsync: this,
+    );
     _outerScrollController = ScrollController();
     _previewScrollController = ScrollController();
   }
@@ -122,7 +129,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               ];
             },
             body: userProfileAsync.when<Widget>(
-              loading: () => const Center(child: CatchLoadingIndicator()),
+              loading: () => TabBarView(
+                controller: _tabController,
+                children: [
+                  const _ProfileTabScrollView(
+                    scrollKey: PageStorageKey('profile-edit-tab-loading'),
+                    slivers: [ProfileTabSkeletonSliverBody()],
+                  ),
+                  _ProfileTabScrollView(
+                    scrollKey: const PageStorageKey(
+                      'profile-preview-tab-loading',
+                    ),
+                    slivers: [
+                      _PreviewTabSkeletonSliverBody(
+                        scrollController: _previewScrollController,
+                        onForwardScroll: _handlePreviewForwardScroll,
+                        onLeadingOverscroll: _handlePreviewLeadingOverscroll,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
               error: (e, _) => CatchErrorState.fromError(
                 e,
                 context: AppErrorContext.profile,
@@ -201,6 +228,42 @@ class _ProfileUnavailableBody extends StatelessWidget {
         icon: CatchIcons.personOffOutlined,
         title: 'Profile not available',
         message: 'Finish onboarding or sign in again to load your profile.',
+      ),
+    );
+  }
+}
+
+class _PreviewTabSkeletonSliverBody extends StatelessWidget {
+  const _PreviewTabSkeletonSliverBody({
+    required this.scrollController,
+    required this.onForwardScroll,
+    required this.onLeadingOverscroll,
+  });
+
+  final ScrollController scrollController;
+  final double Function(double scrollDelta) onForwardScroll;
+  final ValueChanged<double> onLeadingOverscroll;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverFillRemaining(
+      child: Padding(
+        padding: const EdgeInsets.only(top: CatchSpacing.s2),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: CatchLayout.maxContentWidth,
+            ),
+            child: ProfileSurfaceSkeleton(
+              scrollController: scrollController,
+              scrollPhysics: _PreviewHeaderBridgeScrollPhysics(
+                onForwardScroll: onForwardScroll,
+              ),
+              bottomPadding: 0,
+              onLeadingOverscroll: onLeadingOverscroll,
+            ),
+          ),
+        ),
       ),
     );
   }

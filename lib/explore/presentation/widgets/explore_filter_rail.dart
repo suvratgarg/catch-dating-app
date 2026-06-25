@@ -57,8 +57,8 @@ class ExploreFilterRail extends ConsumerWidget {
   }
 }
 
-class _ExploreFilterSheet extends ConsumerWidget {
-  const _ExploreFilterSheet();
+class ExploreFilterSheet extends ConsumerWidget {
+  const ExploreFilterSheet({super.key});
 
   static const List<ExploreDistanceFilter> _distanceFilters = [
     ExploreDistanceFilter.any,
@@ -138,7 +138,7 @@ Future<void> _showExploreFilterSheet(BuildContext context) {
     isScrollControlled: true,
     useSafeArea: true,
     backgroundColor: Colors.transparent,
-    builder: (_) => const _ExploreFilterSheet(),
+    builder: (_) => const ExploreFilterSheet(),
   );
 }
 

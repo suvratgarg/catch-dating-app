@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "screenId": "screen.notifications.list",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["notifications_activity"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template includes drawn phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "activity_timestamps",
+      "stateIds": ["notifications_activity"],
+      "rect": {
+        "x": 348,
+        "y": 128,
+        "width": 28,
+        "height": 584
+      },
+      "reason": "Activity row timestamps depend on the fixture clock and notification seed times."
+    },
+    {
+      "id": "bottom_safe_area",
+      "stateIds": ["notifications_activity"],
+      "rect": {
+        "x": 0,
+        "y": 780,
+        "width": 390,
+        "height": 32
+      },
+      "reason": "Bottom safe-area rounding and scroll extent can vary while the route chrome is being reconciled."
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "screenId": "screen.filters.preferences",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["default_preferences"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template includes drawn phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "age_range_fixture",
+      "stateIds": ["default_preferences"],
+      "rect": {
+        "x": 20,
+        "y": 140,
+        "width": 350,
+        "height": 54
+      },
+      "reason": "Age range values and slider thumbs depend on profile preference fixtures."
+    },
+    {
+      "id": "bottom_dock_safe_area",
+      "stateIds": ["default_preferences"],
+      "rect": {
+        "x": 0,
+        "y": 728,
+        "width": 390,
+        "height": 84
+      },
+      "reason": "Filter apply dock and bottom safe-area treatment are still advisory while filter-sheet chrome is reconciled."
+    }
+  ]
+}

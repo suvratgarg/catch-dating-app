@@ -1,0 +1,16 @@
+{
+  "blockingKeyStats": [],
+  "candidates": [],
+  "generatedFrom": {
+    "extractedMentions": "tool/organizer_intake/generated/source_mention_extracted_mentions.json",
+    "resolutionPolicy": "tool/organizer_intake/generated/source_mention_resolution_policy.json"
+  },
+  "schemaVersion": 1,
+  "summary": {
+    "blockingKeys": 0,
+    "candidates": 0,
+    "eventCandidates": 0,
+    "hardKeyedCandidates": 0,
+    "organizerCandidates": 0
+  }
+}

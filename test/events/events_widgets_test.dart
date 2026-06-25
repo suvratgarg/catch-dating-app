@@ -8,9 +8,11 @@ import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart';
@@ -28,6 +30,7 @@ import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart'
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -269,6 +272,55 @@ void main() {
         find.text('Look for the Catch demo pacer near the entrance.'),
         findsOneWidget,
       );
+    });
+
+    testWidgets(
+      'event location route shows map-shaped skeleton while loading',
+      (tester) async {
+        await pumpEventsTestApp(
+          tester,
+          const EventLocationMapRouteScreen(
+            eventId: 'loading-event',
+            enableNetworkTiles: false,
+          ),
+          overrides: [
+            eventDetailViewModelProvider(
+              'loading-event',
+            ).overrideWithValue(const AsyncLoading<EventDetailViewModel?>()),
+          ],
+        );
+
+        expect(find.byType(EventLocationMapLoadingBody), findsOneWidget);
+        expect(find.byType(CatchSkeleton), findsWidgets);
+        expect(find.byType(CircularProgressIndicator), findsNothing);
+        expect(find.byTooltip('Back'), findsOneWidget);
+        expect(find.text('Get directions'), findsNothing);
+      },
+    );
+
+    testWidgets('event location map shows branded empty state without a pin', (
+      tester,
+    ) async {
+      await pumpEventsTestApp(
+        tester,
+        EventLocationMapScreen(
+          event: buildEvent(
+            meetingPoint: 'Secret start line',
+            locationDetails: 'Host will add the exact pin shortly.',
+          ),
+          enableNetworkTiles: false,
+        ),
+      );
+
+      expect(find.byTooltip('Back'), findsOneWidget);
+      expect(find.text('Location unavailable'), findsOneWidget);
+      expect(
+        find.text(
+          'This event does not have an exact pinned starting point yet.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Get directions'), findsNothing);
     });
 
     testWidgets('event location map keeps directions as an explicit action', (

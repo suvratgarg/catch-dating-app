@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "screenId": "screen.host.chat",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["populated_thread"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude messaging template includes drawn phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "host_identity_avatar",
+      "stateIds": ["populated_thread"],
+      "rect": {
+        "x": 48,
+        "y": 44,
+        "width": 58,
+        "height": 54
+      },
+      "reason": "Host inquiry identity and attendee imagery differ between the shared Claude messaging fixture and app capture fixtures."
+    },
+    {
+      "id": "event_context_copy",
+      "stateIds": ["populated_thread"],
+      "rect": {
+        "x": 0,
+        "y": 100,
+        "width": 390,
+        "height": 86
+      },
+      "reason": "Professional host event context copy is fixture-dependent until Host Chat has a dedicated Claude template variant."
+    },
+    {
+      "id": "message_timestamps_and_copy",
+      "stateIds": ["populated_thread"],
+      "rect": {
+        "x": 0,
+        "y": 174,
+        "width": 390,
+        "height": 392
+      },
+      "reason": "Message text, grouping, unread state, and timestamps differ across app and Claude fixtures; this baseline tracks macro layout."
+    },
+    {
+      "id": "composer_keyboard_safe_area",
+      "stateIds": ["populated_thread"],
+      "rect": {
+        "x": 0,
+        "y": 744,
+        "width": 390,
+        "height": 68
+      },
+      "reason": "Composer input text, send affordance, keyboard state, and bottom inset vary by capture fixture."
+    }
+  ]
+}

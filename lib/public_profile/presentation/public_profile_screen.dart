@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
@@ -24,10 +24,12 @@ class PublicProfileScreen extends ConsumerWidget {
     super.key,
     required this.uid,
     this.initialProfile,
+    this.sharedRunTitle,
   });
 
   final String uid;
   final PublicProfile? initialProfile;
+  final String? sharedRunTitle;
 
   Future<void> _confirmBlock({
     required BuildContext context,
@@ -57,32 +59,9 @@ class PublicProfileScreen extends ConsumerWidget {
       context: context,
       useSafeArea: true,
       builder: (context) => SafeArea(
-        child: CatchBottomSheetScaffold(
-          title: 'Report ${profile.name}',
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s4,
-            CatchSpacing.s3,
-            CatchSpacing.s4,
-            CatchSpacing.s4,
-          ),
-          child: const Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _ReportReasonTile(
-                label: 'Harassment or abuse',
-                value: 'harassment_or_abuse',
-              ),
-              _ReportReasonTile(
-                label: 'Fake or misleading profile',
-                value: 'fake_or_misleading_profile',
-              ),
-              _ReportReasonTile(
-                label: 'Inappropriate content',
-                value: 'inappropriate_content',
-              ),
-              _ReportReasonTile(label: 'Other safety concern', value: 'other'),
-            ],
-          ),
+        child: PublicProfileReportSheet(
+          profileName: profile.name,
+          onReasonSelected: (reason) => Navigator.of(context).pop(reason),
         ),
       ),
     );
@@ -106,19 +85,11 @@ class PublicProfileScreen extends ConsumerWidget {
     );
     final currentUser = ref.watch(watchUserProfileProvider).asData?.value;
     final submitting = blockMutation.isPending || reportMutation.isPending;
-    final t = CatchTokens.of(context);
 
     ref.listen(PublicProfileController.blockUserMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
         if (profile != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '${profile.name} has been blocked.',
-                style: CatchTextStyles.labelL(context, color: t.bg),
-              ),
-            ),
-          );
+          showCatchSnackBar(context, '${profile.name} has been blocked.');
         }
         Navigator.of(context).maybePop();
       }
@@ -126,14 +97,7 @@ class PublicProfileScreen extends ConsumerWidget {
 
     ref.listen(PublicProfileController.reportUserMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Report submitted.',
-              style: CatchTextStyles.labelL(context, color: t.bg),
-            ),
-          ),
-        );
+        showCatchSnackBar(context, 'Report submitted.');
       }
     });
 
@@ -178,11 +142,12 @@ class PublicProfileScreen extends ConsumerWidget {
           ),
           body: profileAsync.when(
             loading: () => profile == null
-                ? const CatchLoadingIndicator()
-                : _ProfileBody(
+                ? const ProfileSurfaceSkeleton(bottomPadding: CatchSpacing.s8)
+                : PublicProfileBody(
                     profile: profile,
                     submitting: submitting,
                     viewerProfile: currentUser,
+                    sharedRunTitle: sharedRunTitle,
                   ),
             error: (error, _) => CatchErrorState.fromError(
               error,
@@ -199,10 +164,11 @@ class PublicProfileScreen extends ConsumerWidget {
                   ),
                 );
               }
-              return _ProfileBody(
+              return PublicProfileBody(
                 profile: loadedProfile,
                 submitting: submitting,
                 viewerProfile: currentUser,
+                sharedRunTitle: sharedRunTitle,
               );
             },
           ),
@@ -212,16 +178,19 @@ class PublicProfileScreen extends ConsumerWidget {
   }
 }
 
-class _ProfileBody extends StatelessWidget {
-  const _ProfileBody({
+class PublicProfileBody extends StatelessWidget {
+  const PublicProfileBody({
+    super.key,
     required this.profile,
     required this.submitting,
     this.viewerProfile,
+    this.sharedRunTitle,
   });
 
   final PublicProfile profile;
   final bool submitting;
   final UserProfile? viewerProfile;
+  final String? sharedRunTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -236,6 +205,7 @@ class _ProfileBody extends StatelessWidget {
             viewerProfile: viewerProfile?.uid == profile.uid
                 ? null
                 : viewerProfile,
+            sharedRunTitle: sharedRunTitle,
           ),
         ),
         if (submitting)
@@ -250,18 +220,72 @@ class _ProfileBody extends StatelessWidget {
   }
 }
 
+class PublicProfileReportSheet extends StatelessWidget {
+  const PublicProfileReportSheet({
+    super.key,
+    required this.profileName,
+    required this.onReasonSelected,
+  });
+
+  final String profileName;
+  final ValueChanged<String> onReasonSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchBottomSheetScaffold(
+      title: 'Report $profileName',
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s4,
+        CatchSpacing.s3,
+        CatchSpacing.s4,
+        CatchSpacing.s4,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _ReportReasonTile(
+            label: 'Harassment or abuse',
+            value: 'harassment_or_abuse',
+            onSelected: onReasonSelected,
+          ),
+          _ReportReasonTile(
+            label: 'Fake or misleading profile',
+            value: 'fake_or_misleading_profile',
+            onSelected: onReasonSelected,
+          ),
+          _ReportReasonTile(
+            label: 'Inappropriate content',
+            value: 'inappropriate_content',
+            onSelected: onReasonSelected,
+          ),
+          _ReportReasonTile(
+            label: 'Other safety concern',
+            value: 'other',
+            onSelected: onReasonSelected,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _ReportReasonTile extends StatelessWidget {
-  const _ReportReasonTile({required this.label, required this.value});
+  const _ReportReasonTile({
+    required this.label,
+    required this.value,
+    required this.onSelected,
+  });
 
   final String label;
   final String value;
+  final ValueChanged<String> onSelected;
 
   @override
   Widget build(BuildContext context) {
     return CatchSettingsRow(
       label: label,
       icon: CatchIcons.flagOutlined,
-      onTap: () => Navigator.of(context).pop(value),
+      onTap: () => onSelected(value),
     );
   }
 }

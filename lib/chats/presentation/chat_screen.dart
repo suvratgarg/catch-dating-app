@@ -5,6 +5,9 @@ import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
+import 'package:catch_dating_app/chats/presentation/chat_read_marker_state.dart';
+import 'package:catch_dating_app/chats/presentation/chat_route_state.dart';
+import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
 import 'package:catch_dating_app/chats/presentation/suvbot_controller.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_header.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
@@ -12,19 +15,20 @@ import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.da
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_top_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key, required this.matchId, this.otherProfile});
@@ -35,6 +39,17 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _ChatContent(matchId: matchId, initialProfile: otherProfile);
+  }
+}
+
+void _retryHostChat(WidgetRef ref, String matchId, HostChatRetryIntent intent) {
+  switch (intent) {
+    case HostChatRetryIntent.reloadMatch:
+      ref.invalidate(matchStreamProvider(matchId));
+    case HostChatRetryIntent.reloadMessages:
+      ref.invalidate(watchConversationMessagesProvider(matchId));
+    case HostChatRetryIntent.reloadSuvbotActions:
+      ref.invalidate(suvbotActionsProvider);
   }
 }
 
@@ -52,10 +67,9 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
   final _textController = TextEditingController();
   final _scrollController = ScrollController();
   late final ConversationReadMarker _readMarker;
+  final _readMarkerState = ChatReadMarkerState();
   bool _didScrollToLatestMessage = false;
   int _lastMessageCount = 0;
-  String? _lastResetUid;
-  String? _lastKnownUid;
 
   @override
   void initState() {
@@ -66,7 +80,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
 
   @override
   void dispose() {
-    final uid = _lastKnownUid;
+    final uid = _readMarkerState.disposeMarkUid;
     if (uid != null) {
       unawaited(_readMarker.markRead(conversationId: widget.matchId, uid: uid));
     }
@@ -76,12 +90,11 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
   }
 
   void _resetUnread(String? uid, {bool force = false}) {
-    if (uid == null) return;
-    _lastKnownUid = uid;
-    if (!force && uid == _lastResetUid) return;
-
-    _lastResetUid = uid;
-    unawaited(_readMarker.markRead(conversationId: widget.matchId, uid: uid));
+    final uidToMark = _readMarkerState.markForUid(uid, force: force);
+    if (uidToMark == null) return;
+    unawaited(
+      _readMarker.markRead(conversationId: widget.matchId, uid: uidToMark),
+    );
   }
 
   bool _isNearBottom() {
@@ -255,9 +268,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
       return;
     }
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Report submitted for $targetName.')),
-    );
+    showCatchSnackBar(context, 'Report submitted for $targetName.');
   }
 
   void _showShareCard({
@@ -268,9 +279,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
   }) {
     if (uid == null) return;
     if (!hasShareableChatMessages(messages)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Send a message before sharing a card.')),
-      );
+      showCatchSnackBar(context, 'Send a message before sharing a card.');
       return;
     }
 
@@ -283,6 +292,56 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
         share: share,
       ),
     );
+  }
+
+  void _openOtherProfile(HostChatScreenState chatState) {
+    final otherUid = chatState.otherUid;
+    if (otherUid == null || !chatState.profileNavigationEnabled) return;
+
+    context.pushNamed(
+      Routes.publicProfileScreen.name,
+      pathParameters: {'uid': otherUid},
+      extra: chatState.profile,
+    );
+  }
+
+  void _handleTopBarAction({
+    required ChatTopBarAction action,
+    required HostChatScreenState chatState,
+    required List<ChatMessage> messages,
+    required String? uid,
+    required Event? event,
+    required ExternalShareController share,
+  }) {
+    final intent = chatState.intentForTopBarAction(action);
+    if (intent == null) return;
+
+    switch (intent.type) {
+      case HostChatActionIntentType.shareCard:
+        _showShareCard(
+          messages: messages,
+          uid: uid,
+          event: event,
+          share: share,
+        );
+        return;
+      case HostChatActionIntentType.reportUser:
+        unawaited(
+          _reportUser(
+            targetUserId: intent.targetUserId!,
+            targetName: intent.targetName!,
+          ),
+        );
+        return;
+      case HostChatActionIntentType.blockUser:
+        unawaited(
+          _confirmBlock(
+            targetUserId: intent.targetUserId!,
+            targetName: intent.targetName!,
+          ),
+        );
+        return;
+    }
   }
 
   @override
@@ -303,162 +362,115 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
           messages: messages,
           previousMessages: previousMessages,
         );
-        final uid = ref.read(uidProvider).value;
-        final latest = messages.isEmpty ? null : messages.last;
-        if (uid != null && latest != null && latest.senderId != uid) {
-          _resetUnread(uid, force: true);
+        final uidToMark = _readMarkerState.markForIncomingLatest(
+          uid: ref.read(uidProvider).value,
+          messages: messages,
+        );
+        if (uidToMark != null) {
+          unawaited(
+            _readMarker.markRead(
+              conversationId: widget.matchId,
+              uid: uidToMark,
+            ),
+          );
         }
       });
     });
 
-    final uid = ref.watch(uidProvider.select((v) => v.value));
-    final messagesAsync = ref.watch(
-      watchConversationMessagesProvider(widget.matchId),
+    final routeState = ref.watch(
+      chatRouteStateProvider(
+        ChatRouteStateArgs(
+          matchId: widget.matchId,
+          initialProfile: widget.initialProfile,
+        ),
+      ),
     );
-    final matchAsync = ref.watch(matchStreamProvider(widget.matchId));
-    final match = matchAsync.asData?.value;
-    final otherUid = uid == null ? null : match?.otherId(uid);
-    final isSuvbot = isSuvbotConversation(
-      matchId: widget.matchId,
-      otherUid: otherUid,
-    );
-    final isHostInquiry = match?.isClubHostInquiry == true;
-    final hostInquiryClub = isHostInquiry && match?.clubId != null
-        ? ref.watch(watchClubProvider(match!.clubId!)).asData?.value
-        : null;
-    final hostProfile = otherUid == null
-        ? null
-        : _hostProfileFor(hostInquiryClub, otherUid);
-    final otherParticipantIsHost = hostProfile != null;
-    final latestEventId = isSuvbot ? null : match?.latestEventId;
-    final eventAsync = latestEventId == null
-        ? const AsyncData<Event?>(null)
-        : ref.watch(watchEventProvider(latestEventId));
-    final shouldReadPublicProfile =
-        otherUid != null &&
-        !isSuvbot &&
-        (!isHostInquiry ||
-            (hostInquiryClub != null && !otherParticipantIsHost));
-    final otherProfileAsync = !shouldReadPublicProfile
-        ? const AsyncData<PublicProfile?>(null)
-        : ref.watch(watchPublicProfileProvider(otherUid));
-    final share = ref.watch(externalShareControllerProvider);
-    final initialProfile = isHostInquiry ? null : widget.initialProfile;
-    final profile = otherProfileAsync.asData?.value ?? initialProfile;
-    final name = isSuvbot
-        ? 'Suvbot'
-        : hostProfile?.displayName ??
-              profile?.name ??
-              (isHostInquiry ? 'Host conversation' : 'Chat');
-    final photoUrl = isSuvbot
-        ? null
-        : hostProfile?.avatarUrl ?? profile?.primaryPhotoThumbnailUrl;
-    final suvbotPending = ref.watch(SuvbotController.requestMutation).isPending;
-    final suvbotActionsAsync = isSuvbot
-        ? ref.watch(suvbotActionsProvider)
-        : const AsyncData(<SuvbotActionItem>[]);
-    final String? composerDisabledReason;
-    if (matchAsync.hasError) {
-      composerDisabledReason = 'Chat unavailable.';
-    } else if (matchAsync.isLoading) {
-      composerDisabledReason = 'Loading chat...';
-    } else if (match == null) {
-      composerDisabledReason = 'Chat unavailable.';
-    } else if (match.isBlocked) {
-      composerDisabledReason = 'This chat is closed.';
-    } else {
-      composerDisabledReason = null;
-    }
-    final initialMessages = messagesAsync.asData?.value;
-    final event = eventAsync.asData?.value;
+    final chatState = routeState.chatState;
+    final routeError = routeState.routeError;
     if (!_didScrollToLatestMessage &&
-        initialMessages != null &&
-        initialMessages.isNotEmpty) {
-      _syncScrollWithMessages(messages: initialMessages);
+        routeState.initialMessages != null &&
+        routeState.initialMessages!.isNotEmpty) {
+      _syncScrollWithMessages(messages: routeState.initialMessages!);
     }
 
     return _ChatMutationListeners(
       child: Scaffold(
         appBar: ChatTopBar(
-          name: name,
-          photoUrl: photoUrl,
-          otherUid: isSuvbot ? null : otherUid,
-          profile: isSuvbot ? null : profile,
-          profileNavigationEnabled: !isHostInquiry,
-          onReport: otherUid == null || isSuvbot
-              ? () {}
-              : () => _reportUser(
-                  targetUserId: otherUid,
-                  targetName: profile?.name ?? 'this person',
-                ),
-          onBlock: otherUid == null || isSuvbot
-              ? () {}
-              : () => _confirmBlock(
-                  targetUserId: otherUid,
-                  targetName: profile?.name ?? 'this person',
-                ),
-          onShareCard: otherUid == null || isSuvbot || isHostInquiry
-              ? null
-              : () => _showShareCard(
-                  messages: messagesAsync.asData?.value ?? const [],
-                  uid: uid,
-                  event: event,
-                  share: share,
-                ),
+          name: chatState.name,
+          photoUrl: chatState.photoUrl,
+          onProfileTap: chatState.profileNavigationEnabled
+              ? () => _openOtherProfile(chatState)
+              : null,
+          actions: chatState.topBarActions,
+          disabledActions: chatState.disabledTopBarActions,
+          onActionSelected: (action) => _handleTopBarAction(
+            action: action,
+            chatState: chatState,
+            messages: routeState.messages,
+            uid: routeState.uid,
+            event: routeState.event,
+            share: routeState.share,
+          ),
         ),
         body: Column(
           children: [
-            if (!isSuvbot) ChatEventContextHeader(event: event),
+            if (routeState.showEventContextHeader)
+              ChatEventContextHeader(event: routeState.event),
             Expanded(
-              child: ChatMessageList(
-                messagesAsync: messagesAsync,
-                currentUid: uid,
-                event: event,
-                otherName: isSuvbot
-                    ? 'Suvbot'
-                    : isHostInquiry
-                    ? name
-                    : profile?.name ?? 'your match',
-                scrollController: _scrollController,
-                onRetry: () => ref.invalidate(
-                  watchConversationMessagesProvider(widget.matchId),
-                ),
-              ),
+              child: routeError == null
+                  ? ChatMessageList(
+                      messagesAsync: routeState.messagesAsync,
+                      currentUid: routeState.uid,
+                      event: routeState.event,
+                      otherName: chatState.messageOtherName,
+                      scrollController: _scrollController,
+                      onRetry: chatState.messagesRetryIntent == null
+                          ? null
+                          : () => _retryHostChat(
+                              ref,
+                              widget.matchId,
+                              chatState.messagesRetryIntent!,
+                            ),
+                    )
+                  : CatchErrorState.fromError(
+                      routeError.error,
+                      context: AppErrorContext.chat,
+                      onRetry: () => _retryHostChat(
+                        ref,
+                        widget.matchId,
+                        routeError.retryIntent,
+                      ),
+                    ),
             ),
-            if (isSuvbot)
+            if (routeState.showSuvbotActionBar)
               SuvbotActionBar(
-                actions: suvbotActionsAsync,
-                pending: suvbotPending,
+                actions: routeState.suvbotActionsAsync,
+                pending: routeState.suvbotPending,
                 onAction: _runSuvbotAction,
                 onTextAction: _runSuvbotTextAction,
-                onRetry: () => ref.invalidate(suvbotActionsProvider),
+                onRetry: () => _retryHostChat(
+                  ref,
+                  widget.matchId,
+                  chatState.suvbotActionsRetryIntent ??
+                      HostChatRetryIntent.reloadSuvbotActions,
+                ),
               ),
-            if (!isSuvbot)
+            if (routeState.showComposer)
               ChatInputBar(
                 controller: _textController,
-                sending: ref
-                    .watch(ChatController.sendMessageMutation)
-                    .isPending,
-                onSend: composerDisabledReason == null ? _send : null,
-                onSendImage: composerDisabledReason == null ? _sendImage : null,
-                disabledReason: composerDisabledReason,
-                sendingImage: ref
-                    .watch(ChatController.sendImageMutation)
-                    .isPending,
+                sending: routeState.sendMessagePending,
+                onSend: chatState.composerDisabledReason == null ? _send : null,
+                onSendImage: chatState.composerDisabledReason == null
+                    ? _sendImage
+                    : null,
+                disabledReason: chatState.composerDisabledReason,
+                sendingImage: routeState.sendImagePending,
               ),
           ],
         ),
       ),
     );
   }
-}
-
-ClubHostProfile? _hostProfileFor(Club? club, String uid) {
-  if (club == null) return null;
-  for (final host in club.displayHostProfiles) {
-    if (host.uid == uid) return host;
-  }
-  return null;
 }
 
 class _ChatMutationListeners extends StatelessWidget {
@@ -468,21 +480,16 @@ class _ChatMutationListeners extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchMutationErrorListener(
-      mutation: ChatController.sendMessageMutation,
-      child: CatchMutationErrorListener(
-        mutation: ChatController.sendImageMutation,
-        child: CatchMutationErrorListener(
-          mutation: ChatController.reportUserMutation,
-          child: CatchMutationErrorListener(
-            mutation: ChatController.blockUserMutation,
-            child: CatchMutationErrorListener(
-              mutation: SuvbotController.requestMutation,
-              child: child,
-            ),
-          ),
-        ),
-      ),
+    return CatchMutationErrorListeners(
+      errorContext: AppErrorContext.chat,
+      mutations: [
+        ChatController.sendMessageMutation,
+        ChatController.sendImageMutation,
+        ChatController.reportUserMutation,
+        ChatController.blockUserMutation,
+        SuvbotController.requestMutation,
+      ],
+      child: child,
     );
   }
 }

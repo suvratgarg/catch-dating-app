@@ -4,20 +4,19 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -27,20 +26,23 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
+import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/event_invite_share_copy.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-enum HostEventManageSection { setup, live, report }
+enum HostEventManageSection { setup, guests, live, report }
+
+typedef _HostEventManageRouteData = ({String? uid, Club? club, Event? event});
 
 class HostEventManageRouteScreen extends ConsumerWidget {
   const HostEventManageRouteScreen({
@@ -49,67 +51,101 @@ class HostEventManageRouteScreen extends ConsumerWidget {
     required this.eventId,
     this.initialEvent,
     this.initialSection = HostEventManageSection.setup,
+    this.initialParticipantSearchQuery = '',
   });
 
   final String clubId;
   final String eventId;
   final Event? initialEvent;
   final HostEventManageSection initialSection;
+  final String initialParticipantSearchQuery;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
     final clubAsync = ref.watch(fetchClubProvider(clubId));
     final eventAsync = ref.watch(watchEventProvider(eventId));
-    final event = eventAsync.asData?.value ?? initialEvent;
+    final routeDataAsync = _hostEventManageRouteData(
+      uidAsync: uidAsync,
+      clubAsync: clubAsync,
+      eventAsync: eventAsync,
+      initialEvent: initialEvent,
+    );
 
-    final loading =
-        uidAsync.isLoading ||
-        clubAsync.isLoading ||
-        (eventAsync.isLoading && event == null);
-    if (loading) {
-      return Scaffold(
+    return CatchAsyncValueView<_HostEventManageRouteData>(
+      value: routeDataAsync,
+      loadingBuilder: (_) => Scaffold(
         backgroundColor: CatchTokens.of(context).bg,
-        body: const SafeArea(child: Center(child: CatchLoadingIndicator())),
-      );
-    }
-
-    final error = uidAsync.error ?? clubAsync.error ?? eventAsync.error;
-    if (error != null) {
-      return CatchErrorScaffold.fromError(
+        appBar: const CatchTopBar(title: 'Manage event', border: true),
+        body: const SafeArea(child: HostRouteLoadingBody(showTabRail: true)),
+      ),
+      errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
         error,
         context: AppErrorContext.event,
         onRetry: () {
           ref.invalidate(fetchClubProvider(clubId));
           ref.invalidate(watchEventProvider(eventId));
         },
-      );
-    }
+      ),
+      builder: (context, routeData) {
+        final uid = routeData.uid;
+        final club = routeData.club;
+        final event = routeData.event;
+        if (club == null || event == null) {
+          return const CatchErrorScaffold(
+            title: 'Event not found',
+            message: 'This hosted event is no longer available.',
+          );
+        }
 
-    final uid = uidAsync.asData?.value;
-    final club = clubAsync.asData?.value;
-    if (club == null || event == null) {
-      return const CatchErrorScaffold(
-        title: 'Event not found',
-        message: 'This hosted event is no longer available.',
-      );
-    }
+        if (uid == null || !club.isHostedBy(uid)) {
+          return CatchErrorScaffold(
+            title: 'Action unavailable',
+            message: 'You can manage only events that you host.',
+            icon: CatchIcons.blockRounded,
+          );
+        }
 
-    if (uid == null || !club.isHostedBy(uid)) {
-      return CatchErrorScaffold(
-        title: 'Action unavailable',
-        message: 'You can manage only events that you host.',
-        icon: CatchIcons.blockRounded,
-      );
-    }
-
-    return HostEventManageScreen(
-      club: club,
-      event: event,
-      onBackToSuccess: () => Navigator.of(context).maybePop(),
-      initialSection: initialSection,
+        return HostEventManageScreen(
+          club: club,
+          event: event,
+          onBackToSuccess: () => Navigator.of(context).maybePop(),
+          initialSection: initialSection,
+          initialParticipantSearchQuery: initialParticipantSearchQuery,
+        );
+      },
     );
   }
+}
+
+AsyncValue<_HostEventManageRouteData> _hostEventManageRouteData({
+  required AsyncValue<String?> uidAsync,
+  required AsyncValue<Club?> clubAsync,
+  required AsyncValue<Event?> eventAsync,
+  required Event? initialEvent,
+}) {
+  final event = eventAsync.asData?.value ?? initialEvent;
+  final loading =
+      uidAsync.isLoading ||
+      clubAsync.isLoading ||
+      (eventAsync.isLoading && event == null);
+  if (loading) return const AsyncLoading<_HostEventManageRouteData>();
+
+  final error = uidAsync.error ?? clubAsync.error ?? eventAsync.error;
+  if (error != null) {
+    final stackTrace =
+        uidAsync.stackTrace ??
+        clubAsync.stackTrace ??
+        eventAsync.stackTrace ??
+        StackTrace.current;
+    return AsyncError<_HostEventManageRouteData>(error, stackTrace);
+  }
+
+  return AsyncData<_HostEventManageRouteData>((
+    uid: uidAsync.asData?.value,
+    club: clubAsync.asData?.value,
+    event: event,
+  ));
 }
 
 class HostEventManageScreen extends ConsumerStatefulWidget {
@@ -121,6 +157,7 @@ class HostEventManageScreen extends ConsumerStatefulWidget {
     this.initialSection = HostEventManageSection.setup,
     this.onSectionChanged,
     this.eventSuccessFixtureActions,
+    this.initialParticipantSearchQuery = '',
   });
 
   final Club club;
@@ -129,6 +166,7 @@ class HostEventManageScreen extends ConsumerStatefulWidget {
   final HostEventManageSection initialSection;
   final ValueChanged<HostEventManageSection>? onSectionChanged;
   final EventSuccessHostFixtureActions? eventSuccessFixtureActions;
+  final String initialParticipantSearchQuery;
 
   @override
   ConsumerState<HostEventManageScreen> createState() =>
@@ -156,10 +194,20 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       watchEventParticipationRosterProvider(event.id),
     );
     final roster = rosterAsync.asData?.value;
+    final cancelMutation = ref.watch(
+      EventBookingController.hostCancelEventMutation,
+    );
+    final deleteMutation = ref.watch(
+      EventBookingController.deleteEventMutation,
+    );
     final hasKnownActivity =
-        (roster?.bookedCount ?? event.signedUpCount) > 0 ||
-        (roster?.checkedInCount ?? event.attendedCount) > 0 ||
-        (roster?.waitlistedCount ?? event.waitlistCount) > 0;
+        _hostBookedCount(event, roster) > 0 ||
+        _hostCheckedInCount(event, roster) > 0 ||
+        _hostWaitlistedCount(event, roster) > 0;
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final collapseHeaderCopy = textScale >= 1.4;
+    const sectionPickerHeight = 62.0;
+    final eventTitle = _hostManageEventTitle(event);
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -167,26 +215,35 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         showBackButton: true,
         onBack: onBackToSuccess,
         border: true,
-        height: CatchLayout.topBarHeight + CatchSpacing.s4,
+        height: CatchLayout.topBarLargeHeight + CatchSpacing.s4,
         titleWidget: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (!collapseHeaderCopy) ...[
+              Text(
+                club.name.toUpperCase(),
+                style: CatchTextStyles.kicker(context, color: t.ink3),
+              ),
+              gapH2,
+            ],
             Text(
-              'HOST MANAGE',
-              style: CatchTextStyles.kicker(context, color: t.ink3),
-            ),
-            gapH2,
-            Text(
-              event.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              eventTitle,
               style: CatchTextStyles.titleL(context, color: t.ink),
+              semanticsLabel: collapseHeaderCopy
+                  ? '${club.name}. $eventTitle'
+                  : null,
+              maxLines: collapseHeaderCopy ? 1 : 2,
+              overflow: TextOverflow.ellipsis,
             ),
+            if (!collapseHeaderCopy) ...[
+              gapH8,
+              _HostManageMetaRow(event: event),
+            ],
           ],
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(CatchSpacing.s12),
+          preferredSize: const Size.fromHeight(sectionPickerHeight),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(
               CatchSpacing.s5,
@@ -208,46 +265,15 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         key: const Key('host_event_manage_scroll_view'),
         padding: CatchInsets.pageBodyUnderHeader,
         children: [
-          if (event.isFull) ...[
-            CatchSurface(
-              padding: const EdgeInsets.symmetric(
-                horizontal: CatchSpacing.s4,
-                vertical: CatchSpacing.s3,
-              ),
-              backgroundColor: t.ink,
-              radius: CatchRadius.md,
-              borderWidth: 0,
-              child: Row(
-                children: [
-                  Icon(
-                    CatchIcons.lockRounded,
-                    color: t.surface,
-                    size: CatchIcon.md,
-                  ),
-                  gapW10,
-                  Expanded(
-                    child: Text(
-                      'FULL - CAPACITY REACHED',
-                      style: CatchTextStyles.monoLabel(
-                        context,
-                        color: t.surface,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    'WAITLIST OPEN',
-                    style: CatchTextStyles.badge(context, color: t.ink3),
-                  ),
-                ],
-              ),
-            ),
-            gapH12,
-          ],
           ..._selectedSectionChildren(
             club: club,
             event: event,
+            roster: roster,
             hasKnownActivity: hasKnownActivity,
             onDeleted: onBackToSuccess,
+            cancelEventPending: cancelMutation.isPending,
+            deleteEventPending: deleteMutation.isPending,
+            actionError: _firstMutationError([cancelMutation, deleteMutation]),
           ),
         ],
       ),
@@ -257,32 +283,50 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
   List<Widget> _selectedSectionChildren({
     required Club club,
     required Event event,
+    required EventParticipationRoster? roster,
     required bool hasKnownActivity,
     required VoidCallback onDeleted,
+    required bool cancelEventPending,
+    required bool deleteEventPending,
+    required Object? actionError,
   }) {
     return switch (_selectedSection) {
       HostEventManageSection.setup => [
-        HostEventParticipantsPanel(
-          eventId: event.id,
-          mode: HostEventParticipantsMode.setup,
-        ),
+        if (_showsCapacityNotice(event)) ...[
+          const _HostFullCapacityBanner(),
+          gapH12,
+        ],
+        _HostFullCapacityApron(event: event, roster: roster),
         gapH20,
-        _HostEventSummaryCard(club: club, event: event),
+        _HostEventActionsSection(
+          club: club,
+          event: event,
+          hasKnownActivity: hasKnownActivity,
+          cancelEventPending: cancelEventPending,
+          deleteEventPending: deleteEventPending,
+          actionError: actionError,
+          onEditEvent: () => _openEditEvent(event),
+          onCancelEvent: () => _confirmCancelEvent(event),
+          onDeleteEvent: () => _confirmDeleteEvent(event, onDeleted),
+        ),
         if (event.effectiveEventPolicy.usesInviteOnly) ...[
           gapH20,
           _HostPrivateAccessCard(club: club, event: event),
         ],
+        gapH20,
+        _HostEventSummaryCard(club: club, event: event),
         gapH20,
         EventSuccessHostSection(
           event: event,
           showTabs: false,
           fixtureActions: widget.eventSuccessFixtureActions,
         ),
-        gapH20,
-        _HostEventActionsCard(
-          event: event,
-          hasKnownActivity: hasKnownActivity,
-          onDeleted: onDeleted,
+      ],
+      HostEventManageSection.guests => [
+        HostEventParticipantsPanel(
+          eventId: event.id,
+          mode: HostEventParticipantsMode.setup,
+          initialSearchQuery: widget.initialParticipantSearchQuery,
         ),
       ],
       HostEventManageSection.live => [
@@ -290,18 +334,15 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           event: event,
           initialTab: EventSuccessHostTab.live,
           showTabs: false,
+          compactLiveControls: true,
           fixtureActions: widget.eventSuccessFixtureActions,
-          liveRoster: HostEventParticipantsPanel(
-            eventId: event.id,
-            mode: HostEventParticipantsMode.live,
-            showSummaryHeader: false,
-          ),
         ),
       ],
       HostEventManageSection.report => [
         HostEventParticipantsPanel(
           eventId: event.id,
           mode: HostEventParticipantsMode.report,
+          initialSearchQuery: widget.initialParticipantSearchQuery,
         ),
         gapH20,
         EventSuccessHostSection(
@@ -312,6 +353,179 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ),
       ],
     };
+  }
+
+  void _openEditEvent(Event event) {
+    context.pushNamed(
+      Routes.hostAppEditEventScreen.name,
+      pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+      extra: event,
+    );
+  }
+
+  Future<void> _confirmCancelEvent(Event event) async {
+    final confirmed = await showCatchAdaptiveDialog<bool>(
+      context: context,
+      title: 'Cancel this event?',
+      message:
+          'Cancelling removes it from schedules but keeps attendee, payment, and history records. Attendees are notified and refunded per your cancellation policy.',
+      actions: const [
+        CatchDialogAction(label: 'Keep event', value: false, isDefault: true),
+        CatchDialogAction(
+          label: 'Cancel event',
+          value: true,
+          isDestructive: true,
+        ),
+      ],
+    );
+    if (confirmed != true || !mounted) return;
+
+    unawaited(
+      EventBookingController.hostCancelEventMutation.run(ref, (tx) async {
+        await tx
+            .get(hostEventManageActionsProvider)
+            .cancelHostedEvent(event: event);
+        if (!mounted) return;
+        showCatchSnackBar(context, 'Event cancelled.');
+      }),
+    );
+  }
+
+  Future<void> _confirmDeleteEvent(Event event, VoidCallback onDeleted) async {
+    final confirmed = await showCatchAdaptiveDialog<bool>(
+      context: context,
+      title: 'Delete unused event?',
+      message:
+          'Only events with no bookings, waitlist, attendance, payments, or reviews can be deleted. This permanently removes the event.',
+      actions: const [
+        CatchDialogAction(label: 'Keep event', value: false, isDefault: true),
+        CatchDialogAction(
+          label: 'Delete unused event',
+          value: true,
+          isDestructive: true,
+        ),
+      ],
+    );
+    if (confirmed != true || !mounted) return;
+
+    unawaited(
+      EventBookingController.deleteEventMutation.run(ref, (tx) async {
+        await tx
+            .get(hostEventManageActionsProvider)
+            .deleteUnusedEvent(event: event);
+        if (!mounted) return;
+        showCatchSnackBar(context, 'Event deleted.');
+        onDeleted();
+      }),
+    );
+  }
+}
+
+bool _showsCapacityNotice(Event event) {
+  if (event.isFull) return true;
+  return event.effectiveWaitlistedCohortCounts.values.any((count) => count > 0);
+}
+
+int _hostBookedCount(Event event, EventParticipationRoster? roster) {
+  final rosterCount = roster?.bookedCount;
+  if (rosterCount == null) return event.signedUpCount;
+  return rosterCount > event.signedUpCount ? rosterCount : event.signedUpCount;
+}
+
+int _hostCheckedInCount(Event event, EventParticipationRoster? roster) {
+  final rosterCount = roster?.checkedInCount;
+  if (rosterCount == null) return event.attendedCount;
+  return rosterCount > event.attendedCount ? rosterCount : event.attendedCount;
+}
+
+int _hostWaitlistedCount(Event event, EventParticipationRoster? roster) {
+  final rosterCount = roster?.waitlistedCount;
+  if (rosterCount == null) return event.waitlistCount;
+  return rosterCount > event.waitlistCount ? rosterCount : event.waitlistCount;
+}
+
+String _hostManageEventTitle(Event event) {
+  if (event.eventFormat.isDistanceBased) return event.title;
+  final weekday = EventFormatters.longWeekday(event.startTime);
+  return '$weekday ${event.eventFormat.eventTitleLabel}';
+}
+
+Object? _firstMutationError(Iterable<Object> mutations) {
+  for (final mutation in mutations) {
+    if (mutation is MutationError) return mutation.error;
+  }
+  return null;
+}
+
+class _HostManageMetaRow extends StatelessWidget {
+  const _HostManageMetaRow({required this.event});
+
+  final Event event;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Row(
+      children: [
+        Expanded(
+          flex: 5,
+          child: _HostManageMetaItem(
+            icon: CatchIcons.calendarTodayOutlined,
+            label:
+                '${event.shortDateLabel} · ${EventFormatters.time(event.startTime)}',
+            color: t.ink2,
+          ),
+        ),
+        gapW12,
+        Expanded(
+          flex: 4,
+          child: _HostManageMetaItem(
+            icon: CatchIcons.pinOutlined,
+            label: event.locationName,
+            color: t.ink2,
+          ),
+        ),
+        gapW12,
+        Expanded(
+          flex: 3,
+          child: _HostManageMetaItem(
+            icon: CatchIcons.groupsOutlined,
+            label: event.spotsLabel,
+            color: t.ink2,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HostManageMetaItem extends StatelessWidget {
+  const _HostManageMetaItem({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: CatchIcon.badge, color: color),
+        gapW4,
+        Expanded(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.supporting(context, color: color),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -326,10 +540,12 @@ class _HostManageSectionPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchOptionGroup<HostEventManageSection>(
-      options: [
+    return CatchSegmentedControl<HostEventManageSection>(
+      expanded: true,
+      style: CatchSegmentedControlStyle.surface,
+      segments: [
         for (final section in HostEventManageSection.values)
-          CatchOption(value: section, label: section.label),
+          CatchSegment(value: section, label: section.label.toUpperCase()),
       ],
       selected: selectedSection,
       onChanged: onChanged,
@@ -341,6 +557,7 @@ extension on HostEventManageSection {
   String get label {
     return switch (this) {
       HostEventManageSection.setup => 'Setup',
+      HostEventManageSection.guests => 'Guests',
       HostEventManageSection.live => 'Live',
       HostEventManageSection.report => 'Report',
     };
@@ -357,30 +574,32 @@ class _HostPrivateAccessCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final accessAsync = ref.watch(watchEventPrivateAccessProvider(event.id));
-    return accessAsync.when(
-      loading: () => _PrivateAccessShell(
+    return CatchAsyncValueView<EventPrivateAccess?>(
+      value: accessAsync,
+      loadingBuilder: (_) => _PrivateAccessShell(
         child: Row(
           children: [
-            const SizedBox.square(
-              dimension: CatchIcon.md,
-              child: CatchLoadingIndicator(strokeWidth: 2),
-            ),
+            const HostInlineSkeletonIcon(),
             gapW12,
-            Text(
-              'Loading invite access...',
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+            Expanded(
+              child: Text(
+                'Loading invite access...',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
             ),
           ],
         ),
       ),
-      error: (error, _) => CatchInlineErrorState.fromError(
+      errorBuilder: (_, error, _) => CatchInlineErrorState.fromError(
         error,
         context: AppErrorContext.event,
         compact: true,
         onRetry: () =>
             ref.invalidate(watchEventPrivateAccessProvider(event.id)),
       ),
-      data: (access) =>
+      builder: (context, access) =>
           _PrivateAccessBody(club: club, event: event, access: access),
     );
   }
@@ -416,6 +635,9 @@ class _PrivateAccessBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
+    final shareMutation = ref.watch(
+      HostEventManageController.sharePrivateLinkMutation,
+    );
     final inviteLinksAsync = ref.watch(watchEventInviteLinksProvider(event.id));
     final inviteCode = access?.inviteCode.trim();
     final inviteLink = inviteCode == null || inviteCode.isEmpty
@@ -470,17 +692,30 @@ class _PrivateAccessBody extends ConsumerWidget {
                 value: inviteLink,
                 showDivider: false,
               ),
+            if (shareMutation.hasError) ...[
+              gapH12,
+              CatchMutationErrorBanner(
+                mutation: shareMutation,
+                errorContext: AppErrorContext.event,
+              ),
+            ],
             gapH14,
             CatchButton(
               label: 'Share private link',
-              onPressed: inviteLink == null
+              onPressed: inviteLink == null || shareMutation.isPending
                   ? null
-                  : () =>
-                        unawaited(_sharePrivateLink(context, ref, inviteLink)),
+                  : () => _shareHostPrivateLink(
+                      context: context,
+                      ref: ref,
+                      club: club,
+                      event: event,
+                      inviteLink: inviteLink,
+                    ),
               variant: CatchButtonVariant.secondary,
               icon: Icon(
                 CatchIcons.platformShare(platform: Theme.of(context).platform),
               ),
+              isLoading: shareMutation.isPending,
               fullWidth: true,
             ),
             gapH18,
@@ -494,35 +729,32 @@ class _PrivateAccessBody extends ConsumerWidget {
       ),
     );
   }
+}
 
-  Future<void> _sharePrivateLink(
-    BuildContext context,
-    WidgetRef ref,
-    String inviteLink,
-  ) async {
-    final box = context.findRenderObject() as RenderBox?;
-    final origin = box == null
-        ? null
-        : box.localToGlobal(Offset.zero) & box.size;
-    try {
-      await ref
-          .read(externalShareControllerProvider)
-          .shareText(
-            text: EventInviteShareCopy.hostPrivateInviteText(
-              event: event,
-              clubName: club.name,
-              inviteLink: inviteLink,
-            ),
-            subject: EventInviteShareCopy.subject(event),
-            origin: origin,
-          );
-    } catch (_) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open share sheet.')),
-      );
-    }
-  }
+void _shareHostPrivateLink({
+  required BuildContext context,
+  required WidgetRef ref,
+  required Club club,
+  required Event event,
+  required String inviteLink,
+}) {
+  final box = context.findRenderObject() as RenderBox?;
+  final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
+  unawaited(
+    HostEventManageController.sharePrivateLinkMutation
+        .run(
+          ref,
+          (tx) => tx
+              .get(hostEventManageActionsProvider)
+              .sharePrivateLink(
+                club: club,
+                event: event,
+                inviteLink: inviteLink,
+                origin: origin,
+              ),
+        )
+        .then<void>((_) {}, onError: (_) {}),
+  );
 }
 
 class _HostInviteLinksList extends ConsumerWidget {
@@ -539,44 +771,92 @@ class _HostInviteLinksList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
+    final createMutation = ref.watch(
+      HostEventManageController.createInviteLinkMutation,
+    );
+    final copyMutation = ref.watch(
+      HostEventManageController.copyInviteLinkMutation,
+    );
+    final disableMutation = ref.watch(
+      HostEventManageController.disableInviteLinkMutation,
+    );
+    final mutationError = [
+      createMutation,
+      copyMutation,
+      disableMutation,
+    ].firstWhere((mutation) => mutation.hasError, orElse: () => createMutation);
+    final isMutating =
+        createMutation.isPending ||
+        copyMutation.isPending ||
+        disableMutation.isPending;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                'Named invite links',
-                style: CatchTextStyles.labelL(context),
-              ),
-            ),
-            CatchButton(
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final button = CatchButton(
               label: 'New link',
-              onPressed: () => unawaited(_createNamedLink(context, ref)),
+              onPressed: isMutating
+                  ? null
+                  : () => unawaited(_createNamedLink(context, ref)),
               variant: CatchButtonVariant.secondary,
               icon: Icon(CatchIcons.addRounded),
-            ),
-          ],
+              isLoading: createMutation.isPending,
+            );
+            if (constraints.maxWidth < 360) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Named invite links',
+                    style: CatchTextStyles.labelL(context),
+                  ),
+                  gapH10,
+                  Align(alignment: Alignment.centerLeft, child: button),
+                ],
+              );
+            }
+            return Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Named invite links',
+                    style: CatchTextStyles.labelL(context),
+                  ),
+                ),
+                button,
+              ],
+            );
+          },
         ),
         gapH6,
         Text(
           'Track which channels create demand, bookings, arrivals, catches, and chats.',
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
+        if (mutationError.hasError) ...[
+          gapH12,
+          CatchMutationErrorBanner(
+            mutation: mutationError,
+            errorContext: AppErrorContext.event,
+          ),
+        ],
         gapH12,
-        linksAsync.when(
-          loading: () => Text(
+        CatchAsyncValueView<List<EventInviteLink>>(
+          value: linksAsync,
+          loadingBuilder: (_) => Text(
             'Loading invite links...',
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
-          error: (error, _) => CatchInlineErrorState.fromError(
+          errorBuilder: (_, error, _) => CatchInlineErrorState.fromError(
             error,
             context: AppErrorContext.event,
             compact: true,
             onRetry: () =>
                 ref.invalidate(watchEventInviteLinksProvider(event.id)),
           ),
-          data: (links) => links.isEmpty
+          builder: (context, links) => links.isEmpty
               ? Text(
                   'Create links for Instagram bio, WhatsApp alumni, venue partners, or any channel you want to compare.',
                   style: CatchTextStyles.supporting(context, color: t.ink2),
@@ -588,6 +868,7 @@ class _HostInviteLinksList extends ConsumerWidget {
                         event: event,
                         inviteCode: inviteCode,
                         link: link,
+                        actionsDisabled: isMutating,
                       ),
                   ],
                 ),
@@ -599,28 +880,22 @@ class _HostInviteLinksList extends ConsumerWidget {
   Future<void> _createNamedLink(BuildContext context, WidgetRef ref) async {
     final draft = await _showInviteLinkDialog(context);
     if (draft == null) return;
+    if (!context.mounted) return;
     try {
-      final response = await ref
-          .read(eventRepositoryProvider)
-          .createInviteLink(
-            eventId: event.id,
-            label: draft.label,
-            source: draft.source,
+      final label = await HostEventManageController.createInviteLinkMutation
+          .run(
+            ref,
+            (tx) => tx
+                .get(hostEventManageActionsProvider)
+                .createInviteLink(
+                  event: event,
+                  inviteCode: inviteCode,
+                  draft: draft,
+                ),
           );
-      final url = _inviteLinkUrl(
-        event: event,
-        inviteCode: inviteCode,
-        inviteLinkId: response.inviteLinkId,
-      );
-      await Clipboard.setData(ClipboardData(text: url));
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${response.label} copied.')));
-    } catch (error) {
-      if (!context.mounted) return;
-      showCatchErrorSnackBar(context, error);
-    }
+      showCatchSnackBar(context, '$label copied.');
+    } catch (_) {}
   }
 }
 
@@ -629,16 +904,18 @@ class _HostInviteLinkRow extends ConsumerWidget {
     required this.event,
     required this.inviteCode,
     required this.link,
+    required this.actionsDisabled,
   });
 
   final Event event;
   final String inviteCode;
   final EventInviteLink link;
+  final bool actionsDisabled;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final url = _inviteLinkUrl(
+    final url = hostInviteLinkUrl(
       event: event,
       inviteCode: inviteCode,
       inviteLinkId: link.id,
@@ -648,80 +925,110 @@ class _HostInviteLinkRow extends ConsumerWidget {
       child: CatchSurface(
         padding: CatchInsets.contentDense,
         borderColor: t.line,
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          link.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.labelL(context),
-                        ),
-                      ),
-                      if (link.isDisabled) ...[
-                        gapW8,
-                        const CatchBadge(label: 'Disabled'),
-                      ],
-                    ],
-                  ),
-                  if (link.source != null) ...[
-                    gapH2,
-                    Text(
-                      link.source!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
-                    ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final details = Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s1,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(link.label, style: CatchTextStyles.labelL(context)),
+                    if (link.isDisabled) const CatchBadge(label: 'Disabled'),
                   ],
-                  gapH8,
+                ),
+                if (link.source != null) ...[
+                  gapH2,
                   Text(
-                    _inviteLinkStats(link),
-                    maxLines: 2,
+                    link.source!,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: CatchTextStyles.supporting(context, color: t.ink2),
                   ),
                 ],
-              ),
-            ),
-            gapW8,
-            Tooltip(
-              message: 'Copy link',
-              child: CatchIconButton(
-                onTap: () => unawaited(_copyInviteLink(context, url)),
-                child: Icon(CatchIcons.contentCopyRounded, size: CatchIcon.sm),
-              ),
-            ),
-            if (!link.isDisabled) ...[
-              gapW8,
-              Tooltip(
-                message: 'Disable link',
-                child: CatchIconButton(
-                  onTap: () => unawaited(_disableInviteLink(context, ref)),
-                  child: Icon(
-                    CatchIcons.hourglassDisabledRounded,
-                    size: CatchIcon.sm,
+                gapH8,
+                Text(
+                  _inviteLinkStats(link),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
+              ],
+            );
+            final actions = Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Tooltip(
+                  message: 'Copy link',
+                  child: CatchIconButton(
+                    onTap: actionsDisabled
+                        ? null
+                        : () => unawaited(_copyInviteLink(context, ref, url)),
+                    disabled: actionsDisabled,
+                    child: Icon(
+                      CatchIcons.contentCopyRounded,
+                      size: CatchIcon.sm,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ],
+                if (!link.isDisabled) ...[
+                  gapW8,
+                  Tooltip(
+                    message: 'Disable link',
+                    child: CatchIconButton(
+                      onTap: actionsDisabled
+                          ? null
+                          : () => unawaited(_disableInviteLink(context, ref)),
+                      disabled: actionsDisabled,
+                      child: Icon(
+                        CatchIcons.hourglassDisabledRounded,
+                        size: CatchIcon.sm,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            );
+            if (constraints.maxWidth < 340) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  details,
+                  gapH10,
+                  Align(alignment: Alignment.centerRight, child: actions),
+                ],
+              );
+            }
+            return Row(
+              children: [
+                Expanded(child: details),
+                gapW8,
+                actions,
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
-  Future<void> _copyInviteLink(BuildContext context, String url) async {
-    await Clipboard.setData(ClipboardData(text: url));
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('${link.label} copied.')));
+  Future<void> _copyInviteLink(
+    BuildContext context,
+    WidgetRef ref,
+    String url,
+  ) async {
+    try {
+      final label = await HostEventManageController.copyInviteLinkMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostEventManageActionsProvider)
+            .copyInviteLink(label: link.label, url: url),
+      );
+      if (!context.mounted) return;
+      showCatchSnackBar(context, '$label copied.');
+    } catch (_) {}
   }
 
   Future<void> _disableInviteLink(BuildContext context, WidgetRef ref) async {
@@ -736,46 +1043,51 @@ class _HostInviteLinkRow extends ConsumerWidget {
       ],
     );
     if (confirmed != true) return;
+    if (!context.mounted) return;
     try {
-      await ref
-          .read(eventRepositoryProvider)
-          .disableInviteLink(eventId: event.id, inviteLinkId: link.id);
+      final label = await HostEventManageController.disableInviteLinkMutation
+          .run(
+            ref,
+            (tx) => tx
+                .get(hostEventManageActionsProvider)
+                .disableInviteLink(event: event, link: link),
+          );
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${link.label} disabled.')));
-    } catch (_) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not disable invite link.')),
-      );
-    }
+      showCatchSnackBar(context, '$label disabled.');
+    } catch (_) {}
   }
 }
 
-class _InviteLinkDraft {
-  const _InviteLinkDraft({required this.label, this.source});
-
-  final String label;
-  final String? source;
-}
-
-Future<_InviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
+Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
   final labelController = TextEditingController();
   final sourceController = TextEditingController();
   try {
-    return showDialog<_InviteLinkDraft>(
+    return showDialog<HostInviteLinkDraft>(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) {
           final label = labelController.text.trim();
           final source = sourceController.text.trim();
-          return AlertDialog(
-            title: Text(
-              'New invite link',
-              style: CatchTextStyles.sectionTitle(context),
-            ),
-            content: Column(
+          return CatchFormDialog(
+            title: 'New invite link',
+            actions: [
+              CatchTextButton(
+                label: 'Cancel',
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              CatchTextButton(
+                label: 'Create',
+                onPressed: label.isEmpty
+                    ? null
+                    : () => Navigator.of(context).pop(
+                        HostInviteLinkDraft(
+                          label: label,
+                          source: source.isEmpty ? null : source,
+                        ),
+                      ),
+              ),
+            ],
+            child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 CatchTextField(
@@ -795,23 +1107,6 @@ Future<_InviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
                 ),
               ],
             ),
-            actions: [
-              CatchTextButton(
-                label: 'Cancel',
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-              CatchTextButton(
-                label: 'Create',
-                onPressed: label.isEmpty
-                    ? null
-                    : () => Navigator.of(context).pop(
-                        _InviteLinkDraft(
-                          label: label,
-                          source: source.isEmpty ? null : source,
-                        ),
-                      ),
-              ),
-            ],
           );
         },
       ),
@@ -820,19 +1115,6 @@ Future<_InviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
     labelController.dispose();
     sourceController.dispose();
   }
-}
-
-String _inviteLinkUrl({
-  required Event event,
-  required String inviteCode,
-  required String inviteLinkId,
-}) {
-  return AppDeepLinks.event(
-    clubId: event.clubId,
-    eventId: event.id,
-    inviteCode: inviteCode,
-    inviteLinkId: inviteLinkId,
-  ).toString();
 }
 
 String _inviteLinkStats(EventInviteLink link) {
@@ -846,193 +1128,390 @@ String _inviteLinkStats(EventInviteLink link) {
   ].join(' | ');
 }
 
-class _HostEventActionsCard extends ConsumerWidget {
-  const _HostEventActionsCard({
-    required this.event,
-    required this.hasKnownActivity,
-    required this.onDeleted,
-  });
+class _HostFullCapacityApron extends StatelessWidget {
+  const _HostFullCapacityApron({required this.event, required this.roster});
 
   final Event event;
-  final bool hasKnownActivity;
-  final VoidCallback onDeleted;
+  final EventParticipationRoster? roster;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
-    final cancelMutation = ref.watch(
-      EventBookingController.hostCancelEventMutation,
-    );
-    final deleteMutation = ref.watch(
-      EventBookingController.deleteEventMutation,
-    );
-    final errorMutation = [
-      cancelMutation,
-      deleteMutation,
-    ].firstWhere((mutation) => mutation.hasError, orElse: () => cancelMutation);
-    final isMutating = cancelMutation.isPending || deleteMutation.isPending;
+  Widget build(BuildContext context) {
+    final booked = _hostBookedCount(event, roster);
+    final waitlisted = _hostWaitlistedCount(event, roster);
+    final open = (event.capacityLimit - booked).clamp(0, event.capacityLimit);
+    final revenueEstimate = booked * event.priceInPaise;
+    final revenueLabel = event.isFree
+        ? 'Free'
+        : EventFormatters.priceInPaise(
+            revenueEstimate,
+            currencyCode: event.currency,
+          );
+    final refundPolicy = event.effectiveEventPolicy.cancellationPolicy.title;
 
-    return CatchSurface(
-      padding: CatchInsets.content,
-      borderColor: t.line,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(CatchIcons.adminPanelSettingsOutlined, color: t.ink2),
-              gapW10,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Host actions',
-                      style: CatchTextStyles.sectionTitle(context),
-                    ),
-                    gapH4,
-                    Text(
-                      event.isCancelled
-                          ? 'This event has already been cancelled.'
-                          : 'Use cancel for published events that should leave schedules but keep attendee, payment, and history records. Delete is only for unused events created by mistake.',
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
-                    ),
-                  ],
-                ),
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _HostCapacityTile(
+                value: '$booked',
+                suffix: '/${event.capacityLimit}',
+                label: 'Booked',
+                detail: '$open open',
               ),
-              if (event.isCancelled)
-                const CatchBadge(
-                  label: 'Cancelled',
-                  tone: CatchBadgeTone.danger,
-                ),
-            ],
-          ),
-          if (errorMutation.hasError) ...[
-            gapH12,
-            CatchErrorBanner.fromError(
-              (errorMutation as MutationError).error,
-              context: AppErrorContext.event,
+            ),
+            gapW10,
+            Expanded(
+              child: _HostCapacityTile(
+                value: '$waitlisted',
+                label: 'Waitlist',
+                detail: waitlisted == 1
+                    ? '1 to review'
+                    : '$waitlisted to review',
+              ),
             ),
           ],
-          gapH14,
-          if (!event.isCancelled)
-            CatchButton(
-              label: 'Edit event details',
-              onPressed: isMutating
-                  ? null
-                  : () => context.pushNamed(
-                      Routes.hostAppEditEventScreen.name,
-                      pathParameters: {
-                        'clubId': event.clubId,
-                        'eventId': event.id,
-                      },
-                      extra: event,
-                    ),
-              variant: CatchButtonVariant.secondary,
-              icon: Icon(CatchIcons.editOutlined),
-              fullWidth: true,
-            ),
-          if (!event.isCancelled) gapH10,
-          if (!event.isCancelled)
-            CatchButton(
-              label: 'Cancel published event',
-              onPressed: isMutating
-                  ? null
-                  : () => _confirmCancelEvent(context, ref),
-              variant: CatchButtonVariant.danger,
-              icon: Icon(CatchIcons.cancelOutlined),
-              isLoading: cancelMutation.isPending,
-              fullWidth: true,
-            ),
-          if (!event.isCancelled) gapH10,
-          if (hasKnownActivity)
-            Text(
-              'Delete unused event is unavailable once an event has bookings, waitlist, attendance, payments, or reviews. Cancel the published event instead.',
-              style: CatchTextStyles.supporting(context, color: t.ink3),
-            )
-          else
-            CatchButton(
-              label: 'Delete unused event',
-              onPressed: isMutating
-                  ? null
-                  : () => _confirmDeleteEvent(context, ref),
-              variant: CatchButtonVariant.secondary,
-              icon: Icon(CatchIcons.deleteOutlineRounded),
-              isLoading: deleteMutation.isPending,
-              fullWidth: true,
-              foregroundColor: t.danger,
-              borderColor: t.danger.withValues(
-                alpha: CatchOpacity.hostDangerBorder,
+        ),
+        gapH10,
+        Row(
+          children: [
+            Expanded(
+              child: _HostCapacityTile(
+                value: revenueLabel,
+                label: 'Revenue est',
               ),
             ),
+            gapW10,
+            Expanded(
+              child: _HostCapacityTile(
+                value: refundPolicy,
+                label: 'Refund policy',
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _HostFullCapacityBanner extends StatelessWidget {
+  const _HostFullCapacityBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s4,
+        vertical: CatchSpacing.s3,
+      ),
+      backgroundColor: t.ink,
+      radius: CatchRadius.md,
+      borderWidth: 0,
+      child: Row(
+        children: [
+          Icon(CatchIcons.lockRounded, color: t.surface, size: CatchIcon.md),
+          gapW10,
+          Expanded(
+            child: Text(
+              'FULL - CAPACITY REACHED',
+              style: CatchTextStyles.monoLabel(context, color: t.surface),
+            ),
+          ),
+          Text(
+            'WAITLIST OPEN',
+            style: CatchTextStyles.badge(context, color: t.ink3),
+          ),
         ],
       ),
     );
   }
+}
 
-  Future<void> _confirmCancelEvent(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showCatchAdaptiveDialog<bool>(
-      context: context,
-      title: 'Cancel this event?',
-      message:
-          'Cancelling removes it from schedules but keeps attendee, payment, and history records. Attendees are notified and refunded per your cancellation policy.',
-      actions: const [
-        CatchDialogAction(label: 'Keep event', value: false, isDefault: true),
-        CatchDialogAction(
-          label: 'Cancel event',
-          value: true,
-          isDestructive: true,
-        ),
-      ],
-    );
-    if (confirmed != true) return;
+class _HostCapacityTile extends StatelessWidget {
+  const _HostCapacityTile({
+    required this.value,
+    required this.label,
+    this.suffix,
+    this.detail,
+  });
 
-    if (!context.mounted) return;
-    final messenger = ScaffoldMessenger.of(context);
-    unawaited(
-      EventBookingController.hostCancelEventMutation.run(ref, (tx) async {
-        await tx
-            .get(eventBookingControllerProvider.notifier)
-            .cancelHostedEvent(event: event);
-        ref.invalidate(watchEventProvider(event.id));
-        ref.invalidate(watchEventParticipationRosterProvider(event.id));
-        messenger.showSnackBar(
-          const SnackBar(content: Text('Event cancelled.')),
-        );
-      }),
+  final String value;
+  final String? suffix;
+  final String label;
+  final String? detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      borderColor: t.line,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RichText(
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            text: TextSpan(
+              text: value,
+              style: CatchTextStyles.titleL(context, color: t.ink),
+              children: [
+                if (suffix != null)
+                  TextSpan(
+                    text: suffix,
+                    style: CatchTextStyles.supporting(context, color: t.ink3),
+                  ),
+              ],
+            ),
+          ),
+          gapH4,
+          Text(
+            label.toUpperCase(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.monoLabel(context, color: t.ink2),
+          ),
+          if (detail != null) ...[
+            gapH4,
+            Text(
+              detail!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.supporting(context, color: t.ink3),
+            ),
+          ],
+        ],
+      ),
     );
   }
+}
 
-  Future<void> _confirmDeleteEvent(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showCatchAdaptiveDialog<bool>(
-      context: context,
-      title: 'Delete unused event?',
-      message:
-          'Only events with no bookings, waitlist, attendance, payments, or reviews can be deleted. This permanently removes the event.',
-      actions: const [
-        CatchDialogAction(label: 'Keep event', value: false, isDefault: true),
-        CatchDialogAction(
-          label: 'Delete unused event',
-          value: true,
-          isDestructive: true,
+class _HostEventActionsSection extends ConsumerWidget {
+  const _HostEventActionsSection({
+    required this.club,
+    required this.event,
+    required this.hasKnownActivity,
+    required this.cancelEventPending,
+    required this.deleteEventPending,
+    required this.actionError,
+    required this.onEditEvent,
+    required this.onCancelEvent,
+    required this.onDeleteEvent,
+  });
+
+  final Club club;
+  final Event event;
+  final bool hasKnownActivity;
+  final bool cancelEventPending;
+  final bool deleteEventPending;
+  final Object? actionError;
+  final VoidCallback onEditEvent;
+  final Future<void> Function() onCancelEvent;
+  final Future<void> Function() onDeleteEvent;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
+    final isMutating = cancelEventPending || deleteEventPending;
+    final isInviteOnly = event.effectiveEventPolicy.usesInviteOnly;
+    final accessAsync = isInviteOnly
+        ? ref.watch(watchEventPrivateAccessProvider(event.id))
+        : null;
+    final inviteLinksAsync = isInviteOnly
+        ? ref.watch(watchEventInviteLinksProvider(event.id))
+        : null;
+    final shareMutation = ref.watch(
+      HostEventManageController.sharePrivateLinkMutation,
+    );
+    final inviteCode = accessAsync?.asData?.value?.inviteCode.trim();
+    final inviteLink = inviteCode == null || inviteCode.isEmpty
+        ? null
+        : AppDeepLinks.event(
+            clubId: club.id,
+            eventId: event.id,
+            inviteCode: inviteCode,
+          ).toString();
+    final shareDetail = _privateShareDetail(
+      accessAsync: accessAsync,
+      inviteLinksAsync: inviteLinksAsync,
+      sharePending: shareMutation.isPending,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'HOST ACTIONS',
+          style: CatchTextStyles.monoLabel(context, color: t.ink2),
         ),
+        gapH10,
+        Divider(color: t.line, height: 1),
+        if (actionError != null) ...[
+          gapH12,
+          CatchErrorBanner.fromError(
+            actionError!,
+            context: AppErrorContext.event,
+          ),
+          gapH8,
+        ],
+        if (!event.isCancelled)
+          _HostActionRow(
+            label: 'Edit event details',
+            detail: 'Schedule · location',
+            onTap: isMutating ? null : onEditEvent,
+          ),
+        if (isInviteOnly)
+          _HostActionRow(
+            label: 'Share private link',
+            detail: shareDetail,
+            onTap: inviteLink == null || shareMutation.isPending
+                ? null
+                : () => _shareHostPrivateLink(
+                    context: context,
+                    ref: ref,
+                    club: club,
+                    event: event,
+                    inviteLink: inviteLink,
+                  ),
+            showDivider: false,
+          ),
+        gapH18,
+        Text(
+          'DANGER ZONE',
+          style: CatchTextStyles.monoLabel(context, color: t.ink2),
+        ),
+        gapH10,
+        if (event.isCancelled)
+          const _HostActionRow(
+            label: 'Event cancelled',
+            detail: 'Records are retained',
+            destructive: true,
+            showDivider: false,
+          )
+        else ...[
+          _HostActionRow(
+            label: 'Cancel event',
+            detail: cancelEventPending
+                ? 'Cancelling...'
+                : 'Keeps records · notifies guests',
+            destructive: true,
+            onTap: isMutating ? null : () => unawaited(onCancelEvent()),
+            showDivider: !hasKnownActivity,
+          ),
+          if (!hasKnownActivity)
+            _HostActionRow(
+              label: 'Delete unused event',
+              detail: deleteEventPending ? 'Deleting...' : 'Permanent removal',
+              destructive: true,
+              onTap: isMutating ? null : () => unawaited(onDeleteEvent()),
+              showDivider: false,
+            ),
+        ],
       ],
     );
-    if (confirmed != true) return;
+  }
+}
 
-    if (!context.mounted) return;
-    final messenger = ScaffoldMessenger.of(context);
-    unawaited(
-      EventBookingController.deleteEventMutation.run(ref, (tx) async {
-        await tx
-            .get(eventBookingControllerProvider.notifier)
-            .deleteHostedEvent(event: event);
-        ref.invalidate(watchEventProvider(event.id));
-        ref.invalidate(watchEventParticipationRosterProvider(event.id));
-        messenger.showSnackBar(const SnackBar(content: Text('Event deleted.')));
-        onDeleted();
-      }),
+String _privateShareDetail({
+  required AsyncValue<EventPrivateAccess?>? accessAsync,
+  required AsyncValue<List<EventInviteLink>>? inviteLinksAsync,
+  required bool sharePending,
+}) {
+  if (sharePending) return 'Sharing...';
+  if (accessAsync == null) return 'Public event link';
+  if (accessAsync.isLoading) return 'Loading link';
+  if (accessAsync.hasError || accessAsync.asData?.value == null) {
+    return 'Invite setup unavailable';
+  }
+
+  if (inviteLinksAsync == null || inviteLinksAsync.isLoading) {
+    return 'Private invite link';
+  }
+  if (inviteLinksAsync.hasError) return 'Invite links unavailable';
+  final count = inviteLinksAsync.asData?.value.length ?? 0;
+  if (count == 1) return '1 invite link';
+  return '$count invite links';
+}
+
+class _HostActionRow extends StatelessWidget {
+  const _HostActionRow({
+    required this.label,
+    required this.detail,
+    this.onTap,
+    this.destructive = false,
+    this.showDivider = true,
+  });
+
+  final String label;
+  final String detail;
+  final VoidCallback? onTap;
+  final bool destructive;
+  final bool showDivider;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final labelColor = destructive ? t.danger : t.ink;
+    final detailColor = onTap == null ? t.ink3 : t.ink;
+
+    return Semantics(
+      button: onTap != null,
+      enabled: onTap != null,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                CatchSpacing.s8,
+                CatchSpacing.s4,
+                CatchSpacing.s4,
+                CatchSpacing.s4,
+              ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final labelText = Text(
+                    label,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.labelL(
+                      context,
+                      color: onTap == null ? t.ink3 : labelColor,
+                    ),
+                  );
+                  final detailText = Text(
+                    detail,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.supporting(
+                      context,
+                      color: detailColor,
+                    ),
+                  );
+                  if (constraints.maxWidth < 330) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [labelText, gapH4, detailText],
+                    );
+                  }
+                  return Row(
+                    children: [
+                      Expanded(flex: 5, child: labelText),
+                      gapW8,
+                      Expanded(flex: 6, child: detailText),
+                    ],
+                  );
+                },
+              ),
+            ),
+            if (showDivider)
+              Divider(color: t.line, height: 1, indent: CatchSpacing.s8),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -1104,24 +1583,49 @@ class _HostEventSummaryRow extends StatelessWidget {
 
     return Column(
       children: [
-        Row(
-          children: [
-            Icon(icon, color: t.ink2, size: CatchIcon.md),
-            gapW10,
-            Text(
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final iconWidget = Icon(icon, color: t.ink2, size: CatchIcon.md);
+            final labelText = Text(
               label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-            gapW16,
-            Expanded(
-              child: Text(
-                value,
-                style: CatchTextStyles.labelL(context),
-                textAlign: TextAlign.right,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
+            );
+            final valueText = Text(
+              value,
+              maxLines: 1,
+              style: CatchTextStyles.labelL(context),
+              textAlign: constraints.maxWidth < 340
+                  ? TextAlign.left
+                  : TextAlign.right,
+              overflow: TextOverflow.ellipsis,
+            );
+            if (constraints.maxWidth < 340) {
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  iconWidget,
+                  gapW10,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [labelText, gapH2, valueText],
+                    ),
+                  ),
+                ],
+              );
+            }
+            return Row(
+              children: [
+                iconWidget,
+                gapW10,
+                Expanded(child: labelText),
+                gapW10,
+                Expanded(flex: 3, child: valueText),
+              ],
+            );
+          },
         ),
         if (showDivider) ...[gapH12, Divider(color: t.line, height: 1), gapH12],
       ],

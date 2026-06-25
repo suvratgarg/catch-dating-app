@@ -12,6 +12,7 @@ class WhereStep extends StatelessWidget {
   const WhereStep({
     super.key,
     required this.formKey,
+    this.autovalidateMode = AutovalidateMode.disabled,
     required this.meetingPointController,
     required this.locationDetailsController,
     required this.startingPoint,
@@ -20,6 +21,7 @@ class WhereStep extends StatelessWidget {
   });
 
   final GlobalKey<FormState> formKey;
+  final AutovalidateMode autovalidateMode;
   final TextEditingController meetingPointController;
   final TextEditingController locationDetailsController;
   final LocationCoordinate? startingPoint;
@@ -30,6 +32,7 @@ class WhereStep extends StatelessWidget {
   Widget build(BuildContext context) {
     return Form(
       key: formKey,
+      autovalidateMode: autovalidateMode,
       child: ListView(
         padding: CatchInsets.formStepBody,
         children: [

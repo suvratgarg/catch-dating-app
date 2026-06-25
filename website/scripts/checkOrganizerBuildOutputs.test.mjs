@@ -35,6 +35,7 @@ test("checkOrganizerBuildOutputs rejects stale route and sitemap state", () => {
     afterflyRobots: "noindex, follow",
     includeNoindexInSitemap: true,
     includeLegacyInSitemap: true,
+    includePublicSourceMap: true,
     omitLegacyRoute: true,
     sitemapUrls: [
       "https://example.test/",
@@ -53,12 +54,15 @@ test("checkOrganizerBuildOutputs rejects stale route and sitemap state", () => {
   assert.match(result.errors.join("\n"), /legacy path present in sitemap/);
   assert.match(result.errors.join("\n"), /missing legacy route HTML/);
   assert.match(result.errors.join("\n"), /noindex listing present in sitemap/);
+  assert.match(result.errors.join("\n"), /public source map emitted/);
+  assert.match(result.errors.join("\n"), /references a public source map/);
 });
 
 function createDist({
   afterflyRobots = "index, follow",
   includeLegacyInSitemap = false,
   includeNoindexInSitemap = false,
+  includePublicSourceMap = false,
   omitLegacyRoute = false,
   sitemapUrls,
 }) {
@@ -101,6 +105,15 @@ function createDist({
     routePath: "/organizers/noindex-sample/",
     robots: "noindex, follow",
   });
+  if (includePublicSourceMap) {
+    const assetsDir = path.join(distRoot, "assets");
+    fs.mkdirSync(assetsDir, {recursive: true});
+    fs.writeFileSync(
+      path.join(assetsDir, "index.js"),
+      "console.log('test');\n//# sourceMappingURL=index.js.map\n"
+    );
+    fs.writeFileSync(path.join(assetsDir, "index.js.map"), "{}\n");
+  }
   return distRoot;
 }
 

@@ -31,6 +31,10 @@ import {buildOrganizerPendingDecisionAnswerPacket} from
   "./lib/pending_decision_answer_packet_core.mjs";
 import {buildOrganizerPromotionExecutionPacket} from
   "./lib/promotion_execution_packet_core.mjs";
+import {buildSourceMentionResolution} from
+  "./lib/source_mention_resolution_core.mjs";
+import {buildPromptQueue as buildSourceMentionLlmPromptQueue} from
+  "./llm_source_resolution.mjs";
 import {buildReviewedDecisionAnswerPacketRegister} from
   "./reviewed_decision_answer_packets.mjs";
 
@@ -61,7 +65,12 @@ const rawArtifactsRoot = path.resolve(
 );
 const generatedRoot = path.resolve(args.generatedRoot ?? path.join(intakeRoot, "generated"));
 const adminGeneratedRoot = path.resolve(
-  args.adminGeneratedRoot ?? path.join(repoRoot, "admin", "src", "generated")
+  args.adminGeneratedRoot ??
+    path.join(repoRoot, "admin", "src", "features", "intake", "organizer", "generated")
+);
+const hostDiscoverySearchPlanPath = path.resolve(
+  args.hostDiscoverySearchPlan ??
+    path.join(repoRoot, "tool", "host_discovery", "generated", "search_plan.json")
 );
 const searchResultCandidateQueuePath = path.join(generatedRoot, "search_result_candidate_queue.json");
 const externalEventCandidateQueuePath = path.join(generatedRoot, "external_event_candidate_queue.json");
@@ -189,7 +198,19 @@ const canonicalHostEntities = buildCanonicalHostEntityRegistry({
 const eventCrawlPlan = buildEventCrawlPlan(effectiveEntities, curationState);
 const eventCrawlRunPlan = buildEventCrawlRunPlan({eventCrawlPlan});
 const searchResultCandidateQueue = loadSearchResultCandidateQueue();
+const discoverySearchPlan = buildDiscoverySearchPlan({
+  launchCitySlugs: ["indore", "mumbai"],
+  searchPlan: loadHostDiscoverySearchPlan(),
+});
 const externalEventCandidateQueue = loadExternalEventCandidateQueue();
+const sourceMentionResolution = buildSourceMentionResolution({
+  externalEventCandidateQueue,
+  searchResultCandidateQueue,
+});
+const sourceMentionLlmPromptQueue = buildSourceMentionLlmPromptQueue({
+  candidates: sourceMentionResolution.resolutionCandidates,
+  clusters: sourceMentionResolution.resolutionClusters,
+});
 const externalEventLocationResolutionQueue =
   loadExternalEventLocationResolutionQueue();
 const externalEventImportPlan = loadExternalEventImportPlan();
@@ -236,6 +257,7 @@ const policyGapRegister = buildOrganizerPolicyGapRegister({
   externalEventImportExecutionPlan,
   externalEventImportPlan,
   policyGapDecisionBatches,
+  sourceMentionResolution,
 });
 for (const error of policyGapRegister.errors ?? []) {
   errors.push(error);
@@ -343,7 +365,9 @@ const adminBridge = buildAdminBridge(
   externalEventLocationResolutionQueue,
   externalEventImportPlan,
   externalEventImportExecutionPlan,
-  rawArtifactStorageManifest
+  rawArtifactStorageManifest,
+  sourceMentionResolution,
+  sourceMentionLlmPromptQueue
 );
 
 if (errors.length > 0) {
@@ -406,6 +430,41 @@ const artifacts = [
     name: "publication decision impact preview",
     path: path.join(generatedRoot, "publication_decision_impact_preview.json"),
     data: publicationDecisionImpactPreview,
+  },
+  {
+    name: "source mention resolution policy",
+    path: path.join(generatedRoot, "source_mention_resolution_policy.json"),
+    data: sourceMentionResolution.resolutionPolicy,
+  },
+  {
+    name: "source mention source artifacts",
+    path: path.join(generatedRoot, "source_mention_source_artifacts.json"),
+    data: sourceMentionResolution.sourceArtifacts,
+  },
+  {
+    name: "source mention extracted mentions",
+    path: path.join(generatedRoot, "source_mention_extracted_mentions.json"),
+    data: sourceMentionResolution.extractedMentions,
+  },
+  {
+    name: "source mention resolution candidates",
+    path: path.join(generatedRoot, "source_mention_resolution_candidates.json"),
+    data: sourceMentionResolution.resolutionCandidates,
+  },
+  {
+    name: "source mention resolution clusters",
+    path: path.join(generatedRoot, "source_mention_resolution_clusters.json"),
+    data: sourceMentionResolution.resolutionClusters,
+  },
+  {
+    name: "source mention resolution review packets",
+    path: path.join(generatedRoot, "source_mention_resolution_review_packets.json"),
+    data: sourceMentionResolution.reviewPackets,
+  },
+  {
+    name: "source mention LLM prompt queue",
+    path: path.join(generatedRoot, "source_mention_llm_prompt_queue.json"),
+    data: sourceMentionLlmPromptQueue,
   },
   {
     name: "event crawl plan",
@@ -3102,7 +3161,9 @@ function buildAdminBridge(
   externalEventLocationResolutionQueue,
   externalEventImportPlan,
   externalEventImportExecutionPlan,
-  rawArtifactStorageManifest
+  rawArtifactStorageManifest,
+  sourceMentionResolution,
+  sourceMentionLlmPromptQueue
 ) {
   return {
     schemaVersion: 1,
@@ -3153,6 +3214,20 @@ function buildAdminBridge(
         "tool/organizer_intake/generated/external_event_import_execution_plan.json",
       rawArtifactStorageManifest:
         "tool/organizer_intake/generated/raw_artifact_storage_manifest.json",
+      sourceMentionResolutionPolicy:
+        "tool/organizer_intake/generated/source_mention_resolution_policy.json",
+      sourceMentionSourceArtifacts:
+        "tool/organizer_intake/generated/source_mention_source_artifacts.json",
+      sourceMentionExtractedMentions:
+        "tool/organizer_intake/generated/source_mention_extracted_mentions.json",
+      sourceMentionResolutionCandidates:
+        "tool/organizer_intake/generated/source_mention_resolution_candidates.json",
+      sourceMentionResolutionClusters:
+        "tool/organizer_intake/generated/source_mention_resolution_clusters.json",
+      sourceMentionResolutionReviewPackets:
+        "tool/organizer_intake/generated/source_mention_resolution_review_packets.json",
+      sourceMentionLlmPromptQueue:
+        "tool/organizer_intake/generated/source_mention_llm_prompt_queue.json",
     },
     summary: {
       reviewItems: reviewQueue.summary.total,
@@ -3265,6 +3340,37 @@ function buildAdminBridge(
       searchResultCandidates: searchResultCandidateQueue.summary.candidates,
       matchedSearchResultCandidates: searchResultCandidateQueue.summary.matchedExistingEntities,
       duplicateSearchResultKeys: searchResultCandidateQueue.summary.duplicateNormalizedKeys,
+      sourceArtifacts: sourceMentionResolution.sourceArtifacts.summary.artifacts,
+      sourceMentions:
+        sourceMentionResolution.extractedMentions.summary.mentions,
+      sourceMentionEventMentions:
+        sourceMentionResolution.extractedMentions.summary.eventMentions,
+      sourceMentionOrganizerMentions:
+        sourceMentionResolution.extractedMentions.summary.organizerMentions,
+      sourceMentionCandidates:
+        sourceMentionResolution.resolutionCandidates.summary.candidates,
+      sourceMentionClusters:
+        sourceMentionResolution.resolutionClusters.summary.clusters,
+      sourceMentionAutoAttachClusters:
+        sourceMentionResolution.resolutionClusters.summary.autoAttachClusters,
+      sourceMentionNeedsReviewClusters:
+        sourceMentionResolution.resolutionClusters.summary.needsHumanReviewClusters,
+      sourceMentionLlmReviewQueued:
+        sourceMentionResolution.resolutionClusters.summary.llmReviewQueued,
+      sourceMentionReviewPackets:
+        sourceMentionResolution.reviewPackets.summary.packets,
+      sourceMentionHumanReviewRequired:
+        sourceMentionResolution.reviewPackets.summary.humanReviewRequired,
+      sourceMentionLlmPromptRequests:
+        sourceMentionLlmPromptQueue.summary.requests,
+      discoverySearchPlanPlanned: discoverySearchPlan.summary.planned,
+      discoverySearchPlanSkippedFresh: discoverySearchPlan.summary.skippedFresh,
+      discoverySearchPlanLaunchCityPlanned:
+        discoverySearchPlan.summary.launchCityPlanned,
+      discoverySearchPlanLaunchCitySkippedFresh:
+        discoverySearchPlan.summary.launchCitySkippedFresh,
+      discoverySearchPlanMissingLaunchCityCategories:
+        discoverySearchPlan.summary.missingLaunchCityCategories.length,
       externalEventCandidates: externalEventCandidateQueue.summary.candidates,
       externalEventCandidatesBlocked: externalEventCandidateQueue.summary.blocked,
       externalEventCandidatesReviewed: externalEventCandidateQueue.summary.reviewed ?? 0,
@@ -3373,6 +3479,17 @@ function buildAdminBridge(
       guardrails: rawArtifactStorageManifest.guardrails,
       artifacts: rawArtifactStorageManifest.artifacts,
     },
+    publishingContracts: buildPublishingContracts(),
+    discoverySearchPlan,
+    sourceMentionResolution: {
+      policy: sourceMentionResolution.resolutionPolicy,
+      sourceArtifacts: sourceMentionResolution.sourceArtifacts,
+      extractedMentions: sourceMentionResolution.extractedMentions,
+      resolutionCandidates: sourceMentionResolution.resolutionCandidates,
+      resolutionClusters: sourceMentionResolution.resolutionClusters,
+      reviewPackets: sourceMentionResolution.reviewPackets,
+      llmPromptQueue: sourceMentionLlmPromptQueue,
+    },
     searchCandidates: {
       summary: searchResultCandidateQueue.summary,
       generatedFrom: searchResultCandidateQueue.generatedFrom,
@@ -3469,6 +3586,166 @@ function buildAdminBridge(
         decisionCommands: decisionCommandsFor(item.entityId, publicationPacket),
       };
     }),
+  };
+}
+
+function loadHostDiscoverySearchPlan() {
+  if (!fs.existsSync(hostDiscoverySearchPlanPath)) {
+    return {
+      schemaVersion: 1,
+      generatedFrom: {
+        searchMatrix: "tool/host_discovery/search_matrix.json",
+        targetCategories: "tool/host_discovery/target_categories.json",
+        queryTemplates: "tool/host_discovery/query_templates.json",
+        batches: [],
+        runs: [],
+      },
+      asOf: null,
+      freshForDays: null,
+      plannedCount: 0,
+      skippedFreshCount: 0,
+      planned: [],
+      skippedFresh: [],
+      warnings: [
+        `Missing host discovery search plan: ${relative(hostDiscoverySearchPlanPath)}`,
+      ],
+    };
+  }
+  return readJson(hostDiscoverySearchPlanPath);
+}
+
+function buildDiscoverySearchPlan({launchCitySlugs, searchPlan}) {
+  const planned = (searchPlan.planned ?? []).map(discoverySearchPlanEntry);
+  const skippedFresh = (searchPlan.skippedFresh ?? []).map(discoverySearchPlanEntry);
+  const launchCities = launchCitySlugs.map((citySlug) =>
+    discoveryLaunchCity(citySlug, planned, skippedFresh)
+  );
+  const missingLaunchCityCategories = launchCities.flatMap((city) =>
+    city.missingCategoryIds.map((categoryId) => ({
+      citySlug: city.citySlug,
+      city: city.city,
+      categoryId,
+    }))
+  );
+  return {
+    schemaVersion: 1,
+    generatedFrom: {
+      searchPlan: relative(hostDiscoverySearchPlanPath),
+      searchMatrix: searchPlan.generatedFrom?.searchMatrix ?? null,
+      targetCategories: searchPlan.generatedFrom?.targetCategories ?? null,
+      queryTemplates: searchPlan.generatedFrom?.queryTemplates ?? null,
+      batches: searchPlan.generatedFrom?.batches ?? [],
+      runs: searchPlan.generatedFrom?.runs ?? [],
+    },
+    asOf: searchPlan.asOf ?? null,
+    freshForDays: searchPlan.freshForDays ?? null,
+    summary: {
+      planned: planned.length,
+      skippedFresh: skippedFresh.length,
+      launchCityPlanned:
+        planned.filter((entry) => launchCitySlugs.includes(entry.citySlug)).length,
+      launchCitySkippedFresh:
+        skippedFresh.filter((entry) => launchCitySlugs.includes(entry.citySlug)).length,
+      plannedByCity: countBy(planned, (entry) => entry.citySlug),
+      plannedByCategory: countBy(planned, (entry) => entry.categoryId),
+      plannedByKind: countBy(planned, (entry) => entry.planKind),
+      launchCities: launchCitySlugs,
+      missingLaunchCityCategories,
+    },
+    contracts: buildPublishingContracts(),
+    launchCities,
+    planned,
+    skippedFresh,
+    warnings: searchPlan.warnings ?? [],
+    commands: {
+      configure:
+        "Edit tool/host_discovery/search_matrix.json and " +
+        "tool/host_discovery/query_templates.json.",
+      regenerate:
+        "node tool/host_discovery/plan_search_runs.mjs && " +
+        "node tool/organizer_intake/organizer_intake.mjs",
+      capture:
+        "node tool/organizer_intake/capture_search_results.mjs " +
+        "--run-key RUN_KEY --raw-results PROVIDER_RESULTS_JSON " +
+        "--date YYYY-MM-DD --write",
+      ingest:
+        "node tool/organizer_intake/ingest_search_results.mjs",
+    },
+  };
+}
+
+function discoveryLaunchCity(citySlug, planned, skippedFresh) {
+  const cityEntries = [...planned, ...skippedFresh]
+    .filter((entry) => entry.citySlug === citySlug);
+  const categories = [...new Set(cityEntries.map((entry) => entry.categoryId))]
+    .sort();
+  const expectedCategoryIds = [
+    "racket_sport_social",
+    "singles_event_operator",
+    "social_run_club",
+  ];
+  return {
+    citySlug,
+    city: cityEntries[0]?.city ?? citySlug,
+    planned:
+      planned.filter((entry) => entry.citySlug === citySlug).length,
+    skippedFresh:
+      skippedFresh.filter((entry) => entry.citySlug === citySlug).length,
+    categoryIds: categories,
+    missingCategoryIds: expectedCategoryIds.filter((categoryId) =>
+      !categories.includes(categoryId)
+    ),
+  };
+}
+
+function discoverySearchPlanEntry(entry) {
+  return {
+    runKey: entry.runKey,
+    planKind: entry.planKind,
+    source: entry.source,
+    citySlug: entry.citySlug,
+    city: entry.city,
+    categoryId: entry.categoryId,
+    queryTemplateId: entry.queryTemplateId,
+    queryTemplate: entry.queryTemplate,
+    renderedQuery: entry.renderedQuery,
+    candidateId: entry.candidateId ?? null,
+    candidateName: entry.candidateName ?? null,
+    resultFingerprint: entry.resultFingerprint ?? null,
+    existingRunId: entry.existingRunId ?? null,
+    existingRunFile: entry.existingRunFile ?? null,
+    searchedAt: entry.searchedAt ?? null,
+  };
+}
+
+function buildPublishingContracts() {
+  return {
+    organizer: {
+      intakeTarget: "organizer",
+      callablePayloadSchema: "contracts/callables/create_club_payload.schema.json",
+      firestoreSchema: "contracts/firestore/clubs.schema.json",
+      generatedCallablePayload:
+        "functions/src/shared/generated/createClubCallablePayload.ts",
+      writeCallable: "createClub",
+      projectionNotes: [
+        "Unclaimed supply must remain ownership.state=programmatic and claim.state=unclaimed until a real owner claims it.",
+        "App browse can use clubs.appVisibility; website routes use clubs.publicPage.",
+        "Public copy must stay source-backed through clubs.provenance and clubs.publicProfile.",
+      ],
+    },
+    event: {
+      intakeTarget: "event",
+      callablePayloadSchema: "contracts/callables/create_event_payload.schema.json",
+      firestoreSchema: "contracts/firestore/events.schema.json",
+      generatedCallablePayload:
+        "functions/src/shared/generated/createEventCallablePayload.ts",
+      writeCallable: "createEvent",
+      projectionNotes: [
+        "External event candidates stay review-only until they can produce createEvent-compatible payloads.",
+        "App discovery depends on events discovery fields derived from the canonical event document.",
+        "Location, time, capacity, price, constraints, and eventFormat must satisfy createEvent before publish.",
+      ],
+    },
   };
 }
 
@@ -3883,7 +4160,8 @@ function textLength(value) {
 function countBy(items, field) {
   const counts = {};
   for (const item of items) {
-    const key = item[field] ?? "<missing>";
+    const key =
+      typeof field === "function" ? field(item) ?? "<missing>" : item[field] ?? "<missing>";
     counts[key] = (counts[key] ?? 0) + 1;
   }
   return Object.fromEntries(Object.entries(counts).sort(([a], [b]) => a.localeCompare(b)));
@@ -3897,6 +4175,7 @@ function parseArgs(argv) {
     check: false,
     curationDecisionsRoot: null,
     generatedRoot: null,
+    hostDiscoverySearchPlan: null,
     help: false,
     policyGapDecisionsRoot: null,
     rawArtifactsRoot: null,
@@ -3917,6 +4196,8 @@ function parseArgs(argv) {
       parsed.curationDecisionsRoot = requiredValue(argv, ++index, arg);
     } else if (arg === "--generated-root") {
       parsed.generatedRoot = requiredValue(argv, ++index, arg);
+    } else if (arg === "--host-discovery-search-plan") {
+      parsed.hostDiscoverySearchPlan = requiredValue(argv, ++index, arg);
     } else if (arg === "--policy-gap-decisions-root") {
       parsed.policyGapDecisionsRoot = requiredValue(argv, ++index, arg);
     } else if (arg === "--raw-artifacts-root") {
@@ -3942,6 +4223,8 @@ function printHelp() {
 
 Options:
   --check                         Check generated organizer intake artifact drift.
+  --host-discovery-search-plan <path>
+                                  Read the organizer discovery search plan from a specific file.
   --answer-packets-root <path>    Read reviewed answer packets from a specific folder.
   --batches-root <path>            Read organizer entity batches from a specific folder.
   --curation-decisions-root <path> Read curation decisions from a specific folder.

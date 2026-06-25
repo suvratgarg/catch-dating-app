@@ -10,7 +10,9 @@ import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
+import 'package:catch_dating_app/matches/presentation/host_inbox_filter.dart';
 import 'package:catch_dating_app/matches/presentation/matches_list_screen.dart';
+import 'package:catch_dating_app/matches/presentation/widgets/chats_list.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -104,8 +106,140 @@ Match _buildMatch({
   );
 }
 
+ChatsListViewModel _stateTestViewModel({
+  List<ChatThreadPreview> newMatches = const <ChatThreadPreview>[],
+  List<ChatThreadPreview> conversations = const <ChatThreadPreview>[],
+}) {
+  return ChatsListViewModel(
+    newMatches: List.unmodifiable(newMatches),
+    conversations: List.unmodifiable(conversations),
+    totalThreadCount: newMatches.length + conversations.length,
+  );
+}
+
+ChatThreadPreview _previewForStateTest({
+  required Match match,
+  int unreadCount = 0,
+}) {
+  return ChatThreadPreview(
+    match: match,
+    matchId: match.id,
+    otherUid: match.user1Id,
+    displayName: 'Asha Guest',
+    photoUrl: null,
+    previewText: match.lastMessagePreview ?? 'Ask the host',
+    timestamp: match.lastMessageAt ?? match.createdAt,
+    unreadCount: unreadCount,
+    hasConversation: match.lastMessagePreview != null,
+    eventIds: match.eventIds,
+  );
+}
+
 void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
+  group('HostInboxScreenState', () {
+    test('computes host filter, unread count, and visible rows', () {
+      final unread = _previewForStateTest(
+        match: _buildMatch(
+          id: 'host-unread',
+          unreadCounts: const {'host-1': 3},
+          conversationType: MatchConversationType.clubHostInquiry,
+        ),
+        unreadCount: 3,
+      );
+      final read = _previewForStateTest(
+        match: _buildMatch(
+          id: 'host-read',
+          conversationType: MatchConversationType.clubHostInquiry,
+        ),
+      );
+
+      final state = HostInboxScreenState.fromAsync(
+        viewModel: AsyncData<ChatsListViewModel>(
+          _stateTestViewModel(conversations: [unread, read]),
+        ),
+        uid: 'host-1',
+        query: '',
+        selectedFilter: HostInboxFilter.unread,
+        isHostApp: true,
+      );
+
+      expect(state.hostFilter, HostInboxFilter.unread);
+      expect(state.unreadThreadCount, 1);
+      expect(state.showSearchAction, isTrue);
+      final content = state.displayState as ChatsListContent;
+      expect(content.viewModel.visibleThreadCount, 1);
+      expect(content.viewModel.conversations.single.matchId, 'host-unread');
+    });
+
+    test('maps search and unread empty states', () {
+      final searchEmpty = HostInboxScreenState.fromAsync(
+        viewModel: const AsyncData<ChatsListViewModel>(
+          ChatsListViewModel(
+            newMatches: <ChatThreadPreview>[],
+            conversations: <ChatThreadPreview>[],
+            totalThreadCount: 2,
+          ),
+        ),
+        uid: 'host-1',
+        query: 'no matching attendee',
+        selectedFilter: HostInboxFilter.all,
+        isHostApp: true,
+      );
+      expect(
+        (searchEmpty.displayState as ChatsListEmpty).kind,
+        ChatsListEmptyKind.noSearchResults,
+      );
+
+      final noUnread = HostInboxScreenState.fromAsync(
+        viewModel: AsyncData<ChatsListViewModel>(
+          _stateTestViewModel(
+            conversations: [
+              _previewForStateTest(
+                match: _buildMatch(
+                  id: 'host-read',
+                  conversationType: MatchConversationType.clubHostInquiry,
+                ),
+              ),
+            ],
+          ),
+        ),
+        uid: 'host-1',
+        query: '',
+        selectedFilter: HostInboxFilter.unread,
+        isHostApp: true,
+      );
+      expect(
+        (noUnread.displayState as ChatsListEmpty).kind,
+        ChatsListEmptyKind.noUnreadQueries,
+      );
+    });
+
+    test('maps async loading and error branches', () {
+      final loading = HostInboxScreenState.fromAsync(
+        viewModel: const AsyncLoading<ChatsListViewModel>(),
+        uid: 'host-1',
+        query: '',
+        selectedFilter: HostInboxFilter.all,
+        isHostApp: true,
+      );
+      expect(loading.displayState, isA<ChatsListLoading>());
+      expect(loading.showSearchAction, isFalse);
+
+      final error = StateError('host inbox failed');
+      final failed = HostInboxScreenState.fromAsync(
+        viewModel: AsyncError<ChatsListViewModel>(error, StackTrace.empty),
+        uid: 'host-1',
+        query: '',
+        selectedFilter: HostInboxFilter.all,
+        isHostApp: true,
+      );
+      final errorState = failed.displayState as ChatsListError;
+      expect(errorState.error, same(error));
+      expect(errorState.retryIntent, ChatsListRetryIntent.reloadViewModel);
+    });
+  });
 
   testWidgets('chat sliver header search expands while pinned and editable', (
     tester,
@@ -393,17 +527,141 @@ void main() {
     expect(find.text('Attendee queries'), findsOneWidget);
     expect(find.text('All'), findsOneWidget);
     expect(find.text('Unread · 1'), findsOneWidget);
-    expect(find.text('ATTENDEE QUERIES'), findsOneWidget);
+    expect(find.text('Message all 2 attendees'), findsOneWidget);
+    expect(
+      find.text('Reminders, the meeting point, changes'),
+      findsOneWidget,
+    );
     expect(find.text('Is there parking near the start?'), findsOneWidget);
     expect(find.text('Do I need ID at check-in?'), findsOneWidget);
     expect(find.text('Messages from your matches'), findsNothing);
     expect(find.text('CONVERSATIONS'), findsNothing);
+
+    await tester.tap(find.text('Message all 2 attendees'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('New blast'), findsOneWidget);
+    expect(find.text('Send broadcast'), findsOneWidget);
+
+    await tester.tapAt(const Offset(10, 10));
+    await pumpFeatureUi(tester);
 
     await tester.tap(find.text('Unread · 1'));
     await pumpFeatureUi(tester);
 
     expect(find.text('Is there parking near the start?'), findsOneWidget);
     expect(find.text('Do I need ID at check-in?'), findsNothing);
+  });
+
+  testWidgets('host inbox rows navigate to host chat route', (tester) async {
+    AppConfig.configureEntrypointRole(AppRole.host);
+    final hostInquiry = _buildMatch(
+      id: 'host-inquiry',
+      user1Id: 'guest-1',
+      user2Id: 'host-1',
+      lastMessageAt: DateTime(2026, 4, 23, 12),
+      lastMessagePreview: 'Is there parking near the start?',
+      lastMessageSenderId: 'guest-1',
+      conversationType: MatchConversationType.clubHostInquiry,
+    );
+    final matchRepository = _FakeMatchRepository(matches: [hostInquiry]);
+    final conversationRepository = _FakeConversationRepository();
+    final router = GoRouter(
+      initialLocation: Routes.hostInboxScreen.path,
+      routes: [
+        GoRoute(
+          path: Routes.hostInboxScreen.path,
+          name: Routes.hostInboxScreen.name,
+          builder: (_, _) => const ChatsListScreen(),
+          routes: [
+            GoRoute(
+              path: ':matchId',
+              name: Routes.hostChatScreen.name,
+              builder: (_, state) =>
+                  Text('Host chat ${state.pathParameters['matchId']}'),
+            ),
+          ],
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          matchRepositoryProvider.overrideWithValue(matchRepository),
+          conversationRepositoryProvider.overrideWithValue(
+            conversationRepository,
+          ),
+          watchMatchesForUserProvider(
+            'host-1',
+          ).overrideWith((ref) => Stream.value([hostInquiry])),
+        ],
+        child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+      ),
+    );
+
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Host conversation'), findsOneWidget);
+
+    await tester.tap(find.text('Host conversation'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Host chat host-inquiry'), findsOneWidget);
+  });
+
+  testWidgets('host inbox hides consumer dating matches', (tester) async {
+    AppConfig.configureEntrypointRole(AppRole.host);
+    final hostInquiry = _buildMatch(
+      id: 'host-inquiry',
+      user1Id: 'guest-1',
+      user2Id: 'host-1',
+      lastMessageAt: DateTime(2026, 4, 23, 12),
+      lastMessagePreview: 'Is there parking near the start?',
+      lastMessageSenderId: 'guest-1',
+      conversationType: MatchConversationType.clubHostInquiry,
+    );
+    final datingMatch = _buildMatch(
+      id: 'dating-match',
+      user1Id: 'host-1',
+      lastMessageAt: DateTime(2026, 4, 23, 11),
+      lastMessagePreview: 'Consumer chat should stay out.',
+      lastMessageSenderId: 'runner-2',
+    );
+    final matches = [hostInquiry, datingMatch];
+    final matchRepository = _FakeMatchRepository(matches: matches);
+    final conversationRepository = _FakeConversationRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          matchRepositoryProvider.overrideWithValue(matchRepository),
+          conversationRepositoryProvider.overrideWithValue(
+            conversationRepository,
+          ),
+          watchMatchesForUserProvider(
+            'host-1',
+          ).overrideWith((ref) => Stream.value(matches)),
+          watchPublicProfileProvider('runner-2').overrideWith(
+            (ref) => Stream.value(
+              buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const ChatsListScreen(),
+        ),
+      ),
+    );
+
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Is there parking near the start?'), findsOneWidget);
+    expect(find.text('Consumer chat should stay out.'), findsNothing);
+    expect(find.text('Taylor'), findsNothing);
   });
 
   testWidgets('does not mark own latest message as unread', (tester) async {

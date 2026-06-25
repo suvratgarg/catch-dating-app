@@ -28,7 +28,7 @@ Future<void> showWriteReviewSheet({
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (_) => _WriteReviewSheet(
+    builder: (_) => WriteReviewSheet(
       clubId: clubId,
       eventId: eventId,
       reviewer: reviewer,
@@ -37,8 +37,9 @@ Future<void> showWriteReviewSheet({
   );
 }
 
-class _WriteReviewSheet extends ConsumerStatefulWidget {
-  const _WriteReviewSheet({
+class WriteReviewSheet extends ConsumerStatefulWidget {
+  const WriteReviewSheet({
+    super.key,
     required this.clubId,
     required this.eventId,
     required this.reviewer,
@@ -51,10 +52,10 @@ class _WriteReviewSheet extends ConsumerStatefulWidget {
   final Review? existingReview;
 
   @override
-  ConsumerState<_WriteReviewSheet> createState() => _WriteReviewSheetState();
+  ConsumerState<WriteReviewSheet> createState() => _WriteReviewSheetState();
 }
 
-class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
+class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
   late int _rating;
   late final TextEditingController _commentController;
   bool _didResetMutations = false;

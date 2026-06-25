@@ -147,17 +147,17 @@ test("approved review decisions create public projections and claim targets", ()
     generatedRoot,
     "organizer_policy_decision_packets.json"
   );
-  assert.equal(policyDecisionPackets.summary.packets, 5);
-  assert.equal(policyDecisionPackets.summary.unansweredQuestions, 25);
-  assert.equal(adminBridge.policyDecisionPackets.summary.packets, 5);
+  assert.equal(policyDecisionPackets.summary.packets, 6);
+  assert.equal(policyDecisionPackets.summary.unansweredQuestions, 31);
+  assert.equal(adminBridge.policyDecisionPackets.summary.packets, 6);
   const operatorActionQueue = readGenerated(
     generatedRoot,
     "organizer_operator_action_queue.json"
   );
-  assert.equal(operatorActionQueue.summary.policyDecisionActions, 5);
+  assert.equal(operatorActionQueue.summary.policyDecisionActions, 6);
   assert.equal(
     adminBridge.operatorActionQueue.summary.policyDecisionActions,
-    5
+    6
   );
   assert.equal(
     adminBridge.summary.operatorActions,
@@ -199,10 +199,10 @@ test("approved review decisions create public projections and claim targets", ()
     generatedRoot,
     "organizer_pending_input_request.json"
   );
-  assert.equal(pendingInputRequest.summary.requests, 6);
+  assert.equal(pendingInputRequest.summary.requests, 7);
   assert.equal(pendingInputRequest.summary.adminPublicationRequests, 1);
-  assert.equal(pendingInputRequest.summary.policyDecisionRequests, 5);
-  assert.equal(pendingInputRequest.summary.requiredPolicyQuestions, 25);
+  assert.equal(pendingInputRequest.summary.policyDecisionRequests, 6);
+  assert.equal(pendingInputRequest.summary.requiredPolicyQuestions, 31);
   assert.equal(
     adminBridge.pendingInputRequest.summary.requests,
     pendingInputRequest.summary.requests
@@ -373,10 +373,10 @@ test("publication impact preview does not create public projections", () => {
   );
   assert.equal(adminBridge.summary.publicationImpactWouldPublish, 2);
   assert.equal(adminBridge.summary.publicationImpactClaimTargets, 2);
-  assert.equal(adminBridge.summary.pendingInputRequests, 7);
+  assert.equal(adminBridge.summary.pendingInputRequests, 8);
   assert.equal(adminBridge.summary.pendingAdminPublicationInputs, 2);
-  assert.equal(adminBridge.summary.pendingPolicyDecisionInputs, 5);
-  assert.equal(adminBridge.summary.pendingRequiredPolicyQuestions, 25);
+  assert.equal(adminBridge.summary.pendingPolicyDecisionInputs, 6);
+  assert.equal(adminBridge.summary.pendingRequiredPolicyQuestions, 31);
   assert.equal(adminBridge.summary.pendingWorkCovered, 7);
   assert.equal(adminBridge.summary.pendingWorkUntriaged, 0);
   assert.equal(adminBridge.summary.reviewedAnswerPacketStatus, "no_reviewed_packets");

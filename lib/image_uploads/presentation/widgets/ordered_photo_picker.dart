@@ -42,6 +42,8 @@ class OrderedPhotoPicker extends StatefulWidget {
     this.maxPhotos = 6,
     this.crossAxisCount = 2,
     this.childAspectRatio = CatchAspectRatio.wide16x9,
+    this.showCoverBadge = false,
+    this.showReorderHandle = true,
   });
 
   final Widget label;
@@ -54,6 +56,8 @@ class OrderedPhotoPicker extends StatefulWidget {
   final int maxPhotos;
   final int crossAxisCount;
   final double childAspectRatio;
+  final bool showCoverBadge;
+  final bool showReorderHandle;
 
   @override
   State<OrderedPhotoPicker> createState() => _OrderedPhotoPickerState();
@@ -131,6 +135,8 @@ class _OrderedPhotoPickerState extends State<OrderedPhotoPicker> {
                       photo: photo,
                       index: index,
                       canReorder: canReorder,
+                      showCoverBadge: widget.showCoverBadge && index == 0,
+                      showReorderHandle: widget.showReorderHandle,
                       onRemove: widget.onRemovePhoto == null
                           ? null
                           : () => widget.onRemovePhoto!(index),
@@ -152,12 +158,16 @@ class _OrderedPhotoTile extends StatelessWidget {
     required this.photo,
     required this.index,
     required this.canReorder,
+    required this.showCoverBadge,
+    required this.showReorderHandle,
     this.onRemove,
   });
 
   final OrderedPhotoPreview photo;
   final int index;
   final bool canReorder;
+  final bool showCoverBadge;
+  final bool showReorderHandle;
   final VoidCallback? onRemove;
 
   @override
@@ -222,7 +232,30 @@ class _OrderedPhotoTile extends StatelessWidget {
                     ),
                   ),
                 ),
-              if (canReorder)
+              if (showCoverBadge)
+                Positioned(
+                  top: CatchSpacing.s1,
+                  left: CatchSpacing.s1,
+                  child: CatchSurface(
+                    radius: CatchRadius.pill,
+                    borderWidth: 0,
+                    backgroundColor: t.ink.withValues(
+                      alpha: CatchOpacity.photoSlotDeleteChrome,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CatchSpacing.micro6,
+                      vertical: CatchSpacing.micro3,
+                    ),
+                    child: Text(
+                      'COVER',
+                      style: CatchTextStyles.monoLabel(
+                        context,
+                        color: t.surface,
+                      ),
+                    ),
+                  ),
+                ),
+              if (canReorder && showReorderHandle)
                 Positioned(
                   bottom: CatchSpacing.s1,
                   right: CatchSpacing.s1,
@@ -270,26 +303,34 @@ class _AddPhotoTile extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           onTap: onTap,
           padding: CatchInsets.contentDense,
-          child: ExcludeSemantics(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  CatchIcons.addPhotoAlternateOutlined,
-                  size: CatchIcon.hero,
-                  color: t.ink2,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final textScale = MediaQuery.textScalerOf(context).scale(1);
+              final showLabel = constraints.maxHeight >= 96 && textScale < 1.4;
+              return ExcludeSemantics(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      CatchIcons.addPhotoAlternateOutlined,
+                      size: CatchIcon.hero,
+                      color: t.ink2,
+                    ),
+                    if (showLabel) ...[
+                      gapH8,
+                      Text(
+                        label,
+                        style: CatchTextStyles.bodyLead(context, color: t.ink2),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ],
                 ),
-                gapH8,
-                Text(
-                  label,
-                  style: CatchTextStyles.bodyLead(context, color: t.ink2),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),

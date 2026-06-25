@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-06-18",
+  "updated": "2026-06-23",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -14,28 +14,36 @@
       "routeId": "startScreen",
       "status": "captured",
       "priority": "P2",
-      "captureIds": ["start_welcome"],
+      "captureIds": [
+        "start_welcome"
+      ],
       "reason": "Static welcome/start fixture."
     },
     {
       "routeId": "authScreen",
       "status": "captured",
       "priority": "P2",
-      "captureIds": ["auth_phone_entry"],
+      "captureIds": [
+        "auth_phone_entry"
+      ],
       "reason": "Baseline phone-entry auth capture; OTP state can be added as a variant."
     },
     {
       "routeId": "onboardingScreen",
       "status": "captured",
       "priority": "P2",
-      "captureIds": ["onboarding_welcome"],
+      "captureIds": [
+        "onboarding_welcome"
+      ],
       "reason": "Baseline onboarding welcome capture; deeper steps can be added as variants."
     },
     {
       "routeId": "calendarScreen",
       "status": "captured",
       "priority": "P2",
-      "captureIds": ["calendar_planned_events"],
+      "captureIds": [
+        "calendar_planned_events"
+      ],
       "reason": "Current-user calendar fixture with booked and saved events."
     },
     {
@@ -49,7 +57,9 @@
       "routeId": "savedEventsScreen",
       "status": "captured",
       "priority": "P2",
-      "captureIds": ["saved_events_list"],
+      "captureIds": [
+        "saved_events_list"
+      ],
       "reason": "Saved events list fixture with deterministic club lookup."
     },
     {
@@ -63,7 +73,9 @@
       "routeId": "filtersScreen",
       "status": "captured",
       "priority": "P2",
-      "captureIds": ["filters_preferences"],
+      "captureIds": [
+        "filters_preferences"
+      ],
       "reason": "Profile-backed filter defaults fixture."
     },
     {
@@ -77,42 +89,106 @@
       "routeId": "eventLocationMapScreen",
       "status": "captured",
       "priority": "P3",
-      "captureIds": ["event_location_map"],
-      "reason": "Event location map fixture using the deterministic placeholder map fallback."
+      "captureIds": [
+        "event_location_map",
+        "event_location_map_loading",
+        "event_location_map_error",
+        "event_location_map_not_found",
+        "event_location_map_no_coordinate",
+        "event_location_map_text_scale_2",
+        "event_location_map_reduced_motion"
+      ],
+      "reason": "Event location map captures now cover pinned map, route loading, route error, event not found, no-coordinate empty state, text scale, reduced motion, and paired light/dark output with network tiles disabled."
     },
     {
       "routeId": "dashboardScreen",
       "status": "captured",
       "priority": "P1",
-      "captureIds": ["dashboard_home"],
-      "reason": "Main review surface with current user, upcoming event, notifications, and recommendations."
+      "captureIds": [
+        "dashboard_home",
+        "dashboard_home_loading",
+        "dashboard_home_profile_error",
+        "dashboard_home_offline",
+        "dashboard_home_memberships_error",
+        "dashboard_home_booked_events_error",
+        "dashboard_home_empty_start",
+        "dashboard_home_recommendations_loading",
+        "dashboard_home_recommendations_error",
+        "dashboard_home_text_scale_2",
+        "dashboard_home_reduced_motion",
+        "dashboard_home_self_check_in",
+        "dashboard_home_after_event_focus",
+        "dashboard_home_self_check_in_pending",
+        "dashboard_home_self_check_in_error"
+      ],
+      "reason": "Main review surface plus deterministic route variants for loading, data-load errors, empty start, self check-in open/pending/error, after-event focus, recommendations loading/error, text scale, and reduced motion."
     },
     {
       "routeId": "notificationsScreen",
       "status": "captured",
       "priority": "P3",
-      "captureIds": ["notifications_activity"],
-      "reason": "Activity notifications fixture with upcoming event context."
+      "captureIds": [
+        "notifications_activity",
+        "notifications_uid_loading",
+        "notifications_signed_out",
+        "notifications_activity_loading",
+        "notifications_activity_error",
+        "notifications_empty",
+        "notifications_mark_all_read_pending",
+        "notifications_mark_all_read_error",
+        "notifications_deep_link_error",
+        "notifications_text_scale_2",
+        "notifications_reduced_motion"
+      ],
+      "reason": "Notifications captures now cover populated read/unread activity, uid loading, signed-out, activity loading, activity error, empty activity, mark-all-read pending/error, deep-link failure feedback, text scale 2.0, reduced motion, and paired light/dark output."
     },
     {
       "routeId": "exploreScreen",
       "status": "captured",
       "priority": "P1",
-      "captureIds": ["member_event_discovery"],
-      "reason": "Event discovery and club browse review surface."
+      "captureIds": [
+        "member_event_discovery",
+        "explore_loading",
+        "explore_club_source_error",
+        "explore_feed_error",
+        "explore_empty_city",
+        "explore_no_search_results",
+        "explore_search_query",
+        "explore_filters_active",
+        "explore_text_scale_2",
+        "explore_reduced_motion"
+      ],
+      "reason": "Explore discovery route captures now cover populated, loading, source error, feed error, empty city, no-search, active search, active filters, text-scale, and reduced-motion states."
     },
     {
       "routeId": "exploreMapScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Distinct Explore map-mode route; needs a deterministic map fixture before marking it captured."
+      "captureIds": [
+        "explore_map",
+        "explore_map_loading",
+        "explore_map_error"
+      ],
+      "reason": "Explore map route captures now cover pins-ready, loading, and feed-error states with network tiles disabled."
     },
     {
       "routeId": "clubDetailScreen",
       "status": "captured",
       "priority": "P1",
-      "captureIds": ["club_detail_member"],
-      "reason": "Member-state club detail fixture with upcoming events and reviews."
+      "captureIds": [
+        "club_detail_member",
+        "club_detail_visitor",
+        "club_detail_guest",
+        "club_detail_host_public",
+        "club_detail_missing",
+        "club_detail_error",
+        "club_detail_join_pending",
+        "club_detail_mutation_error",
+        "club_detail_offline",
+        "club_detail_text_scale_2",
+        "club_detail_reduced_motion"
+      ],
+      "reason": "Club Detail captured across member, visitor, guest, host public, missing, error, mutation, offline, text-scale, and reduced-motion states."
     },
     {
       "routeId": "eventDetailScreen",
@@ -121,86 +197,266 @@
       "captureIds": [
         "event_detail_member",
         "event_detail_member_ticket",
-        "event_detail_member_spotlight"
+        "event_detail_member_spotlight",
+        "event_detail_loading",
+        "event_detail_not_found",
+        "event_detail_error",
+        "event_detail_guest",
+        "event_detail_offline",
+        "event_detail_text_scale_2",
+        "event_detail_reduced_motion",
+        "event_detail_booking_signed_up",
+        "event_detail_booking_waitlist",
+        "event_detail_booking_waitlist_offer",
+        "event_detail_booking_full",
+        "event_detail_booking_attended",
+        "event_detail_booking_past",
+        "event_detail_booking_cancelled"
       ],
-      "reason": "Canonical event detail captured across standard, ticket, and spotlight presentations; reused by calendar, saved, and dashboard aliases."
+      "reason": "Canonical event detail captured across standard, ticket, spotlight, loading, missing, error, guest, offline, accessibility, and booking-state variants; reused by calendar, saved, and dashboard aliases."
     },
     {
       "routeId": "eventSuccessCompanionScreen",
       "status": "captured",
       "priority": "P1",
-      "captureIds": ["event_success_companion"],
-      "reason": "Deterministic attendee companion fixture using the default live guide plan."
+      "captureIds": [
+        "event_success_companion_route_loading",
+        "event_success_companion_event_load_error",
+        "event_success_companion_event_not_found",
+        "event_success_companion_sign_in_required",
+        "event_success_companion_no_booking",
+        "event_success_companion_profile_loading",
+        "event_success_companion_participation_error",
+        "event_success_companion_plan_loading",
+        "event_success_companion_plan_error",
+        "event_success_companion_plan_missing",
+        "event_success_companion_data_error",
+        "event_success_companion_offline",
+        "event_success_companion",
+        "event_success_companion_self_check_in",
+        "event_success_companion_pre_arrival_planning",
+        "event_success_companion_first_hello_start",
+        "event_success_companion_first_hello_assigned",
+        "event_success_companion_compatibility_questionnaire",
+        "event_success_companion_compatibility_saved",
+        "event_success_companion_live_step_context",
+        "event_success_companion_social_prompt",
+        "event_success_companion_conversation_cues",
+        "event_success_companion_micro_pod_assignment",
+        "event_success_companion_micro_pod_loading_peers",
+        "event_success_companion_micro_pod_opted_out",
+        "event_success_companion_table_group_rotations",
+        "event_success_companion_rotation_schedule",
+        "event_success_companion_rotation_loading_peers",
+        "event_success_companion_rotation_opted_out",
+        "event_success_companion_live_reveal_countdown",
+        "event_success_companion_live_reveal_unlocked",
+        "event_success_companion_wingman_request",
+        "event_success_companion_wingman_submitted",
+        "event_success_companion_afterglow_feedback",
+        "event_success_companion_text_scale_2",
+        "event_success_companion_reduced_motion"
+      ],
+      "reason": "Deterministic attendee companion captures now cover route loading/error/access/offline states, default live guide, self-check-in, runtime moments, assignment/rotation/reveal/wingman/afterglow variants, text-scale, and reduced-motion states; paired light/dark and stage-specific reference comparisons remain open in the design parity tracker."
     },
     {
       "routeId": "swipeHubScreen",
       "status": "captured",
       "priority": "P1",
-      "captureIds": ["swipe_hub_active"],
-      "reason": "Main Catches hub with an active post-event catch window."
+      "captureIds": [
+        "swipe_hub_active",
+        "swipe_hub_uid_loading",
+        "swipe_hub_uid_error",
+        "swipe_hub_signed_out",
+        "swipe_hub_attended_events_loading",
+        "swipe_hub_attended_events_error",
+        "swipe_hub_offline",
+        "swipe_hub_empty",
+        "swipe_hub_text_scale_2",
+        "swipe_hub_reduced_motion"
+      ],
+      "reason": "Catches hub captures now cover active, uid loading/error, signed-out hidden, attended-events loading/error/offline, empty, text-scale, and reduced-motion states."
     },
     {
       "routeId": "swipeEventScreen",
       "status": "captured",
       "priority": "P1",
-      "captureIds": ["post_run_catch_window"],
-      "reason": "Post-event roster and catch-window candidate."
+      "captureIds": [
+        "post_run_catch_window",
+        "swipe_event_queue_loading",
+        "swipe_event_queue_error",
+        "swipe_event_offline",
+        "swipe_event_empty_queue",
+        "swipe_event_missing",
+        "swipe_event_sign_in_required",
+        "swipe_event_in_progress",
+        "swipe_event_did_not_attend",
+        "swipe_event_window_closed",
+        "swipe_event_text_scale_2",
+        "swipe_event_reduced_motion"
+      ],
+      "reason": "Catches event deck captures now cover active deck, queue loading/error/offline, empty queue, missing event, sign-in required, in-progress, did-not-attend, closed-window, text-scale, and reduced-motion states."
     },
     {
       "routeId": "eventRecapScreen",
       "status": "captured",
       "priority": "P2",
-      "captureIds": ["event_recap_attendees"],
+      "captureIds": [
+        "event_recap_attendees"
+      ],
       "reason": "Attended event recap fixture with remembered attendee tiles."
     },
     {
       "routeId": "matchesListScreen",
       "status": "captured",
       "priority": "P1",
-      "captureIds": ["matches_list_context"],
-      "reason": "Match list fixture with active conversations and new matches from synthetic personas."
+      "captureIds": [
+        "matches_list_context",
+        "matches_list_loading",
+        "matches_list_error",
+        "matches_list_offline",
+        "matches_list_no_matches_empty",
+        "matches_list_search_open",
+        "matches_list_search_empty",
+        "matches_list_duplicate_collapsed",
+        "matches_list_match_celebration",
+        "matches_list_text_scale_2",
+        "matches_list_reduced_motion"
+      ],
+      "reason": "Consumer match list captures now cover loading, error, offline, empty, search, duplicate collapse, match celebration, text scale, reduced motion, and populated conversation rows."
     },
     {
       "routeId": "chatScreen",
       "status": "captured",
       "priority": "P1",
-      "captureIds": ["match_chat_context"],
-      "reason": "Marketing match chat context candidate backed by the synthetic sales persona catalog."
+      "captureIds": [
+        "match_chat_context",
+        "match_chat_messages_loading",
+        "match_chat_messages_error",
+        "match_chat_offline",
+        "match_chat_empty_thread",
+        "match_chat_event_context_fallback",
+        "match_chat_unavailable",
+        "match_chat_blocked",
+        "match_chat_image_thread",
+        "match_chat_suvbot_controls",
+        "match_chat_suvbot_action_error",
+        "match_chat_share_card",
+        "match_chat_composer_states",
+        "match_chat_text_scale_2",
+        "match_chat_reduced_motion"
+      ],
+      "reason": "Consumer match chat captures now cover loading, error, offline, empty, unavailable, blocked, image, Suvbot, share-card, composer, text scale, reduced motion, and populated thread states."
     },
     {
       "routeId": "profileScreen",
       "status": "captured",
       "priority": "P1",
-      "captureIds": ["profile_self"],
-      "reason": "First working raw light/dark review capture."
+      "captureIds": [
+        "profile_self",
+        "profile_self_loading",
+        "profile_self_error",
+        "profile_self_offline",
+        "profile_self_unavailable",
+        "profile_self_edit_tab",
+        "profile_self_preview_tab",
+        "profile_self_photo_upload_pending",
+        "profile_self_text_scale_2",
+        "profile_self_reduced_motion"
+      ],
+      "reason": "Self-profile captures now cover flagship profile surface plus deterministic full-route loading, error, offline, unavailable, edit tab, preview tab, upload-pending, text scale, reduced motion, and paired light/dark variants."
     },
     {
       "routeId": "reviewsHistoryScreen",
       "status": "captured",
       "priority": "P3",
-      "captureIds": ["reviews_history_list"],
-      "reason": "Review history fixture with event context."
+      "captureIds": [
+        "reviews_history_signed_out",
+        "reviews_history_profile_loading",
+        "reviews_history_profile_error",
+        "reviews_history_reviews_loading",
+        "reviews_history_reviews_error",
+        "reviews_history_empty",
+        "reviews_history_list",
+        "reviews_history_missing_event_context",
+        "reviews_history_text_scale_2",
+        "reviews_history_reduced_motion"
+      ],
+      "reason": "Reviews History captures now cover signed-out, profile loading/error, reviews loading/error, empty, populated rows, missing event-context fallback, text scale 2.0, reduced motion, and paired light/dark output from the populated fixture."
     },
     {
       "routeId": "publicProfileScreen",
       "status": "captured",
       "priority": "P1",
-      "captureIds": ["public_profile_member"],
-      "reason": "Public profile review surface backed by the synthetic sales persona fixture."
+      "captureIds": [
+        "public_profile_member",
+        "public_profile_loading",
+        "public_profile_initial_fallback_loading",
+        "public_profile_error",
+        "public_profile_offline",
+        "public_profile_unavailable",
+        "public_profile_own_profile",
+        "public_profile_block_pending",
+        "public_profile_report_sheet",
+        "public_profile_block_confirmation",
+        "public_profile_text_scale_2",
+        "public_profile_reduced_motion"
+      ],
+      "reason": "Public-profile captures now cover loaded member profile plus deterministic loading, initial-profile fallback, error, offline, unavailable, own-profile, pending overlay, report sheet, block confirmation, text scale, reduced motion, and paired light/dark variants."
     },
     {
       "routeId": "settingsScreen",
       "status": "captured",
       "priority": "P3",
-      "captureIds": ["settings_account"],
-      "reason": "Account and safety settings fixture with current user data."
+      "captureIds": [
+        "settings_account",
+        "settings_profile_loading",
+        "settings_profile_error",
+        "settings_profile_offline",
+        "settings_profile_missing",
+        "settings_blocked_loading",
+        "settings_blocked_error",
+        "settings_blocked_offline",
+        "settings_blocked_list",
+        "settings_preference_pending",
+        "settings_preference_error",
+        "settings_preference_offline",
+        "settings_delete_pending",
+        "settings_delete_error",
+        "settings_delete_offline",
+        "settings_sign_out_pending",
+        "settings_sign_out_error",
+        "settings_sign_out_offline",
+        "settings_unblock_pending",
+        "settings_unblock_error",
+        "settings_unblock_offline",
+        "settings_text_scale_2",
+        "settings_reduced_motion"
+      ],
+      "reason": "Settings Account captures cover profile-backed account rows, profile loading/error/offline/missing, blocked-account empty/loading/error/offline/list footer states, preference/delete/sign-out/unblock mutation pending, error, and offline states, text scale, reduced motion, and paired light/dark outputs."
     },
     {
       "routeId": "paymentHistoryScreen",
       "status": "captured",
       "priority": "P3",
-      "captureIds": ["payment_history_empty"],
-      "reason": "Payment history baseline empty state."
+      "captureIds": [
+        "payment_history_uid_loading",
+        "payment_history_signed_out",
+        "payment_history_uid_error",
+        "payment_history_uid_offline",
+        "payment_history_loading",
+        "payment_history_error",
+        "payment_history_payments_offline",
+        "payment_history_empty",
+        "payment_history_populated",
+        "payment_history_receipt_sheet",
+        "payment_history_failed_signup_receipt_sheet",
+        "payment_history_support_snackbar",
+        "payment_history_missing_event_title",
+        "payment_history_text_scale_2",
+        "payment_history_reduced_motion"
+      ],
+      "reason": "Payment History captures now cover uid loading/error/offline, signed-out, payments loading/error/offline, empty, populated mixed-status rows, receipt sheet, failed sign-up help sheet, support snackbar, missing event-title fallback, text scale 2.0, reduced motion, and paired light/dark output from the populated fixture."
     },
     {
       "routeId": "paymentConfirmationScreen",
@@ -210,35 +466,130 @@
     },
     {
       "routeId": "hostHomeScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "New host operations home for the split host app; needs a dedicated host-shell capture fixture."
+      "captureIds": [
+        "host_home_dashboard",
+        "host_home_events_list",
+        "host_home_signed_out",
+        "host_home_clubs_loading",
+        "host_home_clubs_error",
+        "host_home_clubs_offline",
+        "host_home_empty_clubs",
+        "host_home_events_loading",
+        "host_home_events_error",
+        "host_home_events_offline",
+        "host_home_cohost_empty_events",
+        "host_home_text_scale_2",
+        "host_home_reduced_motion",
+        "host_home_light_dark"
+      ],
+      "reason": "Host operations home is captured for Today/dashboard and Events-list baselines plus signed-out access, club loading/error/offline, empty clubs, nested event loading/error/offline, co-host empty events, text scale 2.0, reduced motion, and paired light/dark output. HostHomeRouteState and HostHomeEventsSectionState now own route/event async branch selection; remaining work is stable reference export for additional variants."
     },
     {
       "routeId": "hostClubsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "New host clubs management surface; needs a dedicated host-shell capture fixture."
+      "captureIds": [
+        "host_clubs_management",
+        "host_clubs_loading",
+        "host_clubs_error",
+        "host_clubs_offline",
+        "host_clubs_empty",
+        "host_clubs_cohost_edit",
+        "host_clubs_insights_report",
+        "host_clubs_preview_tab",
+        "host_clubs_text_scale_2",
+        "host_clubs_reduced_motion",
+        "host_clubs_light_dark",
+        "host_clubs_signed_out",
+        "host_clubs_insights_loading",
+        "host_clubs_insights_error",
+        "host_clubs_insights_offline",
+        "host_clubs_payout_loading",
+        "host_clubs_payout_ready",
+        "host_clubs_payout_restricted",
+        "host_clubs_payout_error",
+        "host_clubs_payout_offline",
+        "host_clubs_inline_edit_pending",
+        "host_clubs_inline_edit_error",
+        "host_clubs_inline_edit_offline",
+        "host_clubs_payout_setup_pending",
+        "host_clubs_payout_setup_error",
+        "host_clubs_payout_setup_offline",
+        "host_clubs_payout_refresh_pending",
+        "host_clubs_payout_refresh_error",
+        "host_clubs_payout_refresh_offline",
+        "host_clubs_team_pending",
+        "host_clubs_team_error",
+        "host_clubs_team_offline"
+      ],
+      "reason": "Host Clubs captures now cover the default organizer overview, signed-out, loading, generic/offline load errors, empty, co-host edit, inline editor pending/error/offline, insights report/loading/error/offline, preview tab, payout provider loading/ready/restricted/error/offline, payout setup pending/error/offline, payout refresh pending/error/offline, host-team mutation pending/error/offline, text scale 2.0, reduced motion, and paired light/dark output. The canonical Host Organizer advisory comparison is within threshold; additional pixel variants depend on future Claude reference exports."
     },
     {
       "routeId": "hostClubDetailScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Host-mode club detail includes professional host controls and should not be aliased to the consumer member detail capture."
+      "captureIds": [
+        "host_club_detail_public",
+        "host_club_detail_initial_loading",
+        "host_club_detail_loading",
+        "host_club_detail_error",
+        "host_club_detail_offline",
+        "host_club_detail_not_found",
+        "host_club_detail_signed_out",
+        "host_club_detail_non_host_preview",
+        "host_club_detail_empty_schedule",
+        "host_club_detail_text_scale_2",
+        "host_club_detail_reduced_motion",
+        "host_club_detail_light_dark"
+      ],
+      "reason": "Host-mode club detail now has deterministic captures for public preview, initial fallback loading, full loading, generic error, offline error, not-found, signed-out preview, non-host public preview, empty schedule, text scale 2.0, reduced motion, and paired light/dark output. Remaining work is policy for embedded host controls, deeper schedule/share/contact/review variants, additional Claude references, and pixel comparison."
     },
     {
       "routeId": "hostCreateClubScreen",
       "status": "captured",
       "priority": "P2",
-      "captureIds": ["create_club_basics"],
-      "reason": "Host app create-club route owns the create-club form surface."
+      "captureIds": [
+        "create_club_basics",
+        "create_club_basics_validation",
+        "create_club_picked_media",
+        "create_club_draft_restored",
+        "create_club_details",
+        "create_club_host_defaults",
+        "create_club_event_success_defaults",
+        "create_club_save_draft_pending",
+        "create_club_save_draft_error",
+        "create_club_submit_pending",
+        "create_club_submit_error",
+        "create_club_submit_offline",
+        "create_club_text_scale_2",
+        "create_club_reduced_motion",
+        "create_club_light_dark"
+      ],
+      "reason": "Host app create-club route now has deterministic captures for basics, basics validation errors, picked media, restored draft, details, host defaults, Event Success defaults, save-draft pending/error, submit pending/error, offline submit error, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
     },
     {
       "routeId": "hostEditClubScreen",
       "status": "captured",
       "priority": "P2",
-      "captureIds": ["edit_club_basics"],
-      "reason": "Host app edit-club route owns the edit-club form surface."
+      "captureIds": [
+        "edit_club_basics",
+        "edit_club_validation_error",
+        "edit_club_media_replacement",
+        "edit_club_submit_pending",
+        "edit_club_submit_error",
+        "edit_club_route_loading",
+        "edit_club_route_error",
+        "edit_club_route_offline",
+        "edit_club_not_found",
+        "edit_club_cohost_media",
+        "edit_club_forbidden",
+        "edit_club_text_scale_2",
+        "edit_club_reduced_motion",
+        "edit_club_light_dark"
+      ],
+      "reason": "Host app edit-club route now has deterministic captures for owner edit, validation errors, media replacement, submit pending/error, route loading/error/offline/not-found, co-host media-only mode, forbidden identity, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
     },
     {
       "routeId": "hostCreateEventScreen",
@@ -247,32 +598,112 @@
       "captureIds": [
         "host_event_setup",
         "host_create_basics",
+        "host_create_route_loading",
+        "host_create_route_error",
+        "host_create_route_offline",
+        "host_create_not_found",
+        "host_create_text_scale_2",
+        "host_create_reduced_motion",
+        "host_create_light_dark",
         "host_create_location",
         "host_create_schedule",
         "host_create_policy",
-        "host_create_guide"
+        "host_create_guide",
+        "host_create_basics_validation",
+        "host_create_custom_activity",
+        "host_create_event_photos",
+        "host_create_location_selected",
+        "host_create_draft_picker",
+        "host_create_draft_restored",
+        "host_create_save_draft_pending",
+        "host_create_save_draft_error",
+        "host_create_submit_pending",
+        "host_create_submit_error",
+        "host_create_submit_offline",
+        "host_create_success_manage"
       ],
-      "reason": "Host app create-event route owns the host event setup flow."
+      "reason": "Host app create-event route now has deterministic captures for route loading/error/offline/not-found, basics, validation, custom activity, picked event photos, selected location, draft picker/restored, save-draft pending/error, submit pending/error/offline, success, wizard location/schedule/policy/guide, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are schedule validation, policy variants, draft delete, unsaved changes, unauthorized policy, deeper map/draft/photo offline variants, and reference-specific variants."
     },
     {
       "routeId": "hostAppEventDetailScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Host app event detail can render host-state actions and needs a dedicated host fixture."
+      "reason": "Host app Event Detail capture renders the host role state with consumer booking actions suppressed.",
+      "captureIds": [
+        "event_detail_host_app"
+      ]
     },
     {
       "routeId": "hostAppEventManageScreen",
       "status": "captured",
       "priority": "P1",
-      "captureIds": ["host_live_console", "host_post_event_report"],
-      "reason": "Host app manage route captured with live console and post-event report variants."
+      "captureIds": [
+        "host_manage_route_loading",
+        "host_manage_initial_event_extra",
+        "host_manage_route_error",
+        "host_manage_route_offline",
+        "host_manage_not_found",
+        "host_manage_unauthorized",
+        "host_manage_attendance_loading",
+        "host_manage_attendance_error",
+        "host_manage_attendance_empty",
+        "host_manage_attendee_profiles_loading",
+        "host_manage_attendee_profiles_error",
+        "host_manage_filtered_roster_empty",
+        "host_manage_private_access_loading",
+        "host_manage_private_access_error",
+        "host_manage_invite_links_loading",
+        "host_manage_invite_links_error",
+        "host_manage_invite_links_empty",
+        "host_manage_invite_link_mutation_pending",
+        "host_manage_invite_link_mutation_error",
+        "host_manage_private_link_share_pending",
+        "host_manage_private_link_share_error",
+        "host_manage_edit_event_action",
+        "host_manage_cancel_event_pending",
+        "host_manage_cancel_event_error",
+        "host_manage_delete_event_pending",
+        "host_manage_delete_event_error",
+        "host_manage_setup_private_access",
+        "host_manage_full_waitlist_apron",
+        "host_manage_attendance_roster",
+        "host_manage_attendance_mutation_pending",
+        "host_manage_attendance_mutation_error",
+        "host_live_console",
+        "host_manage_live_unavailable",
+        "host_post_event_report",
+        "host_manage_report_export_pending",
+        "host_manage_report_export_error",
+        "host_manage_cancelled_event",
+        "host_manage_text_scale_2",
+        "host_manage_reduced_motion",
+        "host_manage_light_dark"
+      ],
+      "reason": "Host app manage route now has deterministic captures for route loading/error/offline/not-found, initial-event fallback, unauthorized access, attendance loading/error/empty, attendee profile loading/error, filtered roster empty, private-access loading/error, invite-link loading/error/empty, invite-link mutation pending/error, private-link share pending/error, edit/cancel/delete host actions, setup/private access, full/waitlist apron, attendance roster, attendance mutation pending/error, live console, live unavailable/no saved guide, report workspace, report export pending/error, cancelled event, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are Event Success live/report substates, deeper section-level offline variants, and reference-specific variants."
     },
     {
       "routeId": "hostAppEditEventScreen",
       "status": "captured",
       "priority": "P2",
-      "captureIds": ["edit_hosted_event"],
-      "reason": "Host app edit-event route owns the hosted event edit surface."
+      "captureIds": [
+        "edit_hosted_event",
+        "edit_hosted_event_route_loading",
+        "edit_hosted_event_route_error",
+        "edit_hosted_event_offline",
+        "edit_hosted_event_not_found",
+        "edit_hosted_event_unauthorized",
+        "edit_hosted_event_schedule_locked",
+        "edit_hosted_event_cancelled",
+        "edit_hosted_event_private_access_loading",
+        "edit_hosted_event_submit_pending",
+        "edit_hosted_event_submit_error",
+        "edit_hosted_event_text_scale_2",
+        "edit_hosted_event_reduced_motion",
+        "edit_hosted_event_light_dark",
+        "edit_hosted_event_validation_error",
+        "edit_hosted_event_location_selected"
+      ],
+      "reason": "Host app edit-event route now has deterministic captures for prefilled form, route loading/error/offline/not-found, unauthorized host, schedule-locked, cancelled-disabled, private-access loading, validation errors, selected location, submit pending/error, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific states."
     },
     {
       "routeId": "hostAppAttendanceSheet",
@@ -290,27 +721,97 @@
     },
     {
       "routeId": "hostInboxScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Professional host inbox is separate from consumer dating chats and needs a dedicated host-message capture fixture."
+      "captureIds": [
+        "host_inbox_uid_loading",
+        "host_inbox_loading",
+        "host_inbox_error",
+        "host_inbox_offline",
+        "host_inbox_empty",
+        "host_inbox_queries",
+        "host_inbox_unread_filter",
+        "matches_host_unread_empty",
+        "host_inbox_search_active",
+        "host_inbox_search_empty",
+        "host_inbox_new_query",
+        "host_inbox_text_scale_2",
+        "host_inbox_reduced_motion",
+        "host_inbox_light_dark"
+      ],
+      "reason": "Host Inbox now has deterministic captures for uid loading, matches loading, generic error, offline error, empty, populated attendee queries, unread-filtered rows, no-unread empty, search active, search empty, new inquiry, text scale 2.0, reduced motion, and paired light/dark output. Remaining work is host-chat route callback seam, additional duplicate/grouping policy proof, state reference exports, and pixel comparison."
     },
     {
       "routeId": "hostChatScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "Professional host conversation view should be captured separately from dating chat."
+      "captureIds": [
+        "host_chat_inquiry",
+        "host_chat_match_loading",
+        "host_chat_match_error",
+        "host_chat_not_found",
+        "host_chat_messages_loading",
+        "host_chat_messages_error",
+        "host_chat_offline",
+        "host_chat_empty_thread",
+        "host_chat_event_context_fallback",
+        "host_chat_blocked",
+        "host_chat_text_scale_2",
+        "host_chat_reduced_motion",
+        "host_chat_light_dark",
+        "host_chat_composer_states"
+      ],
+      "reason": "Host Chat now has deterministic captures for host inquiry baseline, match loading, match error, missing chat, message loading, message error, offline message load, empty thread, event fallback, blocked chat, text scale 2.0, reduced motion, paired light/dark output, and composer ready/send-pending/image-pending/disabled states. Remaining work is keyboard-open safe-area, report/block mutation surfaces, provider-specific offline policy, dedicated references, and pixel comparison."
     },
     {
       "routeId": "hostSettingsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P2",
-      "reason": "Host account/settings surface is distinct from consumer account settings and needs a host profile fixture."
+      "captureIds": [
+        "host_settings_active_profile",
+        "host_settings_profile_loading",
+        "host_settings_profile_error",
+        "host_settings_profile_offline",
+        "host_settings_no_profile",
+        "host_settings_create_profile_pending",
+        "host_settings_create_profile_error",
+        "host_settings_create_profile_offline",
+        "host_settings_fallback_profile",
+        "host_settings_clubs_loading",
+        "host_settings_clubs_error",
+        "host_settings_clubs_offline",
+        "host_settings_profile_editor_sheet",
+        "host_settings_save_profile_pending",
+        "host_settings_save_profile_error",
+        "host_settings_save_profile_offline",
+        "host_settings_sign_out_error",
+        "host_settings_sign_out_offline",
+        "host_settings_text_scale_2",
+        "host_settings_reduced_motion"
+      ],
+      "reason": "Host account/settings captures cover active professional profile, profile loading/error/offline, no-profile, create-profile mutation pending/error/offline, fallback profile, hosted/owned clubs loading/error/offline, editor-sheet save pending/error/offline, sign-out error/offline, text-scale 2.0, and reduced-motion fixtures."
     },
     {
       "routeId": "hostProfileScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P2",
-      "reason": "Host profile editing is a new host settings sub-route and needs a dedicated host profile fixture."
+      "captureIds": [
+        "host_profile_populated",
+        "host_profile_loading",
+        "host_profile_error",
+        "host_profile_offline",
+        "host_profile_missing",
+        "host_profile_validation_error",
+        "host_profile_create_pending",
+        "host_profile_create_error",
+        "host_profile_create_offline",
+        "host_profile_save_pending",
+        "host_profile_save_error",
+        "host_profile_save_offline",
+        "host_profile_text_scale_2",
+        "host_profile_reduced_motion"
+      ],
+      "reason": "Host professional profile editor captures cover populated, loading, error/offline, missing-profile, display-name validation, create/save mutation pending/error/offline, text-scale 2.0, and reduced-motion fixtures."
     },
     {
       "routeId": "eventPolicyLabScreen",

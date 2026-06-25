@@ -1,0 +1,17 @@
+{
+  "generatedFrom": {
+    "candidates": "tool/organizer_intake/generated/source_mention_resolution_candidates.json",
+    "clusters": "tool/organizer_intake/generated/source_mention_resolution_clusters.json"
+  },
+  "policy": {
+    "cacheRoot": "tool/organizer_intake/llm_cache",
+    "note": "This artifact is prompt preparation only. A backend runner must add cache reads/writes and explicit model-call approval.",
+    "status": "model_calls_disabled"
+  },
+  "requests": [],
+  "schemaVersion": 1,
+  "summary": {
+    "promptReady": 0,
+    "requests": 0
+  }
+}

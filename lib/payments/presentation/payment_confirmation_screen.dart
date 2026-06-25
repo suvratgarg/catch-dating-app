@@ -7,11 +7,12 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -38,16 +39,17 @@ class PaymentConfirmationScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final eventAsync = ref.watch(watchEventProvider(data.eventId));
 
-    return eventAsync.when(
-      loading: () => const Scaffold(body: CatchLoadingIndicator()),
-      error: (e, _) => Scaffold(
+    return CatchAsyncValueView<Event?>(
+      value: eventAsync,
+      loadingBuilder: (_) => const _PaymentConfirmationLoadingScreen(),
+      errorBuilder: (_, e, _) => Scaffold(
         body: CatchErrorState.fromError(
           e,
           context: AppErrorContext.payments,
           onRetry: () => ref.invalidate(watchEventProvider(data.eventId)),
         ),
       ),
-      data: (event) {
+      builder: (context, event) {
         if (event == null) {
           return const Scaffold(
             body: CatchErrorState(
@@ -61,6 +63,73 @@ class PaymentConfirmationScreen extends ConsumerWidget {
         }
         return _ConfirmationBody(data: data, event: event);
       },
+    );
+  }
+}
+
+class _PaymentConfirmationLoadingScreen extends StatelessWidget {
+  const _PaymentConfirmationLoadingScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Scaffold(
+      backgroundColor: t.bg,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: CatchInsets.pageBody,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(child: CatchSkeleton.circle(size: CatchIcon.forceUpdate)),
+              gapH24,
+              Center(
+                child: CatchSkeleton.text(
+                  width: CatchLayout.skeletonTextTitleWidth,
+                ),
+              ),
+              gapH12,
+              CatchSkeleton.textBlock(lines: 2),
+              gapH24,
+              CatchSurface(
+                padding: CatchInsets.content,
+                borderColor: t.line,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CatchSkeleton.text(
+                      width: CatchLayout.skeletonTextTitleWidth,
+                    ),
+                    gapH8,
+                    CatchSkeleton.text(
+                      width: CatchLayout.skeletonTextShortWidth,
+                    ),
+                    gapH16,
+                    CatchSkeleton.card(
+                      height: CatchLayout.skeletonCardCompactHeight,
+                    ),
+                  ],
+                ),
+              ),
+              gapH20,
+              Row(
+                children: [
+                  for (var index = 0; index < 3; index++) ...[
+                    Expanded(
+                      child: CatchSkeleton.card(
+                        height: CatchLayout.skeletonCardCompactHeight,
+                      ),
+                    ),
+                    if (index < 2) gapW8,
+                  ],
+                ],
+              ),
+              gapH20,
+              CatchSkeleton.card(height: CatchLayout.buttonLgHeight),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

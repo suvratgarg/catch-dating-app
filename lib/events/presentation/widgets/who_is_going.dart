@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -55,8 +56,9 @@ class WhoIsGoing extends ConsumerWidget {
       watchEventParticipationRosterProvider(event.id),
     );
 
-    return rosterAsync.when(
-      loading: () => _WhoIsGoingContent(
+    return CatchAsyncValueView<EventParticipationRoster>(
+      value: rosterAsync,
+      loadingBuilder: (_) => _WhoIsGoingContent(
         event: event,
         roster: EventParticipationRoster.empty(),
         userProfile: userProfile,
@@ -64,14 +66,14 @@ class WhoIsGoing extends ConsumerWidget {
         surfaceStyle: surfaceStyle,
         showHeader: showHeader,
       ),
-      error: (e, _) => CatchInlineErrorState.fromError(
+      errorBuilder: (_, e, _) => CatchInlineErrorState.fromError(
         e,
         context: AppErrorContext.event,
         compact: true,
         onRetry: () =>
             ref.invalidate(watchEventParticipationRosterProvider(event.id)),
       ),
-      data: (roster) => _WhoIsGoingContent(
+      builder: (context, roster) => _WhoIsGoingContent(
         event: event,
         roster: roster,
         userProfile: userProfile,

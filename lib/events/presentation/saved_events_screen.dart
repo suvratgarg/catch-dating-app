@@ -4,9 +4,10 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -31,9 +32,10 @@ class SavedEventsScreen extends ConsumerWidget {
       backgroundColor: t.bg,
       appBar: const CatchTopBar(title: 'Saved events'),
       body: SafeArea(
-        child: savedEventsAsync.when(
-          loading: () => const CatchLoadingIndicator(),
-          error: (error, _) => CatchErrorState.fromError(
+        child: CatchAsyncValueView<List<Event>>(
+          value: savedEventsAsync,
+          loadingBuilder: (_) => const _SavedEventsLoading(),
+          errorBuilder: (_, error, _) => CatchErrorState.fromError(
             error,
             context: AppErrorContext.event,
             onRetry: uid == null
@@ -42,7 +44,7 @@ class SavedEventsScreen extends ConsumerWidget {
                     watchSavedEventDetailsForUserProvider(uid),
                   ),
           ),
-          data: (events) {
+          builder: (context, events) {
             if (events.isEmpty) {
               return const _SavedEventsMessage(
                 title: 'No saved events yet',
@@ -57,7 +59,6 @@ class SavedEventsScreen extends ConsumerWidget {
                 ClubNameLookupQuery(orderedEvents.map((event) => event.clubId)),
               ),
             );
-            final clubNames = clubNamesAsync.asData?.value;
 
             return CustomScrollView(
               slivers: [
@@ -70,20 +71,17 @@ class SavedEventsScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                if (clubNames == null)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: clubNamesAsync.hasError
-                        ? CatchErrorState.fromError(
-                            clubNamesAsync.error!,
-                            context: AppErrorContext.event,
-                            onRetry: () =>
-                                ref.invalidate(clubNameLookupProvider),
-                          )
-                        : const CatchLoadingIndicator(),
-                  )
-                else
-                  EventAgendaSliverList(
+                CatchAsyncValueSliver<Map<String, String>>(
+                  value: clubNamesAsync,
+                  sliverLoadingBuilder: (_) =>
+                      const EventAgendaSliverSkeleton(),
+                  sliverErrorBuilder: (_, error, _) =>
+                      CatchSliverErrorState.fromError(
+                        error,
+                        context: AppErrorContext.event,
+                        onRetry: () => ref.invalidate(clubNameLookupProvider),
+                      ),
+                  builder: (context, clubNames) => EventAgendaSliverList(
                     events: orderedEvents,
                     showClubName: true,
                     clubNameBuilder: (event) => clubNames[event.clubId],
@@ -97,6 +95,7 @@ class SavedEventsScreen extends ConsumerWidget {
                     onEventSelected: (event) =>
                         _openEventDetail(context, event),
                   ),
+                ),
               ],
             );
           },
@@ -109,6 +108,27 @@ class SavedEventsScreen extends ConsumerWidget {
     final clubId = Uri.encodeComponent(event.clubId);
     final eventId = Uri.encodeComponent(event.id);
     context.push('/saved-events/clubs/$clubId/events/$eventId', extra: event);
+  }
+}
+
+class _SavedEventsLoading extends StatelessWidget {
+  const _SavedEventsLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: CatchInsets.pageHeaderCompact,
+          sliver: SliverToBoxAdapter(
+            child: CatchSkeleton.text(
+              width: CatchLayout.skeletonTextHeadlineWidth,
+            ),
+          ),
+        ),
+        const EventAgendaSliverSkeleton(),
+      ],
+    );
   }
 }
 

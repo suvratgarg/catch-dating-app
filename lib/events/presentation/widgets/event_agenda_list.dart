@@ -1,5 +1,8 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
@@ -153,6 +156,137 @@ class EventAgendaSliverList extends StatelessWidget {
                 children: children,
               ),
             ),
+    );
+  }
+}
+
+class EventAgendaSliverSkeleton extends StatelessWidget {
+  const EventAgendaSliverSkeleton({
+    super.key,
+    this.count = 4,
+    this.padding = const EdgeInsets.fromLTRB(
+      CatchLayout.detailScreenHorizontalPadding,
+      CatchLayout.agendaListTopPadding,
+      CatchLayout.detailScreenHorizontalPadding,
+      CatchLayout.agendaListBottomPadding,
+    ),
+    this.dayLabelBottomGap = CatchLayout.agendaDayLabelBottomGap,
+    this.itemGap = CatchLayout.agendaItemGap,
+  });
+
+  final int count;
+  final EdgeInsetsGeometry padding;
+  final double dayLabelBottomGap;
+  final double itemGap;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPadding(
+      padding: padding,
+      sliver: SliverList.list(
+        children: [
+          CatchSkeleton.text(width: CatchLayout.skeletonTextEyebrowWidth),
+          SizedBox(height: dayLabelBottomGap),
+          for (var i = 0; i < count; i++) ...[
+            const _EventAgendaTileSkeleton(),
+            if (i < count - 1) SizedBox(height: itemGap),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _EventAgendaTileSkeleton extends StatelessWidget {
+  const _EventAgendaTileSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      borderColor: t.line2,
+      radius: CatchRadius.md,
+      padding: EdgeInsets.zero,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchSkeleton.custom(
+              child: Container(
+                width: CatchLayout.eventDateRailWidth,
+                decoration: const BoxDecoration(
+                  color: CatchTokens.editorialLight,
+                  borderRadius: BorderRadius.horizontal(
+                    left: Radius.circular(CatchRadius.md),
+                  ),
+                ),
+                child: Padding(
+                  padding: CatchInsets.contentDense,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CatchSkeleton.text(
+                        width: CatchLayout.skeletonTextDateWidth,
+                      ),
+                      gapH6,
+                      CatchSkeleton.text(
+                        width: CatchLayout.skeletonTextMicroWidth,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: CatchInsets.listBody,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        CatchSkeleton.circle(
+                          size: CatchLayout.eventTypeDisplaySize,
+                        ),
+                        gapW8,
+                        Expanded(child: CatchSkeleton.text()),
+                        gapW8,
+                        CatchSkeleton.box(
+                          width: CatchLayout.skeletonTextChipWidth,
+                          height: CatchSpacing.s5,
+                          radius: CatchRadius.pill,
+                        ),
+                      ],
+                    ),
+                    gapH8,
+                    CatchSkeleton.text(),
+                    gapH6,
+                    FractionallySizedBox(
+                      widthFactor: 0.72,
+                      child: CatchSkeleton.text(),
+                    ),
+                    gapH10,
+                    Row(
+                      children: [
+                        CatchSkeleton.circle(size: CatchIcon.profileRunStat),
+                        gapW8,
+                        CatchSkeleton.text(
+                          width: CatchLayout.skeletonTextRowWidth,
+                        ),
+                      ],
+                    ),
+                    gapH8,
+                    CatchSkeleton.text(
+                      width: CatchLayout.skeletonTextBodyWidth,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -470,7 +470,7 @@ participation edge for the real tester, schedule locks, and aggregate repairs.
 
 ### Validate Demo Readiness
 
-Before a demo, event:
+Before a demo, run:
 
 ```bash
 node tool/demo/demo_ops.mjs validate-demo-state \
@@ -496,6 +496,102 @@ node tool/demo/demo_ops.mjs demo-checklist \
 
 The checklist converts raw counts into capabilities such as profile, event detail,
 post-event recap, matches, chat, saved events, payment history, and notifications.
+
+## Live Chats QA Closure
+
+Use this checklist to close `MATCH-CHAT-OWNER-QA-001`. It is intentionally an
+owner-operated live-account loop because it depends on a real phone, the active
+Firestore project, and real tester accounts.
+
+1. Confirm the target account has enough state for Chats:
+
+   ```bash
+   node tool/demo/demo_ops.mjs validate-demo-state \
+     --env prod \
+     --phone +919131404263
+   ```
+
+2. If the account is missing a chat partner, create or repair a deterministic
+   live-tester match. First inspect the dry run, then rerun with `--apply` only
+   when the proposed paths are expected:
+
+   ```bash
+   node tool/demo/demo_ops.mjs match-phones \
+     --env prod \
+     --phone-a +919131404263 \
+     --phone-b +919870042103 \
+     --allow-prod
+
+   node tool/demo/demo_ops.mjs match-phones \
+     --env prod \
+     --phone-a +919131404263 \
+     --phone-b +919870042103 \
+     --apply \
+     --allow-prod
+   ```
+
+3. If the chat list has stale or duplicated demo-owned threads for one tester,
+   reset only that tester's disposable relationship state, then warm it again:
+
+   ```bash
+   node tool/demo/demo_ops.mjs reset-user-demo-state \
+     --env prod \
+     --phone +919131404263 \
+     --apply \
+     --allow-prod
+
+   node tool/demo/demo_ops.mjs warm-user \
+     --env prod \
+     --phone +919131404263 \
+     --apply \
+     --allow-prod
+   ```
+
+4. Create one unread message when the badge, ordering, and opened-thread
+   behavior need a deterministic live check:
+
+   ```bash
+   node tool/demo/demo_ops.mjs create-unread-message \
+     --env prod \
+     --from-phone +919870042103 \
+     --to-phone +919131404263 \
+     --text "Want to try the Saturday route?" \
+     --apply \
+     --allow-prod
+   ```
+
+5. On the live phone, verify the Chats list and thread:
+
+   - the list shows one visible conversation per matched person;
+   - unread count and ordering update after the deterministic unread message;
+   - opening the thread shows the same match, message, and shared event context;
+   - profile images use thumbnails and do not flash full-size source photos;
+   - no duplicate synthetic name/photo pairs appear for the active account.
+
+6. If thumbnails are missing on real data, run the profile-thumbnail backfill
+   from an authenticated shell targeting the intended Firebase project. Dry-run
+   first, review `missing` and `skipped`, then apply only when the plan is
+   expected:
+
+   ```bash
+   GOOGLE_CLOUD_PROJECT=<firebase-project-id> \
+   FIREBASE_STORAGE_BUCKET=<firebase-storage-bucket> \
+   npm --prefix functions run backfill:profile-thumbnails
+
+   GOOGLE_CLOUD_PROJECT=<firebase-project-id> \
+   FIREBASE_STORAGE_BUCKET=<firebase-storage-bucket> \
+   npm --prefix functions run backfill:profile-thumbnails -- --apply
+   ```
+
+7. After any writes, rerun both validators:
+
+   ```bash
+   node tool/demo/demo_ops.mjs validate-demo-state \
+     --env prod \
+     --phone +919131404263
+
+   node tool/data/validate_firestore_data.mjs --env prod
+   ```
 
 ## State Toggles
 

@@ -8,10 +8,12 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:flutter/material.dart';
 
 Future<EventDraft?> showDraftPickerSheet({
@@ -95,9 +97,7 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
       }
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Could not delete draft.')));
+      showCatchSnackBar(context, 'Could not delete draft.');
     } finally {
       if (mounted) setState(() => _deletingDraftId = null);
     }
@@ -214,10 +214,7 @@ class _DraftCard extends StatelessWidget {
               size: 36,
               background: Colors.transparent,
               child: isDeleting
-                  ? const SizedBox.square(
-                      dimension: CatchIcon.md,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
+                  ? const HostInlineSkeletonIcon()
                   : Icon(
                       CatchIcons.deleteOutlineRounded,
                       size: 20,

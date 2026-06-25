@@ -1,3 +1,6 @@
+import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -10,10 +13,14 @@ import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' show Provider;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'dashboard_full_view_model.g.dart';
+
+final dashboardNowProvider = Provider<DateTime>((ref) => DateTime.now());
 
 enum DashboardSectionStatus { loading, error, data }
 
@@ -73,6 +80,102 @@ class DashboardFullViewModel {
   recommendationsSection;
 }
 
+enum DashboardHomeScreenStatus { loading, error, empty, full }
+
+enum DashboardHomeRetryTarget { userProfile, memberships, signedUpEvents }
+
+class DashboardHomeLoadError {
+  const DashboardHomeLoadError({
+    required this.error,
+    required this.fallbackMessage,
+    required this.retryTarget,
+    this.uid,
+  });
+
+  final Object error;
+  final String fallbackMessage;
+  final DashboardHomeRetryTarget retryTarget;
+  final String? uid;
+}
+
+class DashboardHomeHeaderModel {
+  const DashboardHomeHeaderModel({required this.eyebrow, required this.title});
+
+  final String eyebrow;
+  final String title;
+
+  factory DashboardHomeHeaderModel.empty() {
+    return const DashboardHomeHeaderModel(
+      eyebrow: 'WELCOME TO CATCH',
+      title: "Let's find your first event",
+    );
+  }
+
+  factory DashboardHomeHeaderModel.full({
+    required UserProfile user,
+    required DateTime now,
+  }) {
+    return DashboardHomeHeaderModel(
+      eyebrow: dashboardDayCity(user.city, now: now).toUpperCase(),
+      title: '${dashboardGreeting(now)}, ${user.greetingDisplayName}',
+    );
+  }
+}
+
+class DashboardHomeScreenState {
+  const DashboardHomeScreenState._({
+    required this.status,
+    required this.header,
+    this.error,
+    this.user,
+    this.viewModel,
+    this.followedClubIds = const <String>[],
+    this.notificationUid,
+  });
+
+  DashboardHomeScreenState.loading()
+    : this._(
+        status: DashboardHomeScreenStatus.loading,
+        header: DashboardHomeHeaderModel.empty(),
+      );
+
+  DashboardHomeScreenState.error(DashboardHomeLoadError error)
+    : this._(
+        status: DashboardHomeScreenStatus.error,
+        header: DashboardHomeHeaderModel.empty(),
+        error: error,
+      );
+
+  DashboardHomeScreenState.empty({String? notificationUid})
+    : this._(
+        status: DashboardHomeScreenStatus.empty,
+        header: DashboardHomeHeaderModel.empty(),
+        notificationUid: notificationUid,
+      );
+
+  DashboardHomeScreenState.full({
+    required DashboardHomeHeaderModel header,
+    required UserProfile user,
+    required DashboardFullViewModel viewModel,
+    required List<String> followedClubIds,
+  }) : this._(
+         status: DashboardHomeScreenStatus.full,
+         header: header,
+         user: user,
+         viewModel: viewModel,
+         followedClubIds: followedClubIds,
+         notificationUid: user.uid,
+       );
+
+  final DashboardHomeScreenStatus status;
+  final DashboardHomeHeaderModel header;
+  final DashboardHomeLoadError? error;
+  final UserProfile? user;
+  final DashboardFullViewModel? viewModel;
+  final List<String> followedClubIds;
+  final String? notificationUid;
+}
+
 class DashboardEventRecommendation {
   const DashboardEventRecommendation({
     required this.event,
@@ -85,6 +188,19 @@ class DashboardEventRecommendation {
   final String clubName;
   final String reasonLabel;
   final double score;
+}
+
+String dashboardGreeting(DateTime now) {
+  final hour = now.hour;
+  if (hour < 12) return 'Morning';
+  if (hour < 17) return 'Afternoon';
+  return 'Evening';
+}
+
+String dashboardDayCity(String? city, {required DateTime now}) {
+  final day = AppTimeFormatters.longWeekday(now);
+  final label = cityLabel(city);
+  return '$day · ${label.isEmpty ? defaultCityDataForMarket().label : label}';
 }
 
 DashboardFullViewModel buildDashboardFullViewModel({
@@ -609,5 +725,91 @@ DashboardFullViewModel dashboardFullViewModel(
         ),
       ),
     ),
+    now: ref.watch(dashboardNowProvider),
+  );
+}
+
+/// Builds the route-level state for Dashboard Home.
+///
+/// The route widget should only switch over this state and compose the selected
+/// sections; provider waves, retry targets, header copy, and empty/full
+/// selection live here.
+@riverpod
+DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
+  final now = ref.watch(dashboardNowProvider);
+  final userAsync = ref.watch(watchUserProfileProvider);
+
+  return userAsync.when(
+    loading: DashboardHomeScreenState.loading,
+    error: (error, stackTrace) => DashboardHomeScreenState.error(
+      DashboardHomeLoadError(
+        error: error,
+        fallbackMessage: 'Unable to load your dashboard.',
+        retryTarget: DashboardHomeRetryTarget.userProfile,
+      ),
+    ),
+    data: (user) {
+      if (user == null) {
+        return DashboardHomeScreenState.empty();
+      }
+
+      final membershipsAsync = ref.watch(
+        watchActiveClubMembershipsForUserProvider(user.uid),
+      );
+      final signedUpEventsAsync = ref.watch(
+        watchSignedUpEventsProvider(user.uid),
+      );
+
+      if (membershipsAsync.isLoading || signedUpEventsAsync.isLoading) {
+        return DashboardHomeScreenState.loading();
+      }
+      if (membershipsAsync.hasError) {
+        return DashboardHomeScreenState.error(
+          DashboardHomeLoadError(
+            error: membershipsAsync.error!,
+            fallbackMessage: 'Unable to load your clubs.',
+            retryTarget: DashboardHomeRetryTarget.memberships,
+            uid: user.uid,
+          ),
+        );
+      }
+      if (signedUpEventsAsync.hasError) {
+        return DashboardHomeScreenState.error(
+          DashboardHomeLoadError(
+            error: signedUpEventsAsync.error!,
+            fallbackMessage: 'Unable to load your booked events.',
+            retryTarget: DashboardHomeRetryTarget.signedUpEvents,
+            uid: user.uid,
+          ),
+        );
+      }
+
+      final signedUpEvents =
+          signedUpEventsAsync.asData?.value ?? const <Event>[];
+      final followedClubIds =
+          membershipsAsync.asData?.value
+              .map((membership) => membership.clubId)
+              .toList(growable: false) ??
+          const <String>[];
+      final viewModel = ref.watch(
+        dashboardFullViewModelProvider(
+          signedUpEvents: signedUpEvents,
+          user: user,
+          uid: user.uid,
+          followedClubIds: followedClubIds,
+        ),
+      );
+
+      if (signedUpEvents.isEmpty && viewModel.arrivalAction == null) {
+        return DashboardHomeScreenState.empty(notificationUid: user.uid);
+      }
+
+      return DashboardHomeScreenState.full(
+        header: DashboardHomeHeaderModel.full(user: user, now: now),
+        user: user,
+        viewModel: viewModel,
+        followedClubIds: followedClubIds,
+      );
+    },
   );
 }

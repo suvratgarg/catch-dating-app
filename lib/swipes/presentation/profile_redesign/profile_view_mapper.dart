@@ -134,7 +134,7 @@ ProfileView profileViewFromCardContent(
   return ProfileView(
     name: name,
     age: age,
-    heroPhoto: hero == null ? null : NetworkImage(hero.url),
+    heroPhoto: hero == null ? null : _profileImageProvider(hero.url),
     heroReaction: hero == null
         ? null
         : _target(
@@ -168,7 +168,7 @@ ProfilePhotoSection _photoSection(
       ? 'second profile photo'
       : 'profile photo $ordinal';
   return ProfilePhotoSection(
-    image: NetworkImage(photo.url),
+    image: _profileImageProvider(photo.url),
     caption: photo.prompt?.displayPrompt,
     reaction: _target(
       'photo-$ordinal',
@@ -190,6 +190,14 @@ ProfileReactionTarget _target(
   label: label,
   preview: _truncatePreview(preview),
 );
+
+ImageProvider<Object> _profileImageProvider(String url) {
+  final trimmed = url.trim();
+  if (trimmed.startsWith('assets/')) {
+    return AssetImage(trimmed);
+  }
+  return NetworkImage(trimmed);
+}
 
 String _photoPreview(
   String name,

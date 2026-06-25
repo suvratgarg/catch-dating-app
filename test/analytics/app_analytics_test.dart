@@ -76,6 +76,16 @@ void main() {
     expect(reporter.events, isEmpty);
   });
 
+  test('uses event-platform conversion names for ad readiness', () {
+    expect(AnalyticsEvents.eventBookingStarted, 'event_booking_started');
+    expect(AnalyticsEvents.eventBooked, 'event_booked');
+    expect(AnalyticsEvents.eventBookingFailed, 'event_booking_failed');
+    expect(AnalyticsEvents.eventAttended, 'event_attended');
+    expect(AnalyticsEvents.phoneVerified, 'phone_verified');
+    expect(AnalyticsEvents.profileCompleted, 'profile_completed');
+    expect(AnalyticsEvents.hostEventCreated, 'host_event_created');
+  });
+
   test('route observer records unique route names', () {
     final reporter = _FakeAnalyticsReporter();
     final analytics = AppAnalytics(reporter: reporter, shouldCollect: true);

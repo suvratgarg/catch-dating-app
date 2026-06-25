@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "screenId": "screen.explore.discovery",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar_and_location",
+      "stateIds": ["discovery_feed"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 104
+      },
+      "reason": "Top chrome, location copy, and search affordance vary between the Claude template and Flutter route shell."
+    },
+    {
+      "id": "hero_live_counts",
+      "stateIds": ["discovery_feed"],
+      "rect": {
+        "x": 224,
+        "y": 262,
+        "width": 146,
+        "height": 34
+      },
+      "reason": "Event time, price, going count, and capacity are dynamic feed data."
+    },
+    {
+      "id": "club_media_card",
+      "stateIds": ["discovery_feed"],
+      "rect": {
+        "x": 20,
+        "y": 676,
+        "width": 350,
+        "height": 136
+      },
+      "reason": "The club interleave uses illustrative media and a sticky map pill; image and lower dock overlap should not dominate the first advisory baseline."
+    },
+    {
+      "id": "tab_dock_safe_area",
+      "stateIds": ["discovery_feed"],
+      "rect": {
+        "x": 0,
+        "y": 742,
+        "width": 390,
+        "height": 70
+      },
+      "reason": "Bottom tab dock and safe-area treatment vary across route capture devices until the app and design reference share one chrome contract."
+    }
+  ]
+}

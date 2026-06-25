@@ -252,6 +252,71 @@
         "schema/backfill plan exists for legacy Club compatibility",
         "public website, admin, Flutter app, and backend copy migration is sequenced"
       ]
+    },
+    {
+      "area": "source_resolution",
+      "blockedArtifacts": [
+        "tool/organizer_intake/generated/source_mention_resolution_policy.json",
+        "tool/organizer_intake/generated/source_mention_resolution_clusters.json",
+        "tool/organizer_intake/generated/source_mention_resolution_review_packets.json",
+        "tool/organizer_intake/llm_source_resolution.mjs"
+      ],
+      "currentState": "0 source mention candidate(s), 0 candidate pair(s), 0 human-review cluster(s); LLM adjudication disabled.",
+      "decisionOwner": "product_ops",
+      "decisionStatus": "not_reviewed",
+      "defaultPosition": "disabled_until_policy_approved",
+      "evidence": {
+        "autoAttachThreshold": 0.9,
+        "blockingKeys": [
+          "date-city",
+          "date-organizer",
+          "date-venue",
+          "hard:eventUrl",
+          "hard:providerEvent",
+          "hard:surface",
+          "organizer-domain",
+          "organizer-name-city",
+          "title-city",
+          "week-category-city"
+        ],
+        "candidatePairs": 0,
+        "clusters": 0,
+        "llmAdjudicationMinScore": 0.45,
+        "llmReviewQueued": 0,
+        "llmStatus": "disabled",
+        "maxClusterSizeForLlm": 8,
+        "maxPairsPerBlockingKey": 400,
+        "needsHumanReview": 0,
+        "needsHumanReviewThreshold": 0.45,
+        "probableDuplicateThreshold": 0.72,
+        "resolutionCandidates": 0,
+        "sourceMentions": 0,
+        "stableProviderEventPlatforms": [
+          "eventbrite",
+          "luma",
+          "meetup"
+        ],
+        "warnings": 0
+      },
+      "gapId": "source_mention_resolution_policy",
+      "nextAction": "Review resolver thresholds, blocking keys, provider hard-key policy, and LLM cost caps before enabling model adjudication.",
+      "requiredInputs": [
+        "blocking-key allowlist and known stable provider platforms",
+        "thresholds for auto-attach, probable duplicate, and human review",
+        "maximum cluster size and pair cap before LLM adjudication",
+        "LLM model, JSON schema, prompt version, and cache invalidation policy",
+        "monthly LLM spend cap and per-run request cap",
+        "admin override workflow for same, split, suppress, and attach decisions"
+      ],
+      "reviewDecision": null,
+      "severity": "medium",
+      "status": "decision_required",
+      "unblockCriteria": [
+        "source mention resolution policy.llm.status is enabled only after cost caps are encoded",
+        "prompt payload generation remains backend/tooling only and never runs from React",
+        "source mention review packets are resolved before canonical organizer or event projection",
+        "accepted policy is encoded in repo-backed resolver config and bridge checks pass"
+      ]
     }
   ],
   "generatedFrom": {
@@ -260,7 +325,8 @@
     "externalEventImportExecutionPlan": "tool/organizer_intake/generated/external_event_import_execution_plan.json",
     "externalEventImportPlan": "tool/organizer_intake/generated/external_event_import_plan.json",
     "externalEventLocationResolutionQueue": "tool/organizer_intake/generated/external_event_location_resolution_queue.json",
-    "policyGapDecisionBatches": "tool/organizer_intake/policy_gap_decisions/*.json"
+    "policyGapDecisionBatches": "tool/organizer_intake/policy_gap_decisions/*.json",
+    "sourceMentionResolution": "tool/organizer_intake/generated/source_mention_resolution_clusters.json"
   },
   "guardrails": [
     "Policy gaps are declarative; this artifact never enables crawls, provider lookups, or event writes.",
@@ -269,32 +335,34 @@
   ],
   "schemaVersion": 1,
   "summary": {
-    "blockedByPolicy": 4,
-    "decisionRequired": 5,
-    "gaps": 5,
+    "blockedByPolicy": 5,
+    "decisionRequired": 6,
+    "gaps": 6,
     "gapsByArea": {
       "crawl": 1,
       "event_import": 2,
       "location_resolution": 1,
-      "naming": 1
+      "naming": 1,
+      "source_resolution": 1
     },
     "gapsByDecisionStatus": {
       "accepted": 2,
-      "held": 3
+      "held": 3,
+      "not_reviewed": 1
     },
     "gapsBySeverity": {
       "high": 2,
-      "medium": 3
+      "medium": 4
     },
     "gapsByStatus": {
-      "decision_required": 5
+      "decision_required": 6
     },
     "ready": 0,
     "reviewAccepted": 2,
     "reviewDecisions": 5,
     "reviewHeld": 3,
     "reviewInvalid": 0,
-    "reviewNotReviewed": 0,
+    "reviewNotReviewed": 1,
     "reviewRejected": 0
   }
 }

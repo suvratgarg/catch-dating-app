@@ -30,7 +30,7 @@
     },
     {
       "blockers": [
-        "3 product policy decision(s) pending"
+        "4 product policy decision(s) pending"
       ],
       "command": "node tool/organizer_intake/pending_decision_answer_packet.mjs --format markdown",
       "executionMode": "manual_review",
@@ -44,7 +44,7 @@
     },
     {
       "blockers": [
-        "3 answer slot(s) remain in generated packet",
+        "4 answer slot(s) remain in generated packet",
         "no reviewed answer packet is ready to apply",
         "use --write only against a reviewed copied answer packet"
       ],
@@ -155,8 +155,8 @@
     "guardedRemoteWritePhases": 1,
     "localPromotionPipelineReady": true,
     "pendingAdminDecisions": 0,
-    "pendingAnswerSlots": 3,
-    "pendingPolicyDecisions": 3,
+    "pendingAnswerSlots": 4,
+    "pendingPolicyDecisions": 4,
     "pendingWorkUntriaged": 0,
     "phases": 9,
     "phasesByStatus": {
