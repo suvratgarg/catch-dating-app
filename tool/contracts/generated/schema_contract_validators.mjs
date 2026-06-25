@@ -150,11 +150,24 @@ import {
   resetMatchUnreadCountClientWriteSchema,
 } from "./schema_contract_registry.mjs";
 
+const requireFromRepo = createRequire(
+  new URL("../../../package.json", import.meta.url)
+);
 const requireFromFunctions = createRequire(
   new URL("../../../functions/package.json", import.meta.url)
 );
-const Ajv = requireFromFunctions("ajv");
-const addFormats = requireFromFunctions("ajv-formats");
+
+function requireContractDependency(name) {
+  try {
+    return requireFromRepo(name);
+  } catch (error) {
+    if (error?.code !== "MODULE_NOT_FOUND") throw error;
+    return requireFromFunctions(name);
+  }
+}
+
+const Ajv = requireContractDependency("ajv");
+const addFormats = requireContractDependency("ajv-formats");
 
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
