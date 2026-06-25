@@ -1,6 +1,6 @@
 {
-  "version": "4.1.9",
-  "updated": "2026-06-17",
+  "version": "4.1.10",
+  "updated": "2026-06-24",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -326,6 +326,19 @@
       "skip_when": [
         "Only changing Flutter mobile UI behavior",
         "Only changing backend data contracts with no web routing impact"
+      ]
+    },
+    "docs/plans/host_listing_discovery_architecture.md": {
+      "purpose": "Organizer and event discovery architecture for source mentions, deterministic dedupe, bounded LLM extraction/adjudication, admin review, claimable listings, and Firestore projection planning.",
+      "read_when": [
+        "Changing organizer or event intake workflows",
+        "Adding crawler, search, editorial, or platform-source ingestion",
+        "Designing source-mention, cluster, dedupe, LLM, or admin-review policy",
+        "Planning claimable organizer pages or external event projection"
+      ],
+      "skip_when": [
+        "Only changing marketing website layout with no organizer data-flow impact",
+        "Only changing Flutter mobile UI behavior"
       ]
     },
     "docs/location_stack_plan.md": {

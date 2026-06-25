@@ -15,22 +15,22 @@
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "4.1.9",
-    "updated": "2026-06-17",
+    "version": "4.1.10",
+    "updated": "2026-06-24",
     "status": "active",
     "read_policy": "Use for compact read/skip policies before opening long markdown docs."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "4.1.16",
-    "updated": "2026-06-17",
+    "version": "4.1.204",
+    "updated": "2026-06-25",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
   },
   "audit_rules": {
     "path": "docs/audit_registry/rules.json",
-    "version": "2.5.7",
-    "updated": "2026-06-01",
+    "version": "2.5.8",
+    "updated": "2026-06-23",
     "status": "active",
     "read_policy": "Use for active/watch/archived recursive audit rules, including widget catalog updates, realtime stream lifecycle constraints, branded error UI requirements, Firestore rules emulator-test workflow, event-policy/event-success in-development preservation, and error catalogue maintenance."
   },
@@ -92,29 +92,64 @@
   },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "4.1.14",
-    "updated": "2026-06-20",
+    "version": "4.1.17",
+    "updated": "2026-06-24",
     "status": "active",
     "read_policy": "Read before adding, deleting, or consolidating docs."
   },
   "design_parity_tracker": {
     "path": "docs/design_parity/README.md",
-    "version": "0.1.0",
-    "updated": "2026-06-20",
+    "version": "0.1.9",
+    "updated": "2026-06-22",
     "status": "active",
-    "read_policy": "Use before design-parity passes to pick feature scope, state coverage, preview/capture requirements, visual-diff gaps, component-contract gaps, and drift-prevention follow-ups."
+    "read_policy": "Use before design-parity passes to pick feature scope, state coverage, screen contracts, preview/capture requirements, visual-diff gaps, component-contract gaps, and drift-prevention follow-ups."
+  },
+  "design_parity_comprehensive_todo": {
+    "path": "docs/design_parity/comprehensive_todo.md",
+    "version": "0.2.165",
+    "updated": "2026-06-25",
+    "status": "active",
+    "read_policy": "Use as the canonical execution checklist for remaining design-parity work across sources of truth, state contracts, Widgetbook, captures, pixel comparison, composition, tokens, feature queues, drift prevention, and pass cadence."
+  },
+  "design_parity_todo": {
+    "path": "docs/design_parity/design_parity_todo.md",
+    "version": "0.2.85",
+    "updated": "2026-06-22",
+    "status": "active",
+    "read_policy": "Use as the detailed working backlog and historical evidence trail; prefer docs/design_parity/comprehensive_todo.md for current execution order."
+  },
+  "claude_widgetbook_inventory": {
+    "path": "docs/design_parity/claude_widgetbook_inventory.md",
+    "version": "0.1.11",
+    "updated": "2026-06-23",
+    "status": "active",
+    "read_policy": "Use before Claude Design to Widgetbook sync work to compare exported Claude primitives, local Widgetbook entries, local contracts, token specimens, aliases, and missing inventory."
+  },
+  "composition_migration_spec": {
+    "path": "docs/design_parity/composition_migration_spec.md",
+    "version": "0.1.1",
+    "updated": "2026-06-22",
+    "status": "active",
+    "read_policy": "Use before screen/component migration passes to apply the layered tokens-to-screens architecture, source-of-truth ownership, contract shape, migration workflow, and enforcement plan."
+  },
+  "event_detail_composition_tracker": {
+    "path": "docs/design_parity/event_detail_composition_tracker.md",
+    "version": "0.1.2",
+    "updated": "2026-06-22",
+    "status": "active",
+    "read_policy": "Use for the Event Detail composition migration map, Claude-to-Flutter section inventory, current state coverage, and first implementation slice."
   },
   "error_handling_audit": {
     "path": "docs/error-handling-audit.md",
-    "version": "2.6.2",
-    "updated": "2026-05-22",
+    "version": "2.7.2",
+    "updated": "2026-06-20",
     "status": "active",
     "read_policy": "Use as the current app-wide error-management source of truth, backend migration checklist, frontend/local error-management playbook, app error catalogue, descriptor contract, naming convention, and branded error surface guidance; refresh with dart tool/audit/backend_error_candidates.dart before new backend error work and create the app-wide scanner before frontend/local migration."
   },
   "data_contracts": {
     "path": "docs/data_contracts.md",
-    "version": "1.1.5",
-    "updated": "2026-05-26",
+    "version": "1.1.6",
+    "updated": "2026-06-24",
     "status": "active",
     "read_policy": "Read before Firestore rules, Functions mutation boundaries, schema-source tooling, Dart/TypeScript model generation, callable validation schemas, seed validation, relationship documents, data migrations, or rules test execution."
   },
@@ -155,8 +190,8 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.281",
-    "updated": "2026-06-20",
+    "version": "2.5.425",
+    "updated": "2026-06-25",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },
@@ -183,7 +218,7 @@
   },
   "release_operations": {
     "path": "docs/release_operations.md",
-    "version": "1.7.3",
+    "version": "1.7.7",
     "updated": "2026-05-28",
     "status": "active",
     "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, store readiness, or release evidence."
@@ -194,6 +229,13 @@
     "updated": "2026-06-02",
     "status": "active",
     "read_policy": "Read before changing website stacks, Firebase Hosting targets, domain/subdomain routing, public marketing pages, Flutter web deployment, admin web deployment, or host portal placement."
+  },
+  "host_listing_discovery_architecture": {
+    "path": "docs/plans/host_listing_discovery_architecture.md",
+    "version": "0.2.0",
+    "updated": "2026-06-24",
+    "status": "draft",
+    "read_policy": "Read before changing organizer/event discovery, source-mention extraction, deterministic dedupe, LLM adjudication, admin review packets, claimable listings, or Firestore projection planning."
   },
   "marketing_app_media_pipeline": {
     "path": "docs/marketing_app_media_pipeline.md",

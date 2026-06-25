@@ -4,7 +4,15 @@ on:
   pull_request:
     paths:
       - ".github/actions/**"
+      - "design/**"
+      - "design_context_pack/**"
+      - "docs/design_parity/**"
+      - "package-lock.json"
+      - "package.json"
+      - "pubspec.lock"
+      - "pubspec.yaml"
       - "tool/**"
+      - "widgetbook/**"
       - ".github/workflows/tools-ci.yml"
       - "functions/package-lock.json"
       - "functions/package.json"
@@ -12,7 +20,15 @@ on:
     branches: [main]
     paths:
       - ".github/actions/**"
+      - "design/**"
+      - "design_context_pack/**"
+      - "docs/design_parity/**"
+      - "package-lock.json"
+      - "package.json"
+      - "pubspec.lock"
+      - "pubspec.yaml"
       - "tool/**"
+      - "widgetbook/**"
       - ".github/workflows/tools-ci.yml"
       - "functions/package-lock.json"
       - "functions/package.json"
