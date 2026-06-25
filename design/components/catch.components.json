@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 1,
-  "updated": "2026-06-17",
+  "updated": "2026-06-23",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -386,6 +386,63 @@
         "allowedChildren": ["catch.text_field", "catch.chip", "catch.option_card"],
         "notes": [
           "This is the preferred form/settings row contract before inventing local input rows."
+        ]
+      }
+    },
+    {
+      "id": "catch.field_group",
+      "name": "CatchFieldGroup",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Hairline-divided surface group for stacking CatchField rows into a single on-surface form or settings card.",
+      "dart": {
+        "symbol": "CatchFieldGroup",
+        "file": "lib/core/widgets/catch_field.dart",
+        "constructors": ["CatchFieldGroup"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/FieldGroup",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "FieldGroup",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "children",
+            "type": "list",
+            "required": true,
+            "dartType": "List<Widget>"
+          }
+        ],
+        "states": ["stacked-fields", "mixed-modes", "single-child", "long-copy"],
+        "slots": [
+          {
+            "name": "children",
+            "kind": "field-row-list",
+            "allowedComponents": ["catch.field"],
+            "notes": "Prefer CatchField children so dividers, row density, and interaction rhythm stay consistent."
+          }
+        ],
+        "tokens": ["radius.md", "theme.light.color.surface", "theme.light.color.line", "theme.light.color.line2"],
+        "dartRoles": ["CatchSurface", "CatchField", "CatchStroke.hairline"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": ["catch.field"],
+        "notes": [
+          "Use for grouped settings/forms rows; do not recreate local divided-card shells.",
+          "The group owns row dividers. Individual fields own their own mode, validation, and callbacks."
         ]
       }
     },
@@ -943,6 +1000,505 @@
         "notes": [
           "Use this primitive for route chrome before creating local AppBar variants.",
           "Large mode is implied by a non-empty kicker unless explicitly overridden."
+        ]
+      }
+    },
+    {
+      "id": "catch.privacy_badge",
+      "name": "CatchPrivacyBadge",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Compact privacy/visibility label for user-private, Catch-private, and host-visible metadata.",
+      "dart": {
+        "symbol": "CatchPrivacyBadge",
+        "file": "lib/core/widgets/catch_privacy_badge.dart",
+        "constructors": ["CatchPrivacyBadge"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/PrivacyBadge",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "PrivacyBadge",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "kind",
+            "type": "enum",
+            "required": false,
+            "default": "you",
+            "dartType": "CatchPrivacyBadgeKind",
+            "values": ["you", "catchPrivate", "host"]
+          }
+        ],
+        "states": ["private-to-you", "catch-private", "host-visible"],
+        "slots": [],
+        "tokens": ["space.s1", "space.micro3", "space.micro10", "radius.pill", "theme.light.color.line2", "theme.light.color.ink3"],
+        "dartRoles": ["CatchSurface", "CatchTextStyles.badge", "CatchIcon.xs"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use only for privacy/visibility semantics; generic status belongs in CatchBadge.",
+          "The badge copy is owned by the enum kind so product privacy language stays centralized."
+        ]
+      }
+    },
+    {
+      "id": "catch.journey_steps",
+      "name": "CatchJourneySteps",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Numbered, line-traced sequence for ordered onboarding, dashboard, or event journey steps.",
+      "dart": {
+        "symbol": "CatchJourneySteps",
+        "file": "lib/core/widgets/catch_journey_steps.dart",
+        "constructors": ["CatchJourneySteps"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/JourneySteps",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "JourneySteps",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "steps",
+            "type": "list",
+            "required": true,
+            "dartType": "List<CatchJourneyStep>"
+          },
+          {
+            "name": "accent",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          }
+        ],
+        "states": ["numbered-trace", "titles-only", "accented", "long-copy"],
+        "slots": [],
+        "tokens": ["space.s5", "space.micro3", "space.micro10", "theme.light.color.primary", "theme.light.color.line2", "theme.light.color.bg"],
+        "dartRoles": ["CatchLayout.journeyStepsIndexColumnWidth", "CatchLayout.journeyStepsRailColumnWidth", "CatchLayout.journeyStepsNodeExtent", "CatchTextStyles.mono", "CatchTextStyles.titleS", "CatchTextStyles.bodyS"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use only when order and trace matter; unordered benefits or facts should use a list/card pattern.",
+          "The primitive owns numbering, rail geometry, and connector termination."
+        ]
+      }
+    },
+    {
+      "id": "catch.screen_body",
+      "name": "CatchScreenBody",
+      "status": "active",
+      "kind": "pattern",
+      "summary": "Standard non-sliver screen body wrapper that owns page gutters, vertical padding, and optional scrolling.",
+      "dart": {
+        "symbol": "CatchScreenBody",
+        "file": "lib/core/widgets/catch_section_layout.dart",
+        "constructors": ["CatchScreenBody"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/ScreenBody",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "ScreenBody",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "child",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget"
+          },
+          {
+            "name": "gutter",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          },
+          {
+            "name": "scrollable",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          },
+          {
+            "name": "padding",
+            "type": "object",
+            "required": false,
+            "dartType": "EdgeInsetsGeometry?"
+          },
+          {
+            "name": "pt",
+            "type": "number",
+            "required": false,
+            "dartType": "double?"
+          },
+          {
+            "name": "pb",
+            "type": "number",
+            "required": false,
+            "dartType": "double?"
+          }
+        ],
+        "states": ["scrolling-gutter", "non-scroll", "no-gutter", "custom-padding"],
+        "slots": [
+          {
+            "name": "child",
+            "kind": "body-content",
+            "allowedComponents": ["catch.section_stack", "catch.surface", "catch.field_group"]
+          }
+        ],
+        "tokens": ["space.s5", "space.s6"],
+        "dartRoles": ["CatchInsets.pageBody", "CatchSpacing.screenPx", "CatchSpacing.screenPt", "CatchSpacing.screenPb"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": ["catch.section_stack", "catch.surface", "catch.field_group"],
+        "notes": [
+          "Use for regular non-sliver route bodies before composing ad hoc page padding.",
+          "Screens may override top/bottom rhythm but should not hand-roll the horizontal gutter."
+        ]
+      }
+    },
+    {
+      "id": "catch.section_stack",
+      "name": "CatchSectionStack",
+      "status": "active",
+      "kind": "pattern",
+      "summary": "Standard stack wrapper for handoff sections, owning page padding and optional inserted gaps between section blocks.",
+      "dart": {
+        "symbol": "CatchSectionStack",
+        "file": "lib/core/widgets/catch_section_layout.dart",
+        "constructors": ["CatchSectionStack"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/SectionStack",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "SectionStack",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "children",
+            "type": "list",
+            "required": true,
+            "dartType": "List<Widget>"
+          },
+          {
+            "name": "padding",
+            "type": "object",
+            "required": false,
+            "default": "CatchInsets.pageBody",
+            "dartType": "EdgeInsetsGeometry"
+          },
+          {
+            "name": "gap",
+            "type": "number",
+            "required": false,
+            "default": 0,
+            "dartType": "double"
+          }
+        ],
+        "states": ["handoff-sections", "plain-sections", "custom-gap", "zero-padding"],
+        "slots": [
+          {
+            "name": "children",
+            "kind": "section-list",
+            "allowedComponents": ["catch.field_group", "catch.journey_steps", "catch.surface"],
+            "notes": "Prefer CatchDesignSection children for handoff sections; simple primitives are allowed for compact internal stacks."
+          }
+        ],
+        "tokens": ["space.s0", "space.s3", "space.s5", "space.s6", "theme.light.color.line"],
+        "dartRoles": ["CatchInsets.pageBody", "CatchSectionList", "CatchDesignSection", "CatchGaps.section"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": ["catch.field_group", "catch.journey_steps", "catch.surface"],
+        "notes": [
+          "Use under CatchScreenBody or sliver wrappers to prevent screen-local section spacing drift.",
+          "Let CatchDesignSection own section dividers; use the gap prop only for explicit non-handoff stacks."
+        ]
+      }
+    },
+    {
+      "id": "catch.roster_tiles",
+      "name": "CatchRosterTiles",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Selectable host-roster count tiles for filtering participant boards by lifecycle or attention state.",
+      "dart": {
+        "symbol": "CatchRosterTiles",
+        "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+        "constructors": ["CatchRosterTiles"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/RosterTiles",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "RosterTiles",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "items",
+            "type": "list",
+            "required": true,
+            "dartType": "List<CatchRosterTile>"
+          },
+          {
+            "name": "selected",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "onSelect",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<String>?"
+          }
+        ],
+        "states": ["default", "selected", "read-only", "warning", "danger"],
+        "slots": [],
+        "tokens": ["space.micro6", "radius.md", "theme.light.color.ink", "theme.light.color.surface", "theme.light.color.line", "theme.light.color.success", "theme.light.color.warning", "theme.light.color.danger", "theme.light.color.gold"],
+        "dartRoles": ["CatchLayout.rosterFilterTileMinHeight", "CatchTextStyles.numericLarge", "CatchTextStyles.monoLabel", "CatchOpacity.calloutFill", "CatchOpacity.subtleBorder"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use for roster filtering or count summaries only; do not use as a generic stat strip.",
+          "Parent state owns selection and filtering; the visual primitive only emits selected ids."
+        ]
+      }
+    },
+    {
+      "id": "catch.roster_row",
+      "name": "CatchRosterRow",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Host-roster participant row with identity, signal badge, and typed action cell.",
+      "dart": {
+        "symbol": "CatchRosterRow",
+        "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+        "constructors": ["CatchRosterRow"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/RosterRow",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "RosterRow",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "person",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "imageUrl",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "meta",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "signal",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "tone",
+            "type": "enum",
+            "required": false,
+            "default": "neutral",
+            "dartType": "CatchBadgeTone",
+            "values": ["neutral", "brand", "success", "warning", "danger", "gold", "solid", "live"]
+          },
+          {
+            "name": "action",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchRosterAction?"
+          }
+        ],
+        "states": ["button-action", "decision-action", "badge-action", "text-action", "empty-signal", "disabled-action", "truncated"],
+        "slots": [
+          {
+            "name": "action",
+            "kind": "typed-action-cell",
+            "notes": "Use CatchRosterButtonAction, CatchRosterDecideAction, CatchRosterBadgeAction, or CatchRosterTextAction."
+          }
+        ],
+        "tokens": ["space.s2", "space.micro3", "space.micro6", "space.micro10", "space.micro14", "theme.light.color.surface", "theme.light.color.line", "theme.light.color.ink2", "theme.light.color.ink3", "theme.light.color.success", "theme.light.color.danger"],
+        "dartRoles": ["CatchLayout.rosterRowAvatarExtent", "CatchLayout.rosterDecideTargetExtent", "CatchTextStyles.name", "CatchTextStyles.monoLabel", "CatchTextStyles.mono", "CatchBadge", "CatchButton", "CatchPersonAvatar"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": ["catch.badge", "catch.button"],
+        "notes": [
+          "Rows should receive immutable display data and typed callbacks from a roster adapter.",
+          "Use action-cell variants instead of ad hoc trailing widgets so table alignment remains stable."
+        ]
+      }
+    },
+    {
+      "id": "catch.roster_table",
+      "name": "CatchRosterTable",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Host-roster table shell with fixed identity/signal/action columns and built-in empty state.",
+      "dart": {
+        "symbol": "CatchRosterTable",
+        "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+        "constructors": ["CatchRosterTable"]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/RosterTable",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "RosterTable",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "columns",
+            "type": "list",
+            "required": true,
+            "dartType": "List<String>"
+          },
+          {
+            "name": "rows",
+            "type": "list",
+            "required": false,
+            "default": "[]",
+            "dartType": "List<CatchRosterRow>"
+          },
+          {
+            "name": "showEmpty",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "emptyTitle",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "emptyMessage",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          }
+        ],
+        "states": ["populated", "empty", "partial-columns", "long-copy"],
+        "slots": [
+          {
+            "name": "rows",
+            "kind": "roster-row-list",
+            "notes": "Rows should be CatchRosterRow instances so the fixed 5/3/3 column contract holds."
+          }
+        ],
+        "tokens": ["space.s1", "space.s2", "space.s3", "space.s4", "space.s5", "space.micro10", "space.micro14", "radius.md", "theme.light.color.surface", "theme.light.color.line", "theme.light.color.line2", "theme.light.color.ink3"],
+        "dartRoles": ["CatchRosterRow", "CatchTextStyles.monoLabel", "CatchTextStyles.name", "CatchTextStyles.bodyS", "CatchIcon.md"],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": ["catch.roster_row"],
+        "notes": [
+          "Use for host roster board tables; compact metrics and filters should stay in CatchRosterTiles.",
+          "The table owns headers and empty state, while callers own filtering, mutation, and data loading."
         ]
       }
     }

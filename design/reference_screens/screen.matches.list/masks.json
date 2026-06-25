@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "screenId": "screen.matches.list",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["populated_threads"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template includes drawn phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "profile_photos",
+      "stateIds": ["populated_threads"],
+      "rect": {
+        "x": 48,
+        "y": 160,
+        "width": 56,
+        "height": 508
+      },
+      "reason": "Conversation avatars are remote or fixture profile imagery and are not stable enough for structural pixel comparison."
+    },
+    {
+      "id": "timestamps_badges",
+      "stateIds": ["populated_threads"],
+      "rect": {
+        "x": 346,
+        "y": 168,
+        "width": 42,
+        "height": 474
+      },
+      "reason": "Message timestamps and unread badge counts vary by fixture clock and row grouping."
+    },
+    {
+      "id": "bottom_safe_area",
+      "stateIds": ["populated_threads"],
+      "rect": {
+        "x": 0,
+        "y": 780,
+        "width": 390,
+        "height": 32
+      },
+      "reason": "Bottom safe-area rounding and scroll extent can vary while screen layout parity is still advisory."
+    }
+  ]
+}

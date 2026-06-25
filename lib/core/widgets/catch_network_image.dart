@@ -46,6 +46,17 @@ class CatchNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (_isBundledAsset(url)) {
+      return Image.asset(
+        url,
+        fit: fit,
+        width: width,
+        height: height,
+        semanticLabel: semanticLabel,
+        errorBuilder: errorBuilder ?? _defaultError,
+      );
+    }
+
     final media = MediaQuery.maybeOf(context);
     final dpr = media?.devicePixelRatio ?? 1.0;
     final screenWidth = media?.size.width;
@@ -57,8 +68,7 @@ class CatchNetworkImage extends StatelessWidget {
 
     // Prefer an explicit override, then the laid-out size, then a screen-width
     // cap so a full-bleed image never decodes beyond what can be shown.
-    final decodeWidth =
-        cacheWidth ?? scaled(width) ?? scaled(screenWidth);
+    final decodeWidth = cacheWidth ?? scaled(width) ?? scaled(screenWidth);
 
     return Image.network(
       url,
@@ -73,12 +83,21 @@ class CatchNetworkImage extends StatelessWidget {
     );
   }
 
+  static bool _isBundledAsset(String url) {
+    final trimmed = url.trim();
+    return trimmed.startsWith('assets/') || trimmed.startsWith('packages/');
+  }
+
   Widget _defaultError(BuildContext context, Object error, StackTrace? stack) {
     final t = CatchTokens.of(context);
     return ColoredBox(
       color: t.surface,
       child: Center(
-        child: Icon(CatchIcons.imageOutlined, color: t.ink3, size: CatchIcon.md),
+        child: Icon(
+          CatchIcons.imageOutlined,
+          color: t.ink3,
+          size: CatchIcon.md,
+        ),
       ),
     );
   }

@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "screenId": "screen.host.club.create",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["basics_default"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template includes drawn phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "club_media",
+      "stateIds": ["basics_default"],
+      "rect": {
+        "x": 20,
+        "y": 136,
+        "width": 350,
+        "height": 190
+      },
+      "reason": "Club logo, photo placeholders, and selected cover thumbnails are fixture media."
+    },
+    {
+      "id": "club_identity_values",
+      "stateIds": ["basics_default"],
+      "rect": {
+        "x": 68,
+        "y": 414,
+        "width": 236,
+        "height": 138
+      },
+      "reason": "Club name, city, and area copy vary across host fixtures."
+    },
+    {
+      "id": "bottom_footer_safe_area",
+      "stateIds": ["basics_default"],
+      "rect": {
+        "x": 0,
+        "y": 728,
+        "width": 390,
+        "height": 84
+      },
+      "reason": "Wizard footer positioning and bottom safe-area treatment are still advisory while create/edit host forms are reconciled."
+    }
+  ]
+}

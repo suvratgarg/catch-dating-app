@@ -88,12 +88,16 @@ abstract final class CatchIcons {
   /// Message-host / chat affordance (`chat-circle`).
   static IconData get chatCircle => PhosphorIconsRegular.chatCircle;
 
+  /// Host broadcast / blast affordance (`megaphone-simple`).
+  static IconData get megaphone => PhosphorIconsFill.megaphoneSimple;
+
   /// Quiet "matching opens" / catch-window whisper mark (`sparkle`).
   static IconData get sparkle => PhosphorIconsRegular.sparkle;
 
   /// Selection-control marks (OptionCard): filled-look check + empty circle.
   static IconData get checkCircle => PhosphorIconsRegular.checkCircle;
   static IconData get circle => PhosphorIconsRegular.circle;
+  static IconData get celebration => Icons.celebration_rounded;
   static IconData get saved => PhosphorIconsFill.bookmarkSimple;
   static IconData get savedOutlined => PhosphorIconsRegular.bookmarkSimple;
   static IconData get hostBadge => PhosphorIconsFill.shield;

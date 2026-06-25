@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "screenId": "screen.host.clubs",
+  "updated": "2026-06-25",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["organizer_overview"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template includes drawn phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "organizer_identity",
+      "stateIds": ["organizer_overview"],
+      "rect": {
+        "x": 16,
+        "y": 44,
+        "width": 358,
+        "height": 186
+      },
+      "reason": "Organizer logo, location, activity labels, host-role affordance, and fixture-dependent tag wrapping shift the first callout position."
+    },
+    {
+      "id": "metrics_and_team",
+      "stateIds": ["organizer_overview"],
+      "rect": {
+        "x": 16,
+        "y": 340,
+        "width": 358,
+        "height": 406
+      },
+      "reason": "Club metrics, team names, avatars, payout state, and management rows vary across fixtures."
+    },
+    {
+      "id": "payout_callout_copy",
+      "stateIds": ["organizer_overview"],
+      "rect": {
+        "x": 20,
+        "y": 224,
+        "width": 348,
+        "height": 96
+      },
+      "reason": "Payout status copy and action rendering vary with account state and text rasterization; the structural callout placement remains compared around this band."
+    },
+    {
+      "id": "host_tab_bar",
+      "stateIds": ["organizer_overview"],
+      "rect": {
+        "x": 0,
+        "y": 744,
+        "width": 390,
+        "height": 68
+      },
+      "reason": "Host shell tab chrome and safe-area treatment are still advisory while host IA is being reconciled."
+    }
+  ]
+}

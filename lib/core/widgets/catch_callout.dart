@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/src/catch_inline_message_surface.dart';
 import 'package:flutter/material.dart';
 
 enum CatchCalloutTone { primary, success, warning, danger, neutral }
@@ -40,8 +39,11 @@ class CatchCallout extends StatelessWidget {
       CatchCalloutTone.neutral => t.ink2,
     };
 
-    return CatchSurface(
-      tone: CatchSurfaceTone.transparent,
+    return CatchInlineMessageSurface(
+      title: title,
+      message: message,
+      icon: icon ?? CatchIcons.sparkle,
+      iconColor: isNeutral ? t.ink2 : toneColor,
       backgroundColor: isNeutral
           ? null
           : Color.alphaBlend(
@@ -49,34 +51,6 @@ class CatchCallout extends StatelessWidget {
               t.surface,
             ),
       borderColor: isNeutral ? t.line : null,
-      radius: CatchRadius.md,
-      padding: CatchInsets.tileContentCompact,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: CatchStroke.hairline),
-            child: Icon(
-              icon ?? CatchIcons.sparkle,
-              size: CatchIcon.md,
-              color: isNeutral ? t.ink2 : toneColor,
-            ),
-          ),
-          const SizedBox(width: CatchSpacing.s3),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (title != null && title!.isNotEmpty) ...[
-                  Text(title!, style: CatchTextStyles.labelL(context)),
-                  const SizedBox(height: CatchSpacing.s1),
-                ],
-                Text(message, style: CatchTextStyles.bodyS(context)),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

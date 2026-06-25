@@ -1,0 +1,339 @@
+{
+  "$schema": "./screen_coverage.schema.json",
+  "version": 1,
+  "updated": "2026-06-22",
+  "generatedAgainst": "tool/ui_capture/route_inventory.json",
+  "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for a future screen contract, or explicitly excluded from baseline design parity.",
+  "routes": [
+    {
+      "routeId": "loadingScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Transient startup state; capture only when launch UX work needs it."
+    },
+    {
+      "routeId": "startScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.start.welcome as the logged-out Start Welcome route.",
+      "screenId": "screen.start.welcome"
+    },
+    {
+      "routeId": "authScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.auth.phone_entry as the phone/OTP authentication route.",
+      "screenId": "screen.auth.phone_entry"
+    },
+    {
+      "routeId": "onboardingScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.onboarding.flow as the multi-step onboarding route.",
+      "screenId": "screen.onboarding.flow"
+    },
+    {
+      "routeId": "calendarScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.calendar.home as the planned events calendar route.",
+      "screenId": "screen.calendar.home"
+    },
+    {
+      "routeId": "calendarEventDetailScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.event.detail",
+      "reason": "Covered by screen.event.detail as the alias route for Event Detail."
+    },
+    {
+      "routeId": "savedEventsScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.saved_events.list as the saved events list route.",
+      "screenId": "screen.saved_events.list"
+    },
+    {
+      "routeId": "savedEventDetailScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.event.detail",
+      "reason": "Covered by screen.event.detail as the alias route for Event Detail."
+    },
+    {
+      "routeId": "filtersScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.filters.preferences as the Catches filters preference route.",
+      "screenId": "screen.filters.preferences"
+    },
+    {
+      "routeId": "dashboardEventDetailScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.event.detail",
+      "reason": "Covered by screen.event.detail as the alias route for Event Detail."
+    },
+    {
+      "routeId": "eventLocationMapScreen",
+      "status": "contracted",
+      "priority": "P3",
+      "reason": "Covered by screen.event.location_map as the chromeless exact-location map route.",
+      "screenId": "screen.event.location_map"
+    },
+    {
+      "routeId": "dashboardScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.dashboard.home as the primary Dashboard Home route.",
+      "screenId": "screen.dashboard.home"
+    },
+    {
+      "routeId": "notificationsScreen",
+      "status": "contracted",
+      "priority": "P3",
+      "reason": "Covered by screen.notifications.list as the Activity notifications route under Dashboard.",
+      "screenId": "screen.notifications.list"
+    },
+    {
+      "routeId": "exploreScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.explore.discovery",
+      "reason": "Covered by screen.explore.discovery as the primary route for Explore Discovery."
+    },
+    {
+      "routeId": "exploreMapScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.explore.discovery",
+      "reason": "Covered by screen.explore.discovery as the alias route for Explore Discovery."
+    },
+    {
+      "routeId": "clubDetailScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.club.detail",
+      "reason": "Covered by screen.club.detail as the primary route for Club Detail."
+    },
+    {
+      "routeId": "eventDetailScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.event.detail",
+      "reason": "Covered by screen.event.detail as the primary route for Event Detail."
+    },
+    {
+      "routeId": "eventSuccessCompanionScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.event_success.companion as the primary attendee Event Success Companion route.",
+      "screenId": "screen.event_success.companion"
+    },
+    {
+      "routeId": "swipeHubScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.catches.hub as the primary Catches hub route.",
+      "screenId": "screen.catches.hub"
+    },
+    {
+      "routeId": "swipeEventScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.catches.event as the event-specific Catches deck route.",
+      "screenId": "screen.catches.event"
+    },
+    {
+      "routeId": "eventRecapScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.event.recap as the attended-event recap route.",
+      "screenId": "screen.event.recap"
+    },
+    {
+      "routeId": "matchesListScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.matches.list as the consumer chats and matches list route.",
+      "screenId": "screen.matches.list"
+    },
+    {
+      "routeId": "chatScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.matches.chat as the consumer match conversation route.",
+      "screenId": "screen.matches.chat"
+    },
+    {
+      "routeId": "profileScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.profile.self as the current-user profile edit and preview route.",
+      "screenId": "screen.profile.self"
+    },
+    {
+      "routeId": "reviewsHistoryScreen",
+      "status": "contracted",
+      "priority": "P3",
+      "reason": "Covered by screen.reviews.history as the current-user review history route.",
+      "screenId": "screen.reviews.history"
+    },
+    {
+      "routeId": "publicProfileScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.profile.public as the public member profile and safety-actions route.",
+      "screenId": "screen.profile.public"
+    },
+    {
+      "routeId": "settingsScreen",
+      "status": "contracted",
+      "priority": "P3",
+      "reason": "Covered by screen.settings.account as the consumer account, notification, privacy, safety, and sign-out settings route.",
+      "screenId": "screen.settings.account"
+    },
+    {
+      "routeId": "paymentHistoryScreen",
+      "status": "contracted",
+      "priority": "P3",
+      "reason": "Covered by screen.payments.history as the current-user payment receipt history route.",
+      "screenId": "screen.payments.history"
+    },
+    {
+      "routeId": "paymentConfirmationScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Route requires transaction extra; capture only with deterministic confirmation data."
+    },
+    {
+      "routeId": "hostHomeScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.home as the Host app operations home route.",
+      "screenId": "screen.host.home"
+    },
+    {
+      "routeId": "hostClubsScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.clubs as the Host app club management route.",
+      "screenId": "screen.host.clubs"
+    },
+    {
+      "routeId": "hostClubDetailScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.club.detail as the Host app public club preview/detail route.",
+      "screenId": "screen.host.club.detail"
+    },
+    {
+      "routeId": "hostCreateClubScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.host.club.create as the host create-club wizard route.",
+      "screenId": "screen.host.club.create"
+    },
+    {
+      "routeId": "hostEditClubScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.host.club.edit as the host edit-club route.",
+      "screenId": "screen.host.club.edit"
+    },
+    {
+      "routeId": "hostCreateEventScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.event.create as the Host app create-event wizard route.",
+      "screenId": "screen.host.event.create"
+    },
+    {
+      "routeId": "hostAppEventDetailScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.event.detail",
+      "reason": "Covered by screen.event.detail as the host route for Event Detail."
+    },
+    {
+      "routeId": "hostAppEventManageScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.event.manage as the canonical per-event host workspace.",
+      "screenId": "screen.host.event.manage"
+    },
+    {
+      "routeId": "hostAppEditEventScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.host.event.edit as the host edit-event route.",
+      "screenId": "screen.host.event.edit"
+    },
+    {
+      "routeId": "hostAppAttendanceSheet",
+      "status": "alias",
+      "priority": "P2",
+      "canonicalRouteId": "hostAppEventManageScreen",
+      "reason": "Alias remains covered by screen.host.event.manage; the attendance route opens the canonical Live roster section of Host Event Manage."
+    },
+    {
+      "routeId": "hostAppEventSuccessScreen",
+      "status": "alias",
+      "priority": "P2",
+      "canonicalRouteId": "hostAppEventManageScreen",
+      "reason": "Alias remains covered by screen.host.event.manage; the Event Success route enters the canonical Host Event Manage surface."
+    },
+    {
+      "routeId": "hostInboxScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.inbox as the professional host attendee-query inbox.",
+      "screenId": "screen.host.inbox"
+    },
+    {
+      "routeId": "hostChatScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.chat as the professional host conversation thread.",
+      "screenId": "screen.host.chat"
+    },
+    {
+      "routeId": "hostSettingsScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.host.settings as the host account/settings route.",
+      "screenId": "screen.host.settings"
+    },
+    {
+      "routeId": "hostProfileScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.host.profile as the direct professional host profile editor route.",
+      "screenId": "screen.host.profile"
+    },
+    {
+      "routeId": "eventPolicyLabScreen",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Dev-gated lab route."
+    },
+    {
+      "routeId": "eventSuccessLabScreen",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Dev-gated lab route."
+    },
+    {
+      "routeId": "eventSuccessManualQaScreen",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Manual QA surface, not baseline app review."
+    },
+    {
+      "routeId": "eventSuccessPreviewScreen",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Dev-gated preview route."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "screenId": "screen.start.welcome",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "drawn_status_bar_and_dynamic_island",
+      "stateIds": ["landed_direct"],
+      "rect": {"x": 0, "y": 0, "width": 390, "height": 64},
+      "reason": "The HTML handoff draws phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "outer_phone_corners",
+      "stateIds": ["landed_direct"],
+      "rect": {"x": 0, "y": 0, "width": 390, "height": 20},
+      "reason": "The normalized crop includes the prototype's rounded device shell at the very top edge."
+    },
+    {
+      "id": "bottom_safe_area_rounding",
+      "stateIds": ["landed_direct"],
+      "rect": {"x": 0, "y": 780, "width": 390, "height": 32},
+      "reason": "Bottom safe-area rounding differs between the HTML phone shell and Flutter capture harness."
+    }
+  ]
+}

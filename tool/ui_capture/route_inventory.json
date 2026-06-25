@@ -4,11 +4,16 @@
   "source": {
     "path": "lib/routing/go_router.dart",
     "normalizedFileSha256": "a930ab2a361d7a685eb8523a8ea095c80066c589b93c522daeb7663a8a7ea24e",
-    "routeContractSha256": "b7ce0377788c4f1bfbc1c0f180063bdf22ac5231b1f438fdedc632be2b473526",
-    "goRouteCount": 33,
-    "shellBranchCount": 5,
+    "routeContractSha256": "ddf10495eb2372ace7990f5f6aad87521426af2e9ad24995e483e49f15ace48e",
+    "goRouteCount": 48,
+    "shellBranchCount": 9,
     "enumRouteCount": 48,
-    "referencedRouteCount": 34
+    "referencedRouteCount": 48,
+    "runtimeRouteCount": 48,
+    "routeHelperCount": 1,
+    "routeHelpers": [
+      "_hostShellRoute"
+    ]
   },
   "routes": [
     {
@@ -17,6 +22,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/loading",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.loadingScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -25,6 +34,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/start",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.startScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -33,6 +46,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/auth",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.authScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -41,6 +58,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/onboarding",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.onboardingScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -49,6 +70,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/calendar",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.calendarScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -60,6 +85,10 @@
       ],
       "requiresFixture": true,
       "gated": false,
+      "runtimePath": "/calendar/clubs/:clubId/events/:eventId",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.calendarEventDetailScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -68,6 +97,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/saved-events",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.savedEventsScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -79,6 +112,10 @@
       ],
       "requiresFixture": true,
       "gated": false,
+      "runtimePath": "/saved-events/clubs/:clubId/events/:eventId",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.savedEventDetailScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -87,6 +124,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/filters",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.filtersScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -98,6 +139,10 @@
       ],
       "requiresFixture": true,
       "gated": false,
+      "runtimePath": "/dashboard/clubs/:clubId/events/:eventId",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.dashboardEventDetailScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -108,6 +153,10 @@
       ],
       "requiresFixture": true,
       "gated": false,
+      "runtimePath": "/events/:eventId/location",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.eventLocationMapScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -116,6 +165,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.dashboardScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -124,6 +177,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/notifications",
+      "runtimeParentId": "dashboardScreen",
+      "runtimePathExpression": "'notifications'",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -132,6 +189,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/clubs",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.exploreScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -140,6 +201,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/clubs/map",
+      "runtimeParentId": "exploreScreen",
+      "runtimePathExpression": "'map'",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -150,6 +215,10 @@
       ],
       "requiresFixture": true,
       "gated": false,
+      "runtimePath": "/clubs/:clubId",
+      "runtimeParentId": "exploreScreen",
+      "runtimePathExpression": "':clubId'",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -161,6 +230,10 @@
       ],
       "requiresFixture": true,
       "gated": false,
+      "runtimePath": "/clubs/:clubId/events/:eventId",
+      "runtimeParentId": "clubDetailScreen",
+      "runtimePathExpression": "'events/:eventId'",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -172,6 +245,10 @@
       ],
       "requiresFixture": true,
       "gated": false,
+      "runtimePath": "/clubs/:clubId/events/:eventId/companion",
+      "runtimeParentId": "eventDetailScreen",
+      "runtimePathExpression": "'companion'",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -180,6 +257,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/catches",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.swipeHubScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -190,6 +271,10 @@
       ],
       "requiresFixture": true,
       "gated": false,
+      "runtimePath": "/catches/:eventId",
+      "runtimeParentId": "swipeHubScreen",
+      "runtimePathExpression": "':eventId'",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -200,6 +285,10 @@
       ],
       "requiresFixture": true,
       "gated": false,
+      "runtimePath": "/catches/:eventId/recap",
+      "runtimeParentId": "swipeHubScreen",
+      "runtimePathExpression": "':eventId/recap'",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -208,6 +297,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/chats",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.matchesListScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -218,6 +311,10 @@
       ],
       "requiresFixture": true,
       "gated": false,
+      "runtimePath": "/chats/:matchId",
+      "runtimeParentId": "matchesListScreen",
+      "runtimePathExpression": "':matchId'",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -226,6 +323,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/you",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.profileScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -234,6 +335,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/you/reviews",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.reviewsHistoryScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -244,6 +349,10 @@
       ],
       "requiresFixture": true,
       "gated": false,
+      "runtimePath": "/profiles/:uid",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.publicProfileScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -252,6 +361,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/settings",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.settingsScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -260,6 +373,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/payment-history",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.paymentHistoryScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -268,6 +385,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/payment-confirmation",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.paymentConfirmationScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -276,6 +397,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
+      "runtimePath": "/host",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostHomeScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -284,7 +409,11 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "referencedByGoRouter": false
+      "runtimePath": "/host/clubs",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostClubsScreen.path",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
     },
     {
       "id": "hostClubDetailScreen",
@@ -294,7 +423,11 @@
       ],
       "requiresFixture": true,
       "gated": false,
-      "referencedByGoRouter": false
+      "runtimePath": "/host/clubs/:clubId",
+      "runtimeParentId": "hostClubsScreen",
+      "runtimePathExpression": "':clubId'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
     },
     {
       "id": "hostCreateClubScreen",
@@ -302,7 +435,11 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "referencedByGoRouter": false
+      "runtimePath": "/host/clubs/create-club",
+      "runtimeParentId": "hostClubsScreen",
+      "runtimePathExpression": "'create-club'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
     },
     {
       "id": "hostEditClubScreen",
@@ -312,7 +449,11 @@
       ],
       "requiresFixture": true,
       "gated": false,
-      "referencedByGoRouter": false
+      "runtimePath": "/host/clubs/:clubId/edit",
+      "runtimeParentId": "hostClubDetailScreen",
+      "runtimePathExpression": "'edit'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
     },
     {
       "id": "hostCreateEventScreen",
@@ -322,7 +463,11 @@
       ],
       "requiresFixture": true,
       "gated": false,
-      "referencedByGoRouter": false
+      "runtimePath": "/host/clubs/:clubId/create-event",
+      "runtimeParentId": "hostClubDetailScreen",
+      "runtimePathExpression": "'create-event'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
     },
     {
       "id": "hostAppEventDetailScreen",
@@ -333,7 +478,11 @@
       ],
       "requiresFixture": true,
       "gated": false,
-      "referencedByGoRouter": false
+      "runtimePath": "/host/clubs/:clubId/events/:eventId",
+      "runtimeParentId": "hostClubDetailScreen",
+      "runtimePathExpression": "'events/:eventId'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
     },
     {
       "id": "hostAppEventManageScreen",
@@ -344,7 +493,11 @@
       ],
       "requiresFixture": true,
       "gated": false,
-      "referencedByGoRouter": false
+      "runtimePath": "/host/clubs/:clubId/events/:eventId/manage",
+      "runtimeParentId": "hostClubDetailScreen",
+      "runtimePathExpression": "'events/:eventId/manage'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
     },
     {
       "id": "hostAppEditEventScreen",
@@ -355,7 +508,11 @@
       ],
       "requiresFixture": true,
       "gated": false,
-      "referencedByGoRouter": false
+      "runtimePath": "/host/clubs/:clubId/events/:eventId/edit",
+      "runtimeParentId": "hostClubDetailScreen",
+      "runtimePathExpression": "'events/:eventId/edit'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
     },
     {
       "id": "hostAppAttendanceSheet",
@@ -366,7 +523,11 @@
       ],
       "requiresFixture": true,
       "gated": false,
-      "referencedByGoRouter": false
+      "runtimePath": "/host/clubs/:clubId/events/:eventId/attendance",
+      "runtimeParentId": "hostClubDetailScreen",
+      "runtimePathExpression": "'events/:eventId/attendance'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
     },
     {
       "id": "hostAppEventSuccessScreen",
@@ -377,7 +538,11 @@
       ],
       "requiresFixture": true,
       "gated": false,
-      "referencedByGoRouter": false
+      "runtimePath": "/host/clubs/:clubId/events/:eventId/success",
+      "runtimeParentId": "hostClubDetailScreen",
+      "runtimePathExpression": "'events/:eventId/success'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
     },
     {
       "id": "hostInboxScreen",
@@ -385,7 +550,11 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "referencedByGoRouter": false
+      "runtimePath": "/host/inbox",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostInboxScreen.path",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
     },
     {
       "id": "hostChatScreen",
@@ -395,7 +564,11 @@
       ],
       "requiresFixture": true,
       "gated": false,
-      "referencedByGoRouter": false
+      "runtimePath": "/host/inbox/:matchId",
+      "runtimeParentId": "hostInboxScreen",
+      "runtimePathExpression": "':matchId'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
     },
     {
       "id": "hostSettingsScreen",
@@ -403,7 +576,11 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "referencedByGoRouter": false
+      "runtimePath": "/host/settings",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostSettingsScreen.path",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
     },
     {
       "id": "hostProfileScreen",
@@ -411,7 +588,11 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "referencedByGoRouter": false
+      "runtimePath": "/host/settings/profile",
+      "runtimeParentId": "hostSettingsScreen",
+      "runtimePathExpression": "'profile'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
     },
     {
       "id": "eventPolicyLabScreen",
@@ -419,6 +600,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": true,
+      "runtimePath": "/dev/event-policy-lab",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.eventPolicyLabScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -427,6 +612,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": true,
+      "runtimePath": "/dev/event-success-lab",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.eventSuccessLabScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -435,6 +624,10 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": true,
+      "runtimePath": "/dev/event-success-manual-qa",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.eventSuccessManualQaScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
@@ -446,6 +639,10 @@
       ],
       "requiresFixture": true,
       "gated": true,
+      "runtimePath": "/dev/event-success-preview/:clubId/:eventId",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.eventSuccessPreviewScreen.path",
+      "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     }
   ],
@@ -468,7 +665,21 @@
     "exploreMapScreen",
     "exploreScreen",
     "filtersScreen",
+    "hostAppAttendanceSheet",
+    "hostAppEditEventScreen",
+    "hostAppEventDetailScreen",
+    "hostAppEventManageScreen",
+    "hostAppEventSuccessScreen",
+    "hostChatScreen",
+    "hostClubDetailScreen",
+    "hostClubsScreen",
+    "hostCreateClubScreen",
+    "hostCreateEventScreen",
+    "hostEditClubScreen",
     "hostHomeScreen",
+    "hostInboxScreen",
+    "hostProfileScreen",
+    "hostSettingsScreen",
     "loadingScreen",
     "matchesListScreen",
     "notificationsScreen",

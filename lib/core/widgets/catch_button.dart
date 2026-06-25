@@ -109,8 +109,8 @@ class _CatchButtonState extends State<CatchButton> {
       ],
     );
 
-    final decoratedButton = ConstrainedBox(
-      constraints: BoxConstraints(minHeight: spec.height),
+    final decoratedButton = SizedBox(
+      height: spec.height,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: palette.background,
@@ -185,7 +185,7 @@ class _ButtonLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = Row(
-      mainAxisSize: fullWidth ? MainAxisSize.max : MainAxisSize.min,
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (icon != null) ...[
@@ -195,27 +195,20 @@ class _ButtonLabel extends StatelessWidget {
           ),
           SizedBox(width: gap),
         ],
-        if (fullWidth)
-          Flexible(
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: textStyle.copyWith(color: color),
-            ),
-          )
-        else
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: textStyle.copyWith(color: color),
-          ),
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: textStyle.copyWith(color: color),
+        ),
       ],
     );
 
-    if (fullWidth) return content;
+    if (fullWidth) {
+      return Center(
+        child: FittedBox(fit: BoxFit.scaleDown, child: content),
+      );
+    }
 
     return FittedBox(fit: BoxFit.scaleDown, child: content);
   }

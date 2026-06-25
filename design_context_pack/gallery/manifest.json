@@ -3,12 +3,11 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 48,
-    "captures": 36,
+    "captures": 466,
     "statusCounts": {
       "excluded": 6,
-      "captured": 28,
-      "alias": 5,
-      "planned": 9
+      "captured": 37,
+      "alias": 5
     }
   },
   "profile": {
@@ -32,6 +31,159 @@
         "dark": "dark/profile_self.png"
       },
       "whatItIs": "Profile Self",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "profile_self_loading",
+      "routes": [
+        "profileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/profile_self_loading.png",
+        "dark": "dark/profile_self_loading.png"
+      },
+      "whatItIs": "Profile Self Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "profile_self_error",
+      "routes": [
+        "profileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/profile_self_error.png",
+        "dark": "dark/profile_self_error.png"
+      },
+      "whatItIs": "Profile Self Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "profile_self_offline",
+      "routes": [
+        "profileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/profile_self_offline.png",
+        "dark": "dark/profile_self_offline.png"
+      },
+      "whatItIs": "Profile Self Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "profile_self_unavailable",
+      "routes": [
+        "profileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/profile_self_unavailable.png",
+        "dark": "dark/profile_self_unavailable.png"
+      },
+      "whatItIs": "Profile Self Unavailable",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "profile_self_edit_tab",
+      "routes": [
+        "profileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/profile_self_edit_tab.png",
+        "dark": "dark/profile_self_edit_tab.png"
+      },
+      "whatItIs": "Profile Self Edit Tab",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "profile_self_preview_tab",
+      "routes": [
+        "profileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/profile_self_preview_tab.png",
+        "dark": "dark/profile_self_preview_tab.png"
+      },
+      "whatItIs": "Profile Self Preview Tab",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "profile_self_photo_upload_pending",
+      "routes": [
+        "profileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/profile_self_photo_upload_pending.png",
+        "dark": "dark/profile_self_photo_upload_pending.png"
+      },
+      "whatItIs": "Profile Self Photo Upload Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "profile_self_text_scale_2",
+      "routes": [
+        "profileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/profile_self_text_scale_2.png",
+        "dark": "dark/profile_self_text_scale_2.png"
+      },
+      "whatItIs": "Profile Self Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "profile_self_reduced_motion",
+      "routes": [
+        "profileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/profile_self_reduced_motion.png",
+        "dark": "dark/profile_self_reduced_motion.png"
+      },
+      "whatItIs": "Profile Self Reduced Motion",
       "keepChangeNotes": ""
     },
     {
@@ -140,6 +292,261 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "event_detail_loading",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_loading.png",
+        "dark": "dark/event_detail_loading.png"
+      },
+      "whatItIs": "Event Detail Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_not_found",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_not_found.png",
+        "dark": "dark/event_detail_not_found.png"
+      },
+      "whatItIs": "Event Detail Not Found",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_error",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_error.png",
+        "dark": "dark/event_detail_error.png"
+      },
+      "whatItIs": "Event Detail Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_guest",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_guest.png",
+        "dark": "dark/event_detail_guest.png"
+      },
+      "whatItIs": "Event Detail Guest",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_host_app",
+      "routes": [
+        "hostAppEventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_host_app.png",
+        "dark": "dark/event_detail_host_app.png"
+      },
+      "whatItIs": "Event Detail Host App",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_offline",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_offline.png",
+        "dark": "dark/event_detail_offline.png"
+      },
+      "whatItIs": "Event Detail Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_text_scale_2",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_text_scale_2.png",
+        "dark": "dark/event_detail_text_scale_2.png"
+      },
+      "whatItIs": "Event Detail Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_reduced_motion",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_reduced_motion.png",
+        "dark": "dark/event_detail_reduced_motion.png"
+      },
+      "whatItIs": "Event Detail Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_booking_signed_up",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_booking_signed_up.png",
+        "dark": "dark/event_detail_booking_signed_up.png"
+      },
+      "whatItIs": "Event Detail Booking Signed Up",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_booking_waitlist",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_booking_waitlist.png",
+        "dark": "dark/event_detail_booking_waitlist.png"
+      },
+      "whatItIs": "Event Detail Booking Waitlist",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_booking_waitlist_offer",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_booking_waitlist_offer.png",
+        "dark": "dark/event_detail_booking_waitlist_offer.png"
+      },
+      "whatItIs": "Event Detail Booking Waitlist Offer",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_booking_full",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_booking_full.png",
+        "dark": "dark/event_detail_booking_full.png"
+      },
+      "whatItIs": "Event Detail Booking Full",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_booking_attended",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_booking_attended.png",
+        "dark": "dark/event_detail_booking_attended.png"
+      },
+      "whatItIs": "Event Detail Booking Attended",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_booking_past",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_booking_past.png",
+        "dark": "dark/event_detail_booking_past.png"
+      },
+      "whatItIs": "Event Detail Booking Past",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_booking_cancelled",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_booking_cancelled.png",
+        "dark": "dark/event_detail_booking_cancelled.png"
+      },
+      "whatItIs": "Event Detail Booking Cancelled",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "dashboard_home",
       "routes": [
         "dashboardScreen"
@@ -157,6 +564,1604 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "dashboard_home_loading",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home_loading.png",
+        "dark": "dark/dashboard_home_loading.png"
+      },
+      "whatItIs": "Dashboard Home Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "dashboard_home_profile_error",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home_profile_error.png",
+        "dark": "dark/dashboard_home_profile_error.png"
+      },
+      "whatItIs": "Dashboard Home Profile Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "dashboard_home_offline",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home_offline.png",
+        "dark": "dark/dashboard_home_offline.png"
+      },
+      "whatItIs": "Dashboard Home Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "dashboard_home_memberships_error",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home_memberships_error.png",
+        "dark": "dark/dashboard_home_memberships_error.png"
+      },
+      "whatItIs": "Dashboard Home Memberships Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "dashboard_home_booked_events_error",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home_booked_events_error.png",
+        "dark": "dark/dashboard_home_booked_events_error.png"
+      },
+      "whatItIs": "Dashboard Home Booked Events Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "dashboard_home_empty_start",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home_empty_start.png",
+        "dark": "dark/dashboard_home_empty_start.png"
+      },
+      "whatItIs": "Dashboard Home Empty Start",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "dashboard_home_recommendations_loading",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home_recommendations_loading.png",
+        "dark": "dark/dashboard_home_recommendations_loading.png"
+      },
+      "whatItIs": "Dashboard Home Recommendations Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "dashboard_home_recommendations_error",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home_recommendations_error.png",
+        "dark": "dark/dashboard_home_recommendations_error.png"
+      },
+      "whatItIs": "Dashboard Home Recommendations Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "dashboard_home_self_check_in",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home_self_check_in.png",
+        "dark": "dark/dashboard_home_self_check_in.png"
+      },
+      "whatItIs": "Dashboard Home Self Check In",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "dashboard_home_self_check_in_pending",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home_self_check_in_pending.png",
+        "dark": "dark/dashboard_home_self_check_in_pending.png"
+      },
+      "whatItIs": "Dashboard Home Self Check In Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "dashboard_home_self_check_in_error",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home_self_check_in_error.png",
+        "dark": "dark/dashboard_home_self_check_in_error.png"
+      },
+      "whatItIs": "Dashboard Home Self Check In Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "dashboard_home_after_event_focus",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home_after_event_focus.png",
+        "dark": "dark/dashboard_home_after_event_focus.png"
+      },
+      "whatItIs": "Dashboard Home After Event Focus",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "dashboard_home_text_scale_2",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home_text_scale_2.png",
+        "dark": "dark/dashboard_home_text_scale_2.png"
+      },
+      "whatItIs": "Dashboard Home Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "dashboard_home_reduced_motion",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home_reduced_motion.png",
+        "dark": "dark/dashboard_home_reduced_motion.png"
+      },
+      "whatItIs": "Dashboard Home Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_dashboard",
+      "routes": [
+        "hostHomeScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_dashboard.png",
+        "dark": "dark/host_home_dashboard.png"
+      },
+      "whatItIs": "Host Home Dashboard",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_events_list",
+      "routes": [
+        "hostHomeScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_events_list.png",
+        "dark": "dark/host_home_events_list.png"
+      },
+      "whatItIs": "Host Home Events List",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_signed_out",
+      "routes": [
+        "hostHomeScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_signed_out.png",
+        "dark": "dark/host_home_signed_out.png"
+      },
+      "whatItIs": "Host Home Signed Out",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_clubs_loading",
+      "routes": [
+        "hostHomeScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_clubs_loading.png",
+        "dark": "dark/host_home_clubs_loading.png"
+      },
+      "whatItIs": "Host Home Clubs Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_clubs_error",
+      "routes": [
+        "hostHomeScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_clubs_error.png",
+        "dark": "dark/host_home_clubs_error.png"
+      },
+      "whatItIs": "Host Home Clubs Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_clubs_offline",
+      "routes": [
+        "hostHomeScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_clubs_offline.png",
+        "dark": "dark/host_home_clubs_offline.png"
+      },
+      "whatItIs": "Host Home Clubs Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_empty_clubs",
+      "routes": [
+        "hostHomeScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_empty_clubs.png",
+        "dark": "dark/host_home_empty_clubs.png"
+      },
+      "whatItIs": "Host Home Empty Clubs",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_events_loading",
+      "routes": [
+        "hostHomeScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_events_loading.png",
+        "dark": "dark/host_home_events_loading.png"
+      },
+      "whatItIs": "Host Home Events Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_events_error",
+      "routes": [
+        "hostHomeScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_events_error.png",
+        "dark": "dark/host_home_events_error.png"
+      },
+      "whatItIs": "Host Home Events Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_events_offline",
+      "routes": [
+        "hostHomeScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_events_offline.png",
+        "dark": "dark/host_home_events_offline.png"
+      },
+      "whatItIs": "Host Home Events Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_cohost_empty_events",
+      "routes": [
+        "hostHomeScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_cohost_empty_events.png",
+        "dark": "dark/host_home_cohost_empty_events.png"
+      },
+      "whatItIs": "Host Home Cohost Empty Events",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_text_scale_2",
+      "routes": [
+        "hostHomeScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_text_scale_2.png",
+        "dark": "dark/host_home_text_scale_2.png"
+      },
+      "whatItIs": "Host Home Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_reduced_motion",
+      "routes": [
+        "hostHomeScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_reduced_motion.png",
+        "dark": "dark/host_home_reduced_motion.png"
+      },
+      "whatItIs": "Host Home Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_light_dark",
+      "routes": [
+        "hostHomeScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_light_dark.png",
+        "dark": "dark/host_home_light_dark.png"
+      },
+      "whatItIs": "Host Home Light Dark",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_management",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_management.png",
+        "dark": "dark/host_clubs_management.png"
+      },
+      "whatItIs": "Host Clubs Management",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_signed_out",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_signed_out.png",
+        "dark": "dark/host_clubs_signed_out.png"
+      },
+      "whatItIs": "Host Clubs Signed Out",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_loading",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_loading.png",
+        "dark": "dark/host_clubs_loading.png"
+      },
+      "whatItIs": "Host Clubs Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_error",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_error.png",
+        "dark": "dark/host_clubs_error.png"
+      },
+      "whatItIs": "Host Clubs Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_offline",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_offline.png",
+        "dark": "dark/host_clubs_offline.png"
+      },
+      "whatItIs": "Host Clubs Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_empty",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_empty.png",
+        "dark": "dark/host_clubs_empty.png"
+      },
+      "whatItIs": "Host Clubs Empty",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_cohost_edit",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_cohost_edit.png",
+        "dark": "dark/host_clubs_cohost_edit.png"
+      },
+      "whatItIs": "Host Clubs Cohost Edit",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_inline_edit_pending",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_inline_edit_pending.png",
+        "dark": "dark/host_clubs_inline_edit_pending.png"
+      },
+      "whatItIs": "Host Clubs Inline Edit Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_inline_edit_error",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_inline_edit_error.png",
+        "dark": "dark/host_clubs_inline_edit_error.png"
+      },
+      "whatItIs": "Host Clubs Inline Edit Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_inline_edit_offline",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_inline_edit_offline.png",
+        "dark": "dark/host_clubs_inline_edit_offline.png"
+      },
+      "whatItIs": "Host Clubs Inline Edit Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_insights_report",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_insights_report.png",
+        "dark": "dark/host_clubs_insights_report.png"
+      },
+      "whatItIs": "Host Clubs Insights Report",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_insights_loading",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_insights_loading.png",
+        "dark": "dark/host_clubs_insights_loading.png"
+      },
+      "whatItIs": "Host Clubs Insights Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_insights_error",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_insights_error.png",
+        "dark": "dark/host_clubs_insights_error.png"
+      },
+      "whatItIs": "Host Clubs Insights Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_insights_offline",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_insights_offline.png",
+        "dark": "dark/host_clubs_insights_offline.png"
+      },
+      "whatItIs": "Host Clubs Insights Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_preview_tab",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_preview_tab.png",
+        "dark": "dark/host_clubs_preview_tab.png"
+      },
+      "whatItIs": "Host Clubs Preview Tab",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_payout_loading",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_payout_loading.png",
+        "dark": "dark/host_clubs_payout_loading.png"
+      },
+      "whatItIs": "Host Clubs Payout Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_payout_ready",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_payout_ready.png",
+        "dark": "dark/host_clubs_payout_ready.png"
+      },
+      "whatItIs": "Host Clubs Payout Ready",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_payout_restricted",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_payout_restricted.png",
+        "dark": "dark/host_clubs_payout_restricted.png"
+      },
+      "whatItIs": "Host Clubs Payout Restricted",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_payout_error",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_payout_error.png",
+        "dark": "dark/host_clubs_payout_error.png"
+      },
+      "whatItIs": "Host Clubs Payout Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_payout_offline",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_payout_offline.png",
+        "dark": "dark/host_clubs_payout_offline.png"
+      },
+      "whatItIs": "Host Clubs Payout Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_payout_setup_pending",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_payout_setup_pending.png",
+        "dark": "dark/host_clubs_payout_setup_pending.png"
+      },
+      "whatItIs": "Host Clubs Payout Setup Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_payout_setup_error",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_payout_setup_error.png",
+        "dark": "dark/host_clubs_payout_setup_error.png"
+      },
+      "whatItIs": "Host Clubs Payout Setup Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_payout_setup_offline",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_payout_setup_offline.png",
+        "dark": "dark/host_clubs_payout_setup_offline.png"
+      },
+      "whatItIs": "Host Clubs Payout Setup Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_payout_refresh_pending",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_payout_refresh_pending.png",
+        "dark": "dark/host_clubs_payout_refresh_pending.png"
+      },
+      "whatItIs": "Host Clubs Payout Refresh Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_payout_refresh_error",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_payout_refresh_error.png",
+        "dark": "dark/host_clubs_payout_refresh_error.png"
+      },
+      "whatItIs": "Host Clubs Payout Refresh Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_payout_refresh_offline",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_payout_refresh_offline.png",
+        "dark": "dark/host_clubs_payout_refresh_offline.png"
+      },
+      "whatItIs": "Host Clubs Payout Refresh Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_team_pending",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_team_pending.png",
+        "dark": "dark/host_clubs_team_pending.png"
+      },
+      "whatItIs": "Host Clubs Team Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_team_error",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_team_error.png",
+        "dark": "dark/host_clubs_team_error.png"
+      },
+      "whatItIs": "Host Clubs Team Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_team_offline",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_team_offline.png",
+        "dark": "dark/host_clubs_team_offline.png"
+      },
+      "whatItIs": "Host Clubs Team Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_text_scale_2",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_text_scale_2.png",
+        "dark": "dark/host_clubs_text_scale_2.png"
+      },
+      "whatItIs": "Host Clubs Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_reduced_motion",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_reduced_motion.png",
+        "dark": "dark/host_clubs_reduced_motion.png"
+      },
+      "whatItIs": "Host Clubs Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_clubs_light_dark",
+      "routes": [
+        "hostClubsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_light_dark.png",
+        "dark": "dark/host_clubs_light_dark.png"
+      },
+      "whatItIs": "Host Clubs Light Dark",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_active_profile",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_active_profile.png",
+        "dark": "dark/host_settings_active_profile.png"
+      },
+      "whatItIs": "Host Settings Active Profile",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_text_scale_2",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_text_scale_2.png",
+        "dark": "dark/host_settings_text_scale_2.png"
+      },
+      "whatItIs": "Host Settings Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_reduced_motion",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_reduced_motion.png",
+        "dark": "dark/host_settings_reduced_motion.png"
+      },
+      "whatItIs": "Host Settings Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_profile_loading",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_profile_loading.png",
+        "dark": "dark/host_settings_profile_loading.png"
+      },
+      "whatItIs": "Host Settings Profile Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_profile_error",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_profile_error.png",
+        "dark": "dark/host_settings_profile_error.png"
+      },
+      "whatItIs": "Host Settings Profile Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_profile_offline",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_profile_offline.png",
+        "dark": "dark/host_settings_profile_offline.png"
+      },
+      "whatItIs": "Host Settings Profile Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_no_profile",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_no_profile.png",
+        "dark": "dark/host_settings_no_profile.png"
+      },
+      "whatItIs": "Host Settings No Profile",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_create_profile_pending",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_create_profile_pending.png",
+        "dark": "dark/host_settings_create_profile_pending.png"
+      },
+      "whatItIs": "Host Settings Create Profile Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_create_profile_error",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_create_profile_error.png",
+        "dark": "dark/host_settings_create_profile_error.png"
+      },
+      "whatItIs": "Host Settings Create Profile Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_create_profile_offline",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_create_profile_offline.png",
+        "dark": "dark/host_settings_create_profile_offline.png"
+      },
+      "whatItIs": "Host Settings Create Profile Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_fallback_profile",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_fallback_profile.png",
+        "dark": "dark/host_settings_fallback_profile.png"
+      },
+      "whatItIs": "Host Settings Fallback Profile",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_clubs_loading",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_clubs_loading.png",
+        "dark": "dark/host_settings_clubs_loading.png"
+      },
+      "whatItIs": "Host Settings Clubs Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_clubs_error",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_clubs_error.png",
+        "dark": "dark/host_settings_clubs_error.png"
+      },
+      "whatItIs": "Host Settings Clubs Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_clubs_offline",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_clubs_offline.png",
+        "dark": "dark/host_settings_clubs_offline.png"
+      },
+      "whatItIs": "Host Settings Clubs Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_profile_editor_sheet",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_profile_editor_sheet.png",
+        "dark": "dark/host_settings_profile_editor_sheet.png"
+      },
+      "whatItIs": "Host Settings Profile Editor Sheet",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_save_profile_pending",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_save_profile_pending.png",
+        "dark": "dark/host_settings_save_profile_pending.png"
+      },
+      "whatItIs": "Host Settings Save Profile Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_save_profile_error",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_save_profile_error.png",
+        "dark": "dark/host_settings_save_profile_error.png"
+      },
+      "whatItIs": "Host Settings Save Profile Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_save_profile_offline",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_save_profile_offline.png",
+        "dark": "dark/host_settings_save_profile_offline.png"
+      },
+      "whatItIs": "Host Settings Save Profile Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_sign_out_error",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_sign_out_error.png",
+        "dark": "dark/host_settings_sign_out_error.png"
+      },
+      "whatItIs": "Host Settings Sign Out Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_settings_sign_out_offline",
+      "routes": [
+        "hostSettingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_settings_sign_out_offline.png",
+        "dark": "dark/host_settings_sign_out_offline.png"
+      },
+      "whatItIs": "Host Settings Sign Out Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_profile_populated",
+      "routes": [
+        "hostProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_profile_populated.png",
+        "dark": "dark/host_profile_populated.png"
+      },
+      "whatItIs": "Host Profile Populated",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_profile_validation_error",
+      "routes": [
+        "hostProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_profile_validation_error.png",
+        "dark": "dark/host_profile_validation_error.png"
+      },
+      "whatItIs": "Host Profile Validation Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_profile_text_scale_2",
+      "routes": [
+        "hostProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_profile_text_scale_2.png",
+        "dark": "dark/host_profile_text_scale_2.png"
+      },
+      "whatItIs": "Host Profile Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_profile_reduced_motion",
+      "routes": [
+        "hostProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_profile_reduced_motion.png",
+        "dark": "dark/host_profile_reduced_motion.png"
+      },
+      "whatItIs": "Host Profile Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_profile_loading",
+      "routes": [
+        "hostProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_profile_loading.png",
+        "dark": "dark/host_profile_loading.png"
+      },
+      "whatItIs": "Host Profile Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_profile_error",
+      "routes": [
+        "hostProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_profile_error.png",
+        "dark": "dark/host_profile_error.png"
+      },
+      "whatItIs": "Host Profile Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_profile_offline",
+      "routes": [
+        "hostProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_profile_offline.png",
+        "dark": "dark/host_profile_offline.png"
+      },
+      "whatItIs": "Host Profile Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_profile_missing",
+      "routes": [
+        "hostProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_profile_missing.png",
+        "dark": "dark/host_profile_missing.png"
+      },
+      "whatItIs": "Host Profile Missing",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_profile_create_pending",
+      "routes": [
+        "hostProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_profile_create_pending.png",
+        "dark": "dark/host_profile_create_pending.png"
+      },
+      "whatItIs": "Host Profile Create Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_profile_create_error",
+      "routes": [
+        "hostProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_profile_create_error.png",
+        "dark": "dark/host_profile_create_error.png"
+      },
+      "whatItIs": "Host Profile Create Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_profile_create_offline",
+      "routes": [
+        "hostProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_profile_create_offline.png",
+        "dark": "dark/host_profile_create_offline.png"
+      },
+      "whatItIs": "Host Profile Create Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_profile_save_pending",
+      "routes": [
+        "hostProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_profile_save_pending.png",
+        "dark": "dark/host_profile_save_pending.png"
+      },
+      "whatItIs": "Host Profile Save Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_profile_save_error",
+      "routes": [
+        "hostProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_profile_save_error.png",
+        "dark": "dark/host_profile_save_error.png"
+      },
+      "whatItIs": "Host Profile Save Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_profile_save_offline",
+      "routes": [
+        "hostProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_profile_save_offline.png",
+        "dark": "dark/host_profile_save_offline.png"
+      },
+      "whatItIs": "Host Profile Save Offline",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "club_detail_member",
       "routes": [
         "clubDetailScreen"
@@ -171,6 +2176,380 @@
         "dark": "dark/club_detail_member.png"
       },
       "whatItIs": "Club Detail Member",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "club_detail_visitor",
+      "routes": [
+        "clubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/club_detail_visitor.png",
+        "dark": "dark/club_detail_visitor.png"
+      },
+      "whatItIs": "Club Detail Visitor",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "club_detail_guest",
+      "routes": [
+        "clubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/club_detail_guest.png",
+        "dark": "dark/club_detail_guest.png"
+      },
+      "whatItIs": "Club Detail Guest",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "club_detail_host_public",
+      "routes": [
+        "clubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/club_detail_host_public.png",
+        "dark": "dark/club_detail_host_public.png"
+      },
+      "whatItIs": "Club Detail Host Public",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_club_detail_public",
+      "routes": [
+        "hostClubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_club_detail_public.png",
+        "dark": "dark/host_club_detail_public.png"
+      },
+      "whatItIs": "Host Club Detail Public",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_club_detail_initial_loading",
+      "routes": [
+        "hostClubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_club_detail_initial_loading.png",
+        "dark": "dark/host_club_detail_initial_loading.png"
+      },
+      "whatItIs": "Host Club Detail Initial Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_club_detail_loading",
+      "routes": [
+        "hostClubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_club_detail_loading.png",
+        "dark": "dark/host_club_detail_loading.png"
+      },
+      "whatItIs": "Host Club Detail Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_club_detail_error",
+      "routes": [
+        "hostClubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_club_detail_error.png",
+        "dark": "dark/host_club_detail_error.png"
+      },
+      "whatItIs": "Host Club Detail Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_club_detail_offline",
+      "routes": [
+        "hostClubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_club_detail_offline.png",
+        "dark": "dark/host_club_detail_offline.png"
+      },
+      "whatItIs": "Host Club Detail Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_club_detail_not_found",
+      "routes": [
+        "hostClubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_club_detail_not_found.png",
+        "dark": "dark/host_club_detail_not_found.png"
+      },
+      "whatItIs": "Host Club Detail Not Found",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_club_detail_signed_out",
+      "routes": [
+        "hostClubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_club_detail_signed_out.png",
+        "dark": "dark/host_club_detail_signed_out.png"
+      },
+      "whatItIs": "Host Club Detail Signed Out",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_club_detail_non_host_preview",
+      "routes": [
+        "hostClubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_club_detail_non_host_preview.png",
+        "dark": "dark/host_club_detail_non_host_preview.png"
+      },
+      "whatItIs": "Host Club Detail Non Host Preview",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_club_detail_empty_schedule",
+      "routes": [
+        "hostClubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_club_detail_empty_schedule.png",
+        "dark": "dark/host_club_detail_empty_schedule.png"
+      },
+      "whatItIs": "Host Club Detail Empty Schedule",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_club_detail_text_scale_2",
+      "routes": [
+        "hostClubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_club_detail_text_scale_2.png",
+        "dark": "dark/host_club_detail_text_scale_2.png"
+      },
+      "whatItIs": "Host Club Detail Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_club_detail_reduced_motion",
+      "routes": [
+        "hostClubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_club_detail_reduced_motion.png",
+        "dark": "dark/host_club_detail_reduced_motion.png"
+      },
+      "whatItIs": "Host Club Detail Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_club_detail_light_dark",
+      "routes": [
+        "hostClubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_club_detail_light_dark.png",
+        "dark": "dark/host_club_detail_light_dark.png"
+      },
+      "whatItIs": "Host Club Detail Light Dark",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "club_detail_missing",
+      "routes": [
+        "clubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/club_detail_missing.png",
+        "dark": "dark/club_detail_missing.png"
+      },
+      "whatItIs": "Club Detail Missing",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "club_detail_error",
+      "routes": [
+        "clubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/club_detail_error.png",
+        "dark": "dark/club_detail_error.png"
+      },
+      "whatItIs": "Club Detail Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "club_detail_join_pending",
+      "routes": [
+        "clubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/club_detail_join_pending.png",
+        "dark": "dark/club_detail_join_pending.png"
+      },
+      "whatItIs": "Club Detail Join Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "club_detail_mutation_error",
+      "routes": [
+        "clubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/club_detail_mutation_error.png",
+        "dark": "dark/club_detail_mutation_error.png"
+      },
+      "whatItIs": "Club Detail Mutation Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "club_detail_offline",
+      "routes": [
+        "clubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/club_detail_offline.png",
+        "dark": "dark/club_detail_offline.png"
+      },
+      "whatItIs": "Club Detail Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "club_detail_text_scale_2",
+      "routes": [
+        "clubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/club_detail_text_scale_2.png",
+        "dark": "dark/club_detail_text_scale_2.png"
+      },
+      "whatItIs": "Club Detail Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "club_detail_reduced_motion",
+      "routes": [
+        "clubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/club_detail_reduced_motion.png",
+        "dark": "dark/club_detail_reduced_motion.png"
+      },
+      "whatItIs": "Club Detail Reduced Motion",
       "keepChangeNotes": ""
     },
     {
@@ -242,6 +2621,108 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "event_location_map_loading",
+      "routes": [
+        "eventLocationMapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_location_map_loading.png",
+        "dark": "dark/event_location_map_loading.png"
+      },
+      "whatItIs": "Event Location Map Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_location_map_error",
+      "routes": [
+        "eventLocationMapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_location_map_error.png",
+        "dark": "dark/event_location_map_error.png"
+      },
+      "whatItIs": "Event Location Map Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_location_map_not_found",
+      "routes": [
+        "eventLocationMapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_location_map_not_found.png",
+        "dark": "dark/event_location_map_not_found.png"
+      },
+      "whatItIs": "Event Location Map Not Found",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_location_map_no_coordinate",
+      "routes": [
+        "eventLocationMapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_location_map_no_coordinate.png",
+        "dark": "dark/event_location_map_no_coordinate.png"
+      },
+      "whatItIs": "Event Location Map No Coordinate",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_location_map_text_scale_2",
+      "routes": [
+        "eventLocationMapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_location_map_text_scale_2.png",
+        "dark": "dark/event_location_map_text_scale_2.png"
+      },
+      "whatItIs": "Event Location Map Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_location_map_reduced_motion",
+      "routes": [
+        "eventLocationMapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_location_map_reduced_motion.png",
+        "dark": "dark/event_location_map_reduced_motion.png"
+      },
+      "whatItIs": "Event Location Map Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "member_event_discovery",
       "routes": [
         "exploreScreen"
@@ -262,6 +2743,210 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "explore_loading",
+      "routes": [
+        "exploreScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_loading.png",
+        "dark": "dark/explore_loading.png"
+      },
+      "whatItIs": "Explore Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "explore_club_source_error",
+      "routes": [
+        "exploreScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_club_source_error.png",
+        "dark": "dark/explore_club_source_error.png"
+      },
+      "whatItIs": "Explore Club Source Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "explore_feed_error",
+      "routes": [
+        "exploreScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_feed_error.png",
+        "dark": "dark/explore_feed_error.png"
+      },
+      "whatItIs": "Explore Feed Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "explore_empty_city",
+      "routes": [
+        "exploreScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_empty_city.png",
+        "dark": "dark/explore_empty_city.png"
+      },
+      "whatItIs": "Explore Empty City",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "explore_no_search_results",
+      "routes": [
+        "exploreScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_no_search_results.png",
+        "dark": "dark/explore_no_search_results.png"
+      },
+      "whatItIs": "Explore No Search Results",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "explore_search_query",
+      "routes": [
+        "exploreScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_search_query.png",
+        "dark": "dark/explore_search_query.png"
+      },
+      "whatItIs": "Explore Search Query",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "explore_filters_active",
+      "routes": [
+        "exploreScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_filters_active.png",
+        "dark": "dark/explore_filters_active.png"
+      },
+      "whatItIs": "Explore Filters Active",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "explore_text_scale_2",
+      "routes": [
+        "exploreScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_text_scale_2.png",
+        "dark": "dark/explore_text_scale_2.png"
+      },
+      "whatItIs": "Explore Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "explore_reduced_motion",
+      "routes": [
+        "exploreScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_reduced_motion.png",
+        "dark": "dark/explore_reduced_motion.png"
+      },
+      "whatItIs": "Explore Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "explore_map",
+      "routes": [
+        "exploreMapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_map.png",
+        "dark": "dark/explore_map.png"
+      },
+      "whatItIs": "Explore Map",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "explore_map_loading",
+      "routes": [
+        "exploreMapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_map_loading.png",
+        "dark": "dark/explore_map_loading.png"
+      },
+      "whatItIs": "Explore Map Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "explore_map_error",
+      "routes": [
+        "exploreMapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_map_error.png",
+        "dark": "dark/explore_map_error.png"
+      },
+      "whatItIs": "Explore Map Error",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "create_club_basics",
       "routes": [
         "hostCreateClubScreen"
@@ -279,6 +2964,244 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "create_club_basics_validation",
+      "routes": [
+        "hostCreateClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_basics_validation.png",
+        "dark": "dark/create_club_basics_validation.png"
+      },
+      "whatItIs": "Create Club Basics Validation",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "create_club_picked_media",
+      "routes": [
+        "hostCreateClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_picked_media.png",
+        "dark": "dark/create_club_picked_media.png"
+      },
+      "whatItIs": "Create Club Picked Media",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "create_club_draft_restored",
+      "routes": [
+        "hostCreateClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_draft_restored.png",
+        "dark": "dark/create_club_draft_restored.png"
+      },
+      "whatItIs": "Create Club Draft Restored",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "create_club_details",
+      "routes": [
+        "hostCreateClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_details.png",
+        "dark": "dark/create_club_details.png"
+      },
+      "whatItIs": "Create Club Details",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "create_club_host_defaults",
+      "routes": [
+        "hostCreateClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_host_defaults.png",
+        "dark": "dark/create_club_host_defaults.png"
+      },
+      "whatItIs": "Create Club Host Defaults",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "create_club_event_success_defaults",
+      "routes": [
+        "hostCreateClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_event_success_defaults.png",
+        "dark": "dark/create_club_event_success_defaults.png"
+      },
+      "whatItIs": "Create Club Event Success Defaults",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "create_club_save_draft_pending",
+      "routes": [
+        "hostCreateClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_save_draft_pending.png",
+        "dark": "dark/create_club_save_draft_pending.png"
+      },
+      "whatItIs": "Create Club Save Draft Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "create_club_save_draft_error",
+      "routes": [
+        "hostCreateClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_save_draft_error.png",
+        "dark": "dark/create_club_save_draft_error.png"
+      },
+      "whatItIs": "Create Club Save Draft Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "create_club_submit_pending",
+      "routes": [
+        "hostCreateClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_submit_pending.png",
+        "dark": "dark/create_club_submit_pending.png"
+      },
+      "whatItIs": "Create Club Submit Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "create_club_submit_error",
+      "routes": [
+        "hostCreateClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_submit_error.png",
+        "dark": "dark/create_club_submit_error.png"
+      },
+      "whatItIs": "Create Club Submit Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "create_club_submit_offline",
+      "routes": [
+        "hostCreateClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_submit_offline.png",
+        "dark": "dark/create_club_submit_offline.png"
+      },
+      "whatItIs": "Create Club Submit Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "create_club_text_scale_2",
+      "routes": [
+        "hostCreateClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_text_scale_2.png",
+        "dark": "dark/create_club_text_scale_2.png"
+      },
+      "whatItIs": "Create Club Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "create_club_reduced_motion",
+      "routes": [
+        "hostCreateClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_reduced_motion.png",
+        "dark": "dark/create_club_reduced_motion.png"
+      },
+      "whatItIs": "Create Club Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "create_club_light_dark",
+      "routes": [
+        "hostCreateClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_light_dark.png",
+        "dark": "dark/create_club_light_dark.png"
+      },
+      "whatItIs": "Create Club Light Dark",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "edit_club_basics",
       "routes": [
         "hostEditClubScreen"
@@ -293,6 +3216,499 @@
         "dark": "dark/edit_club_basics.png"
       },
       "whatItIs": "Edit Club Basics",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_club_validation_error",
+      "routes": [
+        "hostEditClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_club_validation_error.png",
+        "dark": "dark/edit_club_validation_error.png"
+      },
+      "whatItIs": "Edit Club Validation Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_club_media_replacement",
+      "routes": [
+        "hostEditClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_club_media_replacement.png",
+        "dark": "dark/edit_club_media_replacement.png"
+      },
+      "whatItIs": "Edit Club Media Replacement",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_club_submit_pending",
+      "routes": [
+        "hostEditClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_club_submit_pending.png",
+        "dark": "dark/edit_club_submit_pending.png"
+      },
+      "whatItIs": "Edit Club Submit Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_club_submit_error",
+      "routes": [
+        "hostEditClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_club_submit_error.png",
+        "dark": "dark/edit_club_submit_error.png"
+      },
+      "whatItIs": "Edit Club Submit Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_club_route_loading",
+      "routes": [
+        "hostEditClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_club_route_loading.png",
+        "dark": "dark/edit_club_route_loading.png"
+      },
+      "whatItIs": "Edit Club Route Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_club_route_error",
+      "routes": [
+        "hostEditClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_club_route_error.png",
+        "dark": "dark/edit_club_route_error.png"
+      },
+      "whatItIs": "Edit Club Route Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_club_route_offline",
+      "routes": [
+        "hostEditClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_club_route_offline.png",
+        "dark": "dark/edit_club_route_offline.png"
+      },
+      "whatItIs": "Edit Club Route Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_club_not_found",
+      "routes": [
+        "hostEditClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_club_not_found.png",
+        "dark": "dark/edit_club_not_found.png"
+      },
+      "whatItIs": "Edit Club Not Found",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_club_cohost_media",
+      "routes": [
+        "hostEditClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_club_cohost_media.png",
+        "dark": "dark/edit_club_cohost_media.png"
+      },
+      "whatItIs": "Edit Club Cohost Media",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_club_forbidden",
+      "routes": [
+        "hostEditClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_club_forbidden.png",
+        "dark": "dark/edit_club_forbidden.png"
+      },
+      "whatItIs": "Edit Club Forbidden",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_club_text_scale_2",
+      "routes": [
+        "hostEditClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_club_text_scale_2.png",
+        "dark": "dark/edit_club_text_scale_2.png"
+      },
+      "whatItIs": "Edit Club Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_club_reduced_motion",
+      "routes": [
+        "hostEditClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_club_reduced_motion.png",
+        "dark": "dark/edit_club_reduced_motion.png"
+      },
+      "whatItIs": "Edit Club Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_club_light_dark",
+      "routes": [
+        "hostEditClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_club_light_dark.png",
+        "dark": "dark/edit_club_light_dark.png"
+      },
+      "whatItIs": "Edit Club Light Dark",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_route_loading",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_route_loading.png",
+        "dark": "dark/host_create_route_loading.png"
+      },
+      "whatItIs": "Host Create Route Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_route_error",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_route_error.png",
+        "dark": "dark/host_create_route_error.png"
+      },
+      "whatItIs": "Host Create Route Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_route_offline",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_route_offline.png",
+        "dark": "dark/host_create_route_offline.png"
+      },
+      "whatItIs": "Host Create Route Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_not_found",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_not_found.png",
+        "dark": "dark/host_create_not_found.png"
+      },
+      "whatItIs": "Host Create Not Found",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_basics_validation",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_basics_validation.png",
+        "dark": "dark/host_create_basics_validation.png"
+      },
+      "whatItIs": "Host Create Basics Validation",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_custom_activity",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_custom_activity.png",
+        "dark": "dark/host_create_custom_activity.png"
+      },
+      "whatItIs": "Host Create Custom Activity",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_event_photos",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_event_photos.png",
+        "dark": "dark/host_create_event_photos.png"
+      },
+      "whatItIs": "Host Create Event Photos",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_location_selected",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_location_selected.png",
+        "dark": "dark/host_create_location_selected.png"
+      },
+      "whatItIs": "Host Create Location Selected",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_draft_picker",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_draft_picker.png",
+        "dark": "dark/host_create_draft_picker.png"
+      },
+      "whatItIs": "Host Create Draft Picker",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_draft_restored",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_draft_restored.png",
+        "dark": "dark/host_create_draft_restored.png"
+      },
+      "whatItIs": "Host Create Draft Restored",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_save_draft_pending",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_save_draft_pending.png",
+        "dark": "dark/host_create_save_draft_pending.png"
+      },
+      "whatItIs": "Host Create Save Draft Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_save_draft_error",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_save_draft_error.png",
+        "dark": "dark/host_create_save_draft_error.png"
+      },
+      "whatItIs": "Host Create Save Draft Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_submit_pending",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_submit_pending.png",
+        "dark": "dark/host_create_submit_pending.png"
+      },
+      "whatItIs": "Host Create Submit Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_submit_error",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_submit_error.png",
+        "dark": "dark/host_create_submit_error.png"
+      },
+      "whatItIs": "Host Create Submit Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_submit_offline",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_submit_offline.png",
+        "dark": "dark/host_create_submit_offline.png"
+      },
+      "whatItIs": "Host Create Submit Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_success_manage",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_success_manage.png",
+        "dark": "dark/host_create_success_manage.png"
+      },
+      "whatItIs": "Host Create Success Manage",
       "keepChangeNotes": ""
     },
     {
@@ -416,6 +3832,57 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "host_create_text_scale_2",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_text_scale_2.png",
+        "dark": "dark/host_create_text_scale_2.png"
+      },
+      "whatItIs": "Host Create Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_reduced_motion",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_reduced_motion.png",
+        "dark": "dark/host_create_reduced_motion.png"
+      },
+      "whatItIs": "Host Create Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_light_dark",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_light_dark.png",
+        "dark": "dark/host_create_light_dark.png"
+      },
+      "whatItIs": "Host Create Light Dark",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "edit_hosted_event",
       "routes": [
         "hostAppEditEventScreen"
@@ -430,6 +3897,907 @@
         "dark": "dark/edit_hosted_event.png"
       },
       "whatItIs": "Edit Hosted Event",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_route_loading",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_route_loading.png",
+        "dark": "dark/edit_hosted_event_route_loading.png"
+      },
+      "whatItIs": "Edit Hosted Event Route Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_route_error",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_route_error.png",
+        "dark": "dark/edit_hosted_event_route_error.png"
+      },
+      "whatItIs": "Edit Hosted Event Route Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_offline",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_offline.png",
+        "dark": "dark/edit_hosted_event_offline.png"
+      },
+      "whatItIs": "Edit Hosted Event Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_not_found",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_not_found.png",
+        "dark": "dark/edit_hosted_event_not_found.png"
+      },
+      "whatItIs": "Edit Hosted Event Not Found",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_unauthorized",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_unauthorized.png",
+        "dark": "dark/edit_hosted_event_unauthorized.png"
+      },
+      "whatItIs": "Edit Hosted Event Unauthorized",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_schedule_locked",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_schedule_locked.png",
+        "dark": "dark/edit_hosted_event_schedule_locked.png"
+      },
+      "whatItIs": "Edit Hosted Event Schedule Locked",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_cancelled",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_cancelled.png",
+        "dark": "dark/edit_hosted_event_cancelled.png"
+      },
+      "whatItIs": "Edit Hosted Event Cancelled",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_private_access_loading",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_private_access_loading.png",
+        "dark": "dark/edit_hosted_event_private_access_loading.png"
+      },
+      "whatItIs": "Edit Hosted Event Private Access Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_validation_error",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_validation_error.png",
+        "dark": "dark/edit_hosted_event_validation_error.png"
+      },
+      "whatItIs": "Edit Hosted Event Validation Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_location_selected",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_location_selected.png",
+        "dark": "dark/edit_hosted_event_location_selected.png"
+      },
+      "whatItIs": "Edit Hosted Event Location Selected",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_submit_pending",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_submit_pending.png",
+        "dark": "dark/edit_hosted_event_submit_pending.png"
+      },
+      "whatItIs": "Edit Hosted Event Submit Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_submit_error",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_submit_error.png",
+        "dark": "dark/edit_hosted_event_submit_error.png"
+      },
+      "whatItIs": "Edit Hosted Event Submit Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_text_scale_2",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_text_scale_2.png",
+        "dark": "dark/edit_hosted_event_text_scale_2.png"
+      },
+      "whatItIs": "Edit Hosted Event Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_reduced_motion",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_reduced_motion.png",
+        "dark": "dark/edit_hosted_event_reduced_motion.png"
+      },
+      "whatItIs": "Edit Hosted Event Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event_light_dark",
+      "routes": [
+        "hostAppEditEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event_light_dark.png",
+        "dark": "dark/edit_hosted_event_light_dark.png"
+      },
+      "whatItIs": "Edit Hosted Event Light Dark",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_route_loading",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_route_loading.png",
+        "dark": "dark/host_manage_route_loading.png"
+      },
+      "whatItIs": "Host Manage Route Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_initial_event_extra",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_initial_event_extra.png",
+        "dark": "dark/host_manage_initial_event_extra.png"
+      },
+      "whatItIs": "Host Manage Initial Event Extra",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_route_error",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_route_error.png",
+        "dark": "dark/host_manage_route_error.png"
+      },
+      "whatItIs": "Host Manage Route Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_route_offline",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_route_offline.png",
+        "dark": "dark/host_manage_route_offline.png"
+      },
+      "whatItIs": "Host Manage Route Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_not_found",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_not_found.png",
+        "dark": "dark/host_manage_not_found.png"
+      },
+      "whatItIs": "Host Manage Not Found",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_unauthorized",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_unauthorized.png",
+        "dark": "dark/host_manage_unauthorized.png"
+      },
+      "whatItIs": "Host Manage Unauthorized",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_attendance_loading",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_attendance_loading.png",
+        "dark": "dark/host_manage_attendance_loading.png"
+      },
+      "whatItIs": "Host Manage Attendance Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_attendance_error",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_attendance_error.png",
+        "dark": "dark/host_manage_attendance_error.png"
+      },
+      "whatItIs": "Host Manage Attendance Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_attendance_empty",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_attendance_empty.png",
+        "dark": "dark/host_manage_attendance_empty.png"
+      },
+      "whatItIs": "Host Manage Attendance Empty",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_attendee_profiles_loading",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_attendee_profiles_loading.png",
+        "dark": "dark/host_manage_attendee_profiles_loading.png"
+      },
+      "whatItIs": "Host Manage Attendee Profiles Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_attendee_profiles_error",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_attendee_profiles_error.png",
+        "dark": "dark/host_manage_attendee_profiles_error.png"
+      },
+      "whatItIs": "Host Manage Attendee Profiles Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_filtered_roster_empty",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_filtered_roster_empty.png",
+        "dark": "dark/host_manage_filtered_roster_empty.png"
+      },
+      "whatItIs": "Host Manage Filtered Roster Empty",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_private_access_loading",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_private_access_loading.png",
+        "dark": "dark/host_manage_private_access_loading.png"
+      },
+      "whatItIs": "Host Manage Private Access Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_private_access_error",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_private_access_error.png",
+        "dark": "dark/host_manage_private_access_error.png"
+      },
+      "whatItIs": "Host Manage Private Access Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_invite_links_loading",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_invite_links_loading.png",
+        "dark": "dark/host_manage_invite_links_loading.png"
+      },
+      "whatItIs": "Host Manage Invite Links Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_invite_links_error",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_invite_links_error.png",
+        "dark": "dark/host_manage_invite_links_error.png"
+      },
+      "whatItIs": "Host Manage Invite Links Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_invite_links_empty",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_invite_links_empty.png",
+        "dark": "dark/host_manage_invite_links_empty.png"
+      },
+      "whatItIs": "Host Manage Invite Links Empty",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_invite_link_mutation_pending",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_invite_link_mutation_pending.png",
+        "dark": "dark/host_manage_invite_link_mutation_pending.png"
+      },
+      "whatItIs": "Host Manage Invite Link Mutation Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_invite_link_mutation_error",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_invite_link_mutation_error.png",
+        "dark": "dark/host_manage_invite_link_mutation_error.png"
+      },
+      "whatItIs": "Host Manage Invite Link Mutation Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_private_link_share_pending",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_private_link_share_pending.png",
+        "dark": "dark/host_manage_private_link_share_pending.png"
+      },
+      "whatItIs": "Host Manage Private Link Share Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_private_link_share_error",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_private_link_share_error.png",
+        "dark": "dark/host_manage_private_link_share_error.png"
+      },
+      "whatItIs": "Host Manage Private Link Share Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_edit_event_action",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_edit_event_action.png",
+        "dark": "dark/host_manage_edit_event_action.png"
+      },
+      "whatItIs": "Host Manage Edit Event Action",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_cancel_event_pending",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_cancel_event_pending.png",
+        "dark": "dark/host_manage_cancel_event_pending.png"
+      },
+      "whatItIs": "Host Manage Cancel Event Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_cancel_event_error",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_cancel_event_error.png",
+        "dark": "dark/host_manage_cancel_event_error.png"
+      },
+      "whatItIs": "Host Manage Cancel Event Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_delete_event_pending",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_delete_event_pending.png",
+        "dark": "dark/host_manage_delete_event_pending.png"
+      },
+      "whatItIs": "Host Manage Delete Event Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_delete_event_error",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_delete_event_error.png",
+        "dark": "dark/host_manage_delete_event_error.png"
+      },
+      "whatItIs": "Host Manage Delete Event Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_cancelled_event",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_cancelled_event.png",
+        "dark": "dark/host_manage_cancelled_event.png"
+      },
+      "whatItIs": "Host Manage Cancelled Event",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_text_scale_2",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_text_scale_2.png",
+        "dark": "dark/host_manage_text_scale_2.png"
+      },
+      "whatItIs": "Host Manage Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_reduced_motion",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_reduced_motion.png",
+        "dark": "dark/host_manage_reduced_motion.png"
+      },
+      "whatItIs": "Host Manage Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_light_dark",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_light_dark.png",
+        "dark": "dark/host_manage_light_dark.png"
+      },
+      "whatItIs": "Host Manage Light Dark",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_report_export_pending",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_report_export_pending.png",
+        "dark": "dark/host_manage_report_export_pending.png"
+      },
+      "whatItIs": "Host Manage Report Export Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_report_export_error",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_report_export_error.png",
+        "dark": "dark/host_manage_report_export_error.png"
+      },
+      "whatItIs": "Host Manage Report Export Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_setup_private_access",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_setup_private_access.png",
+        "dark": "dark/host_manage_setup_private_access.png"
+      },
+      "whatItIs": "Host Manage Setup Private Access",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_full_waitlist_apron",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_full_waitlist_apron.png",
+        "dark": "dark/host_manage_full_waitlist_apron.png"
+      },
+      "whatItIs": "Host Manage Full Waitlist Apron",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_attendance_mutation_pending",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_attendance_mutation_pending.png",
+        "dark": "dark/host_manage_attendance_mutation_pending.png"
+      },
+      "whatItIs": "Host Manage Attendance Mutation Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_attendance_mutation_error",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_attendance_mutation_error.png",
+        "dark": "dark/host_manage_attendance_mutation_error.png"
+      },
+      "whatItIs": "Host Manage Attendance Mutation Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_attendance_roster",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_attendance_roster.png",
+        "dark": "dark/host_manage_attendance_roster.png"
+      },
+      "whatItIs": "Host Manage Attendance Roster",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_manage_live_unavailable",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_manage_live_unavailable.png",
+        "dark": "dark/host_manage_live_unavailable.png"
+      },
+      "whatItIs": "Host Manage Live Unavailable",
       "keepChangeNotes": ""
     },
     {
@@ -510,6 +4878,346 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "swipe_hub_uid_loading",
+      "routes": [
+        "swipeHubScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_hub_uid_loading.png",
+        "dark": "dark/swipe_hub_uid_loading.png"
+      },
+      "whatItIs": "Swipe Hub Uid Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_hub_uid_error",
+      "routes": [
+        "swipeHubScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_hub_uid_error.png",
+        "dark": "dark/swipe_hub_uid_error.png"
+      },
+      "whatItIs": "Swipe Hub Uid Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_hub_signed_out",
+      "routes": [
+        "swipeHubScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_hub_signed_out.png",
+        "dark": "dark/swipe_hub_signed_out.png"
+      },
+      "whatItIs": "Swipe Hub Signed Out",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_hub_attended_events_loading",
+      "routes": [
+        "swipeHubScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_hub_attended_events_loading.png",
+        "dark": "dark/swipe_hub_attended_events_loading.png"
+      },
+      "whatItIs": "Swipe Hub Attended Events Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_hub_attended_events_error",
+      "routes": [
+        "swipeHubScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_hub_attended_events_error.png",
+        "dark": "dark/swipe_hub_attended_events_error.png"
+      },
+      "whatItIs": "Swipe Hub Attended Events Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_hub_offline",
+      "routes": [
+        "swipeHubScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_hub_offline.png",
+        "dark": "dark/swipe_hub_offline.png"
+      },
+      "whatItIs": "Swipe Hub Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_hub_empty",
+      "routes": [
+        "swipeHubScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_hub_empty.png",
+        "dark": "dark/swipe_hub_empty.png"
+      },
+      "whatItIs": "Swipe Hub Empty",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_hub_text_scale_2",
+      "routes": [
+        "swipeHubScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_hub_text_scale_2.png",
+        "dark": "dark/swipe_hub_text_scale_2.png"
+      },
+      "whatItIs": "Swipe Hub Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_hub_reduced_motion",
+      "routes": [
+        "swipeHubScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_hub_reduced_motion.png",
+        "dark": "dark/swipe_hub_reduced_motion.png"
+      },
+      "whatItIs": "Swipe Hub Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_event_queue_loading",
+      "routes": [
+        "swipeEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_event_queue_loading.png",
+        "dark": "dark/swipe_event_queue_loading.png"
+      },
+      "whatItIs": "Swipe Event Queue Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_event_queue_error",
+      "routes": [
+        "swipeEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_event_queue_error.png",
+        "dark": "dark/swipe_event_queue_error.png"
+      },
+      "whatItIs": "Swipe Event Queue Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_event_offline",
+      "routes": [
+        "swipeEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_event_offline.png",
+        "dark": "dark/swipe_event_offline.png"
+      },
+      "whatItIs": "Swipe Event Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_event_empty_queue",
+      "routes": [
+        "swipeEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_event_empty_queue.png",
+        "dark": "dark/swipe_event_empty_queue.png"
+      },
+      "whatItIs": "Swipe Event Empty Queue",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_event_missing",
+      "routes": [
+        "swipeEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_event_missing.png",
+        "dark": "dark/swipe_event_missing.png"
+      },
+      "whatItIs": "Swipe Event Missing",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_event_sign_in_required",
+      "routes": [
+        "swipeEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_event_sign_in_required.png",
+        "dark": "dark/swipe_event_sign_in_required.png"
+      },
+      "whatItIs": "Swipe Event Sign In Required",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_event_in_progress",
+      "routes": [
+        "swipeEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_event_in_progress.png",
+        "dark": "dark/swipe_event_in_progress.png"
+      },
+      "whatItIs": "Swipe Event In Progress",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_event_did_not_attend",
+      "routes": [
+        "swipeEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_event_did_not_attend.png",
+        "dark": "dark/swipe_event_did_not_attend.png"
+      },
+      "whatItIs": "Swipe Event Did Not Attend",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_event_window_closed",
+      "routes": [
+        "swipeEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_event_window_closed.png",
+        "dark": "dark/swipe_event_window_closed.png"
+      },
+      "whatItIs": "Swipe Event Window Closed",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_event_text_scale_2",
+      "routes": [
+        "swipeEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_event_text_scale_2.png",
+        "dark": "dark/swipe_event_text_scale_2.png"
+      },
+      "whatItIs": "Swipe Event Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_event_reduced_motion",
+      "routes": [
+        "swipeEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_event_reduced_motion.png",
+        "dark": "dark/swipe_event_reduced_motion.png"
+      },
+      "whatItIs": "Swipe Event Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "notifications_activity",
       "routes": [
         "notificationsScreen"
@@ -524,6 +5232,176 @@
         "dark": "dark/notifications_activity.png"
       },
       "whatItIs": "Notifications Activity",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "notifications_mark_all_read_pending",
+      "routes": [
+        "notificationsScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/notifications_mark_all_read_pending.png",
+        "dark": "dark/notifications_mark_all_read_pending.png"
+      },
+      "whatItIs": "Notifications Mark All Read Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "notifications_mark_all_read_error",
+      "routes": [
+        "notificationsScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/notifications_mark_all_read_error.png",
+        "dark": "dark/notifications_mark_all_read_error.png"
+      },
+      "whatItIs": "Notifications Mark All Read Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "notifications_deep_link_error",
+      "routes": [
+        "notificationsScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/notifications_deep_link_error.png",
+        "dark": "dark/notifications_deep_link_error.png"
+      },
+      "whatItIs": "Notifications Deep Link Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "notifications_uid_loading",
+      "routes": [
+        "notificationsScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/notifications_uid_loading.png",
+        "dark": "dark/notifications_uid_loading.png"
+      },
+      "whatItIs": "Notifications Uid Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "notifications_signed_out",
+      "routes": [
+        "notificationsScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/notifications_signed_out.png",
+        "dark": "dark/notifications_signed_out.png"
+      },
+      "whatItIs": "Notifications Signed Out",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "notifications_activity_loading",
+      "routes": [
+        "notificationsScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/notifications_activity_loading.png",
+        "dark": "dark/notifications_activity_loading.png"
+      },
+      "whatItIs": "Notifications Activity Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "notifications_activity_error",
+      "routes": [
+        "notificationsScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/notifications_activity_error.png",
+        "dark": "dark/notifications_activity_error.png"
+      },
+      "whatItIs": "Notifications Activity Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "notifications_empty",
+      "routes": [
+        "notificationsScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/notifications_empty.png",
+        "dark": "dark/notifications_empty.png"
+      },
+      "whatItIs": "Notifications Empty",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "notifications_text_scale_2",
+      "routes": [
+        "notificationsScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/notifications_text_scale_2.png",
+        "dark": "dark/notifications_text_scale_2.png"
+      },
+      "whatItIs": "Notifications Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "notifications_reduced_motion",
+      "routes": [
+        "notificationsScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/notifications_reduced_motion.png",
+        "dark": "dark/notifications_reduced_motion.png"
+      },
+      "whatItIs": "Notifications Reduced Motion",
       "keepChangeNotes": ""
     },
     {
@@ -544,6 +5422,210 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "event_success_companion_route_loading",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_route_loading.png",
+        "dark": "dark/event_success_companion_route_loading.png"
+      },
+      "whatItIs": "Event Success Companion Route Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_event_load_error",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_event_load_error.png",
+        "dark": "dark/event_success_companion_event_load_error.png"
+      },
+      "whatItIs": "Event Success Companion Event Load Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_event_not_found",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_event_not_found.png",
+        "dark": "dark/event_success_companion_event_not_found.png"
+      },
+      "whatItIs": "Event Success Companion Event Not Found",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_sign_in_required",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_sign_in_required.png",
+        "dark": "dark/event_success_companion_sign_in_required.png"
+      },
+      "whatItIs": "Event Success Companion Sign In Required",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_no_booking",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_no_booking.png",
+        "dark": "dark/event_success_companion_no_booking.png"
+      },
+      "whatItIs": "Event Success Companion No Booking",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_profile_loading",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_profile_loading.png",
+        "dark": "dark/event_success_companion_profile_loading.png"
+      },
+      "whatItIs": "Event Success Companion Profile Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_participation_error",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_participation_error.png",
+        "dark": "dark/event_success_companion_participation_error.png"
+      },
+      "whatItIs": "Event Success Companion Participation Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_plan_loading",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_plan_loading.png",
+        "dark": "dark/event_success_companion_plan_loading.png"
+      },
+      "whatItIs": "Event Success Companion Plan Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_plan_error",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_plan_error.png",
+        "dark": "dark/event_success_companion_plan_error.png"
+      },
+      "whatItIs": "Event Success Companion Plan Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_plan_missing",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_plan_missing.png",
+        "dark": "dark/event_success_companion_plan_missing.png"
+      },
+      "whatItIs": "Event Success Companion Plan Missing",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_data_error",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_data_error.png",
+        "dark": "dark/event_success_companion_data_error.png"
+      },
+      "whatItIs": "Event Success Companion Data Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_offline",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_offline.png",
+        "dark": "dark/event_success_companion_offline.png"
+      },
+      "whatItIs": "Event Success Companion Offline",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "event_success_companion",
       "routes": [
         "eventSuccessCompanionScreen"
@@ -558,6 +5640,567 @@
         "dark": "dark/event_success_companion.png"
       },
       "whatItIs": "Event Success Companion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_self_check_in",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_self_check_in.png",
+        "dark": "dark/event_success_companion_self_check_in.png"
+      },
+      "whatItIs": "Event Success Companion Self Check In",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_pre_arrival_planning",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_pre_arrival_planning.png",
+        "dark": "dark/event_success_companion_pre_arrival_planning.png"
+      },
+      "whatItIs": "Event Success Companion Pre Arrival Planning",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_first_hello_start",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_first_hello_start.png",
+        "dark": "dark/event_success_companion_first_hello_start.png"
+      },
+      "whatItIs": "Event Success Companion First Hello Start",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_first_hello_assigned",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_first_hello_assigned.png",
+        "dark": "dark/event_success_companion_first_hello_assigned.png"
+      },
+      "whatItIs": "Event Success Companion First Hello Assigned",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_compatibility_questionnaire",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_compatibility_questionnaire.png",
+        "dark": "dark/event_success_companion_compatibility_questionnaire.png"
+      },
+      "whatItIs": "Event Success Companion Compatibility Questionnaire",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_compatibility_saved",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_compatibility_saved.png",
+        "dark": "dark/event_success_companion_compatibility_saved.png"
+      },
+      "whatItIs": "Event Success Companion Compatibility Saved",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_live_step_context",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_live_step_context.png",
+        "dark": "dark/event_success_companion_live_step_context.png"
+      },
+      "whatItIs": "Event Success Companion Live Step Context",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_social_prompt",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_social_prompt.png",
+        "dark": "dark/event_success_companion_social_prompt.png"
+      },
+      "whatItIs": "Event Success Companion Social Prompt",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_conversation_cues",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_conversation_cues.png",
+        "dark": "dark/event_success_companion_conversation_cues.png"
+      },
+      "whatItIs": "Event Success Companion Conversation Cues",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_micro_pod_assignment",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_micro_pod_assignment.png",
+        "dark": "dark/event_success_companion_micro_pod_assignment.png"
+      },
+      "whatItIs": "Event Success Companion Micro Pod Assignment",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_micro_pod_loading_peers",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_micro_pod_loading_peers.png",
+        "dark": "dark/event_success_companion_micro_pod_loading_peers.png"
+      },
+      "whatItIs": "Event Success Companion Micro Pod Loading Peers",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_micro_pod_opted_out",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_micro_pod_opted_out.png",
+        "dark": "dark/event_success_companion_micro_pod_opted_out.png"
+      },
+      "whatItIs": "Event Success Companion Micro Pod Opted Out",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_table_group_rotations",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_table_group_rotations.png",
+        "dark": "dark/event_success_companion_table_group_rotations.png"
+      },
+      "whatItIs": "Event Success Companion Table Group Rotations",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_rotation_schedule",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_rotation_schedule.png",
+        "dark": "dark/event_success_companion_rotation_schedule.png"
+      },
+      "whatItIs": "Event Success Companion Rotation Schedule",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_rotation_loading_peers",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_rotation_loading_peers.png",
+        "dark": "dark/event_success_companion_rotation_loading_peers.png"
+      },
+      "whatItIs": "Event Success Companion Rotation Loading Peers",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_rotation_opted_out",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_rotation_opted_out.png",
+        "dark": "dark/event_success_companion_rotation_opted_out.png"
+      },
+      "whatItIs": "Event Success Companion Rotation Opted Out",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_live_reveal_countdown",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_live_reveal_countdown.png",
+        "dark": "dark/event_success_companion_live_reveal_countdown.png"
+      },
+      "whatItIs": "Event Success Companion Live Reveal Countdown",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_live_reveal_unlocked",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_live_reveal_unlocked.png",
+        "dark": "dark/event_success_companion_live_reveal_unlocked.png"
+      },
+      "whatItIs": "Event Success Companion Live Reveal Unlocked",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_wingman_request",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_wingman_request.png",
+        "dark": "dark/event_success_companion_wingman_request.png"
+      },
+      "whatItIs": "Event Success Companion Wingman Request",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_wingman_submitted",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_wingman_submitted.png",
+        "dark": "dark/event_success_companion_wingman_submitted.png"
+      },
+      "whatItIs": "Event Success Companion Wingman Submitted",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_afterglow_feedback",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_afterglow_feedback.png",
+        "dark": "dark/event_success_companion_afterglow_feedback.png"
+      },
+      "whatItIs": "Event Success Companion Afterglow Feedback",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_text_scale_2",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_text_scale_2.png",
+        "dark": "dark/event_success_companion_text_scale_2.png"
+      },
+      "whatItIs": "Event Success Companion Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion_reduced_motion",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion_reduced_motion.png",
+        "dark": "dark/event_success_companion_reduced_motion.png"
+      },
+      "whatItIs": "Event Success Companion Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "matches_list_loading",
+      "routes": [
+        "matchesListScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/matches_list_loading.png",
+        "dark": "dark/matches_list_loading.png"
+      },
+      "whatItIs": "Matches List Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "matches_list_error",
+      "routes": [
+        "matchesListScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/matches_list_error.png",
+        "dark": "dark/matches_list_error.png"
+      },
+      "whatItIs": "Matches List Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "matches_list_offline",
+      "routes": [
+        "matchesListScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/matches_list_offline.png",
+        "dark": "dark/matches_list_offline.png"
+      },
+      "whatItIs": "Matches List Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "matches_list_no_matches_empty",
+      "routes": [
+        "matchesListScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/matches_list_no_matches_empty.png",
+        "dark": "dark/matches_list_no_matches_empty.png"
+      },
+      "whatItIs": "Matches List No Matches Empty",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "matches_list_search_open",
+      "routes": [
+        "matchesListScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/matches_list_search_open.png",
+        "dark": "dark/matches_list_search_open.png"
+      },
+      "whatItIs": "Matches List Search Open",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "matches_list_search_empty",
+      "routes": [
+        "matchesListScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/matches_list_search_empty.png",
+        "dark": "dark/matches_list_search_empty.png"
+      },
+      "whatItIs": "Matches List Search Empty",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "matches_list_duplicate_collapsed",
+      "routes": [
+        "matchesListScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/matches_list_duplicate_collapsed.png",
+        "dark": "dark/matches_list_duplicate_collapsed.png"
+      },
+      "whatItIs": "Matches List Duplicate Collapsed",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "matches_list_match_celebration",
+      "routes": [
+        "matchesListScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/matches_list_match_celebration.png",
+        "dark": "dark/matches_list_match_celebration.png"
+      },
+      "whatItIs": "Matches List Match Celebration",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "matches_list_text_scale_2",
+      "routes": [
+        "matchesListScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/matches_list_text_scale_2.png",
+        "dark": "dark/matches_list_text_scale_2.png"
+      },
+      "whatItIs": "Matches List Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "matches_list_reduced_motion",
+      "routes": [
+        "matchesListScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/matches_list_reduced_motion.png",
+        "dark": "dark/matches_list_reduced_motion.png"
+      },
+      "whatItIs": "Matches List Reduced Motion",
       "keepChangeNotes": ""
     },
     {
@@ -581,6 +6224,244 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "match_chat_messages_loading",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_messages_loading.png",
+        "dark": "dark/match_chat_messages_loading.png"
+      },
+      "whatItIs": "Match Chat Messages Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "match_chat_messages_error",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_messages_error.png",
+        "dark": "dark/match_chat_messages_error.png"
+      },
+      "whatItIs": "Match Chat Messages Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "match_chat_offline",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_offline.png",
+        "dark": "dark/match_chat_offline.png"
+      },
+      "whatItIs": "Match Chat Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "match_chat_empty_thread",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_empty_thread.png",
+        "dark": "dark/match_chat_empty_thread.png"
+      },
+      "whatItIs": "Match Chat Empty Thread",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "match_chat_event_context_fallback",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_event_context_fallback.png",
+        "dark": "dark/match_chat_event_context_fallback.png"
+      },
+      "whatItIs": "Match Chat Event Context Fallback",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "match_chat_unavailable",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_unavailable.png",
+        "dark": "dark/match_chat_unavailable.png"
+      },
+      "whatItIs": "Match Chat Unavailable",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "match_chat_blocked",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_blocked.png",
+        "dark": "dark/match_chat_blocked.png"
+      },
+      "whatItIs": "Match Chat Blocked",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "match_chat_image_thread",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_image_thread.png",
+        "dark": "dark/match_chat_image_thread.png"
+      },
+      "whatItIs": "Match Chat Image Thread",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "match_chat_suvbot_controls",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_suvbot_controls.png",
+        "dark": "dark/match_chat_suvbot_controls.png"
+      },
+      "whatItIs": "Match Chat Suvbot Controls",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "match_chat_suvbot_action_error",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_suvbot_action_error.png",
+        "dark": "dark/match_chat_suvbot_action_error.png"
+      },
+      "whatItIs": "Match Chat Suvbot Action Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "match_chat_share_card",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_share_card.png",
+        "dark": "dark/match_chat_share_card.png"
+      },
+      "whatItIs": "Match Chat Share Card",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "match_chat_composer_states",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_composer_states.png",
+        "dark": "dark/match_chat_composer_states.png"
+      },
+      "whatItIs": "Match Chat Composer States",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "match_chat_text_scale_2",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_text_scale_2.png",
+        "dark": "dark/match_chat_text_scale_2.png"
+      },
+      "whatItIs": "Match Chat Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "match_chat_reduced_motion",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_reduced_motion.png",
+        "dark": "dark/match_chat_reduced_motion.png"
+      },
+      "whatItIs": "Match Chat Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "matches_list_context",
       "routes": [
         "matchesListScreen"
@@ -595,6 +6476,482 @@
         "dark": "dark/matches_list_context.png"
       },
       "whatItIs": "Matches List Context",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_queries",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_queries.png",
+        "dark": "dark/host_inbox_queries.png"
+      },
+      "whatItIs": "Host Inbox Queries",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_uid_loading",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_uid_loading.png",
+        "dark": "dark/host_inbox_uid_loading.png"
+      },
+      "whatItIs": "Host Inbox Uid Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_loading",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_loading.png",
+        "dark": "dark/host_inbox_loading.png"
+      },
+      "whatItIs": "Host Inbox Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_error",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_error.png",
+        "dark": "dark/host_inbox_error.png"
+      },
+      "whatItIs": "Host Inbox Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_offline",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_offline.png",
+        "dark": "dark/host_inbox_offline.png"
+      },
+      "whatItIs": "Host Inbox Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_empty",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_empty.png",
+        "dark": "dark/host_inbox_empty.png"
+      },
+      "whatItIs": "Host Inbox Empty",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_unread_filter",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_unread_filter.png",
+        "dark": "dark/host_inbox_unread_filter.png"
+      },
+      "whatItIs": "Host Inbox Unread Filter",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "matches_host_unread_empty",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/matches_host_unread_empty.png",
+        "dark": "dark/matches_host_unread_empty.png"
+      },
+      "whatItIs": "Matches Host Unread Empty",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_search_active",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_search_active.png",
+        "dark": "dark/host_inbox_search_active.png"
+      },
+      "whatItIs": "Host Inbox Search Active",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_search_empty",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_search_empty.png",
+        "dark": "dark/host_inbox_search_empty.png"
+      },
+      "whatItIs": "Host Inbox Search Empty",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_new_query",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_new_query.png",
+        "dark": "dark/host_inbox_new_query.png"
+      },
+      "whatItIs": "Host Inbox New Query",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_text_scale_2",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_text_scale_2.png",
+        "dark": "dark/host_inbox_text_scale_2.png"
+      },
+      "whatItIs": "Host Inbox Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_reduced_motion",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_reduced_motion.png",
+        "dark": "dark/host_inbox_reduced_motion.png"
+      },
+      "whatItIs": "Host Inbox Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_light_dark",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_light_dark.png",
+        "dark": "dark/host_inbox_light_dark.png"
+      },
+      "whatItIs": "Host Inbox Light Dark",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_chat_inquiry",
+      "routes": [
+        "hostChatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_chat_inquiry.png",
+        "dark": "dark/host_chat_inquiry.png"
+      },
+      "whatItIs": "Host Chat Inquiry",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_chat_match_loading",
+      "routes": [
+        "hostChatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_chat_match_loading.png",
+        "dark": "dark/host_chat_match_loading.png"
+      },
+      "whatItIs": "Host Chat Match Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_chat_match_error",
+      "routes": [
+        "hostChatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_chat_match_error.png",
+        "dark": "dark/host_chat_match_error.png"
+      },
+      "whatItIs": "Host Chat Match Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_chat_not_found",
+      "routes": [
+        "hostChatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_chat_not_found.png",
+        "dark": "dark/host_chat_not_found.png"
+      },
+      "whatItIs": "Host Chat Not Found",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_chat_messages_loading",
+      "routes": [
+        "hostChatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_chat_messages_loading.png",
+        "dark": "dark/host_chat_messages_loading.png"
+      },
+      "whatItIs": "Host Chat Messages Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_chat_messages_error",
+      "routes": [
+        "hostChatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_chat_messages_error.png",
+        "dark": "dark/host_chat_messages_error.png"
+      },
+      "whatItIs": "Host Chat Messages Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_chat_offline",
+      "routes": [
+        "hostChatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_chat_offline.png",
+        "dark": "dark/host_chat_offline.png"
+      },
+      "whatItIs": "Host Chat Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_chat_empty_thread",
+      "routes": [
+        "hostChatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_chat_empty_thread.png",
+        "dark": "dark/host_chat_empty_thread.png"
+      },
+      "whatItIs": "Host Chat Empty Thread",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_chat_event_context_fallback",
+      "routes": [
+        "hostChatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_chat_event_context_fallback.png",
+        "dark": "dark/host_chat_event_context_fallback.png"
+      },
+      "whatItIs": "Host Chat Event Context Fallback",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_chat_blocked",
+      "routes": [
+        "hostChatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_chat_blocked.png",
+        "dark": "dark/host_chat_blocked.png"
+      },
+      "whatItIs": "Host Chat Blocked",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_chat_text_scale_2",
+      "routes": [
+        "hostChatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_chat_text_scale_2.png",
+        "dark": "dark/host_chat_text_scale_2.png"
+      },
+      "whatItIs": "Host Chat Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_chat_reduced_motion",
+      "routes": [
+        "hostChatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_chat_reduced_motion.png",
+        "dark": "dark/host_chat_reduced_motion.png"
+      },
+      "whatItIs": "Host Chat Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_chat_light_dark",
+      "routes": [
+        "hostChatScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_chat_light_dark.png",
+        "dark": "dark/host_chat_light_dark.png"
+      },
+      "whatItIs": "Host Chat Light Dark",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_chat_composer_states",
+      "routes": [
+        "hostChatScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_chat_composer_states.png",
+        "dark": "dark/host_chat_composer_states.png"
+      },
+      "whatItIs": "Host Chat Composer States",
       "keepChangeNotes": ""
     },
     {
@@ -615,6 +6972,295 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "public_profile_loading",
+      "routes": [
+        "publicProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/public_profile_loading.png",
+        "dark": "dark/public_profile_loading.png"
+      },
+      "whatItIs": "Public Profile Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "public_profile_initial_fallback_loading",
+      "routes": [
+        "publicProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/public_profile_initial_fallback_loading.png",
+        "dark": "dark/public_profile_initial_fallback_loading.png"
+      },
+      "whatItIs": "Public Profile Initial Fallback Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "public_profile_error",
+      "routes": [
+        "publicProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/public_profile_error.png",
+        "dark": "dark/public_profile_error.png"
+      },
+      "whatItIs": "Public Profile Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "public_profile_offline",
+      "routes": [
+        "publicProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/public_profile_offline.png",
+        "dark": "dark/public_profile_offline.png"
+      },
+      "whatItIs": "Public Profile Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "public_profile_unavailable",
+      "routes": [
+        "publicProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/public_profile_unavailable.png",
+        "dark": "dark/public_profile_unavailable.png"
+      },
+      "whatItIs": "Public Profile Unavailable",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "public_profile_own_profile",
+      "routes": [
+        "publicProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/public_profile_own_profile.png",
+        "dark": "dark/public_profile_own_profile.png"
+      },
+      "whatItIs": "Public Profile Own Profile",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "public_profile_block_pending",
+      "routes": [
+        "publicProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/public_profile_block_pending.png",
+        "dark": "dark/public_profile_block_pending.png"
+      },
+      "whatItIs": "Public Profile Block Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "public_profile_report_sheet",
+      "routes": [
+        "publicProfileScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/public_profile_report_sheet.png",
+        "dark": "dark/public_profile_report_sheet.png"
+      },
+      "whatItIs": "Public Profile Report Sheet",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "public_profile_block_confirmation",
+      "routes": [
+        "publicProfileScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/public_profile_block_confirmation.png",
+        "dark": "dark/public_profile_block_confirmation.png"
+      },
+      "whatItIs": "Public Profile Block Confirmation",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "public_profile_text_scale_2",
+      "routes": [
+        "publicProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/public_profile_text_scale_2.png",
+        "dark": "dark/public_profile_text_scale_2.png"
+      },
+      "whatItIs": "Public Profile Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "public_profile_reduced_motion",
+      "routes": [
+        "publicProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/public_profile_reduced_motion.png",
+        "dark": "dark/public_profile_reduced_motion.png"
+      },
+      "whatItIs": "Public Profile Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "reviews_history_signed_out",
+      "routes": [
+        "reviewsHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/reviews_history_signed_out.png",
+        "dark": "dark/reviews_history_signed_out.png"
+      },
+      "whatItIs": "Reviews History Signed Out",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "reviews_history_profile_loading",
+      "routes": [
+        "reviewsHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/reviews_history_profile_loading.png",
+        "dark": "dark/reviews_history_profile_loading.png"
+      },
+      "whatItIs": "Reviews History Profile Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "reviews_history_profile_error",
+      "routes": [
+        "reviewsHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/reviews_history_profile_error.png",
+        "dark": "dark/reviews_history_profile_error.png"
+      },
+      "whatItIs": "Reviews History Profile Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "reviews_history_reviews_loading",
+      "routes": [
+        "reviewsHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/reviews_history_reviews_loading.png",
+        "dark": "dark/reviews_history_reviews_loading.png"
+      },
+      "whatItIs": "Reviews History Reviews Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "reviews_history_reviews_error",
+      "routes": [
+        "reviewsHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/reviews_history_reviews_error.png",
+        "dark": "dark/reviews_history_reviews_error.png"
+      },
+      "whatItIs": "Reviews History Reviews Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "reviews_history_empty",
+      "routes": [
+        "reviewsHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/reviews_history_empty.png",
+        "dark": "dark/reviews_history_empty.png"
+      },
+      "whatItIs": "Reviews History Empty",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "reviews_history_list",
       "routes": [
         "reviewsHistoryScreen"
@@ -629,6 +7275,57 @@
         "dark": "dark/reviews_history_list.png"
       },
       "whatItIs": "Reviews History List",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "reviews_history_missing_event_context",
+      "routes": [
+        "reviewsHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/reviews_history_missing_event_context.png",
+        "dark": "dark/reviews_history_missing_event_context.png"
+      },
+      "whatItIs": "Reviews History Missing Event Context",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "reviews_history_text_scale_2",
+      "routes": [
+        "reviewsHistoryScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/reviews_history_text_scale_2.png",
+        "dark": "dark/reviews_history_text_scale_2.png"
+      },
+      "whatItIs": "Reviews History Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "reviews_history_reduced_motion",
+      "routes": [
+        "reviewsHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/reviews_history_reduced_motion.png",
+        "dark": "dark/reviews_history_reduced_motion.png"
+      },
+      "whatItIs": "Reviews History Reduced Motion",
       "keepChangeNotes": ""
     },
     {
@@ -649,6 +7346,499 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "settings_profile_loading",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_profile_loading.png",
+        "dark": "dark/settings_profile_loading.png"
+      },
+      "whatItIs": "Settings Profile Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_profile_error",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_profile_error.png",
+        "dark": "dark/settings_profile_error.png"
+      },
+      "whatItIs": "Settings Profile Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_profile_offline",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_profile_offline.png",
+        "dark": "dark/settings_profile_offline.png"
+      },
+      "whatItIs": "Settings Profile Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_profile_missing",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_profile_missing.png",
+        "dark": "dark/settings_profile_missing.png"
+      },
+      "whatItIs": "Settings Profile Missing",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_blocked_loading",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_blocked_loading.png",
+        "dark": "dark/settings_blocked_loading.png"
+      },
+      "whatItIs": "Settings Blocked Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_blocked_error",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_blocked_error.png",
+        "dark": "dark/settings_blocked_error.png"
+      },
+      "whatItIs": "Settings Blocked Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_blocked_offline",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_blocked_offline.png",
+        "dark": "dark/settings_blocked_offline.png"
+      },
+      "whatItIs": "Settings Blocked Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_blocked_list",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_blocked_list.png",
+        "dark": "dark/settings_blocked_list.png"
+      },
+      "whatItIs": "Settings Blocked List",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_text_scale_2",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_text_scale_2.png",
+        "dark": "dark/settings_text_scale_2.png"
+      },
+      "whatItIs": "Settings Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_reduced_motion",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_reduced_motion.png",
+        "dark": "dark/settings_reduced_motion.png"
+      },
+      "whatItIs": "Settings Reduced Motion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_preference_pending",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_preference_pending.png",
+        "dark": "dark/settings_preference_pending.png"
+      },
+      "whatItIs": "Settings Preference Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_preference_error",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_preference_error.png",
+        "dark": "dark/settings_preference_error.png"
+      },
+      "whatItIs": "Settings Preference Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_preference_offline",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_preference_offline.png",
+        "dark": "dark/settings_preference_offline.png"
+      },
+      "whatItIs": "Settings Preference Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_delete_pending",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_delete_pending.png",
+        "dark": "dark/settings_delete_pending.png"
+      },
+      "whatItIs": "Settings Delete Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_delete_error",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_delete_error.png",
+        "dark": "dark/settings_delete_error.png"
+      },
+      "whatItIs": "Settings Delete Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_delete_offline",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_delete_offline.png",
+        "dark": "dark/settings_delete_offline.png"
+      },
+      "whatItIs": "Settings Delete Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_sign_out_pending",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_sign_out_pending.png",
+        "dark": "dark/settings_sign_out_pending.png"
+      },
+      "whatItIs": "Settings Sign Out Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_sign_out_error",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_sign_out_error.png",
+        "dark": "dark/settings_sign_out_error.png"
+      },
+      "whatItIs": "Settings Sign Out Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_sign_out_offline",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_sign_out_offline.png",
+        "dark": "dark/settings_sign_out_offline.png"
+      },
+      "whatItIs": "Settings Sign Out Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_unblock_pending",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_unblock_pending.png",
+        "dark": "dark/settings_unblock_pending.png"
+      },
+      "whatItIs": "Settings Unblock Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_unblock_error",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_unblock_error.png",
+        "dark": "dark/settings_unblock_error.png"
+      },
+      "whatItIs": "Settings Unblock Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_unblock_offline",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_unblock_offline.png",
+        "dark": "dark/settings_unblock_offline.png"
+      },
+      "whatItIs": "Settings Unblock Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_uid_loading",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_uid_loading.png",
+        "dark": "dark/payment_history_uid_loading.png"
+      },
+      "whatItIs": "Payment History Uid Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_signed_out",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_signed_out.png",
+        "dark": "dark/payment_history_signed_out.png"
+      },
+      "whatItIs": "Payment History Signed Out",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_uid_error",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_uid_error.png",
+        "dark": "dark/payment_history_uid_error.png"
+      },
+      "whatItIs": "Payment History Uid Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_uid_offline",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_uid_offline.png",
+        "dark": "dark/payment_history_uid_offline.png"
+      },
+      "whatItIs": "Payment History Uid Offline",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_loading",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_loading.png",
+        "dark": "dark/payment_history_loading.png"
+      },
+      "whatItIs": "Payment History Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_error",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_error.png",
+        "dark": "dark/payment_history_error.png"
+      },
+      "whatItIs": "Payment History Error",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_payments_offline",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_payments_offline.png",
+        "dark": "dark/payment_history_payments_offline.png"
+      },
+      "whatItIs": "Payment History Payments Offline",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "payment_history_empty",
       "routes": [
         "paymentHistoryScreen"
@@ -663,6 +7853,125 @@
         "dark": "dark/payment_history_empty.png"
       },
       "whatItIs": "Payment History Empty",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_populated",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_populated.png",
+        "dark": "dark/payment_history_populated.png"
+      },
+      "whatItIs": "Payment History Populated",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_receipt_sheet",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_receipt_sheet.png",
+        "dark": "dark/payment_history_receipt_sheet.png"
+      },
+      "whatItIs": "Payment History Receipt Sheet",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_failed_signup_receipt_sheet",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_failed_signup_receipt_sheet.png",
+        "dark": "dark/payment_history_failed_signup_receipt_sheet.png"
+      },
+      "whatItIs": "Payment History Failed Signup Receipt Sheet",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_support_snackbar",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_support_snackbar.png",
+        "dark": "dark/payment_history_support_snackbar.png"
+      },
+      "whatItIs": "Payment History Support Snackbar",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_missing_event_title",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_missing_event_title.png",
+        "dark": "dark/payment_history_missing_event_title.png"
+      },
+      "whatItIs": "Payment History Missing Event Title",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_text_scale_2",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_text_scale_2.png",
+        "dark": "dark/payment_history_text_scale_2.png"
+      },
+      "whatItIs": "Payment History Text Scale 2",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_reduced_motion",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_reduced_motion.png",
+        "dark": "dark/payment_history_reduced_motion.png"
+      },
+      "whatItIs": "Payment History Reduced Motion",
       "keepChangeNotes": ""
     }
   ]

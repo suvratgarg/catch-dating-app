@@ -15,8 +15,8 @@
     },
     {
       "path": "design_system/components.json",
-      "sha256": "26c357d55ad7dadbb467d764084a4c9b5f4780666bd7a9b084f9b890f7871a5d",
-      "bytes": 33686
+      "sha256": "2b0c37487e5adbe6811c436b1e92515f94584b451e037145eb5d08ecb0e9395d",
+      "bytes": 54593
     },
     {
       "path": "design_system/design_language.txt",
@@ -40,8 +40,8 @@
     },
     {
       "path": "gallery/manifest.json",
-      "sha256": "19416a3759f7713ebc4d76995e4bdc0722ba34301dcab47bf04ace04f0196daa",
-      "bytes": 15342
+      "sha256": "0b430abb5be04f581334a318ff3d2dda3fdf74f125c7c70b38da3e4a50e9fc10",
+      "bytes": 195492
     }
   ]
 }

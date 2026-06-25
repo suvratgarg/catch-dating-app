@@ -95,7 +95,7 @@ Options:
   --ids <ids>              Comma-separated capture ids, or "all". Default: profile_self.
   --all                    Render every capture id declared in the catalog.
   --output-dir <path>      Artifact output directory. Default: artifacts/ui-captures/review.
-  --device <id>            Override catalog devices, e.g. iphone-17-pro.
+  --device <id>            Override catalog devices, e.g. design-phone or iphone-17-pro.
   --text-scale <scale>     MediaQuery text scale, e.g. 1.5 or 2.0.
   --pixel-ratio <scale>    PNG raster scale passed to RenderRepaintBoundary.toImage.
   --output-layout <layout> capture-first (id/theme.png) or theme-first (theme/id.png).

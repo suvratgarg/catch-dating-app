@@ -1,0 +1,372 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://catch.app/design/screens/catch.screens.schema.json",
+  "title": "Catch screen composition registry",
+  "type": "object",
+  "required": ["$schema", "version", "updated", "sourceOfTruth", "screens"],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "const": 1
+    },
+    "updated": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "sourceOfTruth": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "screens": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/screen"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "screen": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "owner",
+        "priority",
+        "status",
+        "routes",
+        "source",
+        "stateController",
+        "designRefs",
+        "captures",
+        "states",
+        "composition",
+        "openGaps"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^screen\\.[a-z0-9_.-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priority": {
+          "enum": ["P1", "P2", "P3", "P4"]
+        },
+        "status": {
+          "enum": ["planned", "in_progress", "ready", "blocked"]
+        },
+        "routes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/route"
+          }
+        },
+        "source": {
+          "$ref": "#/$defs/dartBinding"
+        },
+        "stateController": {
+          "$ref": "#/$defs/stateController"
+        },
+        "designRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/designRef"
+          }
+        },
+        "captures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/captureRef"
+          }
+        },
+        "states": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/state"
+          }
+        },
+        "composition": {
+          "$ref": "#/$defs/composition"
+        },
+        "openGaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/gap"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "route": {
+      "type": "object",
+      "required": ["id", "path", "role"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "enum": ["primary", "alias", "host"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "dartBinding": {
+      "type": "object",
+      "required": ["file", "symbol"],
+      "properties": {
+        "file": {
+          "type": "string",
+          "minLength": 1
+        },
+        "symbol": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "stateController": {
+      "type": "object",
+      "required": ["primary", "files", "mutationOwners"],
+      "properties": {
+        "primary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dartBinding"
+          }
+        },
+        "mutationOwners": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dartBinding"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "designRef": {
+      "type": "object",
+      "required": ["id", "kind", "status", "notes"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_.-]+$"
+        },
+        "kind": {
+          "enum": ["claude", "figma", "repo", "external", "generated"]
+        },
+        "status": {
+          "enum": ["available", "needs_export", "planned", "blocked"]
+        },
+        "path": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "captureRef": {
+      "type": "object",
+      "required": ["id", "status", "notes"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_.-]+$"
+        },
+        "status": {
+          "enum": ["planned", "captured", "ready", "blocked"]
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "state": {
+      "type": "object",
+      "required": ["id", "kind", "status", "source", "nextAction"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_.-]+$"
+        },
+        "kind": {
+          "enum": [
+            "loading",
+            "populated",
+            "empty",
+            "error",
+            "offline",
+            "permission",
+            "mutation",
+            "theme",
+            "accessibility"
+          ]
+        },
+        "status": {
+          "enum": ["planned", "implemented", "captured", "tested", "ready", "blocked"]
+        },
+        "source": {
+          "type": "string"
+        },
+        "captureIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "previewIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "tests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nextAction": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "composition": {
+      "type": "object",
+      "required": ["currentLayout", "targetLayout", "sections"],
+      "properties": {
+        "currentLayout": {
+          "type": "string"
+        },
+        "targetLayout": {
+          "type": "string"
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/section"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "section": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "status",
+        "layer",
+        "claudeComponents",
+        "flutter",
+        "currentOwner",
+        "targetOwner",
+        "dependencies",
+        "states",
+        "migration"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^section\\.[a-z0-9_.-]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "enum": ["registered", "implemented_local", "candidate", "planned", "blocked"]
+        },
+        "layer": {
+          "enum": ["compound", "section", "screen-adapter"]
+        },
+        "claudeComponents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "flutter": {
+          "$ref": "#/$defs/dartBinding"
+        },
+        "currentOwner": {
+          "type": "string"
+        },
+        "targetOwner": {
+          "type": "string"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "previewIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "migration": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "gap": {
+      "type": "object",
+      "required": ["id", "status", "nextAction"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z0-9-]+$"
+        },
+        "status": {
+          "enum": ["open", "in_progress", "blocked", "closed"]
+        },
+        "nextAction": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

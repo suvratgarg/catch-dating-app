@@ -23,6 +23,11 @@ class CaptureDevice {
     size: Size(440, 1220),
   );
 
+  static const designPhone = CaptureDevice(
+    id: 'design-phone',
+    size: Size(390, 812),
+  );
+
   static const iphone15 = CaptureDevice(id: 'iphone-15', size: Size(393, 852));
 
   static const iphone17Pro = CaptureDevice(
@@ -34,6 +39,7 @@ class CaptureDevice {
   static const all = <CaptureDevice>[
     reviewTall,
     reviewPhone,
+    designPhone,
     iphone15,
     iphone17Pro,
   ];

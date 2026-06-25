@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "screenId": "screen.host.event.create",
+  "updated": "2026-06-25",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": [
+        "basics_default",
+        "where_step_default",
+        "when_step_default",
+        "policy_default",
+        "event_success_step",
+        "success_manage"
+      ],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template includes drawn phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "photo_grid_media",
+      "stateIds": [
+        "basics_default"
+      ],
+      "rect": {
+        "x": 20,
+        "y": 152,
+        "width": 350,
+        "height": 178
+      },
+      "reason": "Event photo slots and thumbnails are fixture media and should not dominate the first advisory baseline."
+    },
+    {
+      "id": "dynamic_description_tail",
+      "stateIds": [
+        "basics_default"
+      ],
+      "rect": {
+        "x": 20,
+        "y": 662,
+        "width": 350,
+        "height": 74
+      },
+      "reason": "Description copy and scroll-tail clipping vary between the Claude template and Flutter capture fixtures."
+    },
+    {
+      "id": "bottom_footer_safe_area",
+      "stateIds": [
+        "basics_default",
+        "where_step_default",
+        "when_step_default",
+        "policy_default",
+        "event_success_step"
+      ],
+      "rect": {
+        "x": 0,
+        "y": 736,
+        "width": 390,
+        "height": 76
+      },
+      "reason": "Footer button positions and bottom safe-area rounding are still advisory while wizard chrome is being reconciled."
+    },
+    {
+      "id": "map_picker_placeholder",
+      "stateIds": [
+        "where_step_default"
+      ],
+      "rect": {
+        "x": 20,
+        "y": 152,
+        "width": 350,
+        "height": 152
+      },
+      "reason": "Map picker treatment and eventual map tiles are dynamic route state."
+    },
+    {
+      "id": "schedule_datetime_values",
+      "stateIds": [
+        "when_step_default"
+      ],
+      "rect": {
+        "x": 20,
+        "y": 150,
+        "width": 350,
+        "height": 150
+      },
+      "reason": "Date, time, and duration values are generated fixture data."
+    },
+    {
+      "id": "policy_form_values",
+      "stateIds": [
+        "policy_default"
+      ],
+      "rect": {
+        "x": 20,
+        "y": 198,
+        "width": 350,
+        "height": 520
+      },
+      "reason": "Capacity, price, admission, age, and cancellation policy values vary across event-policy fixtures."
+    },
+    {
+      "id": "event_success_guide_rows",
+      "stateIds": [
+        "event_success_step"
+      ],
+      "rect": {
+        "x": 20,
+        "y": 152,
+        "width": 350,
+        "height": 500
+      },
+      "reason": "Host guide recommendations, row copy, and target counts are derived from event and activity fixtures."
+    }
+  ]
+}

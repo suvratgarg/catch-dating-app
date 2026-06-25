@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 /// package icon fonts explicitly.
 Future<void> loadCatchTestFonts() async {
   final loaders = <FontLoader>[
+    FontLoader('Inter')..addFont(_bytes('assets/fonts/Inter-Roman-VF.ttf')),
     FontLoader('Archivo')
       ..addFont(_bytes('assets/fonts/Archivo-Roman-VF.woff2')),
     FontLoader('IBM Plex Mono')

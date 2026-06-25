@@ -10,6 +10,7 @@ import 'package:shimmer/shimmer.dart';
 ///
 /// **Named constructors:**
 /// - [CatchSkeleton.card] — rounded rectangle matching [CatchSurface] shape
+/// - [CatchSkeleton.box] — fixed-size rounded rectangle for icons/pills
 /// - [CatchSkeleton.text] — single text line
 /// - [CatchSkeleton.textBlock] — multi-line paragraph
 /// - [CatchSkeleton.circle] — circular avatar placeholder
@@ -35,6 +36,28 @@ class CatchSkeleton extends StatelessWidget {
         decoration: BoxDecoration(
           color: CatchTokens.editorialLight,
           borderRadius: BorderRadius.circular(CatchRadius.md),
+        ),
+      ),
+    );
+  }
+
+  /// Fixed-size rounded rectangle placeholder.
+  factory CatchSkeleton.box({
+    double? width,
+    required double height,
+    double radius = CatchRadius.xs,
+    BorderRadiusGeometry? borderRadius,
+    Color? borderColor,
+  }) {
+    return CatchSkeleton._(
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: CatchTokens.editorialLight,
+          borderRadius:
+              borderRadius ?? BorderRadius.all(Radius.circular(radius)),
+          border: borderColor == null ? null : Border.all(color: borderColor),
         ),
       ),
     );

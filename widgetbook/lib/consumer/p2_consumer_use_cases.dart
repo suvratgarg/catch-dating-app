@@ -1,0 +1,344 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
+import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+
+final _filtersProfile = ProfileSurfaceFixtures.viewer.copyWith(
+  interestedInGenders: const [Gender.man],
+  minAgePreference: 24,
+  maxAgePreference: 36,
+);
+
+@widgetbook.UseCase(
+  name: 'Route states',
+  type: FiltersScreen,
+  path: '[P2 consumer surfaces]/Filters',
+)
+Widget filtersRouteStates(BuildContext context) {
+  return _ConsumerCatalog(
+    title: 'FiltersScreen',
+    contractId: 'screen.filters.preferences',
+    children: [
+      _StateCard(
+        label: 'default preferences',
+        child: const _DeviceFrame(child: _FiltersRouteScope()),
+      ),
+      _StateCard(
+        label: 'profile loading',
+        child: _DeviceFrame(
+          child: _FiltersRouteScope(
+            profileStream: ProfileSurfaceFixtures.loadingStream<UserProfile?>(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'profile error',
+        child: _DeviceFrame(
+          child: _FiltersRouteScope(
+            profileStream: ProfileSurfaceFixtures.errorStream<UserProfile?>(
+              'Profile failed',
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'offline profile error',
+        child: _DeviceFrame(
+          child: _FiltersRouteScope(
+            profileStream: Stream<UserProfile?>.error(
+              ProfileSurfaceFixtures.offlineException(
+                action: 'load filters profile',
+              ),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'missing profile',
+        child: _DeviceFrame(
+          child: _FiltersRouteScope(
+            profileStream: Stream<UserProfile?>.value(null),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2.0',
+        child: const _DeviceFrame(
+          child: _MediaOverride(
+            textScaler: TextScaler.linear(2),
+            child: _FiltersRouteScope(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reduced motion',
+        child: const _DeviceFrame(
+          child: _MediaOverride(
+            disableAnimations: true,
+            child: _FiltersRouteScope(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Content states',
+  type: FiltersContent,
+  path: '[P2 consumer surfaces]/Filters',
+)
+Widget filtersContentStates(BuildContext context) {
+  return _ConsumerCatalog(
+    title: 'FiltersContent',
+    contractId: 'screen.filters.preferences sections',
+    children: [
+      _StateCard(
+        label: 'default preferences',
+        child: _DeviceFrame(
+          child: _FiltersContentFrame(
+            ageRange: filtersAgeRangeValues(_filtersProfile),
+            interestedIn: _filtersProfile.interestedInGenders.toSet(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'dirty edits',
+        child: const _DeviceFrame(
+          child: _FiltersContentFrame(
+            ageRange: RangeValues(20, 60),
+            interestedIn: {Gender.woman, Gender.nonBinary},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reset restored',
+        child: _DeviceFrame(
+          child: _FiltersContentFrame(
+            ageRange: filtersAgeRangeValues(_filtersProfile),
+            interestedIn: _filtersProfile.interestedInGenders.toSet(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'save pending',
+        child: const _DeviceFrame(
+          child: _FiltersContentFrame(
+            ageRange: RangeValues(25, 34),
+            interestedIn: {Gender.man, Gender.woman},
+            saving: true,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2.0',
+        child: const _DeviceFrame(
+          child: _MediaOverride(
+            textScaler: TextScaler.linear(2),
+            child: _FiltersContentFrame(
+              ageRange: RangeValues(24, 36),
+              interestedIn: {Gender.man},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reduced motion',
+        child: const _DeviceFrame(
+          child: _MediaOverride(
+            disableAnimations: true,
+            child: _FiltersContentFrame(
+              ageRange: RangeValues(24, 36),
+              interestedIn: {Gender.man},
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+class _FiltersRouteScope extends StatelessWidget {
+  const _FiltersRouteScope({this.profileStream});
+
+  final Stream<UserProfile?>? profileStream;
+
+  @override
+  Widget build(BuildContext context) {
+    return ProviderScope(
+      overrides: [
+        watchUserProfileProvider.overrideWith(
+          (ref) => profileStream ?? Stream<UserProfile?>.value(_filtersProfile),
+        ),
+      ],
+      child: const FiltersScreen(),
+    );
+  }
+}
+
+class _FiltersContentFrame extends StatelessWidget {
+  const _FiltersContentFrame({
+    required this.ageRange,
+    required this.interestedIn,
+    this.saving = false,
+  });
+
+  final RangeValues ageRange;
+  final Set<Gender> interestedIn;
+  final bool saving;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Scaffold(
+      backgroundColor: t.bg,
+      appBar: CatchTopBar(
+        title: 'Filters',
+        actions: [
+          CatchTopBarTextAction(
+            label: 'Reset',
+            onPressed: saving ? null : _noopTap,
+          ),
+        ],
+      ),
+      body: FiltersContent(
+        ageRange: ageRange,
+        interestedIn: interestedIn,
+        saving: saving,
+        onAgeRangeChanged: _ignoreRange,
+        onGenderToggled: _ignoreGender,
+        onApply: _noopTap,
+      ),
+    );
+  }
+}
+
+class _ConsumerCatalog extends StatelessWidget {
+  const _ConsumerCatalog({
+    required this.title,
+    required this.contractId,
+    required this.children,
+  });
+
+  final String title;
+  final String contractId;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Scaffold(
+      backgroundColor: t.bg,
+      body: SafeArea(
+        child: ListView(
+          padding: CatchInsets.content,
+          children: [
+            Text(title, style: CatchTextStyles.titleL(context)),
+            gapH4,
+            Text(
+              contractId,
+              style: CatchTextStyles.monoLabel(context, color: t.ink2),
+            ),
+            gapH24,
+            for (final child in children) ...[child, gapH20],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StateCard extends StatelessWidget {
+  const _StateCard({required this.label, required this.child});
+
+  final String label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.surface,
+        border: Border.all(color: t.line),
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
+      ),
+      child: Padding(
+        padding: CatchInsets.content,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: CatchTextStyles.sectionTitle(context)),
+            gapH12,
+            child,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DeviceFrame extends StatelessWidget {
+  const _DeviceFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 390),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: t.surface,
+            border: Border.all(color: t.line),
+            borderRadius: BorderRadius.circular(CatchRadius.lg),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(CatchRadius.lg),
+            child: SizedBox(height: 720, child: child),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MediaOverride extends StatelessWidget {
+  const _MediaOverride({
+    required this.child,
+    this.textScaler,
+    this.disableAnimations = false,
+  });
+
+  final Widget child;
+  final TextScaler? textScaler;
+  final bool disableAnimations;
+
+  @override
+  Widget build(BuildContext context) {
+    final base = MediaQuery.of(context);
+    return MediaQuery(
+      data: base.copyWith(
+        textScaler: textScaler ?? base.textScaler,
+        disableAnimations: disableAnimations || base.disableAnimations,
+      ),
+      child: child,
+    );
+  }
+}
+
+void _noopTap() {}
+
+void _ignoreRange(RangeValues values) {}
+
+void _ignoreGender(Gender gender) {}

@@ -1,7 +1,7 @@
 ---
 doc_id: error_handling_audit
-version: 2.7.0
-updated: 2026-06-16
+version: 2.7.2
+updated: 2026-06-20
 owner: recursive_audit_loop
 status: active
 ---
@@ -23,6 +23,24 @@ lists in the audit registry rather than copying findings into new trackers.
 Stamp files reviewed against this doc in the audit registry.
 
 ## Current State of Truth
+
+### 2026-06-20: Error Surface Consolidation
+
+The error primitive family now separates visual content, placement adapters, and
+delivery channels more explicitly:
+
+- `CatchErrorState` owns the app-facing branded error content through one
+  internal resolved spec and one shared body renderer.
+- `CatchErrorScaffold`, `CatchSliverErrorState`, and `CatchInlineErrorState`
+  remain code-level placement adapters, but no longer duplicate descriptor or
+  body resolution. Widgetbook reviews them together under one Error surfaces
+  entry.
+- `CatchErrorBanner` remains the persistent inline mutation/form error channel
+  and shares the internal inline-message shell with `CatchCallout`.
+- `CatchMutationErrorBanner` is the new persistent Riverpod mutation adapter.
+- `CatchMutationErrorListener` and `CatchMutationErrorListeners` are the
+  transient snackbar boundaries for one or many mutations.
+- `CatchFrameworkErrorView` remains separate for `ErrorWidget.builder`.
 
 ### 2026-06-16: Frontend / Local Error-Management Layer (APP-ERROR-INFRA-001)
 
@@ -236,7 +254,7 @@ Surface rules:
 | `CatchErrorScaffold` | Root screen/tab cannot load | Title/message/retry from descriptor; never raw exception text. |
 | `CatchSliverErrorState` | Sliver-native load failure | Same descriptor, sliver-compatible layout. |
 | `CatchInlineErrorState` | Section/card-level failure | Compact descriptor copy and retry when retryable. |
-| `ErrorBanner.fromError` | Persistent form/mutation failure | No retry unless action exists; avoid duplicating field-level validation. |
+| `CatchErrorBanner.fromError` / `CatchMutationErrorBanner` | Persistent form/mutation failure | No retry unless action exists; avoid duplicating field-level validation. |
 | `showCatchErrorSnackBar` | Transient action failure | Descriptor message and retry action if the failed action can safely rerun. |
 | Field validation error | Per-field invalid input | Specific field copy, not a snackbar or generic exception. |
 | `CatchFrameworkErrorView` | Flutter build/render failure | Minimal fallback; diagnostic details only in debug/reporting. |
@@ -452,7 +470,8 @@ The backend error feature now has a single presentation descriptor:
 - `appErrorTitle` and `appErrorMessage` are compatibility helpers over the
   descriptor.
 - `CatchErrorState`, `CatchErrorScaffold`, `CatchSliverErrorState`,
-  `CatchInlineErrorState`, `showCatchErrorSnackBar`, and `ErrorBanner.fromError`
+  `CatchInlineErrorState`, `showCatchErrorSnackBar`, and
+  `CatchErrorBanner.fromError`
   all consume the same descriptor contract.
 - Non-retryable typed failures such as validation and permission errors no
   longer show retry actions merely because a caller passed an `onRetry`.
@@ -532,7 +551,7 @@ error primitives:
 
 `CatchFrameworkErrorView` remains separate for Flutter framework/build errors
 because `ErrorWidget.builder` runs while the widget tree may already be
-unstable. `ErrorBanner` remains the inline mutation/form error primitive.
+unstable. `CatchErrorBanner` remains the inline mutation/form error primitive.
 `CatchErrorText` was removed after the hard migration; do not reintroduce
 compatibility wrappers for app-facing load failures unless there is a specific
 measured need.
@@ -643,7 +662,7 @@ Layer 3: Propagation (Controller / Provider)
 
 Layer 4: Display (UI)
   AsyncValueWidget / AsyncValueSliverWidget → CatchErrorState family
-  Mutation.hasError → ErrorBanner for inline/form failures
+  Mutation.hasError → CatchErrorBanner / CatchMutationErrorBanner for inline/form failures
   Transient actions → showCatchErrorSnackBar
   Framework crash → CatchFrameworkErrorView
 
@@ -864,7 +883,7 @@ The UI then watches the mutation:
 ```dart
 final joinMutation = ref.watch(RunBookingController.joinWaitlistMutation);
 if (joinMutation.hasError)
-  ErrorBanner(message: mutationErrorMessage(joinMutation)),
+  CatchErrorBanner(message: mutationErrorMessage(joinMutation)),
 ```
 
 **Pattern 2: Controllers use auth/session guards that throw `AppException`**
@@ -927,7 +946,7 @@ signInWithCredential(credential).catchError((e, st) {
 |---------|-------|--------|
 | `CatchErrorState` family | New canonical path | Full-screen, sliver, and inline app-facing load failures |
 | `AsyncValueWidget` / `AsyncValueSliverWidget` | Migrated default | Branded errors by default through `appErrorTitle` / `appErrorMessage` |
-| `ErrorBanner` | Canonical mutation/form inline path | Save-before-pop forms, sheets, and persistent page actions |
+| `CatchErrorBanner` / `CatchMutationErrorBanner` | Canonical mutation/form inline path | Save-before-pop forms, sheets, and persistent page actions |
 | `showCatchErrorSnackBar` | Canonical transient action path | Snackbars map through `appErrorMessage` |
 | `CatchFrameworkErrorView` | Framework crash fallback | Keep separate and minimal for `ErrorWidget.builder` |
 | `CatchErrorText` | Removed | Do not reintroduce as a compatibility layer |
@@ -940,7 +959,7 @@ signInWithCredential(credential).catchError((e, st) {
 | Full-screen/root-tab data load | `AsyncValue` error or route guard failure | `CatchErrorScaffold` |
 | Sliver-native screen load | `AsyncValue` error inside `CustomScrollView` | `CatchSliverErrorState` |
 | Section/card failure | Section-level provider or stale refresh failure | `CatchInlineErrorState` |
-| Inline mutation/form failure | Mutation state check | `ErrorBanner` |
+| Inline mutation/form failure | Mutation state check | `CatchErrorBanner` / `CatchMutationErrorBanner` |
 | Transient action failure | Mutation listener or caught action error | `showCatchErrorSnackBar` |
 | Form field validation | FormField validator | Inline `errorText` |
 | Framework/build/layout crash | `ErrorWidget.builder` | `CatchFrameworkErrorView` |
@@ -952,7 +971,7 @@ signInWithCredential(credential).catchError((e, st) {
 Raw error (any type)
   → appErrorTitle(error, context: ...)
   → appErrorMessage(error, context: ...)
-    → CatchErrorState / ErrorBanner / showCatchErrorSnackBar
+    → CatchErrorState / CatchErrorBanner / showCatchErrorSnackBar
 
 Backend-specific:
   → backendErrorMessage(error)         // Normalizes Firebase/Auth/Storage/Functions/etc.
@@ -1120,9 +1139,9 @@ These locations catch and discard errors without any logging. They represent inv
 | Frontend migration scanner | `tool/audit/frontend_error_candidates.dart` |
 | Branded error surfaces | `lib/core/widgets/catch_error_state.dart` |
 | Branded error snackbar | `lib/core/widgets/catch_error_snackbar.dart` |
-| Error banner widget | `lib/core/widgets/error_banner.dart` |
+| Error banner widget | `lib/core/widgets/catch_error_banner.dart` |
 | Mutation error display | `lib/core/widgets/mutation_error_util.dart` |
-| Mutation snackbar listener | `lib/core/widgets/mutation_error_snackbar_listener.dart` |
+| Mutation snackbar listener | `lib/core/widgets/catch_mutation_error_listener.dart` |
 | Global error handlers | `lib/main.dart:142-168` |
 
 ### Error handling decision flowchart

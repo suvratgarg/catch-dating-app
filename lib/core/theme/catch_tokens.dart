@@ -1453,15 +1453,15 @@ abstract final class CatchLayout {
   );
 
   /// Club detail hero media and caption sizing.
-  static const double clubDetailHeroCoverHeightRatio = 3 / 4;
+  static const double clubDetailHeroCoverHeightRatio = 0.61;
   static const double clubDetailHeroNoCoverPhoneHeight = 220.0;
   static const double clubDetailHeroNoCoverWideHeight = 164.0;
   static const double clubDetailHeroCoverWideMinHeight = 164.0;
   static const double clubDetailHeroCoverWideMaxHeight = 260.0;
-  static const double clubDetailHeroTitleTopPadding = CatchSpacing.s5;
+  static const double clubDetailHeroTitleTopPadding = CatchSpacing.s3;
   static const double clubDetailHeroTitleBottomPadding = CatchSpacing.s3;
   static const double clubDetailHeroTitleLocationGap = CatchSpacing.s2;
-  static const double clubDetailHeroExpandedTitleSize = 42.0;
+  static const double clubDetailHeroExpandedTitleSize = 34.0;
   static const double clubDetailHeroExpandedTitleLineHeight = 0.96;
   static const double clubDetailHeroCollapsedTitleSize = 28.0;
   static const double clubDetailHeroCollapsedTitleLineHeight = 0.96;
@@ -1508,6 +1508,14 @@ abstract final class CatchLayout {
   static const double catchesHubBackgroundIconTopOffset = -42.0;
   static const double celebrationViewportVerticalPadding =
       CatchSpacing.s4 + CatchSpacing.s5;
+  static const double celebrationPaperTopPadding =
+      CatchSpacing.s12 + CatchSpacing.s6;
+  static const double celebrationPaperBottomPadding = CatchSpacing.s6;
+  static const double celebrationPaperViewportVerticalPadding =
+      celebrationPaperTopPadding + celebrationPaperBottomPadding;
+  static const double celebrationPaperDetailRowVerticalPadding =
+      CatchSpacing.micro14;
+  static const double celebrationPaperActionTopGap = CatchSpacing.s6;
   static const double bottomActionScrimHeight = 128.0;
   static const double floatingControlExtent = 48.0;
   static const double selectionBadgeRadius = 14.0;
@@ -1652,6 +1660,7 @@ abstract final class CatchLayout {
   static const double eventDetailItineraryDotExtent = 9.0;
   // JourneySteps (design-system components/events/JourneySteps) — numbered
   // node-rail sequence shared by the first-run dashboard and onboarding.
+  static const double dashboardEmptyHeroHeight = 370.0;
   static const double journeyStepsIndexColumnWidth = 30.0;
   static const double journeyStepsRailColumnWidth = 20.0;
   static const double journeyStepsNodeExtent = 11.0;
@@ -1663,6 +1672,7 @@ abstract final class CatchLayout {
   static const double crossPathsHeartExtent = 34.0;
   static const double crossPathsPolaroidTilt = 0.0349; // 2° in radians
   // CoverStory (design-system components/explore/CoverStory).
+  static const double exploreDiscoveryCoverHeight = 316.0;
   static const double coverStoryGhostGlyphSize = 210.0;
   static const double coverStorySearchExtent = 38.0;
   static const double coverStoryGhostRightInset = 34.0;
@@ -1742,6 +1752,7 @@ abstract final class CatchLayout {
   static const double topBarTabHeight = CatchSpacing.s12;
   static const double topBarCollapsedFadeExtent = 72.0;
   static const double topBarCompactSearchBottomHeight = 68.0;
+  static const double topBarTrailingMaxRatio = 0.58;
   static const double exploreSheetPeekSize = 0.11;
   static const double exploreSheetMapSize = 0.70;
   static const double exploreSheetFullSize = 1.0;
@@ -1850,7 +1861,7 @@ abstract final class CatchLayout {
   static const double chatShareCardAspectRatio = 4 / 5;
   static const double chatShareCardPixelRatio = 3.0;
   static const double chatShareCardHeaderIconExtent = 40.0;
-  static const int chatShareCardMaxMessages = 5;
+  static const int chatShareCardMaxMessages = 3;
   static const double richShareCardWidth = 360.0;
   static const double richShareCardAspectRatio = 4 / 5;
   static const double richShareCardPixelRatio = 3.0;

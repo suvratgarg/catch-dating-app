@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "screenId": "screen.host.club.detail",
+  "updated": "2026-06-25",
+  "regions": [
+    {
+      "id": "hero_media_and_chrome",
+      "stateIds": ["host_public_view"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 240
+      },
+      "reason": "Club hero imagery, route action chrome, and rounded media edge/shell transition depend on design-fixture media and capture shell behavior."
+    },
+    {
+      "id": "club_identity",
+      "stateIds": ["host_public_view"],
+      "rect": {
+        "x": 20,
+        "y": 240,
+        "width": 350,
+        "height": 92
+      },
+      "reason": "Club title, city, neighborhood, and host-public identity copy are fixture data."
+    },
+    {
+      "id": "next_event_banner",
+      "stateIds": ["host_public_view"],
+      "rect": {
+        "x": 20,
+        "y": 344,
+        "width": 350,
+        "height": 40
+      },
+      "reason": "Next-event date/time copy is dynamic club schedule data."
+    },
+    {
+      "id": "stats_strip",
+      "stateIds": ["host_public_view"],
+      "rect": {
+        "x": 20,
+        "y": 399,
+        "width": 350,
+        "height": 80
+      },
+      "reason": "Member, rating, review, and established-date values are dynamic club data."
+    },
+    {
+      "id": "bottom_safe_area",
+      "stateIds": ["host_public_view"],
+      "rect": {
+        "x": 0,
+        "y": 780,
+        "width": 390,
+        "height": 32
+      },
+      "reason": "Bottom scroll extent can vary while screen layout parity is still advisory."
+    }
+  ]
+}

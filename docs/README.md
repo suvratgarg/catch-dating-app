@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 4.1.14
-updated: 2026-06-20
+version: 4.1.17
+updated: 2026-06-24
 owner: recursive_audit_loop
 status: active
 ---
@@ -38,7 +38,7 @@ section unless the task requires a full historical audit.
 |---|---|---|
 | Widget inventory and reusable widget guidance | `widget_catalog.md` | Catalog of Flutter widgets, primitive APIs, feature ownership notes, and catalog-update rules for material widget architecture changes. |
 | Visual identity / design language | `design_language.md` | Locked editorial identity — palette (B&W base + activity color), typography (Newsreader/Inter/IBM Plex Mono), photo grading, ticket/polaroid metaphors, exploration log, and the UI elevation roadmap. |
-| Design parity state matrix | `design_parity/` | Feature-by-feature design-spec parity matrix connecting screens, states, captures, component contracts, previews, lints, and visual-diff gaps. |
+| Design parity state matrix, inventory, and composition migration | `design_parity/` | Feature-by-feature design-spec parity matrix plus Claude Design to Widgetbook inventory and layered composition migration spec connecting screens, states, captures, component contracts, previews, lints, token specimens, and visual-diff gaps. |
 | UI layout, spacing, slivers, scroll ownership | `ui_architecture.md` | Unified layout architecture guide for screen padding, tab body insets, sliver usage, scroll ownership, and widget-test layout expectations. |
 | UI migration prompts | `sizing_migration_prompt.md`, `design_token_migration_prompt.md` | Reusable agent prompts for the mechanical sizing and design-token sweeps; each pairs with its `tool/check_*.sh` scanner as the deterministic definition of done. |
 | Controller architecture | `controller_patterns.md` | Current controller/view-model patterns, UI/controller boundary rules, and realtime stream lifecycle ownership guidance. |
@@ -47,10 +47,11 @@ section unless the task requires a full historical audit.
 | Release operations | `release_operations.md` | CI/release gates, Firebase deploy ordering, environment prerequisites, smoke tests, and human release evidence. |
 | Web surface architecture | `web_surface_architecture.md` | Domain/subdomain ownership, Firebase Hosting targets, stack boundaries for marketing/app/admin, marketing CI/CD, and future host-portal placement. |
 | Admin and analytics dashboard | `admin_analytics_dashboard_spec.md` | Internal admin console and analytics product spec: safety/access ops, cohort retention, host/event analytics, user value, finance, BigQuery marts, and admin API boundaries. |
+| Admin dashboard user stories and component catalogue | `admin_dashboard_user_stories_and_component_catalogue.md` | Tab-by-tab user stories, current workflow fit, top admin-console weaknesses, inspected-file log, and React admin primitive/component migration catalogue. |
 | Marketing app media pipeline | `marketing_app_media_pipeline.md` | Capture manifest, website screenshot sync, host vertical media slots, and drift-check workflow for app-derived marketing assets. Fed by the UI capture pipeline below. |
 | UI capture / visual review pipeline | `plans/ui_capture_pipeline_plan.md` | One deterministic per-screen capture harness with two consumers — raw review PNGs (fast UI review after changes) and curated marketing media (feeds the manifest above). Reuses the golden harness (`matchCatchGolden`); a route-drift check keeps the screen catalog honest. |
 | Marketing landing page research | `marketing_landing_page_research.md` | Reference-site research, content inventory, visual direction, and app-theme implications for the next Catch website pass. |
-| Organizer discovery and claimable listings | `plans/host_listing_discovery_architecture.md` | Deterministic organizer discovery, candidate backlog, seed listing projection, source-evidence ledger, index-readiness gates, and Firestore import planning. |
+| Organizer/event discovery and claimable listings | `plans/host_listing_discovery_architecture.md` | Deterministic organizer/event discovery, source-mention resolution, clustering, bounded LLM extraction/adjudication, candidate backlog, source-evidence ledger, index-readiness gates, and Firestore projection planning. |
 | Organizer claim workflow | `plans/organizer_claim_workflow_implementation_plan.md` | Claim request data model, backend callable plan, admin review flow, website/app surfaces, analytics, review-response rollout, and indexing policy for programmatic organizer pages. |
 | Data contracts and Firestore/Functions ownership | `data_contracts.md` | Firestore document shape, schema tooling, relationship documents, rules-test workflow, migration policy, and data-contract watch items. |
 | Backend operation ownership | `backend_operation_catalog.md` | Human-readable catalog of direct client writes, callable-owned mutations, trigger-owned projections, server-only collections, and notification starting points. |

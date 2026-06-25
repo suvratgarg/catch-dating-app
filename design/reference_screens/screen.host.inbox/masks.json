@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "screenId": "screen.host.inbox",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["populated_queries"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template includes drawn phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "event_identity",
+      "stateIds": ["populated_queries"],
+      "rect": {
+        "x": 16,
+        "y": 92,
+        "width": 358,
+        "height": 54
+      },
+      "reason": "Host inbox event title, date, and event scope are fixture data."
+    },
+    {
+      "id": "conversation_timestamps",
+      "stateIds": ["populated_queries"],
+      "rect": {
+        "x": 332,
+        "y": 272,
+        "width": 46,
+        "height": 144
+      },
+      "reason": "Conversation timestamps and unread counts depend on fixture clock and seeded messages."
+    },
+    {
+      "id": "host_tab_bar",
+      "stateIds": ["populated_queries"],
+      "rect": {
+        "x": 0,
+        "y": 768,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "Host shell tab chrome and safe-area treatment are still advisory while host IA is being reconciled."
+    }
+  ]
+}

@@ -53,14 +53,13 @@ class CatchBrowseHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    // Clamp text scaling inside the header. The 60 px content slot fits
-    // title + subtitle at scale 1.0; above ~1.15 the subtitle overflows.
-    // We clamp to keep the layout intact while still honouring the user's
-    // larger preference up to that ceiling.
+    // Clamp text scaling inside the fixed-height pinned header. The 60 px
+    // content slot fits title + subtitle at scale 1.0; larger text remains
+    // available in the scrollable content below without breaking this sliver.
     final ambientScaler = MediaQuery.textScalerOf(context);
-    final clampedFactor = ambientScaler.scale(1.0).clamp(0.85, 1.15);
+    final clampedFactor = ambientScaler.scale(1.0).clamp(0.85, 1.0);
     final clampedScaler = TextScaler.linear(clampedFactor);
-    final contentHeight = _contentHeight * clampedFactor;
+    final contentHeight = _contentHeight;
 
     return ColoredBox(
       color: backgroundColor ?? t.bg,

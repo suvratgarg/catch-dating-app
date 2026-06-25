@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "screenId": "screen.club.detail",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "hero_media_and_chrome",
+      "stateIds": ["member_default"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 222
+      },
+      "reason": "Club hero imagery and route action chrome depend on design-fixture media and capture shell behavior."
+    },
+    {
+      "id": "next_event_banner",
+      "stateIds": ["member_default"],
+      "rect": {
+        "x": 20,
+        "y": 344,
+        "width": 350,
+        "height": 40
+      },
+      "reason": "Next-event date/time copy is dynamic club schedule data."
+    },
+    {
+      "id": "stats_strip",
+      "stateIds": ["member_default"],
+      "rect": {
+        "x": 20,
+        "y": 399,
+        "width": 350,
+        "height": 80
+      },
+      "reason": "Member, rating, review, and established-date values are dynamic club data."
+    },
+    {
+      "id": "bottom_safe_area",
+      "stateIds": ["member_default"],
+      "rect": {
+        "x": 0,
+        "y": 780,
+        "width": 390,
+        "height": 32
+      },
+      "reason": "Bottom scroll extent can vary while screen layout parity is still advisory."
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "screenId": "screen.settings.account",
+  "updated": "2026-06-22",
+  "regions": [
+    {
+      "id": "status_bar",
+      "stateIds": ["profile_backed_account"],
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 44
+      },
+      "reason": "The Claude template includes drawn phone chrome while Flutter captures use the design-phone safe area contract."
+    },
+    {
+      "id": "account_identity_values",
+      "stateIds": ["profile_backed_account"],
+      "rect": {
+        "x": 68,
+        "y": 144,
+        "width": 194,
+        "height": 100
+      },
+      "reason": "Phone and email are account fixture data and should not dominate the first advisory baseline."
+    },
+    {
+      "id": "blocked_count",
+      "stateIds": ["profile_backed_account"],
+      "rect": {
+        "x": 68,
+        "y": 548,
+        "width": 52,
+        "height": 38
+      },
+      "reason": "Blocked-account counts vary with safety fixtures."
+    },
+    {
+      "id": "bottom_scroll_tail",
+      "stateIds": ["profile_backed_account"],
+      "rect": {
+        "x": 0,
+        "y": 780,
+        "width": 390,
+        "height": 32
+      },
+      "reason": "The first exported Settings frame clips before the full About/sign-out tail, so the bottom scroll edge stays advisory."
+    }
+  ]
+}
