@@ -111,7 +111,10 @@ class _EventSuccessManualQaScreenState
                       )
                     : const Padding(
                         padding: CatchInsets.contentRelaxed,
-                        child: CatchSkeletonList(height: 112),
+                        child: CatchSkeletonList(
+                          height: CatchLayout
+                              .dashboardRecommendedEventSkeletonHeight,
+                        ),
                       ),
               );
             }

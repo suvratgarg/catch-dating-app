@@ -153,21 +153,21 @@ class _EventPreviewHeroSkeleton extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               CatchSkeleton.box(
-                width: 104,
+                width: CatchLayout.skeletonTextCompactWidth,
                 height: CatchLayout.badgeActionHeight,
                 radius: CatchRadius.pill,
               ),
               CatchSkeleton.box(
-                width: 92,
+                width: CatchLayout.skeletonTextLabelWidth,
                 height: CatchLayout.badgeActionHeight,
                 radius: CatchRadius.pill,
               ),
             ],
           ),
           gapH20,
-          CatchSkeleton.text(width: 230),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextHeroWideWidth),
           gapH10,
-          CatchSkeleton.text(width: 190),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextLongWidth),
           gapH20,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -175,7 +175,9 @@ class _EventPreviewHeroSkeleton extends StatelessWidget {
             children: [
               for (var i = 0; i < 4; i++)
                 CatchSkeleton.box(
-                  width: i == 0 ? 92 : 78,
+                  width: i == 0
+                      ? CatchLayout.skeletonTextLabelWidth
+                      : CatchLayout.skeletonTextMetaLabelWidth,
                   height: CatchLayout.badgeActionHeight,
                   radius: CatchRadius.pill,
                 ),

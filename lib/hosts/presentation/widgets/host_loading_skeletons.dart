@@ -49,15 +49,19 @@ class HostSummarySkeleton extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchSkeleton.text(width: 180),
+                CatchSkeleton.text(
+                  width: CatchLayout.skeletonTextCardTitleWidth,
+                ),
                 gapH8,
-                CatchSkeleton.text(width: 128),
+                CatchSkeleton.text(
+                  width: CatchLayout.skeletonTextTertiaryWidth,
+                ),
               ],
             ),
           ),
           gapW12,
           CatchSkeleton.box(
-            width: 76,
+            width: CatchLayout.skeletonTextActionWidth,
             height: CatchLayout.badgeActionHeight,
             radius: CatchRadius.pill,
           ),
@@ -155,8 +159,8 @@ class HostEventRowsSkeleton extends StatelessWidget {
             Row(
               children: [
                 CatchSkeleton.box(
-                  width: 52,
-                  height: 52,
+                  width: CatchLayout.skeletonMediaTileExtent,
+                  height: CatchLayout.skeletonMediaTileExtent,
                   radius: CatchRadius.sm,
                 ),
                 gapW12,
@@ -164,7 +168,11 @@ class HostEventRowsSkeleton extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CatchSkeleton.text(width: i == 0 ? 188 : 154),
+                      CatchSkeleton.text(
+                        width: i == 0
+                            ? CatchLayout.skeletonTextBodyLongWidth
+                            : CatchLayout.skeletonTextDetailWidth,
+                      ),
                       gapH8,
                       CatchSkeleton.text(width: i == 1 ? 128 : 166),
                     ],
@@ -215,9 +223,12 @@ class HostChartSkeleton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSkeleton.text(width: 148),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextInlineTitleWidth),
           gapH16,
-          CatchSkeleton.box(height: 132, radius: CatchRadius.sm),
+          CatchSkeleton.box(
+            height: CatchLayout.hostChartSkeletonHeight,
+            radius: CatchRadius.sm,
+          ),
         ],
       ),
     );
@@ -239,20 +250,30 @@ class HostRosterSkeleton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSkeleton.text(width: 136),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWidth),
           gapH14,
           for (var i = 0; i < count; i++) ...[
             Row(
               children: [
-                CatchSkeleton.circle(size: 42),
+                CatchSkeleton.circle(
+                  size: CatchLayout.skeletonAvatarCompactExtent,
+                ),
                 gapW12,
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CatchSkeleton.text(width: i.isEven ? 126 : 156),
+                      CatchSkeleton.text(
+                        width: i.isEven
+                            ? CatchLayout.skeletonTextSecondaryWidth
+                            : CatchLayout.skeletonTextDetailWideWidth,
+                      ),
                       gapH6,
-                      CatchSkeleton.text(width: i == count - 1 ? 116 : 184),
+                      CatchSkeleton.text(
+                        width: i == count - 1
+                            ? CatchLayout.skeletonTextBodyWidth
+                            : CatchLayout.skeletonTextBodyLongWidth,
+                      ),
                     ],
                   ),
                 ),
@@ -285,7 +306,11 @@ class _HostAnalyticsMetricGridSkeleton extends StatelessWidget {
     return Row(
       children: [
         for (var i = 0; i < 2; i++) ...[
-          Expanded(child: CatchSkeleton.card(height: 96)),
+          Expanded(
+            child: CatchSkeleton.card(
+              height: CatchLayout.skeletonCardCompactHeight,
+            ),
+          ),
           if (i == 0) gapW12,
         ],
       ],

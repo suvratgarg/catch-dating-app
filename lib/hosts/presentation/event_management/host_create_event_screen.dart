@@ -90,17 +90,19 @@ class _CreateEventLoadingBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSkeleton.text(width: 148),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextInlineTitleWidth),
           gapH12,
-          CatchSkeleton.card(height: 192),
+          CatchSkeleton.card(
+            height: CatchLayout.hostCreateEventRouteFormSkeletonHeight,
+          ),
           gapH24,
-          CatchSkeleton.text(width: 232),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextPageTitleWidth),
           gapH12,
           const _LoadingChipRow(widths: [168, 108]),
           gapH10,
           const _LoadingChipRow(widths: [212]),
           gapH18,
-          CatchSkeleton.text(width: 112),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextBodyWidth),
           gapH12,
           CatchSkeleton.textBlock(),
         ],
@@ -151,7 +153,7 @@ class _CreateEventLoadingFooter extends StatelessWidget {
         child: Row(
           children: [
             CatchSkeleton.box(
-              width: 112,
+              width: CatchLayout.skeletonTextBodyWidth,
               height: CatchLayout.buttonLgHeight,
               radius: CatchRadius.pill,
             ),
@@ -160,7 +162,7 @@ class _CreateEventLoadingFooter extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerRight,
                 child: CatchSkeleton.box(
-                  width: 148,
+                  width: CatchLayout.skeletonTextInlineTitleWidth,
                   height: CatchLayout.buttonLgHeight,
                   radius: CatchRadius.pill,
                 ),

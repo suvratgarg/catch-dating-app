@@ -532,20 +532,30 @@ class _EventSuccessLiveRosterSkeleton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSkeleton.text(width: 132),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
           gapH14,
           for (var i = 0; i < 3; i++) ...[
             Row(
               children: [
-                CatchSkeleton.circle(size: 42),
+                CatchSkeleton.circle(
+                  size: CatchLayout.skeletonAvatarCompactExtent,
+                ),
                 gapW12,
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CatchSkeleton.text(width: i == 0 ? 128 : 104),
+                      CatchSkeleton.text(
+                        width: i == 0
+                            ? CatchLayout.skeletonTextTertiaryWidth
+                            : CatchLayout.skeletonTextCompactWidth,
+                      ),
                       gapH6,
-                      CatchSkeleton.text(width: i == 2 ? 156 : 188),
+                      CatchSkeleton.text(
+                        width: i == 2
+                            ? CatchLayout.skeletonTextDetailWideWidth
+                            : CatchLayout.skeletonTextBodyLongWidth,
+                      ),
                     ],
                   ),
                 ),
@@ -572,7 +582,7 @@ class _EventSuccessReportMetricsSkeleton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSkeleton.text(width: 146),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWideWidth),
           gapH14,
           Row(
             children: [
@@ -581,9 +591,13 @@ class _EventSuccessReportMetricsSkeleton extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CatchSkeleton.text(width: 48),
+                      CatchSkeleton.text(
+                        width: CatchLayout.skeletonTextValueWidth,
+                      ),
                       gapH8,
-                      CatchSkeleton.text(width: 72),
+                      CatchSkeleton.text(
+                        width: CatchLayout.skeletonTextStatusWidth,
+                      ),
                     ],
                   ),
                 ),

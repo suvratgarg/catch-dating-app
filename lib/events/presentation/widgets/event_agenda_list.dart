@@ -185,7 +185,7 @@ class EventAgendaSliverSkeleton extends StatelessWidget {
       padding: padding,
       sliver: SliverList.list(
         children: [
-          CatchSkeleton.text(width: 86),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextEyebrowWidth),
           SizedBox(height: dayLabelBottomGap),
           for (var i = 0; i < count; i++) ...[
             const _EventAgendaTileSkeleton(),
@@ -225,9 +225,13 @@ class _EventAgendaTileSkeleton extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CatchSkeleton.text(width: 30),
+                      CatchSkeleton.text(
+                        width: CatchLayout.skeletonTextDateWidth,
+                      ),
                       gapH6,
-                      CatchSkeleton.text(width: 22),
+                      CatchSkeleton.text(
+                        width: CatchLayout.skeletonTextMicroWidth,
+                      ),
                     ],
                   ),
                 ),
@@ -242,12 +246,14 @@ class _EventAgendaTileSkeleton extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        CatchSkeleton.circle(size: 26),
+                        CatchSkeleton.circle(
+                          size: CatchLayout.eventTypeDisplaySize,
+                        ),
                         gapW8,
                         Expanded(child: CatchSkeleton.text()),
                         gapW8,
                         CatchSkeleton.box(
-                          width: 54,
+                          width: CatchLayout.skeletonTextChipWidth,
                           height: CatchSpacing.s5,
                           radius: CatchRadius.pill,
                         ),
@@ -263,13 +269,17 @@ class _EventAgendaTileSkeleton extends StatelessWidget {
                     gapH10,
                     Row(
                       children: [
-                        CatchSkeleton.circle(size: 17),
+                        CatchSkeleton.circle(size: CatchIcon.profileRunStat),
                         gapW8,
-                        CatchSkeleton.text(width: 130),
+                        CatchSkeleton.text(
+                          width: CatchLayout.skeletonTextRowWidth,
+                        ),
                       ],
                     ),
                     gapH8,
-                    CatchSkeleton.text(width: 112),
+                    CatchSkeleton.text(
+                      width: CatchLayout.skeletonTextBodyWidth,
+                    ),
                   ],
                 ),
               ),

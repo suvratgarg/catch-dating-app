@@ -193,7 +193,7 @@ class ActivitySectionSkeleton extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchSkeleton.text(width: 78),
+        CatchSkeleton.text(width: CatchLayout.skeletonTextMetaLabelWidth),
         gapH8,
         for (var i = 0; i < count; i++)
           _NotificationRowSkeleton(divider: i > 0),
@@ -229,7 +229,9 @@ class _NotificationRowSkeleton extends StatelessWidget {
                   children: [
                     Expanded(child: CatchSkeleton.text()),
                     gapW8,
-                    CatchSkeleton.text(width: 42),
+                    CatchSkeleton.text(
+                      width: CatchLayout.skeletonTextTimeWidth,
+                    ),
                   ],
                 ),
                 gapH6,

@@ -155,12 +155,12 @@ class _CompanionStageSkeleton extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CatchSkeleton.box(
-            width: 118,
+            width: CatchLayout.skeletonTextPillWidth,
             height: CatchLayout.badgeActionHeight,
             radius: CatchRadius.pill,
           ),
           gapH16,
-          CatchSkeleton.text(width: 216),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextFeatureWidth),
           gapH10,
           CatchSkeleton.textBlock(),
           gapH18,
@@ -199,7 +199,7 @@ class _CompanionPrimaryActionSkeleton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSkeleton.text(width: 168),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextActionLabelWidth),
           gapH12,
           CatchSkeleton.textBlock(lines: 2),
           gapH16,
@@ -226,20 +226,30 @@ class _CompanionPeerListSkeleton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSkeleton.text(width: 146),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWideWidth),
           gapH14,
           for (var i = 0; i < 3; i++) ...[
             Row(
               children: [
-                CatchSkeleton.circle(size: 42),
+                CatchSkeleton.circle(
+                  size: CatchLayout.skeletonAvatarCompactExtent,
+                ),
                 gapW12,
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CatchSkeleton.text(width: i == 1 ? 112 : 138),
+                      CatchSkeleton.text(
+                        width: i == 1
+                            ? CatchLayout.skeletonTextBodyWidth
+                            : CatchLayout.skeletonTextBodyWideWidth,
+                      ),
                       gapH6,
-                      CatchSkeleton.text(width: i == 2 ? 180 : 154),
+                      CatchSkeleton.text(
+                        width: i == 2
+                            ? CatchLayout.skeletonTextCardTitleWidth
+                            : CatchLayout.skeletonTextDetailWidth,
+                      ),
                     ],
                   ),
                 ),

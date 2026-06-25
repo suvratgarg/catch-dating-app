@@ -381,18 +381,21 @@ class _HostPaymentAccountLoadingCard extends StatelessWidget {
             children: [
               const Expanded(child: CatchSectionHeader(title: 'Payouts')),
               CatchSkeleton.box(
-                width: 82,
-                height: 24,
+                width: CatchLayout.skeletonStatusPillWidth,
+                height: CatchSpacing.s6,
                 radius: CatchRadius.pill,
               ),
             ],
           ),
           gapH14,
-          CatchSkeleton.text(width: 190),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextLongWidth),
           gapH8,
           CatchSkeleton.textBlock(lines: 2),
           gapH14,
-          CatchSkeleton.box(height: 44, radius: CatchRadius.sm),
+          CatchSkeleton.box(
+            height: CatchLayout.hostPaymentActionSkeletonHeight,
+            radius: CatchRadius.sm,
+          ),
         ],
       ),
     );

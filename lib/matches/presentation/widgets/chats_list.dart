@@ -293,7 +293,9 @@ class _ChatListTileSkeleton extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CatchSkeleton.text(width: 132),
+                    CatchSkeleton.text(
+                      width: CatchLayout.skeletonTextTitleWidth,
+                    ),
                     const SizedBox(height: CatchSpacing.micro6),
                     CatchSkeleton.text(),
                   ],
@@ -304,10 +306,10 @@ class _ChatListTileSkeleton extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CatchSkeleton.text(width: 42),
+                  CatchSkeleton.text(width: CatchLayout.skeletonTextTimeWidth),
                   const SizedBox(height: CatchSpacing.micro6),
                   CatchSkeleton.box(
-                    width: 24,
+                    width: CatchLayout.chatUnreadPillWidth,
                     height: CatchSpacing.s4,
                     radius: CatchRadius.pill,
                   ),

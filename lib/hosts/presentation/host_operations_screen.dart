@@ -3131,7 +3131,7 @@ class _HostOrganizerPayoutPrompt extends ConsumerWidget {
                 if (!loading) ...[
                   gapH8,
                   SizedBox(
-                    width: 120,
+                    width: CatchLayout.hostPayoutSetupButtonWidth,
                     child: CatchButton(
                       label: 'Set up payouts',
                       size: CatchButtonSize.sm,
@@ -3214,7 +3214,7 @@ class _HostOrganizerMetricRow extends StatelessWidget {
       borderColor: t.line,
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
-        height: 78,
+        height: CatchLayout.hostOrganizerMetricRowHeight,
         child: Row(
           children: [
             Expanded(child: _HostOrganizerMetricTile(item: items[0])),
@@ -3355,7 +3355,7 @@ class _HostOrganizerTeamRow extends StatelessWidget {
         if (divider)
           Positioned(
             top: 0,
-            left: 54,
+            left: CatchLayout.hostOrganizerTeamDividerInset,
             right: 0,
             child: ColoredBox(
               color: t.line.withValues(alpha: CatchOpacity.infoRowDivider),
@@ -3367,7 +3367,7 @@ class _HostOrganizerTeamRow extends StatelessWidget {
           child: Row(
             children: [
               CatchPersonAvatar(
-                size: 42,
+                size: CatchLayout.skeletonAvatarCompactExtent,
                 name: profile.displayName,
                 imageUrl: profile.avatarUrl,
               ),
@@ -3452,7 +3452,7 @@ class _HostOrganizerTrendStrip extends StatelessWidget {
           ),
           gapH16,
           SizedBox(
-            height: 76,
+            height: CatchLayout.hostOrganizerTrendChartHeight,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [

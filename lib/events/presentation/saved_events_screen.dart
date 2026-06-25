@@ -120,7 +120,11 @@ class _SavedEventsLoading extends StatelessWidget {
       slivers: [
         SliverPadding(
           padding: CatchInsets.pageHeaderCompact,
-          sliver: SliverToBoxAdapter(child: CatchSkeleton.text(width: 178)),
+          sliver: SliverToBoxAdapter(
+            child: CatchSkeleton.text(
+              width: CatchLayout.skeletonTextHeadlineWidth,
+            ),
+          ),
         ),
         const EventAgendaSliverSkeleton(),
       ],

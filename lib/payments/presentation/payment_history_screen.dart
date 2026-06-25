@@ -148,11 +148,13 @@ class _PaymentHistoryTileSkeleton extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CatchSkeleton.text(width: 190),
+                  CatchSkeleton.text(width: CatchLayout.skeletonTextLongWidth),
                   gapH8,
-                  CatchSkeleton.text(width: 126),
+                  CatchSkeleton.text(
+                    width: CatchLayout.skeletonTextSecondaryWidth,
+                  ),
                   gapH6,
-                  CatchSkeleton.text(width: 150),
+                  CatchSkeleton.text(width: CatchLayout.skeletonTextWideWidth),
                 ],
               ),
             ),
@@ -160,10 +162,10 @@ class _PaymentHistoryTileSkeleton extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                CatchSkeleton.text(width: 72),
+                CatchSkeleton.text(width: CatchLayout.skeletonTextStatusWidth),
                 gapH8,
                 CatchSkeleton.box(
-                  width: 76,
+                  width: CatchLayout.skeletonTextActionWidth,
                   height: CatchSpacing.s5,
                   radius: CatchRadius.pill,
                 ),

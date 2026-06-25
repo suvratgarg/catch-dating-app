@@ -384,8 +384,8 @@ class _PaperCelebrationIcon extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return Container(
-      width: 64,
-      height: 64,
+      width: CatchSpacing.s16,
+      height: CatchSpacing.s16,
       decoration: BoxDecoration(color: t.primarySoft, shape: BoxShape.circle),
       child: Icon(icon, color: t.primary, size: 30),
     );
@@ -441,7 +441,7 @@ class _PaperCelebrationDetailRow extends StatelessWidget {
         children: [
           if (icon != null) ...[Icon(icon, size: 18, color: t.ink3), gapW12],
           SizedBox(
-            width: 78,
+            width: CatchLayout.celebrationDetailLabelWidth,
             child: Text(
               detail.label.toUpperCase(),
               style: CatchTextStyles.labelS(context, color: t.ink2),

@@ -232,9 +232,9 @@ class _DashboardLoadingHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchSkeleton.text(width: 86),
+                CatchSkeleton.text(width: CatchLayout.skeletonTextEyebrowWidth),
                 gapH8,
-                CatchSkeleton.text(width: 220),
+                CatchSkeleton.text(width: CatchLayout.skeletonTextHeroWidth),
               ],
             ),
           ),
@@ -263,9 +263,9 @@ class _DashboardFocusLoadingCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSkeleton.text(width: 92),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextLabelWidth),
           gapH12,
-          CatchSkeleton.text(width: 240),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextBannerWidth),
           gapH12,
           CatchSkeleton.textBlock(lines: 2),
           gapH16,
@@ -304,13 +304,13 @@ class _DashboardStrideLoadingCard extends StatelessWidget {
       padding: CatchInsets.content,
       child: Row(
         children: [
-          CatchSkeleton.circle(size: 52),
+          CatchSkeleton.circle(size: CatchLayout.skeletonMediaTileExtent),
           gapW14,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchSkeleton.text(width: 150),
+                CatchSkeleton.text(width: CatchLayout.skeletonTextWideWidth),
                 gapH8,
                 CatchSkeleton.textBlock(lines: 2),
               ],
@@ -331,7 +331,10 @@ class _DashboardQuickActionsLoadingRow extends StatelessWidget {
       children: [
         for (var i = 0; i < 2; i++) ...[
           Expanded(
-            child: CatchSkeleton.box(height: 76, radius: CatchRadius.md),
+            child: CatchSkeleton.box(
+              height: CatchLayout.dashboardQuickActionSkeletonHeight,
+              radius: CatchRadius.md,
+            ),
           ),
           if (i == 0) gapW12,
         ],
@@ -348,9 +351,12 @@ class _DashboardRecommendedLoadingSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchSkeleton.text(width: 136),
+        CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWidth),
         gapH12,
-        const CatchSkeletonList(count: 2, height: 112),
+        const CatchSkeletonList(
+          count: 2,
+          height: CatchLayout.dashboardRecommendedEventSkeletonHeight,
+        ),
       ],
     );
   }

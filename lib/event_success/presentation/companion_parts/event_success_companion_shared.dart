@@ -580,8 +580,8 @@ class _PaperBarcode extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return SizedBox(
-      width: 92,
-      height: 34,
+      width: CatchLayout.eventSuccessPaperBarcodeWidth,
+      height: CatchLayout.eventSuccessPaperBarcodeHeight,
       child: CustomPaint(painter: _PaperBarcodePainter(color: t.ink)),
     );
   }

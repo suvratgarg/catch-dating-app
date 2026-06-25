@@ -256,7 +256,7 @@ class _ReviewHistoryItemSkeleton extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchSkeleton.text(width: 132),
+        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
         gapH8,
         CatchSurface(
           borderColor: t.line,
@@ -266,18 +266,23 @@ class _ReviewHistoryItemSkeleton extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  CatchSkeleton.circle(size: 32),
+                  CatchSkeleton.circle(size: CatchLayout.rosterRowAvatarExtent),
                   gapW8,
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CatchSkeleton.text(width: 92),
+                        CatchSkeleton.text(
+                          width: CatchLayout.skeletonTextLabelWidth,
+                        ),
                         gapH6,
                         Row(
                           children: [
                             for (var i = 0; i < 5; i++) ...[
-                              CatchSkeleton.box(width: 12, height: 12),
+                              CatchSkeleton.box(
+                                width: CatchIcon.badge,
+                                height: CatchIcon.badge,
+                              ),
                               if (i < 4) gapW3,
                             ],
                           ],
