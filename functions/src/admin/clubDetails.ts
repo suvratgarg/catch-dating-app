@@ -5,22 +5,37 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {ClubDocument} from "../shared/generated/firestoreAdminTypes";
 import {AdminGetClubDetailsCallablePayload} from
   "../shared/generated/adminGetClubDetailsCallablePayload";
+import {AdminListClubDetailsCallablePayload} from
+  "../shared/generated/adminListClubDetailsCallablePayload";
 import {AdminUpdateClubDetailsCallablePayload} from
   "../shared/generated/adminUpdateClubDetailsCallablePayload";
 import {
   validateAdminGetClubDetailsCallablePayload,
+  validateAdminListClubDetailsCallablePayload,
   validateAdminUpdateClubDetailsCallablePayload,
 } from "../shared/generated/schemaValidators";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {requireAdminRole} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
+import {
+  readOrganizerRouteReservationStatus,
+  requireValidOrganizerCanonicalPath,
+  reserveOrganizerCanonicalRoute,
+  type OrganizerRouteReservationStatus,
+} from "./organizerPublishingGuards";
+import {
+  buildOrganizerAdminSearchProjection,
+  clubWithAdminFieldsForSearch,
+  organizerAdminSearchQueryTokens,
+} from "./organizerAdminSearch";
 
 const clubDetailsRoles = ["admin", "adminOwner", "support"] as const;
 
 interface ClubDetailsDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
+  now?: () => Date;
   checkRateLimit?: (
     db: FirebaseFirestore.Firestore,
     uid: string,
@@ -31,6 +46,7 @@ interface ClubDetailsDeps {
 const defaultDeps: ClubDetailsDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  now: () => new Date(),
   checkRateLimit: defaultCheckRateLimit,
 };
 
@@ -87,6 +103,33 @@ export interface AdminGetClubDetailsResponse {
   club: AdminClubDetailsSnapshot;
 }
 
+export interface AdminClubListRow {
+  clubId: string;
+  name: string;
+  displayCategory: string | null;
+  cityName: string | null;
+  citySlug: string | null;
+  regionName: string | null;
+  countryCode: string | null;
+  appVisibility: string | null;
+  claimState: string | null;
+  ownershipState: string | null;
+  canonicalPath: string | null;
+  publishStatus: string | null;
+  indexStatus: string | null;
+  robots: string | null;
+  sourceConfidence: string | null;
+  verificationStatus: string | null;
+  routeStatus: "missing" | "valid" | "invalid";
+  routeReservationStatus: OrganizerRouteReservationStatus;
+  searchIndexStatus: "missing" | "indexed";
+}
+
+export interface AdminListClubDetailsResponse {
+  generatedAt: string;
+  rows: AdminClubListRow[];
+}
+
 export interface AdminUpdateClubDetailsResponse {
   clubId: string;
   updatedFieldCount: number;
@@ -120,6 +163,67 @@ export async function adminGetClubDetailsHandler(
 }
 
 /**
+ * Lists canonical organizer profile rows from clubs/{clubId}.
+ * @param {CallableRequest<unknown>} request Callable request.
+ * @param {ClubDetailsDeps} deps Injectable dependencies.
+ * @return {Promise<AdminListClubDetailsResponse>} Organizer list rows.
+ */
+export async function adminListClubDetailsHandler(
+  request: CallableRequest<unknown>,
+  deps: ClubDetailsDeps = defaultDeps
+): Promise<AdminListClubDetailsResponse> {
+  const adminContext = requireAdminRole(request, clubDetailsRoles);
+  const data = validateCallableWithAjv<AdminListClubDetailsCallablePayload>(
+    request,
+    validateAdminListClubDetailsCallablePayload,
+    normalizeAdminListClubDetailsPayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminListClubDetails");
+
+  const limit = clampLimit(data.limit);
+  const queryText = normalizeSearchText(data.query);
+  const searchTokens = organizerAdminSearchQueryTokens(queryText);
+  const hasSearchQuery = searchTokens.length > 0;
+  const now = deps.now?.() ?? new Date();
+  let query: FirebaseFirestore.Query = db.collection("clubs");
+  if (hasSearchQuery) {
+    query = query.where(
+      "adminSearch.tokens",
+      "array-contains-any",
+      searchTokens
+    );
+  }
+  if (data.citySlug) {
+    query = query.where("publicPage.citySlug", "==", data.citySlug);
+  } else if (data.citySlugs && data.citySlugs.length > 0) {
+    query = query.where("publicPage.citySlug", "in", data.citySlugs);
+  }
+  if (data.publishStatus) {
+    query = query.where("publicPage.publishStatus", "==", data.publishStatus);
+  }
+  if (data.appVisibility) {
+    query = query.where("appVisibility", "==", data.appVisibility);
+  }
+  const snapshot = await query
+    .limit(queryLimitForSearch(limit, hasSearchQuery))
+    .get();
+  const rows = snapshot.docs
+    .map((doc) =>
+      publicClubListRow(doc.id, requireDoc<ClubDocument>(doc, "ClubDocument")))
+    .filter((row) => clubListRowMatchesQuery(row, queryText))
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .slice(0, limit);
+  const rowsWithRouteReservations =
+    await attachOrganizerRouteReservationStatuses(db, rows);
+
+  return {
+    generatedAt: now.toISOString(),
+    rows: rowsWithRouteReservations,
+  };
+}
+
+/**
  * Applies an audited admin cleanup patch to owner-safe organizer fields.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {ClubDetailsDeps} deps Injectable dependencies.
@@ -141,6 +245,12 @@ export async function adminUpdateClubDetailsHandler(
   if (updatedFieldCount === 0) {
     throw new HttpsError("invalid-argument", "No editable fields supplied.");
   }
+  if (!data.reviewNote) {
+    throw new HttpsError(
+      "invalid-argument",
+      "A review note is required for audited organizer edits."
+    );
+  }
 
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminUpdateClubDetails");
@@ -151,6 +261,32 @@ export async function adminUpdateClubDetailsHandler(
       throw new HttpsError("not-found", "Organizer listing not found.");
     }
     const before = requireDoc<ClubDocument>(clubSnap, "ClubDocument");
+    if (data.fields.publicPage !== undefined) {
+      const nextPublicPage = {
+        ...(before.publicPage ?? {}),
+        ...data.fields.publicPage,
+      };
+      const canonicalPath = nextPublicPage.canonicalPath ?? null;
+      if (canonicalPath) {
+        await reserveOrganizerCanonicalRoute(tx, db, {
+          clubId: data.clubId,
+          canonicalPath,
+          slug: nextPublicPage.slug,
+          citySlug: nextPublicPage.citySlug,
+          previousCanonicalPath: before.publicPage?.canonicalPath ?? null,
+          adminUid: adminContext.uid,
+          source: "adminUpdateClubDetails",
+          serverTimestamp: deps.serverTimestamp,
+        });
+      }
+    }
+    const nextClubForSearch = clubWithAdminFieldsForSearch(before, data.fields);
+    patch.adminSearch = buildOrganizerAdminSearchProjection(
+      data.clubId,
+      nextClubForSearch,
+      deps.serverTimestamp(),
+      "adminUpdateClubDetails"
+    );
     tx.update(clubRef, patch);
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminUpdateClubDetails",
@@ -225,6 +361,85 @@ function publicClubDetails(
       missingEvidence: club.publicProfile?.missingEvidence ?? [],
     },
   };
+}
+
+/**
+ * Builds a compact organizer row from the canonical club document.
+ * @param {string} clubId Firestore document id.
+ * @param {ClubDocument} club Canonical club document.
+ * @return {AdminClubListRow} Admin-safe list row.
+ */
+function publicClubListRow(
+  clubId: string,
+  club: ClubDocument
+): AdminClubListRow {
+  return {
+    clubId,
+    name: club.name,
+    displayCategory: club.displayCategory ?? null,
+    cityName: club.cityName ?? club.area ?? null,
+    citySlug: club.publicPage?.citySlug ?? club.location ?? null,
+    regionName: club.regionName ?? null,
+    countryCode: club.countryCode ?? null,
+    appVisibility: club.appVisibility ?? null,
+    claimState: club.claim?.state ?? null,
+    ownershipState: club.ownership?.state ?? null,
+    canonicalPath: club.publicPage?.canonicalPath ?? null,
+    publishStatus: club.publicPage?.publishStatus ?? null,
+    indexStatus: club.publicPage?.indexStatus ?? null,
+    robots: club.publicPage?.robots ?? null,
+    sourceConfidence: club.provenance?.sourceConfidence ?? null,
+    verificationStatus: club.provenance?.verificationStatus ?? null,
+    routeStatus: publicRouteStatus(club),
+    routeReservationStatus: "missing",
+    searchIndexStatus: (club.adminSearch?.tokens?.length ?? 0) > 0 ?
+      "indexed" :
+      "missing",
+  };
+}
+
+/**
+ * Adds durable route reservation status to organizer list rows.
+ * @param {FirebaseFirestore.Firestore} db Firestore database.
+ * @param {AdminClubListRow[]} rows Organizer rows.
+ * @return {Promise<AdminClubListRow[]>} Rows with reservation status.
+ */
+async function attachOrganizerRouteReservationStatuses(
+  db: FirebaseFirestore.Firestore,
+  rows: AdminClubListRow[]
+): Promise<AdminClubListRow[]> {
+  return Promise.all(rows.map(async (row) => {
+    if (row.routeStatus !== "valid" || !row.canonicalPath) return row;
+    return {
+      ...row,
+      routeReservationStatus: await readOrganizerRouteReservationStatus(
+        db,
+        row.clubId,
+        row.canonicalPath
+      ),
+    };
+  }));
+}
+
+/**
+ * Returns whether the public route is present and internally consistent.
+ * @param {ClubDocument} club Canonical club document.
+ * @return {"missing" | "valid" | "invalid"} Route status.
+ */
+function publicRouteStatus(
+  club: ClubDocument
+): "missing" | "valid" | "invalid" {
+  if (!club.publicPage?.canonicalPath) return "missing";
+  try {
+    requireValidOrganizerCanonicalPath(
+      club.publicPage.canonicalPath,
+      club.publicPage.slug,
+      club.publicPage.citySlug
+    );
+    return "valid";
+  } catch {
+    return "invalid";
+  }
 }
 
 /**
@@ -329,6 +544,25 @@ function normalizeAdminGetClubDetailsPayload(value: unknown): unknown {
   if (!value || typeof value !== "object") return value;
   const data = value as Record<string, unknown>;
   return {...data, clubId: normalizeString(data.clubId)};
+}
+
+/**
+ * Normalizes admin list payload filters before schema validation.
+ * @param {unknown} value Raw callable data.
+ * @return {unknown} Normalized payload.
+ */
+function normalizeAdminListClubDetailsPayload(value: unknown): unknown {
+  if (value === undefined || value === null) return {};
+  if (typeof value !== "object" || Array.isArray(value)) return value;
+  const data = value as Record<string, unknown>;
+  return {
+    ...data,
+    query: normalizeNullableString(data.query),
+    citySlug: normalizeNullableString(data.citySlug),
+    citySlugs: normalizeCitySlugs(data.citySlugs),
+    publishStatus: normalizeNullableString(data.publishStatus),
+    appVisibility: normalizeNullableString(data.appVisibility),
+  };
 }
 
 /**
@@ -489,6 +723,21 @@ function normalizeString(value: unknown): unknown {
 }
 
 /**
+ * Normalizes bounded multi-city admin list filters.
+ * @param {unknown} value Raw citySlugs payload.
+ * @return {unknown} Unique normalized city slugs or validation passthrough.
+ */
+function normalizeCitySlugs(value: unknown): unknown {
+  if (value === undefined || value === null) return null;
+  if (!Array.isArray(value)) return value;
+  return Array.from(new Set(
+    value
+      .map((item) => normalizeNullableString(item))
+      .filter((item): item is string => typeof item === "string")
+  ));
+}
+
+/**
  * Trims optional string fields and converts blanks to null.
  * @param {unknown} value Raw value.
  * @return {unknown} Normalized nullable text.
@@ -525,6 +774,78 @@ function normalizeStringArray(value: unknown): unknown {
       .filter((item) => typeof item === "string" && item.length > 0)
   ));
 }
+
+/**
+ * Bounds the list limit.
+ * @param {number | undefined} value Raw limit.
+ * @return {number} Safe limit.
+ */
+function clampLimit(value: number | undefined): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) return 50;
+  return Math.max(1, Math.min(100, Math.trunc(value)));
+}
+
+/**
+ * Returns a larger candidate window for token-backed searches.
+ * @param {number} limit Requested row limit.
+ * @param {boolean} hasSearchQuery Whether search tokens are applied.
+ * @return {number} Firestore query limit.
+ */
+function queryLimitForSearch(limit: number, hasSearchQuery: boolean): number {
+  if (hasSearchQuery) return Math.min(500, Math.max(limit * 10, limit));
+  return Math.min(250, Math.max(limit * 4, limit));
+}
+
+/**
+ * Normalizes a free-text admin search query.
+ * @param {string | null | undefined} value Raw query.
+ * @return {string} Search query.
+ */
+function normalizeSearchText(value: string | null | undefined): string {
+  return (value ?? "").trim().toLowerCase();
+}
+
+/**
+ * Applies deterministic text matching to a compact list row.
+ * @param {AdminClubListRow} row Organizer row.
+ * @param {string} queryText Normalized query.
+ * @return {boolean} Whether the row matches.
+ */
+function clubListRowMatchesQuery(
+  row: AdminClubListRow,
+  queryText: string
+): boolean {
+  if (!queryText) return true;
+  const haystack = [
+    row.clubId,
+    row.name,
+    row.displayCategory,
+    row.cityName,
+    row.citySlug,
+    row.regionName,
+    row.countryCode,
+    row.canonicalPath,
+    row.publishStatus,
+    row.indexStatus,
+    row.appVisibility,
+    row.claimState,
+    row.ownershipState,
+    row.sourceConfidence,
+    row.verificationStatus,
+  ]
+    .filter((item): item is string => typeof item === "string")
+    .join(" ")
+    .toLowerCase();
+  return queryText
+    .split(/\s+/u)
+    .filter(Boolean)
+    .every((token) => haystack.includes(token));
+}
+
+export const adminListClubDetails = onCall(
+  appCheckCallableOptions,
+  (request) => adminListClubDetailsHandler(request)
+);
 
 export const adminGetClubDetails = onCall(
   appCheckCallableOptions,

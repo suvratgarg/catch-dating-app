@@ -1023,6 +1023,64 @@ const schemaEventDocumentSchema = <String, Object?>{
       'maximum': 120,
       'x-catch-ownership': 'callable-owned',
     },
+    'adminSearch': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Server-owned deterministic search projection used by admin event publishing. Rebuildable from canonical event and organizer fields; not consumed by the app.',
+      'required': <Object?>[
+        'tokens',
+        'sortKey',
+        'updatedAt',
+        'updatedBySource',
+      ],
+      'properties': <String, Object?>{
+        'tokens': <String, Object?>{
+          'type': 'array',
+          'maxItems': 120,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 2,
+            'maxLength': 80,
+            'pattern': '^[a-z0-9-]+\$',
+          },
+        },
+        'sortKey': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[a-z0-9-]+(?:-[a-z0-9-]+)*\$',
+        },
+        'updatedAt': <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        'updatedBySource': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'adminUpdateEventDetails',
+            'adminEventSearchBackfill',
+          ],
+        },
+      },
+      'x-catch-ownership': 'server-only',
+    },
     'synthetic': <String, Object?>{
       'type': 'boolean',
       'description': 'Internal demo seed marker used for cleanup and diagnostics.',

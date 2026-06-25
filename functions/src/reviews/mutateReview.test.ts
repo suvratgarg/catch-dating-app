@@ -18,6 +18,10 @@ class FakeDocRef {
   get id() {
     return this.path.split("/").pop() ?? this.path;
   }
+
+  async get() {
+    return new FakeSnapshot(this.firestore.get(this.path));
+  }
 }
 
 class FakeSnapshot {
@@ -248,11 +252,7 @@ function assertHttpsCode(error: unknown, code: string): boolean {
 
 function baseDocs(overrides: Record<string, FakeData | undefined> = {}) {
   return {
-    "clubs/club-1": {
-      name: "Club One",
-      status: "active",
-      archived: false,
-    },
+    "clubs/club-1": clubDoc(),
     "users/runner-1": {
       name: "Runner One",
       firstName: "Runner",
@@ -266,6 +266,31 @@ function baseDocs(overrides: Record<string, FakeData | undefined> = {}) {
       status: "attended",
     },
     ...overrides,
+  };
+}
+
+function clubDoc(publicPageOverrides: FakeData = {}): FakeData {
+  return {
+    name: "Club One",
+    status: "active",
+    archived: false,
+    claim: {
+      state: "unclaimed",
+      claimHref: "/host/#founding-hosts",
+      lastClaimRequestId: null,
+    },
+    publicPage: {
+      slug: "club-one",
+      citySlug: "delhi",
+      canonicalPath: "/organizers/club-one/",
+      publishStatus: "published",
+      indexStatus: "indexReady",
+      robots: "index, follow",
+      seoTitle: null,
+      seoDescription: null,
+      lastRenderedAt: null,
+      ...publicPageOverrides,
+    },
   };
 }
 
@@ -315,7 +340,7 @@ test("createPublicClubReviewHandler writes anonymous unverified review",
         comment: "  Friendly group, easy to join.  ",
         reviewerName: "",
         isAnonymous: true,
-        submittedFromPath: "/organizers/indore/afterfly-run-club/",
+        submittedFromPath: "/organizers/club-one/",
       }, {ip: "203.0.113.7"}),
       h.deps
     );
@@ -339,7 +364,7 @@ test("createPublicClubReviewHandler writes anonymous unverified review",
     assert.equal(review?.isAnonymous, true);
     assert.equal(
       review?.submittedFromPath,
-      "/organizers/indore/afterfly-run-club/"
+      "/organizers/club-one/"
     );
   });
 
@@ -354,6 +379,7 @@ test("createPublicClubReviewHandler holds blocked content as pending",
         comment: "just kill yourself please",
         reviewerName: "",
         isAnonymous: true,
+        submittedFromPath: "/organizers/club-one/",
       }, {ip: "203.0.113.7"}),
       h.deps
     );
@@ -394,10 +420,71 @@ test("createPublicClubReviewHandler rejects missing organizer", async () => {
         comment: "Helpful.",
         reviewerName: "Reviewer",
         isAnonymous: false,
+        submittedFromPath: "/organizers/club-one/",
       }),
       h.deps
     ),
     (error) => assertHttpsCode(error, "not-found")
+  );
+});
+
+test("createPublicClubReviewHandler rejects unpublished pages", async () => {
+  const h = harness(baseDocs({
+    "clubs/club-1": clubDoc({
+      publishStatus: "qa",
+      robots: "noindex, follow",
+    }),
+  }));
+
+  await assert.rejects(
+    () => createPublicClubReviewHandler(
+      request(null, {
+        clubId: "club-1",
+        rating: 5,
+        comment: "Good room.",
+        reviewerName: "Visitor",
+        isAnonymous: false,
+        submittedFromPath: "/organizers/club-one/",
+      }),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "failed-precondition")
+  );
+});
+
+test("createPublicClubReviewHandler rejects noncanonical paths", async () => {
+  const h = harness(baseDocs());
+
+  await assert.rejects(
+    () => createPublicClubReviewHandler(
+      request(null, {
+        clubId: "club-1",
+        rating: 5,
+        comment: "Good room.",
+        reviewerName: "Visitor",
+        isAnonymous: false,
+        submittedFromPath: "/organizers/other-club/",
+      }),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+});
+
+test("listPublicClubReviewsHandler rejects unpublished pages", async () => {
+  const h = harness(baseDocs({
+    "clubs/club-1": clubDoc({
+      publishStatus: "suppressed",
+      robots: "noindex, follow",
+    }),
+  }));
+
+  await assert.rejects(
+    () => listPublicClubReviewsHandler(
+      request(null, {clubId: "club-1"}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "failed-precondition")
   );
 });
 

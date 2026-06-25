@@ -87,5 +87,8 @@ export interface HostAnalyticsCallableResponse {
     id: string;
     state: "ok" | "partial" | "missing";
     detail: string;
+    owner: string;
+    runbook: string;
+    nextAction: string;
   }[];
 }

@@ -13,7 +13,7 @@ final class CreatePublicClubReviewCallableRequest {
     required this.comment,
     required this.reviewerName,
     required this.isAnonymous,
-    this.submittedFromPath,
+    required this.submittedFromPath,
   });
 
   final String clubId;
@@ -21,7 +21,7 @@ final class CreatePublicClubReviewCallableRequest {
   final String comment;
   final String reviewerName;
   final bool isAnonymous;
-  final String? submittedFromPath;
+  final String submittedFromPath;
 
   Map<String, Object?> toJson() => {
     'clubId': clubId,
@@ -29,6 +29,6 @@ final class CreatePublicClubReviewCallableRequest {
     'comment': comment,
     'reviewerName': reviewerName,
     'isAnonymous': isAnonymous,
-    'submittedFromPath': ?submittedFromPath,
+    'submittedFromPath': submittedFromPath,
   };
 }

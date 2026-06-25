@@ -131,6 +131,212 @@
       ]
     },
     {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "clubId", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "clubId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "clubId", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "clubId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "externalEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "externalEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "publicationStatus", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "externalEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discovery.citySlug", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "externalEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discovery.citySlug", "mode": "ASCENDING"},
+        {"fieldPath": "publicationStatus", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "externalEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discovery.citySlug", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "externalEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discovery.citySlug", "mode": "ASCENDING"},
+        {"fieldPath": "publicationStatus", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "eventParticipations",
       "queryScope": "COLLECTION",
       "fields": [
@@ -178,6 +384,67 @@
       "fields": [
         {"fieldPath": "location", "mode": "ASCENDING"},
         {"fieldPath": "rating", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "clubs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "publicPage.citySlug", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "clubs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "publicPage.publishStatus", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "clubs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "appVisibility", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "clubs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "publicPage.citySlug", "mode": "ASCENDING"},
+        {"fieldPath": "publicPage.publishStatus", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "clubs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "publicPage.citySlug", "mode": "ASCENDING"},
+        {"fieldPath": "appVisibility", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "clubs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "publicPage.publishStatus", "mode": "ASCENDING"},
+        {"fieldPath": "appVisibility", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "clubs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "publicPage.citySlug", "mode": "ASCENDING"},
+        {"fieldPath": "publicPage.publishStatus", "mode": "ASCENDING"},
+        {"fieldPath": "appVisibility", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
       ]
     },
     {

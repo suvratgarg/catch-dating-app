@@ -78,6 +78,90 @@ function event(overrides = {}) {
   };
 }
 
+function externalEvent(overrides = {}) {
+  return {
+    schemaVersion: 1,
+    eventId: "external-event-1",
+    canonicalHostId: "host-afterfly",
+    compatibilityClubId: "club-afterfly",
+    title: "External mixer",
+    description: "Reviewed external supply.",
+    startTime: Timestamp.fromDate(new Date("2026-06-26T14:30:00.000Z")),
+    endTime: Timestamp.fromDate(new Date("2026-06-26T16:30:00.000Z")),
+    timezone: "Asia/Kolkata",
+    meetingPoint: "Bandra Amphitheatre",
+    meetingLocation: {
+      name: "Bandra Amphitheatre",
+      address: "Bandra, Mumbai",
+      placeId: null,
+      latitude: 19.05,
+      longitude: 72.82,
+      notes: null,
+    },
+    locationDetails: null,
+    photoUrl: null,
+    activity: {
+      version: 1,
+      activityKind: "singlesMixer",
+      interactionModel: "freeFormMixer",
+      source: "admin",
+    },
+    price: {
+      displayText: null,
+      parsedPriceInPaise: 0,
+      currency: "INR",
+    },
+    status: "active",
+    publicationStatus: "public",
+    booking: {
+      mode: "external_outbound_only",
+      catchBookingEnabled: false,
+      catchPaymentsEnabled: false,
+      catchReservationsEnabled: false,
+      catchWaitlistEnabled: false,
+      externalLinks: [{
+        platform: "luma",
+        url: "https://luma.com/e",
+        linkType: "booking_or_event_page",
+        sourceEventKey: "external-event-1",
+        candidateId: "candidate-external-event-1",
+        primary: true,
+      }],
+    },
+    discovery: {
+      citySlug: "mumbai",
+      countryCode: "IN",
+      availability: "read_only_external",
+      manualApprovalRequired: true,
+    },
+    dedupe: {
+      normalizedEventKey: "external-event-1",
+      primaryCandidateId: "candidate-external-event-1",
+      duplicateCandidateIds: [],
+      conflictPolicy: "single_read_only_event_with_multiple_outbound_links",
+    },
+    externalSource: {
+      candidateId: "candidate-external-event-1",
+      sourceEventKey: "external-event-1",
+      sourceEventId: "external-event-1",
+      platform: "luma",
+      eventUrl: "https://luma.com/e",
+      sourceUrl: "https://example.com/source",
+    },
+    review: {
+      eventReviewBatchId: "batch-1",
+      reviewer: "ops",
+      decidedAt: "2026-06-25",
+      note: null,
+      importPolicyAcknowledged: true,
+      ownerSafeCopyReviewed: true,
+    },
+    createdAt: Timestamp.fromDate(new Date("2026-06-25T10:00:00.000Z")),
+    updatedAt: Timestamp.fromDate(new Date("2026-06-25T10:00:00.000Z")),
+    ...overrides,
+  };
+}
+
 function eventParticipation(overrides = {}) {
   return {
     eventId: "event-1",
@@ -1551,6 +1635,45 @@ describe("firestore.rules", () => {
       await assertFails(
         deleteDoc(doc(authedDb("host-1"), "events", "event-1")),
       );
+    });
+
+    it("allows only public active external event reads", async () => {
+      await seed(["externalEvents", "external-public"], externalEvent({
+        eventId: "external-public",
+      }));
+      await seed(["externalEvents", "external-draft"], externalEvent({
+        eventId: "external-draft",
+        publicationStatus: "draft",
+      }));
+      await seed(["externalEvents", "external-cancelled"], externalEvent({
+        eventId: "external-cancelled",
+        status: "cancelled",
+      }));
+
+      const db = authedDb("runner-1");
+      await assertSucceeds(getDoc(doc(db, "externalEvents", "external-public")));
+      await assertFails(getDoc(doc(db, "externalEvents", "external-draft")));
+      await assertFails(getDoc(doc(db, "externalEvents", "external-cancelled")));
+      await assertSucceeds(getDocs(query(
+        collection(db, "externalEvents"),
+        where("publicationStatus", "==", "public"),
+        where("status", "==", "active"),
+        orderBy("startTime"),
+        limit(10),
+      )));
+      await assertFails(getDocs(query(
+        collection(db, "externalEvents"),
+        where("publicationStatus", "==", "draft"),
+      )));
+      await assertFails(
+        setDoc(doc(db, "externalEvents", "external-new"), externalEvent({
+          eventId: "external-new",
+        })),
+      );
+      await assertFails(updateDoc(doc(db, "externalEvents", "external-public"), {
+        title: "Client edit",
+      }));
+      await assertFails(deleteDoc(doc(db, "externalEvents", "external-public")));
     });
   });
 

@@ -59,8 +59,10 @@ Do not edit it by hand.
 | DeletedUserTombstoneDocument | `firestore/deleted_users.schema.json` | `functions/src/shared/generated/deletedUserTombstoneDocument.ts` |
 | RateLimitDocument | `firestore/rate_limits.schema.json` | `functions/src/shared/generated/rateLimitDocument.ts` |
 | FunctionEventReceiptDocument | `firestore/function_event_receipts.schema.json` | `functions/src/shared/generated/functionEventReceiptDocument.ts` |
+| PublicRouteReservationDocument | `firestore/public_route_reservations.schema.json` | `functions/src/shared/generated/publicRouteReservationDocument.ts` |
 | SeedEventManifestDocument | `firestore/seed_events.schema.json` | `functions/src/shared/generated/seedEventManifestDocument.ts` |
 | OrganizerIntakeReviewDecisionDocument | `firestore/organizer_intake_review_decisions.schema.json` | `functions/src/shared/generated/organizerIntakeReviewDecisionDocument.ts` |
+| EventIntakeReviewDecisionDocument | `firestore/event_intake_review_decisions.schema.json` | `functions/src/shared/generated/eventIntakeReviewDecisionDocument.ts` |
 | OrganizerIntakeCurationDecisionDocument | `firestore/organizer_intake_curation_decisions.schema.json` | `functions/src/shared/generated/organizerIntakeCurationDecisionDocument.ts` |
 | OrganizerEventCandidateReviewDecisionDocument | `firestore/organizer_event_candidate_review_decisions.schema.json` | `functions/src/shared/generated/organizerEventCandidateReviewDecisionDocument.ts` |
 | OrganizerEventLocationResolutionDecisionDocument | `firestore/organizer_event_location_resolution_decisions.schema.json` | `functions/src/shared/generated/organizerEventLocationResolutionDecisionDocument.ts` |
@@ -77,15 +79,23 @@ Do not edit it by hand.
 | RemoveClubHostCallablePayload | `callables/remove_club_host_payload.schema.json` | `functions/src/shared/generated/removeClubHostCallablePayload.ts` |
 | TransferClubOwnershipCallablePayload | `callables/transfer_club_ownership_payload.schema.json` | `functions/src/shared/generated/transferClubOwnershipCallablePayload.ts` |
 | RequestClubClaimCallablePayload | `callables/request_club_claim_payload.schema.json` | `functions/src/shared/generated/requestClubClaimCallablePayload.ts` |
+| RequestClubClaimCallableResponse | `callable_responses/request_club_claim_response.schema.json` | `functions/src/shared/generated/requestClubClaimCallableResponse.ts` |
 | AdminDecideClubClaimCallablePayload | `callables/admin_decide_club_claim_payload.schema.json` | `functions/src/shared/generated/adminDecideClubClaimCallablePayload.ts` |
 | AdminDecideOrganizerIntakeCallablePayload | `callables/admin_decide_organizer_intake_payload.schema.json` | `functions/src/shared/generated/adminDecideOrganizerIntakeCallablePayload.ts` |
 | AdminRecordOrganizerCurationCallablePayload | `callables/admin_record_organizer_curation_payload.schema.json` | `functions/src/shared/generated/adminRecordOrganizerCurationCallablePayload.ts` |
+| AdminRecordEventIntakeReviewDecisionCallablePayload | `callables/admin_record_event_intake_review_decision_payload.schema.json` | `functions/src/shared/generated/adminRecordEventIntakeReviewDecisionCallablePayload.ts` |
 | AdminDecideOrganizerEventCandidateCallablePayload | `callables/admin_decide_organizer_event_candidate_payload.schema.json` | `functions/src/shared/generated/adminDecideOrganizerEventCandidateCallablePayload.ts` |
 | AdminDecideOrganizerPolicyGapCallablePayload | `callables/admin_decide_organizer_policy_gap_payload.schema.json` | `functions/src/shared/generated/adminDecideOrganizerPolicyGapCallablePayload.ts` |
 | AdminResolveOrganizerEventLocationCallablePayload | `callables/admin_resolve_organizer_event_location_payload.schema.json` | `functions/src/shared/generated/adminResolveOrganizerEventLocationCallablePayload.ts` |
 | AdminSetClubIndexStatusCallablePayload | `callables/admin_set_club_index_status_payload.schema.json` | `functions/src/shared/generated/adminSetClubIndexStatusCallablePayload.ts` |
 | AdminGetClubDetailsCallablePayload | `callables/admin_get_club_details_payload.schema.json` | `functions/src/shared/generated/adminGetClubDetailsCallablePayload.ts` |
+| AdminListClubDetailsCallablePayload | `callables/admin_list_club_details_payload.schema.json` | `functions/src/shared/generated/adminListClubDetailsCallablePayload.ts` |
 | AdminUpdateClubDetailsCallablePayload | `callables/admin_update_club_details_payload.schema.json` | `functions/src/shared/generated/adminUpdateClubDetailsCallablePayload.ts` |
+| AdminGetEventDetailsCallablePayload | `callables/admin_get_event_details_payload.schema.json` | `functions/src/shared/generated/adminGetEventDetailsCallablePayload.ts` |
+| AdminListEventDetailsCallablePayload | `callables/admin_list_event_details_payload.schema.json` | `functions/src/shared/generated/adminListEventDetailsCallablePayload.ts` |
+| AdminListExternalEventDetailsCallablePayload | `callables/admin_list_external_event_details_payload.schema.json` | `functions/src/shared/generated/adminListExternalEventDetailsCallablePayload.ts` |
+| AdminUpdateEventDetailsCallablePayload | `callables/admin_update_event_details_payload.schema.json` | `functions/src/shared/generated/adminUpdateEventDetailsCallablePayload.ts` |
+| AdminPublishExternalEventCallablePayload | `callables/admin_publish_external_event_payload.schema.json` | `functions/src/shared/generated/adminPublishExternalEventCallablePayload.ts` |
 | StartClubHostConversationCallablePayload | `callables/start_club_host_conversation_payload.schema.json` | `functions/src/shared/generated/startClubHostConversationCallablePayload.ts` |
 | ArchiveClubCallablePayload | `callables/archive_club_payload.schema.json` | `functions/src/shared/generated/archiveClubCallablePayload.ts` |
 | DeleteClubCallablePayload | `callables/delete_club_payload.schema.json` | `functions/src/shared/generated/deleteClubCallablePayload.ts` |
@@ -101,6 +111,7 @@ Do not edit it by hand.
 | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `functions/src/shared/generated/disableEventInviteLinkCallablePayload.ts` |
 | RecordEventInviteLinkOpenCallablePayload | `callables/record_event_invite_link_open_payload.schema.json` | `functions/src/shared/generated/recordEventInviteLinkOpenCallablePayload.ts` |
 | RecordOrganizerAnalyticsEventCallablePayload | `callables/record_organizer_analytics_event_payload.schema.json` | `functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload.ts` |
+| RecordOrganizerAnalyticsEventCallableResponse | `callable_responses/record_organizer_analytics_event_response.schema.json` | `functions/src/shared/generated/recordOrganizerAnalyticsEventCallableResponse.ts` |
 | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `functions/src/shared/generated/markEventAttendanceCallablePayload.ts` |
 | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `functions/src/shared/generated/eventJoinRequestDecisionCallablePayload.ts` |
 | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `functions/src/shared/generated/overrideEventSuccessRotationsCallablePayload.ts` |
@@ -112,7 +123,9 @@ Do not edit it by hand.
 | SelfCheckInAttendanceCallablePayload | `callables/self_check_in_attendance_payload.schema.json` | `functions/src/shared/generated/selfCheckInAttendanceCallablePayload.ts` |
 | CreateEventReviewCallablePayload | `callables/create_event_review_payload.schema.json` | `functions/src/shared/generated/createEventReviewCallablePayload.ts` |
 | CreatePublicClubReviewCallablePayload | `callables/create_public_club_review_payload.schema.json` | `functions/src/shared/generated/createPublicClubReviewCallablePayload.ts` |
+| CreatePublicClubReviewCallableResponse | `callable_responses/create_public_club_review_response.schema.json` | `functions/src/shared/generated/createPublicClubReviewCallableResponse.ts` |
 | ListPublicClubReviewsCallablePayload | `callables/list_public_club_reviews_payload.schema.json` | `functions/src/shared/generated/listPublicClubReviewsCallablePayload.ts` |
+| ListPublicClubReviewsCallableResponse | `callable_responses/list_public_club_reviews_response.schema.json` | `functions/src/shared/generated/listPublicClubReviewsCallableResponse.ts` |
 | UpdateEventReviewCallablePayload | `callables/update_event_review_payload.schema.json` | `functions/src/shared/generated/updateEventReviewCallablePayload.ts` |
 | DeleteEventReviewCallablePayload | `callables/delete_event_review_payload.schema.json` | `functions/src/shared/generated/deleteEventReviewCallablePayload.ts` |
 | SetReviewResponseCallablePayload | `callables/set_review_response_payload.schema.json` | `functions/src/shared/generated/setReviewResponseCallablePayload.ts` |
@@ -136,6 +149,7 @@ Do not edit it by hand.
 | PlaceDetailsCallableResponse | `callable_responses/place_details_response.schema.json` | `functions/src/shared/generated/placeDetailsCallableResponse.ts` |
 | ExploreSearchCallablePayload | `callables/explore_search_payload.schema.json` | `functions/src/shared/generated/exploreSearchCallablePayload.ts` |
 | ExploreSearchCallableResponse | `callable_responses/explore_search_response.schema.json` | `functions/src/shared/generated/exploreSearchCallableResponse.ts` |
+| WebsiteHostListingProjection | `public/website_host_listing_projection.schema.json` | `functions/src/shared/generated/websiteHostListingProjection.ts` |
 | FetchEventSuccessWingmanCandidatesCallableResponse | `callable_responses/fetch_event_success_wingman_candidates_response.schema.json` | `functions/src/shared/generated/fetchEventSuccessWingmanCandidatesCallableResponse.ts` |
 | CreateProfileDecisionClientWrite | `client_writes/create_profile_decision.schema.json` | `functions/src/shared/generated/createProfileDecisionClientWrite.ts` |
 | CreateChatMessageClientWrite | `client_writes/create_chat_message.schema.json` | `functions/src/shared/generated/createChatMessageClientWrite.ts` |
@@ -195,8 +209,10 @@ Do not edit it by hand.
 | `schemaDeletedUserTombstoneDocumentSchema` | DeletedUserTombstoneDocument | `firestore/deleted_users.schema.json` | `lib/core/schema_contracts/generated/schemas/deleted_user_tombstone_document.g.dart` |
 | `schemaRateLimitDocumentSchema` | RateLimitDocument | `firestore/rate_limits.schema.json` | `lib/core/schema_contracts/generated/schemas/rate_limit_document.g.dart` |
 | `schemaFunctionEventReceiptDocumentSchema` | FunctionEventReceiptDocument | `firestore/function_event_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/function_event_receipt_document.g.dart` |
+| `schemaPublicRouteReservationDocumentSchema` | PublicRouteReservationDocument | `firestore/public_route_reservations.schema.json` | `lib/core/schema_contracts/generated/schemas/public_route_reservation_document.g.dart` |
 | `schemaSeedEventManifestDocumentSchema` | SeedEventManifestDocument | `firestore/seed_events.schema.json` | `lib/core/schema_contracts/generated/schemas/seed_event_manifest_document.g.dart` |
 | `schemaOrganizerIntakeReviewDecisionDocumentSchema` | OrganizerIntakeReviewDecisionDocument | `firestore/organizer_intake_review_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_intake_review_decision_document.g.dart` |
+| `schemaEventIntakeReviewDecisionDocumentSchema` | EventIntakeReviewDecisionDocument | `firestore/event_intake_review_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_intake_review_decision_document.g.dart` |
 | `schemaOrganizerIntakeCurationDecisionDocumentSchema` | OrganizerIntakeCurationDecisionDocument | `firestore/organizer_intake_curation_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_intake_curation_decision_document.g.dart` |
 | `schemaOrganizerEventCandidateReviewDecisionDocumentSchema` | OrganizerEventCandidateReviewDecisionDocument | `firestore/organizer_event_candidate_review_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_candidate_review_decision_document.g.dart` |
 | `schemaOrganizerEventLocationResolutionDecisionDocumentSchema` | OrganizerEventLocationResolutionDecisionDocument | `firestore/organizer_event_location_resolution_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_location_resolution_decision_document.g.dart` |
@@ -213,15 +229,23 @@ Do not edit it by hand.
 | `schemaRemoveClubHostCallablePayloadSchema` | RemoveClubHostCallablePayload | `callables/remove_club_host_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/remove_club_host_callable_payload.g.dart` |
 | `schemaTransferClubOwnershipCallablePayloadSchema` | TransferClubOwnershipCallablePayload | `callables/transfer_club_ownership_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/transfer_club_ownership_callable_payload.g.dart` |
 | `schemaRequestClubClaimCallablePayloadSchema` | RequestClubClaimCallablePayload | `callables/request_club_claim_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/request_club_claim_callable_payload.g.dart` |
+| `schemaRequestClubClaimCallableResponseSchema` | RequestClubClaimCallableResponse | `callable_responses/request_club_claim_response.schema.json` | `lib/core/schema_contracts/generated/schemas/request_club_claim_callable_response.g.dart` |
 | `schemaAdminDecideClubClaimCallablePayloadSchema` | AdminDecideClubClaimCallablePayload | `callables/admin_decide_club_claim_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_club_claim_callable_payload.g.dart` |
 | `schemaAdminDecideOrganizerIntakeCallablePayloadSchema` | AdminDecideOrganizerIntakeCallablePayload | `callables/admin_decide_organizer_intake_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_organizer_intake_callable_payload.g.dart` |
 | `schemaAdminRecordOrganizerCurationCallablePayloadSchema` | AdminRecordOrganizerCurationCallablePayload | `callables/admin_record_organizer_curation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_record_organizer_curation_callable_payload.g.dart` |
+| `schemaAdminRecordEventIntakeReviewDecisionCallablePayloadSchema` | AdminRecordEventIntakeReviewDecisionCallablePayload | `callables/admin_record_event_intake_review_decision_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_record_event_intake_review_decision_callable_payload.g.dart` |
 | `schemaAdminDecideOrganizerEventCandidateCallablePayloadSchema` | AdminDecideOrganizerEventCandidateCallablePayload | `callables/admin_decide_organizer_event_candidate_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_organizer_event_candidate_callable_payload.g.dart` |
 | `schemaAdminDecideOrganizerPolicyGapCallablePayloadSchema` | AdminDecideOrganizerPolicyGapCallablePayload | `callables/admin_decide_organizer_policy_gap_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_organizer_policy_gap_callable_payload.g.dart` |
 | `schemaAdminResolveOrganizerEventLocationCallablePayloadSchema` | AdminResolveOrganizerEventLocationCallablePayload | `callables/admin_resolve_organizer_event_location_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_resolve_organizer_event_location_callable_payload.g.dart` |
 | `schemaAdminSetClubIndexStatusCallablePayloadSchema` | AdminSetClubIndexStatusCallablePayload | `callables/admin_set_club_index_status_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_set_club_index_status_callable_payload.g.dart` |
 | `schemaAdminGetClubDetailsCallablePayloadSchema` | AdminGetClubDetailsCallablePayload | `callables/admin_get_club_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_club_details_callable_payload.g.dart` |
+| `schemaAdminListClubDetailsCallablePayloadSchema` | AdminListClubDetailsCallablePayload | `callables/admin_list_club_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_club_details_callable_payload.g.dart` |
 | `schemaAdminUpdateClubDetailsCallablePayloadSchema` | AdminUpdateClubDetailsCallablePayload | `callables/admin_update_club_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_update_club_details_callable_payload.g.dart` |
+| `schemaAdminGetEventDetailsCallablePayloadSchema` | AdminGetEventDetailsCallablePayload | `callables/admin_get_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_event_details_callable_payload.g.dart` |
+| `schemaAdminListEventDetailsCallablePayloadSchema` | AdminListEventDetailsCallablePayload | `callables/admin_list_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_event_details_callable_payload.g.dart` |
+| `schemaAdminListExternalEventDetailsCallablePayloadSchema` | AdminListExternalEventDetailsCallablePayload | `callables/admin_list_external_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_external_event_details_callable_payload.g.dart` |
+| `schemaAdminUpdateEventDetailsCallablePayloadSchema` | AdminUpdateEventDetailsCallablePayload | `callables/admin_update_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_update_event_details_callable_payload.g.dart` |
+| `schemaAdminPublishExternalEventCallablePayloadSchema` | AdminPublishExternalEventCallablePayload | `callables/admin_publish_external_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_publish_external_event_callable_payload.g.dart` |
 | `schemaStartClubHostConversationCallablePayloadSchema` | StartClubHostConversationCallablePayload | `callables/start_club_host_conversation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/start_club_host_conversation_callable_payload.g.dart` |
 | `schemaArchiveClubCallablePayloadSchema` | ArchiveClubCallablePayload | `callables/archive_club_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/archive_club_callable_payload.g.dart` |
 | `schemaDeleteClubCallablePayloadSchema` | DeleteClubCallablePayload | `callables/delete_club_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/delete_club_callable_payload.g.dart` |
@@ -237,6 +261,7 @@ Do not edit it by hand.
 | `schemaDisableEventInviteLinkCallablePayloadSchema` | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/disable_event_invite_link_callable_payload.g.dart` |
 | `schemaRecordEventInviteLinkOpenCallablePayloadSchema` | RecordEventInviteLinkOpenCallablePayload | `callables/record_event_invite_link_open_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_event_invite_link_open_callable_payload.g.dart` |
 | `schemaRecordOrganizerAnalyticsEventCallablePayloadSchema` | RecordOrganizerAnalyticsEventCallablePayload | `callables/record_organizer_analytics_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_organizer_analytics_event_callable_payload.g.dart` |
+| `schemaRecordOrganizerAnalyticsEventCallableResponseSchema` | RecordOrganizerAnalyticsEventCallableResponse | `callable_responses/record_organizer_analytics_event_response.schema.json` | `lib/core/schema_contracts/generated/schemas/record_organizer_analytics_event_callable_response.g.dart` |
 | `schemaMarkEventAttendanceCallablePayloadSchema` | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/mark_event_attendance_callable_payload.g.dart` |
 | `schemaEventJoinRequestDecisionCallablePayloadSchema` | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/event_join_request_decision_callable_payload.g.dart` |
 | `schemaOverrideEventSuccessRotationsCallablePayloadSchema` | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/override_event_success_rotations_callable_payload.g.dart` |
@@ -248,7 +273,9 @@ Do not edit it by hand.
 | `schemaSelfCheckInAttendanceCallablePayloadSchema` | SelfCheckInAttendanceCallablePayload | `callables/self_check_in_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/self_check_in_attendance_callable_payload.g.dart` |
 | `schemaCreateEventReviewCallablePayloadSchema` | CreateEventReviewCallablePayload | `callables/create_event_review_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_event_review_callable_payload.g.dart` |
 | `schemaCreatePublicClubReviewCallablePayloadSchema` | CreatePublicClubReviewCallablePayload | `callables/create_public_club_review_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_public_club_review_callable_payload.g.dart` |
+| `schemaCreatePublicClubReviewCallableResponseSchema` | CreatePublicClubReviewCallableResponse | `callable_responses/create_public_club_review_response.schema.json` | `lib/core/schema_contracts/generated/schemas/create_public_club_review_callable_response.g.dart` |
 | `schemaListPublicClubReviewsCallablePayloadSchema` | ListPublicClubReviewsCallablePayload | `callables/list_public_club_reviews_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_public_club_reviews_callable_payload.g.dart` |
+| `schemaListPublicClubReviewsCallableResponseSchema` | ListPublicClubReviewsCallableResponse | `callable_responses/list_public_club_reviews_response.schema.json` | `lib/core/schema_contracts/generated/schemas/list_public_club_reviews_callable_response.g.dart` |
 | `schemaUpdateEventReviewCallablePayloadSchema` | UpdateEventReviewCallablePayload | `callables/update_event_review_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_event_review_callable_payload.g.dart` |
 | `schemaDeleteEventReviewCallablePayloadSchema` | DeleteEventReviewCallablePayload | `callables/delete_event_review_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/delete_event_review_callable_payload.g.dart` |
 | `schemaSetReviewResponseCallablePayloadSchema` | SetReviewResponseCallablePayload | `callables/set_review_response_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_review_response_callable_payload.g.dart` |
@@ -272,6 +299,7 @@ Do not edit it by hand.
 | `schemaPlaceDetailsCallableResponseSchema` | PlaceDetailsCallableResponse | `callable_responses/place_details_response.schema.json` | `lib/core/schema_contracts/generated/schemas/place_details_callable_response.g.dart` |
 | `schemaExploreSearchCallablePayloadSchema` | ExploreSearchCallablePayload | `callables/explore_search_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/explore_search_callable_payload.g.dart` |
 | `schemaExploreSearchCallableResponseSchema` | ExploreSearchCallableResponse | `callable_responses/explore_search_response.schema.json` | `lib/core/schema_contracts/generated/schemas/explore_search_callable_response.g.dart` |
+| `schemaWebsiteHostListingProjectionSchema` | WebsiteHostListingProjection | `public/website_host_listing_projection.schema.json` | `lib/core/schema_contracts/generated/schemas/website_host_listing_projection.g.dart` |
 | `schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema` | FetchEventSuccessWingmanCandidatesCallableResponse | `callable_responses/fetch_event_success_wingman_candidates_response.schema.json` | `lib/core/schema_contracts/generated/schemas/fetch_event_success_wingman_candidates_callable_response.g.dart` |
 | `schemaCreateProfileDecisionClientWriteSchema` | CreateProfileDecisionClientWrite | `client_writes/create_profile_decision.schema.json` | `lib/core/schema_contracts/generated/schemas/create_profile_decision_client_write.g.dart` |
 | `schemaCreateChatMessageClientWriteSchema` | CreateChatMessageClientWrite | `client_writes/create_chat_message.schema.json` | `lib/core/schema_contracts/generated/schemas/create_chat_message_client_write.g.dart` |
@@ -295,11 +323,17 @@ Do not edit it by hand.
 | AdminDecideClubClaimCallableRequest | AdminDecideClubClaimCallablePayload | `callables/admin_decide_club_claim_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_decide_club_claim_callable_request.g.dart` |
 | AdminDecideOrganizerIntakeCallableRequest | AdminDecideOrganizerIntakeCallablePayload | `callables/admin_decide_organizer_intake_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_decide_organizer_intake_callable_request.g.dart` |
 | AdminRecordOrganizerCurationCallableRequest | AdminRecordOrganizerCurationCallablePayload | `callables/admin_record_organizer_curation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_record_organizer_curation_callable_request.g.dart` |
+| AdminRecordEventIntakeReviewDecisionCallableRequest | AdminRecordEventIntakeReviewDecisionCallablePayload | `callables/admin_record_event_intake_review_decision_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_record_event_intake_review_decision_callable_request.g.dart` |
 | AdminDecideOrganizerEventCandidateCallableRequest | AdminDecideOrganizerEventCandidateCallablePayload | `callables/admin_decide_organizer_event_candidate_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_decide_organizer_event_candidate_callable_request.g.dart` |
 | AdminDecideOrganizerPolicyGapCallableRequest | AdminDecideOrganizerPolicyGapCallablePayload | `callables/admin_decide_organizer_policy_gap_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_decide_organizer_policy_gap_callable_request.g.dart` |
 | AdminResolveOrganizerEventLocationCallableRequest | AdminResolveOrganizerEventLocationCallablePayload | `callables/admin_resolve_organizer_event_location_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_resolve_organizer_event_location_callable_request.g.dart` |
 | AdminSetClubIndexStatusCallableRequest | AdminSetClubIndexStatusCallablePayload | `callables/admin_set_club_index_status_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_set_club_index_status_callable_request.g.dart` |
 | AdminGetClubDetailsCallableRequest | AdminGetClubDetailsCallablePayload | `callables/admin_get_club_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_club_details_callable_request.g.dart` |
+| AdminListClubDetailsCallableRequest | AdminListClubDetailsCallablePayload | `callables/admin_list_club_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_club_details_callable_request.g.dart` |
+| AdminGetEventDetailsCallableRequest | AdminGetEventDetailsCallablePayload | `callables/admin_get_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_event_details_callable_request.g.dart` |
+| AdminListEventDetailsCallableRequest | AdminListEventDetailsCallablePayload | `callables/admin_list_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_event_details_callable_request.g.dart` |
+| AdminListExternalEventDetailsCallableRequest | AdminListExternalEventDetailsCallablePayload | `callables/admin_list_external_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_external_event_details_callable_request.g.dart` |
+| AdminPublishExternalEventCallableRequest | AdminPublishExternalEventCallablePayload | `callables/admin_publish_external_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_publish_external_event_callable_request.g.dart` |
 | StartClubHostConversationCallableRequest | StartClubHostConversationCallablePayload | `callables/start_club_host_conversation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/start_club_host_conversation_callable_request.g.dart` |
 | ArchiveClubCallableRequest | ArchiveClubCallablePayload | `callables/archive_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/archive_club_callable_request.g.dart` |
 | DeleteClubCallableRequest | DeleteClubCallablePayload | `callables/delete_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/delete_club_callable_request.g.dart` |
@@ -347,6 +381,7 @@ Do not edit it by hand.
 |---|---|
 | UpdateClubCallablePayloadPatch | cannot map patch field "clubPhotos" (type=array) |
 | AdminUpdateClubDetailsCallablePayloadPatch | no Dart patch config |
+| AdminUpdateEventDetailsCallablePayloadPatch | no Dart patch config |
 | RefreshStripeHostPaymentAccountCallablePayload | no properties |
 
 ## Registry And Validator Outputs

@@ -11,5 +11,5 @@ export interface CreatePublicClubReviewCallablePayload {
   comment: string;
   reviewerName: string;
   isAnonymous: boolean;
-  submittedFromPath?: string | null;
+  submittedFromPath: string;
 }

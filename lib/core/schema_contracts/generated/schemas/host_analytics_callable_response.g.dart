@@ -426,6 +426,9 @@ const schemaHostAnalyticsCallableResponseSchema = <String, Object?>{
           'id',
           'state',
           'detail',
+          'owner',
+          'runbook',
+          'nextAction',
         ],
         'properties': <String, Object?>{
           'id': <String, Object?>{
@@ -442,6 +445,21 @@ const schemaHostAnalyticsCallableResponseSchema = <String, Object?>{
             ],
           },
           'detail': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 240,
+          },
+          'owner': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 80,
+          },
+          'runbook': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 200,
+          },
+          'nextAction': <String, Object?>{
             'type': 'string',
             'minLength': 1,
             'maxLength': 240,

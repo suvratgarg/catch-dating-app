@@ -552,6 +552,12 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Written exclusively by admin organizer publishing callables to reserve
+    // public website routes before pages become indexable.
+    match /publicRouteReservations/{routeKey} {
+      allow read, write: if false;
+    }
+
     // Written exclusively by demo-data tooling to track synthetic-data cleanup.
     match /seedEvents/{manifestId} {
       allow read, write: if false;
@@ -778,6 +784,12 @@ service cloud.firestore {
       // Event deletion needs backend cleanup/refunds before it can be safely
       // exposed.
       allow delete: if false;
+    }
+
+    match /externalEvents/{eventId} {
+      allow get, list: if resource.data.publicationStatus == 'public'
+        && resource.data.status == 'active';
+      allow write: if false;
     }
 
     match /eventPrivateAccess/{eventId} {

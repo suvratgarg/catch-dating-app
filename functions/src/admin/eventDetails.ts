@@ -1,0 +1,795 @@
+import {onCall, CallableRequest, HttpsError} from
+  "firebase-functions/v2/https";
+import * as admin from "firebase-admin";
+import {appCheckCallableOptions} from "../shared/callableOptions";
+import {
+  ClubDocument,
+  EventDocument,
+  EventFormatSnapshot,
+} from "../shared/generated/firestoreAdminTypes";
+import {AdminGetEventDetailsCallablePayload} from
+  "../shared/generated/adminGetEventDetailsCallablePayload";
+import {AdminListEventDetailsCallablePayload} from
+  "../shared/generated/adminListEventDetailsCallablePayload";
+import {AdminUpdateEventDetailsCallablePayload} from
+  "../shared/generated/adminUpdateEventDetailsCallablePayload";
+import {
+  validateAdminGetEventDetailsCallablePayload,
+  validateAdminListEventDetailsCallablePayload,
+  validateAdminUpdateEventDetailsCallablePayload,
+} from "../shared/generated/schemaValidators";
+import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {requireAdminRole} from "./adminAuth";
+import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
+import {eventDiscoveryProjection} from "../events/eventDiscoveryProjection";
+import {
+  buildEventAdminSearchProjection,
+  eventAdminSearchQueryTokens,
+  eventFormatLabel,
+  eventTitleLabel,
+  eventWithAdminFieldsForSearch,
+} from "./eventAdminSearch";
+
+const eventDetailsRoles = ["admin", "adminOwner", "support"] as const;
+type EventListTimeWindow = "upcoming" | "past" | "all";
+
+interface EventDetailsDeps {
+  firestore: () => FirebaseFirestore.Firestore;
+  serverTimestamp: () => FirebaseFirestore.FieldValue;
+  now?: () => Date;
+  checkRateLimit?: (
+    db: FirebaseFirestore.Firestore,
+    uid: string,
+    action: string
+  ) => Promise<void>;
+}
+
+const defaultDeps: EventDetailsDeps = {
+  firestore: () => admin.firestore(),
+  serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  now: () => new Date(),
+  checkRateLimit: defaultCheckRateLimit,
+};
+
+type EventDetailsPatch = AdminUpdateEventDetailsCallablePayload["fields"];
+
+export interface AdminEventDetailsSnapshot {
+  eventId: string;
+  clubId: string;
+  organizerName: string | null;
+  title: string;
+  startTime: string | null;
+  endTime: string | null;
+  meetingPoint: string;
+  locationDetails: string | null;
+  description: string;
+  photoUrl: string | null;
+  eventFormat: {
+    version: number;
+    activityKind: EventFormatSnapshot["activityKind"];
+    interactionModel: EventFormatSnapshot["interactionModel"];
+    customActivityLabel: string | null;
+    label: string;
+  };
+  distanceKm: number;
+  pace: EventDocument["pace"];
+  capacityLimit: number;
+  bookedCount: number;
+  checkedInCount: number;
+  waitlistedCount: number;
+  priceInPaise: number;
+  currency: string;
+  status: EventDocument["status"];
+  cancellationReason: string | null;
+  discovery: {
+    citySlug: string | null;
+    activityKind: string | null;
+    availability: string | null;
+    hasOpenSpots: boolean | null;
+    inviteRequired: boolean | null;
+    membershipRequired: boolean | null;
+    manualApprovalRequired: boolean | null;
+    minAge: number | null;
+    maxAge: number | null;
+  };
+  searchIndexStatus: "missing" | "indexed";
+}
+
+export interface AdminEventListRow {
+  eventId: string;
+  clubId: string;
+  organizerName: string | null;
+  title: string;
+  activityKind: EventFormatSnapshot["activityKind"];
+  activityLabel: string;
+  startTime: string | null;
+  citySlug: string | null;
+  meetingPoint: string;
+  status: EventDocument["status"];
+  availability: string | null;
+  bookedCount: number;
+  capacityLimit: number;
+  priceInPaise: number;
+  currency: string;
+  searchIndexStatus: "missing" | "indexed";
+}
+
+export interface AdminGetEventDetailsResponse {
+  event: AdminEventDetailsSnapshot;
+}
+
+export interface AdminListEventDetailsResponse {
+  generatedAt: string;
+  rows: AdminEventListRow[];
+}
+
+export interface AdminUpdateEventDetailsResponse {
+  eventId: string;
+  updatedFieldCount: number;
+}
+
+/**
+ * Lists canonical app events from events/{eventId}.
+ * @param {CallableRequest<unknown>} request Callable request.
+ * @param {EventDetailsDeps} deps Injectable dependencies.
+ * @return {Promise<AdminListEventDetailsResponse>} Event rows.
+ */
+export async function adminListEventDetailsHandler(
+  request: CallableRequest<unknown>,
+  deps: EventDetailsDeps = defaultDeps
+): Promise<AdminListEventDetailsResponse> {
+  const adminContext = requireAdminRole(request, eventDetailsRoles);
+  const data = validateCallableWithAjv<AdminListEventDetailsCallablePayload>(
+    request,
+    validateAdminListEventDetailsCallablePayload,
+    normalizeAdminListEventDetailsPayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminListEventDetails");
+
+  const limit = clampLimit(data.limit);
+  const queryText = normalizeSearchText(data.query);
+  const searchTokens = eventAdminSearchQueryTokens(queryText);
+  const hasSearchQuery = searchTokens.length > 0;
+  const timeWindow = normalizeTimeWindow(data.timeWindow);
+  const now = deps.now?.() ?? new Date();
+  let query: FirebaseFirestore.Query = db.collection("events");
+  if (hasSearchQuery) {
+    query = query.where(
+      "adminSearch.tokens",
+      "array-contains-any",
+      searchTokens
+    );
+  }
+  if (data.clubId) query = query.where("clubId", "==", data.clubId);
+  if (data.citySlug) {
+    query = query.where("discoveryCityName", "==", data.citySlug);
+  } else if (data.citySlugs && data.citySlugs.length > 0) {
+    query = query.where("discoveryCityName", "in", data.citySlugs);
+  }
+  if (data.activityKind) {
+    query = query.where("discoveryActivityKind", "==", data.activityKind);
+  }
+  if (data.status) query = query.where("status", "==", data.status);
+  query = applyTimeWindow(query, timeWindow, now);
+  const snapshot = await query
+    .limit(queryLimitForSearch(limit, hasSearchQuery))
+    .get();
+  const events = snapshot.docs.map((doc) => ({
+    eventId: doc.id,
+    event: requireDoc<EventDocument>(doc, "EventDocument"),
+  }));
+  const clubNames = await loadClubNames(
+    db,
+    events.map((row) => row.event.clubId)
+  );
+  const rows = events
+    .map(({eventId, event}) =>
+      publicEventListRow(eventId, event, clubNames.get(event.clubId) ?? null))
+    .filter((row) => eventListRowMatchesQuery(row, queryText))
+    .sort((a, b) => compareEventRows(a, b, timeWindow))
+    .slice(0, limit);
+  return {
+    generatedAt: now.toISOString(),
+    rows,
+  };
+}
+
+/**
+ * Loads an admin-safe canonical event snapshot.
+ * @param {CallableRequest<unknown>} request Callable request.
+ * @param {EventDetailsDeps} deps Injectable dependencies.
+ * @return {Promise<AdminGetEventDetailsResponse>} Event snapshot.
+ */
+export async function adminGetEventDetailsHandler(
+  request: CallableRequest<unknown>,
+  deps: EventDetailsDeps = defaultDeps
+): Promise<AdminGetEventDetailsResponse> {
+  const adminContext = requireAdminRole(request, eventDetailsRoles);
+  const data = validateCallableWithAjv<AdminGetEventDetailsCallablePayload>(
+    request,
+    validateAdminGetEventDetailsCallablePayload,
+    normalizeAdminGetEventDetailsPayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetEventDetails");
+  const eventSnap = await db.collection("events").doc(data.eventId).get();
+  if (!eventSnap.exists) {
+    throw new HttpsError("not-found", "Event not found.");
+  }
+  const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+  const club = await loadClub(db, event.clubId);
+  return {
+    event: publicEventDetails(data.eventId, event, club?.name ?? null),
+  };
+}
+
+/**
+ * Applies audited low-risk admin edits to a canonical event.
+ * @param {CallableRequest<unknown>} request Callable request.
+ * @param {EventDetailsDeps} deps Injectable dependencies.
+ * @return {Promise<AdminUpdateEventDetailsResponse>} Save summary.
+ */
+export async function adminUpdateEventDetailsHandler(
+  request: CallableRequest<unknown>,
+  deps: EventDetailsDeps = defaultDeps
+): Promise<AdminUpdateEventDetailsResponse> {
+  const adminContext = requireAdminRole(request, eventDetailsRoles);
+  const data =
+    validateCallableWithAjv<AdminUpdateEventDetailsCallablePayload>(
+      request,
+      validateAdminUpdateEventDetailsCallablePayload,
+      normalizeAdminUpdateEventDetailsPayload
+    );
+  const rawPatch = buildFirestorePatch(data.fields);
+  const editableFieldCount = Object.keys(rawPatch).length;
+  if (editableFieldCount === 0) {
+    throw new HttpsError("invalid-argument", "No editable fields supplied.");
+  }
+  if (!data.reviewNote) {
+    throw new HttpsError(
+      "invalid-argument",
+      "A review note is required for audited event edits."
+    );
+  }
+
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminUpdateEventDetails");
+  const eventRef = db.collection("events").doc(data.eventId);
+  await db.runTransaction(async (tx) => {
+    const eventSnap = await tx.get(eventRef);
+    if (!eventSnap.exists) {
+      throw new HttpsError("not-found", "Event not found.");
+    }
+    const before = requireDoc<EventDocument>(eventSnap, "EventDocument");
+    if (before.status === "cancelled") {
+      throw new HttpsError(
+        "failed-precondition",
+        "Cancelled events cannot be edited from admin details."
+      );
+    }
+    const clubRef = db.collection("clubs").doc(before.clubId);
+    const clubSnap = await tx.get(clubRef);
+    const club = clubSnap.exists ?
+      requireDoc<ClubDocument>(clubSnap, "ClubDocument") :
+      null;
+    const patch = mergeEventDetailsPatch(before, rawPatch);
+    const nextEvent = eventWithAdminFieldsForSearch(before, patch);
+    const fullPatch: Record<string, unknown> = {
+      ...patch,
+      ...eventDiscoveryProjection({
+        event: nextEvent,
+        clubLocation: club?.location,
+      }),
+      adminSearch: buildEventAdminSearchProjection(
+        data.eventId,
+        nextEvent,
+        club,
+        deps.serverTimestamp(),
+        "adminUpdateEventDetails"
+      ),
+    };
+    tx.update(eventRef, fullPatch);
+    setAdminAuditLogInTransaction(tx, db, adminContext, {
+      action: "adminUpdateEventDetails",
+      targetPath: eventRef.path,
+      request,
+      before: {
+        event: publicEventDetails(data.eventId, before, club?.name ?? null),
+      },
+      after: {
+        eventId: data.eventId,
+        updatedFields: Object.keys(fullPatch).sort(),
+      },
+      note: data.reviewNote,
+      serverTimestamp: deps.serverTimestamp,
+    });
+  });
+
+  return {eventId: data.eventId, updatedFieldCount: editableFieldCount};
+}
+
+/**
+ * Builds a compact event row from EventDocument.
+ * @param {string} eventId Firestore document id.
+ * @param {EventDocument} event Canonical event.
+ * @param {string | null} organizerName Organizer name.
+ * @return {AdminEventListRow} List row.
+ */
+function publicEventListRow(
+  eventId: string,
+  event: EventDocument,
+  organizerName: string | null
+): AdminEventListRow {
+  return {
+    eventId,
+    clubId: event.clubId,
+    organizerName,
+    title: eventTitleLabel(event),
+    activityKind: event.eventFormat.activityKind,
+    activityLabel: eventFormatLabel(event.eventFormat),
+    startTime: timestampIso(event.startTime),
+    citySlug: event.discoveryCityName ?? null,
+    meetingPoint: event.meetingPoint,
+    status: event.status,
+    availability: event.discoveryAvailability ?? null,
+    bookedCount: event.bookedCount ?? 0,
+    capacityLimit: event.capacityLimit,
+    priceInPaise: event.priceInPaise,
+    currency: event.currency ?? "INR",
+    searchIndexStatus: (event.adminSearch?.tokens?.length ?? 0) > 0 ?
+      "indexed" :
+      "missing",
+  };
+}
+
+/**
+ * Builds the admin UI snapshot from EventDocument.
+ * @param {string} eventId Firestore document id.
+ * @param {EventDocument} event Canonical event.
+ * @param {string | null} organizerName Organizer name.
+ * @return {AdminEventDetailsSnapshot} Event details.
+ */
+function publicEventDetails(
+  eventId: string,
+  event: EventDocument,
+  organizerName: string | null
+): AdminEventDetailsSnapshot {
+  return {
+    eventId,
+    clubId: event.clubId,
+    organizerName,
+    title: eventTitleLabel(event),
+    startTime: timestampIso(event.startTime),
+    endTime: timestampIso(event.endTime),
+    meetingPoint: event.meetingPoint,
+    locationDetails: event.locationDetails ?? null,
+    description: event.description,
+    photoUrl: event.photoUrl ?? null,
+    eventFormat: {
+      version: event.eventFormat.version,
+      activityKind: event.eventFormat.activityKind,
+      interactionModel: event.eventFormat.interactionModel,
+      customActivityLabel: event.eventFormat.customActivityLabel ?? null,
+      label: eventFormatLabel(event.eventFormat),
+    },
+    distanceKm: event.distanceKm,
+    pace: event.pace,
+    capacityLimit: event.capacityLimit,
+    bookedCount: event.bookedCount ?? 0,
+    checkedInCount: event.checkedInCount ?? 0,
+    waitlistedCount: event.waitlistedCount ?? 0,
+    priceInPaise: event.priceInPaise,
+    currency: event.currency ?? "INR",
+    status: event.status,
+    cancellationReason: event.cancellationReason ?? null,
+    discovery: {
+      citySlug: event.discoveryCityName ?? null,
+      activityKind: event.discoveryActivityKind ?? null,
+      availability: event.discoveryAvailability ?? null,
+      hasOpenSpots: event.discoveryHasOpenSpots ?? null,
+      inviteRequired: event.discoveryInviteRequired ?? null,
+      membershipRequired: event.discoveryMembershipRequired ?? null,
+      manualApprovalRequired: event.discoveryManualApprovalRequired ?? null,
+      minAge: event.discoveryMinAge ?? null,
+      maxAge: event.discoveryMaxAge ?? null,
+    },
+    searchIndexStatus: (event.adminSearch?.tokens?.length ?? 0) > 0 ?
+      "indexed" :
+      "missing",
+  };
+}
+
+/**
+ * Converts safe admin event fields into a Firestore update patch.
+ * @param {EventDetailsPatch} fields Validated fields.
+ * @return {Record<string, unknown>} Firestore patch.
+ */
+function buildFirestorePatch(
+  fields: EventDetailsPatch
+): Record<string, unknown> {
+  const patch: Record<string, unknown> = {};
+  copyDefined(patch, fields, [
+    "description",
+    "photoUrl",
+    "distanceKm",
+    "pace",
+    "eventFormat",
+  ]);
+  return patch;
+}
+
+/**
+ * Merges admin event edits with fields the admin form does not own.
+ * @param {EventDocument} before Existing canonical event.
+ * @param {Record<string, unknown>} rawPatch Validated admin patch.
+ * @return {Record<string, unknown>} Firestore patch.
+ */
+function mergeEventDetailsPatch(
+  before: EventDocument,
+  rawPatch: Record<string, unknown>
+): Record<string, unknown> {
+  const patch = {...rawPatch};
+  const eventFormat = rawPatch.eventFormat;
+  if (eventFormat && typeof eventFormat === "object") {
+    const mergedFormat = {
+      ...before.eventFormat,
+      ...(eventFormat as Record<string, unknown>),
+    };
+    if (
+      !Object.prototype.hasOwnProperty.call(
+        eventFormat,
+        "customActivityLabel"
+      )
+    ) {
+      delete (mergedFormat as Record<string, unknown>).customActivityLabel;
+    }
+    patch.eventFormat = mergedFormat;
+  }
+  return patch;
+}
+
+/**
+ * Copies defined fields into the patch.
+ * @param {Record<string, unknown>} patch Output patch.
+ * @param {Record<string, unknown>} source Source object.
+ * @param {string[]} keys Keys to copy.
+ */
+function copyDefined(
+  patch: Record<string, unknown>,
+  source: Record<string, unknown>,
+  keys: string[]
+) {
+  for (const key of keys) {
+    if (source[key] !== undefined) patch[key] = source[key];
+  }
+}
+
+/**
+ * Loads a club document if present.
+ * @param {FirebaseFirestore.Firestore} db Firestore database.
+ * @param {string} clubId Club id.
+ * @return {Promise<ClubDocument | null>} Club or null.
+ */
+async function loadClub(
+  db: FirebaseFirestore.Firestore,
+  clubId: string
+): Promise<ClubDocument | null> {
+  const snap = await db.collection("clubs").doc(clubId).get();
+  return snap.exists ? requireDoc<ClubDocument>(snap, "ClubDocument") : null;
+}
+
+/**
+ * Loads organizer names for list rows.
+ * @param {FirebaseFirestore.Firestore} db Firestore database.
+ * @param {string[]} clubIds Club ids.
+ * @return {Promise<Map<string, string>>} Club id to name.
+ */
+async function loadClubNames(
+  db: FirebaseFirestore.Firestore,
+  clubIds: string[]
+): Promise<Map<string, string>> {
+  const uniqueIds = Array.from(new Set(clubIds.filter(Boolean))).slice(0, 100);
+  const entries = await Promise.all(uniqueIds.map(async (clubId) => {
+    const club = await loadClub(db, clubId);
+    return [clubId, club?.name ?? null] as const;
+  }));
+  return new Map(entries.flatMap(([clubId, name]) =>
+    name ? [[clubId, name] as const] : []
+  ));
+}
+
+/**
+ * Normalizes the get payload before schema validation.
+ * @param {unknown} value Raw payload.
+ * @return {unknown} Normalized payload.
+ */
+function normalizeAdminGetEventDetailsPayload(value: unknown): unknown {
+  if (!value || typeof value !== "object") return value;
+  const data = value as Record<string, unknown>;
+  return {...data, eventId: normalizeString(data.eventId)};
+}
+
+/**
+ * Normalizes event list filters before schema validation.
+ * @param {unknown} value Raw payload.
+ * @return {unknown} Normalized payload.
+ */
+function normalizeAdminListEventDetailsPayload(value: unknown): unknown {
+  if (value === undefined || value === null) return {};
+  if (typeof value !== "object" || Array.isArray(value)) return value;
+  const data = value as Record<string, unknown>;
+  return {
+    ...data,
+    query: normalizeNullableString(data.query),
+    clubId: normalizeNullableString(data.clubId),
+    citySlug: normalizeNullableString(data.citySlug),
+    citySlugs: normalizeCitySlugs(data.citySlugs),
+    activityKind: normalizeNullableString(data.activityKind),
+    status: normalizeNullableString(data.status),
+    timeWindow: normalizeNullableString(data.timeWindow),
+  };
+}
+
+/**
+ * Normalizes admin event edit payloads before schema validation.
+ * @param {unknown} value Raw payload.
+ * @return {unknown} Normalized payload.
+ */
+function normalizeAdminUpdateEventDetailsPayload(value: unknown): unknown {
+  if (!value || typeof value !== "object") return value;
+  const data = value as Record<string, unknown>;
+  const fields = data.fields && typeof data.fields === "object" ?
+    data.fields as Record<string, unknown> :
+    data.fields;
+  return {
+    ...data,
+    eventId: normalizeString(data.eventId),
+    reviewNote: normalizeNullableString(data.reviewNote),
+    fields: fields && typeof fields === "object" ?
+      normalizeEventDetailsFields(fields as Record<string, unknown>) :
+      fields,
+  };
+}
+
+/**
+ * Normalizes editable event fields.
+ * @param {Record<string, unknown>} fields Raw fields.
+ * @return {Record<string, unknown>} Normalized fields.
+ */
+function normalizeEventDetailsFields(
+  fields: Record<string, unknown>
+): Record<string, unknown> {
+  return {
+    ...fields,
+    description: normalizeString(fields.description),
+    photoUrl: normalizeOptionalNullableString(fields.photoUrl),
+    eventFormat: fields.eventFormat &&
+      typeof fields.eventFormat === "object" ?
+      normalizeEventFormat(fields.eventFormat as Record<string, unknown>) :
+      fields.eventFormat,
+  };
+}
+
+/**
+ * Normalizes event format text fields.
+ * @param {Record<string, unknown>} format Event format payload.
+ * @return {Record<string, unknown>} Normalized format.
+ */
+function normalizeEventFormat(
+  format: Record<string, unknown>
+): Record<string, unknown> {
+  const customActivityLabel =
+    normalizeNullableString(format.customActivityLabel);
+  return {
+    ...format,
+    activityKind: normalizeString(format.activityKind),
+    interactionModel: normalizeString(format.interactionModel),
+    customActivityLabel: customActivityLabel === null ?
+      undefined :
+      customActivityLabel,
+  };
+}
+
+/**
+ * Trims a string field.
+ * @param {unknown} value Raw value.
+ * @return {unknown} Trimmed value.
+ */
+function normalizeString(value: unknown): unknown {
+  return typeof value === "string" ? value.trim() : value;
+}
+
+/**
+ * Trims nullable strings and converts blanks to null.
+ * @param {unknown} value Raw value.
+ * @return {unknown} Normalized nullable string.
+ */
+function normalizeNullableString(value: unknown): unknown {
+  if (value === undefined || value === null) return null;
+  if (typeof value !== "string") return value;
+  const trimmed = value.trim();
+  return trimmed.length === 0 ? null : trimmed;
+}
+
+/**
+ * Trims optional nullable strings without inventing absent fields.
+ * @param {unknown} value Raw value.
+ * @return {unknown} Normalized optional nullable string.
+ */
+function normalizeOptionalNullableString(value: unknown): unknown {
+  if (value === undefined) return undefined;
+  return normalizeNullableString(value);
+}
+
+/**
+ * Normalizes bounded multi-city list filters.
+ * @param {unknown} value Raw citySlugs payload.
+ * @return {unknown} Unique normalized city slugs or validation passthrough.
+ */
+function normalizeCitySlugs(value: unknown): unknown {
+  if (value === undefined || value === null) return null;
+  if (!Array.isArray(value)) return value;
+  return Array.from(new Set(
+    value
+      .map((item) => normalizeNullableString(item))
+      .filter((item): item is string => typeof item === "string")
+  ));
+}
+
+/**
+ * Bounds list limit.
+ * @param {number | undefined} value Raw limit.
+ * @return {number} Safe limit.
+ */
+function clampLimit(value: number | undefined): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) return 50;
+  return Math.max(1, Math.min(100, Math.trunc(value)));
+}
+
+/**
+ * Returns query limit for normal and token-search list calls.
+ * @param {number} limit Requested limit.
+ * @param {boolean} hasSearchQuery Whether token search is active.
+ * @return {number} Firestore limit.
+ */
+function queryLimitForSearch(limit: number, hasSearchQuery: boolean): number {
+  if (hasSearchQuery) return Math.min(500, Math.max(limit * 10, limit));
+  return Math.min(250, Math.max(limit * 4, limit));
+}
+
+/**
+ * Normalizes free-text search.
+ * @param {string | null | undefined} value Raw query.
+ * @return {string} Query.
+ */
+function normalizeSearchText(value: string | null | undefined): string {
+  return (value ?? "").trim().toLowerCase();
+}
+
+/**
+ * Returns a stable time window default.
+ * @param {string | null | undefined} value Raw time window.
+ * @return {EventListTimeWindow} Time window.
+ */
+function normalizeTimeWindow(
+  value: string | null | undefined
+): EventListTimeWindow {
+  if (value === "upcoming" || value === "past") return value;
+  return "all";
+}
+
+/**
+ * Applies server-side event time ordering/windowing.
+ * @param {FirebaseFirestore.Query} query Query.
+ * @param {EventListTimeWindow} timeWindow Time window.
+ * @param {Date} now Stable callable clock for windowing and snapshot metadata.
+ * @return {FirebaseFirestore.Query} Query.
+ */
+function applyTimeWindow(
+  query: FirebaseFirestore.Query,
+  timeWindow: EventListTimeWindow,
+  now: Date
+): FirebaseFirestore.Query {
+  if (timeWindow === "upcoming") {
+    return query
+      .where("startTime", ">=", now)
+      .orderBy("startTime", "asc");
+  }
+  if (timeWindow === "past") {
+    return query
+      .where("startTime", "<", now)
+      .orderBy("startTime", "desc");
+  }
+  return query.orderBy("startTime", "asc");
+}
+
+/**
+ * Compares event rows with the same ordering as the server query.
+ * @param {AdminEventListRow} a First row.
+ * @param {AdminEventListRow} b Second row.
+ * @param {EventListTimeWindow} timeWindow Time window.
+ * @return {number} Sort result.
+ */
+function compareEventRows(
+  a: AdminEventListRow,
+  b: AdminEventListRow,
+  timeWindow: EventListTimeWindow
+): number {
+  const aTime = a.startTime ?? "";
+  const bTime = b.startTime ?? "";
+  const timeCompare = aTime.localeCompare(bTime);
+  if (timeCompare !== 0) {
+    return timeWindow === "past" ? -timeCompare : timeCompare;
+  }
+  return a.title.localeCompare(b.title);
+}
+
+/**
+ * Applies deterministic text matching after Firestore candidate retrieval.
+ * @param {AdminEventListRow} row Event row.
+ * @param {string} query Query text.
+ * @return {boolean} Whether row matches.
+ */
+function eventListRowMatchesQuery(
+  row: AdminEventListRow,
+  query: string
+): boolean {
+  if (!query) return true;
+  const haystack = [
+    row.eventId,
+    row.clubId,
+    row.organizerName,
+    row.title,
+    row.activityKind,
+    row.activityLabel,
+    row.citySlug,
+    row.meetingPoint,
+    row.status,
+    row.availability,
+  ]
+    .filter((item): item is string => typeof item === "string")
+    .join(" ")
+    .toLowerCase();
+  return query
+    .split(/\s+/u)
+    .filter(Boolean)
+    .every((token) => haystack.includes(token));
+}
+
+/**
+ * Serializes Firestore timestamps for admin UI transport.
+ * @param {unknown} value Timestamp-like value.
+ * @return {string | null} ISO string.
+ */
+function timestampIso(value: unknown): string | null {
+  if (!value) return null;
+  const timestamp = value as {
+    toDate?: () => Date;
+    toMillis?: () => number;
+  };
+  if (typeof timestamp.toDate === "function") {
+    return timestamp.toDate().toISOString();
+  }
+  if (typeof timestamp.toMillis === "function") {
+    return new Date(timestamp.toMillis()).toISOString();
+  }
+  if (value instanceof Date) return value.toISOString();
+  return null;
+}
+
+export const adminListEventDetails = onCall(
+  appCheckCallableOptions,
+  (request) => adminListEventDetailsHandler(request)
+);
+
+export const adminGetEventDetails = onCall(
+  appCheckCallableOptions,
+  (request) => adminGetEventDetailsHandler(request)
+);
+
+export const adminUpdateEventDetails = onCall(
+  appCheckCallableOptions,
+  (request) => adminUpdateEventDetailsHandler(request)
+);

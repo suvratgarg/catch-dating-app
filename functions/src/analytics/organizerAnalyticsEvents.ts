@@ -6,12 +6,19 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {BigQueryClient, defaultBigQueryClient} from "../shared/bigQuery";
 import {checkIpRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
+import {ClubDocument} from "../shared/generated/firestoreAdminTypes";
 import {
   RecordOrganizerAnalyticsEventCallablePayload,
 } from "../shared/generated/recordOrganizerAnalyticsEventCallablePayload";
 import {
+  RecordOrganizerAnalyticsEventCallableResponse,
+} from "../shared/generated/recordOrganizerAnalyticsEventCallableResponse";
+import {
   validateRecordOrganizerAnalyticsEventCallablePayload,
 } from "../shared/generated/schemaValidators";
+import {
+  assertPublicOrganizerPageEligible,
+} from "../shared/publicOrganizerPage";
 
 interface OrganizerAnalyticsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -37,12 +44,13 @@ const defaultDeps: OrganizerAnalyticsDeps = {
  * Records one public organizer analytics event into BigQuery.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {OrganizerAnalyticsDeps} deps Injectable dependencies.
- * @return {Promise<{accepted: boolean}>} Accepted marker.
+ * @return {Promise<RecordOrganizerAnalyticsEventCallableResponse>}
+ * Accepted marker.
  */
 export async function recordOrganizerAnalyticsEventHandler(
   request: CallableRequest<unknown>,
   deps: OrganizerAnalyticsDeps = defaultDeps
-): Promise<{accepted: boolean}> {
+): Promise<RecordOrganizerAnalyticsEventCallableResponse> {
   const payload = validateCallableWithAjv<
     RecordOrganizerAnalyticsEventCallablePayload
   >(
@@ -113,6 +121,13 @@ async function assertOrganizerScope(
   if (!clubSnapshot.exists) {
     throw new HttpsError("not-found", "Organizer not found.");
   }
+  assertPublicOrganizerPageEligible(
+    clubSnapshot.data() as ClubDocument,
+    {
+      allowDirectorySearchPath: payload.eventName === "searchAppearance",
+      pagePath: payload.pagePath,
+    }
+  );
   if (eventSnapshot && !eventSnapshot.exists) {
     throw new HttpsError("not-found", "Event not found.");
   }

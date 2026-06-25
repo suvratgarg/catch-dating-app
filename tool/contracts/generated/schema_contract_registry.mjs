@@ -3865,6 +3865,65 @@ export const clubDocumentSchema = {
       },
       "x-catch-ownership": "server-only"
     },
+    "adminSearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Server-owned deterministic search projection used by admin organizer publishing. Rebuildable from canonical club fields; not consumed by the app.",
+      "required": [
+        "tokens",
+        "sortKey",
+        "updatedAt",
+        "updatedBySource"
+      ],
+      "properties": {
+        "tokens": {
+          "type": "array",
+          "maxItems": 120,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80,
+            "pattern": "^[a-z0-9-]+$"
+          }
+        },
+        "sortKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-z0-9-]+(?:-[a-z0-9-]+)*$"
+        },
+        "updatedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "updatedBySource": {
+          "type": "string",
+          "enum": [
+            "adminUpdateClubDetails",
+            "adminSetClubIndexStatus",
+            "adminOrganizerSearchBackfill"
+          ]
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
     "publicProfile": {
       "type": "object",
       "additionalProperties": false,
@@ -5585,6 +5644,64 @@ export const eventDocumentSchema = {
       "minimum": 0,
       "maximum": 120,
       "x-catch-ownership": "callable-owned"
+    },
+    "adminSearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Server-owned deterministic search projection used by admin event publishing. Rebuildable from canonical event and organizer fields; not consumed by the app.",
+      "required": [
+        "tokens",
+        "sortKey",
+        "updatedAt",
+        "updatedBySource"
+      ],
+      "properties": {
+        "tokens": {
+          "type": "array",
+          "maxItems": 120,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80,
+            "pattern": "^[a-z0-9-]+$"
+          }
+        },
+        "sortKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-z0-9-]+(?:-[a-z0-9-]+)*$"
+        },
+        "updatedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "updatedBySource": {
+          "type": "string",
+          "enum": [
+            "adminUpdateEventDetails",
+            "adminEventSearchBackfill"
+          ]
+        }
+      },
+      "x-catch-ownership": "server-only"
     },
     "synthetic": {
       "type": "boolean",
@@ -12107,6 +12224,251 @@ export const functionEventReceiptDocumentSchema = {
   }
 };
 
+export const publicRouteReservationDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/public_route_reservations.schema.json",
+  "title": "PublicRouteReservationDocument",
+  "description": "Server-owned reservation for a public website route. Stored at publicRouteReservations/{routeKey}; routeKey is derived from the normalized route path so route allocation is deterministic and transactionally claimable.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "publicRouteReservations",
+  "x-firestore-path": "publicRouteReservations/{routeKey}",
+  "x-document-id-field": "routeKey",
+  "x-owner": "admin organizer publishing callables",
+  "required": [
+    "routeKey",
+    "routePath",
+    "routeKind",
+    "routeSegments",
+    "status",
+    "ownerType",
+    "ownerCollection",
+    "ownerId",
+    "targetPath",
+    "slug",
+    "citySlug",
+    "createdAt",
+    "updatedAt",
+    "lastVerifiedAt",
+    "lastVerifiedByUid",
+    "lastVerifiedSource"
+  ],
+  "properties": {
+    "routeKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 220,
+      "pattern": "^[a-z0-9-]+(?:__[a-z0-9-]+)*$",
+      "description": "Deterministic document id derived from routePath by removing leading/trailing slash and replacing route separators with double underscores.",
+      "x-catch-ownership": "server-only"
+    },
+    "routePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^/organizers/([a-z0-9-]+/)?[a-z0-9-]+/$",
+      "x-catch-ownership": "server-only"
+    },
+    "routeKind": {
+      "type": "string",
+      "enum": [
+        "organizerCanonical"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "routeSegments": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80,
+        "pattern": "^[a-z0-9-]+$"
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "released"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "ownerType": {
+      "type": "string",
+      "enum": [
+        "club"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "ownerCollection": {
+      "type": "string",
+      "enum": [
+        "clubs"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "ownerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "targetPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 260,
+      "pattern": "^clubs/[^/]+$",
+      "x-catch-ownership": "server-only"
+    },
+    "slug": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[a-z0-9-]+$",
+      "x-catch-ownership": "server-only"
+    },
+    "citySlug": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "pattern": "^[a-z0-9-]+$",
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "lastVerifiedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "lastVerifiedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "lastVerifiedSource": {
+      "type": "string",
+      "enum": [
+        "adminUpdateClubDetails",
+        "adminSetClubIndexStatus"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "releasedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "releasedByUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "replacementRoutePath": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "pattern": "^/organizers/([a-z0-9-]+/)?[a-z0-9-]+/$",
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
 export const seedEventManifestDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/seed_events.schema.json",
@@ -12394,6 +12756,176 @@ export const organizerIntakeReviewDecisionDocumentSchema = {
         "pending_static_generation",
         "not_projectable"
       ]
+    }
+  }
+};
+
+export const eventIntakeReviewDecisionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_intake_review_decisions.schema.json",
+  "title": "EventIntakeReviewDecisionDocument",
+  "description": "Latest admin review decision stored at eventIntakeReviewDecisions/{decisionId}. Source artifacts, marketing content, imported events, and canonical events are not stored here.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventIntakeReviewDecisions",
+  "x-firestore-path": "eventIntakeReviewDecisions/{decisionId}",
+  "x-document-id-field": "decisionId",
+  "x-owner": "adminRecordEventIntakeReviewDecision callable",
+  "required": [
+    "schemaVersion",
+    "decisionId",
+    "targetType",
+    "targetId",
+    "decision",
+    "decisionStatus",
+    "runId",
+    "note",
+    "checklist",
+    "edits",
+    "reviewedByUid",
+    "reviewedAt",
+    "updatedAt",
+    "effect"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "decisionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "targetType": {
+      "type": "string",
+      "enum": [
+        "source_profile",
+        "query_template",
+        "run_plan",
+        "source_result",
+        "event_candidate"
+      ]
+    },
+    "targetId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "needs_changes",
+        "hold",
+        "reject"
+      ]
+    },
+    "decisionStatus": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "needs_changes",
+        "held",
+        "rejected"
+      ]
+    },
+    "runId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceReviewed",
+        "dateReviewed",
+        "venueReviewed",
+        "copyReviewed",
+        "rightsReviewed",
+        "noCatchHostingImplied"
+      ],
+      "properties": {
+        "sourceReviewed": {
+          "type": "boolean"
+        },
+        "dateReviewed": {
+          "type": "boolean"
+        },
+        "venueReviewed": {
+          "type": "boolean"
+        },
+        "copyReviewed": {
+          "type": "boolean"
+        },
+        "rightsReviewed": {
+          "type": "boolean"
+        },
+        "noCatchHostingImplied": {
+          "type": "boolean"
+        }
+      }
+    },
+    "edits": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "reviewedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reviewedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "effect": {
+      "type": "string",
+      "const": "decision_only_no_publish"
     }
   }
 };
@@ -16462,7 +16994,10 @@ export const hostAnalyticsCallableResponseSchema = {
         "required": [
           "id",
           "state",
-          "detail"
+          "detail",
+          "owner",
+          "runbook",
+          "nextAction"
         ],
         "properties": {
           "id": {
@@ -16479,6 +17014,21 @@ export const hostAnalyticsCallableResponseSchema = {
             ]
           },
           "detail": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "runbook": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "nextAction": {
             "type": "string",
             "minLength": 1,
             "maxLength": 240
@@ -17131,6 +17681,31 @@ export const requestClubClaimCallablePayloadSchema = {
   }
 };
 
+export const requestClubClaimCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/request_club_claim_response.schema.json",
+  "title": "RequestClubClaimCallableResponse",
+  "description": "Callable response returned by requestClubClaim after a public organizer claim request is accepted for review.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "status"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending"
+      ]
+    }
+  }
+};
+
 export const adminDecideClubClaimCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_decide_club_claim_payload.schema.json",
@@ -17758,6 +18333,96 @@ export const adminRecordOrganizerCurationCallablePayloadSchema = {
   }
 };
 
+export const adminRecordEventIntakeReviewDecisionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_record_event_intake_review_decision_payload.schema.json",
+  "title": "AdminRecordEventIntakeReviewDecisionCallablePayload",
+  "description": "Callable payload accepted by adminRecordEventIntakeReviewDecision. This records a manual admin decision for private event-intake artifacts without publishing marketing content or creating canonical events.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "targetType",
+    "targetId",
+    "decision",
+    "checklist",
+    "note"
+  ],
+  "properties": {
+    "targetType": {
+      "type": "string",
+      "enum": [
+        "source_profile",
+        "query_template",
+        "run_plan",
+        "source_result",
+        "event_candidate"
+      ]
+    },
+    "targetId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "needs_changes",
+        "hold",
+        "reject"
+      ]
+    },
+    "runId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "edits": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceReviewed",
+        "dateReviewed",
+        "venueReviewed",
+        "copyReviewed",
+        "rightsReviewed",
+        "noCatchHostingImplied"
+      ],
+      "properties": {
+        "sourceReviewed": {
+          "type": "boolean"
+        },
+        "dateReviewed": {
+          "type": "boolean"
+        },
+        "venueReviewed": {
+          "type": "boolean"
+        },
+        "copyReviewed": {
+          "type": "boolean"
+        },
+        "rightsReviewed": {
+          "type": "boolean"
+        },
+        "noCatchHostingImplied": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+};
+
 export const adminDecideOrganizerEventCandidateCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
@@ -18083,6 +18748,92 @@ export const adminGetClubDetailsCallablePayloadSchema = {
   }
 };
 
+export const adminListClubDetailsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_club_details_payload.schema.json",
+  "title": "AdminListClubDetailsCallablePayload",
+  "description": "Callable payload accepted by adminListClubDetails. This lists canonical organizer profile rows from clubs/{clubId} for the admin publishing workspace.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 160
+    },
+    "citySlug": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "citySlugs": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "publishStatus": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "draft",
+        "qa",
+        "published",
+        "suppressed",
+        "removed",
+        null
+      ]
+    },
+    "appVisibility": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "discoverable",
+        "hidden",
+        null
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  }
+};
+
 export const adminUpdateClubDetailsCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_update_club_details_payload.schema.json",
@@ -18386,6 +19137,482 @@ export const adminUpdateClubDetailsCallablePayloadSchema = {
         "null"
       ],
       "maxLength": 1000
+    }
+  }
+};
+
+export const adminGetEventDetailsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_event_details_payload.schema.json",
+  "title": "AdminGetEventDetailsCallablePayload",
+  "description": "Callable payload accepted by adminGetEventDetails. This loads a canonical events/{eventId} document for the admin event publishing workspace.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const adminListEventDetailsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_event_details_payload.schema.json",
+  "title": "AdminListEventDetailsCallablePayload",
+  "description": "Callable payload accepted by adminListEventDetails. This lists canonical events/{eventId} rows for the admin event publishing workspace.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 160
+    },
+    "clubId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "citySlug": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "citySlugs": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "activityKind": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "socialRun",
+        "running",
+        "walking",
+        "pickleball",
+        "padel",
+        "tennis",
+        "badminton",
+        "cycling",
+        "spinClass",
+        "yoga",
+        "strengthTraining",
+        "pubQuiz",
+        "barCrawl",
+        "dinner",
+        "singlesMixer",
+        "openActivity",
+        null
+      ]
+    },
+    "status": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "active",
+        "cancelled",
+        null
+      ]
+    },
+    "timeWindow": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "upcoming",
+        "past",
+        "all",
+        null
+      ],
+      "description": "Optional server-side startTime window used by admin event lists. Upcoming and past are evaluated against callable server time."
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  }
+};
+
+export const adminListExternalEventDetailsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_external_event_details_payload.schema.json",
+  "title": "AdminListExternalEventDetailsCallablePayload",
+  "description": "Callable payload accepted by adminListExternalEventDetails. This lists read-only externalEvents/{eventId} rows for the admin event supply workspace.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 160
+    },
+    "citySlug": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "citySlugs": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "publicationStatus": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "draft",
+        "public",
+        "archived",
+        "removed",
+        null
+      ]
+    },
+    "status": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "active",
+        "cancelled",
+        null
+      ]
+    },
+    "timeWindow": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "upcoming",
+        "past",
+        "all",
+        null
+      ],
+      "description": "Optional server-side startTime window used by admin external event lists. Upcoming and past are evaluated against callable server time."
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  }
+};
+
+export const adminUpdateEventDetailsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_update_event_details_payload.schema.json",
+  "title": "AdminUpdateEventDetailsCallablePayload",
+  "description": "Callable payload accepted by adminUpdateEventDetails. This edits low-risk app-facing canonical event fields through an audited admin callable.",
+  "x-callable-shape": "patch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "fields"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reviewNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "fields": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "description": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "photoUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "distanceKm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "pace": {
+          "type": "string",
+          "enum": [
+            "easy",
+            "moderate",
+            "fast",
+            "competitive"
+          ]
+        },
+        "eventFormat": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "activityKind",
+            "interactionModel"
+          ],
+          "properties": {
+            "version": {
+              "type": "integer",
+              "const": 1
+            },
+            "activityKind": {
+              "type": "string",
+              "enum": [
+                "socialRun",
+                "running",
+                "walking",
+                "pickleball",
+                "padel",
+                "tennis",
+                "badminton",
+                "cycling",
+                "spinClass",
+                "yoga",
+                "strengthTraining",
+                "pubQuiz",
+                "barCrawl",
+                "dinner",
+                "singlesMixer",
+                "openActivity"
+              ]
+            },
+            "interactionModel": {
+              "type": "string",
+              "enum": [
+                "pacePods",
+                "pairedRotations",
+                "teamRotations",
+                "seatedTable",
+                "freeFormMixer",
+                "hostLedProgram",
+                "openFormat"
+              ]
+            },
+            "customActivityLabel": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "defaultPlaybookId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "defaultModuleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "maxItems": 30,
+              "uniqueItems": true
+            },
+            "eventSuccessPrimitives": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "Optional event-success behavior primitives for custom or unsupported activity formats. These fields translate a saved event format into the small set of primitives event success can reason about.",
+              "properties": {
+                "phoneAvailability": {
+                  "type": "string",
+                  "enum": [
+                    "continuous",
+                    "plannedPauses",
+                    "arrivalAndPostEventOnly",
+                    "hostOnlyLive",
+                    "noneDuringActivity"
+                  ]
+                },
+                "rotationSuitability": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "plannedBreaks",
+                    "continuousRounds"
+                  ]
+                },
+                "assignmentAlgorithm": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "pacePods",
+                    "socialPods",
+                    "pairRotations",
+                    "teamBalancer",
+                    "tableSeating"
+                  ]
+                },
+                "compatibilityPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "socialCohortBalance",
+                    "mutualInterestOnly",
+                    "questionnaireClueOnly"
+                  ]
+                }
+              }
+            },
+            "activityDetails": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminPublishExternalEventCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_publish_external_event_payload.schema.json",
+  "title": "AdminPublishExternalEventCallablePayload",
+  "description": "Callable payload accepted by adminPublishExternalEvent. This publishes one preflight-approved read-only externalEvents/{eventId} document from eventSupplyReadiness/current.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sourceActionId",
+    "targetPath",
+    "reviewNote",
+    "checklist"
+  ],
+  "properties": {
+    "sourceActionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "targetPath": {
+      "type": "string",
+      "pattern": "^externalEvents/[A-Za-z0-9_-]{1,180}$"
+    },
+    "reviewNote": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "preflightActionReviewed",
+        "outboundLinksReviewed",
+        "noCatchBookingPaymentsWaitlist",
+        "ownerSafeCopyReviewed"
+      ],
+      "properties": {
+        "preflightActionReviewed": {
+          "type": "boolean"
+        },
+        "outboundLinksReviewed": {
+          "type": "boolean"
+        },
+        "noCatchBookingPaymentsWaitlist": {
+          "type": "boolean"
+        },
+        "ownerSafeCopyReviewed": {
+          "type": "boolean"
+        }
+      }
     }
   }
 };
@@ -20412,6 +21639,23 @@ export const recordOrganizerAnalyticsEventCallablePayloadSchema = {
   }
 };
 
+export const recordOrganizerAnalyticsEventCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/record_organizer_analytics_event_response.schema.json",
+  "title": "RecordOrganizerAnalyticsEventCallableResponse",
+  "description": "Callable response returned by recordOrganizerAnalyticsEvent after an organizer analytics event is accepted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "accepted"
+  ],
+  "properties": {
+    "accepted": {
+      "type": "boolean"
+    }
+  }
+};
+
 export const markEventAttendanceCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/mark_event_attendance_payload.schema.json",
@@ -20816,7 +22060,8 @@ export const createPublicClubReviewCallablePayloadSchema = {
     "rating",
     "comment",
     "reviewerName",
-    "isAnonymous"
+    "isAnonymous",
+    "submittedFromPath"
   ],
   "properties": {
     "clubId": {
@@ -20842,11 +22087,242 @@ export const createPublicClubReviewCallablePayloadSchema = {
       "type": "boolean"
     },
     "submittedFromPath": {
-      "type": [
-        "string",
-        "null"
-      ],
+      "type": "string",
+      "minLength": 1,
       "maxLength": 240
+    }
+  }
+};
+
+export const createPublicClubReviewCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_public_club_review_response.schema.json",
+  "title": "CreatePublicClubReviewCallableResponse",
+  "description": "Callable response returned by createPublicClubReview after a public organizer review is accepted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reviewId",
+    "review"
+  ],
+  "properties": {
+    "reviewId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "reviewerName",
+        "rating",
+        "comment",
+        "createdAt",
+        "verificationStatus",
+        "source",
+        "isAnonymous",
+        "ownerResponse"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewerName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rating": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "comment": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verificationStatus": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "unverified"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "catchEvent",
+            "publicListing"
+          ]
+        },
+        "isAnonymous": {
+          "type": "boolean"
+        },
+        "ownerResponse": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "hostName",
+                "hostAvatarUrl",
+                "message",
+                "updatedAt"
+              ],
+              "properties": {
+                "hostName": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "hostAvatarUrl": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "definitions": {
+    "publicClubReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "reviewerName",
+        "rating",
+        "comment",
+        "createdAt",
+        "verificationStatus",
+        "source",
+        "isAnonymous",
+        "ownerResponse"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewerName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rating": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "comment": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verificationStatus": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "unverified"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "catchEvent",
+            "publicListing"
+          ]
+        },
+        "isAnonymous": {
+          "type": "boolean"
+        },
+        "ownerResponse": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "hostName",
+                "hostAvatarUrl",
+                "message",
+                "updatedAt"
+              ],
+              "properties": {
+                "hostName": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "hostAvatarUrl": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "ownerResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hostName",
+        "hostAvatarUrl",
+        "message",
+        "updatedAt"
+      ],
+      "properties": {
+        "hostName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hostAvatarUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "message": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     }
   }
 };
@@ -20866,6 +22342,238 @@ export const listPublicClubReviewsCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    }
+  }
+};
+
+export const listPublicClubReviewsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_public_club_reviews_response.schema.json",
+  "title": "ListPublicClubReviewsCallableResponse",
+  "description": "Callable response returned by listPublicClubReviews for public organizer listing review hydration.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reviews"
+  ],
+  "properties": {
+    "reviews": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "reviewerName",
+          "rating",
+          "comment",
+          "createdAt",
+          "verificationStatus",
+          "source",
+          "isAnonymous",
+          "ownerResponse"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reviewerName": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "minLength": 1
+          },
+          "verificationStatus": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "unverified"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "catchEvent",
+              "publicListing"
+            ]
+          },
+          "isAnonymous": {
+            "type": "boolean"
+          },
+          "ownerResponse": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "hostName",
+                  "hostAvatarUrl",
+                  "message",
+                  "updatedAt"
+                ],
+                "properties": {
+                  "hostName": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "hostAvatarUrl": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uri"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "publicClubReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "reviewerName",
+        "rating",
+        "comment",
+        "createdAt",
+        "verificationStatus",
+        "source",
+        "isAnonymous",
+        "ownerResponse"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewerName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rating": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "comment": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verificationStatus": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "unverified"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "catchEvent",
+            "publicListing"
+          ]
+        },
+        "isAnonymous": {
+          "type": "boolean"
+        },
+        "ownerResponse": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "hostName",
+                "hostAvatarUrl",
+                "message",
+                "updatedAt"
+              ],
+              "properties": {
+                "hostName": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "hostAvatarUrl": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "ownerResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hostName",
+        "hostAvatarUrl",
+        "message",
+        "updatedAt"
+      ],
+      "properties": {
+        "hostName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hostAvatarUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "message": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     }
   }
 };
@@ -21601,6 +23309,1297 @@ export const exploreSearchCallableResponseSchema = {
         "type": "string",
         "minLength": 1,
         "maxLength": 256
+      }
+    }
+  }
+};
+
+export const websiteHostListingProjectionSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/public/website_host_listing_projection.schema.json",
+  "title": "WebsiteHostListingProjection",
+  "description": "Public organizer listing projection consumed by the marketing website and future shared web/app listing surfaces. It is generated from approved organizer, seed, or demo data and is not the canonical club document.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "website/scripts/generateOrganizerListings.mjs",
+  "required": [
+    "id",
+    "listingVariant",
+    "dataOrigin",
+    "name",
+    "slug",
+    "city",
+    "citySlug",
+    "region",
+    "country",
+    "path",
+    "category",
+    "status",
+    "indexing",
+    "sourceConfidence",
+    "headline",
+    "description",
+    "sourceSummary",
+    "logo",
+    "formats",
+    "facts",
+    "eventEvidence",
+    "reviews",
+    "fitNotes",
+    "missingEvidence",
+    "sources",
+    "claim",
+    "publicApi",
+    "lastVerifiedAt",
+    "searchText"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "listingVariant": {
+      "type": "string",
+      "enum": [
+        "unclaimedScraped",
+        "appCreatedClub"
+      ]
+    },
+    "dataOrigin": {
+      "type": "string",
+      "enum": [
+        "scrapedSeed",
+        "catchDemo",
+        "organizerIntake"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slug": {
+      "type": "string",
+      "minLength": 1
+    },
+    "city": {
+      "type": "string",
+      "minLength": 1
+    },
+    "citySlug": {
+      "type": "string",
+      "minLength": 1
+    },
+    "region": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string",
+      "pattern": "^/[^?#]*/$"
+    },
+    "legacyPaths": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^/[^?#]*/$"
+      },
+      "uniqueItems": true
+    },
+    "category": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "indexing": {
+      "type": "string",
+      "enum": [
+        "index, follow",
+        "noindex, follow"
+      ]
+    },
+    "sourceConfidence": {
+      "type": "string",
+      "enum": [
+        "first_party",
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "headline": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceSummary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "logo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "text",
+        "status"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "monogram"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "formats": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "value"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "memberCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rating": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "reviewCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nextEventAt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "nextEventLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "role",
+        "avatarUrl"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "avatarUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        }
+      }
+    },
+    "catchEvents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "role",
+          "title",
+          "activityKind",
+          "timeline",
+          "startTime",
+          "endTime",
+          "date",
+          "location",
+          "summary",
+          "capacityLimit",
+          "bookedCount",
+          "checkedInCount",
+          "waitlistedCount",
+          "priceLabel"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "activityKind": {
+            "type": "string",
+            "minLength": 1
+          },
+          "timeline": {
+            "type": "string",
+            "enum": [
+              "upcoming",
+              "past"
+            ]
+          },
+          "startTime": {
+            "type": "string",
+            "minLength": 1
+          },
+          "endTime": {
+            "type": "string",
+            "minLength": 1
+          },
+          "date": {
+            "type": "string",
+            "minLength": 1
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1
+          },
+          "summary": {
+            "type": "string"
+          },
+          "capacityLimit": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "bookedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "checkedInCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "waitlistedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "priceLabel": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scorecard": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": true
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "externalEvents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "activityKind",
+          "availability",
+          "startTime",
+          "endTime",
+          "date",
+          "location",
+          "summary",
+          "priceLabel",
+          "sourceLabel",
+          "sourceHref",
+          "externalLinkCount",
+          "dedupeKey"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "activityKind": {
+            "type": "string",
+            "minLength": 1
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "read_only_external"
+            ]
+          },
+          "startTime": {
+            "type": "string",
+            "minLength": 1
+          },
+          "endTime": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "date": {
+            "type": "string",
+            "minLength": 1
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1
+          },
+          "summary": {
+            "type": "string"
+          },
+          "priceLabel": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sourceLabel": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sourceHref": {
+            "type": "string",
+            "format": "uri"
+          },
+          "externalLinkCount": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "dedupeKey": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "eventSuccessSummary": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bookedCount",
+            "checkedInCount",
+            "mutualMatchCount",
+            "chatStartedCount",
+            "catchSentCount",
+            "safetyIncidentCount"
+          ],
+          "properties": {
+            "bookedCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "checkedInCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "mutualMatchCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "chatStartedCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "catchSentCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "safetyIncidentCount": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "eventEvidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "date",
+          "location",
+          "summary",
+          "facts",
+          "sourceLabel",
+          "sourceHref"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "date": {
+            "type": "string",
+            "minLength": 1
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1
+          },
+          "summary": {
+            "type": "string"
+          },
+          "facts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "sourceLabel": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sourceHref": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      }
+    },
+    "reviews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "reviewerName",
+          "rating",
+          "comment",
+          "createdAt",
+          "verificationStatus",
+          "source",
+          "isAnonymous",
+          "ownerResponse"
+        ],
+        "properties": {
+          "id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "reviewerName": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "minLength": 1
+          },
+          "verificationStatus": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "unverified"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "catchEvent",
+              "publicListing"
+            ]
+          },
+          "isAnonymous": {
+            "type": "boolean"
+          },
+          "ownerResponse": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "hostName",
+                  "hostAvatarUrl",
+                  "message",
+                  "updatedAt"
+                ],
+                "properties": {
+                  "hostName": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "hostAvatarUrl": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uri"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "fitNotes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "missingEvidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "label",
+          "detail",
+          "confidence"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
+          }
+        }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "href",
+        "label"
+      ],
+      "properties": {
+        "href": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "publicApi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "reason",
+        "claimTargetSyncStatus"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "disabled"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "claimTargetSyncStatus": {
+          "type": "string",
+          "enum": [
+            "in_sync",
+            "write_needed",
+            "static_fixture",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "lastVerifiedAt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "searchText": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "definitions": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "routePath": {
+      "type": "string",
+      "pattern": "^/[^?#]*/$"
+    },
+    "urlOrNull": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri"
+    },
+    "labelValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "value"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "logo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "text",
+        "status"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "monogram"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "memberCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rating": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "reviewCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nextEventAt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "nextEventLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "role",
+        "avatarUrl"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "avatarUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        }
+      }
+    },
+    "catchEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "role",
+        "title",
+        "activityKind",
+        "timeline",
+        "startTime",
+        "endTime",
+        "date",
+        "location",
+        "summary",
+        "capacityLimit",
+        "bookedCount",
+        "checkedInCount",
+        "waitlistedCount",
+        "priceLabel"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "activityKind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timeline": {
+          "type": "string",
+          "enum": [
+            "upcoming",
+            "past"
+          ]
+        },
+        "startTime": {
+          "type": "string",
+          "minLength": 1
+        },
+        "endTime": {
+          "type": "string",
+          "minLength": 1
+        },
+        "date": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "capacityLimit": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bookedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checkedInCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "waitlistedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "priceLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scorecard": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "externalEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "activityKind",
+        "availability",
+        "startTime",
+        "endTime",
+        "date",
+        "location",
+        "summary",
+        "priceLabel",
+        "sourceLabel",
+        "sourceHref",
+        "externalLinkCount",
+        "dedupeKey"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "activityKind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "availability": {
+          "type": "string",
+          "enum": [
+            "read_only_external"
+          ]
+        },
+        "startTime": {
+          "type": "string",
+          "minLength": 1
+        },
+        "endTime": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "date": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "priceLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceHref": {
+          "type": "string",
+          "format": "uri"
+        },
+        "externalLinkCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "dedupeKey": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "eventSuccessSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bookedCount",
+        "checkedInCount",
+        "mutualMatchCount",
+        "chatStartedCount",
+        "catchSentCount",
+        "safetyIncidentCount"
+      ],
+      "properties": {
+        "bookedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checkedInCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mutualMatchCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "chatStartedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "catchSentCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "safetyIncidentCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "eventEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "date",
+        "location",
+        "summary",
+        "facts",
+        "sourceLabel",
+        "sourceHref"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "date": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "facts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "sourceLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceHref": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "publicReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "reviewerName",
+        "rating",
+        "comment",
+        "createdAt",
+        "verificationStatus",
+        "source",
+        "isAnonymous",
+        "ownerResponse"
+      ],
+      "properties": {
+        "id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reviewerName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rating": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "comment": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verificationStatus": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "unverified"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "catchEvent",
+            "publicListing"
+          ]
+        },
+        "isAnonymous": {
+          "type": "boolean"
+        },
+        "ownerResponse": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "hostName",
+                "hostAvatarUrl",
+                "message",
+                "updatedAt"
+              ],
+              "properties": {
+                "hostName": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "hostAvatarUrl": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "ownerResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hostName",
+        "hostAvatarUrl",
+        "message",
+        "updatedAt"
+      ],
+      "properties": {
+        "hostName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hostAvatarUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "message": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "publicApi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "reason",
+        "claimTargetSyncStatus"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "disabled"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "claimTargetSyncStatus": {
+          "type": "string",
+          "enum": [
+            "in_sync",
+            "write_needed",
+            "static_fixture",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "label",
+        "detail",
+        "confidence"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "detail": {
+          "type": "string",
+          "minLength": 1
+        },
+        "href": {
+          "type": "string",
+          "format": "uri"
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        }
       }
     }
   }

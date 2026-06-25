@@ -271,6 +271,47 @@
       "maximum": 120,
       "x-catch-ownership": "callable-owned"
     },
+    "adminSearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Server-owned deterministic search projection used by admin event publishing. Rebuildable from canonical event and organizer fields; not consumed by the app.",
+      "required": [
+        "tokens",
+        "sortKey",
+        "updatedAt",
+        "updatedBySource"
+      ],
+      "properties": {
+        "tokens": {
+          "type": "array",
+          "maxItems": 120,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80,
+            "pattern": "^[a-z0-9-]+$"
+          }
+        },
+        "sortKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-z0-9-]+(?:-[a-z0-9-]+)*$"
+        },
+        "updatedAt": {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+        },
+        "updatedBySource": {
+          "type": "string",
+          "enum": [
+            "adminUpdateEventDetails",
+            "adminEventSearchBackfill"
+          ]
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
     },

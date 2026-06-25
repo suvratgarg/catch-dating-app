@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_event_details_payload.schema.json",
+  "title": "AdminListEventDetailsCallablePayload",
+  "description": "Callable payload accepted by adminListEventDetails. This lists canonical events/{eventId} rows for the admin event publishing workspace.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "query": {"type": ["string", "null"], "maxLength": 160},
+    "clubId": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ]
+    },
+    "citySlug": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/citySlug"},
+        {"type": "null"}
+      ]
+    },
+    "citySlugs": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "$ref": "../shared/event_common.schema.json#/definitions/citySlug"
+          },
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true
+        },
+        {"type": "null"}
+      ]
+    },
+    "activityKind": {
+      "type": ["string", "null"],
+      "enum": [
+        "socialRun",
+        "running",
+        "walking",
+        "pickleball",
+        "padel",
+        "tennis",
+        "badminton",
+        "cycling",
+        "spinClass",
+        "yoga",
+        "strengthTraining",
+        "pubQuiz",
+        "barCrawl",
+        "dinner",
+        "singlesMixer",
+        "openActivity",
+        null
+      ]
+    },
+    "status": {
+      "type": ["string", "null"],
+      "enum": ["active", "cancelled", null]
+    },
+    "timeWindow": {
+      "type": ["string", "null"],
+      "enum": ["upcoming", "past", "all", null],
+      "description": "Optional server-side startTime window used by admin event lists. Upcoming and past are evaluated against callable server time."
+    },
+    "limit": {"type": "integer", "minimum": 1, "maximum": 100}
+  }
+}

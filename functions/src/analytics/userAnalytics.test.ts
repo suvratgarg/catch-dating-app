@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {CallableRequest} from "firebase-functions/v2/https";
 import {
+  adminGetUserAnalyticsHandler,
   buildUserAnalyticsFromRecords,
   resolveUserAnalyticsRange,
 } from "./userAnalytics";
@@ -87,6 +89,67 @@ test(
   }
 );
 
+test("adminGetUserAnalyticsHandler scopes by selected user id", async () => {
+  const auditLogs: Record<string, unknown>[] = [];
+  const rateLimitCalls: Array<{uid: string; action: string}> = [];
+  const response = await adminGetUserAnalyticsHandler(
+    callableRequest("admin-1", {
+      userId: "user-1",
+      rangePreset: "7d",
+    }, {analyticsViewer: true}),
+    {
+      firestore: () => fakeAuditFirestore(auditLogs),
+      now: () => new Date("2026-06-18T12:00:00.000Z"),
+      serverTimestamp: () => "SERVER_TIMESTAMP" as never,
+      bigQuerySource: {
+        async loadRows(_range, scope) {
+          assert.deepEqual(scope, {uid: "user-1"});
+          return [martRow({
+            date: "2026-06-18",
+            profileViewCount: 3,
+            incomingLikeCount: 2,
+          })] as never;
+        },
+      },
+      async checkRateLimit(_db, uid, action) {
+        rateLimitCalls.push({uid, action});
+      },
+    }
+  );
+
+  assert.equal(response.scope.userId, "user-1");
+  assert.deepEqual(rateLimitCalls, [{
+    uid: "admin-1",
+    action: "adminGetUserAnalytics",
+  }]);
+  assert.equal(auditLogs.length, 1);
+  assert.equal(auditLogs[0].action, "adminGetUserAnalytics");
+  assert.equal(auditLogs[0].targetPath, "users/user-1/analytics");
+});
+
+test("adminGetUserAnalyticsHandler requires selected user id", async () => {
+  await assert.rejects(
+    () => adminGetUserAnalyticsHandler(
+      callableRequest("admin-1", {rangePreset: "7d"}, {analyticsViewer: true}),
+      {
+        firestore: () => fakeAuditFirestore([]),
+        now: () => new Date("2026-06-18T12:00:00.000Z"),
+        serverTimestamp: () => "SERVER_TIMESTAMP" as never,
+        bigQuerySource: {
+          async loadRows() {
+            return [];
+          },
+        },
+      }
+    ),
+    (error) =>
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "invalid-argument"
+  );
+});
+
 function metric(
   response: ReturnType<typeof buildUserAnalyticsFromRecords>,
   id: string
@@ -169,4 +232,28 @@ function martRow(overrides: Record<string, unknown> = {}) {
     dataCompletenessScore: 1,
     ...overrides,
   };
+}
+
+function callableRequest(
+  uid: string | null,
+  data: unknown,
+  token: Record<string, unknown> = {}
+): CallableRequest<unknown> {
+  return {
+    auth: uid ? {uid, token} as CallableRequest["auth"] : undefined,
+    data,
+  } as CallableRequest<unknown>;
+}
+
+function fakeAuditFirestore(auditLogs: Record<string, unknown>[]) {
+  return {
+    collection(path: string) {
+      assert.equal(path, "adminAuditLogs");
+      return {
+        async add(data: Record<string, unknown>) {
+          auditLogs.push(data);
+        },
+      };
+    },
+  } as never;
 }

@@ -765,6 +765,21 @@ export interface ClubDocument {
     lastVerifiedAt: FirebaseFirestore.Timestamp | null;
   };
   /**
+   * Server-owned deterministic search projection used by admin organizer publishing. Rebuildable from canonical club fields; not consumed by the app.
+   */
+  adminSearch?: {
+    /**
+     * @maxItems 120
+     */
+    tokens: string[];
+    sortKey: string;
+    updatedAt: FirebaseFirestore.Timestamp;
+    updatedBySource:
+      | "adminUpdateClubDetails"
+      | "adminSetClubIndexStatus"
+      | "adminOrganizerSearchBackfill";
+  };
+  /**
    * Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.
    */
   publicProfile?: {
@@ -958,6 +973,18 @@ export interface EventDocument {
   discoveryManualApprovalRequired?: boolean;
   discoveryMinAge?: number;
   discoveryMaxAge?: number;
+  /**
+   * Server-owned deterministic search projection used by admin event publishing. Rebuildable from canonical event and organizer fields; not consumed by the app.
+   */
+  adminSearch?: {
+    /**
+     * @maxItems 120
+     */
+    tokens: string[];
+    sortKey: string;
+    updatedAt: FirebaseFirestore.Timestamp;
+    updatedBySource: "adminUpdateEventDetails" | "adminEventSearchBackfill";
+  };
 }
 
 /**
@@ -1868,6 +1895,38 @@ export interface FunctionEventReceiptDocument {
 }
 
 /**
+ * Server-owned reservation for a public website route. Stored at publicRouteReservations/{routeKey}; routeKey is derived from the normalized route path so route allocation is deterministic and transactionally claimable.
+ */
+export interface PublicRouteReservationDocument {
+  /**
+   * Deterministic document id derived from routePath by removing leading/trailing slash and replacing route separators with double underscores.
+   */
+  routeKey: string;
+  routePath: string;
+  routeKind: "organizerCanonical";
+  /**
+   * @minItems 2
+   * @maxItems 3
+   */
+  routeSegments: string[];
+  status: "active" | "released";
+  ownerType: "club";
+  ownerCollection: "clubs";
+  ownerId: string;
+  targetPath: string;
+  slug: string;
+  citySlug: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  lastVerifiedAt: FirebaseFirestore.Timestamp;
+  lastVerifiedByUid: string;
+  lastVerifiedSource: "adminUpdateClubDetails" | "adminSetClubIndexStatus";
+  releasedAt?: FirebaseFirestore.Timestamp | null;
+  releasedByUid?: string | null;
+  replacementRoutePath?: string | null;
+}
+
+/**
  * Tool-owned synthetic-data manifest stored at seedEvents/{manifestId}.
  */
 export interface SeedEventManifestDocument {
@@ -1909,6 +1968,40 @@ export interface OrganizerIntakeReviewDecisionDocument {
   reviewedAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   projectionState: "pending_static_generation" | "not_projectable";
+}
+
+/**
+ * Latest admin review decision stored at eventIntakeReviewDecisions/{decisionId}. Source artifacts, marketing content, imported events, and canonical events are not stored here.
+ */
+export interface EventIntakeReviewDecisionDocument {
+  schemaVersion: 1;
+  decisionId: string;
+  targetType:
+    | "source_profile"
+    | "query_template"
+    | "run_plan"
+    | "source_result"
+    | "event_candidate";
+  targetId: string;
+  decision: "approve" | "needs_changes" | "hold" | "reject";
+  decisionStatus: "approved" | "needs_changes" | "held" | "rejected";
+  runId: string | null;
+  note: string;
+  checklist: {
+    sourceReviewed: boolean;
+    dateReviewed: boolean;
+    venueReviewed: boolean;
+    copyReviewed: boolean;
+    rightsReviewed: boolean;
+    noCatchHostingImplied: boolean;
+  };
+  edits: {
+    [k: string]: unknown;
+  };
+  reviewedByUid: string;
+  reviewedAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  effect: "decision_only_no_publish";
 }
 
 /**

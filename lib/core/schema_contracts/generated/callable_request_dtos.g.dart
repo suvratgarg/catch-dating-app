@@ -19,6 +19,12 @@ export 'callables/admin_decide_organizer_event_candidate_callable_request.g.dart
 export 'callables/admin_decide_organizer_intake_callable_request.g.dart';
 export 'callables/admin_decide_organizer_policy_gap_callable_request.g.dart';
 export 'callables/admin_get_club_details_callable_request.g.dart';
+export 'callables/admin_get_event_details_callable_request.g.dart';
+export 'callables/admin_list_club_details_callable_request.g.dart';
+export 'callables/admin_list_event_details_callable_request.g.dart';
+export 'callables/admin_list_external_event_details_callable_request.g.dart';
+export 'callables/admin_publish_external_event_callable_request.g.dart';
+export 'callables/admin_record_event_intake_review_decision_callable_request.g.dart';
 export 'callables/admin_record_organizer_curation_callable_request.g.dart';
 export 'callables/admin_resolve_organizer_event_location_callable_request.g.dart';
 export 'callables/admin_set_club_index_status_callable_request.g.dart';

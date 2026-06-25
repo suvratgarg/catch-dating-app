@@ -134,23 +134,55 @@ export {
   syncAlgoliaClubIndex,
   syncAlgoliaEventIndex,
 } from "./search/algoliaExploreIndex";
+export {
+  adminGetAdminUserRoles,
+  adminListAdminRoleAssignments,
+  adminSetAdminUserRoles,
+} from "./admin/adminUserRoles";
 export {adminGetOverview} from "./admin/overview";
 export {
+  adminAssignSafetyTriageItem,
+  adminDecideSafetyTriageItem,
+  adminGetSafetyTriageDetails,
+} from "./admin/safetyTriage";
+export {
   adminDecideAccessApplication,
+  adminGetAccessApplicationDetails,
 } from "./admin/accessApplications";
 export {
   adminSetClubIndexStatus,
 } from "./admin/clubIndexing";
 export {
   adminGetClubDetails,
+  adminListClubDetails,
   adminUpdateClubDetails,
 } from "./admin/clubDetails";
+export {
+  adminGetEventDetails,
+  adminListEventDetails,
+  adminUpdateEventDetails,
+} from "./admin/eventDetails";
+export {
+  adminListExternalEventDetails,
+} from "./admin/externalEventDetails";
+export {
+  adminGetEventSupplyReadiness,
+} from "./admin/eventSupplyReadiness";
+export {
+  adminPublishExternalEvent,
+} from "./admin/externalEventPublishing";
+export {
+  adminGetEventIntakeDashboard,
+} from "./admin/eventIntakeDashboard";
 export {
   adminDecideOrganizerIntake,
 } from "./admin/organizerIntake";
 export {
   adminRecordOrganizerCuration,
 } from "./admin/organizerCuration";
+export {
+  adminRecordEventIntakeReviewDecision,
+} from "./admin/eventIntakeReview";
 export {
   adminDecideOrganizerEventCandidate,
 } from "./admin/organizerEventIntake";
@@ -160,6 +192,11 @@ export {
 export {
   adminDecideOrganizerPolicyGap,
 } from "./admin/organizerPolicyGap";
+export {
+  adminCreateMarketingContentDraft,
+  adminGetMarketingOpsDashboard,
+  adminRecordMarketingReviewDecision,
+} from "./admin/marketingOps";
 export {
   adminGetHostAnalytics,
   getHostAnalytics,

@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.1.5
-updated: 2026-05-26
+version: 1.1.6
+updated: 2026-06-24
 owner: recursive_audit_loop
 status: active
 ---
@@ -232,6 +232,30 @@ Existing remote event docs created before this projection must be repaired with
 `node tool/data/backfill_event_discovery_fields.mjs` before a release depends on
 the direct event index. The repair is dry-run by default and requires
 `--allow-prod` when applying against prod.
+
+Admin organizer search uses a separate server-owned
+`clubs/{clubId}.adminSearch` projection for the admin Organizers canonical
+directory. It is not consumed by the app or website. `adminListClubDetails`
+accepts either a single `citySlug` or a bounded `citySlugs` array for
+admin-only launch-city work queues such as Indore + Mumbai. Existing club docs
+can be repaired with `node tool/data/backfill_organizer_admin_search.mjs`; the
+repair is dry-run by default and requires `--allow-prod` when applying against
+prod.
+
+Admin event search uses a separate server-owned
+`events/{eventId}.adminSearch` projection for the admin Events canonical
+directory. It is not consumed by the app. `adminListEventDetails` accepts either
+a single `citySlug` or a bounded `citySlugs` array for admin-only launch-city
+work queues such as Indore + Mumbai. Existing event docs can be repaired with
+`node tool/data/backfill_event_admin_search.mjs`; the repair is dry-run by
+default and requires `--allow-prod` when applying against prod.
+
+Read-only external event supply uses `externalEvents/{eventId}`. These records
+are sourced from reviewed organizer intake candidates, preserve source/dedupe
+attribution, and must keep Catch booking, payments, reservations, and waitlists
+disabled. `adminListExternalEventDetails` lists that collection for admin event
+supply review with the same bounded launch-city and time-window filters, but it
+does not import candidates or mutate Firestore.
 
 Read-only dry-runs on 2026-05-26 found:
 

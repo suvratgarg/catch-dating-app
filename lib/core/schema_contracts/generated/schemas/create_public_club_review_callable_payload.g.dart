@@ -17,6 +17,7 @@ const schemaCreatePublicClubReviewCallablePayloadSchema = <String, Object?>{
     'comment',
     'reviewerName',
     'isAnonymous',
+    'submittedFromPath',
   ],
   'properties': <String, Object?>{
     'clubId': <String, Object?>{
@@ -42,10 +43,8 @@ const schemaCreatePublicClubReviewCallablePayloadSchema = <String, Object?>{
       'type': 'boolean',
     },
     'submittedFromPath': <String, Object?>{
-      'type': <Object?>[
-        'string',
-        'null',
-      ],
+      'type': 'string',
+      'minLength': 1,
       'maxLength': 240,
     },
   },
