@@ -69,7 +69,7 @@ const listings = [
   ...(args.noDemo ? [] : appCreatedDemoListings()),
 ]
   .map(withPublicExternalEvents)
-  .sort((a, b) => a.name.localeCompare(b.name));
+  .sort((a, b) => compareText(a.name, b.name));
 validateListingProjections(listings);
 const renderedListings = `${JSON.stringify(listings, null, 2)}\n`;
 
@@ -98,12 +98,20 @@ function organizerIntakeProjectionEntries() {
       entry?.publicListing &&
       entry?.publishStatus === "published"
     )
-    .sort((a, b) => a.entityId.localeCompare(b.entityId));
+    .sort((a, b) => compareText(a.entityId, b.entityId));
 }
 
 function readJsonIfExists(filePath) {
   if (!fs.existsSync(filePath)) return null;
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
+function compareText(a, b) {
+  const left = String(a ?? "");
+  const right = String(b ?? "");
+  if (left < right) return -1;
+  if (left > right) return 1;
+  return 0;
 }
 
 function publicExternalEventsByCanonicalHostId(readiness) {
