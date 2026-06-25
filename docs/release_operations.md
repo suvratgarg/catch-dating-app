@@ -39,7 +39,7 @@ The current workflows are:
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/admin-website.yml` | Validates and deploys the production Firebase Hosting `admin` target after matching changes land on `main`. |
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
-| `.github/workflows/ios-testflight-release.yml` | Manual prod iOS archive/export gate. TestFlight upload is break-glass only while Xcode Cloud is canonical. |
+| `.github/workflows/ios-testflight-release.yml` | Manual prod iOS archive/export gate, plus automatic Host TestFlight upload after app-relevant changes land on `main`. Consumer TestFlight stays Xcode Cloud-first. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
 
 ## Git Branch Hygiene
@@ -212,9 +212,12 @@ Firebase CD is intentionally asymmetric by environment:
 
 The automatic dev deploy is a backend deploy, not a store release. It deploys
 Functions, Firestore indexes, Firestore rules, and Storage rules in the safe
-order. Mobile app binaries, TestFlight, Play internal testing, Hosting, and
-observability evidence remain separate release steps unless explicitly added to
-the selected manual deploy targets.
+order. Mobile app binaries, Play internal testing, Hosting, and observability
+evidence remain separate release steps unless explicitly added to the selected
+manual deploy targets. Host iOS is the exception: app-relevant pushes to `main`
+run `.github/workflows/ios-testflight-release.yml` with `app_role=host` and
+upload the exported IPA to TestFlight, because Host Xcode Cloud distribution is
+not currently safe to rely on.
 
 Marketing and admin Hosting deploys require explicit Vite Firebase/App Check
 environment variables. Firebase Hosting predeploy runs

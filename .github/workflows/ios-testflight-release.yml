@@ -1,6 +1,19 @@
 name: iOS TestFlight Release
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/actions/setup-flutter/**'
+      - '.github/workflows/ios-testflight-release.yml'
+      - 'assets/**'
+      - 'ios/**'
+      - 'lib/**'
+      - 'packages/**'
+      - 'pubspec.lock'
+      - 'pubspec.yaml'
+      - 'tool/**'
   workflow_dispatch:
     inputs:
       app_role:
@@ -12,12 +25,12 @@ on:
           - consumer
           - host
       upload_to_testflight:
-        description: Break-glass only. Xcode Cloud is the canonical TestFlight uploader.
+        description: Upload the manual archive to TestFlight. Consumer uploads are break-glass; Host uploads automatically on main.
         required: true
         default: false
         type: boolean
       break_glass_reason:
-        description: Required when upload_to_testflight is true. Explain why Xcode Cloud is not being used.
+        description: Required when a manual TestFlight upload is requested.
         required: false
         default: ''
         type: string
@@ -27,24 +40,64 @@ permissions:
 
 jobs:
   prod-ios:
-    name: Prod iOS archive (${{ inputs.app_role }})
+    name: Prod iOS archive (${{ github.event_name == 'push' && 'host' || inputs.app_role }})
     runs-on: macos-26
     environment: prod
     timeout-minutes: 60
 
     env:
-      APP_ROLE: ${{ inputs.app_role }}
       ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
       ASC_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
-      ARCHIVE_NAME: ${{ inputs.app_role == 'host' && 'HostRunner' || 'Runner' }}
-      EXPECTED_BUNDLE_ID: ${{ inputs.app_role == 'host' && 'com.catchdates.host' || 'com.catchdates.app' }}
-      EXPORT_PATH: build/ios/export/${{ inputs.app_role == 'host' && 'host-prod' || 'prod' }}
-      IOS_CONFIGURATION: ${{ inputs.app_role == 'host' && 'Release-host-prod' || 'Release-prod' }}
-      IOS_SCHEME: ${{ inputs.app_role == 'host' && 'host-prod' || 'prod' }}
 
     steps:
       - uses: actions/checkout@v6
+
+      - name: Resolve release target
+        env:
+          APP_ROLE_INPUT: ${{ github.event.inputs.app_role || 'consumer' }}
+          UPLOAD_TO_TESTFLIGHT_INPUT: ${{ github.event.inputs.upload_to_testflight || 'false' }}
+        run: |
+          set -euo pipefail
+
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            app_role="host"
+            upload_to_testflight="true"
+          else
+            app_role="$APP_ROLE_INPUT"
+            upload_to_testflight="$UPLOAD_TO_TESTFLIGHT_INPUT"
+          fi
+
+          case "$app_role" in
+            consumer)
+              archive_name="Runner"
+              expected_bundle_id="com.catchdates.app"
+              export_path="build/ios/export/prod"
+              ios_configuration="Release-prod"
+              ios_scheme="prod"
+              ;;
+            host)
+              archive_name="HostRunner"
+              expected_bundle_id="com.catchdates.host"
+              export_path="build/ios/export/host-prod"
+              ios_configuration="Release-host-prod"
+              ios_scheme="host-prod"
+              ;;
+            *)
+              echo "Unsupported app_role: $app_role"
+              exit 1
+              ;;
+          esac
+
+          {
+            echo "APP_ROLE=$app_role"
+            echo "ARCHIVE_NAME=$archive_name"
+            echo "EXPECTED_BUNDLE_ID=$expected_bundle_id"
+            echo "EXPORT_PATH=$export_path"
+            echo "IOS_CONFIGURATION=$ios_configuration"
+            echo "IOS_SCHEME=$ios_scheme"
+            echo "UPLOAD_TO_TESTFLIGHT=$upload_to_testflight"
+          } >> "$GITHUB_ENV"
 
       - uses: ./.github/actions/setup-flutter
 
@@ -186,34 +239,33 @@ jobs:
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v6
         with:
-          name: catch-ios-${{ inputs.app_role }}-prod-ipa
+          name: catch-ios-${{ github.event_name == 'push' && 'host' || inputs.app_role }}-prod-ipa
           path: build/ios/export/**/*.ipa
           if-no-files-found: error
           retention-days: 14
 
       - name: Guard break-glass TestFlight upload
-        if: ${{ github.event.inputs.upload_to_testflight == 'true' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.upload_to_testflight == 'true' }}
         env:
           BREAK_GLASS_REASON: ${{ github.event.inputs.break_glass_reason }}
         run: |
           set -euo pipefail
           if [[ -z "${BREAK_GLASS_REASON//[[:space:]]/}" ]]; then
-            echo "GitHub TestFlight upload is break-glass only."
-            echo "Use Xcode Cloud for routine TestFlight distribution, or provide break_glass_reason."
+            echo "Manual GitHub TestFlight upload requires a reason."
+            echo "Consumer TestFlight remains Xcode Cloud-first; Host uploads automatically from main until Host Xcode Cloud distribution is safe."
             exit 1
           fi
 
           {
-            echo "## Break-glass TestFlight upload"
+            echo "## Manual TestFlight upload"
             echo
-            echo "Xcode Cloud is the canonical TestFlight uploader."
-            echo "This GitHub upload path is being used as a fallback for:"
+            echo "This manual GitHub upload path is being used for:"
             echo
             echo "$BREAK_GLASS_REASON"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload to TestFlight
-        if: ${{ github.event.inputs.upload_to_testflight == 'true' }}
+        if: ${{ github.event_name == 'push' || github.event.inputs.upload_to_testflight == 'true' }}
         run: |
           set -euo pipefail
           upload_options="$RUNNER_TEMP/ExportOptions.upload.plist"
