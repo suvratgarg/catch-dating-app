@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
@@ -333,6 +334,106 @@ void main() {
       );
 
       expect(result.requireValue!.userProfile, isNull);
+    });
+  });
+
+  group('HostClubDetailScreenState', () {
+    test('wraps a live host view model as public preview content', () {
+      final club = buildClub();
+      final state = HostClubDetailScreenState.fromAsync(
+        viewModel: AsyncData(
+          ClubDetailViewModel(
+            club: club,
+            isHost: true,
+            isMember: false,
+            upcomingEvents: const <Event>[],
+            reviews: const <Review>[],
+            userProfile: buildUser(uid: 'host-1'),
+            uid: 'host-1',
+            isAuthenticated: true,
+          ),
+        ),
+        initialClub: null,
+        currentUid: 'host-1',
+        currentUserProfile: buildUser(uid: 'host-1'),
+        currentMembership: null,
+        appRole: AppRole.host,
+      );
+
+      expect(state, isA<HostClubDetailContent>());
+      final content = state as HostClubDetailContent;
+      expect(content.club, club);
+      expect(content.isHost, isTrue);
+      expect(content.publicPreviewMode, isTrue);
+      expect(content.showMembershipDock, isFalse);
+      expect(content.isInitialFallback, isFalse);
+    });
+
+    test('uses initial club fallback while live host data loads', () {
+      final club = buildClub(
+        ownerUserId: 'host-1',
+        hostUserIds: const ['host-1'],
+      );
+      final state = HostClubDetailScreenState.fromAsync(
+        viewModel: const AsyncLoading<ClubDetailViewModel?>(),
+        initialClub: club,
+        currentUid: 'host-1',
+        currentUserProfile: buildUser(uid: 'host-1'),
+        currentMembership: null,
+        appRole: AppRole.host,
+      );
+
+      expect(state, isA<HostClubDetailContent>());
+      final content = state as HostClubDetailContent;
+      expect(content.club, club);
+      expect(content.isHost, isTrue);
+      expect(content.isAuthenticated, isTrue);
+      expect(content.publicPreviewMode, isTrue);
+      expect(content.showMembershipDock, isFalse);
+      expect(content.isInitialFallback, isTrue);
+    });
+
+    test('maps blocking async branches to loading, error, and not found', () {
+      expect(
+        HostClubDetailScreenState.fromAsync(
+          viewModel: const AsyncLoading<ClubDetailViewModel?>(),
+          initialClub: null,
+          currentUid: null,
+          currentUserProfile: null,
+          currentMembership: null,
+          appRole: AppRole.consumer,
+        ),
+        isA<HostClubDetailLoading>(),
+      );
+
+      final errorState =
+          HostClubDetailScreenState.fromAsync(
+                viewModel: AsyncError<ClubDetailViewModel?>(
+                  StateError('club failed'),
+                  StackTrace.empty,
+                ),
+                initialClub: null,
+                currentUid: null,
+                currentUserProfile: null,
+                currentMembership: null,
+                appRole: AppRole.consumer,
+              )
+              as HostClubDetailError;
+      expect(errorState.retryIntent, HostClubDetailRetryIntent.reloadDetail);
+
+      expect(errorState, isA<HostClubDetailError>());
+
+      expect(
+        HostClubDetailScreenState.fromAsync(
+          viewModel: const AsyncData<ClubDetailViewModel?>(null),
+          initialClub: null,
+          currentUid: null,
+          currentUserProfile: null,
+          currentMembership: null,
+          appRole: AppRole.consumer,
+        ),
+        isA<HostClubDetailNotFound>(),
+      );
     });
   });
 

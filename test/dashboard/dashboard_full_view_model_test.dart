@@ -1,12 +1,18 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
+import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
+import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,6 +21,23 @@ import '../events/events_test_helpers.dart';
 
 const _noRecommendationCandidates =
     AsyncData<List<DashboardEventRecommendationCandidate>>([]);
+
+DashboardRecommendationsQuery _recommendationsQueryFor(
+  String uid,
+  List<String> followedClubIds,
+) => DashboardRecommendationsQuery(
+  userId: uid,
+  followedClubIds: followedClubIds,
+);
+
+AsyncData<WeeklyActivitySnapshot> _emptyWeeklyActivitySnapshot() {
+  return AsyncData(
+    WeeklyActivitySnapshot.permissionRequired(
+      referenceDate: DateTime(2026, 5, 13),
+      platformLabel: 'Apple Health',
+    ),
+  );
+}
 
 DashboardEventRecommendationCandidate _recommendationCandidate(
   Event event, {
@@ -25,6 +48,17 @@ DashboardEventRecommendationCandidate _recommendationCandidate(
   clubName: clubName,
   clubLocation: clubLocation,
 );
+
+ClubMembership _membership({required String clubId, String uid = 'runner-1'}) {
+  return ClubMembership(
+    id: clubMembershipId(clubId: clubId, uid: uid),
+    clubId: clubId,
+    uid: uid,
+    role: ClubMembershipRole.member,
+    status: ClubMembershipStatus.active,
+    joinedAt: DateTime(2026),
+  );
+}
 
 PhysicalActivity _platformActivity({
   required String id,
@@ -43,6 +77,158 @@ PhysicalActivity _platformActivity({
 }
 
 void main() {
+  group('dashboardHomeScreenStateProvider', () {
+    test(
+      'returns the signed-out empty state without notification chrome',
+      () async {
+        final container = ProviderContainer(
+          overrides: [
+            watchUserProfileProvider.overrideWithValue(
+              const AsyncData<UserProfile?>(null),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final state = container.read(dashboardHomeScreenStateProvider);
+        expect(state.status, DashboardHomeScreenStatus.empty);
+        expect(state.notificationUid, isNull);
+        expect(state.header.title, "Let's find your first event");
+      },
+    );
+
+    test('surfaces membership failures with a typed retry target', () async {
+      final user = buildUser();
+      final container = ProviderContainer(
+        overrides: [
+          watchUserProfileProvider.overrideWithValue(AsyncData(user)),
+          watchActiveClubMembershipsForUserProvider(user.uid).overrideWithValue(
+            const AsyncError<List<ClubMembership>>('clubs', StackTrace.empty),
+          ),
+          watchSignedUpEventsProvider(
+            user.uid,
+          ).overrideWithValue(const AsyncData<List<Event>>([])),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final state = container.read(dashboardHomeScreenStateProvider);
+      expect(state.status, DashboardHomeScreenStatus.error);
+      expect(state.error?.retryTarget, DashboardHomeRetryTarget.memberships);
+      expect(state.error?.uid, user.uid);
+      expect(state.error?.fallbackMessage, 'Unable to load your clubs.');
+    });
+
+    test('normalizes provider loading waves into one loading state', () {
+      final user = buildUser();
+      final profileLoading = ProviderContainer(
+        overrides: [
+          watchUserProfileProvider.overrideWithValue(
+            const AsyncLoading<UserProfile?>(),
+          ),
+        ],
+      );
+      final membershipsLoading = ProviderContainer(
+        overrides: [
+          watchUserProfileProvider.overrideWithValue(AsyncData(user)),
+          watchActiveClubMembershipsForUserProvider(
+            user.uid,
+          ).overrideWithValue(const AsyncLoading<List<ClubMembership>>()),
+          watchSignedUpEventsProvider(
+            user.uid,
+          ).overrideWithValue(const AsyncData<List<Event>>([])),
+        ],
+      );
+      addTearDown(profileLoading.dispose);
+      addTearDown(membershipsLoading.dispose);
+
+      expect(
+        profileLoading.read(dashboardHomeScreenStateProvider).status,
+        DashboardHomeScreenStatus.loading,
+      );
+      expect(
+        membershipsLoading.read(dashboardHomeScreenStateProvider).status,
+        DashboardHomeScreenStatus.loading,
+      );
+    });
+
+    test(
+      'returns signed-in empty state with notification action ownership',
+      () {
+        final user = buildUser();
+        final container = ProviderContainer(
+          overrides: [
+            dashboardNowProvider.overrideWithValue(DateTime(2026, 5, 13, 8)),
+            watchUserProfileProvider.overrideWithValue(AsyncData(user)),
+            watchActiveClubMembershipsForUserProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<ClubMembership>>([])),
+            watchSignedUpEventsProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            watchAttendedEventsProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            weeklyActivityProvider.overrideWithValue(
+              _emptyWeeklyActivitySnapshot(),
+            ),
+            watchReviewsByUserProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Review>>([])),
+            dashboardRecommendedEventsProvider(
+              _recommendationsQueryFor(user.uid, const []),
+            ).overrideWithValue(_noRecommendationCandidates),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final state = container.read(dashboardHomeScreenStateProvider);
+        expect(state.status, DashboardHomeScreenStatus.empty);
+        expect(state.notificationUid, user.uid);
+        expect(state.header.eyebrow, 'WELCOME TO CATCH');
+      },
+    );
+
+    test('returns full state with pinned header copy and followed clubs', () {
+      final user = buildUser();
+      final event = buildEvent(startTime: DateTime(2026, 5, 14, 8));
+      final container = ProviderContainer(
+        overrides: [
+          dashboardNowProvider.overrideWithValue(DateTime(2026, 5, 13, 8)),
+          watchUserProfileProvider.overrideWithValue(AsyncData(user)),
+          watchActiveClubMembershipsForUserProvider(user.uid).overrideWithValue(
+            AsyncData<List<ClubMembership>>([
+              _membership(clubId: 'club-a', uid: user.uid),
+            ]),
+          ),
+          watchSignedUpEventsProvider(
+            user.uid,
+          ).overrideWithValue(AsyncData<List<Event>>([event])),
+          watchAttendedEventsProvider(
+            user.uid,
+          ).overrideWithValue(const AsyncData<List<Event>>([])),
+          weeklyActivityProvider.overrideWithValue(
+            _emptyWeeklyActivitySnapshot(),
+          ),
+          watchReviewsByUserProvider(
+            user.uid,
+          ).overrideWithValue(const AsyncData<List<Review>>([])),
+          dashboardRecommendedEventsProvider(
+            _recommendationsQueryFor(user.uid, const ['club-a']),
+          ).overrideWithValue(_noRecommendationCandidates),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final state = container.read(dashboardHomeScreenStateProvider);
+      expect(state.status, DashboardHomeScreenStatus.full);
+      expect(state.header.title, 'Morning, Runner');
+      expect(state.header.eyebrow, 'WEDNESDAY · MUMBAI');
+      expect(state.followedClubIds, ['club-a']);
+      expect(state.viewModel?.nextEvent?.id, event.id);
+    });
+  });
+
   group('buildDashboardFullViewModel', () {
     test('selects the nearest upcoming event as nextEvent', () {
       final now = DateTime(2026, 4, 23, 9);

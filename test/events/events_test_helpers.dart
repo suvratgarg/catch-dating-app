@@ -329,6 +329,7 @@ class FakeEventRepository extends Fake implements EventRepository {
   Object? declineWaitlistOfferError;
   Object? decideJoinRequestError;
   Object? markAttendanceError;
+  Object? selfCheckInError;
   String? cancelledEventId;
   String? hostCancelledEventId;
   String? hostCancelReason;
@@ -597,6 +598,9 @@ class FakeEventRepository extends Fake implements EventRepository {
     required double? latitude,
     required double? longitude,
   }) async {
+    if (selfCheckInError != null) {
+      throw selfCheckInError!;
+    }
     selfCheckedInEventId = eventId;
   }
 }

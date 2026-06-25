@@ -935,31 +935,45 @@ class _RecommendationSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                recommendation.module.title,
-                style: CatchTextStyles.labelL(context),
-              ),
-              gapH4,
-              Text(
-                recommendation.reason,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-            ],
-          ),
-        ),
-        gapW12,
-        CatchToggle(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final copy = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              recommendation.module.title,
+              style: CatchTextStyles.labelL(context),
+            ),
+            gapH4,
+            Text(
+              recommendation.reason,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
+          ],
+        );
+        final toggle = CatchToggle(
           value: active,
           semanticLabel: recommendation.module.title,
           onChanged: onChanged,
-        ),
-      ],
+        );
+        if (constraints.maxWidth < 320) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              copy,
+              gapH10,
+              Align(alignment: Alignment.centerLeft, child: toggle),
+            ],
+          );
+        }
+        return Row(
+          children: [
+            Expanded(child: copy),
+            gapW12,
+            toggle,
+          ],
+        );
+      },
     );
   }
 }

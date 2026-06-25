@@ -14,6 +14,7 @@ class _LiveTab extends ConsumerWidget {
     required this.wingmanRequests,
     required this.wingmanProfiles,
     this.liveRoster,
+    required this.compactLiveControls,
     required this.fixtureActions,
     required this.shrinkWrap,
     required this.physics,
@@ -32,6 +33,7 @@ class _LiveTab extends ConsumerWidget {
   final List<EventSuccessWingmanRequest> wingmanRequests;
   final List<PublicProfile> wingmanProfiles;
   final Widget? liveRoster;
+  final bool compactLiveControls;
   final EventSuccessHostFixtureActions? fixtureActions;
   final bool shrinkWrap;
   final ScrollPhysics physics;
@@ -43,6 +45,14 @@ class _LiveTab extends ConsumerWidget {
     final completeMutation = ref.watch(
       EventSuccessController.completePlanMutation,
     );
+    final attendanceErrorMutation = liveRoster == null
+        ? null
+        : _firstMutationError(<MutationState<void>>[
+            ref.watch(EventBookingController.markAttendanceMutation),
+            ref.watch(EventBookingController.approveJoinRequestMutation),
+            ref.watch(EventBookingController.declineJoinRequestMutation),
+            ref.watch(EventBookingController.createWaitlistOfferMutation),
+          ]);
     if (!planIsPersisted) {
       final isPreEvent = event.startTime.isAfter(DateTime.now());
       return ListView(
@@ -198,46 +208,50 @@ class _LiveTab extends ConsumerWidget {
     final liveRevealAvailable =
         runtime.liveRevealEnabled &&
         (runtime.guidedRotationsEnabled || runtime.microPodsEnabled);
-    final currentStepCards = <Widget>[
-      if (runtime.checkInEnabled &&
-          activeStepHas(EventSuccessModuleCatalog.checkIn.id))
-        hasEmbeddedRoster ? attendanceQrCard() : attendanceCard(),
-      if (runtime.wingmanRequestsEnabled &&
-          activeStepHas(EventSuccessModuleCatalog.wingmanRequests.id))
-        wingmanCard(),
-      if (runtime.conversationCuesEnabled && conversationCueActive)
-        conversationCueCard(),
-      if (runtime.microPodsEnabled &&
-          activeStepHas(EventSuccessModuleCatalog.microPods.id))
-        microPodsCard(),
-      if (runtime.guidedRotationsEnabled &&
-          activeStepHas(EventSuccessModuleCatalog.guidedRotations.id))
-        rotationsCard(),
-      if (liveRevealAvailable &&
-          activeStepHas(EventSuccessModuleCatalog.liveReveal.id))
-        liveRevealCard(),
-    ];
-    final supportingCards = <Widget>[
-      if (runtime.checkInEnabled &&
-          !activeStepHas(EventSuccessModuleCatalog.checkIn.id))
-        hasEmbeddedRoster ? attendanceQrCard() : attendanceCard(),
-      if (runtime.compatibilityQuestionnaireEnabled)
-        _CompatibilitySignalHostCard(plan: plan),
-      if (runtime.wingmanRequestsEnabled &&
-          !activeStepHas(EventSuccessModuleCatalog.wingmanRequests.id))
-        wingmanCard(),
-      if (runtime.conversationCuesEnabled && !conversationCueActive)
-        conversationCueCard(),
-      if (runtime.microPodsEnabled &&
-          !activeStepHas(EventSuccessModuleCatalog.microPods.id))
-        microPodsCard(),
-      if (runtime.guidedRotationsEnabled &&
-          !activeStepHas(EventSuccessModuleCatalog.guidedRotations.id))
-        rotationsCard(),
-      if (liveRevealAvailable &&
-          !activeStepHas(EventSuccessModuleCatalog.liveReveal.id))
-        liveRevealCard(),
-    ];
+    final currentStepCards = compactLiveControls
+        ? <Widget>[]
+        : <Widget>[
+            if (runtime.checkInEnabled &&
+                activeStepHas(EventSuccessModuleCatalog.checkIn.id))
+              hasEmbeddedRoster ? attendanceQrCard() : attendanceCard(),
+            if (runtime.wingmanRequestsEnabled &&
+                activeStepHas(EventSuccessModuleCatalog.wingmanRequests.id))
+              wingmanCard(),
+            if (runtime.conversationCuesEnabled && conversationCueActive)
+              conversationCueCard(),
+            if (runtime.microPodsEnabled &&
+                activeStepHas(EventSuccessModuleCatalog.microPods.id))
+              microPodsCard(),
+            if (runtime.guidedRotationsEnabled &&
+                activeStepHas(EventSuccessModuleCatalog.guidedRotations.id))
+              rotationsCard(),
+            if (liveRevealAvailable &&
+                activeStepHas(EventSuccessModuleCatalog.liveReveal.id))
+              liveRevealCard(),
+          ];
+    final supportingCards = compactLiveControls
+        ? <Widget>[]
+        : <Widget>[
+            if (runtime.checkInEnabled &&
+                !activeStepHas(EventSuccessModuleCatalog.checkIn.id))
+              hasEmbeddedRoster ? attendanceQrCard() : attendanceCard(),
+            if (runtime.compatibilityQuestionnaireEnabled)
+              _CompatibilitySignalHostCard(plan: plan),
+            if (runtime.wingmanRequestsEnabled &&
+                !activeStepHas(EventSuccessModuleCatalog.wingmanRequests.id))
+              wingmanCard(),
+            if (runtime.conversationCuesEnabled && !conversationCueActive)
+              conversationCueCard(),
+            if (runtime.microPodsEnabled &&
+                !activeStepHas(EventSuccessModuleCatalog.microPods.id))
+              microPodsCard(),
+            if (runtime.guidedRotationsEnabled &&
+                !activeStepHas(EventSuccessModuleCatalog.guidedRotations.id))
+              rotationsCard(),
+            if (liveRevealAvailable &&
+                !activeStepHas(EventSuccessModuleCatalog.liveReveal.id))
+              liveRevealCard(),
+          ];
 
     return ListView(
       shrinkWrap: shrinkWrap,
@@ -259,10 +273,20 @@ class _LiveTab extends ConsumerWidget {
           ),
           gapH16,
         ],
+        if (attendanceErrorMutation != null) ...[
+          CatchErrorBanner.fromError(
+            (attendanceErrorMutation as MutationError).error,
+            context: AppErrorContext.event,
+          ),
+          gapH16,
+        ],
         _LiveNowConsole(
           plan: livePlan,
           event: event,
           liveRoster: liveRoster,
+          compactCopy: compactLiveControls,
+          bookedCount: livePlan.bookedCount,
+          checkedInCount: livePlan.checkedInCount,
           currentStepControls: currentStepCards,
           onPrevious: mutation.isPending || activeStepIndex == 0
               ? null
@@ -292,22 +316,24 @@ class _LiveTab extends ConsumerWidget {
           gapH10,
           CatchSectionList(gap: CatchSpacing.s4, children: supportingCards),
         ],
-        gapH20,
-        CatchButton(
-          label: 'Mark live guide complete',
-          variant: CatchButtonVariant.secondary,
-          isLoading:
-              fixtureActions?.onCompletePlan == null &&
-              completeMutation.isPending,
-          onPressed: completeMutation.isPending
-              ? null
-              : () => _completeGuide(
-                  ref,
-                  event.id,
-                  fixtureActions?.onCompletePlan,
-                ),
-          fullWidth: true,
-        ),
+        if (!compactLiveControls) ...[
+          gapH20,
+          CatchButton(
+            label: 'Mark live guide complete',
+            variant: CatchButtonVariant.secondary,
+            isLoading:
+                fixtureActions?.onCompletePlan == null &&
+                completeMutation.isPending,
+            onPressed: completeMutation.isPending
+                ? null
+                : () => _completeGuide(
+                    ref,
+                    event.id,
+                    fixtureActions?.onCompletePlan,
+                  ),
+            fullWidth: true,
+          ),
+        ],
       ],
     );
   }
@@ -361,11 +387,23 @@ class _LiveTab extends ConsumerWidget {
   }
 }
 
+MutationState<void>? _firstMutationError(
+  Iterable<MutationState<void>> mutations,
+) {
+  for (final mutation in mutations) {
+    if (mutation.hasError) return mutation;
+  }
+  return null;
+}
+
 class _LiveNowConsole extends StatelessWidget {
   const _LiveNowConsole({
     required this.plan,
     required this.event,
     required this.liveRoster,
+    required this.compactCopy,
+    required this.bookedCount,
+    required this.checkedInCount,
     required this.currentStepControls,
     required this.onPrevious,
     required this.onNext,
@@ -374,6 +412,9 @@ class _LiveNowConsole extends StatelessWidget {
   final EventSuccessLivePlan plan;
   final Event event;
   final Widget? liveRoster;
+  final bool compactCopy;
+  final int bookedCount;
+  final int checkedInCount;
   final List<Widget> currentStepControls;
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
@@ -383,9 +424,20 @@ class _LiveNowConsole extends StatelessWidget {
     final t = CatchTokens.of(context);
     final fg = t.primaryInk;
     final total = plan.steps.length;
-    final stepLine = total > 0
-        ? 'Step ${plan.activeStepIndex + 1}/$total · ${plan.activeStep.stage.label}'
-        : plan.activeStep.stage.label;
+    final compactPresenter = compactCopy
+        ? _CompactLiveConsolePresenter.forEvent(event, plan)
+        : null;
+    final activeStepTitle = compactPresenter?.title ?? plan.activeStep.title;
+    final activeStepInstruction =
+        compactPresenter?.instruction ?? plan.activeStep.hostInstruction;
+    final attendeeExperience =
+        compactPresenter?.attendeeExperience ??
+        'Attendees at ${event.locationName} see: ${plan.activeStep.attendeeExperience}';
+    final stepLine =
+        compactPresenter?.stepLine ??
+        (total > 0
+            ? 'Step ${plan.activeStepIndex + 1}/$total · ${plan.activeStep.stage.label}'
+            : plan.activeStep.stage.label);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -432,12 +484,12 @@ class _LiveNowConsole extends StatelessWidget {
               ),
               gapH16,
               Text(
-                plan.activeStep.title,
+                activeStepTitle,
                 style: CatchTextStyles.consoleTitle(context, color: fg),
               ),
               gapH6,
               Text(
-                plan.activeStep.hostInstruction,
+                activeStepInstruction,
                 style: CatchTextStyles.bodyS(
                   context,
                   color: fg.withValues(
@@ -466,7 +518,7 @@ class _LiveNowConsole extends StatelessWidget {
                     gapW8,
                     Expanded(
                       child: Text(
-                        'Attendees at ${event.locationName} see: ${plan.activeStep.attendeeExperience}',
+                        attendeeExperience,
                         style: CatchTextStyles.bodyS(
                           context,
                           color: fg.withValues(
@@ -480,6 +532,13 @@ class _LiveNowConsole extends StatelessWidget {
               ),
             ],
           ),
+        ),
+        gapH14,
+        _LiveStepNavigation(plan: plan, onPrevious: onPrevious, onNext: onNext),
+        gapH12,
+        _LiveCheckInSummaryStrip(
+          bookedCount: bookedCount,
+          checkedInCount: checkedInCount,
         ),
         if (liveRoster != null) ...[
           gapH14,
@@ -499,9 +558,105 @@ class _LiveNowConsole extends StatelessWidget {
           gapH10,
           CatchSectionList(gap: CatchSpacing.s4, children: currentStepControls),
         ],
-        gapH14,
-        _LiveStepNavigation(plan: plan, onPrevious: onPrevious, onNext: onNext),
       ],
+    );
+  }
+}
+
+class _CompactLiveConsolePresenter {
+  const _CompactLiveConsolePresenter({
+    required this.stepLine,
+    required this.title,
+    required this.instruction,
+    required this.attendeeExperience,
+  });
+
+  final String stepLine;
+  final String title;
+  final String instruction;
+  final String attendeeExperience;
+
+  static _CompactLiveConsolePresenter? forEvent(
+    Event event,
+    EventSuccessLivePlan plan,
+  ) {
+    final stage = plan.activeStep.stage;
+    final isRoundLike =
+        event.eventFormat.interactionModel ==
+            EventInteractionModel.teamRotations &&
+        (stage == EventSuccessStage.activity ||
+            stage == EventSuccessStage.mixing);
+    if (!isRoundLike) return null;
+    final total = plan.steps.length;
+    final stepLine = total > 0
+        ? 'Step ${plan.activeStepIndex + 1}/$total · Round'
+        : 'Round';
+    return _CompactLiveConsolePresenter(
+      stepLine: stepLine,
+      title: 'Round in play',
+      instruction:
+          'Keep rounds tight; reveal scores between each. Swap anyone sitting out into a team.',
+      attendeeExperience:
+          'Attendees see: Guests see the current round and the live scoreboard.',
+    );
+  }
+}
+
+class _LiveCheckInSummaryStrip extends StatelessWidget {
+  const _LiveCheckInSummaryStrip({
+    required this.bookedCount,
+    required this.checkedInCount,
+  });
+
+  final int bookedCount;
+  final int checkedInCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final arrivedLabel = bookedCount <= 0
+        ? '$checkedInCount arrived'
+        : '$checkedInCount of $bookedCount arrived';
+    return CatchSurface(
+      backgroundColor: t.ink,
+      borderWidth: 0,
+      radius: CatchRadius.md,
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s5,
+        vertical: CatchSpacing.s4,
+      ),
+      child: Row(
+        children: [
+          Icon(CatchIcons.gridViewRounded, color: t.bg, size: CatchIcon.row),
+          gapW14,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Check guests in',
+                  style: CatchTextStyles.sectionTitle(context, color: t.bg),
+                ),
+                gapH2,
+                Text(
+                  arrivedLabel,
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: t.bg.withValues(
+                      alpha: CatchOpacity.eventSuccessProminent,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          gapW12,
+          Text(
+            '$checkedInCount',
+            style: CatchTextStyles.display(context, color: t.bg),
+          ),
+        ],
+      ),
     );
   }
 }

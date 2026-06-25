@@ -4,32 +4,27 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+
+enum ChatTopBarAction { shareCard, report, block }
 
 class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
   const ChatTopBar({
     super.key,
     required this.name,
     required this.photoUrl,
-    required this.otherUid,
-    required this.profile,
-    required this.onReport,
-    required this.onBlock,
-    this.profileNavigationEnabled = true,
-    this.onShareCard,
-  });
+    this.onProfileTap,
+    this.actions = const [],
+    this.disabledActions = const {},
+    this.onActionSelected,
+  }) : assert(actions.length == 0 || onActionSelected != null);
 
   final String name;
   final String? photoUrl;
-  final String? otherUid;
-  final PublicProfile? profile;
-  final VoidCallback onReport;
-  final VoidCallback onBlock;
-  final bool profileNavigationEnabled;
-  final VoidCallback? onShareCard;
+  final VoidCallback? onProfileTap;
+  final List<ChatTopBarAction> actions;
+  final Set<ChatTopBarAction> disabledActions;
+  final ValueChanged<ChatTopBarAction>? onActionSelected;
 
   @override
   Size get preferredSize => const Size.fromHeight(56);
@@ -44,53 +39,47 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
       titleWidget: _ChatTitle(
         name: name,
         photoUrl: photoUrl,
-        onTap: otherUid == null || !profileNavigationEnabled
-            ? null
-            : () => context.pushNamed(
-                Routes.publicProfileScreen.name,
-                pathParameters: {'uid': otherUid!},
-                extra: profile,
-              ),
+        onTap: onProfileTap,
       ),
       actions: [
-        if (otherUid != null)
-          CatchTopBarMenuAction<String>(
+        if (actions.isNotEmpty)
+          CatchTopBarMenuAction<ChatTopBarAction>(
             tooltip: 'Chat actions',
-            onSelected: (value) {
-              switch (value) {
-                case 'shareCard':
-                  onShareCard?.call();
-                case 'report':
-                  onReport();
-                case 'block':
-                  onBlock();
-                default:
-              }
-            },
-            items: [
-              if (onShareCard != null)
-                CatchActionMenuItem(
-                  value: 'shareCard',
-                  label: 'Share card',
-                  icon: CatchIcons.platformShare(
-                    platform: Theme.of(context).platform,
-                  ),
-                ),
-              CatchActionMenuItem(
-                value: 'report',
-                label: 'Report',
-                icon: CatchIcons.flagOutlined,
-              ),
-              CatchActionMenuItem(
-                value: 'block',
-                label: 'Block',
-                icon: CatchIcons.blockRounded,
-                isDestructive: true,
-              ),
-            ],
+            onSelected: onActionSelected,
+            items: actions
+                .map((action) => _actionMenuItem(context, action))
+                .toList(),
           ),
       ],
     );
+  }
+
+  CatchActionMenuItem<ChatTopBarAction> _actionMenuItem(
+    BuildContext context,
+    ChatTopBarAction action,
+  ) {
+    final enabled = !disabledActions.contains(action);
+    return switch (action) {
+      ChatTopBarAction.shareCard => CatchActionMenuItem(
+        value: ChatTopBarAction.shareCard,
+        label: 'Share card',
+        icon: CatchIcons.platformShare(platform: Theme.of(context).platform),
+        enabled: enabled,
+      ),
+      ChatTopBarAction.report => CatchActionMenuItem(
+        value: ChatTopBarAction.report,
+        label: 'Report',
+        icon: CatchIcons.flagOutlined,
+        enabled: enabled,
+      ),
+      ChatTopBarAction.block => CatchActionMenuItem(
+        value: ChatTopBarAction.block,
+        label: 'Block',
+        icon: CatchIcons.blockRounded,
+        enabled: enabled,
+        isDestructive: true,
+      ),
+    };
   }
 }
 

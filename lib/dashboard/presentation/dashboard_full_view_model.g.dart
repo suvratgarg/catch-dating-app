@@ -100,7 +100,7 @@ final class DashboardFullViewModelProvider
 }
 
 String _$dashboardFullViewModelHash() =>
-    r'db4a601200b057d270a6c7589b967bad9db035d2';
+    r'7b3d5b0fc2653abc4b3fa6b66b7927a17fc577b4';
 
 /// Combines signed-up events, attended events, and recommended events into a single
 /// [DashboardFullViewModel] for the dashboard screen.
@@ -146,3 +146,68 @@ final class DashboardFullViewModelFamily extends $Family
   @override
   String toString() => r'dashboardFullViewModelProvider';
 }
+
+/// Builds the route-level state for Dashboard Home.
+///
+/// The route widget should only switch over this state and compose the selected
+/// sections; provider waves, retry targets, header copy, and empty/full
+/// selection live here.
+
+@ProviderFor(dashboardHomeScreenState)
+final dashboardHomeScreenStateProvider = DashboardHomeScreenStateProvider._();
+
+/// Builds the route-level state for Dashboard Home.
+///
+/// The route widget should only switch over this state and compose the selected
+/// sections; provider waves, retry targets, header copy, and empty/full
+/// selection live here.
+
+final class DashboardHomeScreenStateProvider
+    extends
+        $FunctionalProvider<
+          DashboardHomeScreenState,
+          DashboardHomeScreenState,
+          DashboardHomeScreenState
+        >
+    with $Provider<DashboardHomeScreenState> {
+  /// Builds the route-level state for Dashboard Home.
+  ///
+  /// The route widget should only switch over this state and compose the selected
+  /// sections; provider waves, retry targets, header copy, and empty/full
+  /// selection live here.
+  DashboardHomeScreenStateProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'dashboardHomeScreenStateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$dashboardHomeScreenStateHash();
+
+  @$internal
+  @override
+  $ProviderElement<DashboardHomeScreenState> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  DashboardHomeScreenState create(Ref ref) {
+    return dashboardHomeScreenState(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DashboardHomeScreenState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DashboardHomeScreenState>(value),
+    );
+  }
+}
+
+String _$dashboardHomeScreenStateHash() =>
+    r'5339a856fbeb67b044df698deb20b757e0787a8a';

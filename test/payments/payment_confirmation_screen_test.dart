@@ -2,6 +2,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
@@ -181,7 +182,7 @@ void main() {
       expect(find.byKey(PaymentConfirmationKeys.backHome), findsOneWidget);
     });
 
-    testWidgets('shows loading indicator while event is loading', (
+    testWidgets('shows confirmation-shaped skeleton while event is loading', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -199,7 +200,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(CatchSkeleton), findsWidgets);
     });
 
     testWidgets('shows not found when event is null', (tester) async {

@@ -10,13 +10,15 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
@@ -107,8 +109,146 @@ class _CompanionLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _CompanionScaffold(
-      body: Center(child: CatchLoadingIndicator()),
+    return const _CompanionScaffold(body: EventSuccessCompanionLoadingBody());
+  }
+}
+
+class EventSuccessCompanionLoadingBody extends StatelessWidget {
+  const EventSuccessCompanionLoadingBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: CatchInsets.pageBodyRelaxed,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.maxContentWidth,
+          ),
+          child: const Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _CompanionStageSkeleton(),
+              gapH16,
+              _CompanionPrimaryActionSkeleton(),
+              gapH16,
+              _CompanionPeerListSkeleton(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CompanionStageSkeleton extends StatelessWidget {
+  const _CompanionStageSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: CatchInsets.contentRelaxed,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.box(
+            width: 118,
+            height: CatchLayout.badgeActionHeight,
+            radius: CatchRadius.pill,
+          ),
+          gapH16,
+          CatchSkeleton.text(width: 216),
+          gapH10,
+          CatchSkeleton.textBlock(),
+          gapH18,
+          Row(
+            children: [
+              Expanded(
+                child: CatchSkeleton.box(
+                  height: CatchLayout.controlMdMinHeight,
+                  radius: CatchRadius.sm,
+                ),
+              ),
+              gapW10,
+              CatchSkeleton.box(
+                width: CatchLayout.controlMdMinHeight,
+                height: CatchLayout.controlMdMinHeight,
+                radius: CatchRadius.sm,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CompanionPrimaryActionSkeleton extends StatelessWidget {
+  const _CompanionPrimaryActionSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: CatchInsets.content,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.text(width: 168),
+          gapH12,
+          CatchSkeleton.textBlock(lines: 2),
+          gapH16,
+          CatchSkeleton.box(
+            height: CatchLayout.controlMdMinHeight,
+            radius: CatchRadius.sm,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CompanionPeerListSkeleton extends StatelessWidget {
+  const _CompanionPeerListSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: CatchInsets.content,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.text(width: 146),
+          gapH14,
+          for (var i = 0; i < 3; i++) ...[
+            Row(
+              children: [
+                CatchSkeleton.circle(size: 42),
+                gapW12,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CatchSkeleton.text(width: i == 1 ? 112 : 138),
+                      gapH6,
+                      CatchSkeleton.text(width: i == 2 ? 180 : 154),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (i < 2) gapH16,
+          ],
+        ],
+      ),
     );
   }
 }
@@ -878,6 +1018,16 @@ class _EventSuccessCompanionScreenState
       );
     }
 
+    if (_shouldUsePaperCompanionShell(attendeeMoment.kind)) {
+      return _CompanionPaperScaffold(
+        event: event,
+        plan: plan,
+        presentation: momentPresentation,
+        showSelfCheckIn: attendeeMoment.showSelfCheckIn,
+        eventEnded: eventEnded,
+      );
+    }
+
     return _CompanionStageScaffold(
       event: event,
       plan: plan,
@@ -917,4 +1067,12 @@ class _EventSuccessCompanionScreenState
       }
     });
   }
+}
+
+bool _shouldUsePaperCompanionShell(EventSuccessAttendeeMomentKind kind) {
+  return switch (kind) {
+    EventSuccessAttendeeMomentKind.preArrival ||
+    EventSuccessAttendeeMomentKind.selfCheckIn => true,
+    _ => false,
+  };
 }

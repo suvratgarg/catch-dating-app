@@ -22,7 +22,7 @@ class ClubAvatarRail extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchHorizontalRail(
       title: 'Your clubs',
-      height: CatchLayout.clubAvatarRailHeight,
+      height: null,
       spacing: CatchSpacing.micro14,
       showDivider: showDivider,
       headerPadding: headerPadding ?? CatchInsets.sectionHeader,

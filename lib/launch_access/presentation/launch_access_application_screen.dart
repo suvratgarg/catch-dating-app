@@ -9,8 +9,8 @@ import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -39,7 +39,7 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
           child: !config.gateEnabled
               ? const _LaunchAccessDisabledView()
               : uidAsync.when(
-                  loading: () => const Center(child: CatchLoadingIndicator()),
+                  loading: () => const _LaunchAccessLoadingBody(),
                   error: (error, _) =>
                       Center(child: CatchErrorBanner.fromError(error)),
                   data: (uid) {
@@ -50,8 +50,7 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
                       watchLaunchAccessApplicationProvider(uid),
                     );
                     return applicationAsync.when(
-                      loading: () =>
-                          const Center(child: CatchLoadingIndicator()),
+                      loading: () => const _LaunchAccessLoadingBody(),
                       error: (error, _) =>
                           Center(child: CatchErrorBanner.fromError(error)),
                       data: (application) {
@@ -70,6 +69,88 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
                 ),
         ),
       ),
+    );
+  }
+}
+
+class _LaunchAccessLoadingBody extends StatelessWidget {
+  const _LaunchAccessLoadingBody();
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(top: CatchSpacing.s4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+          gapH8,
+          CatchSkeleton.textBlock(lines: 2),
+          gapH24,
+          CatchSkeleton.card(height: CatchLayout.controlMdMinHeight),
+          gapH24,
+          const _LaunchAccessChoiceSkeleton(rows: 1),
+          gapH24,
+          const _LaunchAccessChoiceSkeleton(rows: 2),
+          gapH24,
+          const _LaunchAccessChoiceSkeleton(rows: 2),
+          gapH24,
+          Row(
+            children: [
+              Expanded(child: CatchSkeleton.textBlock(lines: 2)),
+              gapW12,
+              CatchSkeleton.box(
+                width: CatchSpacing.s12,
+                height: CatchSpacing.s8,
+                radius: CatchRadius.pill,
+              ),
+            ],
+          ),
+          gapH24,
+          for (var index = 0; index < 3; index++) ...[
+            CatchSkeleton.card(height: CatchLayout.controlMdMinHeight),
+            gapH16,
+          ],
+          CatchSkeleton.card(height: CatchSpacing.s16),
+          gapH32,
+          CatchSkeleton.card(height: CatchLayout.buttonLgHeight),
+          gapH32,
+        ],
+      ),
+    );
+  }
+}
+
+class _LaunchAccessChoiceSkeleton extends StatelessWidget {
+  const _LaunchAccessChoiceSkeleton({required this.rows});
+
+  final int rows;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+        gapH10,
+        for (var row = 0; row < rows; row++) ...[
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (var index = 0; index < 3; index++)
+                CatchSkeleton.box(
+                  width: index == 1
+                      ? CatchLayout.skeletonTextTitleWidth
+                      : CatchLayout.skeletonTextShortWidth,
+                  height: CatchSpacing.s8,
+                  radius: CatchRadius.pill,
+                ),
+            ],
+          ),
+          if (row < rows - 1) gapH8,
+        ],
+      ],
     );
   }
 }

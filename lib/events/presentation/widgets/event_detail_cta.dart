@@ -28,6 +28,61 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+class EventBookingDock extends StatelessWidget {
+  const EventBookingDock({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.leadingContent,
+    this.buttonKey,
+    this.isLoading = false,
+    this.backgroundColor,
+    this.dividerColor,
+    this.buttonAccentColor,
+    this.catchLine,
+    this.catchLineAccent,
+    this.footnote,
+    this.errorMessage,
+  });
+
+  final String label;
+  final VoidCallback? onPressed;
+  final Widget? leadingContent;
+  final Key? buttonKey;
+  final bool isLoading;
+  final Color? backgroundColor;
+  final Color? dividerColor;
+  final Color? buttonAccentColor;
+  final String? catchLine;
+  final Color? catchLineAccent;
+  final String? footnote;
+  final String? errorMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    final error = errorMessage;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (error != null) CatchErrorBanner(message: error),
+        CatchBottomCta(
+          label: label,
+          onPressed: onPressed,
+          leadingContent: leadingContent,
+          buttonKey: buttonKey,
+          isLoading: isLoading,
+          backgroundColor: backgroundColor,
+          dividerColor: dividerColor,
+          buttonAccentColor: buttonAccentColor,
+          catchLine: catchLine,
+          catchLineAccent: catchLineAccent,
+          footnote: footnote,
+        ),
+      ],
+    );
+  }
+}
+
 class EventDetailCta extends ConsumerWidget {
   const EventDetailCta({
     super.key,
@@ -114,303 +169,290 @@ class EventDetailCta extends ConsumerWidget {
       acceptOfferMutation,
       declineOfferMutation,
     ].firstWhere((m) => m.hasError, orElse: () => bookMutation);
+    final errorMessage = errorMutation.hasError
+        ? appErrorMessage(
+            (errorMutation as MutationError).error,
+            context: AppErrorContext.event,
+          )
+        : null;
+    EventBookingDock dock({
+      required String label,
+      required VoidCallback? onPressed,
+      Widget? leadingContent,
+      Key? buttonKey,
+      bool isLoading = false,
+      Color? buttonAccentColor,
+      String? catchLine,
+      Color? catchLineAccent,
+      String? footnote,
+    }) {
+      return EventBookingDock(
+        label: label,
+        onPressed: onPressed,
+        leadingContent: leadingContent,
+        buttonKey: buttonKey,
+        isLoading: isLoading,
+        backgroundColor: ctaBackground,
+        dividerColor: ctaDivider,
+        buttonAccentColor: buttonAccentColor,
+        catchLine: catchLine,
+        catchLineAccent: catchLineAccent,
+        footnote: footnote,
+        errorMessage: errorMessage,
+      );
+    }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (errorMutation.hasError)
-          CatchErrorBanner(
-            message: appErrorMessage(
-              (errorMutation as MutationError).error,
-              context: AppErrorContext.event,
-            ),
-          ),
-        if (hasActiveWaitlistOffer)
-          CatchBottomCta(
-            label: !isFreeForViewer && !supportsPaid
-                ? 'Paid booking unavailable'
-                : isFreeForViewer
-                ? 'Accept spot'
-                : 'Accept spot and pay',
-            onPressed:
-                acceptOfferMutation.isPending ||
-                    (!isFreeForViewer && !supportsPaid)
-                ? null
-                : () {
-                    final router = GoRouter.maybeOf(context);
-                    final navigator = Navigator.of(
-                      context,
-                      rootNavigator: true,
-                    );
-                    EventBookingController.acceptWaitlistOfferMutation.run(
-                      ref,
-                      (tx) async {
-                        final data = await tx
-                            .get(eventBookingControllerProvider.notifier)
-                            .acceptWaitlistOffer(
-                              event: event,
-                              user: userProfile,
-                              inviteCode: inviteCode,
-                              inviteLinkId:
-                                  participation?.inviteLinkId ?? inviteLinkId,
-                            );
-                        if (data != null) {
-                          if (router == null) return;
-                          unawaited(
-                            router.pushNamed(
-                              Routes.paymentConfirmationScreen.name,
-                              extra: data,
-                            ),
-                          );
-                        } else {
-                          unawaited(
-                            navigator.push(
-                              MaterialPageRoute<void>(
-                                fullscreenDialog: true,
-                                builder: (routeContext) =>
-                                    EventJoinedCelebrationScreen(
-                                      event: event,
-                                      onViewEvent: () =>
-                                          Navigator.of(routeContext).pop(),
-                                      onBackHome: () {
-                                        Navigator.of(routeContext).pop();
-                                        router?.goNamed(
-                                          Routes.dashboardScreen.name,
-                                        );
-                                      },
-                                    ),
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                    );
-                  },
-            isLoading: acceptOfferMutation.isPending,
-            buttonAccentColor: bookingAccent,
-            leadingContent: _WaitlistOfferLeading(
-              expiresAt: participation?.waitlistOfferExpiresAt,
-              isDeclining: declineOfferMutation.isPending,
-              onDecline: declineOfferMutation.isPending
-                  ? null
-                  : () =>
-                        EventBookingController.declineWaitlistOfferMutation.run(
-                          ref,
-                          (tx) async => tx
-                              .get(eventBookingControllerProvider.notifier)
-                              .declineWaitlistOffer(event: event),
-                        ),
-            ),
-            backgroundColor: ctaBackground,
-            dividerColor: ctaDivider,
-          )
-        else if (canRequestHostApproval)
-          CatchBottomCta(
-            buttonKey: EventActionKeys.joinWaitlistButton,
-            label: needsRunPreferences
-                ? 'Set run preferences'
-                : 'Request to join',
-            onPressed: joinWMutation.isPending
-                ? null
-                : needsRunPreferences
-                ? () => _openRunPreferencesGate(context)
-                : () => EventBookingController.joinWaitlistMutation.run(
-                    ref,
-                    (tx) async => tx
-                        .get(eventBookingControllerProvider.notifier)
-                        .joinWaitlist(
-                          event: event,
-                          inviteCode: inviteCode,
-                          inviteLinkId: inviteLinkId,
-                        ),
-                  ),
-            isLoading: joinWMutation.isPending,
-            buttonAccentColor: bookingAccent,
-            backgroundColor: ctaBackground,
-            dividerColor: ctaDivider,
-          )
-        else
-          switch (status) {
-            EventSignUpStatus.eligible => CatchBottomCta(
-              buttonKey: EventActionKeys.bookButton,
-              label: !isFreeForViewer && !supportsPaid
-                  ? 'Paid booking unavailable'
-                  : needsRunPreferences
-                  ? 'Set run preferences'
-                  : hasApprovedJoinRequest
-                  ? isFreeForViewer
-                        ? 'Join approved event'
-                        : 'Complete approved booking'
-                  : isFreeForViewer
-                  ? 'Join event — ${EventCapacityPresenter(event).joinCtaAvailabilityLabel}'
-                  : 'Book event',
-              onPressed:
-                  bookMutation.isPending || (!isFreeForViewer && !supportsPaid)
-                  ? null
-                  : needsRunPreferences
-                  ? () => _openRunPreferencesGate(context)
-                  : () {
-                      final router = GoRouter.maybeOf(context);
-                      final navigator = Navigator.of(
-                        context,
-                        rootNavigator: true,
+    if (hasActiveWaitlistOffer) {
+      return dock(
+        label: !isFreeForViewer && !supportsPaid
+            ? 'Paid booking unavailable'
+            : isFreeForViewer
+            ? 'Accept spot'
+            : 'Accept spot and pay',
+        onPressed:
+            acceptOfferMutation.isPending || (!isFreeForViewer && !supportsPaid)
+            ? null
+            : () {
+                final router = GoRouter.maybeOf(context);
+                final navigator = Navigator.of(context, rootNavigator: true);
+                EventBookingController.acceptWaitlistOfferMutation.run(ref, (
+                  tx,
+                ) async {
+                  final data = await tx
+                      .get(eventBookingControllerProvider.notifier)
+                      .acceptWaitlistOffer(
+                        event: event,
+                        user: userProfile,
+                        inviteCode: inviteCode,
+                        inviteLinkId:
+                            participation?.inviteLinkId ?? inviteLinkId,
                       );
-                      EventBookingController.bookMutation.run(ref, (tx) async {
-                        final data = await tx
-                            .get(eventBookingControllerProvider.notifier)
-                            .book(
-                              event: event,
-                              user: userProfile,
-                              inviteCode: inviteCode,
-                              inviteLinkId:
-                                  participation?.inviteLinkId ?? inviteLinkId,
-                            );
-                        if (data != null) {
-                          if (router == null) return;
-                          unawaited(
-                            router.pushNamed(
-                              Routes.paymentConfirmationScreen.name,
-                              extra: data,
-                            ),
-                          );
-                        } else {
-                          unawaited(
-                            navigator.push(
-                              MaterialPageRoute<void>(
-                                fullscreenDialog: true,
-                                builder: (routeContext) =>
-                                    EventJoinedCelebrationScreen(
-                                      event: event,
-                                      onViewEvent: () =>
-                                          Navigator.of(routeContext).pop(),
-                                      onBackHome: () {
-                                        Navigator.of(routeContext).pop();
-                                        router?.goNamed(
-                                          Routes.dashboardScreen.name,
-                                        );
-                                      },
-                                    ),
+                  if (data != null) {
+                    if (router == null) return;
+                    unawaited(
+                      router.pushNamed(
+                        Routes.paymentConfirmationScreen.name,
+                        extra: data,
+                      ),
+                    );
+                  } else {
+                    unawaited(
+                      navigator.push(
+                        MaterialPageRoute<void>(
+                          fullscreenDialog: true,
+                          builder: (routeContext) =>
+                              EventJoinedCelebrationScreen(
+                                event: event,
+                                onViewEvent: () =>
+                                    Navigator.of(routeContext).pop(),
+                                onBackHome: () {
+                                  Navigator.of(routeContext).pop();
+                                  router?.goNamed(Routes.dashboardScreen.name);
+                                },
                               ),
-                            ),
-                          );
-                        }
-                      });
-                    },
-              isLoading: bookMutation.isPending,
-              buttonAccentColor: bookingAccent,
-              backgroundColor: ctaBackground,
-              dividerColor: ctaDivider,
-              catchLine: 'Matching opens for everyone who goes',
-              catchLineAccent: bookingAccent,
-              leadingContent: isFreeForViewer
-                  ? null
-                  : PriceLeading(
-                      price: EventFormatters.priceInPaise(
-                        quotedPriceInPaise,
-                        currencyCode: event.currency,
+                        ),
                       ),
-                      note: isScarce ? '$spotsRemaining spots left' : null,
-                      warn: isScarce,
-                    ),
-            ),
-            EventSignUpStatus.signedUp => (() {
-              if (isSelfCheckInOpenForParticipationStatus(
-                event: event,
-                status: participation?.status,
-                now: referenceNow,
-              )) {
-                return const SizedBox.shrink();
-              }
-
-              return CatchBottomCta(
-                buttonKey: EventActionKeys.cancelBookingButton,
-                label: 'Cancel booking',
-                onPressed: cancelMutation.isPending
-                    ? null
-                    : () => EventBookingController.cancelMutation.run(
-                        ref,
-                        (tx) async => tx
-                            .get(eventBookingControllerProvider.notifier)
-                            .cancelBooking(event: event),
-                      ),
-                isLoading: cancelMutation.isPending,
-                leadingContent: const BookedLeading(),
-                backgroundColor: ctaBackground,
-                dividerColor: ctaDivider,
-              );
-            })(),
-            EventSignUpStatus.full => CatchBottomCta(
-              buttonKey: EventActionKeys.joinWaitlistButton,
-              label: needsRunPreferences
-                  ? 'Set run preferences'
-                  : requiresHostApproval
-                  ? 'Request to join'
-                  : 'Join waitlist',
-              onPressed: joinWMutation.isPending
-                  ? null
-                  : needsRunPreferences
-                  ? () => _openRunPreferencesGate(context)
-                  : () => EventBookingController.joinWaitlistMutation.run(
-                      ref,
-                      (tx) async => tx
-                          .get(eventBookingControllerProvider.notifier)
-                          .joinWaitlist(
-                            event: event,
-                            inviteCode: inviteCode,
-                            inviteLinkId: inviteLinkId,
-                          ),
-                    ),
-              isLoading: joinWMutation.isPending,
-              backgroundColor: ctaBackground,
-              dividerColor: ctaDivider,
-            ),
-            EventSignUpStatus.waitlisted => CatchBottomCta(
-              label: requiresHostApproval
-                  ? 'Withdraw request'
-                  : 'Leave waitlist',
-              onPressed: leaveWMutation.isPending
-                  ? null
-                  : () => EventBookingController.leaveWaitlistMutation.run(
-                      ref,
-                      (tx) async => tx
-                          .get(eventBookingControllerProvider.notifier)
-                          .leaveWaitlist(event: event),
-                    ),
-              isLoading: leaveWMutation.isPending,
-              backgroundColor: ctaBackground,
-              dividerColor: ctaDivider,
-            ),
-            EventSignUpStatus.attended => CatchBottomCta(
-              label: 'You attended this event',
-              onPressed: null,
-              leadingContent: const AttendedLeading(),
-              backgroundColor: ctaBackground,
-              dividerColor: ctaDivider,
-            ),
-            EventSignUpStatus.past => CatchBottomCta(
-              label: 'This event has ended',
-              onPressed: null,
-              backgroundColor: ctaBackground,
-              dividerColor: ctaDivider,
-            ),
-            EventSignUpStatus.ineligible => CatchBottomCta(
-              label: switch (eligibility) {
-                AgeTooYoung(:final minAge) => 'Must be $minAge+ to join',
-                AgeTooOld(:final maxAge) => 'Must be $maxAge or younger',
-                EventInviteRequired() => 'Invite required',
-                GenderCapacityReached() =>
-                  requiresHostApproval
-                      ? 'Request required'
-                      : 'Spots for your gender are full',
-                _ => 'Not eligible for this event',
+                    );
+                  }
+                });
               },
-              onPressed: null,
-              backgroundColor: ctaBackground,
-              dividerColor: ctaDivider,
-            ),
-          },
-      ],
-    );
+        isLoading: acceptOfferMutation.isPending,
+        buttonAccentColor: bookingAccent,
+        leadingContent: WaitlistOfferLeading(
+          expiresAt: participation?.waitlistOfferExpiresAt,
+          isDeclining: declineOfferMutation.isPending,
+          onDecline: declineOfferMutation.isPending
+              ? null
+              : () => EventBookingController.declineWaitlistOfferMutation.run(
+                  ref,
+                  (tx) async => tx
+                      .get(eventBookingControllerProvider.notifier)
+                      .declineWaitlistOffer(event: event),
+                ),
+        ),
+      );
+    }
+
+    if (canRequestHostApproval) {
+      return dock(
+        buttonKey: EventActionKeys.joinWaitlistButton,
+        label: needsRunPreferences ? 'Set run preferences' : 'Request to join',
+        onPressed: joinWMutation.isPending
+            ? null
+            : needsRunPreferences
+            ? () => _openRunPreferencesGate(context)
+            : () => EventBookingController.joinWaitlistMutation.run(
+                ref,
+                (tx) async => tx
+                    .get(eventBookingControllerProvider.notifier)
+                    .joinWaitlist(
+                      event: event,
+                      inviteCode: inviteCode,
+                      inviteLinkId: inviteLinkId,
+                    ),
+              ),
+        isLoading: joinWMutation.isPending,
+        buttonAccentColor: bookingAccent,
+      );
+    }
+
+    return switch (status) {
+      EventSignUpStatus.eligible => dock(
+        buttonKey: EventActionKeys.bookButton,
+        label: !isFreeForViewer && !supportsPaid
+            ? 'Paid booking unavailable'
+            : needsRunPreferences
+            ? 'Set run preferences'
+            : hasApprovedJoinRequest
+            ? isFreeForViewer
+                  ? 'Join approved event'
+                  : 'Complete approved booking'
+            : isFreeForViewer
+            ? 'Join event — ${EventCapacityPresenter(event).joinCtaAvailabilityLabel}'
+            : 'Book event',
+        onPressed: bookMutation.isPending || (!isFreeForViewer && !supportsPaid)
+            ? null
+            : needsRunPreferences
+            ? () => _openRunPreferencesGate(context)
+            : () {
+                final router = GoRouter.maybeOf(context);
+                final navigator = Navigator.of(context, rootNavigator: true);
+                EventBookingController.bookMutation.run(ref, (tx) async {
+                  final data = await tx
+                      .get(eventBookingControllerProvider.notifier)
+                      .book(
+                        event: event,
+                        user: userProfile,
+                        inviteCode: inviteCode,
+                        inviteLinkId:
+                            participation?.inviteLinkId ?? inviteLinkId,
+                      );
+                  if (data != null) {
+                    if (router == null) return;
+                    unawaited(
+                      router.pushNamed(
+                        Routes.paymentConfirmationScreen.name,
+                        extra: data,
+                      ),
+                    );
+                  } else {
+                    unawaited(
+                      navigator.push(
+                        MaterialPageRoute<void>(
+                          fullscreenDialog: true,
+                          builder: (routeContext) =>
+                              EventJoinedCelebrationScreen(
+                                event: event,
+                                onViewEvent: () =>
+                                    Navigator.of(routeContext).pop(),
+                                onBackHome: () {
+                                  Navigator.of(routeContext).pop();
+                                  router?.goNamed(Routes.dashboardScreen.name);
+                                },
+                              ),
+                        ),
+                      ),
+                    );
+                  }
+                });
+              },
+        isLoading: bookMutation.isPending,
+        buttonAccentColor: bookingAccent,
+        catchLine: 'Matching opens for everyone who goes',
+        catchLineAccent: bookingAccent,
+        leadingContent: isFreeForViewer
+            ? null
+            : PriceLeading(
+                price: EventFormatters.priceInPaise(
+                  quotedPriceInPaise,
+                  currencyCode: event.currency,
+                ),
+                note: isScarce ? '$spotsRemaining spots left' : null,
+                warn: isScarce,
+              ),
+      ),
+      EventSignUpStatus.signedUp => (() {
+        if (isSelfCheckInOpenForParticipationStatus(
+          event: event,
+          status: participation?.status,
+          now: referenceNow,
+        )) {
+          return const SizedBox.shrink();
+        }
+
+        return dock(
+          buttonKey: EventActionKeys.cancelBookingButton,
+          label: 'Cancel booking',
+          onPressed: cancelMutation.isPending
+              ? null
+              : () => EventBookingController.cancelMutation.run(
+                  ref,
+                  (tx) async => tx
+                      .get(eventBookingControllerProvider.notifier)
+                      .cancelBooking(event: event),
+                ),
+          isLoading: cancelMutation.isPending,
+          leadingContent: const BookedLeading(),
+        );
+      })(),
+      EventSignUpStatus.full => dock(
+        buttonKey: EventActionKeys.joinWaitlistButton,
+        label: needsRunPreferences
+            ? 'Set run preferences'
+            : requiresHostApproval
+            ? 'Request to join'
+            : 'Join waitlist',
+        onPressed: joinWMutation.isPending
+            ? null
+            : needsRunPreferences
+            ? () => _openRunPreferencesGate(context)
+            : () => EventBookingController.joinWaitlistMutation.run(
+                ref,
+                (tx) async => tx
+                    .get(eventBookingControllerProvider.notifier)
+                    .joinWaitlist(
+                      event: event,
+                      inviteCode: inviteCode,
+                      inviteLinkId: inviteLinkId,
+                    ),
+              ),
+        isLoading: joinWMutation.isPending,
+      ),
+      EventSignUpStatus.waitlisted => dock(
+        label: requiresHostApproval ? 'Withdraw request' : 'Leave waitlist',
+        onPressed: leaveWMutation.isPending
+            ? null
+            : () => EventBookingController.leaveWaitlistMutation.run(
+                ref,
+                (tx) async => tx
+                    .get(eventBookingControllerProvider.notifier)
+                    .leaveWaitlist(event: event),
+              ),
+        isLoading: leaveWMutation.isPending,
+      ),
+      EventSignUpStatus.attended => dock(
+        label: 'You attended this event',
+        onPressed: null,
+        leadingContent: const AttendedLeading(),
+      ),
+      EventSignUpStatus.past => dock(
+        label: 'This event has ended',
+        onPressed: null,
+      ),
+      EventSignUpStatus.ineligible => dock(
+        label: switch (eligibility) {
+          AgeTooYoung(:final minAge) => 'Must be $minAge+ to join',
+          AgeTooOld(:final maxAge) => 'Must be $maxAge or younger',
+          EventInviteRequired() => 'Invite required',
+          GenderCapacityReached() =>
+            requiresHostApproval
+                ? 'Request required'
+                : 'Spots for your gender are full',
+          _ => 'Not eligible for this event',
+        },
+        onPressed: null,
+      ),
+    };
   }
 }
 
@@ -504,8 +546,9 @@ class PriceLeading extends StatelessWidget {
   }
 }
 
-class _WaitlistOfferLeading extends StatelessWidget {
-  const _WaitlistOfferLeading({
+class WaitlistOfferLeading extends StatelessWidget {
+  const WaitlistOfferLeading({
+    super.key,
     required this.expiresAt,
     required this.isDeclining,
     required this.onDecline,

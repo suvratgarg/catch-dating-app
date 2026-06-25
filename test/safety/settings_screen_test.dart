@@ -2,6 +2,8 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
@@ -37,6 +39,54 @@ void main() {
     expect(find.byKey(SettingsKeys.showOnMapSwitch), findsOneWidget);
     expect(find.byKey(SettingsKeys.weeklyDigestSwitch), findsOneWidget);
     expect(_topBarMaterial(tester).color, CatchTokens.sunsetLight.bg);
+  });
+
+  testWidgets('renders profile provider loading state without blank rows', (
+    tester,
+  ) async {
+    final container = _settingsContainer(
+      user: buildUser(),
+      profileStream: const Stream.empty(),
+      blockedUsers: const [],
+    );
+    addTearDown(container.dispose);
+
+    await _pumpSettings(tester, container);
+
+    expect(find.text('Loading'), findsNWidgets(2));
+    expect(find.text('No blocked accounts'), findsOneWidget);
+  });
+
+  testWidgets('renders blocked accounts row skeleton while loading', (
+    tester,
+  ) async {
+    final container = _settingsContainer(
+      user: buildUser(),
+      blockedUsers: const [],
+      blockedUsersStream: const Stream.empty(),
+    );
+    addTearDown(container.dispose);
+
+    await _pumpSettings(tester, container);
+
+    expect(find.byType(CatchSkeleton), findsWidgets);
+    expect(find.text('No blocked accounts'), findsNothing);
+  });
+
+  testWidgets('renders profile provider errors through inline error state', (
+    tester,
+  ) async {
+    final container = _settingsContainer(
+      user: buildUser(),
+      profileStream: Stream.error(StateError('profile failed')),
+      blockedUsers: const [],
+    );
+    addTearDown(container.dispose);
+
+    await _pumpSettings(tester, container);
+
+    expect(find.text('Unavailable'), findsNWidgets(2));
+    expect(find.byType(CatchInlineErrorState), findsOneWidget);
   });
 
   testWidgets('preference switches write through SettingsController', (
@@ -212,6 +262,8 @@ Material _topBarMaterial(WidgetTester tester) {
 ProviderContainer _settingsContainer({
   required UserProfile user,
   required List<BlockedUser> blockedUsers,
+  Stream<List<BlockedUser>>? blockedUsersStream,
+  Stream<UserProfile?>? profileStream,
   UserProfileRepository? userRepository,
   SafetyRepository? safetyRepository,
   AuthRepository? authRepository,
@@ -226,7 +278,9 @@ ProviderContainer _settingsContainer({
       ),
       if (externalUrlLauncher != null)
         externalUrlLauncherProvider.overrideWithValue(externalUrlLauncher),
-      watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+      watchUserProfileProvider.overrideWith(
+        (ref) => profileStream ?? Stream.value(user),
+      ),
       userProfileRepositoryProvider.overrideWith(
         (ref) => userRepository ?? _FakeSettingsUserProfileRepository(),
       ),
@@ -234,10 +288,10 @@ ProviderContainer _settingsContainer({
         (ref) => safetyRepository ?? _FakeSettingsSafetyRepository(),
       ),
       watchBlockedUsersProvider.overrideWith(
-        (ref) => Stream.value(blockedUsers),
+        (ref) => blockedUsersStream ?? Stream.value(blockedUsers),
       ),
       publicProfilesByIdsProvider(
-        PublicProfilesQuery(publicProfiles.keys),
+        PublicProfilesQuery(blockedUsers.map((blocked) => blocked.uid)),
       ).overrideWith((ref) async => publicProfiles),
     ],
   );

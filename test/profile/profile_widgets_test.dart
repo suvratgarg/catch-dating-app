@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
@@ -15,6 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
@@ -151,6 +153,37 @@ final _perfectRunPromptTitle = profilePromptDefinition(
 ).title;
 
 void main() {
+  testWidgets('ProfileScreen renders tab-shaped skeletons while loading', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final controller = StreamController<UserProfile?>();
+    addTearDown(controller.close);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchUserProfileProvider.overrideWith((ref) => controller.stream),
+        ],
+        child: MaterialApp(theme: AppTheme.light, home: const ProfileScreen()),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(TabBarView), findsOneWidget);
+    expect(find.byType(ProfileTabSkeletonSliverBody), findsOneWidget);
+    expect(find.byType(CatchLoadingIndicator), findsNothing);
+
+    await tester.tap(find.text('Preview'));
+    await tester.pump();
+    await tester.pump(CatchMotion.base);
+
+    expect(find.byType(ProfileSurfaceSkeleton), findsOneWidget);
+  });
+
   testWidgets(
     'Profile sliver header uses Your profile title with Edit and Preview options',
     (tester) async {

@@ -478,9 +478,9 @@ void main() {
                 width: 320,
                 child: Builder(
                   builder: (context) => MediaQuery(
-                    data: MediaQuery.of(context).copyWith(
-                      textScaler: const TextScaler.linear(1.6),
-                    ),
+                    data: MediaQuery.of(
+                      context,
+                    ).copyWith(textScaler: const TextScaler.linear(1.6)),
                     // Vertical scroll keeps the (intentionally tall) cover from
                     // a height overflow so the probe isolates the horizontal
                     // data-Row constraint under test.
@@ -1194,13 +1194,15 @@ void main() {
       expect(find.text('4.8'), findsOneWidget); // title rating
       expect(
         find.byWidgetPredicate(
-          (widget) => _networkImageUrl(widget) == 'https://example.com/club-cover.jpg',
+          (widget) =>
+              _networkImageUrl(widget) == 'https://example.com/club-cover.jpg',
         ),
         findsWidgets,
       );
       expect(
         find.byWidgetPredicate(
-          (widget) => _networkImageUrl(widget) == 'https://example.com/club-logo.jpg',
+          (widget) =>
+              _networkImageUrl(widget) == 'https://example.com/club-logo.jpg',
         ),
         findsWidgets,
       );
@@ -1341,7 +1343,12 @@ void main() {
               onCreateEvent: () {},
             ),
             StatsStrip(
-              club: buildClub(memberCount: 24, rating: 4.7),
+              club: buildClub(
+                memberCount: 24,
+                rating: 4.7,
+                reviewCount: 12,
+                createdAt: DateTime(2025, 1, 12),
+              ),
               upcomingCount: 3,
             ),
           ],
@@ -1349,12 +1356,15 @@ void main() {
       );
 
       expect(find.text('Booked'), findsOneWidget);
-      expect(find.text('3'), findsNWidgets(2));
+      expect(find.text('3'), findsOneWidget);
       expect(find.text('1'), findsOneWidget);
       expect(find.text('₹30'), findsOneWidget);
       expect(find.byType(CatchStatStrip), findsOneWidget);
       expect(find.text('MEMBERS'), findsOneWidget);
-      expect(find.text('UPCOMING'), findsOneWidget);
+      expect(find.text('REVIEWS'), findsOneWidget);
+      expect(find.text('EST.'), findsOneWidget);
+      expect(find.text('12'), findsOneWidget);
+      expect(find.text("JAN '25"), findsOneWidget);
       expect(find.text('4.7'), findsOneWidget);
     });
 
@@ -1788,7 +1798,7 @@ void main() {
 
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -700));
       await _pumpClubUi(tester);
-      expect(find.text('HOSTED'), findsNothing);
+      expect(find.text('HOSTED'), findsOneWidget);
     });
 
     testWidgets(
@@ -1848,6 +1858,9 @@ void main() {
         expect(find.text('Club host'), findsNothing);
         expect(find.text('Hosts events in Bandra'), findsNothing);
 
+        await tester.ensureVisible(find.text('Asha Shah'));
+        await _pumpClubUi(tester);
+
         await tester.tap(find.text('Asha Shah'));
         await _pumpClubUi(tester);
 
@@ -1879,7 +1892,7 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => Scaffold(
+            builder: (context, _) => Scaffold(
               body: ClubDetailBody(
                 club: club,
                 upcoming: const [],
@@ -1892,6 +1905,19 @@ void main() {
                 clubPushNotificationsEnabled: false,
                 isClubPushMutating: false,
                 isAuthenticated: true,
+                canMessageHosts: true,
+                onMessageHost: (buttonContext, host) async {
+                  final matchId = await fakeRepository
+                      .startClubHostConversation(
+                        clubId: club.id,
+                        hostUid: host.uid,
+                      );
+                  if (!buttonContext.mounted) return;
+                  await buttonContext.pushNamed<void>(
+                    Routes.chatScreen.name,
+                    pathParameters: {'matchId': matchId},
+                  );
+                },
               ),
             ),
           ),
@@ -1943,6 +1969,10 @@ void main() {
       expect(find.text('Co Host'), findsOneWidget);
       expect(find.textContaining('OWNER · '), findsOneWidget);
       expect(find.textContaining('HOST · '), findsOneWidget);
+
+      await tester.ensureVisible(find.text('Co Host'));
+      await _pumpClubUi(tester);
+
       expect(find.byTooltip('Message host'), findsNWidgets(2));
 
       await tester.tap(findLastByTooltip('Message host'));
@@ -2090,7 +2120,7 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => Scaffold(
+            builder: (context, _) => Scaffold(
               body: ClubDetailBody(
                 club: club,
                 upcoming: [event],
@@ -2103,6 +2133,15 @@ void main() {
                 clubPushNotificationsEnabled: false,
                 isClubPushMutating: false,
                 isAuthenticated: true,
+                onEventSelected: (selectedEvent) => unawaited(
+                  context.pushNamed<void>(
+                    Routes.eventDetailScreen.name,
+                    pathParameters: {
+                      'clubId': club.id,
+                      'eventId': selectedEvent.id,
+                    },
+                  ),
+                ),
               ),
             ),
           ),
@@ -2985,8 +3024,8 @@ void main() {
         );
         await _pumpClubUi(tester);
 
-        await _enterCreateClubText(tester, 'Instagram handle', '');
-        await _enterCreateClubText(tester, 'Phone number', '');
+        await _enterCreateClubText(tester, 'Instagram', '');
+        await _enterCreateClubText(tester, 'Phone', '');
         await _enterCreateClubText(tester, 'Email', '');
 
         await tester.tap(find.text('Save changes'));
@@ -3144,7 +3183,9 @@ Future<void> _enterCreateClubText(
   String label,
   String value,
 ) async {
-  final field = find.widgetWithText(CatchTextField, label);
+  final field = find.byWidgetPredicate(
+    (widget) => widget is CatchTextField && widget.label == label,
+  );
   await tester.ensureVisible(field);
   await tester.pump();
   await tester.enterText(field, value);

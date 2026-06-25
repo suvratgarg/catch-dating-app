@@ -51,6 +51,7 @@ class EventPolicyStep extends StatelessWidget {
   const EventPolicyStep({
     super.key,
     required this.formKey,
+    this.autovalidateMode = AutovalidateMode.disabled,
     required this.capacityController,
     required this.priceController,
     required this.currencyCode,
@@ -72,6 +73,7 @@ class EventPolicyStep extends StatelessWidget {
   });
 
   final GlobalKey<FormState> formKey;
+  final AutovalidateMode autovalidateMode;
   final TextEditingController capacityController;
   final TextEditingController priceController;
   final String currencyCode;
@@ -120,6 +122,7 @@ class EventPolicyStep extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Form(
       key: formKey,
+      autovalidateMode: autovalidateMode,
       child: ListView(
         padding: CatchInsets.formStepBody,
         children: [

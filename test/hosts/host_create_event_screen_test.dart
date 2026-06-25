@@ -116,7 +116,9 @@ void main() {
         expect(
           find.byWidgetPredicate(
             (widget) =>
-                widget is CatchSelectChip && widget.label == 'OPEN' && widget.active,
+                widget is CatchSelectChip &&
+                widget.label == 'OPEN' &&
+                widget.active,
           ),
           findsOneWidget,
         );
@@ -157,7 +159,7 @@ void main() {
           findsOneWidget,
         );
         expect(
-          find.textContaining('Followers can discover it from their home feed'),
+          find.textContaining('People can discover it from their home feed'),
           findsOneWidget,
         );
         expect(find.textContaining('visible to'), findsNothing);
@@ -197,8 +199,8 @@ void main() {
         await tester.tap(manageRunButton);
         await _pumpTestAnimation(tester);
 
-        expect(find.text('HOST MANAGE'), findsOneWidget);
-        expect(find.text('Setup'), findsWidgets);
+        expect(find.text('STRIDE SOCIAL'), findsOneWidget);
+        expect(find.text('SETUP'), findsWidgets);
       },
     );
 
@@ -398,7 +400,7 @@ void main() {
 
         expect(find.text('Your event is live.'), findsOneWidget);
         expect(find.text('EVENT CREATED'), findsOneWidget);
-        expect(find.byIcon(CatchIcons.verifiedRounded), findsOneWidget);
+        expect(find.byIcon(CatchIcons.celebration), findsOneWidget);
         expect(
           find.textContaining('is now listed on Stride Social'),
           findsOneWidget,
@@ -414,16 +416,16 @@ void main() {
           find.textContaining('Followers can discover it from their home feed'),
           findsNothing,
         );
-        expect(find.text('When'), findsOneWidget);
-        expect(find.text('Where'), findsOneWidget);
+        expect(find.text('WHEN'), findsOneWidget);
+        expect(find.text('WHERE'), findsOneWidget);
         expect(find.text('Carter Road'), findsOneWidget);
-        expect(find.text('Event'), findsOneWidget);
-        expect(find.text('5km · Easy'), findsOneWidget);
-        expect(find.text('Capacity'), findsOneWidget);
+        expect(find.text('EVENT'), findsOneWidget);
+        expect(find.text('5 km easy social run'), findsOneWidget);
+        expect(find.text('CAPACITY'), findsOneWidget);
         expect(find.text('12 attendees'), findsOneWidget);
-        expect(find.text('Invite code'), findsOneWidget);
+        expect(find.text('INVITE CODE'), findsOneWidget);
         expect(find.text('CATCH-DELHI'), findsOneWidget);
-        expect(find.text('Private link'), findsOneWidget);
+        expect(find.text('PRIVATE LINK'), findsOneWidget);
         expect(
           find.text(
             'https://catchdates.com/clubs/club-1/events/event-private?invite=CATCH-DELHI',
@@ -523,8 +525,9 @@ void main() {
       // Second back — unsaved changes dialog appears since we filled basics.
       await tester.tap(find.byTooltip('Back'));
       await _pumpTestAnimation(tester);
-      await tester.tap(find.text('Discard'));
+      await tester.tap(_dialogAction('Save draft'));
       await _pumpTestAnimation(tester);
+      expect(find.text('Draft saved'), findsOneWidget);
       expect(find.text('Open'), findsOneWidget);
     });
 
@@ -673,6 +676,7 @@ void main() {
           club: buildClub(),
           event: event,
           onBackToSuccess: () {},
+          initialSection: HostEventManageSection.guests,
         ),
         overrides: [
           watchEventProvider(
@@ -722,14 +726,15 @@ void main() {
       );
       await _pumpHostActionFrame(tester);
 
-      expect(find.text('Setup'), findsWidgets);
-      expect(find.text('Live'), findsOneWidget);
-      expect(find.text('Report'), findsOneWidget);
+      expect(find.text('SETUP'), findsOneWidget);
+      expect(find.text('GUESTS'), findsOneWidget);
+      expect(find.text('LIVE'), findsOneWidget);
+      expect(find.text('REPORT'), findsOneWidget);
       expect(find.text('Event success'), findsNothing);
       expect(find.text('Open event success'), findsNothing);
     });
 
-    testWidgets('host manage live embeds the editable roster in live now', (
+    testWidgets('host manage live uses compact check-in workspace', (
       tester,
     ) async {
       tester.view.devicePixelRatio = 1;
@@ -801,15 +806,15 @@ void main() {
       await _pumpTestAnimation(tester);
 
       expect(find.text('LIVE NOW'), findsOneWidget);
-      expect(find.text('Editable roster'), findsOneWidget);
-      expect(find.text('GUEST'), findsOneWidget);
-      expect(find.text('STATUS'), findsOneWidget);
-      expect(find.text('HOST ACTION'), findsOneWidget);
-      expect(find.text('DUE'), findsWidgets);
-      expect(find.text('IN'), findsWidgets);
-      expect(find.text('Harsh'), findsOneWidget);
-      expect(find.text('Manan'), findsOneWidget);
-      expect(find.text('Host check-in QR'), findsOneWidget);
+      expect(find.text('Check guests in'), findsOneWidget);
+      expect(find.text('1 of 2 arrived'), findsOneWidget);
+      expect(find.text('Editable roster'), findsNothing);
+      expect(find.text('GUEST'), findsNothing);
+      expect(find.text('STATUS'), findsNothing);
+      expect(find.text('HOST ACTION'), findsNothing);
+      expect(find.text('Harsh'), findsNothing);
+      expect(find.text('Manan'), findsNothing);
+      expect(find.text('Host check-in QR'), findsNothing);
       expect(find.text('Live attendance'), findsNothing);
       expect(find.text('Needs check-in'), findsNothing);
       expect(find.text('Recently checked in'), findsNothing);
@@ -859,7 +864,7 @@ void main() {
         find.textContaining('Demand-priced bookings may settle higher'),
         findsNothing,
       );
-      expect(find.text('Setup'), findsWidgets);
+      expect(find.text('SETUP'), findsOneWidget);
     });
 
     testWidgets('host manage exposes invite code and private link', (
@@ -936,10 +941,7 @@ void main() {
       );
       await _pumpHostActionFrame(tester);
 
-      final cancelButton = find.widgetWithText(
-        CatchButton,
-        'Cancel published event',
-      );
+      final cancelButton = find.text('Cancel event');
       await tester.scrollUntilVisible(cancelButton, 300);
       await _pumpHostActionFrame(tester);
       await tester.tap(cancelButton.hitTestable());
@@ -978,10 +980,7 @@ void main() {
       );
       await _pumpHostActionFrame(tester);
 
-      final deleteButton = find.widgetWithText(
-        CatchButton,
-        'Delete unused event',
-      );
+      final deleteButton = find.text('Delete unused event');
       await tester.scrollUntilVisible(deleteButton, 300);
       await _pumpHostActionFrame(tester);
       await tester.tap(deleteButton);
@@ -1017,10 +1016,7 @@ void main() {
       );
       await _pumpHostActionFrame(tester);
 
-      expect(
-        find.widgetWithText(CatchButton, 'Delete unused event'),
-        findsNothing,
-      );
+      expect(find.text('Delete unused event'), findsNothing);
     });
 
     testWidgets('draft picker deletes persisted drafts and resumes another', (

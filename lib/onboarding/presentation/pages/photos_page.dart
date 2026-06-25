@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart';
@@ -36,11 +37,8 @@ class PhotosPage extends ConsumerWidget {
     ref.listen(photoUploadControllerProvider, (_, state) {
       if (state.uploadError != null) {
         final messenger = ScaffoldMessenger.of(context);
-        messenger
-          ..clearSnackBars()
-          ..showSnackBar(
-            const SnackBar(content: Text('Upload failed. Please try again.')),
-          );
+        messenger.clearSnackBars();
+        showCatchSnackBar(context, 'Upload failed. Please try again.');
       }
     });
 

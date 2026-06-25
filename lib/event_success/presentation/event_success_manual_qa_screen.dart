@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -108,7 +109,10 @@ class _EventSuccessManualQaScreenState
                         'Manual QA fixture failed to load: ${snapshot.error}',
                         style: CatchTextStyles.supporting(context),
                       )
-                    : const CircularProgressIndicator.adaptive(),
+                    : const Padding(
+                        padding: CatchInsets.contentRelaxed,
+                        child: CatchSkeletonList(height: 112),
+                      ),
               );
             }
             final data = store.fixtures;
@@ -123,7 +127,7 @@ class _EventSuccessManualQaScreenState
                 ),
                 gapH16,
                 _ManualQaSideBySide(
-                  hostTab: store.hostTab,
+                  hostSection: store.hostSection,
                   data: data,
                   firstHelloEnabled: store.firstHelloEnabled,
                   firstHelloSkipped: store.firstHelloSkipped,
@@ -174,7 +178,7 @@ class _ManualQaStore {
   final _ManualQaFixtureData fixtureData;
 
   _ManualQaScenario scenario = _ManualQaScenario.racketPairs;
-  EventSuccessHostTab hostTab = EventSuccessHostTab.setup;
+  HostEventManageSection hostSection = HostEventManageSection.setup;
   int activeStepIndex = 0;
   EventSuccessRevealStatus revealStatus = EventSuccessRevealStatus.idle;
   int activeRevealRoundIndex = 0;
@@ -191,6 +195,8 @@ class _ManualQaStore {
   Set<String>? checkedInOverride;
   Duration _countdownElapsed = Duration.zero;
   Timer? _countdownTimer;
+
+  EventSuccessHostTab get hostTab => hostSection.eventSuccessTab;
 
   _ManualQaFixtures get fixtures => _ManualQaFixtures(
     scenario: scenario,
@@ -235,7 +241,7 @@ class _ManualQaStore {
   }
 
   void setHostTab(EventSuccessHostTab tab) {
-    hostTab = tab;
+    hostSection = tab.hostManageSection;
     activeStepIndex = _defaultActiveStepIndex(scenario: scenario, hostTab: tab);
     if (tab != EventSuccessHostTab.live ||
         !_activeStepHasLiveReveal(activeStepIndex)) {
@@ -246,7 +252,15 @@ class _ManualQaStore {
   }
 
   void setHostSection(HostEventManageSection section) {
-    setHostTab(section.eventSuccessTab);
+    hostSection = section;
+    final tab = section.eventSuccessTab;
+    activeStepIndex = _defaultActiveStepIndex(scenario: scenario, hostTab: tab);
+    if (tab != EventSuccessHostTab.live ||
+        !_activeStepHasLiveReveal(activeStepIndex)) {
+      _resetRevealState();
+    }
+    _syncCountdownTimer();
+    _notify();
   }
 
   void setCompatibilityEnabled(bool value) {
@@ -291,7 +305,7 @@ class _ManualQaStore {
   ) async {
     firstHelloCompleted = true;
     firstHelloSkipped = false;
-    hostTab = EventSuccessHostTab.live;
+    hostSection = HostEventManageSection.live;
     activeStepIndex = _defaultActiveStepIndex(
       scenario: scenario,
       hostTab: hostTab,
@@ -318,7 +332,7 @@ class _ManualQaStore {
   }
 
   bool toggleAttendance(String uid) {
-    hostTab = EventSuccessHostTab.live;
+    hostSection = HostEventManageSection.live;
     final checkedInIds =
         checkedInOverride ?? fixtureData.defaultCheckedInIds.toSet();
     final next = checkedInIds.toSet();
@@ -357,7 +371,7 @@ class _ManualQaStore {
   }
 
   void _moveHostStep(int delta) {
-    hostTab = EventSuccessHostTab.live;
+    hostSection = HostEventManageSection.live;
     activeStepIndex = _clampActiveStepIndex(activeStepIndex + delta);
     if (!_activeStepHasLiveReveal(activeStepIndex)) _resetRevealState();
     _syncCountdownTimer();
@@ -365,7 +379,7 @@ class _ManualQaStore {
   }
 
   void _startRevealCountdown(int roundIndex, int _) {
-    hostTab = EventSuccessHostTab.live;
+    hostSection = HostEventManageSection.live;
     activeStepIndex = _firstRevealStepIndex(scenario);
     revealStatus = EventSuccessRevealStatus.countingDown;
     activeRevealRoundIndex = roundIndex;
@@ -375,7 +389,7 @@ class _ManualQaStore {
   }
 
   void _revealRound(int roundIndex) {
-    hostTab = EventSuccessHostTab.live;
+    hostSection = HostEventManageSection.live;
     activeStepIndex = _firstRevealStepIndex(scenario);
     revealStatus = EventSuccessRevealStatus.revealed;
     activeRevealRoundIndex = roundIndex;
@@ -590,7 +604,7 @@ class _ManualQaControls extends StatelessWidget {
 
 class _ManualQaSideBySide extends StatelessWidget {
   const _ManualQaSideBySide({
-    required this.hostTab,
+    required this.hostSection,
     required this.data,
     required this.firstHelloEnabled,
     required this.firstHelloSkipped,
@@ -607,7 +621,7 @@ class _ManualQaSideBySide extends StatelessWidget {
     required this.onToggleAttendance,
   });
 
-  final EventSuccessHostTab hostTab;
+  final HostEventManageSection hostSection;
   final _ManualQaFixtures data;
   final bool firstHelloEnabled;
   final bool firstHelloSkipped;
@@ -651,7 +665,7 @@ class _ManualQaSideBySide extends StatelessWidget {
                   subtitle:
                       'Production host workspace · ${data.activeStepLabel}',
                   badges: [
-                    data.hostTabBadge(hostTab),
+                    data.hostTabBadge(hostSection.eventSuccessTab),
                     data.activeStepProgress,
                     '${data.roster.bookedCount} booked',
                     '${data.roster.checkedInCount} checked in',
@@ -660,7 +674,7 @@ class _ManualQaSideBySide extends StatelessWidget {
                   ],
                   child: _ManualQaHostManagePane(
                     data: data,
-                    selectedTab: hostTab,
+                    selectedSection: hostSection,
                     fixtureActions: fixtureActions,
                     onSectionChanged: onHostSectionChanged,
                     onToggleAttendance: onToggleAttendance,
@@ -802,14 +816,14 @@ class _QaDeviceFrame extends StatelessWidget {
 class _ManualQaHostManagePane extends StatelessWidget {
   const _ManualQaHostManagePane({
     required this.data,
-    required this.selectedTab,
+    required this.selectedSection,
     required this.fixtureActions,
     required this.onSectionChanged,
     required this.onToggleAttendance,
   });
 
   final _ManualQaFixtures data;
-  final EventSuccessHostTab selectedTab;
+  final HostEventManageSection selectedSection;
   final EventSuccessHostFixtureActions fixtureActions;
   final ValueChanged<HostEventManageSection> onSectionChanged;
   final bool Function(String uid) onToggleAttendance;
@@ -825,7 +839,7 @@ class _ManualQaHostManagePane extends StatelessWidget {
         club: data.club,
         event: data.event,
         onBackToSuccess: () {},
-        initialSection: selectedTab.hostManageSection,
+        initialSection: selectedSection,
         onSectionChanged: onSectionChanged,
         eventSuccessFixtureActions: fixtureActions,
       ),
@@ -2000,6 +2014,7 @@ extension on HostEventManageSection {
   EventSuccessHostTab get eventSuccessTab {
     return switch (this) {
       HostEventManageSection.setup => EventSuccessHostTab.setup,
+      HostEventManageSection.guests => EventSuccessHostTab.setup,
       HostEventManageSection.live => EventSuccessHostTab.live,
       HostEventManageSection.report => EventSuccessHostTab.report,
     };

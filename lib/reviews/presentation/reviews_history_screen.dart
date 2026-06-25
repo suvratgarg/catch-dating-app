@@ -3,15 +3,18 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -25,31 +28,57 @@ class ReviewsHistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    final userAsync = ref.watch(watchUserProfileProvider);
-    final uid = uidAsync.asData?.value;
 
     return Scaffold(
       appBar: const CatchTopBar(title: 'Review history', border: true),
-      body: switch ((uid, userAsync)) {
-        (null, _) => const _ReviewsHistoryEmpty(
+      body: CatchAsyncValueView<String?>(
+        value: uidAsync,
+        loadingBuilder: (_) => const _ReviewsHistorySkeleton(),
+        errorBuilder: (_, _, _) => const _ReviewsHistoryEmpty(
           title: 'Sign in to see reviews',
           message: 'Your past event reviews will appear here.',
         ),
-        (final String uid, AsyncData(value: final user?)) =>
-          _ReviewsHistoryList(uid: uid, user: user),
-        (_, AsyncError()) => CatchErrorState(
-          title: 'Reviews unavailable',
-          message: 'Could not load your profile.',
-          onRetry: () => ref.invalidate(watchUserProfileProvider),
-        ),
-        _ => const Center(child: CatchLoadingIndicator()),
+        builder: (context, uid) {
+          if (uid == null) {
+            return const _ReviewsHistoryEmpty(
+              title: 'Sign in to see reviews',
+              message: 'Your past event reviews will appear here.',
+            );
+          }
+          return _ReviewsHistoryProfileGate(uid: uid);
+        },
+      ),
+    );
+  }
+}
+
+class _ReviewsHistoryProfileGate extends ConsumerWidget {
+  const _ReviewsHistoryProfileGate({required this.uid});
+
+  final String uid;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(watchUserProfileProvider);
+
+    return CatchAsyncValueView(
+      value: userAsync,
+      loadingBuilder: (_) => const _ReviewsHistorySkeleton(),
+      errorBuilder: (_, _, _) => CatchErrorState(
+        title: 'Reviews unavailable',
+        message: 'Could not load your profile.',
+        onRetry: () => ref.invalidate(watchUserProfileProvider),
+      ),
+      builder: (context, user) {
+        if (user == null) return const _ReviewsHistorySkeleton();
+        return _ReviewsHistoryReviewsGate(uid: uid, user: user);
       },
     );
   }
 }
 
-class _ReviewsHistoryList extends ConsumerWidget {
-  const _ReviewsHistoryList({required this.uid, required this.user});
+class _ReviewsHistoryReviewsGate extends ConsumerWidget {
+  const _ReviewsHistoryReviewsGate({required this.uid, required this.user});
 
   final String uid;
   final UserProfile user;
@@ -57,103 +86,129 @@ class _ReviewsHistoryList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final reviewsAsync = ref.watch(watchReviewsByUserProvider(uid));
+    final reviews = reviewsAsync.asData?.value;
+    AsyncValue<List<Event>> eventsAsync = const AsyncData<List<Event>>([]);
+    if (reviews != null && reviews.isNotEmpty) {
+      final eventIds = ReviewsHistoryState.eventIdsFor(reviews);
+      if (eventIds.isNotEmpty) {
+        eventsAsync = ref.watch(
+          watchEventsByIdsProvider(EventsByIdQuery(eventIds)),
+        );
+      }
+    }
+    void onRetryReviews() => ref.invalidate(watchReviewsByUserProvider(uid));
 
-    return reviewsAsync.when(
-      loading: () => const Center(child: CatchLoadingIndicator()),
-      error: (error, stackTrace) => CatchErrorState(
+    return CatchAsyncValueView<List<Review>>(
+      value: reviewsAsync,
+      loadingBuilder: (_) => const _ReviewsHistorySkeleton(),
+      errorBuilder: (_, _, _) => CatchErrorState(
         title: 'Reviews unavailable',
         message: 'Could not load your reviews.',
-        onRetry: () => ref.invalidate(watchReviewsByUserProvider(uid)),
+        onRetry: onRetryReviews,
       ),
-      data: (reviews) {
-        if (reviews.isEmpty) {
-          return const _ReviewsHistoryEmpty(
-            title: 'No reviews yet',
-            message: 'After you review a completed event, it will appear here.',
-          );
-        }
-
-        // Batch-resolve the events for the date labels in one query instead of
-        // opening a live event-doc stream per review row.
-        final eventIds = <String>{
-          for (final review in reviews)
-            if (review.eventId != null) review.eventId!,
-        };
-        final eventsAsync = eventIds.isEmpty
-            ? const AsyncData<List<Event>>([])
-            : ref.watch(watchEventsByIdsProvider(EventsByIdQuery(eventIds)));
-        final eventsById = <String, Event>{
-          for (final event in eventsAsync.asData?.value ?? const <Event>[])
-            event.id: event,
-        };
-
-        return ListView.separated(
-          padding: CatchInsets.pageBodyRelaxed,
-          itemCount: reviews.length,
-          separatorBuilder: (_, _) => gapH14,
-          itemBuilder: (context, index) {
-            final review = reviews[index];
-            return _ReviewHistoryItem(
-              review: review,
-              user: user,
-              event: review.eventId == null
-                  ? null
-                  : eventsById[review.eventId],
-            );
-          },
+      builder: (context, reviews) {
+        final state = ReviewsHistoryState.fromAsync(
+          uid: uid,
+          user: AsyncData(user),
+          reviews: AsyncData(reviews),
+          events: eventsAsync,
+        );
+        return _ReviewsHistoryBody(
+          state: state,
+          onRetryProfile: () => ref.invalidate(watchUserProfileProvider),
+          onRetryReviews: onRetryReviews,
+          onEditReview: state is ReviewsHistoryContent
+              ? (row) => _showEditReviewSheet(context, state, row)
+              : null,
         );
       },
     );
   }
 }
 
-class _ReviewHistoryItem extends StatelessWidget {
-  const _ReviewHistoryItem({
-    required this.review,
-    required this.user,
-    required this.event,
+class _ReviewsHistoryBody extends StatelessWidget {
+  const _ReviewsHistoryBody({
+    required this.state,
+    required this.onRetryProfile,
+    required this.onRetryReviews,
+    required this.onEditReview,
   });
 
-  final Review review;
-  final UserProfile user;
-  final Event? event;
+  final ReviewsHistoryState state;
+  final VoidCallback onRetryProfile;
+  final VoidCallback? onRetryReviews;
+  final ValueChanged<ReviewsHistoryRow>? onEditReview;
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (state) {
+      ReviewsHistoryLoading() => const _ReviewsHistorySkeleton(),
+      ReviewsHistoryEmpty(:final title, :final message) => _ReviewsHistoryEmpty(
+        title: title,
+        message: message,
+      ),
+      ReviewsHistoryError(:final title, :final message, :final retryTarget) =>
+        CatchErrorState(
+          title: title,
+          message: message,
+          onRetry: switch (retryTarget) {
+            ReviewsHistoryRetryTarget.profile => onRetryProfile,
+            ReviewsHistoryRetryTarget.reviews => onRetryReviews,
+          },
+        ),
+      ReviewsHistoryContent(:final rows) => _ReviewsHistoryList(
+        rows: rows,
+        onEditReview: onEditReview,
+      ),
+    };
+  }
+}
+
+class _ReviewsHistoryList extends StatelessWidget {
+  const _ReviewsHistoryList({required this.rows, required this.onEditReview});
+
+  final List<ReviewsHistoryRow> rows;
+  final ValueChanged<ReviewsHistoryRow>? onEditReview;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: CatchInsets.pageBodyRelaxed,
+      itemCount: rows.length,
+      separatorBuilder: (_, _) => gapH14,
+      itemBuilder: (context, index) =>
+          _ReviewHistoryItem(row: rows[index], onEditReview: onEditReview),
+    );
+  }
+}
+
+class _ReviewHistoryItem extends StatelessWidget {
+  const _ReviewHistoryItem({required this.row, required this.onEditReview});
+
+  final ReviewsHistoryRow row;
+  final ValueChanged<ReviewsHistoryRow>? onEditReview;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final eventId = review.eventId;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          _reviewContextLabel(event, eventId),
+          row.contextLabel,
           style: CatchTextStyles.labelS(context, color: t.ink2),
         ),
         gapH8,
         ReviewCard(
-          review: review,
+          review: row.review,
           isOwn: true,
-          onEdit: eventId == null
-              ? null
-              : () => showWriteReviewSheet(
-                  context: context,
-                  clubId: review.clubId,
-                  eventId: eventId,
-                  reviewer: user,
-                  existingReview: review,
-                ),
+          onEdit: row.canEdit && onEditReview != null
+              ? () => onEditReview!(row)
+              : null,
         ),
       ],
     );
-  }
-
-  String _reviewContextLabel(Event? event, String? eventId) {
-    if (event != null) {
-      return '${event.longDateLabel} · ${event.timeRangeLabel}';
-    }
-    if (eventId != null) return 'Event review';
-    return 'Legacy club review';
   }
 }
 
@@ -165,9 +220,9 @@ class _ReviewsHistoryEmpty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: CatchInsets.contentRelaxed,
+    return CatchScreenBody(
+      scrollable: false,
+      child: Center(
         child: CatchEmptyState(
           icon: CatchIcons.rateReviewOutlined,
           title: title,
@@ -176,4 +231,84 @@ class _ReviewsHistoryEmpty extends StatelessWidget {
       ),
     );
   }
+}
+
+class _ReviewsHistorySkeleton extends StatelessWidget {
+  const _ReviewsHistorySkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: CatchInsets.pageBodyRelaxed,
+      itemCount: 4,
+      separatorBuilder: (_, _) => gapH14,
+      itemBuilder: (context, _) => const _ReviewHistoryItemSkeleton(),
+    );
+  }
+}
+
+class _ReviewHistoryItemSkeleton extends StatelessWidget {
+  const _ReviewHistoryItemSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchSkeleton.text(width: 132),
+        gapH8,
+        CatchSurface(
+          borderColor: t.line,
+          padding: CatchInsets.tileContentCompact,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  CatchSkeleton.circle(size: 32),
+                  gapW8,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CatchSkeleton.text(width: 92),
+                        gapH6,
+                        Row(
+                          children: [
+                            for (var i = 0; i < 5; i++) ...[
+                              CatchSkeleton.box(width: 12, height: 12),
+                              if (i < 4) gapW3,
+                            ],
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              gapH10,
+              CatchSkeleton.textBlock(lines: 2),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+Future<void> _showEditReviewSheet(
+  BuildContext context,
+  ReviewsHistoryContent state,
+  ReviewsHistoryRow row,
+) {
+  final eventId = row.editEventId;
+  if (eventId == null) return Future<void>.value();
+  return showWriteReviewSheet(
+    context: context,
+    clubId: row.review.clubId,
+    eventId: eventId,
+    reviewer: state.user,
+    existingReview: row.review,
+  );
 }

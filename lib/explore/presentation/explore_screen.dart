@@ -36,7 +36,11 @@ class ExploreScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final feedCount = ref.watch(exploreFeedViewModelProvider).asData?.value.count;
+    final feedCount = ref
+        .watch(exploreFeedViewModelProvider)
+        .asData
+        ?.value
+        .count;
     final mapLabel = feedCount == null || feedCount == 0
         ? 'Map'
         : 'Map · $feedCount';
@@ -139,10 +143,7 @@ class _ExploreChrome extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Column(
       mainAxisSize: MainAxisSize.min,
-      children: [
-        ExploreBrowseHeaderContent(),
-        ExploreFilterRail(),
-      ],
+      children: [ExploreDiscoveryCoverHeader(), ExploreFilterRail()],
     );
   }
 }

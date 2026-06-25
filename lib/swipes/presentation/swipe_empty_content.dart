@@ -27,7 +27,9 @@ SwipeEmptyContent buildSwipeEmptyContent({
   required Event? event,
   required UserProfile? currentUser,
   required EventParticipation? currentUserParticipation,
+  DateTime? now,
 }) {
+  final referenceNow = now ?? DateTime.now();
   if (event == null) {
     return SwipeEmptyContent(
       title: 'Catch unavailable',
@@ -52,7 +54,7 @@ SwipeEmptyContent buildSwipeEmptyContent({
     );
   }
 
-  if (event.isUpcoming) {
+  if (event.isUpcomingAt(referenceNow)) {
     return SwipeEmptyContent(
       title: 'Event in progress',
       message: 'Catches unlock for 24 hours after the event finishes.',
@@ -60,7 +62,7 @@ SwipeEmptyContent buildSwipeEmptyContent({
     );
   }
 
-  if (!hasOpenSwipeWindow(event)) {
+  if (!hasOpenSwipeWindow(event, now: referenceNow)) {
     return SwipeEmptyContent(
       title: 'Catch window closed',
       message: 'This event is past the 24-hour catch window.',

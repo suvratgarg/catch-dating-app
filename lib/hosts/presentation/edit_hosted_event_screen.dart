@@ -17,8 +17,8 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -36,6 +36,7 @@ import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_policy_step.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/picker_tile.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
@@ -64,50 +65,123 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
     final uidAsync = ref.watch(uidProvider);
     final clubAsync = ref.watch(fetchClubProvider(clubId));
     final eventAsync = ref.watch(watchEventProvider(eventId));
-    final event = eventAsync.asData?.value ?? initialEvent;
 
-    final loading =
-        uidAsync.isLoading ||
-        clubAsync.isLoading ||
-        (eventAsync.isLoading && event == null);
-    if (loading) {
-      return Scaffold(
+    final state = HostEventEditState.resolve(
+      uid: uidAsync,
+      club: clubAsync,
+      event: eventAsync,
+      initialEvent: initialEvent,
+    );
+
+    return switch (state.status) {
+      HostEventEditRouteStatus.loading => Scaffold(
         backgroundColor: CatchTokens.of(context).bg,
-        body: const SafeArea(child: Center(child: CatchLoadingIndicator())),
-      );
-    }
-
-    final error = uidAsync.error ?? clubAsync.error ?? eventAsync.error;
-    if (error != null) {
-      return CatchErrorScaffold.fromError(
-        error,
+        appBar: const CatchTopBar(title: 'Edit event', border: true),
+        body: const SafeArea(child: HostRouteLoadingBody(showTabRail: true)),
+      ),
+      HostEventEditRouteStatus.error => CatchErrorScaffold.fromError(
+        state.error!,
         context: AppErrorContext.event,
         onRetry: () {
           ref.invalidate(fetchClubProvider(clubId));
           ref.invalidate(watchEventProvider(eventId));
         },
-      );
-    }
-
-    final uid = uidAsync.asData?.value;
-    final club = clubAsync.asData?.value;
-    if (club == null || event == null) {
-      return const CatchErrorScaffold(
+      ),
+      HostEventEditRouteStatus.notFound => const CatchErrorScaffold(
         title: 'Event not found',
         message: 'This hosted event is no longer available.',
-      );
-    }
-
-    if (uid == null || !club.isHostedBy(uid)) {
-      return CatchErrorScaffold(
+      ),
+      HostEventEditRouteStatus.unauthorized => CatchErrorScaffold(
         title: 'Action unavailable',
         message: 'You can edit only events that you host.',
         icon: CatchIcons.blockRounded,
+      ),
+      HostEventEditRouteStatus.ready => EditHostedEventScreen(
+        club: state.club!,
+        event: state.event!,
+      ),
+    };
+  }
+}
+
+enum HostEventEditRouteStatus { loading, error, notFound, unauthorized, ready }
+
+@immutable
+class HostEventEditState {
+  const HostEventEditState({
+    required this.status,
+    this.uid,
+    this.club,
+    this.event,
+    this.error,
+  });
+
+  final HostEventEditRouteStatus status;
+  final String? uid;
+  final Club? club;
+  final Event? event;
+  final Object? error;
+
+  factory HostEventEditState.resolve({
+    required AsyncValue<String?> uid,
+    required AsyncValue<Club?> club,
+    required AsyncValue<Event?> event,
+    Event? initialEvent,
+  }) {
+    final resolvedEvent = event.asData?.value ?? initialEvent;
+    if (uid.isLoading ||
+        club.isLoading ||
+        (event.isLoading && resolvedEvent == null)) {
+      return const HostEventEditState(status: HostEventEditRouteStatus.loading);
+    }
+
+    final error = uid.error ?? club.error ?? event.error;
+    if (error != null) {
+      return HostEventEditState(
+        status: HostEventEditRouteStatus.error,
+        error: error,
       );
     }
 
-    return EditHostedEventScreen(club: club, event: event);
+    final resolvedUid = uid.asData?.value;
+    final resolvedClub = club.asData?.value;
+    if (resolvedClub == null || resolvedEvent == null) {
+      return HostEventEditState(
+        status: HostEventEditRouteStatus.notFound,
+        uid: resolvedUid,
+        club: resolvedClub,
+        event: resolvedEvent,
+      );
+    }
+
+    if (resolvedUid == null || !resolvedClub.isHostedBy(resolvedUid)) {
+      return HostEventEditState(
+        status: HostEventEditRouteStatus.unauthorized,
+        uid: resolvedUid,
+        club: resolvedClub,
+        event: resolvedEvent,
+      );
+    }
+
+    return HostEventEditState(
+      status: HostEventEditRouteStatus.ready,
+      uid: resolvedUid,
+      club: resolvedClub,
+      event: resolvedEvent,
+    );
   }
+
+  static bool eventCanEdit(Event event) => !event.isCancelled;
+
+  static bool eventScheduleLocked(Event event, DateTime now) =>
+      !eventCanEdit(event) ||
+      event.startTime.isBefore(now) ||
+      event.signedUpCount > 0 ||
+      event.waitlistCount > 0 ||
+      event.attendedCount > 0;
+
+  static bool eventPolicyLocked(Event event, DateTime now) =>
+      eventScheduleLocked(event, now);
 }
 
 class EditHostedEventScreen extends ConsumerStatefulWidget {
@@ -117,12 +191,14 @@ class EditHostedEventScreen extends ConsumerStatefulWidget {
     required this.event,
     this.now,
     this.loadMapTiles = true,
+    this.formAutovalidateMode = AutovalidateMode.disabled,
   });
 
   final Club club;
   final Event event;
   final DateTime Function()? now;
   final bool loadMapTiles;
+  final AutovalidateMode formAutovalidateMode;
 
   @override
   ConsumerState<EditHostedEventScreen> createState() =>
@@ -162,25 +238,13 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   String? _scheduleErrorText;
 
   DateTime get _now => widget.now?.call() ?? DateTime.now();
-  bool get _canEdit => !widget.event.isCancelled;
+  bool get _canEdit => HostEventEditState.eventCanEdit(widget.event);
 
-  bool get _scheduleLocked {
-    final event = widget.event;
-    return !_canEdit ||
-        event.startTime.isBefore(_now) ||
-        event.signedUpCount > 0 ||
-        event.waitlistCount > 0 ||
-        event.attendedCount > 0;
-  }
+  bool get _scheduleLocked =>
+      HostEventEditState.eventScheduleLocked(widget.event, _now);
 
-  bool get _policyLocked {
-    final event = widget.event;
-    return !_canEdit ||
-        event.startTime.isBefore(_now) ||
-        event.signedUpCount > 0 ||
-        event.waitlistCount > 0 ||
-        event.attendedCount > 0;
-  }
+  bool get _policyLocked =>
+      HostEventEditState.eventPolicyLocked(widget.event, _now);
 
   DateTime get _selectedStartDateTime => DateTime(
     _selectedDate.year,
@@ -300,6 +364,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
         top: false,
         child: Form(
           key: _formKey,
+          autovalidateMode: widget.formAutovalidateMode,
           child: ListView(
             padding: CatchInsets.pageBody,
             children: [
@@ -596,9 +661,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   void _saveChanges() {
     if (!_formKey.currentState!.validate()) return;
     if (_startingPoint == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pin a starting point before saving.')),
-      );
+      showCatchSnackBar(context, 'Pin a starting point before saving.');
       return;
     }
     if (!_scheduleLocked &&
@@ -658,7 +721,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       eventPolicy: eventPolicy,
     );
 
-    final messenger = ScaffoldMessenger.of(context);
     unawaited(
       EventBookingController.updateHostedEventMutation.run(ref, (tx) async {
         await tx
@@ -671,7 +733,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
         ref.invalidate(watchEventProvider(widget.event.id));
         ref.invalidate(watchEventParticipationRosterProvider(widget.event.id));
         if (!mounted) return;
-        messenger.showSnackBar(const SnackBar(content: Text('Event updated.')));
+        showCatchSnackBar(context, 'Event updated.');
         await Navigator.of(context).maybePop();
       }),
     );

@@ -68,5 +68,101 @@ void main() {
 
     expect(repository.addedHostClubId, 'owned-club');
     expect(repository.addedHostPhoneNumber, '98765 43210');
+    expect(find.text('Host added.'), findsOneWidget);
   });
+
+  testWidgets('Remove host confirmation uses shared copy and mutation', (
+    tester,
+  ) async {
+    final repository = FakeClubsRepository();
+    final club = _hostTeamClub();
+
+    await _pumpHostTeamSection(tester, repository: repository, club: club);
+
+    await tester.tap(find.byKey(const ValueKey('host-team-actions-host-2')));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Remove host'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Remove host?'), findsOneWidget);
+    expect(
+      find.text(
+        'Rishi Mehta will stay a club member but will lose host tools.',
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.widgetWithText(CatchButton, 'Remove'));
+    await pumpFeatureUi(tester);
+
+    expect(repository.removedHostClubId, 'owned-club');
+    expect(repository.removedHostUid, 'host-2');
+    expect(find.text('Rishi Mehta removed.'), findsOneWidget);
+  });
+
+  testWidgets('Transfer ownership confirmation uses shared copy and mutation', (
+    tester,
+  ) async {
+    final repository = FakeClubsRepository();
+    final club = _hostTeamClub();
+
+    await _pumpHostTeamSection(tester, repository: repository, club: club);
+
+    await tester.tap(find.byKey(const ValueKey('host-team-actions-host-2')));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Transfer ownership'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Transfer ownership?'), findsOneWidget);
+    expect(
+      find.text(
+        'Rishi Mehta will become the club owner. You will remain a host.',
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.widgetWithText(CatchButton, 'Transfer'));
+    await pumpFeatureUi(tester);
+
+    expect(repository.transferredOwnershipClubId, 'owned-club');
+    expect(repository.transferredOwnershipUid, 'host-2');
+    expect(find.text('Ownership transferred to Rishi Mehta.'), findsOneWidget);
+  });
+}
+
+Club _hostTeamClub() {
+  return buildClub(
+    id: 'owned-club',
+    ownerUserId: 'host-1',
+    hostProfiles: const [
+      ClubHostProfile(
+        uid: 'host-1',
+        displayName: 'Owner Host',
+        role: ClubHostRole.owner,
+      ),
+      ClubHostProfile(uid: 'host-2', displayName: 'Rishi Mehta'),
+    ],
+  );
+}
+
+Future<void> _pumpHostTeamSection(
+  WidgetTester tester, {
+  required FakeClubsRepository repository,
+  required Club club,
+}) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        clubsRepositoryProvider.overrideWith((ref) => repository),
+        uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
+      ],
+      child: MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: HostTeamManagementSection(club: club, currentUid: 'host-1'),
+        ),
+      ),
+    ),
+  );
+  await tester.pump();
 }

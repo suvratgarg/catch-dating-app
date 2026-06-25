@@ -18,6 +18,7 @@ class EventDetailsStep extends StatelessWidget {
   const EventDetailsStep({
     super.key,
     required this.formKey,
+    this.autovalidateMode = AutovalidateMode.disabled,
     required this.photoPreviews,
     required this.onPickPhotos,
     required this.onRemovePhoto,
@@ -34,6 +35,7 @@ class EventDetailsStep extends StatelessWidget {
   });
 
   final GlobalKey<FormState> formKey;
+  final AutovalidateMode autovalidateMode;
   final List<OrderedPhotoPreview> photoPreviews;
   final VoidCallback? onPickPhotos;
   final ValueChanged<int>? onRemovePhoto;
@@ -57,6 +59,7 @@ class EventDetailsStep extends StatelessWidget {
     ).accent;
     return Form(
       key: formKey,
+      autovalidateMode: autovalidateMode,
       child: SingleChildScrollView(
         padding: CatchInsets.formStepBody,
         child: Column(

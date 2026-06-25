@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -17,6 +20,31 @@ import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('shows filter-shaped skeleton while profile loads', (
+    tester,
+  ) async {
+    final profileController = StreamController<UserProfile?>();
+    addTearDown(profileController.close);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchUserProfileProvider.overrideWith(
+            (ref) => profileController.stream,
+          ),
+        ],
+        child: MaterialApp(theme: AppTheme.light, home: const FiltersScreen()),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Filters'), findsOneWidget);
+    expect(find.byType(FiltersContentSkeleton), findsOneWidget);
+    expect(find.byType(CatchSkeleton), findsWidgets);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.byKey(SwipeKeys.ageRangeSlider), findsNothing);
+  });
+
   testWidgets('saves filters through the controller mutation and pops', (
     tester,
   ) async {

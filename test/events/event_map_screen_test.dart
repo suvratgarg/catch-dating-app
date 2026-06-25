@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
@@ -15,6 +16,27 @@ import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'events_test_helpers.dart';
 
 void main() {
+  testWidgets('shows a map-shaped skeleton while map events load', (
+    tester,
+  ) async {
+    await pumpEventsTestApp(
+      tester,
+      const EventMapView(
+        enableNetworkTiles: false,
+        viewModel: AsyncLoading<EventMapViewModel>(),
+      ),
+      overrides: [
+        deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
+        selectedExploreCityProvider.overrideWithValue(_mumbai),
+      ],
+    );
+
+    expect(find.byType(EventMapLoadingBody), findsOneWidget);
+    expect(find.byType(CatchSkeleton), findsWidgets);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.text('No mapped events yet'), findsNothing);
+  });
+
   testWidgets('shows an empty state when no map events are available', (
     tester,
   ) async {

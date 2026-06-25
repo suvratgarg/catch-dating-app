@@ -1,14 +1,18 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -33,61 +37,79 @@ class ActivitySection extends ConsumerWidget {
   const ActivitySection({
     super.key,
     required this.uid,
+    this.state,
     this.showEmptyState = true,
     this.showMarkAllReadAction = true,
+    this.onRetry,
+    this.onOpenRoute,
   });
 
-  final String uid;
+  const ActivitySection.fromState({
+    super.key,
+    required this.state,
+    this.showEmptyState = true,
+    this.onRetry,
+    this.onOpenRoute,
+  }) : uid = null,
+       showMarkAllReadAction = false;
+
+  final String? uid;
+  final NotificationsListState? state;
   final bool showEmptyState;
   final bool showMarkAllReadAction;
+  final VoidCallback? onRetry;
+  final ValueChanged<String>? onOpenRoute;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final notificationsAsync = ref.watch(
-      watchActivityNotificationsProvider(uid),
-    );
-
-    final isLoading = notificationsAsync.isLoading;
-    final error = notificationsAsync.error;
-    final notifications =
-        notificationsAsync.asData?.value ?? const <ActivityNotification>[];
-    final visibleNotifications = notifications
-        .where((notification) => notification.isVisibleInActivity)
-        .toList(growable: false);
-    final notificationItems = _NotificationItem.fromNotifications(
-      visibleNotifications,
-    );
+    final sectionState =
+        state ??
+        buildNotificationsListState(
+          uid: AsyncData(uid!),
+          notifications: ref.watch(watchActivityNotificationsProvider(uid!)),
+          now: DateTime.now(),
+        );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (isLoading) ...[
-          CatchSurface(
-            padding: CatchInsets.content,
-            borderColor: t.line,
-            child: const Row(
-              children: [
-                SizedBox(
-                  width: CatchLayout.activityLoadingIndicatorExtent,
-                  height: CatchLayout.activityLoadingIndicatorExtent,
-                  child: CatchLoadingIndicator(strokeWidth: 2),
-                ),
-                gapW10,
-                Expanded(child: _ActivityStateLabel('Loading activity...')),
-              ],
+        if (sectionState is NotificationsActivityLoading ||
+            sectionState is NotificationsAccessLoading) ...[
+          const ActivitySectionSkeleton(count: 2),
+        ] else if (sectionState is NotificationsActivityError) ...[
+          if (sectionState.error case final error?)
+            CatchInlineErrorState.fromError(
+              error,
+              context: AppErrorContext.dashboard,
+              compact: true,
+              onRetry:
+                  onRetry ??
+                  (uid == null
+                      ? null
+                      : () {
+                          ref.invalidate(
+                            watchActivityNotificationsProvider(uid!),
+                          );
+                        }),
+            )
+          else
+            CatchInlineErrorState(
+              title: 'Activity unavailable',
+              message: 'Could not load activity.',
+              compact: true,
+              onRetry:
+                  onRetry ??
+                  (uid == null
+                      ? null
+                      : () {
+                          ref.invalidate(
+                            watchActivityNotificationsProvider(uid!),
+                          );
+                        }),
             ),
-          ),
-        ] else if (error != null) ...[
-          CatchInlineErrorState(
-            title: 'Activity unavailable',
-            message: 'Could not load activity.',
-            compact: true,
-            onRetry: () {
-              ref.invalidate(watchActivityNotificationsProvider(uid));
-            },
-          ),
-        ] else if (notificationItems.isEmpty) ...[
+        ] else if (sectionState is NotificationsEmpty ||
+            sectionState is NotificationsSignedOut) ...[
           if (showEmptyState)
             CatchEmptyState(
               icon: CatchIcons.notificationsNoneRounded,
@@ -98,8 +120,13 @@ class ActivitySection extends ConsumerWidget {
               titleStyle: CatchTextStyles.titleL(context),
               messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
             ),
+        ] else if (sectionState is NotificationsContent) ...[
+          _NotificationDayGroups(
+            groups: sectionState.groups,
+            onOpenRoute: onOpenRoute,
+          ),
         ] else ...[
-          _NotificationDayGroups(groups: _groupItems(notificationItems)),
+          const SizedBox.shrink(),
         ],
       ],
     );
@@ -107,9 +134,10 @@ class ActivitySection extends ConsumerWidget {
 }
 
 class _NotificationDayGroups extends StatelessWidget {
-  const _NotificationDayGroups({required this.groups});
+  const _NotificationDayGroups({required this.groups, this.onOpenRoute});
 
-  final List<_ActivityGroup> groups;
+  final List<NotificationDayGroup> groups;
+  final ValueChanged<String>? onOpenRoute;
 
   @override
   Widget build(BuildContext context) {
@@ -141,12 +169,91 @@ class _NotificationDayGroups extends StatelessWidget {
                       style: CatchTextStyles.kicker(context, color: t.ink2),
                     ),
                     gapH8,
-                    _NotificationGroup(items: groupEntry.$2.items),
+                    _NotificationGroup(
+                      rows: groupEntry.$2.rows,
+                      onOpenRoute: onOpenRoute,
+                    ),
                   ],
                 ),
               ),
             ),
           ),
+      ],
+    );
+  }
+}
+
+class ActivitySectionSkeleton extends StatelessWidget {
+  const ActivitySectionSkeleton({super.key, this.count = 4});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchSkeleton.text(width: 78),
+        gapH8,
+        for (var i = 0; i < count; i++)
+          _NotificationRowSkeleton(divider: i > 0),
+      ],
+    );
+  }
+}
+
+class _NotificationRowSkeleton extends StatelessWidget {
+  const _NotificationRowSkeleton({required this.divider});
+
+  final bool divider;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final row = Padding(
+      padding: CatchInsets.contentVerticalMedium,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.box(
+            width: CatchIcon.md,
+            height: CatchIcon.md,
+            radius: CatchRadius.sm,
+          ),
+          gapW12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: CatchSkeleton.text()),
+                    gapW8,
+                    CatchSkeleton.text(width: 42),
+                  ],
+                ),
+                gapH6,
+                CatchSkeleton.textBlock(lines: 2),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return Stack(
+      children: [
+        if (divider)
+          Positioned(
+            top: 0,
+            left: CatchIcon.md + CatchSpacing.s3,
+            right: 0,
+            child: Divider(
+              height: 1,
+              color: t.line.withValues(alpha: CatchOpacity.subtleBorder),
+            ),
+          ),
+        row,
       ],
     );
   }
@@ -256,15 +363,16 @@ class NotificationRow extends StatelessWidget {
 }
 
 class _NotificationGroup extends StatelessWidget {
-  const _NotificationGroup({required this.items});
+  const _NotificationGroup({required this.rows, this.onOpenRoute});
 
-  final List<_NotificationItem> items;
+  final List<NotificationRowDisplay> rows;
+  final ValueChanged<String>? onOpenRoute;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        for (final entry in items.indexed)
+        for (final entry in rows.indexed)
           NotificationRow(
             type: entry.$2.type,
             title: entry.$2.title,
@@ -274,9 +382,42 @@ class _NotificationGroup extends StatelessWidget {
             divider: entry.$1 > 0,
             onTap: entry.$2.route == null
                 ? null
-                : () => context.push(entry.$2.route!),
+                : () =>
+                      (onOpenRoute ??
+                      (route) {
+                        _openNotificationRoute(context, route);
+                      })(entry.$2.route!),
           ),
       ],
+    );
+  }
+
+  void _openNotificationRoute(BuildContext context, String route) {
+    try {
+      unawaited(
+        context.push(route).catchError((Object error, StackTrace stackTrace) {
+          if (!context.mounted) return null;
+          _showNotificationRouteError(context, error, stackTrace);
+          return null;
+        }),
+      );
+    } on Object catch (error, stackTrace) {
+      _showNotificationRouteError(context, error, stackTrace);
+    }
+  }
+
+  void _showNotificationRouteError(
+    BuildContext context,
+    Object error,
+    StackTrace stackTrace,
+  ) {
+    showCatchErrorSnackBar(
+      context,
+      ExternalActionException(
+        'Could not open this activity update.',
+        cause: error,
+        stackTrace: stackTrace,
+      ),
     );
   }
 }
@@ -332,135 +473,5 @@ class _NotificationVisual {
         accent: t.ink2,
       ),
     };
-  }
-}
-
-class _ActivityGroup {
-  const _ActivityGroup({required this.label, required this.items});
-
-  final String label;
-  final List<_NotificationItem> items;
-}
-
-class _NotificationItem {
-  const _NotificationItem({
-    required this.type,
-    required this.title,
-    required this.subtitle,
-    required this.createdAt,
-    required this.timeLabel,
-    required this.isUnread,
-    this.route,
-  });
-
-  final ActivityNotificationType type;
-  final String title;
-  final String subtitle;
-  final DateTime createdAt;
-  final String timeLabel;
-  final bool isUnread;
-  final String? route;
-
-  static List<_NotificationItem> fromNotifications(
-    Iterable<ActivityNotification> notifications,
-  ) {
-    final now = DateTime.now();
-    final items =
-        notifications
-            .where((notification) => notification.isVisibleInActivity)
-            .map(
-              (notification) =>
-                  _NotificationItem.fromNotification(notification, now),
-            )
-            .toList(growable: false)
-          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    return items;
-  }
-
-  factory _NotificationItem.fromNotification(
-    ActivityNotification notification,
-    DateTime now,
-  ) {
-    return _NotificationItem(
-      type: notification.type,
-      title: notification.title,
-      subtitle: notification.body,
-      createdAt: notification.createdAt,
-      route: _notificationRoute(notification),
-      timeLabel: _relativeTime(notification.createdAt, now),
-      isUnread: notification.isUnread,
-    );
-  }
-
-  static String? _notificationRoute(ActivityNotification notification) {
-    if (notification.matchId case final matchId?) {
-      return Routes.chatScreen.path.replaceFirst(':matchId', matchId);
-    }
-    if (notification.eventId case final eventId?
-        when notification.clubId != null) {
-      return Routes.eventDetailScreen.path
-          .replaceFirst(':clubId', notification.clubId!)
-          .replaceFirst(':eventId', eventId);
-    }
-    if (notification.clubId case final clubId?) {
-      return Routes.clubDetailScreen.path.replaceFirst(':clubId', clubId);
-    }
-    return null;
-  }
-
-  static String _relativeTime(DateTime time, DateTime now) {
-    final difference = now.difference(time);
-    if (difference.inMinutes < 1) return 'Now';
-    if (difference.inMinutes < 60) return '${difference.inMinutes}m';
-    if (difference.inHours < 24) return '${difference.inHours}h';
-    return '${difference.inDays}d';
-  }
-}
-
-List<_ActivityGroup> _groupItems(List<_NotificationItem> items) {
-  final now = DateTime.now();
-  final today = <_NotificationItem>[];
-  final yesterday = <_NotificationItem>[];
-  final thisWeek = <_NotificationItem>[];
-  final earlier = <_NotificationItem>[];
-  final weekAgo = now.subtract(const Duration(days: 7));
-
-  for (final item in items) {
-    if (DateUtils.isSameDay(item.createdAt, now)) {
-      today.add(item);
-    } else if (DateUtils.isSameDay(
-      item.createdAt,
-      now.subtract(const Duration(days: 1)),
-    )) {
-      yesterday.add(item);
-    } else if (item.createdAt.isAfter(weekAgo)) {
-      thisWeek.add(item);
-    } else {
-      earlier.add(item);
-    }
-  }
-
-  return [
-    if (today.isNotEmpty) _ActivityGroup(label: 'Today', items: today),
-    if (yesterday.isNotEmpty)
-      _ActivityGroup(label: 'Yesterday', items: yesterday),
-    if (thisWeek.isNotEmpty)
-      _ActivityGroup(label: 'This week', items: thisWeek),
-    if (earlier.isNotEmpty) _ActivityGroup(label: 'Earlier', items: earlier),
-  ];
-}
-
-class _ActivityStateLabel extends StatelessWidget {
-  const _ActivityStateLabel(this.message);
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Text(
-      message,
-      style: CatchTextStyles.supporting(context, color: t.ink2),
-    );
   }
 }

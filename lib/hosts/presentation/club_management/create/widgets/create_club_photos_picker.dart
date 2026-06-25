@@ -7,8 +7,11 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
+
+enum CreateClubPhotosPickerVariant { standard, editStrip }
 
 class CreateClubPhotosPicker extends StatelessWidget {
   const CreateClubPhotosPicker({
@@ -18,6 +21,7 @@ class CreateClubPhotosPicker extends StatelessWidget {
     required this.onAddPhotos,
     required this.onRemovePhoto,
     required this.onReorderPhoto,
+    this.variant = CreateClubPhotosPickerVariant.standard,
   });
 
   final List<OrderedPhotoPreview> photos;
@@ -25,6 +29,7 @@ class CreateClubPhotosPicker extends StatelessWidget {
   final VoidCallback? onAddPhotos;
   final ValueChanged<int>? onRemovePhoto;
   final void Function(int fromIndex, int toIndex)? onReorderPhoto;
+  final CreateClubPhotosPickerVariant variant;
 
   @override
   Widget build(BuildContext context) {
@@ -38,17 +43,43 @@ class CreateClubPhotosPicker extends StatelessWidget {
               ),
           ];
     final hasEditablePhotos = photos.isNotEmpty;
-    return OrderedPhotoPicker(
-      label: const CatchFormFieldLabel(label: 'Club photos', isOptional: true),
+    final editStrip = variant == CreateClubPhotosPickerVariant.editStrip;
+    final picker = OrderedPhotoPicker(
+      label: editStrip
+          ? _EditClubPhotosLabel(count: visiblePhotos.length)
+          : const CatchFormFieldLabel(label: 'Club photos', isOptional: true),
       photos: visiblePhotos,
       onAddPhotos: onAddPhotos,
       onRemovePhoto: hasEditablePhotos ? onRemovePhoto : null,
       onReorderPhoto: hasEditablePhotos ? onReorderPhoto : null,
-      emptyActionLabel: 'Add club photos',
+      emptyActionLabel: editStrip ? 'Add photos' : 'Add club photos',
       addActionLabel: 'Add photos',
+      maxPhotos: editStrip ? 4 : 6,
+      crossAxisCount: editStrip ? 4 : 2,
+      childAspectRatio: editStrip ? 1 : CatchAspectRatio.wide16x9,
+      showCoverBadge: editStrip,
+      showReorderHandle: !editStrip,
+    );
+
+    if (!editStrip) return picker;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        picker,
+        gapH12,
+        Text(
+          'Drag to reorder - the first photo is your cover. Add as many as you like.',
+          style: CatchTextStyles.supporting(
+            context,
+            color: CatchTokens.of(context).ink3,
+          ),
+        ),
+      ],
     );
   }
 }
+
+enum CreateClubProfileImagePickerVariant { standard, editLogo }
 
 class CreateClubProfileImagePicker extends StatelessWidget {
   const CreateClubProfileImagePicker({
@@ -56,16 +87,44 @@ class CreateClubProfileImagePicker extends StatelessWidget {
     required this.imageBytes,
     this.existingImageUrl,
     required this.onTap,
+    this.variant = CreateClubProfileImagePickerVariant.standard,
   });
 
   final Uint8List? imageBytes;
   final String? existingImageUrl;
   final VoidCallback? onTap;
+  final CreateClubProfileImagePickerVariant variant;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final hasImage = imageBytes != null || existingImageUrl != null;
+
+    if (variant == CreateClubProfileImagePickerVariant.editLogo) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('CLUB LOGO', style: CatchTextStyles.kicker(context)),
+          gapH8,
+          Row(
+            children: [
+              _ClubProfileImageTile(
+                imageBytes: imageBytes,
+                existingImageUrl: existingImageUrl,
+                onTap: onTap,
+                size: 64,
+              ),
+              gapW16,
+              Expanded(
+                child: Text(
+                  'A square logo, shown on your club profile and every event.',
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,51 +134,95 @@ class CreateClubProfileImagePicker extends StatelessWidget {
           isOptional: true,
         ),
         gapH8,
-        Semantics(
-          button: true,
-          label: hasImage
-              ? 'Change club profile image'
-              : 'Add club profile image',
-          child: GestureDetector(
-            onTap: onTap,
-            // A small fixed avatar; a full-width square here pushes the rest of
-            // the create form off-screen.
-            child: SizedBox.square(
-              dimension: CatchLayout.clubProfileImagePickerExtent,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(CatchRadius.md),
-                child: hasImage
-                    ? Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          if (imageBytes != null)
-                            Image.memory(imageBytes!, fit: BoxFit.cover)
-                          else
-                            CatchNetworkImage(
-                              existingImageUrl!,
-                              errorBuilder: (_, _, _) =>
-                                  Container(color: t.raised),
-                            ),
-                          Positioned(
-                            bottom: 8,
-                            right: 8,
-                            child: CatchIconTile(
-                              icon: CatchIcons.editOutlined,
-                              iconColor: t.ink,
-                              backgroundColor: t.surface.withValues(
-                                alpha: CatchOpacity.imageEditControlFill,
-                              ),
-                              borderColor: Colors.transparent,
-                              size: 28,
-                              iconSize: CatchIcon.xs,
-                              radius: CatchRadius.pill,
-                            ),
-                          ),
-                        ],
-                      )
-                    : ColoredBox(
-                        color: t.raised,
-                        child: Column(
+        _ClubProfileImageTile(
+          imageBytes: imageBytes,
+          existingImageUrl: existingImageUrl,
+          onTap: onTap,
+          size: CatchLayout.clubProfileImagePickerExtent,
+          showEmptyLabel: true,
+        ),
+      ],
+    );
+  }
+}
+
+class _EditClubPhotosLabel extends StatelessWidget {
+  const _EditClubPhotosLabel({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Row(
+      children: [
+        Text('PHOTOS', style: CatchTextStyles.kicker(context)),
+        const Spacer(),
+        Text(
+          '$count',
+          style: CatchTextStyles.monoLabel(context, color: t.ink3),
+        ),
+      ],
+    );
+  }
+}
+
+class _ClubProfileImageTile extends StatelessWidget {
+  const _ClubProfileImageTile({
+    required this.imageBytes,
+    required this.existingImageUrl,
+    required this.onTap,
+    required this.size,
+    this.showEmptyLabel = false,
+  });
+
+  final Uint8List? imageBytes;
+  final String? existingImageUrl;
+  final VoidCallback? onTap;
+  final double size;
+  final bool showEmptyLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final hasImage = imageBytes != null || existingImageUrl != null;
+
+    return Semantics(
+      button: true,
+      label: hasImage ? 'Change club profile image' : 'Add club profile image',
+      child: GestureDetector(
+        onTap: onTap,
+        child: SizedBox.square(
+          dimension: size,
+          child: CatchSurface(
+            tone: CatchSurfaceTone.raised,
+            radius: CatchRadius.md,
+            borderColor: t.line2,
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (hasImage)
+                  if (imageBytes != null)
+                    Image.memory(imageBytes!, fit: BoxFit.cover)
+                  else
+                    CatchNetworkImage(
+                      existingImageUrl!,
+                      errorBuilder: (_, _, _) => Container(color: t.raised),
+                    )
+                else
+                  ColoredBox(
+                    color: t.raised,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final textScale = MediaQuery.textScalerOf(
+                          context,
+                        ).scale(1);
+                        final showLabel =
+                            showEmptyLabel &&
+                            constraints.maxHeight >= 112 &&
+                            textScale < 1.6;
+                        return Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
@@ -127,26 +230,47 @@ class CreateClubProfileImagePicker extends StatelessWidget {
                               size: 30,
                               color: t.ink2,
                             ),
-                            gapH8,
-                            Padding(
-                              padding: CatchInsets.inlineHorizontal,
-                              child: Text(
-                                'Add image',
-                                style: CatchTextStyles.supporting(
-                                  context,
-                                  color: t.ink2,
+                            if (showLabel) ...[
+                              gapH8,
+                              Padding(
+                                padding: CatchInsets.inlineHorizontal,
+                                child: Text(
+                                  'Add image',
+                                  style: CatchTextStyles.supporting(
+                                    context,
+                                    color: t.ink2,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
-                            ),
+                            ],
                           ],
-                        ),
-                      ),
-              ),
+                        );
+                      },
+                    ),
+                  ),
+                Positioned(
+                  bottom: 6,
+                  right: 6,
+                  child: CatchIconTile(
+                    icon: hasImage
+                        ? CatchIcons.editOutlined
+                        : CatchIcons.addPhotoAlternateOutlined,
+                    iconColor: t.ink,
+                    backgroundColor: t.surface.withValues(
+                      alpha: CatchOpacity.imageEditControlFill,
+                    ),
+                    borderColor: Colors.transparent,
+                    size: 28,
+                    iconSize: CatchIcon.xs,
+                    radius: CatchRadius.pill,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 }

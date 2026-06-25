@@ -13,6 +13,7 @@ class CreateEventSuccessScreen extends StatelessWidget {
     required this.club,
     required this.event,
     this.inviteCode,
+    this.eventDisplayName,
     required this.onManageEvent,
     required this.onDone,
   });
@@ -20,6 +21,7 @@ class CreateEventSuccessScreen extends StatelessWidget {
   final Club club;
   final Event event;
   final String? inviteCode;
+  final String? eventDisplayName;
   final VoidCallback onManageEvent;
   final VoidCallback onDone;
 
@@ -34,13 +36,14 @@ class CreateEventSuccessScreen extends StatelessWidget {
             eventId: event.id,
             inviteCode: normalizedInviteCode,
           ).toString();
+    final displayName = _eventCreatedDisplayName(event, eventDisplayName);
     final message = inviteLink == null
-        ? '${event.title} is now listed on ${club.name}. Followers can discover it from their home feed.'
-        : '${event.title} is now listed on ${club.name}. People can discover it, but only attendees with the invite code or private link can book.';
+        ? '$displayName is now listed on ${club.name}. People can discover it from their home feed.'
+        : '$displayName is now listed on ${club.name}. People can discover it, but only attendees with the invite code or private link can book.';
 
     return CatchCelebrationScreen(
       kind: CelebrationMomentKind.eventCreated,
-      icon: CatchIcons.verifiedRounded,
+      icon: CatchIcons.celebration,
       eyebrow: 'Event created',
       title: 'Your event is live.',
       message: message,
@@ -48,7 +51,7 @@ class CreateEventSuccessScreen extends StatelessWidget {
         CelebrationDetail(
           icon: CatchIcons.calendarMonthOutlined,
           label: 'When',
-          value: '${event.longDateLabel} · ${event.timeRangeLabel}',
+          value: _eventCreatedWhenLabel(event),
         ),
         CelebrationDetail(
           icon: CatchIcons.locationOnOutlined,
@@ -58,7 +61,7 @@ class CreateEventSuccessScreen extends StatelessWidget {
         CelebrationDetail(
           icon: CatchIcons.directionsRunRounded,
           label: 'Event',
-          value: event.activitySummaryLabel,
+          value: _eventCreatedActivityLabel(event),
         ),
         CelebrationDetail(
           icon: CatchIcons.groupOutlined,
@@ -82,13 +85,35 @@ class CreateEventSuccessScreen extends StatelessWidget {
       primaryAction: CelebrationAction(
         label: 'Manage event',
         onPressed: onManageEvent,
-        icon: Icon(CatchIcons.tuneRounded),
       ),
       secondaryAction: CelebrationAction(
         label: 'Back to club',
         onPressed: onDone,
       ),
       onClose: onDone,
+      showCloseButton: false,
+      appearance: CatchCelebrationAppearance.paper,
     );
   }
+}
+
+String _eventCreatedDisplayName(Event event, String? override) {
+  final trimmed = override?.trim();
+  if (trimmed != null && trimmed.isNotEmpty) return trimmed;
+  return event.title;
+}
+
+String _eventCreatedWhenLabel(Event event) {
+  final day = EventFormatters.shortWeekday(event.startTime);
+  final month = EventFormatters.shortMonth(event.startTime);
+  final time = EventFormatters.timeRange(event.startTime, event.endTime);
+  return '$day, ${event.startTime.day} $month · $time';
+}
+
+String _eventCreatedActivityLabel(Event event) {
+  if (!event.eventFormat.isDistanceBased) return event.activitySummaryLabel;
+  final distance = EventFormatters.distanceKm(
+    event.distanceKm,
+  ).replaceFirst('km', ' km');
+  return '$distance ${event.pace.label.toLowerCase()} ${event.eventFormat.label.toLowerCase()}';
 }

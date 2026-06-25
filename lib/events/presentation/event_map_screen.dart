@@ -1,9 +1,11 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_map_center.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
@@ -55,16 +57,17 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
     return Stack(
       children: [
         Positioned.fill(
-          child: viewModelAsync.when(
-            loading: () => const CatchLoadingIndicator(),
-            error: (error, _) => CatchErrorState.fromError(
+          child: CatchAsyncValueView<EventMapViewModel>(
+            value: viewModelAsync,
+            loadingBuilder: (_) => const EventMapLoadingBody(),
+            errorBuilder: (_, error, _) => CatchErrorState.fromError(
               error,
               context: AppErrorContext.event,
               onRetry:
                   widget.onRetry ??
                   () => ref.invalidate(eventMapViewModelProvider),
             ),
-            data: (viewModel) {
+            builder: (context, viewModel) {
               final selectedEvent = viewModel.selectedEvent(_selectedEventId);
               final selectedEventCenter = _startingPointFor(selectedEvent);
               final mapCenter = resolveEventMapInitialCenter(
@@ -106,6 +109,51 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
   void _selectEvent(Event event) {
     setState(() => _selectedEventId = event.id);
     widget.onEventSelected?.call(event);
+  }
+}
+
+class EventMapLoadingBody extends StatelessWidget {
+  const EventMapLoadingBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: CatchSkeleton.box(
+                width: constraints.maxWidth,
+                height: constraints.maxHeight,
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+            Center(
+              child: CatchSkeleton.circle(
+                size: CatchSpacing.s12 + CatchSpacing.s4,
+              ),
+            ),
+            Positioned(
+              left: CatchSpacing.s5,
+              top: CatchSpacing.s5,
+              child: CatchSkeleton.box(
+                width: CatchSpacing.s16 * 2,
+                height: CatchSpacing.s9,
+                radius: CatchRadius.pill,
+                borderColor: t.line,
+              ),
+            ),
+            Positioned(
+              right: CatchSpacing.s5,
+              bottom: CatchSpacing.s5,
+              child: CatchSkeleton.circle(),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_config_provider.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
@@ -11,6 +12,29 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('launch access keeps form-shaped skeleton while loading', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          launchAccessConfigProvider.overrideWith(
+            (ref) => const LaunchAccessConfig(gateEnabled: true),
+          ),
+          uidProvider.overrideWith((ref) => const Stream.empty()),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const LaunchAccessApplicationScreen(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(CatchSkeleton), findsWidgets);
+    expect(find.text('Join the next city drop'), findsNothing);
+  });
+
   testWidgets('launch access form uses CatchToggle for host interest', (
     tester,
   ) async {

@@ -9,10 +9,13 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
+import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_clubs_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
@@ -25,6 +28,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
 import 'package:catch_dating_app/events/presentation/event_check_in_location_service.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
@@ -105,6 +109,67 @@ dynamic _activityNotificationsOverride(
 void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
+  group('NotificationsListState', () {
+    test('groups visible rows with an injected clock', () {
+      final now = DateTime(2026, 5, 16, 12);
+      final state = buildNotificationsListState(
+        uid: const AsyncData<String?>('runner-1'),
+        notifications: AsyncData<List<ActivityNotification>>([
+          _activityNotification(
+            id: 'today',
+            uid: 'runner-1',
+            title: 'Today catch',
+            createdAt: DateTime(2026, 5, 16, 10),
+          ),
+          _activityNotification(
+            id: 'yesterday',
+            uid: 'runner-1',
+            title: 'Yesterday catch',
+            createdAt: DateTime(2026, 5, 15, 18),
+            readAt: DateTime(2026, 5, 16, 8),
+          ),
+          _activityNotification(
+            id: 'week',
+            uid: 'runner-1',
+            title: 'This week catch',
+            createdAt: DateTime(2026, 5, 12, 9),
+          ),
+          _activityNotification(
+            id: 'earlier',
+            uid: 'runner-1',
+            title: 'Earlier catch',
+            createdAt: DateTime(2026, 5, 1, 9),
+          ),
+          _activityNotification(
+            id: 'hidden-message',
+            uid: 'runner-1',
+            type: ActivityNotificationType.message,
+            title: 'Hidden message',
+            createdAt: DateTime(2026, 5, 16, 11),
+          ),
+        ]),
+        now: now,
+        markAllReadPending: true,
+      );
+
+      final content = state as NotificationsContent;
+      expect(content.groups.map((group) => group.label), [
+        'Today',
+        'Yesterday',
+        'This week',
+        'Earlier',
+      ]);
+      expect(content.groups.first.rows.single.title, 'Today catch');
+      expect(content.groups.first.rows.single.timeLabel, '2h');
+      expect(content.groups.first.rows.single.route, '/chats/match-1');
+      expect(content.visibleNotifications, hasLength(4));
+      expect(content.unreadNotifications, hasLength(3));
+      expect(content.showMarkAllReadAction, isTrue);
+      expect(content.canMarkAllRead, isFalse);
+      expect(content.markAllReadLabel, 'Marking...');
+    });
+  });
+
   group('DashboardScreen', () {
     testWidgets('shows a loading state while booked events are loading', (
       tester,
@@ -134,7 +199,8 @@ void main() {
 
       await tester.pump();
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(CatchSkeleton), findsWidgets);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(find.text("Let's find your first event"), findsNothing);
     });
 
@@ -168,6 +234,43 @@ void main() {
       expect(find.text("Let's find your first event"), findsNothing);
     });
 
+    testWidgets('uses shared offline copy for typed dashboard load failures', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            watchUserProfileProvider.overrideWith(
+              (ref) => Stream<UserProfile?>.error(
+                const NetworkException(
+                  'offline',
+                  'No internet connection. Connect to the internet and try again.',
+                ),
+                StackTrace.empty,
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const DashboardScreen(),
+          ),
+        ),
+      );
+
+      await _pumpDashboardUi(tester);
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Connection issue'), findsOneWidget);
+      expect(
+        find.text(
+          'No internet connection. Connect to the internet and try again.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Dashboard unavailable'), findsNothing);
+      expect(find.text('Try again'), findsOneWidget);
+    });
+
     testWidgets('shows the empty dashboard when there are no booked events', (
       tester,
     ) async {
@@ -192,7 +295,10 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
-      expect(find.text("Let's find your first event"), findsOneWidget);
+      expect(
+        find.text('Your catches unlock\nafter your first event.'),
+        findsOneWidget,
+      );
       expect(find.byType(DashboardFull), findsNothing);
     });
 
@@ -239,7 +345,10 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
-      expect(find.text("Let's find your first event"), findsOneWidget);
+      expect(
+        find.text('Your catches unlock\nafter your first event.'),
+        findsOneWidget,
+      );
       expect(find.byType(DashboardFullSliverBody), findsNothing);
       expect(find.text('Host event'), findsNothing);
       expect(find.text('Attendance open'), findsNothing);
@@ -270,9 +379,9 @@ void main() {
             dashboardRecommendedEventsProvider(
               _recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWithValue(_noRecommendationCandidates),
-            watchClubProvider(
-              joinedClub.id,
-            ).overrideWith((ref) => Stream.value(joinedClub)),
+            watchClubsByIdsProvider(
+              ClubsByIdQuery(joinedClubIds),
+            ).overrideWith((ref) => Stream.value([joinedClub])),
             _membershipsOverride(user, joinedClubIds),
             _activityNotificationsOverride(user),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
@@ -308,9 +417,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchClubProvider(
-              joinedClub.id,
-            ).overrideWith((ref) => Stream.value(joinedClub)),
+            watchClubsByIdsProvider(
+              ClubsByIdQuery([joinedClub.id]),
+            ).overrideWith((ref) => Stream.value([joinedClub])),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -324,7 +433,7 @@ void main() {
       expect(find.text('Home Run Club'), findsOneWidget);
     });
 
-    testWidgets('shows notification action with unread badge instead of tabs', (
+    testWidgets('keeps empty start free of notification tab chrome', (
       tester,
     ) async {
       final user = buildUser();
@@ -359,9 +468,12 @@ void main() {
       expect(find.byType(TabBar), findsNothing);
       expect(find.text('Dashboard'), findsNothing);
       expect(find.text('Activity'), findsNothing);
-      expect(find.byTooltip('Notifications'), findsOneWidget);
-      expect(find.text('2'), findsOneWidget);
-      expect(find.text("Let's find your first event"), findsOneWidget);
+      expect(find.byTooltip('Notifications'), findsNothing);
+      expect(find.text('2'), findsNothing);
+      expect(
+        find.text('Your catches unlock\nafter your first event.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('notifications screen opens with a manual read action', (
@@ -409,6 +521,43 @@ void main() {
       expect(repository.markReadCalls.single.map((item) => item.id), [
         'unread',
       ]);
+    });
+
+    testWidgets('notification row navigation failures show branded feedback', (
+      tester,
+    ) async {
+      final notifications = [
+        _activityNotification(
+          id: 'deep-link',
+          uid: 'runner-1',
+          title: 'Deep link catch',
+        ),
+      ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+            activityNotificationRepositoryProvider.overrideWithValue(
+              _FakeActivityNotificationRepository(notifications),
+            ),
+            watchSignedUpEventsProvider(
+              'runner-1',
+            ).overrideWithValue(const AsyncData<List<Event>>([])),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ActivityScreen(),
+          ),
+        ),
+      );
+      await _pumpDashboardUi(tester);
+      await _pumpDashboardUi(tester);
+
+      await tester.tap(find.text('Deep link catch'));
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Could not open this activity update.'), findsOneWidget);
     });
 
     testWidgets('notifications screen renders grouped notification rows', (
@@ -824,6 +973,77 @@ void main() {
       );
     });
 
+    testWidgets('stride section renders injected action and busy states', (
+      tester,
+    ) async {
+      var connectCalls = 0;
+      var installCalls = 0;
+      final actions = DashboardStrideSectionActions(
+        onRetry: () {},
+        onConnect: () => connectCalls += 1,
+        onInstallHealthConnect: () => installCalls += 1,
+      );
+
+      Future<void> pumpSection(
+        WeeklyActivitySnapshot snapshot, {
+        DashboardStrideActionState actionState =
+            DashboardStrideActionState.idle,
+      }) {
+        return tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: DashboardStrideSection(
+                section: DashboardSectionModel.data(snapshot),
+                actions: actions,
+                actionState: actionState,
+              ),
+            ),
+          ),
+        );
+      }
+
+      await pumpSection(
+        WeeklyActivitySnapshot.permissionRequired(
+          referenceDate: DateTime(2026, 5, 13),
+          platformLabel: 'Apple Health',
+        ),
+      );
+      await tester.tap(find.text('Connect Apple Health'));
+      expect(connectCalls, 1);
+
+      await pumpSection(
+        WeeklyActivitySnapshot.permissionRequired(
+          referenceDate: DateTime(2026, 5, 13),
+          platformLabel: 'Apple Health',
+        ),
+        actionState: const DashboardStrideActionState(isConnecting: true),
+      );
+      expect(find.text('Connecting...'), findsOneWidget);
+      await tester.tap(find.text('Connecting...'));
+      expect(connectCalls, 1);
+
+      await pumpSection(
+        WeeklyActivitySnapshot.needsHealthConnect(
+          referenceDate: DateTime(2026, 5, 13),
+        ),
+      );
+      await tester.tap(find.text('Install Health Connect'));
+      expect(installCalls, 1);
+
+      await pumpSection(
+        WeeklyActivitySnapshot.needsHealthConnect(
+          referenceDate: DateTime(2026, 5, 13),
+        ),
+        actionState: const DashboardStrideActionState(
+          isInstallingHealthConnect: true,
+        ),
+      );
+      expect(find.text('Opening...'), findsOneWidget);
+      await tester.tap(find.text('Opening...'));
+      expect(installCalls, 1);
+    });
+
     testWidgets('scrolls the greeting header away with dashboard content', (
       tester,
     ) async {
@@ -958,6 +1178,7 @@ void main() {
             eventCheckInLocationServiceProvider.overrideWithValue(
               const _FakeEventCheckInLocationService(),
             ),
+            dashboardNowProvider.overrideWithValue(now),
             ..._dashboardHostOverrides(user),
           ],
           child: MaterialApp(
@@ -984,6 +1205,57 @@ void main() {
 
       expect(find.text('CHECKED IN'), findsOneWidget);
       expect(find.text('Checked in.'), findsOneWidget);
+    });
+
+    testWidgets('surfaces self check-in failures inline', (tester) async {
+      final now = DateTime.now();
+      final user = buildUser();
+      final event = buildEvent(
+        id: 'check-in-error-event',
+        bookedCount: 1,
+        startTime: now.add(const Duration(minutes: 5)),
+      );
+      final events = FakeEventRepository()
+        ..selfCheckInError = StateError('Check-in failed');
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            watchAttendedEventsProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            dashboardRecommendedEventsProvider(
+              _recommendationsQueryFor(user.uid, const []),
+            ).overrideWithValue(_noRecommendationCandidates),
+            eventRepositoryProvider.overrideWithValue(events),
+            eventSuccessRepositoryProvider.overrideWithValue(
+              _FakeEventSuccessRepository(),
+            ),
+            uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+            eventCheckInLocationServiceProvider.overrideWithValue(
+              const _FakeEventCheckInLocationService(),
+            ),
+            dashboardNowProvider.overrideWithValue(now),
+            ..._dashboardHostOverrides(user),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: DashboardFull(
+              user: user,
+              followedClubIds: const [],
+              signedUpEvents: [event],
+            ),
+          ),
+        ),
+      );
+
+      await _pumpDashboardUi(tester);
+
+      await tester.tap(find.text('Check in'));
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Check-in failed'), findsOneWidget);
+      expect(find.text('Try again'), findsOneWidget);
     });
 
     testWidgets('event focus directions opens the event location externally', (
@@ -1192,7 +1464,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
-          home: const Scaffold(body: QuickActions()),
+          home: Scaffold(body: _testQuickActions()),
         ),
       );
 
@@ -1209,7 +1481,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
-          home: const Scaffold(body: QuickActions()),
+          home: Scaffold(body: _testQuickActions()),
         ),
       );
 
@@ -1226,7 +1498,16 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => const Scaffold(body: QuickActions()),
+            builder: (context, _) => Scaffold(
+              body: QuickActions(
+                actions: dashboardQuickActions(
+                  onCalendarPressed: () =>
+                      context.push(Routes.calendarScreen.path),
+                  onSavedEventsPressed: () =>
+                      context.push(Routes.savedEventsScreen.path),
+                ),
+              ),
+            ),
           ),
           GoRoute(
             path: Routes.calendarScreen.path,
@@ -1259,6 +1540,15 @@ void main() {
       expect(find.text('Saved events screen'), findsOneWidget);
     });
   });
+}
+
+QuickActions _testQuickActions() {
+  return QuickActions(
+    actions: dashboardQuickActions(
+      onCalendarPressed: () {},
+      onSavedEventsPressed: () {},
+    ),
+  );
 }
 
 class _FakeEventCheckInLocationService implements EventCheckInLocationService {

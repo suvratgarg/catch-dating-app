@@ -13,6 +13,7 @@ class ClubBasicsStep extends StatelessWidget {
   const ClubBasicsStep({
     super.key,
     required this.formKey,
+    this.autovalidateMode = AutovalidateMode.disabled,
     required this.nameController,
     required this.selectedCity,
     required this.onCityChanged,
@@ -29,6 +30,7 @@ class ClubBasicsStep extends StatelessWidget {
   });
 
   final GlobalKey<FormState> formKey;
+  final AutovalidateMode autovalidateMode;
   final TextEditingController nameController;
   final CityOption? selectedCity;
   final ValueChanged<CityOption?> onCityChanged;
@@ -47,6 +49,7 @@ class ClubBasicsStep extends StatelessWidget {
   Widget build(BuildContext context) {
     return Form(
       key: formKey,
+      autovalidateMode: autovalidateMode,
       child: SingleChildScrollView(
         padding: CatchInsets.formStepBody,
         child: Column(

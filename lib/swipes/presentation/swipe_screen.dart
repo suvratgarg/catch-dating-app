@@ -7,7 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -31,10 +31,12 @@ class SwipeScreen extends ConsumerStatefulWidget {
     super.key,
     required this.eventId,
     this.vibeIds = const {},
+    this.now,
   });
 
   final String eventId;
   final Set<String> vibeIds;
+  final DateTime? now;
 
   @override
   ConsumerState<SwipeScreen> createState() => _SwipeScreenState();
@@ -49,7 +51,10 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     try {
       await ref
           .read(
-            swipeQueueProvider(widget.eventId, vibeIds: widget.vibeIds).notifier,
+            swipeQueueProvider(
+              widget.eventId,
+              vibeIds: widget.vibeIds,
+            ).notifier,
           )
           .swipe(direction, reactionTarget: reactionTarget, comment: comment);
     } catch (error) {
@@ -89,7 +94,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     return Scaffold(
       backgroundColor: t.bg,
       body: queueAsync.when(
-        loading: () => const CatchLoadingIndicator(),
+        loading: () => const CatchesProfileReviewSkeleton(),
         error: (e, _) => CatchErrorState.fromError(
           e,
           context: AppErrorContext.swipes,
@@ -103,9 +108,10 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
                   event: eventAsync.asData?.value,
                   currentUser: currentUser,
                   currentUserParticipation: currentUserParticipation,
+                  now: widget.now,
                 ),
               )
-            : _CatchesProfileReview(
+            : CatchesProfileReview(
                 profile: profiles.first,
                 remainingCount: profiles.length,
                 viewerProfile: currentUser,
@@ -130,8 +136,33 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
   }
 }
 
-class _CatchesProfileReview extends StatelessWidget {
-  const _CatchesProfileReview({
+class CatchesProfileReviewSkeleton extends StatelessWidget {
+  const CatchesProfileReviewSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Stack(
+      children: [
+        Positioned.fill(
+          child: ProfileSurfaceSkeleton(
+            bottomPadding: CatchLayout.catchesProfileBottomPadding,
+          ),
+        ),
+        _CatchesTopOverlaySkeleton(),
+        CatchesBottomScrim(),
+        Positioned(
+          left: CatchSpacing.s5,
+          bottom: CatchSpacing.s4,
+          child: _CatchesPassButtonSkeleton(),
+        ),
+      ],
+    );
+  }
+}
+
+class CatchesProfileReview extends StatelessWidget {
+  const CatchesProfileReview({
+    super.key,
     required this.profile,
     required this.remainingCount,
     required this.onBack,
@@ -179,12 +210,12 @@ class _CatchesProfileReview extends StatelessWidget {
             },
           ),
         ),
-        _CatchesTopOverlay(
+        CatchesTopOverlay(
           remainingCount: remainingCount,
           onBack: onBack,
           onFilters: onFilters,
         ),
-        const _CatchesBottomScrim(),
+        const CatchesBottomScrim(),
         Positioned(
           left: CatchSpacing.s5,
           bottom: CatchSpacing.s4,
@@ -195,8 +226,73 @@ class _CatchesProfileReview extends StatelessWidget {
   }
 }
 
-class _CatchesTopOverlay extends StatelessWidget {
-  const _CatchesTopOverlay({
+class _CatchesTopOverlaySkeleton extends StatelessWidget {
+  const _CatchesTopOverlaySkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            CatchSpacing.s4,
+            CatchSpacing.s3,
+            CatchSpacing.s4,
+            0,
+          ),
+          child: Row(
+            children: [
+              const _OverlayIconSkeleton(),
+              gapW10,
+              Expanded(
+                child: Center(
+                  child: CatchSkeleton.box(
+                    width: CatchSpacing.s16 * 3,
+                    height: CatchSpacing.s9,
+                    radius: CatchRadius.pill,
+                    borderColor: t.line.withValues(
+                      alpha: CatchOpacity.floatingChromeBorder,
+                    ),
+                  ),
+                ),
+              ),
+              gapW10,
+              const _OverlayIconSkeleton(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _OverlayIconSkeleton extends StatelessWidget {
+  const _OverlayIconSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchSkeleton.circle();
+  }
+}
+
+class _CatchesPassButtonSkeleton extends StatelessWidget {
+  const _CatchesPassButtonSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchSkeleton.circle(size: CatchLayout.passButtonExtent);
+  }
+}
+
+class CatchesTopOverlay extends StatelessWidget {
+  const CatchesTopOverlay({
+    super.key,
     required this.remainingCount,
     required this.onBack,
     required this.onFilters,
@@ -298,8 +394,8 @@ class _OverlayIconAction extends StatelessWidget {
   }
 }
 
-class _CatchesBottomScrim extends StatelessWidget {
-  const _CatchesBottomScrim();
+class CatchesBottomScrim extends StatelessWidget {
+  const CatchesBottomScrim({super.key});
 
   @override
   Widget build(BuildContext context) {

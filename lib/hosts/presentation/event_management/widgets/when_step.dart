@@ -12,6 +12,7 @@ class WhenStep extends StatelessWidget {
   const WhenStep({
     super.key,
     required this.formKey,
+    this.autovalidateMode = AutovalidateMode.disabled,
     required this.dateController,
     required this.startTimeController,
     required this.durationMinutes,
@@ -24,6 +25,7 @@ class WhenStep extends StatelessWidget {
   });
 
   final GlobalKey<FormState> formKey;
+  final AutovalidateMode autovalidateMode;
   final TextEditingController dateController;
   final TextEditingController startTimeController;
   final int durationMinutes;
@@ -39,6 +41,7 @@ class WhenStep extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Form(
       key: formKey,
+      autovalidateMode: autovalidateMode,
       child: ListView(
         padding: CatchInsets.formStepBody,
         children: [

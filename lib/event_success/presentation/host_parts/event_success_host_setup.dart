@@ -270,26 +270,27 @@ class _TargetAttendeeControl extends StatelessWidget {
       tone: CatchSurfaceTone.raised,
       borderColor: t.line,
       padding: CatchInsets.contentDense,
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Target attendees',
-                  style: CatchTextStyles.sectionTitle(context),
-                ),
-                gapH2,
-                Text(
-                  'Recommended range: $recommendedMin-$recommendedMax',
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-              ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final copy = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Target attendees',
+                style: CatchTextStyles.sectionTitle(context),
+              ),
+              gapH2,
+              Text(
+                'Recommended range: $recommendedMin-$recommendedMax',
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+            ],
+          );
+          final stepper = SizedBox(
+            width: math.min(
+              CatchLayout.hostTargetStepperWidth,
+              constraints.maxWidth,
             ),
-          ),
-          SizedBox(
-            width: CatchLayout.hostTargetStepperWidth,
             child: CatchNumberStepper(
               value: value,
               min: 1,
@@ -300,8 +301,25 @@ class _TargetAttendeeControl extends StatelessWidget {
               increaseTooltip: 'Increase target attendees',
               onChanged: (number) => onChanged(number.toInt()),
             ),
-          ),
-        ],
+          );
+          if (constraints.maxWidth < 360) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                copy,
+                gapH12,
+                Align(alignment: Alignment.centerLeft, child: stepper),
+              ],
+            );
+          }
+          return Row(
+            children: [
+              Expanded(child: copy),
+              gapW12,
+              stepper,
+            ],
+          );
+        },
       ),
     );
   }

@@ -46,9 +46,8 @@ class ClubScheduleSection extends StatelessWidget {
               child: CatchEmptyState(
                 icon: CatchIcons.calendarMonthOutlined,
                 title: 'No events scheduled',
-                message: isHost
-                    ? 'Publish an event when this club is ready to meet.'
-                    : 'Future events will appear here once the host publishes one.',
+                message:
+                    'Future events will appear here once the host publishes one.',
                 layout: CatchEmptyStateLayout.inline,
                 iconSize: CatchIcon.row,
                 iconContainerSize: 44,

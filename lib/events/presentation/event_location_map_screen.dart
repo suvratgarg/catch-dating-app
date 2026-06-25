@@ -6,13 +6,15 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_links.dart';
+import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
@@ -35,17 +37,18 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final vmAsync = ref.watch(eventDetailViewModelProvider(eventId));
 
-    return vmAsync.when(
-      loading: () =>
-          const _ChromelessMapScaffold(child: CatchLoadingIndicator()),
-      error: (error, _) => _ChromelessMapScaffold(
+    return CatchAsyncValueView<EventDetailViewModel?>(
+      value: vmAsync,
+      loadingBuilder: (_) =>
+          const _ChromelessMapScaffold(child: EventLocationMapLoadingBody()),
+      errorBuilder: (_, error, _) => _ChromelessMapScaffold(
         child: CatchErrorState.fromError(
           error,
           context: AppErrorContext.event,
           onRetry: () => ref.invalidate(eventDetailViewModelProvider(eventId)),
         ),
       ),
-      data: (vm) {
+      builder: (context, vm) {
         final event = vm?.event;
         if (event == null) {
           return const _ChromelessMapScaffold(
@@ -60,6 +63,71 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
           enableNetworkTiles: enableNetworkTiles,
         );
       },
+    );
+  }
+}
+
+class EventLocationMapLoadingBody extends StatelessWidget {
+  const EventLocationMapLoadingBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Stack(
+      children: [
+        const Positioned.fill(child: EventMapLoadingBody()),
+        Positioned(
+          left: CatchSpacing.s5,
+          right: CatchSpacing.s5,
+          bottom: CatchSpacing.s5,
+          child: SafeArea(
+            top: false,
+            child: CatchSurface(
+              tone: CatchSurfaceTone.raised,
+              elevation: CatchSurfaceElevation.overlay,
+              borderColor: t.line,
+              padding: CatchInsets.content,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      CatchSkeleton.box(
+                        width: CatchLayout.eventInfoTileExtent,
+                        height: CatchLayout.eventInfoTileExtent,
+                        radius: CatchRadius.interactiveTile,
+                        borderColor: t.line,
+                      ),
+                      gapW12,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CatchSkeleton.text(
+                              width: CatchLayout.skeletonTextTitleWidth,
+                            ),
+                            gapH6,
+                            CatchSkeleton.text(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  gapH12,
+                  CatchSkeleton.box(
+                    width: double.infinity,
+                    height: CatchLayout.buttonLgHeight,
+                    radius: CatchRadius.pill,
+                    borderColor: t.line,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

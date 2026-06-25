@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart';
@@ -94,6 +95,171 @@ class ProfileTabSliverBody extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class ProfileTabSkeletonSliverBody extends StatelessWidget {
+  const ProfileTabSkeletonSliverBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPadding(
+      padding: profileTabBodyPadding,
+      sliver: SliverToBoxAdapter(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: CatchLayout.maxContentWidth,
+            ),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CatchSectionList(
+                  gap: 0,
+                  children: [
+                    _ProfilePhotosSkeletonSection(),
+                    _ProfileAnalyticsSkeletonSection(),
+                    _ProfileInfoSkeletonSection(
+                      title: 'Prompts',
+                      rows: maxProfilePromptAnswers,
+                    ),
+                    _ProfileInfoSkeletonSection(title: 'About you', rows: 5),
+                    _ProfileInfoSkeletonSection(title: 'Running', rows: 4),
+                    _ProfileInfoSkeletonSection(title: 'Lifestyle', rows: 4),
+                  ],
+                ),
+                gapH32,
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfilePhotosSkeletonSection extends StatelessWidget {
+  const _ProfilePhotosSkeletonSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchDesignSection(
+      kicker: 'Photos',
+      count: 'loading',
+      first: true,
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          mainAxisSpacing: CatchSpacing.s2,
+          crossAxisSpacing: CatchSpacing.s2,
+          childAspectRatio: CatchAspectRatio.portrait3x4,
+        ),
+        itemCount: maximumProfilePhotoCount,
+        itemBuilder: (context, index) => CatchSkeleton.box(
+          width: double.infinity,
+          height: double.infinity,
+          radius: CatchRadius.lg,
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileAnalyticsSkeletonSection extends StatelessWidget {
+  const _ProfileAnalyticsSkeletonSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchDesignSection(
+      kicker: 'Profile strength',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+          gapH12,
+          CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileInfoSkeletonSection extends StatelessWidget {
+  const _ProfileInfoSkeletonSection({required this.title, required this.rows});
+
+  final String title;
+  final int rows;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchDesignSection(
+      kicker: title,
+      bodyGap: CatchSpacing.micro10,
+      child: Column(
+        children: [
+          for (var index = 0; index < rows; index++) ...[
+            const _ProfileInfoTileSkeleton(),
+            if (index < rows - 1) const _ProfileInfoSkeletonDivider(),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileInfoTileSkeleton extends StatelessWidget {
+  const _ProfileInfoTileSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: CatchSpacing.micro14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: CatchStroke.hairline),
+            child: CatchSkeleton.box(
+              width: CatchIcon.control,
+              height: CatchIcon.control,
+              radius: CatchRadius.pill,
+            ),
+          ),
+          gapW12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+                gapH4,
+                CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+              ],
+            ),
+          ),
+          CatchSkeleton.box(
+            width: CatchSpacing.s10,
+            height: CatchSpacing.s10,
+            radius: CatchRadius.pill,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileInfoSkeletonDivider extends StatelessWidget {
+  const _ProfileInfoSkeletonDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Divider(
+      height: 1,
+      indent: CatchSpacing.s8,
+      color: t.line.withValues(alpha: CatchOpacity.profileInfoDivider),
     );
   }
 }

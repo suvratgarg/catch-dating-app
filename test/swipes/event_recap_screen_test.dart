@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
@@ -14,6 +18,38 @@ import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('EventRecapScreen shows recap-shaped skeleton while loading', (
+    tester,
+  ) async {
+    final eventController = StreamController<Event?>();
+    addTearDown(eventController.close);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+          watchEventProvider(
+            'loading-event',
+          ).overrideWith((ref) => eventController.stream),
+          watchEventParticipationsForEventProvider(
+            'loading-event',
+          ).overrideWithValue(const AsyncData<List<EventParticipation>>([])),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const EventRecapScreen(eventId: 'loading-event'),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Event recap'), findsOneWidget);
+    expect(find.byType(EventRecapLoadingBody), findsOneWidget);
+    expect(find.byType(CatchSkeleton), findsWidgets);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.byKey(SwipeKeys.openCatchesDeckButton), findsNothing);
+  });
+
   testWidgets('EventRecapScreen builds roster from participation edges', (
     tester,
   ) async {

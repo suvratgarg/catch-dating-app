@@ -34,13 +34,16 @@ class EventDetailTicketStubBand extends StatelessWidget {
 
     return ColoredBox(
       color: t.surface,
-      child: SizedBox(
-        height: CatchLayout.eventDetailTicketStubBandHeight,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          minHeight: CatchLayout.eventDetailTicketStubBandHeight,
+        ),
         child: Stack(
           children: [
             Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
+                IntrinsicHeight(
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -1079,8 +1082,8 @@ class EventDetailHostCard extends StatelessWidget {
                                     context,
                                     color: statValueColor,
                                   ).copyWith(
-                                    fontSize:
-                                        CatchLayout.eventDetailHostStatValueSize,
+                                    fontSize: CatchLayout
+                                        .eventDetailHostStatValueSize,
                                   ),
                             ),
                             const SizedBox(height: CatchSpacing.s1),
@@ -1091,8 +1094,8 @@ class EventDetailHostCard extends StatelessWidget {
                                     context,
                                     color: statLabelColor ?? t.ink3,
                                   ).copyWith(
-                                    fontSize:
-                                        CatchLayout.eventDetailHostStatLabelSize,
+                                    fontSize: CatchLayout
+                                        .eventDetailHostStatLabelSize,
                                   ),
                             ),
                           ],
@@ -1165,11 +1168,7 @@ class _HostAvatar extends StatelessWidget {
         ),
         child: url == null || url.isEmpty
             ? null
-            : ClipOval(
-                child: CatchGradedImage(
-                  child: CatchNetworkImage(url),
-                ),
-              ),
+            : ClipOval(child: CatchGradedImage(child: CatchNetworkImage(url))),
       ),
     );
   }

@@ -8,7 +8,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -56,7 +56,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         child: Builder(
           builder: (context) {
             if (signedUpEventsAsync.isLoading || savedEventsAsync.isLoading) {
-              return const CatchLoadingIndicator();
+              return const _CalendarLoadingScreen();
             }
             if (signedUpEventsAsync.hasError || savedEventsAsync.hasError) {
               return CatchErrorState.fromError(
@@ -235,16 +235,17 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
     final clubNames = clubNamesAsync.asData?.value;
     if (clubNames == null) {
+      if (!clubNamesAsync.hasError) {
+        return const [EventAgendaSliverSkeleton(count: 3)];
+      }
       return [
         SliverFillRemaining(
           hasScrollBody: false,
-          child: clubNamesAsync.hasError
-              ? CatchErrorState.fromError(
-                  clubNamesAsync.error!,
-                  context: AppErrorContext.event,
-                  onRetry: () => ref.invalidate(clubNameLookupProvider),
-                )
-              : const CatchLoadingIndicator(),
+          child: CatchErrorState.fromError(
+            clubNamesAsync.error!,
+            context: AppErrorContext.event,
+            onRetry: () => ref.invalidate(clubNameLookupProvider),
+          ),
         ),
       ];
     }
@@ -270,6 +271,27 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         onEventSelected: (event) => _openEventDetail(context, event),
       ),
     ];
+  }
+}
+
+class _CalendarLoadingScreen extends StatelessWidget {
+  const _CalendarLoadingScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: _CalendarDateHeaderDelegate(
+            height: _CalendarDateHeader.heightFor(context, expanded: false),
+            child: const _CalendarDateHeaderSkeleton(),
+          ),
+        ),
+        const SliverToBoxAdapter(child: _CalendarStatsHeaderSkeleton()),
+        const EventAgendaSliverSkeleton(count: 3),
+      ],
+    );
   }
 }
 
@@ -372,6 +394,57 @@ class _CalendarDateHeader extends StatelessWidget {
 
   static String _monthLabel(DateTime date) {
     return '${_monthName(date.month)} ${date.year}';
+  }
+}
+
+class _CalendarDateHeaderSkeleton extends StatelessWidget {
+  const _CalendarDateHeaderSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: CatchInsets.pageHeaderCompact,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+              const Spacer(),
+              CatchSkeleton.box(
+                width: CatchSpacing.s16 + CatchSpacing.s4,
+                height: CatchSpacing.s8,
+                radius: CatchRadius.pill,
+              ),
+            ],
+          ),
+          gapH14,
+          const _CalendarWeekStripSkeleton(),
+        ],
+      ),
+    );
+  }
+}
+
+class _CalendarWeekStripSkeleton extends StatelessWidget {
+  const _CalendarWeekStripSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        for (var i = 0; i < DateTime.daysPerWeek; i++) ...[
+          Expanded(
+            child: CatchSkeleton.box(
+              height: CatchSpacing.s12,
+              radius: CatchRadius.sm,
+              borderColor: i == 2 ? CatchTokens.of(context).line2 : null,
+            ),
+          ),
+          if (i < DateTime.daysPerWeek - 1) gapW4,
+        ],
+      ],
+    );
   }
 }
 
@@ -505,6 +578,61 @@ class _CalendarStatsHeader extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _CalendarStatsHeaderSkeleton extends StatelessWidget {
+  const _CalendarStatsHeaderSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.micro2,
+        CatchSpacing.s5,
+        CatchSpacing.s3,
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.maxContentWidth,
+          ),
+          child: CatchSurface(
+            padding: CatchInsets.tileContentCompact,
+            radius: CatchRadius.md,
+            borderColor: t.line,
+            child: const Row(
+              children: [
+                Expanded(child: _CalendarStatSkeleton()),
+                _StatDivider(),
+                Expanded(child: _CalendarStatSkeleton()),
+                _StatDivider(),
+                Expanded(child: _CalendarStatSkeleton()),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CalendarStatSkeleton extends StatelessWidget {
+  const _CalendarStatSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+        gapH8,
+        CatchSkeleton.text(width: CatchSpacing.s10),
+      ],
     );
   }
 }

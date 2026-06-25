@@ -4,21 +4,26 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_settings_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HostPaymentAccountCard extends ConsumerStatefulWidget {
@@ -33,13 +38,10 @@ class HostPaymentAccountCard extends ConsumerStatefulWidget {
 
 class _HostPaymentAccountCardState
     extends ConsumerState<HostPaymentAccountCard> {
-  Object? _error;
-  bool _onboardingPending = false;
-  bool _refreshPending = false;
-
   Future<void> _showPayoutsHandoff(
     HostPaymentAccount? account,
     _HostPaymentPresentation presentation,
+    bool onboardingPending,
   ) async {
     final t = CatchTokens.of(context);
     final derivedCountry = countryIsoCodeForCityName(widget.club.location);
@@ -66,12 +68,14 @@ class _HostPaymentAccountCardState
             label: 'Continue to Stripe',
             icon: Icon(CatchIcons.openInNewRounded),
             fullWidth: true,
-            isLoading: _onboardingPending,
-            onPressed: _onboardingPending
+            isLoading: onboardingPending,
+            onPressed: onboardingPending
                 ? null
                 : () {
                     Navigator.of(sheetContext).pop();
-                    unawaited(_startOnboarding());
+                    unawaited(
+                      _startOnboarding(country: country, currency: currency),
+                    );
                   },
           ),
           child: Column(
@@ -131,42 +135,37 @@ class _HostPaymentAccountCardState
     );
   }
 
-  Future<void> _startOnboarding() async {
-    setState(() {
-      _error = null;
-      _onboardingPending = true;
-    });
-    try {
-      final link = await ref
-          .read(hostPaymentAccountRepositoryProvider)
-          .createOnboardingLink(
-            country: countryIsoCodeForCityName(widget.club.location),
-            defaultCurrency: currencyCodeForCityName(widget.club.location),
-          );
-      await ref
-          .read(externalLinkControllerProvider)
-          .openExternal(link.onboardingUrl);
-    } catch (error) {
-      if (mounted) setState(() => _error = error);
-    } finally {
-      if (mounted) setState(() => _onboardingPending = false);
+  Future<void> _startOnboarding({
+    required String country,
+    required String currency,
+  }) async {
+    if (ref
+        .read(HostPaymentAccountController.startOnboardingMutation)
+        .isPending) {
+      return;
     }
+    try {
+      await HostPaymentAccountController.startOnboardingMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostPaymentAccountControllerProvider)
+            .startOnboarding(country: country, defaultCurrency: currency),
+      );
+    } catch (_) {}
   }
 
   Future<void> _refresh() async {
-    setState(() {
-      _error = null;
-      _refreshPending = true;
-    });
-    try {
-      await ref
-          .read(hostPaymentAccountRepositoryProvider)
-          .refreshStripeStatus();
-    } catch (error) {
-      if (mounted) setState(() => _error = error);
-    } finally {
-      if (mounted) setState(() => _refreshPending = false);
+    if (ref
+        .read(HostPaymentAccountController.refreshStatusMutation)
+        .isPending) {
+      return;
     }
+    try {
+      await HostPaymentAccountController.refreshStatusMutation.run(
+        ref,
+        (tx) => tx.get(hostPaymentAccountControllerProvider).refreshStatus(),
+      );
+    } catch (_) {}
   }
 
   @override
@@ -175,7 +174,70 @@ class _HostPaymentAccountCardState
     final accountAsync = uid == null
         ? const AsyncValue<HostPaymentAccount?>.data(null)
         : ref.watch(watchHostPaymentAccountProvider(uid));
-    final account = accountAsync.asData?.value;
+    final onboardingMutation = ref.watch(
+      HostPaymentAccountController.startOnboardingMutation,
+    );
+    final refreshMutation = ref.watch(
+      HostPaymentAccountController.refreshStatusMutation,
+    );
+    return CatchAsyncValueView<HostPaymentAccount?>(
+      value: accountAsync,
+      loadingBuilder: (_) => const _HostPaymentAccountLoadingCard(),
+      errorBuilder: (_, error, _) => _HostPaymentAccountErrorCard(
+        error: error,
+        onRetry: uid == null
+            ? null
+            : () => ref.invalidate(watchHostPaymentAccountProvider(uid)),
+      ),
+      builder: (context, account) => _HostPaymentAccountContentCard(
+        account: account,
+        actionError: _firstErrorMutation(onboardingMutation, refreshMutation),
+        onboardingPending: onboardingMutation.isPending,
+        refreshPending: refreshMutation.isPending,
+        onShowPayoutsHandoff: (account, presentation) => _showPayoutsHandoff(
+          account,
+          presentation,
+          onboardingMutation.isPending,
+        ),
+        onRefresh: _refresh,
+      ),
+    );
+  }
+
+  MutationState? _firstErrorMutation(
+    MutationState onboardingMutation,
+    MutationState refreshMutation,
+  ) {
+    if (onboardingMutation.hasError) return onboardingMutation;
+    if (refreshMutation.hasError) return refreshMutation;
+    return null;
+  }
+}
+
+class _HostPaymentAccountContentCard extends StatelessWidget {
+  const _HostPaymentAccountContentCard({
+    required this.account,
+    required this.actionError,
+    required this.onboardingPending,
+    required this.refreshPending,
+    required this.onShowPayoutsHandoff,
+    required this.onRefresh,
+  });
+
+  final HostPaymentAccount? account;
+  final MutationState? actionError;
+  final bool onboardingPending;
+  final bool refreshPending;
+  final Future<void> Function(
+    HostPaymentAccount? account,
+    _HostPaymentPresentation presentation,
+  )
+  onShowPayoutsHandoff;
+  final Future<void> Function() onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    final account = this.account;
     final presentation = _presentation(account);
     final t = CatchTokens.of(context);
 
@@ -221,9 +283,14 @@ class _HostPaymentAccountCardState
               ],
             ),
           ],
-          if (_error != null) ...[
+          if (actionError != null) ...[
             gapH12,
-            CatchErrorBanner(message: appErrorMessage(_error!)),
+            CatchErrorBanner(
+              message: mutationErrorMessage(
+                actionError!,
+                context: AppErrorContext.payments,
+              ),
+            ),
           ],
           gapH12,
           Row(
@@ -231,12 +298,12 @@ class _HostPaymentAccountCardState
               Expanded(
                 child: CatchButton(
                   label: account == null ? 'Set up payouts' : 'Continue setup',
-                  onPressed: _onboardingPending
+                  onPressed: onboardingPending
                       ? null
                       : () => unawaited(
-                          _showPayoutsHandoff(account, presentation),
+                          onShowPayoutsHandoff(account, presentation),
                         ),
-                  isLoading: _onboardingPending,
+                  isLoading: onboardingPending,
                   icon: Icon(CatchIcons.paymentsOutlined),
                 ),
               ),
@@ -244,10 +311,10 @@ class _HostPaymentAccountCardState
                 gapW10,
                 CatchButton(
                   label: 'Refresh',
-                  onPressed: _refreshPending
+                  onPressed: refreshPending
                       ? null
-                      : () => unawaited(_refresh()),
-                  isLoading: _refreshPending,
+                      : () => unawaited(onRefresh()),
+                  isLoading: refreshPending,
                   variant: CatchButtonVariant.secondary,
                   icon: Icon(CatchIcons.refreshRounded),
                 ),
@@ -294,6 +361,69 @@ class _HostPaymentAccountCardState
       title: 'Stripe onboarding is in progress',
       body:
           'Refresh after completing Stripe onboarding to update checkout readiness.',
+    );
+  }
+}
+
+class _HostPaymentAccountLoadingCard extends StatelessWidget {
+  const _HostPaymentAccountLoadingCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      borderColor: t.line,
+      padding: CatchInsets.tileContentCompact,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Expanded(child: CatchSectionHeader(title: 'Payouts')),
+              CatchSkeleton.box(
+                width: 82,
+                height: 24,
+                radius: CatchRadius.pill,
+              ),
+            ],
+          ),
+          gapH14,
+          CatchSkeleton.text(width: 190),
+          gapH8,
+          CatchSkeleton.textBlock(lines: 2),
+          gapH14,
+          CatchSkeleton.box(height: 44, radius: CatchRadius.sm),
+        ],
+      ),
+    );
+  }
+}
+
+class _HostPaymentAccountErrorCard extends StatelessWidget {
+  const _HostPaymentAccountErrorCard({required this.error, this.onRetry});
+
+  final Object error;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      borderColor: t.line,
+      padding: CatchInsets.tileContentCompact,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const CatchSectionHeader(title: 'Payouts'),
+          gapH12,
+          CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.payments,
+            mode: CatchErrorStateMode.compact,
+            onRetry: onRetry,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -5,25 +5,18 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class QuickActions extends StatelessWidget {
-  const QuickActions({super.key});
+  const QuickActions({super.key, required this.actions});
+
+  final List<DashboardQuickAction> actions;
 
   static const double _iconBoxSize = CatchSpacing.s9;
   static const double _tileSpacing = CatchSpacing.s3;
 
-  void _onTap(BuildContext context, _QuickAction action) {
-    if (action.route == null) return;
-    context.push(action.route!);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final actions = _actions;
-
     return LayoutBuilder(
       builder: (context, constraints) {
         final columns =
@@ -42,12 +35,10 @@ class QuickActions extends StatelessWidget {
               SizedBox(
                 width: tileWidth,
                 child: Opacity(
-                  opacity: action.route == null ? 0.7 : 1,
+                  opacity: action.isEnabled ? 1 : 0.7,
                   child: _QuickActionTile(
                     action: action,
-                    onTap: action.route == null
-                        ? null
-                        : () => _onTap(context, action),
+                    onTap: action.onPressed,
                   ),
                 ),
               ),
@@ -56,25 +47,12 @@ class QuickActions extends StatelessWidget {
       },
     );
   }
-
-  List<_QuickAction> get _actions => [
-    _QuickAction(
-      icon: CatchIcons.calendarMonthOutlined,
-      label: 'Calendar',
-      route: Routes.calendarScreen.path,
-    ),
-    _QuickAction(
-      icon: CatchIcons.bookmarkBorderRounded,
-      label: 'Saved events',
-      route: Routes.savedEventsScreen.path,
-    ),
-  ];
 }
 
 class _QuickActionTile extends StatelessWidget {
   const _QuickActionTile({required this.action, required this.onTap});
 
-  final _QuickAction action;
+  final DashboardQuickAction action;
   final VoidCallback? onTap;
 
   @override
@@ -112,10 +90,34 @@ class _QuickActionTile extends StatelessWidget {
   }
 }
 
-class _QuickAction {
-  const _QuickAction({required this.icon, required this.label, this.route});
+class DashboardQuickAction {
+  const DashboardQuickAction({
+    required this.icon,
+    required this.label,
+    this.onPressed,
+  });
 
   final IconData icon;
   final String label;
-  final String? route;
+  final VoidCallback? onPressed;
+
+  bool get isEnabled => onPressed != null;
+}
+
+List<DashboardQuickAction> dashboardQuickActions({
+  required VoidCallback onCalendarPressed,
+  required VoidCallback onSavedEventsPressed,
+}) {
+  return [
+    DashboardQuickAction(
+      icon: CatchIcons.calendarMonthOutlined,
+      label: 'Calendar',
+      onPressed: onCalendarPressed,
+    ),
+    DashboardQuickAction(
+      icon: CatchIcons.bookmarkBorderRounded,
+      label: 'Saved events',
+      onPressed: onSavedEventsPressed,
+    ),
+  ];
 }

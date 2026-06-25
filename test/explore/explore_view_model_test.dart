@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
@@ -12,8 +13,10 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_discovery_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/data/external_event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/domain/saved_event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
@@ -345,25 +348,28 @@ void main() {
       );
     });
 
-    test('debouncedExploreSearchQuery settles immediately for short queries', () async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
+    test(
+      'debouncedExploreSearchQuery settles immediately for short queries',
+      () async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
 
-      container.read(exploreSearchQueryProvider.notifier).setQuery('a');
+        container.read(exploreSearchQueryProvider.notifier).setQuery('a');
 
-      final subscription = container.listen(
-        debouncedExploreSearchQueryProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(subscription.close);
+        final subscription = container.listen(
+          debouncedExploreSearchQueryProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(subscription.close);
 
-      // Clears and single characters bypass the debounce: nothing to search.
-      expect(
-        await container.read(debouncedExploreSearchQueryProvider.future),
-        'a',
-      );
-    });
+        // Clears and single characters bypass the debounce: nothing to search.
+        expect(
+          await container.read(debouncedExploreSearchQueryProvider.future),
+          'a',
+        );
+      },
+    );
 
     test(
       'exploreViewModelProvider partitions joined and discover clubs',
@@ -525,6 +531,9 @@ void main() {
             eventDiscoveryRepositoryProvider.overrideWithValue(
               _FakeEventDiscoveryRepository([far, near]),
             ),
+            externalEventRepositoryProvider.overrideWithValue(
+              _FakeExternalEventRepository([]),
+            ),
             deviceLocationProvider.overrideWith(
               () => _FakeDeviceLocation(const LocationCoordinate(19.0, 72.0)),
             ),
@@ -558,6 +567,57 @@ void main() {
           viewModel.items.single.distanceFromUserLabel,
           contains('km away'),
         );
+      },
+    );
+
+    test(
+      'exploreFeedViewModelProvider keeps external supply separate',
+      () async {
+        final externalEvent = _externalEvent(
+          id: 'external-mumbai-mixer',
+          title: 'Mumbai Singles Mixer',
+          citySlug: 'mumbai',
+          startTime: DateTime.now().add(const Duration(days: 1)),
+        );
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value(null)),
+            watchClubsByLocationProvider(
+              'mumbai',
+            ).overrideWith((ref) => Stream.value(const <Club>[])),
+            eventDiscoveryRepositoryProvider.overrideWithValue(
+              _FakeEventDiscoveryRepository([]),
+            ),
+            externalEventRepositoryProvider.overrideWithValue(
+              _FakeExternalEventRepository([externalEvent]),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final subscription = container.listen(
+          exploreFeedViewModelProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(subscription.close);
+        await container.pump();
+        await flushTestEventQueue();
+        await container.pump();
+
+        expect(
+          subscription.read().hasValue,
+          isTrue,
+          reason: '${subscription.read()}',
+        );
+        final viewModel = subscription.read().value!;
+
+        expect(viewModel.items, isEmpty);
+        expect(viewModel.externalItems.map((item) => item.event.id), [
+          'external-mumbai-mixer',
+        ]);
+        expect(viewModel.isEmpty, isFalse);
+        expect(viewModel.count, 1);
       },
     );
 
@@ -624,6 +684,9 @@ void main() {
             ).overrideWith((ref) => Stream.value([joinedEvent])),
             eventDiscoveryRepositoryProvider.overrideWithValue(
               _FakeEventDiscoveryRepository([requestEvent, savedEvent]),
+            ),
+            externalEventRepositoryProvider.overrideWithValue(
+              _FakeExternalEventRepository([]),
             ),
           ],
         );
@@ -703,6 +766,9 @@ void main() {
             ).overrideWith((ref) => personalEvents.stream),
             eventDiscoveryRepositoryProvider.overrideWithValue(
               _FakeEventDiscoveryRepository([discoverableEvent]),
+            ),
+            externalEventRepositoryProvider.overrideWithValue(
+              _FakeExternalEventRepository([]),
             ),
           ],
         );
@@ -803,6 +869,53 @@ class _FakeEventDiscoveryRepository extends Fake
   Future<List<Event>> fetchDiscoverableEvents(EventDiscoveryQuery query) async {
     return events;
   }
+}
+
+class _FakeExternalEventRepository extends Fake
+    implements ExternalEventRepository {
+  _FakeExternalEventRepository(this.events);
+
+  final List<ExternalEvent> events;
+
+  @override
+  Future<List<ExternalEvent>> fetchDiscoverableExternalEvents(
+    ExternalEventDiscoveryQuery query,
+  ) async {
+    return events;
+  }
+}
+
+ExternalEvent _externalEvent({
+  required String id,
+  required String title,
+  required String citySlug,
+  required DateTime startTime,
+}) {
+  return ExternalEvent(
+    id: id,
+    canonicalHostId: 'host-afterfly',
+    compatibilityClubId: 'club-afterfly',
+    title: title,
+    description: 'A reviewed external event.',
+    startTime: startTime,
+    endTime: startTime.add(const Duration(hours: 2)),
+    meetingPoint: 'Bandra Amphitheatre',
+    activityKind: ActivityKind.singlesMixer,
+    interactionModel: EventInteractionModel.freeFormMixer,
+    status: 'active',
+    publicationStatus: 'public',
+    citySlug: citySlug,
+    externalLinks: const [
+      ExternalEventLink(
+        platform: 'luma',
+        url: 'https://luma.com/e',
+        linkType: 'booking_or_event_page',
+        sourceEventKey: 'external-source-key',
+        candidateId: 'candidate-external',
+        primary: true,
+      ),
+    ],
+  );
 }
 
 class _FakeExploreSearchRepository implements ExploreSearchRepository {
