@@ -4,22 +4,27 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
+import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
+import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
@@ -1117,6 +1122,8 @@ Widget catchSectionContractStates(BuildContext context) {
       'single-field',
       'long-copy',
       'lead-accent',
+      'contained-focused',
+      'contained-error',
     ],
     children: [
       _StateCard(
@@ -1145,6 +1152,42 @@ Widget catchSectionContractStates(BuildContext context) {
                 mode: CatchFieldMode.toggle,
                 toggled: true,
                 onToggle: (_) {},
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'contained-focused',
+        child: _FieldWidth(
+          child: CatchSection(
+            variant: CatchSectionVariant.contained,
+            focused: true,
+            children: [
+              CatchField(
+                title: 'Public name',
+                initialValue: 'Bandra Social Run',
+                icon: CatchIcons.groupsOutlined,
+                mode: CatchFieldMode.edit,
+                focused: true,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'contained-error',
+        child: _FieldWidth(
+          child: CatchSection(
+            variant: CatchSectionVariant.contained,
+            hasError: true,
+            children: [
+              CatchField(
+                title: 'Invite code',
+                initialValue: 'ABC',
+                icon: CatchIcons.lockOutlineRounded,
+                mode: CatchFieldMode.edit,
+                errorText: 'Use a 6-character invite code',
               ),
             ],
           ),
@@ -3589,11 +3632,6 @@ Widget catchFormDialogContractStates(BuildContext context) {
   );
 }
 
-@widgetbook.UseCase(
-  name: 'Public picker behavior',
-  type: CatchAdaptivePickerHarness,
-  path: '[Core primitives]/Dialogs',
-)
 Widget catchAdaptivePickerBehaviorStates(BuildContext context) {
   return const CatchAdaptivePickerHarness();
 }
@@ -3799,6 +3837,343 @@ Widget catchClubDockContractStates(BuildContext context) {
             onManage: _noop,
             onCreate: _noop,
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchBottomDock,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchBottomDockContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchBottomDock',
+    contractId: 'catch.bottom_dock',
+    states: const [
+      'custom',
+      'custom-no-safe-area',
+      'cta',
+      'cta-leading-content',
+      'cta-catch-line',
+      'cta-footnote',
+      'loading',
+      'disabled',
+    ],
+    children: [
+      _StateCard(
+        label: 'custom',
+        child: _DockFrame(
+          child: CatchBottomDock(
+            child: CatchButton(label: 'Continue', onPressed: _noop),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'custom-no-safe-area',
+        child: _DockFrame(
+          child: CatchBottomDock(
+            includeSafeArea: false,
+            child: CatchButton(label: 'Apply filters', onPressed: _noop),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'cta',
+        child: _DockFrame(
+          child: CatchBottomDock.cta(label: 'Book your spot', onPressed: _noop),
+        ),
+      ),
+      _StateCard(
+        label: 'cta-leading-content',
+        child: _DockFrame(
+          child: CatchBottomDock.cta(
+            label: 'Join waitlist',
+            leadingContent: const CatchBadge(label: '4 left'),
+            onPressed: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'cta-catch-line',
+        child: _DockFrame(
+          child: CatchBottomDock.cta(
+            label: 'Book free',
+            catchLine: 'FREE TO JOIN',
+            onPressed: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'cta-footnote',
+        child: _DockFrame(
+          child: CatchBottomDock.cta(
+            label: 'Confirm',
+            footnote: 'No charge until the host approves.',
+            onPressed: _noop,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'loading',
+        child: _DockFrame(
+          child: CatchBottomDock.cta(
+            label: 'Saving',
+            isLoading: true,
+            onPressed: null,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'disabled',
+        child: _DockFrame(
+          child: CatchBottomDock.cta(label: 'Sold out', onPressed: null),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchEventCard,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchEventCardContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchEventCard',
+    contractId: 'catch.event_card',
+    states: const [
+      'ticket',
+      'ticket-status',
+      'spotlight',
+      'compact',
+      'long-copy',
+      'hero-transition',
+      'activity-art',
+    ],
+    children: [
+      const _StateCard(
+        label: 'ticket',
+        child: CatchEventCard.ticket(
+          title: 'Sundowner 5K',
+          subtitle: 'Marine Drive',
+          timeLabel: '7:30 PM',
+          countdownLabel: 'Tonight',
+          priceLabel: 'Free',
+          capacityLabel: '18 going',
+          activityKind: ActivityKind.socialRun,
+        ),
+      ),
+      const _StateCard(
+        label: 'ticket-status',
+        child: CatchEventCard.ticket(
+          title: 'Doubles ladder',
+          subtitle: 'Versova Padel',
+          timeLabel: '9:00 AM',
+          countdownLabel: 'Tomorrow',
+          priceLabel: '₹900',
+          capacityLabel: '4 left',
+          activityKind: ActivityKind.padel,
+          statusLabel: 'Booked',
+        ),
+      ),
+      const _StateCard(
+        label: 'spotlight',
+        child: CatchEventCard.spotlight(
+          title: 'Trivia without awkward tables',
+          supportingLabel: 'The Daily, Bandra',
+          timeLabel: '8:00 PM',
+          countdownLabel: 'Tuesday',
+          priceLabel: '₹600',
+          capacityLabel: '12 going',
+          activityKind: ActivityKind.pubQuiz,
+        ),
+      ),
+      const _StateCard(
+        label: 'compact',
+        child: CatchEventCard.compact(
+          title: 'Sunday flow',
+          subtitle: 'Yoga House',
+          timeLabel: '10:00 AM',
+          countdownLabel: 'Sun',
+          priceLabel: '₹500',
+          capacityLabel: '8 left',
+          activityKind: ActivityKind.yoga,
+        ),
+      ),
+      const _StateCard(
+        label: 'long-copy',
+        child: SizedBox(
+          width: 320,
+          child: CatchEventCard.ticket(
+            title: 'A very long event name that should wrap without clipping',
+            subtitle: 'A long venue name near the waterfront',
+            timeLabel: '7:30 PM',
+            countdownLabel: 'This weekend',
+            priceLabel: 'Free',
+            capacityLabel: '18 going',
+            activityKind: ActivityKind.socialRun,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'hero-transition',
+        child: CatchEventCard.spotlight(
+          title: 'Dinner at the long table',
+          supportingLabel: 'Bandra',
+          timeLabel: '8:30 PM',
+          countdownLabel: 'Friday',
+          priceLabel: '₹1,200',
+          capacityLabel: '2 left',
+          activityKind: ActivityKind.dinner,
+          heroTag: 'contract-event-card',
+          visualHeroTag: 'contract-event-card-visual',
+        ),
+      ),
+      const _StateCard(
+        label: 'activity-art',
+        child: CatchEventCard.compact(
+          title: 'Open court',
+          subtitle: 'Padel ladder',
+          timeLabel: '6:00 PM',
+          countdownLabel: 'Today',
+          priceLabel: '₹800',
+          capacityLabel: '6 left',
+          activityKind: ActivityKind.pickleball,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchGradedImage,
+  path: '[Core primitives]/Media',
+)
+Widget catchGradedImageContractStates(BuildContext context) {
+  Widget swatch(Color color) => SizedBox(
+    width: 220,
+    height: 140,
+    child: DecoratedBox(decoration: BoxDecoration(color: color)),
+  );
+
+  return _ContractScreen(
+    title: 'CatchGradedImage',
+    contractId: 'catch.graded_image',
+    states: const ['enabled', 'disabled', 'light-image', 'dark-image'],
+    children: [
+      _StateCard(
+        label: 'enabled',
+        child: CatchGradedImage(child: swatch(const Color(0xFFE67E45))),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: CatchGradedImage(
+          enabled: false,
+          child: swatch(const Color(0xFFE67E45)),
+        ),
+      ),
+      _StateCard(
+        label: 'light-image',
+        child: CatchGradedImage(child: swatch(const Color(0xFFF1EEE6))),
+      ),
+      _StateCard(
+        label: 'dark-image',
+        child: CatchGradedImage(child: swatch(CatchTokens.editorialDark)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchDetailHeroBackdrop,
+  path: '[Core primitives]/Media',
+)
+Widget catchDetailHeroBackdropContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchDetailHeroBackdrop',
+    contractId: 'catch.detail_media',
+    states: ['photo', 'fallback-gradient', 'scrim', 'no-scrim'],
+    children: [
+      _StateCard(
+        label: 'photo',
+        child: SizedBox(
+          width: 340,
+          height: 180,
+          child: CatchDetailHeroBackdrop(
+            imageUrl: 'https://example.invalid/catch-detail-photo.jpg',
+            semanticLabel: 'Event photo',
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'fallback-gradient',
+        child: SizedBox(
+          width: 340,
+          height: 180,
+          child: CatchDetailHeroBackdrop(),
+        ),
+      ),
+      _StateCard(
+        label: 'scrim',
+        child: SizedBox(
+          width: 340,
+          height: 180,
+          child: CatchDetailHeroBackdrop(showScrim: true),
+        ),
+      ),
+      _StateCard(
+        label: 'no-scrim',
+        child: SizedBox(
+          width: 340,
+          height: 180,
+          child: CatchDetailHeroBackdrop(showScrim: false),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchActivityMapPin,
+  path: '[Core primitives]/Activity',
+)
+Widget catchActivityMapPinContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchActivityMapPin',
+    contractId: 'catch.activity_map_pin',
+    states: ['resting', 'selected', 'selected-label', 'custom-size'],
+    children: [
+      _StateCard(
+        label: 'resting',
+        child: CatchActivityMapPin(activityKind: ActivityKind.socialRun),
+      ),
+      _StateCard(
+        label: 'selected',
+        child: CatchActivityMapPin(
+          activityKind: ActivityKind.pickleball,
+          selected: true,
+        ),
+      ),
+      _StateCard(
+        label: 'selected-label',
+        child: CatchActivityMapPin(
+          activityKind: ActivityKind.dinner,
+          selected: true,
+          label: 'Dinner',
+        ),
+      ),
+      _StateCard(
+        label: 'custom-size',
+        child: CatchActivityMapPin(
+          activityKind: ActivityKind.pubQuiz,
+          size: 44,
         ),
       ),
     ],
@@ -4199,19 +4574,64 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
 )
 Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchPersonRow chat preview states',
+    title: 'CatchPersonRow states',
     contractId: 'catch.person_row',
     states: const [
-      'new-match',
-      'conversation',
-      'unread',
-      'host-inquiry',
+      'roster',
+      'roster-trailing',
+      'chat-preview',
+      'chat-preview-new',
+      'chat-preview-unread',
+      'chat-preview-square-avatar',
       'divider',
       'long-copy',
     ],
     children: [
       _StateCard(
-        label: 'new-match',
+        label: 'roster',
+        child: _ChatTileFrame(
+          child: CatchPersonRow(
+            data: const CatchPersonRowData(
+              name: 'Aanya Rao',
+              metaLine: '5:20 /km · 29',
+              contextLine: 'Sundowner 5K',
+            ),
+            onTap: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'roster-trailing',
+        child: _ChatTileFrame(
+          child: CatchPersonRow(
+            data: const CatchPersonRowData(
+              name: 'Dev Malhotra',
+              metaLine: 'Checked in',
+              contextLine: 'Versova Padel',
+            ),
+            trailing: const CatchBadge(
+              label: 'Host',
+              tone: CatchBadgeTone.gold,
+            ),
+            onTap: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'chat-preview',
+        child: _ChatTileFrame(
+          child: CatchPersonRow(
+            data: const CatchPersonRowData(
+              name: 'Isha Mehta',
+              lastMessage: 'You: See you by the host stand.',
+              timestamp: '9m',
+            ),
+            onTap: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'chat-preview-new',
         child: _ChatTileFrame(
           child: CatchPersonRow(
             data: const CatchPersonRowData(
@@ -4227,20 +4647,7 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'conversation',
-        child: _ChatTileFrame(
-          child: CatchPersonRow(
-            data: const CatchPersonRowData(
-              name: 'Isha Mehta',
-              lastMessage: 'You: See you by the host stand.',
-              timestamp: '9m',
-            ),
-            onTap: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'unread',
+        label: 'chat-preview-unread',
         child: _ChatTileFrame(
           child: CatchPersonRow(
             data: const CatchPersonRowData(
@@ -4256,7 +4663,7 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'host-inquiry',
+        label: 'chat-preview-square-avatar',
         child: _ChatTileFrame(
           child: CatchPersonRow(
             data: const CatchPersonRowData(
@@ -4474,9 +4881,9 @@ class _CatchAdaptivePickerHarnessState
     final date = _selectedDate;
     final time = _selectedTime;
 
-    return _ContractScreen(
+    return _BehaviorScreen(
       title: 'CatchAdaptivePicker behavior',
-      contractId: 'catch.adaptive_picker.behavior',
+      behaviorId: 'catch.adaptive_picker.behavior',
       states: const ['date-picker', 'time-picker', 'public-api'],
       children: [
         _StateCard(
@@ -4548,6 +4955,63 @@ class _CatchAdaptivePickerHarnessState
     );
     if (!mounted || result == null) return;
     setState(() => _selectedTime = result);
+  }
+}
+
+class _BehaviorScreen extends StatelessWidget {
+  const _BehaviorScreen({
+    required this.title,
+    required this.behaviorId,
+    required this.states,
+    required this.children,
+  });
+
+  final String title;
+  final String behaviorId;
+  final List<String> states;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return ColoredBox(
+      color: t.bg,
+      child: SingleChildScrollView(
+        padding: CatchInsets.pageBodyRelaxed,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 920),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CatchBadge(label: behaviorId, uppercase: true),
+                const SizedBox(height: CatchSpacing.s3),
+                Text(title, style: CatchTextStyles.headlineS(context)),
+                const SizedBox(height: CatchSpacing.s3),
+                _InlineWrap(
+                  children: [
+                    for (final state in states)
+                      CatchBadge(
+                        label: state,
+                        size: CatchBadgeSize.md,
+                        tone: CatchBadgeTone.neutral,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: CatchSpacing.s6),
+                ...children.map(
+                  (child) => Padding(
+                    padding: const EdgeInsets.only(bottom: CatchSpacing.s4),
+                    child: child,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

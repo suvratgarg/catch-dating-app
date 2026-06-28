@@ -1197,7 +1197,7 @@
                 "club_detail_host_public"
               ],
               "previewIds": [
-                "CatchClubDock/Dock states"
+                "CatchClubDock/Contract states"
               ],
               "tests": [
                 "test/clubs/clubs_controllers_test.dart"
@@ -1221,7 +1221,7 @@
                 "club_detail_join_pending"
               ],
               "previewIds": [
-                "CatchClubDock/Dock states"
+                "CatchClubDock/Contract states"
               ],
               "tests": [
                 "test/clubs/clubs_controllers_test.dart"
@@ -1426,7 +1426,7 @@
             "lib/dashboard/presentation/widgets/event_focus_rail.dart",
             "lib/dashboard/presentation/widgets/stride_card.dart",
             "lib/dashboard/presentation/widgets/quick_actions.dart",
-            "lib/dashboard/presentation/widgets/dashboard_clubs_rail.dart",
+            "lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart",
             "lib/dashboard/presentation/widgets/recommendations.dart"
           ],
           "componentIds": [
@@ -2887,7 +2887,7 @@
             "lib/matches/presentation/widgets/chats_sliver_header.dart",
             "lib/matches/presentation/widgets/chats_list.dart",
             "lib/matches/presentation/widgets/chats_list_body.dart",
-            "lib/matches/presentation/chat_list_tile.dart"
+            "lib/core/widgets/catch_person_row.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -2954,7 +2954,7 @@
               ],
               "tests": [
                 "test/chats/matches_list_screen_test.dart",
-                "test/chats/chat_list_tile_test.dart"
+                "test/core/catch_person_row_test.dart"
               ],
               "notes": "matches_list_context renders synthetic conversation previews and row-level new/unread treatment.",
               "previewIds": [
@@ -2966,7 +2966,7 @@
               "kind": "populated",
               "status": "captured",
               "tests": [
-                "test/chats/chat_list_tile_test.dart"
+                "test/core/catch_person_row_test.dart"
               ],
               "notes": "ChatsListViewModel separates newMatches, while current ChatsListBody merges new and active rows into one list with row-level new treatment.",
               "previewIds": [
@@ -3043,9 +3043,9 @@
               "status": "captured",
               "tests": [
                 "test/chats/matches_list_screen_test.dart",
-                "test/chats/chat_list_tile_test.dart"
+                "test/core/catch_person_row_test.dart"
               ],
-              "notes": "ChatListTile shows row-level unread treatment and hides unread count for own latest message.",
+              "notes": "CatchPersonRow shows row-level unread treatment and hides unread count for own latest message.",
               "previewIds": [
                 "ChatsListScreen/Consumer route states"
               ],
@@ -4251,7 +4251,7 @@
               "notes": "HostHomeEventsSectionState maps the selected club event async branch to loading, and HostEventsClubSection renders HostEventRowsSkeleton under the Upcoming label. Event-list loading capture is registered.",
               "previewIds": [
                 "HostOperationsHomeScreen/Route states",
-                "HostEventsClubCard/Event section states"
+                "hostHomeEventSectionStates"
               ],
               "captureIds": [
                 "host_home_events_loading"
@@ -4264,7 +4264,7 @@
               "notes": "HostHomeEventsSectionState maps event errors before HostEventsClubSection renders CatchInlineErrorState.fromError with AppErrorContext.event and a typed retry callback supplied by HostEventsClubCard. Event-list error capture is registered.",
               "previewIds": [
                 "HostOperationsHomeScreen/Route states",
-                "HostEventsClubCard/Event section states"
+                "hostHomeEventSectionStates"
               ],
               "captureIds": [
                 "host_home_events_error"
@@ -4279,7 +4279,7 @@
               ],
               "notes": "HostHomeEventsSectionState maps offline event errors before HostEventsClubSection renders the shared retryable connection issue copy without blocking loaded host club chrome.",
               "previewIds": [
-                "HostEventsClubCard/Event section states"
+                "hostHomeEventSectionStates"
               ]
             },
             {
@@ -4292,7 +4292,7 @@
               "notes": "Host Home now separates HostHomeTab.today from HostHomeTab.events. HostHomeTodayDashboardState maps selected-club events into the Today next-event hero plus needs-you task rows, while HostHomeEventRowsState continues sorting non-cancelled club events for the Events list. The registered Host Today and Host Events-list references are both within threshold after the 2026-06-25 pass: Today 17.48% / 15.54, Events 6.76% / 12.26. Add long-title and accessibility variants.",
               "previewIds": [
                 "HostOperationsHomeScreen/Route states",
-                "HostEventsClubCard/Event section states",
+                "hostHomeEventSectionStates",
                 "HostEventRow/Event row states"
               ],
               "captureIds": [
@@ -4307,7 +4307,7 @@
               "notes": "When selected club has no active events, Host Home still shows Add event and No active events yet copy. Add an owner-empty-events capture if it diverges from the co-host empty-events variant.",
               "previewIds": [
                 "HostOperationsHomeScreen/Route states",
-                "HostEventsClubCard/Event section states"
+                "hostHomeEventSectionStates"
               ],
               "captureIds": [
                 "host_home_cohost_empty_events"
@@ -4323,7 +4323,7 @@
               "notes": "_HostEventsScaffold owns the typed Add event callback and pushes hostCreateEventScreen with selected club id plus club extra. HostEventsClubCard receives the callback instead of constructing route parameters locally.",
               "previewIds": [
                 "HostOperationsHomeScreen/Route states",
-                "HostEventsClubCard/Event section states"
+                "hostHomeEventSectionStates"
               ]
             },
             {
@@ -6452,7 +6452,7 @@
             "lib/matches/presentation/widgets/chats_list.dart",
             "lib/matches/presentation/widgets/chats_list_body.dart",
             "lib/matches/presentation/widgets/chat_conversations_list.dart",
-            "lib/matches/presentation/chat_list_tile.dart",
+            "lib/core/widgets/catch_person_row.dart",
             "lib/matches/presentation/widgets/chats_empty_state.dart",
             "lib/matches/data/match_repository.dart"
           ],
@@ -6701,9 +6701,9 @@
               "id": "unread_rows",
               "kind": "populated",
               "status": "captured",
-              "notes": "ChatListTile emphasizes unread/new rows through avatar ring, primary timestamp, preview color, unread badge, or new-match dot. Add host inquiry unread row states for count 1, 2, 99+, and own-latest-message handling. Add 99+ unread capture only if product data can produce high host-inbox unread counts.",
+              "notes": "CatchPersonRow emphasizes unread/new rows through avatar ring, primary timestamp, preview color, unread badge, or new-match dot. Add host inquiry unread row states for count 1, 2, 99+, and own-latest-message handling. Add 99+ unread capture only if product data can produce high host-inbox unread counts.",
               "tests": [
-                "test/chats/chat_list_tile_test.dart"
+                "test/core/catch_person_row_test.dart"
               ],
               "previewIds": [
                 "ChatsListScreen/Host inbox states"
@@ -6717,7 +6717,7 @@
               "id": "host_inquiry_avatar_shape",
               "kind": "populated",
               "status": "captured",
-              "notes": "ChatListTile uses square CatchPersonAvatar shape for club host inquiries and circular avatars for dating matches. Add visual preview/capture for square host inquiry avatars with photo, fallback initials, and missing profile data. Add fallback-avatar capture only if missing profile/club data becomes a visual parity concern.",
+              "notes": "CatchPersonRow uses square CatchPersonAvatar shape for club host inquiries and circular avatars for dating matches. Add visual preview/capture for square host inquiry avatars with photo, fallback initials, and missing profile data. Add fallback-avatar capture only if missing profile/club data becomes a visual parity concern.",
               "previewIds": [
                 "ChatsListScreen/Host inbox states"
               ],

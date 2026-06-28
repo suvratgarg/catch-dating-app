@@ -756,6 +756,11 @@ Widget exploreEventTypeBrowseGridStates(BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(
+  name: 'Map launcher states',
+  type: CatchCountPill,
+  path: '[Explore]/Sections',
+)
 Widget exploreMapLauncherStates(BuildContext context) {
   return _CatalogScreen(
     title: 'CatchCountPill map launcher',

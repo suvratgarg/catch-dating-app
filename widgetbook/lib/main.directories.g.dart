@@ -1196,6 +1196,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchActivityMapPin',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchActivityMapPinContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchDistanceRing',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1243,17 +1254,6 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Dialogs',
         children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchAdaptivePickerHarness',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Public picker behavior',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchAdaptivePickerBehaviorStates,
-              ),
-            ],
-          ),
           _widgetbook.WidgetbookComponent(
             name: 'CatchConfirmDialog',
             useCases: [
@@ -1483,6 +1483,28 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Media',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchDetailHeroBackdrop',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchDetailHeroBackdropContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchGradedImage',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchGradedImageContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchNetworkImage',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1575,6 +1597,17 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Product composites',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchBottomDock',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchBottomDockContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchClubDock',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1604,6 +1637,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchCrossPathsCardContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchEventCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchEventCardContractStates,
               ),
             ],
           ),
@@ -2383,6 +2427,16 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Sections',
         children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchCountPill',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Map launcher states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreMapLauncherStates,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'ExploreBody',
             useCases: [
