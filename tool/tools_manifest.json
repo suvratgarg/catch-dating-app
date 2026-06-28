@@ -1679,6 +1679,19 @@
       ]
     },
     {
+      "id": "design:widget-variant-inventory",
+      "category": "design",
+      "path": "tool/design/generate_widget_variant_inventory.mjs",
+      "command": "node tool/design/generate_widget_variant_inventory.mjs",
+      "safety": "local-writes-audit-json",
+      "status": "active",
+      "description": "Generates and validates the Widgetbook variant inventory used to prune oversized state matrices.",
+      "checks": [
+        "node --check tool/design/generate_widget_variant_inventory.mjs",
+        "node tool/design/generate_widget_variant_inventory.mjs --check"
+      ]
+    },
+    {
       "id": "design:parity-matrix",
       "category": "design",
       "path": "tool/design/check_design_parity_matrix.mjs",
