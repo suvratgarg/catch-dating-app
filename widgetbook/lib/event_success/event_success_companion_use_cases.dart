@@ -492,6 +492,60 @@ Widget eventSuccessCompanionScreenStates(BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(
+  name: 'Loading body',
+  type: EventSuccessCompanionLoadingBody,
+  path: '[P1 product surfaces]/Event Success companion',
+)
+Widget eventSuccessCompanionLoadingBodyState(BuildContext context) {
+  return _CompanionCatalog(
+    title: 'EventSuccessCompanionLoadingBody',
+    contractId: 'state.event_success.companion.loading',
+    children: [
+      _StateCard(
+        label: 'route skeleton',
+        child: _DeviceFrame(
+          child: Builder(
+            builder: (context) {
+              final t = CatchTokens.of(context);
+              return Scaffold(
+                backgroundColor: t.bg,
+                body: const EventSuccessCompanionLoadingBody(),
+              );
+            },
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Feedback form',
+  type: EventSuccessFeedbackForm,
+  path: '[P1 product surfaces]/Event Success companion',
+)
+Widget eventSuccessFeedbackFormStates(BuildContext context) {
+  return _CompanionCatalog(
+    title: 'EventSuccessFeedbackForm',
+    contractId: 'component.event_success.companion.feedback_form',
+    children: [
+      _StateCard(
+        label: 'new private feedback',
+        child: _DeviceFrame(child: _feedbackFormPreview()),
+      ),
+      _StateCard(
+        label: 'saved private feedback',
+        child: _DeviceFrame(
+          child: _feedbackFormPreview(
+            existingFeedback: EventSuccessCompanionFixtures.feedback,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 class _CompanionRouteScope extends StatelessWidget {
   const _CompanionRouteScope({
     this.uid = EventSuccessCompanionFixtures.viewerUid,
@@ -643,6 +697,36 @@ class _CompanionScope extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _feedbackFormPreview({EventSuccessFeedback? existingFeedback}) {
+  return Builder(
+    builder: (context) {
+      final t = CatchTokens.of(context);
+      return ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue(
+            const AsyncData<String?>(EventSuccessCompanionFixtures.viewerUid),
+          ),
+        ],
+        child: Scaffold(
+          backgroundColor: t.bg,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: CatchInsets.content,
+              child: IgnorePointer(
+                child: EventSuccessFeedbackForm(
+                  event: EventSuccessCompanionFixtures.socialEvent,
+                  userProfile: EventSuccessCompanionFixtures.viewer,
+                  existingFeedback: existingFeedback,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }
 
 Stream<T> _loadingStream<T>() => Stream<T>.empty();

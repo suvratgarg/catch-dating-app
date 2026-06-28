@@ -11,7 +11,7 @@ import 'package:catch_dating_app/image_uploads/presentation/photo_upload_control
 import 'package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +50,7 @@ class PhotosPage extends ConsumerWidget {
       uploadingCount: uploadState.loadingIndices.length,
     );
 
-    return OnboardingStepFrame(
+    return onboardingStepLayout(
       footer: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

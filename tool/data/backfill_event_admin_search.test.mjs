@@ -9,7 +9,11 @@ import {
 test("buildEventAdminSearchRepairPlan detects missing and stale search", async () => {
   const firestore = fakeFirestore({
     clubs: {
-      "club-1": {name: "AFTER FLY", location: "indore"},
+      "club-1": {
+        name: "AFTER FLY",
+        location: "in-mp-indore",
+        locationMarketId: "in-mp-indore",
+      },
     },
     events: {
       "event-1": {
@@ -45,12 +49,13 @@ test("buildEventAdminSearchRepairPlan detects missing and stale search", async (
 
   assert.equal(plan.summary.eventsScanned, 3);
   assert.equal(plan.summary.clubsScanned, 1);
-  assert.equal(plan.summary.repairsNeeded, 2);
+  assert.equal(plan.summary.repairsNeeded, 3);
   assert.equal(plan.summary.missingSearch, 1);
-  assert.equal(plan.summary.staleSearch, 1);
+  assert.equal(plan.summary.staleSearch, 2);
   assert.deepEqual(plan.summary.warnings, []);
   assert.deepEqual(plan.summary.repairs.map((repair) => repair.eventId), [
     "event-1",
+    "event-2",
     "event-3",
   ]);
   assert.equal(plan.repairs[0].patch.adminSearch.updatedAt, "SERVER_TIMESTAMP");

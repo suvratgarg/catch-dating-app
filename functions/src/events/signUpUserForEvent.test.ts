@@ -171,6 +171,8 @@ function event(overrides: FakeData = {}): FakeData {
     status: "active",
     cancelledAt: null,
     cancellationReason: null,
+    discoveryCityName: "mumbai",
+    discoveryMarketId: "in-mh-mumbai",
     bookedCount: 0,
     checkedInCount: 0,
     waitlistedCount: 0,
@@ -249,6 +251,7 @@ test("signUpUserForEvent updates event discovery availability", async () => {
     "events/event-1": event({
       capacityLimit: 1,
       discoveryCityName: "mumbai",
+      discoveryMarketId: "in-mh-mumbai",
       discoveryAvailability: "open",
       discoveryHasOpenSpots: true,
     }),
@@ -260,6 +263,7 @@ test("signUpUserForEvent updates event discovery availability", async () => {
   const fake = db as unknown as FakeFirestore;
   const updatedEvent = fake.get("events/event-1");
   assert.equal(updatedEvent?.discoveryCityName, "mumbai");
+  assert.equal(updatedEvent?.discoveryMarketId, "in-mh-mumbai");
   assert.equal(updatedEvent?.discoveryHasOpenSpots, false);
   assert.equal(updatedEvent?.discoveryAvailability, "waitlist");
   assert.deepEqual(updatedEvent?.discoveryOpenCohorts, []);

@@ -70,6 +70,8 @@ function validateComponents(components) {
   const validKinds = new Set(["primitive", "composite", "pattern", "screen-contract"]);
   const validFigmaStatuses = new Set(["unmapped", "mapped", "planned"]);
   const validCodeConnectStatuses = new Set(["planned", "mapped", "not-applicable"]);
+  const memberIds = new Set();
+  const memberSymbols = new Set();
 
   for (const component of components) {
     const label = component?.id ?? "<missing id>";
@@ -106,7 +108,8 @@ function validateComponents(components) {
       failures.push(`${label}: mapped Code Connect component requires template`);
     }
 
-    validateContract(component.contract, label);
+    validateContract(component.contract, component, label, {memberIds, memberSymbols});
+    validateGovernance(component.governance, component, label);
     validateHandoff(component.handoff, label, ids, components);
   }
 }
@@ -128,7 +131,7 @@ function validateDart(component, label) {
   }
 }
 
-function validateContract(contract, label) {
+function validateContract(contract, component, label, {memberIds, memberSymbols}) {
   if (!contract || typeof contract !== "object") {
     failures.push(`${label}: contract is required`);
     return;
@@ -142,6 +145,165 @@ function validateContract(contract, label) {
   for (const token of contract.tokens ?? []) {
     if (!tokenRefs.has(token)) {
       failures.push(`${label}: unknown DTCG token reference '${token}'`);
+    }
+  }
+
+  validateContractMembers(contract.members ?? [], component, label, {
+    memberIds,
+    memberSymbols,
+  });
+}
+
+function validateContractMembers(members, component, label, {memberIds, memberSymbols}) {
+  if (!Array.isArray(members)) {
+    failures.push(`${label}: contract.members must be an array when present`);
+    return;
+  }
+
+  for (const member of members) {
+    const memberLabel = `${label}.members.${member?.symbol ?? "<missing symbol>"}`;
+    const sourcePath = member?.file ?? component.dart?.file;
+    const sourceFile = sourcePath ? fromRepo(sourcePath) : null;
+    const source = sourceFile && fs.existsSync(sourceFile)
+      ? fs.readFileSync(sourceFile, "utf8")
+      : "";
+    if (!member?.id || !member.id.startsWith(`${label}.`)) {
+      failures.push(`${memberLabel}: member id must be nested under ${label}`);
+    }
+    if (sourcePath && !/^lib\/.+\.dart$/u.test(sourcePath)) {
+      failures.push(`${memberLabel}: member file must be under lib/**.dart`);
+    }
+    if (sourcePath && !fs.existsSync(fromRepo(sourcePath))) {
+      failures.push(`${memberLabel}: member file does not exist: ${sourcePath}`);
+    }
+    if (member.id && memberIds.has(member.id)) {
+      failures.push(`${memberLabel}: duplicate contract member id ${member.id}`);
+    }
+    if (member.id) memberIds.add(member.id);
+    if (!member?.symbol || member.symbol.startsWith("_")) {
+      failures.push(`${memberLabel}: member symbol must be public`);
+    }
+    if (member.symbol === component.dart?.symbol) {
+      failures.push(`${memberLabel}: primary dart.symbol should not be repeated as a member`);
+    }
+    if (member.symbol && memberSymbols.has(member.symbol)) {
+      failures.push(`${memberLabel}: duplicate contract member symbol ${member.symbol}`);
+    }
+    if (member.symbol) memberSymbols.add(member.symbol);
+    if (member.symbol && !new RegExp(`\\b${escapeRegExp(member.symbol)}\\b`).test(source)) {
+      failures.push(`${memberLabel}: member symbol not found in ${sourcePath}`);
+    }
+    if (!member.summary || typeof member.summary !== "string") {
+      failures.push(`${memberLabel}: member summary is required`);
+    }
+    validateUniqueArray(member.states, `${memberLabel}: states`);
+  }
+}
+
+function validateGovernance(governance, component, label) {
+  if (!governance || typeof governance !== "object" || Array.isArray(governance)) {
+    failures.push(`${label}: governance is required`);
+    return;
+  }
+
+  const validRoles = new Set(["atom", "composition", "pattern", "screen_contract"]);
+  const validStateOwnership = new Set([
+    "none",
+    "local-ui-only",
+    "slot-state-only",
+    "display-state-only",
+    "screen-owned",
+  ]);
+  const validAsyncOwnership = new Set(["none", "display-state-only", "screen-owned"]);
+  const validLayoutOwnership = new Set(["internal-only", "slot-layout", "screen-layout"]);
+  const validActionOwnership = new Set(["none", "callbacks-only", "route-owned"]);
+  const validDependencyLevels = new Set([
+    "tokens-and-primitives",
+    "primitives-and-slots",
+    "feature-display-models",
+    "route-boundary",
+  ]);
+  const validReviewPolicies = new Set([
+    "contract-page-canonical",
+    "screen-contract-canonical",
+  ]);
+  const roleByKind = new Map([
+    ["primitive", "atom"],
+    ["composite", "composition"],
+    ["pattern", "pattern"],
+    ["screen-contract", "screen_contract"],
+  ]);
+
+  if (!validRoles.has(governance.role)) {
+    failures.push(`${label}: invalid governance.role '${governance.role}'`);
+  }
+  if (roleByKind.get(component.kind) !== governance.role) {
+    failures.push(
+      `${label}: governance.role '${governance.role}' must match kind '${component.kind}'`,
+    );
+  }
+  if (governance.canonicalFamily !== component.id) {
+    failures.push(`${label}: governance.canonicalFamily must equal component id`);
+  }
+  if (typeof governance.publicApi !== "boolean") {
+    failures.push(`${label}: governance.publicApi must be boolean`);
+  } else if (!governance.publicApi) {
+    failures.push(`${label}: component contracts must remain public APIs`);
+  }
+  if (!validStateOwnership.has(governance.stateOwnership)) {
+    failures.push(`${label}: invalid governance.stateOwnership '${governance.stateOwnership}'`);
+  }
+  if (!validAsyncOwnership.has(governance.asyncOwnership)) {
+    failures.push(`${label}: invalid governance.asyncOwnership '${governance.asyncOwnership}'`);
+  }
+  if (!validLayoutOwnership.has(governance.layoutOwnership)) {
+    failures.push(`${label}: invalid governance.layoutOwnership '${governance.layoutOwnership}'`);
+  }
+  if (!validActionOwnership.has(governance.actionOwnership)) {
+    failures.push(`${label}: invalid governance.actionOwnership '${governance.actionOwnership}'`);
+  }
+  if (!validDependencyLevels.has(governance.allowedDependencyLevel)) {
+    failures.push(
+      `${label}: invalid governance.allowedDependencyLevel '${governance.allowedDependencyLevel}'`,
+    );
+  }
+  if (!validReviewPolicies.has(governance.reviewPolicy)) {
+    failures.push(`${label}: invalid governance.reviewPolicy '${governance.reviewPolicy}'`);
+  }
+  if (String(governance.reviewPolicy).includes("private")) {
+    failures.push(`${label}: governance.reviewPolicy must not introduce private-helper paths`);
+  }
+  if (component.dart?.symbol?.startsWith("_")) {
+    failures.push(`${label}: dart.symbol must be public; private helper contracts are forbidden`);
+  }
+  for (const constructor of component.dart?.constructors ?? []) {
+    if (constructor.startsWith("_")) {
+      failures.push(`${label}: dart.constructors must be public; private helper contracts are forbidden`);
+    }
+  }
+  if (component.kind !== "screen-contract" && governance.allowedDependencyLevel === "route-boundary") {
+    failures.push(`${label}: only screen-contract entries may use route-boundary dependencies`);
+  }
+  if (component.kind === "primitive" && governance.allowedDependencyLevel !== "tokens-and-primitives") {
+    failures.push(`${label}: primitive contracts must use tokens-and-primitives dependencies`);
+  }
+  if (
+    (component.kind === "composite" || component.kind === "pattern") &&
+    !["tokens-and-primitives", "primitives-and-slots"].includes(governance.allowedDependencyLevel)
+  ) {
+    failures.push(
+      `${label}: ${component.kind} contracts must stay below feature-display-model dependencies`,
+    );
+  }
+  if (component.kind === "screen-contract") {
+    if (governance.reviewPolicy !== "screen-contract-canonical") {
+      failures.push(`${label}: screen-contract entries must use screen-contract-canonical review`);
+    }
+    if (governance.layoutOwnership !== "screen-layout") {
+      failures.push(`${label}: screen-contract entries must own screen-layout`);
+    }
+    if (governance.actionOwnership !== "route-owned") {
+      failures.push(`${label}: screen-contract entries must own route actions`);
     }
   }
 }

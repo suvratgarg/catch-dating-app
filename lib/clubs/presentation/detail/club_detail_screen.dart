@@ -381,7 +381,7 @@ class ClubDetailLoadingBody extends StatelessWidget {
       color: t.surface,
       child: CustomScrollView(
         slivers: [
-          const SliverToBoxAdapter(child: _ClubHeroLoadingSkeleton()),
+          SliverToBoxAdapter(child: _buildClubHeroLoadingSkeleton()),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(
               CatchLayout.detailScreenHorizontalPadding,
@@ -390,27 +390,27 @@ class ClubDetailLoadingBody extends StatelessWidget {
               CatchLayout.detailScreenBottomPadding,
             ),
             sliver: SliverList.list(
-              children: const [
-                _ClubStatsLoadingSkeleton(),
+              children: [
+                _buildClubStatsLoadingSkeleton(),
                 CatchSectionStack(
-                  padding: EdgeInsets.only(top: CatchSpacing.screenPt),
+                  padding: const EdgeInsets.only(top: CatchSpacing.screenPt),
                   children: [
-                    CatchDesignSection(
-                      kicker: 'Your hosts',
+                    CatchSection(
+                      title: 'Your hosts',
                       first: true,
-                      child: _ClubHostLoadingSkeleton(),
+                      child: _buildClubHostLoadingSkeleton(),
                     ),
-                    CatchDesignSection(
-                      kicker: 'About',
-                      child: _ClubTextLoadingSkeleton(lines: 3),
+                    CatchSection(
+                      title: 'About',
+                      child: _buildClubTextLoadingSkeleton(lines: 3),
                     ),
-                    CatchDesignSection(
-                      kicker: 'What we do',
-                      child: _ClubTagLoadingSkeleton(),
+                    CatchSection(
+                      title: 'What we do',
+                      child: _buildClubTagLoadingSkeleton(),
                     ),
-                    CatchDesignSection(
-                      kicker: 'Upcoming',
-                      child: _ClubScheduleLoadingSkeleton(),
+                    CatchSection(
+                      title: 'Upcoming',
+                      child: _buildClubScheduleLoadingSkeleton(),
                     ),
                   ],
                 ),
@@ -423,176 +423,148 @@ class ClubDetailLoadingBody extends StatelessWidget {
   }
 }
 
-class _ClubHeroLoadingSkeleton extends StatelessWidget {
-  const _ClubHeroLoadingSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        CatchSkeleton.box(
-          width: double.infinity,
-          height: CatchLayout.clubDetailHeroNoCoverPhoneHeight,
-          borderRadius: BorderRadius.zero,
-        ),
-        Positioned(
-          left: CatchLayout.detailScreenHorizontalPadding,
-          right: CatchLayout.detailScreenHorizontalPadding,
-          bottom: CatchSpacing.s5,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-              gapH10,
-              CatchSkeleton.text(width: CatchSpacing.s16 * 3),
-              gapH8,
-              FractionallySizedBox(
-                widthFactor: 0.58,
-                alignment: Alignment.centerLeft,
-                child: CatchSkeleton.text(),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ClubStatsLoadingSkeleton extends StatelessWidget {
-  const _ClubStatsLoadingSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.tileContentCompact,
-      child: const Row(
-        children: [
-          Expanded(child: _ClubStatLoadingSkeleton()),
-          _ClubStatsDividerSkeleton(),
-          Expanded(child: _ClubStatLoadingSkeleton()),
-          _ClubStatsDividerSkeleton(),
-          Expanded(child: _ClubStatLoadingSkeleton()),
-        ],
+Widget _buildClubHeroLoadingSkeleton() {
+  return Stack(
+    children: [
+      CatchSkeleton.box(
+        width: double.infinity,
+        height: CatchLayout.clubDetailHeroNoCoverPhoneHeight,
+        borderRadius: BorderRadius.zero,
       ),
-    );
-  }
-}
-
-class _ClubStatLoadingSkeleton extends StatelessWidget {
-  const _ClubStatLoadingSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-        gapH8,
-        CatchSkeleton.text(width: CatchSpacing.s10),
-      ],
-    );
-  }
-}
-
-class _ClubStatsDividerSkeleton extends StatelessWidget {
-  const _ClubStatsDividerSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
-      child: SizedBox(
-        width: CatchStroke.hairline,
-        height: CatchSpacing.s11,
-        child: ColoredBox(color: CatchTokens.of(context).line),
-      ),
-    );
-  }
-}
-
-class _ClubHostLoadingSkeleton extends StatelessWidget {
-  const _ClubHostLoadingSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.tileContentCompact,
-      child: Row(
-        children: [
-          CatchSkeleton.circle(size: CatchSpacing.s10),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-                gapH6,
-                CatchSkeleton.text(width: CatchSpacing.s16 * 2),
-              ],
+      Positioned(
+        left: CatchLayout.detailScreenHorizontalPadding,
+        right: CatchLayout.detailScreenHorizontalPadding,
+        bottom: CatchSpacing.s5,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+            gapH10,
+            CatchSkeleton.text(width: CatchSpacing.s16 * 3),
+            gapH8,
+            FractionallySizedBox(
+              widthFactor: 0.58,
+              alignment: Alignment.centerLeft,
+              child: CatchSkeleton.text(),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    );
-  }
+    ],
+  );
 }
 
-class _ClubTextLoadingSkeleton extends StatelessWidget {
-  const _ClubTextLoadingSkeleton({required this.lines});
+Widget _buildClubStatsLoadingSkeleton() {
+  return Builder(
+    builder: (context) {
+      final t = CatchTokens.of(context);
 
-  final int lines;
-
-  @override
-  Widget build(BuildContext context) => CatchSkeleton.textBlock(lines: lines);
+      return CatchSurface(
+        borderColor: t.line,
+        padding: CatchInsets.tileContentCompact,
+        child: Row(
+          children: [
+            Expanded(child: _buildClubStatLoadingSkeleton()),
+            _buildClubStatsDividerSkeleton(),
+            Expanded(child: _buildClubStatLoadingSkeleton()),
+            _buildClubStatsDividerSkeleton(),
+            Expanded(child: _buildClubStatLoadingSkeleton()),
+          ],
+        ),
+      );
+    },
+  );
 }
 
-class _ClubTagLoadingSkeleton extends StatelessWidget {
-  const _ClubTagLoadingSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
-      children: [
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s6,
-          height: CatchSpacing.s8,
-          radius: CatchRadius.pill,
-        ),
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s10,
-          height: CatchSpacing.s8,
-          radius: CatchRadius.pill,
-        ),
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s4,
-          height: CatchSpacing.s8,
-          radius: CatchRadius.pill,
-        ),
-      ],
-    );
-  }
+Widget _buildClubStatLoadingSkeleton() {
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+      gapH8,
+      CatchSkeleton.text(width: CatchSpacing.s10),
+    ],
+  );
 }
 
-class _ClubScheduleLoadingSkeleton extends StatelessWidget {
-  const _ClubScheduleLoadingSkeleton();
+Widget _buildClubStatsDividerSkeleton() {
+  return Builder(
+    builder: (context) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
+        child: SizedBox(
+          width: CatchStroke.hairline,
+          height: CatchSpacing.s11,
+          child: ColoredBox(color: CatchTokens.of(context).line),
+        ),
+      );
+    },
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
-        gapH10,
-        CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
-      ],
-    );
-  }
+Widget _buildClubHostLoadingSkeleton() {
+  return Builder(
+    builder: (context) {
+      final t = CatchTokens.of(context);
+
+      return CatchSurface(
+        borderColor: t.line,
+        padding: CatchInsets.tileContentCompact,
+        child: Row(
+          children: [
+            CatchSkeleton.circle(size: CatchSpacing.s10),
+            gapW12,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+                  gapH6,
+                  CatchSkeleton.text(width: CatchSpacing.s16 * 2),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+Widget _buildClubTextLoadingSkeleton({required int lines}) {
+  return CatchSkeleton.textBlock(lines: lines);
+}
+
+Widget _buildClubTagLoadingSkeleton() {
+  return Wrap(
+    spacing: CatchSpacing.s2,
+    runSpacing: CatchSpacing.s2,
+    children: [
+      CatchSkeleton.box(
+        width: CatchSpacing.s16 + CatchSpacing.s6,
+        height: CatchSpacing.s8,
+        radius: CatchRadius.pill,
+      ),
+      CatchSkeleton.box(
+        width: CatchSpacing.s16 + CatchSpacing.s10,
+        height: CatchSpacing.s8,
+        radius: CatchRadius.pill,
+      ),
+      CatchSkeleton.box(
+        width: CatchSpacing.s16 + CatchSpacing.s4,
+        height: CatchSpacing.s8,
+        radius: CatchRadius.pill,
+      ),
+    ],
+  );
+}
+
+Widget _buildClubScheduleLoadingSkeleton() {
+  return Column(
+    children: [
+      CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
+      gapH10,
+      CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
+    ],
+  );
 }

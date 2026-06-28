@@ -348,7 +348,7 @@ test("buildWarmUserPlan prefers events in the user's city", async () => {
     users: {
       uid_a: {
         phoneNumber: "+910000000001",
-        city: "delhi",
+        city: "in-dl-delhi-ncr",
         gender: "woman",
       },
     },
@@ -356,8 +356,8 @@ test("buildWarmUserPlan prefers events in the user's city", async () => {
       uid_a: {name: "Asha"},
     },
     clubs: {
-      club_mumbai: {location: "mumbai"},
-      club_delhi: {location: "delhi"},
+      club_mumbai: {location: "in-mh-mumbai"},
+      club_delhi: {location: "in-dl-delhi-ncr"},
     },
     events: {
       mumbai_soon: {
@@ -565,7 +565,7 @@ test("buildCheckInEventPlan creates a signed-up event inside the check-in window
     users: {
       uid_a: {
         phoneNumber: "+910000000001",
-        city: "delhi",
+        city: "in-dl-delhi-ncr",
         gender: "woman",
       },
     },

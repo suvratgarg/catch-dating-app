@@ -27,6 +27,8 @@ const schemaClubDocumentSchema = <String, Object?>{
     'name',
     'description',
     'location',
+    'locationCityId',
+    'locationMarketId',
     'area',
     'hostUserId',
     'hostName',
@@ -65,13 +67,25 @@ const schemaClubDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'callable-owned',
     },
     'location': <String, Object?>{
-      'type': <Object?>[
-        'string',
-        'null',
-      ],
+      'type': 'string',
       'minLength': 1,
-      'maxLength': 80,
-      'pattern': '^[a-z0-9-]+\$',
+      'maxLength': 120,
+      'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+      'description': 'Canonical launch market id. Public URL slugs live under publicPage.citySlug.',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'locationCityId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'locationMarketId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
       'x-catch-ownership': 'callable-owned',
     },
     'area': <String, Object?>{
@@ -1478,10 +1492,7 @@ const schemaClubDocumentSchema = <String, Object?>{
           'pattern': '^[a-z0-9-]+\$',
         },
         'citySlug': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': 'string',
           'minLength': 1,
           'maxLength': 80,
           'pattern': '^[a-z0-9-]+\$',

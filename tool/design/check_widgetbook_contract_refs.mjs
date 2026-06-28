@@ -120,34 +120,30 @@ function validateComponentPreviews(componentRegistry, widgetbook) {
 
 function validatePrimitiveContractUseCases(componentRegistry, primitiveContracts) {
   const errors = [];
-  const componentIds = new Set((componentRegistry.components ?? []).map((entry) => entry.id));
-  const componentSymbols = new Set(
-    (componentRegistry.components ?? [])
-      .map((entry) => entry.dart?.symbol)
-      .filter(Boolean)
-  );
+  const contractEntries = collectComponentContractEntries(componentRegistry);
+  const componentIds = new Set(contractEntries.map((entry) => entry.id));
+  const componentSymbols = new Set(contractEntries.map((entry) => entry.symbol).filter(Boolean));
 
-  for (const component of componentRegistry.components ?? []) {
-    if (!primitiveContracts.contractIds.has(component.id)) {
+  for (const entry of contractEntries) {
+    if (entry.primary && !primitiveContracts.contractIds.has(entry.id)) {
       errors.push(
-        `${component.id}: missing formal Widgetbook primitive contract preview in ${relativeToRepo(widgetbookPrimitiveContractsPath)}.`
+        `${entry.id}: missing formal Widgetbook primitive contract preview in ${relativeToRepo(widgetbookPrimitiveContractsPath)}.`
       );
     }
-    const expectedStates = component.contract?.states ?? [];
-    const actualStates = primitiveContracts.statesByContractId.get(component.id);
+    const expectedStates = entry.states ?? [];
+    const actualStates = primitiveContracts.statesByContractId.get(entry.id);
     if (actualStates) {
       const expected = expectedStates.join(",");
       const actual = actualStates.join(",");
       if (actual !== expected) {
         errors.push(
-          `${component.id}: Widgetbook contract states [${actual}] do not match component contract states [${expected}].`
+          `${entry.id}: Widgetbook contract states [${actual}] do not match component contract states [${expected}].`
         );
       }
     }
-    const symbol = component.dart?.symbol;
-    if (symbol && !primitiveContracts.types.has(symbol)) {
+    if (entry.primary && entry.symbol && !primitiveContracts.types.has(entry.symbol)) {
       errors.push(
-        `${component.id}: formal Widgetbook primitive contract preview is missing @UseCase type ${symbol}.`
+        `${entry.id}: formal Widgetbook primitive contract preview is missing @UseCase type ${entry.symbol}.`
       );
     }
   }
@@ -168,6 +164,29 @@ function validatePrimitiveContractUseCases(componentRegistry, primitiveContracts
   }
 
   return errors;
+}
+
+function collectComponentContractEntries(componentRegistry) {
+  const entries = [];
+  for (const component of componentRegistry.components ?? []) {
+    entries.push({
+      id: component.id,
+      symbol: component.dart?.symbol,
+      states: component.contract?.states ?? [],
+      parentId: component.id,
+      primary: true,
+    });
+    for (const member of component.contract?.members ?? []) {
+      entries.push({
+        id: member.id,
+        symbol: member.symbol,
+        states: member.states ?? [],
+        parentId: component.id,
+        primary: false,
+      });
+    }
+  }
+  return entries;
 }
 
 function validateFoundationSpecimens(widgetbook) {
@@ -266,10 +285,8 @@ function parsePrimitiveContractUseCases(source) {
   for (const block of extractCallBlocks(source, "_ContractScreen")) {
     const contractId = matchString(block, /\bcontractId:\s*'([^']+)'/u);
     const statesMatch =
-      /\bstates:\s*const\s*<String>\s*\[([\s\S]*?)\]|\bstates:\s*const\s*\[([\s\S]*?)\]/u.exec(
-        block
-      );
-    const statesBlock = statesMatch?.[1] ?? statesMatch?.[2] ?? null;
+      /\bstates:\s*(?:const\s*)?(?:<String>\s*)?\[([\s\S]*?)\]/u.exec(block);
+    const statesBlock = statesMatch?.[1] ?? null;
     if (!contractId) continue;
     statesByContractId.set(contractId, parseStringList(statesBlock));
   }

@@ -184,14 +184,20 @@ class ChatShareCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ShareCardHeader(event: event, accent: accent, visual: visual),
+            _buildShareCardHeader(
+              context,
+              event: event,
+              accent: accent,
+              visual: visual,
+            ),
             gapH16,
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   for (var i = 0; i < cardMessages.length; i++)
-                    _ShareCardBubble(
+                    _buildShareCardBubble(
+                      context,
                       text: cardMessages[i].text,
                       isMe: cardMessages[i].senderId == currentUid,
                       isFirstInGroup:
@@ -227,129 +233,112 @@ class ChatShareCard extends StatelessWidget {
   }
 }
 
-class _ShareCardHeader extends StatelessWidget {
-  const _ShareCardHeader({
-    required this.event,
-    required this.accent,
-    required this.visual,
-  });
+Widget _buildShareCardHeader(
+  BuildContext context, {
+  required Event? event,
+  required Color accent,
+  required EventActivityVisualSpec? visual,
+}) {
+  final t = CatchTokens.of(context);
 
-  final Event? event;
-  final Color accent;
-  final EventActivityVisualSpec? visual;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Row(
-      children: [
-        CatchIconTile(
-          icon: visual?.icon ?? CatchIcons.chatBubbleOutlineRounded,
-          iconColor: accent,
-          backgroundColor: t.surface,
-          borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),
-          size: CatchLayout.chatShareCardHeaderIconExtent,
-          iconSize: CatchIcon.md,
-          radius: CatchRadius.pill,
-        ),
-        gapW10,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                chatContextStampFor(event),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.labelM(
-                  context,
-                  color: accent,
-                ).copyWith(fontWeight: FontWeight.w800),
-              ),
-              gapH3,
-              Text(
-                chatShareCardTitleFor(event),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.titleL(context, color: t.ink),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ShareCardBubble extends StatelessWidget {
-  const _ShareCardBubble({
-    required this.text,
-    required this.isMe,
-    required this.isFirstInGroup,
-    required this.isLastInGroup,
-  });
-
-  final String text;
-  final bool isMe;
-  final bool isFirstInGroup;
-  final bool isLastInGroup;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Padding(
-      padding: isLastInGroup
-          ? CatchInsets.chatBubbleGroupEnd
-          : CatchInsets.chatBubbleGroupContinue,
-      child: Align(
-        alignment: isMe
-            ? AlignmentDirectional.centerEnd
-            : AlignmentDirectional.centerStart,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: math.min(
-                  constraints.maxWidth * CatchLayout.chatBubbleMaxWidthFraction,
-                  CatchLayout.chatBubbleMaxWidth,
-                ),
-              ),
-              child: CatchSurface(
-                backgroundColor: isMe ? t.primary : t.surface,
-                borderColor: isMe ? null : t.line,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(
-                    isMe || isFirstInGroup ? CatchRadius.lg : CatchRadius.sm,
-                  ),
-                  topRight: Radius.circular(
-                    !isMe || isFirstInGroup ? CatchRadius.lg : CatchRadius.sm,
-                  ),
-                  bottomLeft: Radius.circular(
-                    isMe || !isLastInGroup ? CatchRadius.lg : CatchRadius.sm,
-                  ),
-                  bottomRight: Radius.circular(
-                    isMe && isLastInGroup ? CatchRadius.sm : CatchRadius.lg,
-                  ),
-                ),
-                padding: CatchInsets.chatBubbleContent,
-                child: Text(
-                  text,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.chatMessage(
-                    context,
-                    color: isMe ? t.primaryInk : t.ink,
-                  ),
-                ),
-              ),
-            );
-          },
+  return Row(
+    children: [
+      CatchIconTile(
+        icon: visual?.icon ?? CatchIcons.chatBubbleOutlineRounded,
+        iconColor: accent,
+        backgroundColor: t.surface,
+        borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),
+        size: CatchLayout.chatShareCardHeaderIconExtent,
+        iconSize: CatchIcon.md,
+        radius: CatchRadius.pill,
+      ),
+      gapW10,
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              chatContextStampFor(event),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.labelM(
+                context,
+                color: accent,
+              ).copyWith(fontWeight: FontWeight.w800),
+            ),
+            gapH3,
+            Text(
+              chatShareCardTitleFor(event),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.titleL(context, color: t.ink),
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ],
+  );
+}
+
+Widget _buildShareCardBubble(
+  BuildContext context, {
+  required String text,
+  required bool isMe,
+  required bool isFirstInGroup,
+  required bool isLastInGroup,
+}) {
+  final t = CatchTokens.of(context);
+
+  return Padding(
+    padding: isLastInGroup
+        ? CatchInsets.chatBubbleGroupEnd
+        : CatchInsets.chatBubbleGroupContinue,
+    child: Align(
+      alignment: isMe
+          ? AlignmentDirectional.centerEnd
+          : AlignmentDirectional.centerStart,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: math.min(
+                constraints.maxWidth * CatchLayout.chatBubbleMaxWidthFraction,
+                CatchLayout.chatBubbleMaxWidth,
+              ),
+            ),
+            child: CatchSurface(
+              backgroundColor: isMe ? t.primary : t.surface,
+              borderColor: isMe ? null : t.line,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(
+                  isMe || isFirstInGroup ? CatchRadius.lg : CatchRadius.sm,
+                ),
+                topRight: Radius.circular(
+                  !isMe || isFirstInGroup ? CatchRadius.lg : CatchRadius.sm,
+                ),
+                bottomLeft: Radius.circular(
+                  isMe || !isLastInGroup ? CatchRadius.lg : CatchRadius.sm,
+                ),
+                bottomRight: Radius.circular(
+                  isMe && isLastInGroup ? CatchRadius.sm : CatchRadius.lg,
+                ),
+              ),
+              padding: CatchInsets.chatBubbleContent,
+              child: Text(
+                text,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.chatMessage(
+                  context,
+                  color: isMe ? t.primaryInk : t.ink,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    ),
+  );
 }
 
 List<ChatMessage> _visibleShareMessages(List<ChatMessage> messages) {

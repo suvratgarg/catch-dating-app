@@ -22,7 +22,6 @@ const required = target === "marketing" ? [
   ...commonFirebaseVars,
   "VITE_FIREBASE_MEASUREMENT_ID",
   "VITE_WEBSITE_APPCHECK_SITE_KEY",
-  "VITE_GTM_ID",
 ] : [
   ...commonFirebaseVars,
   "VITE_FIREBASE_MEASUREMENT_ID",

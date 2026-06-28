@@ -57,8 +57,8 @@ per-screen visual review. It pairs with [`marketing_app_media_pipeline.md`](mark
 - **`flutter analyze` is authoritative.** Don't hand-edit generated `*.g.dart`/`*.freezed.dart`.
 - **`build_runner` only after annotation/model changes.** Token/font/color/widget edits don't need it.
 - **Preserve the sophisticated atoms — re-grade, don't replace:** ticket perforation + notch
-  clipper, `EventClockMark`, rotated activity stamp, `CatchViewportCurveFrame`, collapsing sliver
-  headers, Hero card→detail transitions. These are the quality bar.
+  clipper, `EventClockMark`, rotated activity stamp, club hero viewport clipping, collapsing
+  sliver headers, Hero card→detail transitions. These are the quality bar.
 - **Keep the activity-visual API stable:** `EventActivityVisualSpec`, `EventActivityBackdrop`,
   `eventActivityVisual(kind, {context})`. Change colors/source, not shape.
 - **Theming is centralized.** Colors in `catch_tokens.dart`/`activity_palette.dart`/`app_theme.dart`;
@@ -91,11 +91,11 @@ As-built reference (already in the tree; do not redo):
   `line` ink@8%. Dark: `bg #0F0E10`, `ink #F4F0E8`, `primary #F4F0E8`. No brand accent; `heroGrad`
   deprecated (ink gradient).
 - **`app_theme.dart`**: `_seedColor #16140F`; ink/paper button pills; `appBarTheme`/`_textTheme`
-  stay Inter (functional fallbacks).
-- **Type** (`catch_fonts.dart`/`catch_text_styles.dart`): display/titles → **Newsreader**;
-  data/kickers/numerics → **IBM Plex Mono**; functional UI + `bodyL/bodyM` → **Inter**; new
-  **`proseL`/`proseM`** (Newsreader) for editorial reading text. `bodyL/M` stayed Inter so
-  functional controls (`CatchTextField`, `CatchSelectMenu`, `city_picker.dart`) don't go serif —
+  stay platform system font (functional fallbacks).
+- **Type** (`catch_fonts.dart`/`catch_text_styles.dart`): display/titles → **Archivo**;
+  data/kickers/numerics → **IBM Plex Mono**; functional UI + `bodyL/bodyM` → **platform system font**; new
+  **`proseL`/`proseM`** (Archivo) for editorial reading text. `bodyL/M` stayed platform system font so
+  functional controls (`CatchField`, `CatchSelectMenu`, `city_picker.dart`) don't go serif —
   Phase 3 migrations swap editorial copy to `proseL/M`.
 - **Removed** `lib/labs/identity_candidate_lab_app.dart`; kept `card_variation_lab_app.dart`.
 - Native/brand surfaces (Android splash, web manifest/index, Razorpay theme) updated off the old
@@ -315,8 +315,8 @@ restored as a non-reactable "Looking for" facts section, the preview tab targets
 
 **Apply**
 1. **Dark "wow" hero:** full-bleed **graded** photo (`GradedImage`) + bottom scrim; name in
-   **Newsreader** (large, upright, italic only as accent), meta in **IBM Plex Mono** (tracked caps).
-2. **Bios/prompts:** `proseL` (Newsreader) for prompt answers/bio; prompt labels in mono.
+   **Archivo** (large, upright, italic only as accent), meta in **IBM Plex Mono** (tracked caps).
+2. **Bios/prompts:** `proseL` (Archivo) for prompt answers/bio; prompt labels in mono.
 3. **Reactions** (`profile_reaction_controls.dart`): ink-default like/pass; optionally inherit the
    activity color of the shared event (design §2).
 4. **Constraints:** photo blocks → `AspectRatio`; no fixed text-row heights. Validate Dynamic Type 2.0.
@@ -338,17 +338,17 @@ As-built: the listed production surfaces have been brought to parity and the
 historical implementation detail.
 
 1. **Onboarding** (`lib/onboarding/**`) — still leans on Material `textTheme`; move headings to
-   Newsreader, copy to `proseM`, CTAs to ink pills; sweep raw colors.
+   Archivo, copy to `proseM`, CTAs to ink pills; sweep raw colors.
 2. **Dashboard** (`lib/dashboard/**`) + **Profile tab** — re-skin tiles/sections; `static_map_dark.dart`
    pins via `ActivityPalette`; `activity_section.dart` already reads `visual.accent` (now tokenized).
 3. **Clubs** — extract a **`CatchPolaroid`** primitive from `_DirectoryPhotoCard`
    (`club_list_tile_parts/directory_card.dart`): white inset frame + framed (graded) photo + mono
-   caption + Newsreader italic name + member seal. Then give the **no-cover** variant
+   caption + Archivo italic name + member seal. Then give the **no-cover** variant
    (`_DirectoryIdentityCard`) the polaroid treatment (caption + `EventActivityBackdrop` art in the
    frame) and **retire `club_cover_fallback.dart`**'s bespoke palette. Add `CatchPolaroid` to
    `widget_catalog.md`.
 4. **Chat / matches** (`lib/chats/**`, matches surfaces) — tokens, mono timestamps, serif headers.
-5. **Settings / safety / payments / calendar / image_uploads** — functional screens; tokens + Inter.
+5. **Settings / safety / payments / calendar / image_uploads** — functional screens; tokens + platform system font.
 6. **event_success** (`lib/event_success/**` + `docs/event_success.md`) — preserve the
    ceremony; re-grade to tokens.
 
@@ -364,7 +364,7 @@ placeholder-era screens; anti-drift gate green repo-wide.
   replacing abstract patterns + generic Phosphor glyphs. SVG drafts in
   `docs/visual_references/catch_activity_grading.html`. Ship on Phosphor glyphs first.
 - **Activity pigment fine-tuning** — edit only `ActivityPalette.pigments`.
-- **Display-face revisit** — Newsreader is a "for now" pick (centralized in `catch_fonts.dart`).
+- **Display-face revisit** — Archivo is a "for now" pick (centralized in `catch_fonts.dart`).
 - ~~**Optical sizing**~~ — ✅ **DONE (2026-05-30)**: all three fonts bundled in `assets/fonts/`; `CatchFonts` drives `FontVariation('opsz'/'wght')` with auto optical sizing.
 
 # Global verification before any PR
@@ -386,7 +386,7 @@ more precision before CI enforcement.
 1. **The linked plan is stale and can mislead implementing agents.**
    `docs/plans/cryptic-hatching-hummingbird.md` still describes the old planning state: Instrument
    Serif, one confident accent, and Phase 0 as future identity selection. This doc now says Phase 0
-   is done with Newsreader, no global accent, and B&W tokens. Either update that plan to the current
+   is done with Archivo, no global accent, and B&W tokens. Either update that plan to the current
    state or remove it from "Read first" so agents do not follow obsolete guidance.
 
 2. **`design_language.md` needs its status / remaining-work section refreshed.**
@@ -428,11 +428,11 @@ more precision before CI enforcement.
    not debate it again.
 
 8. **Font delivery should be made explicit before release.**
-   Newsreader and IBM Plex Mono are now load-bearing identity pieces, but `pubspec.yaml` still does
+   Archivo and IBM Plex Mono are now load-bearing identity pieces, but `pubspec.yaml` still does
    not bundle font assets. Runtime `google_fonts` is fine for iteration, but the release plan should
    either bundle the fonts or explicitly accept runtime/fallback behavior.
    **✅ Resolved 2026-05-30:** the three fonts are now bundled in `assets/fonts/` (variable
-   Newsreader roman+italic, variable Inter, static IBM Plex Mono) and declared in `pubspec.yaml`;
+   Archivo roman+italic, variable platform system font, static IBM Plex Mono) and declared in `pubspec.yaml`;
    production no longer uses runtime `google_fonts` (only the retired `explore_concept/**` sandbox).
 
 9. **Golden tests need a tooling decision.**

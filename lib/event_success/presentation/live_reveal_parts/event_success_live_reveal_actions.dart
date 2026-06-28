@@ -1,7 +1,7 @@
 part of '../event_success_live_reveal_card.dart';
 
-class _HostRevealActions extends ConsumerWidget {
-  const _HostRevealActions({
+class HostRevealActions extends ConsumerWidget {
+  const HostRevealActions({
     required this.eventId,
     required this.roundCount,
     required this.nextRound,

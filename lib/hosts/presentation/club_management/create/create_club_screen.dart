@@ -10,12 +10,14 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
@@ -26,7 +28,6 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -332,15 +333,18 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
           child: ConstrainedBox(
             constraints: BoxConstraints(maxHeight: maxHeight),
             child: SingleChildScrollView(
-              child: CatchFieldGroup(
+              child: CatchSection(
+                variant: CatchSectionVariant.contained,
                 children: [
-                  for (final city in defaultCityOptions)
+                  for (final city in defaultCityOptions.where(
+                    (city) => city.hostCreatable,
+                  ))
                     CatchField(
-                      label: city.label,
-                      value: city.countryIsoCode,
+                      title: city.label,
+                      body: city.countryIsoCode,
                       mode: CatchFieldMode.nav,
                       icon: CatchIcons.locationCityOutlined,
-                      valid: city.name == _selectedCity,
+                      valid: city.effectiveMarketId == _selectedCity,
                       showChevron: true,
                       onTap: () => Navigator.of(context).pop(city),
                     ),
@@ -352,7 +356,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       },
     );
     if (!mounted || picked == null) return null;
-    setState(() => _selectedCity = picked.name);
+    setState(() => _selectedCity = picked.effectiveMarketId);
     return picked;
   }
 
@@ -514,11 +518,11 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            CatchStepFlowHeader(
+            CatchStepHeader(
               title: screenState.title,
               subtitle: screenState.subtitle,
-              currentStep: screenState.currentStep,
-              totalSteps: screenState.totalSteps,
+              step: screenState.currentStep + 1,
+              total: screenState.totalSteps,
               onBack: _back,
             ),
             gapH4,
@@ -533,7 +537,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     nameController: _nameController,
                     selectedCity: cityOptionByName(_selectedCity),
                     onCityChanged: (city) => setState(() {
-                      _selectedCity = city?.name;
+                      _selectedCity = city?.effectiveMarketId;
                     }),
                     areaController: _areaController,
                     detailsEnabled: !mediaOnly,
@@ -583,7 +587,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
               ),
             ),
             if (mutationError != null) CatchErrorBanner(message: mutationError),
-            StepperFooter(
+            _buildStepperFooter(
               isLastStep: screenState.currentStep == activeSteps.length - 1,
               isLoading: screenState.isLoading,
               onNext: _next,
@@ -644,12 +648,14 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _EditClubSection(
+                        _buildEditClubSection(
+                          context: context,
                           label: 'Identity',
-                          child: CatchFieldGroup(
+                          child: CatchSection(
+                            variant: CatchSectionVariant.contained,
                             children: [
                               CatchField(
-                                label: 'Club name',
+                                title: 'Club name',
                                 controller: _nameController,
                                 icon: CatchIcons.groupOutlined,
                                 textCapitalization: TextCapitalization.words,
@@ -661,14 +667,14 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                                   return null;
                                 },
                               ),
-                              _EditClubCityField(
+                              _buildEditClubCityField(
                                 city: cityOptionByName(_selectedCity),
                                 rawCityName: _selectedCity,
                                 enabled: !isSubmitting,
                                 onPickCity: _pickCityForEdit,
                               ),
                               CatchField(
-                                label: 'Area / neighbourhood',
+                                title: 'Area / neighbourhood',
                                 controller: _areaController,
                                 icon: CatchIcons.locationOnOutlined,
                                 placeholder: 'e.g. Bandra, Koramangala',
@@ -682,7 +688,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                                 },
                               ),
                               CatchField(
-                                label: 'Description',
+                                title: 'Description',
                                 controller: _descriptionController,
                                 icon: CatchIcons.editNoteOutlined,
                                 maxLines: 4,
@@ -700,26 +706,28 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                             ],
                           ),
                         ),
-                        _EditClubSection(
+                        _buildEditClubSection(
+                          context: context,
                           label: 'Contact',
-                          child: CatchFieldGroup(
+                          child: CatchSection(
+                            variant: CatchSectionVariant.contained,
                             children: [
                               CatchField(
-                                label: 'Instagram',
+                                title: 'Instagram',
                                 controller: _instagramController,
                                 icon: CatchIcons.alternateEmailOutlined,
                                 leadingUnit: '@',
                                 textInputAction: TextInputAction.next,
                               ),
                               CatchField(
-                                label: 'Phone',
+                                title: 'Phone',
                                 controller: _phoneController,
                                 icon: CatchIcons.phoneOutlined,
                                 keyboardType: TextInputType.phone,
                                 textInputAction: TextInputAction.next,
                               ),
                               CatchField(
-                                label: 'Email',
+                                title: 'Email',
                                 controller: _emailController,
                                 icon: CatchIcons.emailOutlined,
                                 keyboardType: TextInputType.emailAddress,
@@ -731,7 +739,8 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                       ],
                     ),
                   ),
-                  _EditClubSection(
+                  _buildEditClubSection(
+                    context: context,
                     label: 'Event defaults',
                     subtitle: 'Prefill every new event this club creates.',
                     child: Column(
@@ -762,26 +771,68 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
             ),
           ),
           if (mutationError != null) CatchErrorBanner(message: mutationError),
-          _EditClubFooter(isLoading: isSubmitting, onSave: _submitEdit),
+          _buildEditClubFooter(isLoading: isSubmitting, onSave: _submitEdit),
         ],
       ),
     );
   }
-}
 
-class _EditClubSection extends StatelessWidget {
-  const _EditClubSection({
-    required this.label,
-    required this.child,
-    this.subtitle,
-  });
+  Widget _buildStepperFooter({
+    required bool isLastStep,
+    required bool isLoading,
+    required VoidCallback onNext,
+    required VoidCallback? onSaveDraft,
+    required String lastStepLabel,
+  }) {
+    final t = CatchTokens.of(context);
+    return CatchBottomDock(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s4,
+        CatchSpacing.s3,
+        CatchSpacing.s4,
+        CatchSpacing.s3,
+      ),
+      child: Row(
+        children: [
+          if (onSaveDraft != null) ...[
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: CatchButton(
+                  label: 'Save Draft',
+                  onPressed: isLoading ? null : onSaveDraft,
+                  variant: CatchButtonVariant.ghost,
+                  size: CatchButtonSize.lg,
+                  icon: Icon(CatchIcons.saveOutlined),
+                  foregroundColor: t.primary,
+                ),
+              ),
+            ),
+            const SizedBox(width: CatchSpacing.s3),
+          ],
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: CatchButton(
+                label: isLastStep ? lastStepLabel : 'Next',
+                onPressed: onNext,
+                isLoading: isLoading,
+                fullWidth: true,
+                icon: isLastStep ? null : Icon(CatchIcons.arrowForwardRounded),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-  final String label;
-  final String? subtitle;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildEditClubSection({
+    required BuildContext context,
+    required String label,
+    required Widget child,
+    String? subtitle,
+  }) {
     final t = CatchTokens.of(context);
     return Padding(
       padding: const EdgeInsets.only(top: CatchSpacing.s2),
@@ -794,7 +845,7 @@ class _EditClubSection extends StatelessWidget {
           if (subtitle != null) ...[
             gapH4,
             Text(
-              subtitle!,
+              subtitle,
               style: CatchTextStyles.supporting(context, color: t.ink3),
             ),
           ],
@@ -804,36 +855,26 @@ class _EditClubSection extends StatelessWidget {
       ),
     );
   }
-}
 
-class _EditClubCityField extends StatelessWidget {
-  const _EditClubCityField({
-    required this.city,
-    required this.rawCityName,
-    required this.enabled,
-    required this.onPickCity,
-  });
-
-  final CityOption? city;
-  final String? rawCityName;
-  final bool enabled;
-  final Future<CityOption?> Function() onPickCity;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildEditClubCityField({
+    required CityOption? city,
+    required String? rawCityName,
+    required bool enabled,
+    required Future<CityOption?> Function() onPickCity,
+  }) {
     return FormField<CityOption>(
       initialValue: city,
       validator: (_) {
         final hasCity =
-            city != null || (rawCityName != null && rawCityName!.isNotEmpty);
+            city != null || (rawCityName != null && rawCityName.isNotEmpty);
         return hasCity ? null : 'Please select a city';
       },
       builder: (field) {
         final raw = rawCityName;
         final value = city?.label ?? (raw == null || raw.isEmpty ? '' : raw);
         return CatchField(
-          label: 'City',
-          value: value,
+          title: 'City',
+          body: value,
           placeholder: 'Select city',
           mode: CatchFieldMode.nav,
           icon: CatchIcons.locationCityOutlined,
@@ -849,39 +890,24 @@ class _EditClubCityField extends StatelessWidget {
       },
     );
   }
-}
 
-class _EditClubFooter extends StatelessWidget {
-  const _EditClubFooter({required this.isLoading, required this.onSave});
-
-  final bool isLoading;
-  final VoidCallback onSave;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return SafeArea(
-      top: false,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: t.bg,
-          border: Border(top: BorderSide(color: t.line)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s3,
-            CatchSpacing.s5,
-            CatchSpacing.micro18,
-          ),
-          child: CatchButton(
-            label: 'Save changes',
-            icon: Icon(CatchIcons.saveOutlined),
-            isLoading: isLoading,
-            fullWidth: true,
-            onPressed: isLoading ? null : onSave,
-          ),
-        ),
+  Widget _buildEditClubFooter({
+    required bool isLoading,
+    required VoidCallback onSave,
+  }) {
+    return CatchBottomDock(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.s3,
+        CatchSpacing.s5,
+        CatchSpacing.micro18,
+      ),
+      child: CatchButton(
+        label: 'Save changes',
+        icon: Icon(CatchIcons.saveOutlined),
+        isLoading: isLoading,
+        fullWidth: true,
+        onPressed: isLoading ? null : onSave,
       ),
     );
   }

@@ -7,7 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -113,14 +113,14 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
               fullWidth: true,
             )
           else
-            _CustomQuestionnaireFields(
+            CustomQuestionnaireFields(
               value: normalized,
               enabled: enabled,
               onChanged: onChanged,
             ),
         ] else ...[
           gapH12,
-          _QuestionnairePreview(questions: pack.questions),
+          QuestionnairePreview(questions: pack.questions),
         ],
       ],
     );
@@ -137,12 +137,12 @@ Future<void> _openCustomQuestionnaireSheet(
     isScrollControlled: true,
     useSafeArea: true,
     builder: (sheetContext) =>
-        _CustomQuestionnaireSheet(initialValue: initial, onChanged: onChanged),
+        CustomQuestionnaireSheet(initialValue: initial, onChanged: onChanged),
   );
 }
 
-class _CustomQuestionnaireSheet extends StatefulWidget {
-  const _CustomQuestionnaireSheet({
+class CustomQuestionnaireSheet extends StatefulWidget {
+  const CustomQuestionnaireSheet({
     required this.initialValue,
     required this.onChanged,
   });
@@ -151,11 +151,11 @@ class _CustomQuestionnaireSheet extends StatefulWidget {
   final ValueChanged<EventSuccessQuestionnaireConfig> onChanged;
 
   @override
-  State<_CustomQuestionnaireSheet> createState() =>
+  State<CustomQuestionnaireSheet> createState() =>
       _CustomQuestionnaireSheetState();
 }
 
-class _CustomQuestionnaireSheetState extends State<_CustomQuestionnaireSheet> {
+class _CustomQuestionnaireSheetState extends State<CustomQuestionnaireSheet> {
   late EventSuccessQuestionnaireConfig _value = widget.initialValue;
 
   void _emit(EventSuccessQuestionnaireConfig next) {
@@ -173,7 +173,7 @@ class _CustomQuestionnaireSheetState extends State<_CustomQuestionnaireSheet> {
         constraints: BoxConstraints(maxHeight: maxHeight),
         child: SingleChildScrollView(
           padding: CatchInsets.contentHorizontal,
-          child: _CustomQuestionnaireFields(
+          child: CustomQuestionnaireFields(
             value: _value,
             enabled: true,
             onChanged: _emit,
@@ -184,8 +184,8 @@ class _CustomQuestionnaireSheetState extends State<_CustomQuestionnaireSheet> {
   }
 }
 
-class _QuestionnairePreview extends StatelessWidget {
-  const _QuestionnairePreview({required this.questions});
+class QuestionnairePreview extends StatelessWidget {
+  const QuestionnairePreview({required this.questions});
 
   final List<EventSuccessCompatibilityQuestion> questions;
 
@@ -220,8 +220,8 @@ class _QuestionnairePreview extends StatelessWidget {
   }
 }
 
-class _CustomQuestionnaireFields extends StatelessWidget {
-  const _CustomQuestionnaireFields({
+class CustomQuestionnaireFields extends StatelessWidget {
+  const CustomQuestionnaireFields({
     required this.value,
     required this.enabled,
     required this.onChanged,
@@ -237,9 +237,9 @@ class _CustomQuestionnaireFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchTextField(
+        CatchField(
           key: const ValueKey('customQuestionnaireTitle'),
-          label: 'Custom question set name',
+          title: 'Custom question set name',
           initialValue: value.customTitle ?? 'Custom question set',
           enabled: enabled,
           inputFormatters: [LengthLimitingTextInputFormatter(80)],
@@ -252,7 +252,7 @@ class _CustomQuestionnaireFields extends StatelessWidget {
           questionIndex < questions.length;
           questionIndex++
         ) ...[
-          _CustomQuestionFields(
+          CustomQuestionFields(
             question: questions[questionIndex],
             index: questionIndex,
             enabled: enabled,
@@ -310,8 +310,8 @@ class _CustomQuestionnaireFields extends StatelessWidget {
   }
 }
 
-class _CustomQuestionFields extends StatelessWidget {
-  const _CustomQuestionFields({
+class CustomQuestionFields extends StatelessWidget {
+  const CustomQuestionFields({
     required this.question,
     required this.index,
     required this.enabled,
@@ -354,9 +354,9 @@ class _CustomQuestionFields extends StatelessWidget {
           ],
         ),
         gapH6,
-        CatchTextField(
+        CatchField(
           key: ValueKey('customQuestionPrompt-$index'),
-          label: 'Prompt',
+          title: 'Prompt',
           initialValue: question.prompt,
           enabled: enabled,
           inputFormatters: [LengthLimitingTextInputFormatter(140)],
@@ -369,9 +369,9 @@ class _CustomQuestionFields extends StatelessWidget {
           optionIndex < question.options.length;
           optionIndex++
         ) ...[
-          CatchTextField(
+          CatchField(
             key: ValueKey('customQuestionOption-$index-$optionIndex'),
-            label: 'Option ${optionIndex + 1}',
+            title: 'Option ${optionIndex + 1}',
             initialValue: question.options[optionIndex].label,
             enabled: enabled,
             inputFormatters: [LengthLimitingTextInputFormatter(60)],

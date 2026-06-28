@@ -107,6 +107,34 @@ void main() {
       expect(descriptor.retryable, isTrue);
     });
 
+    test('uses Explore copy for Firestore index setup failures', () {
+      const error = BackendOperationException(
+        code: 'failed-precondition',
+        message:
+            'This list is still getting set up. Please try again in a moment.',
+        debugMessage: 'Firestore query requires a composite required index.',
+        context: BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch clubs by location',
+          resource: 'clubs',
+        ),
+        retryable: true,
+      );
+
+      final descriptor = appErrorDescriptor(
+        error,
+        context: AppErrorContext.explore,
+      );
+
+      expect(descriptor.title, 'Explore unavailable');
+      expect(
+        descriptor.message,
+        'Explore is still getting set up. Please try again in a moment.',
+      );
+      expect(descriptor.retryLabel, 'Reload Explore');
+      expect(descriptor.retryable, isTrue);
+    });
+
     test('describes storage and external action failures', () {
       final upload = appErrorDescriptor(
         const StorageException(

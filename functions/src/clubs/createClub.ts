@@ -22,6 +22,7 @@ import {
   professionalHostSnapshot,
 } from "../shared/hostProfiles";
 import {normalizeCreateClubPayload} from "./clubPayloadNormalization";
+import {marketForIdOrAlias} from "../locations/marketConfig";
 
 interface CreateClubDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -71,6 +72,13 @@ export async function createClubHandler(
     validateCreateClubCallablePayload,
     normalizeCreateClubPayload
   );
+  const market = marketForIdOrAlias(data.location);
+  if (!market || !market.hostCreatable) {
+    throw new HttpsError(
+      "failed-precondition",
+      "This city is not open for host creation yet."
+    );
+  }
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, hostUserId, "createClub");
   const clubRef = data.clubId ?
@@ -143,7 +151,9 @@ export async function createClubHandler(
     tx.create(clubRef, {
       name: data.name,
       description: data.description,
-      location: data.location,
+      location: market.marketId,
+      locationCityId: market.cityId,
+      locationMarketId: market.marketId,
       area: data.area,
       hostUserId,
       hostName,
@@ -174,10 +184,10 @@ export async function createClubHandler(
       entityKind: "club",
       entitySubtypes: [],
       displayCategory: "Club",
-      cityName: null,
-      regionName: null,
-      countryCode: "IN",
-      countryName: "India",
+      cityName: market.cityLabel,
+      regionName: market.regionName,
+      countryCode: market.countryIsoCode,
+      countryName: market.countryName,
       appVisibility: "discoverable",
       ownership: {
         state: "userCreated",
@@ -194,7 +204,7 @@ export async function createClubHandler(
       },
       publicPage: {
         slug: clubRef.id,
-        citySlug: data.location,
+        citySlug: market.slug,
         canonicalPath: `/clubs/${clubRef.id}`,
         publishStatus: "draft",
         indexStatus: "noindex",

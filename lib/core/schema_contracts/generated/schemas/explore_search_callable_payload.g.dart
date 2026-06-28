@@ -24,6 +24,8 @@ const schemaExploreSearchCallablePayloadSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
+      'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+      'description': 'Canonical launch market id. The field name is retained for callable compatibility.',
     },
     'limit': <String, Object?>{
       'type': 'integer',

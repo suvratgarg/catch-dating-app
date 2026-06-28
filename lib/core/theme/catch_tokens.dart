@@ -404,6 +404,23 @@ abstract final class CatchInsets {
     CatchSpacing.s6,
   );
 
+  /// Explore activity index padding: page gutters, section top breathing room,
+  /// and enough scroll-end space to clear the floating map pill.
+  static const EdgeInsets eventTypeBrowseIndex = EdgeInsets.fromLTRB(
+    CatchSpacing.screenPx,
+    CatchSpacing.screenPx,
+    CatchSpacing.screenPx,
+    CatchLayout.eventTypeBrowseBottomPadding,
+  );
+
+  /// Loading state for the Explore activity index.
+  static const EdgeInsets eventTypeBrowseSkeleton = EdgeInsets.fromLTRB(
+    CatchSpacing.screenPx,
+    CatchSpacing.screenPx,
+    CatchSpacing.screenPx,
+    CatchSpacing.s4,
+  );
+
   /// Horizontal page/list gutters when vertical padding is owned elsewhere.
   static const EdgeInsets pageHorizontal = EdgeInsets.symmetric(
     horizontal: CatchSpacing.screenPx,
@@ -913,6 +930,15 @@ abstract final class CatchOpacity {
   /// Muted copy/icon foreground on fixed dark overlay surfaces.
   static const double onDarkMuted = 0.70;
 
+  /// Hairline separators over fixed dark editorial hero surfaces.
+  static const double darkHeroDivider = 0.18;
+
+  /// Translucent pill fills over fixed dark editorial hero surfaces.
+  static const double darkHeroPillFill = 0.16;
+
+  /// Backing ring opacity for overlapping avatar stacks on dark/art surfaces.
+  static const double avatarStackRing = 0.28;
+
   static const double activityAvatarPrint = 0.08;
   static const double activityAvatarInnerRule = 0.16;
   static const double activityAvatarDim = 0.20;
@@ -983,9 +1009,9 @@ abstract final class CatchOpacity {
   static const double photoDragGhost = 0.35;
   static const double profileInfoDivider = 0.62;
 
-  /// Inset hairline divider between on-surface rows (InfoRow / settings / chat
+  /// Inset hairline divider between on-surface rows (FieldRow / settings / chat
   /// inbox) — design-system color-mix(line 38%, transparent).
-  static const double infoRowDivider = 0.38;
+  static const double fieldRowDivider = 0.38;
   static const double profileProgressTrack = 0.70;
   static const double profileShadowDark = 0.34;
   static const double profileShadowLight = 0.10;
@@ -1549,12 +1575,12 @@ abstract final class CatchLayout {
   static const double activityArtGlyphScale = 0.95;
   static const double statStripVerticalPadding = 13.0;
   static const double statStripLabelFontSize = 9.0;
-  static const double infoRowVerticalPadding = 13.0;
-  static const double infoRowDividerIconInset =
+  static const double fieldRowVerticalPadding = 13.0;
+  static const double fieldRowDividerIconInset =
       CatchIcon.control + CatchSpacing.s3;
-  static const double infoGroupTopMargin = 8.0;
-  static const double infoGroupTopPadding = 18.0;
-  static const double infoGroupTitleGap = 10.0;
+  static const double fieldGroupTopMargin = 8.0;
+  static const double fieldGroupTopPadding = 18.0;
+  static const double fieldGroupTitleGap = 10.0;
   static const double searchFieldIconSize = 15.0;
   static const double searchFieldIconGap = 10.0;
   static const double searchFieldClearSize = 32.0;
@@ -1595,6 +1621,8 @@ abstract final class CatchLayout {
   static const double eventTypeTileMaxWidth = 340.0;
   static const double eventTypeTileSingleColumnHeight = 88.0;
   static const double eventTypeTileTwoColumnHeight = 72.0;
+  static const double eventTypeIndexRowHeight = 66.0;
+  static const double eventTypeIndexDotSize = 12.0;
   static const double eventTypeBrowseBottomPadding = 84.0;
   static const double eventTypeColorCueTopOffset = -30.0;
   static const double eventTypeDisplaySize = 26.0;

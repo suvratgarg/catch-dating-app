@@ -36,20 +36,17 @@ class ExploreList extends ConsumerWidget {
     final city = ref.watch(selectedExploreCityProvider);
     final query = ref.watch(exploreSearchQueryProvider).trim();
     final filters = ref.watch(exploreFiltersProvider);
-    final sourceClubCount =
-        ref.watch(exploreSourceClubsProvider).asData?.value.length ?? 0;
-    final hasSourceClubs = sourceClubCount > 0;
 
     return switch (viewModelAsync) {
-      AsyncLoading() => const SliverToBoxAdapter(
+      AsyncLoading() => SliverToBoxAdapter(
         child: Padding(
           padding: CatchInsets.pageBody,
-          child: _ClubDirectorySkeletonList(),
+          child: _buildClubDirectorySkeletonList(),
         ),
       ),
       AsyncError(:final error) => CatchSliverErrorState.fromError(
         error,
-        context: AppErrorContext.club,
+        context: AppErrorContext.explore,
         onRetry: () {
           ref.invalidate(exploreViewModelProvider);
           ref.invalidate(exploreSourceClubsProvider);
@@ -61,7 +58,6 @@ class ExploreList extends ConsumerWidget {
                 child: _buildEmptyState(
                   ref,
                   cityLabel: city.label,
-                  hasSourceClubs: hasSourceClubs,
                   hasSearch: query.isNotEmpty,
                   filters: filters,
                 ),
@@ -80,14 +76,10 @@ class ExploreList extends ConsumerWidget {
   Widget _buildEmptyState(
     WidgetRef ref, {
     required String cityLabel,
-    required bool hasSourceClubs,
     required bool hasSearch,
     required ExploreFilterSelection filters,
   }) {
     final hasFilters = filters.hasActiveFilters;
-    if (!hasSourceClubs) {
-      return ExploreEmptyState(cityLabel: cityLabel);
-    }
     if (hasSearch && hasFilters) {
       return ExploreEmptyState.noFilteredSearchResults(
         action: _clearAction(ref, clearSearch: true, clearFilters: true),
@@ -134,90 +126,84 @@ class ExploreList extends ConsumerWidget {
   }
 }
 
-class _ClubDirectorySkeletonList extends StatelessWidget {
-  const _ClubDirectorySkeletonList();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        _ClubDirectorySkeletonCard(),
-        gapH14,
-        _ClubDirectorySkeletonCard(),
-        gapH14,
-        _ClubDirectorySkeletonCard(),
-      ],
-    );
-  }
+Widget _buildClubDirectorySkeletonList() {
+  return Column(
+    children: [
+      _buildClubDirectorySkeletonCard(),
+      gapH14,
+      _buildClubDirectorySkeletonCard(),
+      gapH14,
+      _buildClubDirectorySkeletonCard(),
+    ],
+  );
 }
 
-class _ClubDirectorySkeletonCard extends StatelessWidget {
-  const _ClubDirectorySkeletonCard();
+Widget _buildClubDirectorySkeletonCard() {
+  return Builder(
+    builder: (context) {
+      final t = CatchTokens.of(context);
 
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.card(),
-          Padding(
-            padding: CatchInsets.tileContentCompact,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CatchSkeleton.text(
-                  width: CatchLayout.clubDirectorySkeletonTitleWidth,
-                ),
-                gapH8,
-                CatchSkeleton.text(
-                  width: CatchLayout.clubDirectorySkeletonSubtitleWidth,
-                ),
-                gapH12,
-                Row(
-                  children: [
-                    CatchSkeleton.card(
-                      width: CatchLayout.clubDirectorySkeletonShortChipWidth,
-                      height: CatchSpacing.s6,
-                    ),
-                    gapW8,
-                    CatchSkeleton.card(
-                      width: CatchLayout.clubDirectorySkeletonLongChipWidth,
-                      height: CatchSpacing.s6,
-                    ),
-                  ],
-                ),
-                gapH12,
-                SizedBox(
-                  height: CatchStroke.hairline,
-                  child: ColoredBox(color: t.line),
-                ),
-                gapH12,
-                Row(
-                  children: [
-                    CatchSkeleton.circle(size: CatchIcon.md),
-                    gapW8,
-                    Expanded(
-                      child: CatchSkeleton.text(
-                        width: CatchLayout.clubDirectorySkeletonFooterWidth,
+      return CatchSurface(
+        borderColor: t.line,
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CatchSkeleton.card(),
+            Padding(
+              padding: CatchInsets.tileContentCompact,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CatchSkeleton.text(
+                    width: CatchLayout.clubDirectorySkeletonTitleWidth,
+                  ),
+                  gapH8,
+                  CatchSkeleton.text(
+                    width: CatchLayout.clubDirectorySkeletonSubtitleWidth,
+                  ),
+                  gapH12,
+                  Row(
+                    children: [
+                      CatchSkeleton.card(
+                        width: CatchLayout.clubDirectorySkeletonShortChipWidth,
+                        height: CatchSpacing.s6,
                       ),
-                    ),
-                    gapW12,
-                    CatchSkeleton.card(
-                      width: CatchLayout.clubDirectorySkeletonActionWidth,
-                      height: CatchSpacing.s9,
-                    ),
-                  ],
-                ),
-              ],
+                      gapW8,
+                      CatchSkeleton.card(
+                        width: CatchLayout.clubDirectorySkeletonLongChipWidth,
+                        height: CatchSpacing.s6,
+                      ),
+                    ],
+                  ),
+                  gapH12,
+                  SizedBox(
+                    height: CatchStroke.hairline,
+                    child: ColoredBox(color: t.line),
+                  ),
+                  gapH12,
+                  Row(
+                    children: [
+                      CatchSkeleton.circle(size: CatchIcon.md),
+                      gapW8,
+                      Expanded(
+                        child: CatchSkeleton.text(
+                          width: CatchLayout.clubDirectorySkeletonFooterWidth,
+                        ),
+                      ),
+                      gapW12,
+                      CatchSkeleton.card(
+                        width: CatchLayout.clubDirectorySkeletonActionWidth,
+                        height: CatchSpacing.s9,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
+    },
+  );
 }

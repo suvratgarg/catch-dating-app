@@ -54,7 +54,7 @@ class CatchJourneySteps extends StatelessWidget {
                   child: Column(
                     children: [
                       const SizedBox(height: CatchSpacing.micro3),
-                      _JourneyNode(accent: accentColor),
+                      _buildJourneyNode(context, accentColor),
                       if (i < steps.length - 1)
                         Expanded(
                           child: Container(
@@ -97,23 +97,15 @@ class CatchJourneySteps extends StatelessWidget {
   }
 }
 
-/// The 11px traced node — a [CatchTokens.bg]-filled disc with a 2px accent ring.
-class _JourneyNode extends StatelessWidget {
-  const _JourneyNode({required this.accent});
-
-  final Color accent;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Container(
-      width: CatchLayout.journeyStepsNodeExtent,
-      height: CatchLayout.journeyStepsNodeExtent,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: t.bg,
-        border: Border.all(color: accent, width: CatchStroke.clubMemberSeal),
-      ),
-    );
-  }
+Widget _buildJourneyNode(BuildContext context, Color accent) {
+  final t = CatchTokens.of(context);
+  return Container(
+    width: CatchLayout.journeyStepsNodeExtent,
+    height: CatchLayout.journeyStepsNodeExtent,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: t.bg,
+      border: Border.all(color: accent, width: CatchStroke.clubMemberSeal),
+    ),
+  );
 }

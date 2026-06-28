@@ -1,7 +1,7 @@
 part of '../event_success_host_screen.dart';
 
-class _ReportTab extends StatelessWidget {
-  const _ReportTab({
+class ReportTab extends StatelessWidget {
+  const ReportTab({
     required this.event,
     required this.plan,
     required this.planIsPersisted,
@@ -36,7 +36,7 @@ class _ReportTab extends StatelessWidget {
         physics: physics,
         padding: padding,
         children: [
-          _NoticeCard(
+          NoticeCard(
             icon: CatchIcons.insightsOutlined,
             title: 'No event report yet',
             body:
@@ -58,7 +58,7 @@ class _ReportTab extends StatelessWidget {
         physics: physics,
         padding: padding,
         children: [
-          _NoticeCard(
+          NoticeCard(
             icon: CatchIcons.insightsOutlined,
             title: 'Post-event insights are off',
             body:
@@ -76,7 +76,7 @@ class _ReportTab extends StatelessWidget {
         physics: physics,
         padding: padding,
         children: [
-          _NoticeCard(
+          NoticeCard(
             icon: CatchIcons.insightsOutlined,
             title: 'Waiting for attendee feedback',
             body:
@@ -103,7 +103,7 @@ class _ReportTab extends StatelessWidget {
       physics: physics,
       padding: padding,
       children: [
-        _NoticeCard(
+        NoticeCard(
           icon: CatchIcons.assignmentTurnedInOutlined,
           title:
               '$feedbackCount attendee feedback response${feedbackCount == 1 ? '' : 's'}',
@@ -111,9 +111,9 @@ class _ReportTab extends StatelessWidget {
               'The report combines attendance, safe aggregate feedback, assignment coverage, and explicit host-help requests. Private notes, safety concerns, and individual opener choices are not shown to hosts.',
         ),
         gapH16,
-        _HostReportSignalGrid(brief: brief),
+        HostReportSignalGrid(brief: brief),
         gapH16,
-        _HostFunnelSummary(brief: brief),
+        HostFunnelSummary(brief: brief),
         gapH16,
         EventSuccessPostEventReport(brief: brief),
       ],
@@ -121,8 +121,8 @@ class _ReportTab extends StatelessWidget {
   }
 }
 
-class _HostReportSignalGrid extends StatelessWidget {
-  const _HostReportSignalGrid({required this.brief});
+class HostReportSignalGrid extends StatelessWidget {
+  const HostReportSignalGrid({required this.brief});
 
   final EventSuccessBrief brief;
 
@@ -224,8 +224,8 @@ class _HostReportSignalGrid extends StatelessWidget {
   }
 }
 
-class _HostFunnelSummary extends StatelessWidget {
-  const _HostFunnelSummary({required this.brief});
+class HostFunnelSummary extends StatelessWidget {
+  const HostFunnelSummary({required this.brief});
 
   final EventSuccessBrief brief;
 

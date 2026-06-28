@@ -165,7 +165,7 @@ Examples:
 - `CatchSurface`
 - `CatchBadge`
 - `CatchChip`
-- `CatchTextField`
+- `CatchField`
 - `CatchField`
 - `CatchTopBar`
 
@@ -195,10 +195,10 @@ Purpose: reusable product components composed from primitives.
 
 Examples:
 
-- `CatchInfoGroup`
+- `CatchSection`
 - `CatchOptionGroup`
 - `CatchMetricStrip`
-- `CatchStatStrip`
+- `CatchMetricStrip`
 - `CatchPersonRow`
 - `CatchRosterRow`
 - `EventDetailHostCard`
@@ -425,7 +425,7 @@ Tasks:
   Claude `core` primitive set.
 - Add Widgetbook contract states for every accepted primitive.
 - Add visual reference links to each contract.
-- Decide consolidation items such as `CatchMetricStrip` vs `CatchStatStrip`.
+- Decide consolidation items such as `CatchMetricStrip` vs `CatchMetricStrip`.
 
 Exit criteria:
 

@@ -319,7 +319,7 @@ final exploreFeedViewModelProvider = Provider<AsyncValue<ExploreFeedViewModel>>(
       : ref.watch(
           exploreServerSearchProvider(
             query: debouncedQuery,
-            cityName: city.name,
+            cityName: city.effectiveMarketId,
           ),
         );
 
@@ -419,7 +419,7 @@ final exploreFeedViewModelProvider = Provider<AsyncValue<ExploreFeedViewModel>>(
   final eventsAsync = ref.watch(
     discoverableEventsProvider(
       EventDiscoveryQuery.forCity(
-        cityName: city.name,
+        marketId: city.effectiveMarketId,
         startAt: timeWindow?.start ?? now,
         endBefore: timeWindow?.end,
         activityKinds: [?activityKindFilter],
@@ -432,7 +432,7 @@ final exploreFeedViewModelProvider = Provider<AsyncValue<ExploreFeedViewModel>>(
   final externalEventsAsync = ref.watch(
     discoverableExternalEventsProvider(
       ExternalEventDiscoveryQuery.forCity(
-        citySlug: city.name,
+        citySlug: city.effectiveSlug,
         startAt: timeWindow?.start ?? now,
         endBefore: timeWindow?.end,
         activityKinds: [?activityKindFilter],

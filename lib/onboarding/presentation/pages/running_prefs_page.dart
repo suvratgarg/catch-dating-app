@@ -10,7 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +74,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
         ..addAll(userProfile.preferredRunTimes);
     }
 
-    return OnboardingStepFrame(
+    return onboardingStepLayout(
       footer: CatchButton(
         label: widget.runPreferencesOnly
             ? 'Continue booking'
@@ -86,7 +86,6 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
         size: CatchButtonSize.lg,
       ),
       children: [
-
         // ── Pace ──────────────────────────────────────────────────────────
         Text(
           'TYPICAL PACE · PER KM',

@@ -18,13 +18,15 @@ import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.da
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_empty_state.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type_browse_grid.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_list.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_peek_rail.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -292,6 +294,207 @@ Widget exploreScreenStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Body sliver states',
+  type: ExploreBody,
+  path: '[Explore]/Sections',
+)
+Widget exploreBodyStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreBody',
+    catalogId: 'section.explore.body',
+    children: [
+      _StateCard(
+        label: 'mixed body',
+        child: _SliverFrame(
+          child: _ExploreScope(
+            child: CustomScrollView(
+              slivers: [
+                ExploreBody(
+                  viewModel: ExploreViewModel.partition(
+                    clubs: _clubs,
+                    joinedClubIds: _joinedClubIds,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'List sliver states',
+  type: ExploreList,
+  path: '[Explore]/Sections',
+)
+Widget exploreListStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreList',
+    catalogId: 'section.explore.list',
+    children: [
+      _StateCard(
+        label: 'provider-backed list',
+        child: _SliverFrame(
+          child: _ExploreScope(
+            child: CustomScrollView(slivers: [ExploreList()]),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty search',
+        child: _SliverFrame(
+          height: 320,
+          child: _ExploreScope(
+            searchQuery: 'silent supper cycling crew',
+            viewModel: const AsyncData(
+              ExploreViewModel(joinedClubs: [], allClubs: []),
+            ),
+            child: CustomScrollView(slivers: [ExploreList()]),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'City picker states',
+  type: ExploreCityPicker,
+  path: '[Explore]/Controls',
+)
+Widget exploreCityPickerStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreCityPicker',
+    catalogId: 'control.explore.city_picker',
+    children: [
+      _StateCard(
+        label: 'ready',
+        child: _ExploreScope(child: const Center(child: ExploreCityPicker())),
+      ),
+      _StateCard(
+        label: 'city source loading',
+        child: _ExploreScope(
+          child: ProviderScope(
+            overrides: [
+              cityListProvider.overrideWith(
+                (ref) => Future<List<CityData>>.delayed(
+                  const Duration(minutes: 1),
+                  () => const [_mumbai],
+                ),
+              ),
+            ],
+            child: const Center(child: ExploreCityPicker()),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cover header states',
+  type: ExploreDiscoveryCoverHeader,
+  path: '[Explore]/Sections',
+)
+Widget exploreDiscoveryCoverHeaderStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreDiscoveryCoverHeader',
+    catalogId: 'section.explore.discovery_cover_header',
+    children: [
+      _StateCard(
+        label: 'featured event',
+        child: _DeviceFrame(
+          height: 360,
+          child: _ExploreScope(child: const ExploreDiscoveryCoverHeader()),
+        ),
+      ),
+      _StateCard(
+        label: 'no featured event',
+        child: _DeviceFrame(
+          height: 180,
+          child: _ExploreScope(
+            feed: const AsyncData(ExploreFeedViewModel(items: [])),
+            child: const ExploreDiscoveryCoverHeader(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Filter sheet states',
+  type: ExploreFilterSheet,
+  path: '[Explore]/Controls',
+)
+Widget exploreFilterSheetStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreFilterSheet',
+    catalogId: 'control.explore.filter_sheet',
+    children: [
+      _StateCard(
+        label: 'default',
+        child: _SheetFrame(
+          child: _ExploreScope(
+            child: const AbsorbPointer(child: ExploreFilterSheet()),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'active filters',
+        child: _SheetFrame(
+          child: _ExploreScope(
+            seedFilters: const _FilterSeed(
+              distance: ExploreDistanceFilter.threeKm,
+              joinedOnly: true,
+            ),
+            child: const AbsorbPointer(child: ExploreFilterSheet()),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Peek rail states',
+  type: ExplorePeekRailContent,
+  path: '[Explore]/Sections',
+)
+Widget explorePeekRailContentStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExplorePeekRailContent',
+    catalogId: 'section.explore.peek_rail_content',
+    children: [
+      _StateCard(
+        label: 'nearby rail',
+        child: _ExploreScope(
+          child: ExplorePeekRailContent(
+            items: _feedItems,
+            selectedEventId: null,
+            onEventTapped: (_) {},
+            onSeeAll: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'selected event',
+        child: _ExploreScope(
+          child: ExplorePeekRailContent(
+            items: _feedItems,
+            selectedEventId: _feedItems.first.event.id,
+            onEventTapped: (_) {},
+            onSeeAll: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Chrome states',
   type: ExploreBrowseHeaderContent,
   path: '[Explore]/Sections',
@@ -374,119 +577,6 @@ Widget exploreFilterRailStates(BuildContext context) {
             ),
             child: const AbsorbPointer(child: ExploreFilterSheet()),
           ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'CoverStory states',
-  type: CatchCoverStory,
-  path: '[Explore]/Sections',
-)
-Widget catchCoverStoryStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'CatchCoverStory',
-    catalogId: 'section.explore.cover_story',
-    children: [
-      _StateCard(
-        label: 'headline event',
-        child: const CatchCoverStory(
-          activityKind: ActivityKind.socialRun,
-          kicker: "Tonight's plan",
-          title: 'Sundowner 5K, then coffee on the sea wall',
-          body: 'Sea Face Social · Carter Road · easy pace',
-          cta: 'View event',
-          data: '6:30 PM · Free',
-          data2: '9 going · 3 spots left',
-          location: 'Mumbai',
-          showSearch: true,
-          radius: CatchRadius.lg,
-        ),
-      ),
-      _StateCard(
-        label: 'neutral masthead',
-        child: const CatchCoverStory(
-          title: 'Find plans with people who actually show up',
-          body: 'Browse by time, distance, and the kind of night you want.',
-          cta: 'Explore events',
-          showGhostGlyph: false,
-          radius: CatchRadius.lg,
-        ),
-      ),
-      _StateCard(
-        label: 'data only',
-        child: const CatchCoverStory(
-          activityKind: ActivityKind.dinner,
-          kicker: 'Editor pick',
-          title: 'Dinner for six, no small talk required',
-          data: '8:00 PM · ₹1,400',
-          data2: '10 going · 2 spots left',
-          radius: CatchRadius.lg,
-        ),
-      ),
-      _StateCard(
-        label: 'without CTA',
-        child: const CatchCoverStory(
-          activityKind: ActivityKind.pickleball,
-          kicker: 'Near you',
-          title: 'Open court doubles after work',
-          body: 'Juhu court 2 · teams rotate every game',
-          data: '6:00 PM',
-          radius: CatchRadius.lg,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'CrossPathsCard states',
-  type: CatchCrossPathsCard,
-  path: '[Explore]/Sections',
-)
-Widget catchCrossPathsCardStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'CatchCrossPathsCard',
-    catalogId: 'section.explore.cross_paths_card',
-    children: [
-      _StateCard(
-        label: 'postcard',
-        child: const CatchCrossPathsCard(
-          activityKind: ActivityKind.socialRun,
-          kicker: 'Also going',
-          quote: 'I am doing the easy pace group if you want a familiar face.',
-          displayName: 'Asha',
-          age: 29,
-          meta: 'Sea Face Social · 2 events together',
-          photoUrl:
-              'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&q=80',
-        ),
-      ),
-      _StateCard(
-        label: 'photo row',
-        child: const CatchCrossPathsCard(
-          activityKind: ActivityKind.dinner,
-          variant: CatchCrossPathsVariant.photo,
-          kicker: 'Table mate',
-          quote: 'Long-table dinners are easier when someone breaks the ice.',
-          displayName: 'Maya',
-          age: 31,
-          meta: 'Fort · first dinner',
-          cta: 'Join dinner',
-          photoUrl:
-              'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80',
-        ),
-      ),
-      _StateCard(
-        label: 'no photo fallback',
-        child: const CatchCrossPathsCard(
-          activityKind: ActivityKind.pickleball,
-          quote: 'I can partner with a beginner for the first game.',
-          displayName: 'Rohan',
-          meta: 'Open Court · Juhu',
-          cta: 'Join court',
         ),
       ),
     ],

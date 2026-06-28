@@ -46,7 +46,7 @@ class CreateClubPhotosPicker extends StatelessWidget {
     final editStrip = variant == CreateClubPhotosPickerVariant.editStrip;
     final picker = OrderedPhotoPicker(
       label: editStrip
-          ? _EditClubPhotosLabel(count: visiblePhotos.length)
+          ? _buildEditClubPhotosLabel(context, visiblePhotos.length)
           : const CatchFormFieldLabel(label: 'Club photos', isOptional: true),
       photos: visiblePhotos,
       onAddPhotos: onAddPhotos,
@@ -107,7 +107,8 @@ class CreateClubProfileImagePicker extends StatelessWidget {
           gapH8,
           Row(
             children: [
-              _ClubProfileImageTile(
+              _buildClubProfileImageTile(
+                context: context,
                 imageBytes: imageBytes,
                 existingImageUrl: existingImageUrl,
                 onTap: onTap,
@@ -134,7 +135,8 @@ class CreateClubProfileImagePicker extends StatelessWidget {
           isOptional: true,
         ),
         gapH8,
-        _ClubProfileImageTile(
+        _buildClubProfileImageTile(
+          context: context,
           imageBytes: imageBytes,
           existingImageUrl: existingImageUrl,
           onTap: onTap,
@@ -146,131 +148,111 @@ class CreateClubProfileImagePicker extends StatelessWidget {
   }
 }
 
-class _EditClubPhotosLabel extends StatelessWidget {
-  const _EditClubPhotosLabel({required this.count});
-
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      children: [
-        Text('PHOTOS', style: CatchTextStyles.kicker(context)),
-        const Spacer(),
-        Text(
-          '$count',
-          style: CatchTextStyles.monoLabel(context, color: t.ink3),
-        ),
-      ],
-    );
-  }
+Widget _buildEditClubPhotosLabel(BuildContext context, int count) {
+  final t = CatchTokens.of(context);
+  return Row(
+    children: [
+      Text('PHOTOS', style: CatchTextStyles.kicker(context)),
+      const Spacer(),
+      Text('$count', style: CatchTextStyles.monoLabel(context, color: t.ink3)),
+    ],
+  );
 }
 
-class _ClubProfileImageTile extends StatelessWidget {
-  const _ClubProfileImageTile({
-    required this.imageBytes,
-    required this.existingImageUrl,
-    required this.onTap,
-    required this.size,
-    this.showEmptyLabel = false,
-  });
+Widget _buildClubProfileImageTile({
+  required BuildContext context,
+  required Uint8List? imageBytes,
+  required String? existingImageUrl,
+  required VoidCallback? onTap,
+  required double size,
+  bool showEmptyLabel = false,
+}) {
+  final t = CatchTokens.of(context);
+  final hasImage = imageBytes != null || existingImageUrl != null;
 
-  final Uint8List? imageBytes;
-  final String? existingImageUrl;
-  final VoidCallback? onTap;
-  final double size;
-  final bool showEmptyLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final hasImage = imageBytes != null || existingImageUrl != null;
-
-    return Semantics(
-      button: true,
-      label: hasImage ? 'Change club profile image' : 'Add club profile image',
-      child: GestureDetector(
-        onTap: onTap,
-        child: SizedBox.square(
-          dimension: size,
-          child: CatchSurface(
-            tone: CatchSurfaceTone.raised,
-            radius: CatchRadius.md,
-            borderColor: t.line2,
-            clipBehavior: Clip.antiAlias,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                if (hasImage)
-                  if (imageBytes != null)
-                    Image.memory(imageBytes!, fit: BoxFit.cover)
-                  else
-                    CatchNetworkImage(
-                      existingImageUrl!,
-                      errorBuilder: (_, _, _) => Container(color: t.raised),
-                    )
+  return Semantics(
+    button: true,
+    label: hasImage ? 'Change club profile image' : 'Add club profile image',
+    child: GestureDetector(
+      onTap: onTap,
+      child: SizedBox.square(
+        dimension: size,
+        child: CatchSurface(
+          tone: CatchSurfaceTone.raised,
+          radius: CatchRadius.md,
+          borderColor: t.line2,
+          clipBehavior: Clip.antiAlias,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (hasImage)
+                if (imageBytes != null)
+                  Image.memory(imageBytes, fit: BoxFit.cover)
                 else
-                  ColoredBox(
-                    color: t.raised,
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final textScale = MediaQuery.textScalerOf(
-                          context,
-                        ).scale(1);
-                        final showLabel =
-                            showEmptyLabel &&
-                            constraints.maxHeight >= 112 &&
-                            textScale < 1.6;
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              CatchIcons.addPhotoAlternateOutlined,
-                              size: 30,
-                              color: t.ink2,
-                            ),
-                            if (showLabel) ...[
-                              gapH8,
-                              Padding(
-                                padding: CatchInsets.inlineHorizontal,
-                                child: Text(
-                                  'Add image',
-                                  style: CatchTextStyles.supporting(
-                                    context,
-                                    color: t.ink2,
-                                  ),
-                                  textAlign: TextAlign.center,
+                  CatchNetworkImage(
+                    existingImageUrl!,
+                    errorBuilder: (_, _, _) => Container(color: t.raised),
+                  )
+              else
+                ColoredBox(
+                  color: t.raised,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final textScale = MediaQuery.textScalerOf(
+                        context,
+                      ).scale(1);
+                      final showLabel =
+                          showEmptyLabel &&
+                          constraints.maxHeight >= 112 &&
+                          textScale < 1.6;
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            CatchIcons.addPhotoAlternateOutlined,
+                            size: 30,
+                            color: t.ink2,
+                          ),
+                          if (showLabel) ...[
+                            gapH8,
+                            Padding(
+                              padding: CatchInsets.inlineHorizontal,
+                              child: Text(
+                                'Add image',
+                                style: CatchTextStyles.supporting(
+                                  context,
+                                  color: t.ink2,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
-                            ],
+                            ),
                           ],
-                        );
-                      },
-                    ),
-                  ),
-                Positioned(
-                  bottom: 6,
-                  right: 6,
-                  child: CatchIconTile(
-                    icon: hasImage
-                        ? CatchIcons.editOutlined
-                        : CatchIcons.addPhotoAlternateOutlined,
-                    iconColor: t.ink,
-                    backgroundColor: t.surface.withValues(
-                      alpha: CatchOpacity.imageEditControlFill,
-                    ),
-                    borderColor: Colors.transparent,
-                    size: 28,
-                    iconSize: CatchIcon.xs,
-                    radius: CatchRadius.pill,
+                        ],
+                      );
+                    },
                   ),
                 ),
-              ],
-            ),
+              Positioned(
+                bottom: 6,
+                right: 6,
+                child: CatchIconTile(
+                  icon: hasImage
+                      ? CatchIcons.editOutlined
+                      : CatchIcons.addPhotoAlternateOutlined,
+                  iconColor: t.ink,
+                  backgroundColor: t.surface.withValues(
+                    alpha: CatchOpacity.imageEditControlFill,
+                  ),
+                  borderColor: Colors.transparent,
+                  size: 28,
+                  iconSize: CatchIcon.xs,
+                  radius: CatchRadius.pill,
+                ),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }

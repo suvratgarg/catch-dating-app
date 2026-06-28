@@ -11,7 +11,7 @@ export interface CreateClubCallablePayload {
   clubId?: string;
   name: string;
   description: string;
-  location: string | null;
+  location: string;
   area: string;
   imageUrl?: string | null;
   profileImageUrl?: string | null;

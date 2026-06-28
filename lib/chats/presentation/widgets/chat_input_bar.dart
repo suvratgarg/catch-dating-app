@@ -2,9 +2,10 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:flutter/material.dart';
 
 class ChatInputBar extends StatelessWidget {
@@ -41,7 +42,8 @@ class ChatInputBar extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (showImageButton)
-            _ComposerIconAction(
+            _buildComposerIconAction(
+              context,
               tooltip: 'Send an image',
               onPressed: disabled ? null : onSendImage,
               disabled: disabled || onSendImage == null,
@@ -61,24 +63,27 @@ class ChatInputBar extends StatelessWidget {
                     ),
             ),
           Expanded(
-            child: CatchTextField(
-              label: 'Message',
-              showLabel: false,
-              controller: controller,
-              textCapitalization: TextCapitalization.sentences,
-              textInputAction: TextInputAction.send,
-              minLines: 1,
-              maxLines: 4,
-              hintText: disabledReason ?? 'Message...',
-              size: CatchTextFieldSize.compact,
-              shape: CatchTextFieldShape.pill,
-              tone: CatchTextFieldTone.raised,
-              enabled: onSend != null && !disabled,
-              onSubmitted: (_) => onSend?.call(),
+            child: CatchSection(
+              variant: CatchSectionVariant.contained,
+              padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
+              child: CatchField(
+                title: 'Message',
+                showLabel: false,
+                controller: controller,
+                textCapitalization: TextCapitalization.sentences,
+                textInputAction: TextInputAction.send,
+                minLines: 1,
+                maxLines: 4,
+                placeholder: disabledReason ?? 'Message...',
+                size: CatchFieldSize.compact,
+                enabled: onSend != null && !disabled,
+                onSubmitted: (_) => onSend?.call(),
+              ),
             ),
           ),
           gapW8,
-          _ComposerIconAction(
+          _buildComposerIconAction(
+            context,
             tooltip: 'Send message',
             onPressed: disabled ? null : onSend,
             disabled: disabled || onSend == null,
@@ -104,43 +109,32 @@ class ChatInputBar extends StatelessWidget {
   }
 }
 
-class _ComposerIconAction extends StatelessWidget {
-  const _ComposerIconAction({
-    required this.tooltip,
-    required this.icon,
-    this.onPressed,
-    this.disabled = false,
-    this.backgroundColor,
-    this.foregroundColor,
-  });
+Widget _buildComposerIconAction(
+  BuildContext context, {
+  required String tooltip,
+  required Widget icon,
+  VoidCallback? onPressed,
+  bool disabled = false,
+  Color? backgroundColor,
+  Color? foregroundColor,
+}) {
+  final t = CatchTokens.of(context);
+  final effectiveForeground = foregroundColor ?? t.ink2;
+  final enabled = !disabled && onPressed != null;
 
-  final String tooltip;
-  final Widget icon;
-  final VoidCallback? onPressed;
-  final bool disabled;
-  final Color? backgroundColor;
-  final Color? foregroundColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final effectiveForeground = foregroundColor ?? t.ink2;
-    final enabled = !disabled && onPressed != null;
-
-    return Tooltip(
-      message: tooltip,
-      child: Opacity(
-        opacity: enabled ? 1 : 0.4,
-        child: IconTheme(
-          data: IconThemeData(color: effectiveForeground, size: CatchIcon.md),
-          child: CatchIconButton(
-            size: 42,
-            background: backgroundColor ?? Colors.transparent,
-            onTap: enabled ? onPressed : null,
-            child: icon,
-          ),
+  return Tooltip(
+    message: tooltip,
+    child: Opacity(
+      opacity: enabled ? 1 : 0.4,
+      child: IconTheme(
+        data: IconThemeData(color: effectiveForeground, size: CatchIcon.md),
+        child: CatchIconButton(
+          size: 42,
+          background: backgroundColor ?? Colors.transparent,
+          onTap: enabled ? onPressed : null,
+          child: icon,
         ),
       ),
-    );
-  }
+    ),
+  );
 }

@@ -23,7 +23,7 @@ void main() {
         name: 'Sunset Striders',
         area: 'Bandra',
         description: 'Easy social club.',
-        location: 'mumbai',
+        location: 'in-mh-mumbai',
         instagramHandle: '@sunsetstriders',
       );
 
@@ -32,7 +32,7 @@ void main() {
       final loaded = await repository.loadDraft(userId: 'host-1');
       expect(loaded, isNotNull);
       expect(loaded!.name, 'Sunset Striders');
-      expect(loaded.location, 'mumbai');
+      expect(loaded.location, 'in-mh-mumbai');
       expect(loaded.instagramHandle, '@sunsetstriders');
     });
 

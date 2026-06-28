@@ -5,7 +5,9 @@ import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,8 +45,9 @@ void main() {
 
       await pumpAuthScreen(tester, container: container);
 
-      expect(find.byType(OnboardingStepFrame), findsOneWidget);
-      expect(find.byType(OnboardingStepHeader), findsOneWidget);
+      expect(find.byType(CatchScreenBody), findsOneWidget);
+      expect(find.byType(CatchBottomDock), findsOneWidget);
+      expect(find.byType(CatchStepHeader), findsOneWidget);
       expect(find.text("What's your number?"), findsOneWidget);
       expect(find.text('Send code'), findsOneWidget);
     });

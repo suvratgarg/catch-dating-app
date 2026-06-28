@@ -228,7 +228,7 @@ test(
       "accessApplications/runner-1": {
         applicationVersion: 1,
         status: "pending",
-        city: "mumbai",
+        city: "in-mh-mumbai",
         role: "host",
         eventTypes: ["running", "singlesMixer"],
         availabilityWindows: ["weekdayEvening"],
@@ -242,7 +242,7 @@ test(
       },
       "accessApplications/runner-2": {
         status: "pending",
-        city: "mumbai",
+        city: "in-mh-mumbai",
         role: "host",
         inviteCode: "MUMBAI-FOUNDERS",
         instagramHandle: "@other",
@@ -250,7 +250,7 @@ test(
       },
       "accessApplications/runner-3": {
         status: "pending",
-        city: "mumbai",
+        city: "in-mh-mumbai",
         role: "member",
         inviteCode: "OTHER",
         instagramHandle: "@maya",
@@ -264,7 +264,7 @@ test(
 
     assert.equal(result.application.uid, "runner-1");
     assert.equal(result.application.targetPath, "accessApplications/runner-1");
-    assert.equal(result.application.city, "mumbai");
+    assert.equal(result.application.city, "in-mh-mumbai");
     assert.equal(result.application.role, "host");
     assert.deepEqual(
       result.application.eventTypes,
@@ -342,7 +342,7 @@ test(
     const firestore = new FakeFirestore({
       "accessApplications/runner-1": {
         status: "pending",
-        city: "delhi",
+        city: "in-dl-delhi-ncr",
       },
     });
 

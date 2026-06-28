@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_top_bar.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -18,8 +17,8 @@ class HostChatScreenState {
     required this.profileNavigationEnabled,
     required this.shareCardEnabled,
     required this.safetyActionsEnabled,
-    required this.topBarActions,
-    required this.disabledTopBarActions,
+    required this.threadActions,
+    required this.disabledThreadActions,
     required this.safetyTargetName,
     required this.messageOtherName,
     required this.messagesRetryIntent,
@@ -37,24 +36,24 @@ class HostChatScreenState {
   final bool profileNavigationEnabled;
   final bool shareCardEnabled;
   final bool safetyActionsEnabled;
-  final List<ChatTopBarAction> topBarActions;
-  final Set<ChatTopBarAction> disabledTopBarActions;
+  final List<ChatThreadAction> threadActions;
+  final Set<ChatThreadAction> disabledThreadActions;
   final String safetyTargetName;
   final String messageOtherName;
   final HostChatRetryIntent? messagesRetryIntent;
   final HostChatRetryIntent? suvbotActionsRetryIntent;
   final String? composerDisabledReason;
 
-  HostChatActionIntent? intentForTopBarAction(ChatTopBarAction action) {
-    if (!topBarActions.contains(action) ||
-        disabledTopBarActions.contains(action)) {
+  HostChatActionIntent? intentForThreadAction(ChatThreadAction action) {
+    if (!threadActions.contains(action) ||
+        disabledThreadActions.contains(action)) {
       return null;
     }
 
     switch (action) {
-      case ChatTopBarAction.shareCard:
+      case ChatThreadAction.shareCard:
         return shareCardEnabled ? const HostChatActionIntent.shareCard() : null;
-      case ChatTopBarAction.report:
+      case ChatThreadAction.report:
         final targetUserId = otherUid;
         return safetyActionsEnabled && targetUserId != null
             ? HostChatActionIntent.reportUser(
@@ -62,7 +61,7 @@ class HostChatScreenState {
                 targetName: safetyTargetName,
               )
             : null;
-      case ChatTopBarAction.block:
+      case ChatThreadAction.block:
         final targetUserId = otherUid;
         return safetyActionsEnabled && targetUserId != null
             ? HostChatActionIntent.blockUser(
@@ -116,14 +115,14 @@ class HostChatScreenState {
       profileNavigationEnabled: !isHostInquiry && !isSuvbot,
       shareCardEnabled: shareCardEnabled,
       safetyActionsEnabled: safetyActionsEnabled,
-      topBarActions: [
-        if (shareCardEnabled) ChatTopBarAction.shareCard,
-        if (safetyActionsEnabled) ChatTopBarAction.report,
-        if (safetyActionsEnabled) ChatTopBarAction.block,
+      threadActions: [
+        if (shareCardEnabled) ChatThreadAction.shareCard,
+        if (safetyActionsEnabled) ChatThreadAction.report,
+        if (safetyActionsEnabled) ChatThreadAction.block,
       ],
-      disabledTopBarActions: {
-        if (reportUserPending) ChatTopBarAction.report,
-        if (blockUserPending) ChatTopBarAction.block,
+      disabledThreadActions: {
+        if (reportUserPending) ChatThreadAction.report,
+        if (blockUserPending) ChatThreadAction.block,
       },
       safetyTargetName: profile?.name ?? 'this person',
       messageOtherName: isSuvbot
@@ -141,6 +140,8 @@ class HostChatScreenState {
     );
   }
 }
+
+enum ChatThreadAction { shareCard, report, block }
 
 enum HostChatRetryIntent { reloadMatch, reloadMessages, reloadSuvbotActions }
 

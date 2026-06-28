@@ -13,10 +13,10 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
 import 'package:flutter/material.dart';
@@ -89,7 +89,7 @@ class HostTeamManagementSection extends ConsumerWidget {
             gapH12,
           ],
           for (final host in hosts) ...[
-            _OwnerHostRow(
+            HostTeamOwnerHostRow(
               host: host,
               canManage: host.uid != currentUid && !actionPending,
               onTransfer: () => unawaited(_confirmTransfer(context, ref, host)),
@@ -257,8 +257,9 @@ class HostTeamHostActionDialog extends StatelessWidget {
   }
 }
 
-class _OwnerHostRow extends StatelessWidget {
-  const _OwnerHostRow({
+class HostTeamOwnerHostRow extends StatelessWidget {
+  const HostTeamOwnerHostRow({
+    super.key,
     required this.host,
     required this.canManage,
     required this.onTransfer,
@@ -377,8 +378,8 @@ class _HostTeamAddHostSheetState extends ConsumerState<HostTeamAddHostSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CatchTextField(
-            label: 'Phone number',
+          CatchField(
+            title: 'Phone number',
             controller: _controller,
             prefixIcon: Icon(CatchIcons.phoneOutlined),
             keyboardType: TextInputType.phone,

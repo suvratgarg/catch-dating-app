@@ -58,6 +58,9 @@ run_analyze_probe "seeded violation corpus" <<'DART'
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart' as spacing;
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -72,7 +75,7 @@ class CatchUiLintProbe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = GoogleFonts.getFont('Inter');
+    final style = GoogleFonts.getFont('Roboto');
     return Column(
       children: [
         const _ProbeSection(),
@@ -117,7 +120,7 @@ class CatchUiLintProbe extends StatelessWidget {
           'raw',
           style: TextStyle(fontFamily: 'Archivo', fontSize: 18),
         ),
-        Text('raw', style: GoogleFonts.inter(fontSize: 18)),
+        Text('raw', style: GoogleFonts.roboto(fontSize: 18)),
         Text('raw', style: style),
         Opacity(opacity: 0.5, child: const SizedBox.shrink()),
         AnimatedOpacity(
@@ -142,6 +145,15 @@ class CatchUiLintProbe extends StatelessWidget {
             ],
           ),
           child: const SizedBox.shrink(),
+        ),
+        const CatchSurface(
+          child: CatchSurface(
+            child: SizedBox.shrink(),
+          ),
+        ),
+        const CatchSection(
+          variant: CatchSectionVariant.contained,
+          child: CatchField(title: 'Name'),
         ),
         _buildHeader(),
       ],
@@ -193,12 +205,17 @@ expect_code_count "seeded violation corpus" "catch_no_raw_stroke_width" 2
 expect_code_count "seeded violation corpus" "catch_no_raw_asset_path" 1
 expect_code_count \
   "seeded violation corpus" \
+  "catch_no_nested_rounded_rectangles" \
+  1
+expect_code_count \
+  "seeded violation corpus" \
   "catch_icon_button_requires_tooltip" \
   1
 expect_code_count "seeded violation corpus" "catch_no_allow_debt" 1
 
 run_analyze_probe "transparent and token-backed clean cases" <<'DART'
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 const _probeSemanticBodyPadding = EdgeInsets.fromLTRB(
@@ -225,6 +242,7 @@ class CatchUiLintProbe extends StatelessWidget {
           padding: _probeSemanticBodyPadding,
           child: SizedBox.shrink(),
         ),
+        CatchSurface.tinted(child: SizedBox.shrink()),
       ],
     );
   }

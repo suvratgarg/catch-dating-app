@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -28,22 +28,22 @@ class CreateClubContactFields extends StatelessWidget {
           const CatchFormFieldLabel(label: 'Contact', isOptional: true),
           gapH12,
         ],
-        CatchTextField(
-          label: 'Instagram handle',
+        CatchField(
+          title: 'Instagram handle',
           controller: instagramController,
           isOptional: true,
           prefixIcon: Icon(CatchIcons.alternateEmailRounded),
-          hintText: '@yourclub',
+          placeholder: '@yourclub',
           keyboardType: TextInputType.text,
           textInputAction: TextInputAction.next,
         ),
         gapH16,
-        CatchTextField(
-          label: 'Phone number',
+        CatchField(
+          title: 'Phone number',
           controller: phoneController,
           isOptional: true,
           prefixIcon: Icon(CatchIcons.callOutlined),
-          hintText: '98765 43210',
+          placeholder: '98765 43210',
           keyboardType: TextInputType.phone,
           textInputAction: TextInputAction.next,
           inputFormatters: [
@@ -52,12 +52,12 @@ class CreateClubContactFields extends StatelessWidget {
           ],
         ),
         gapH16,
-        CatchTextField(
-          label: 'Email',
+        CatchField(
+          title: 'Email',
           controller: emailController,
           isOptional: true,
           prefixIcon: Icon(CatchIcons.emailOutlined),
-          hintText: 'hello@yourclub.com',
+          placeholder: 'hello@yourclub.com',
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
         ),

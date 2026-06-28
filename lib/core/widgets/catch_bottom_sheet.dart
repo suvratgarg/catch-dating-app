@@ -73,12 +73,14 @@ class CatchBottomSheetScaffold extends StatelessWidget {
             ],
             if (hasHeader)
               glyph == null
-                  ? _PlainSheetHeader(
+                  ? _buildPlainSheetHeader(
+                      context,
                       title: title,
                       subtitle: subtitle,
                       trailing: right,
                     )
-                  : _BrandedSheetHeader(
+                  : _buildBrandedSheetHeader(
+                      context,
                       glyph: glyph!,
                       title: title,
                       subtitle: subtitle,
@@ -102,110 +104,91 @@ class CatchBottomSheetScaffold extends StatelessWidget {
   }
 }
 
-class _PlainSheetHeader extends StatelessWidget {
-  const _PlainSheetHeader({
-    required this.title,
-    required this.subtitle,
-    required this.trailing,
-  });
+Widget _buildPlainSheetHeader(
+  BuildContext context, {
+  required String? title,
+  required String? subtitle,
+  required Widget? trailing,
+}) {
+  final t = CatchTokens.of(context);
 
-  final String? title;
-  final String? subtitle;
-  final Widget? trailing;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_hasText(title))
-                Text(title!, style: CatchTextStyles.titleL(context)),
-              if (_hasText(subtitle)) ...[
-                gapH6,
-                Text(
-                  subtitle!,
-                  style: CatchTextStyles.bodyM(context, color: t.ink2),
-                ),
-              ],
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_hasText(title))
+              Text(title!, style: CatchTextStyles.titleL(context)),
+            if (_hasText(subtitle)) ...[
+              gapH6,
+              Text(
+                subtitle!,
+                style: CatchTextStyles.bodyM(context, color: t.ink2),
+              ),
             ],
-          ),
+          ],
         ),
-        if (trailing != null) ...[
-          const SizedBox(width: CatchLayout.sheetHeaderGap),
-          trailing!,
-        ],
+      ),
+      if (trailing != null) ...[
+        const SizedBox(width: CatchLayout.sheetHeaderGap),
+        trailing,
       ],
-    );
-  }
+    ],
+  );
 }
 
-class _BrandedSheetHeader extends StatelessWidget {
-  const _BrandedSheetHeader({
-    required this.glyph,
-    required this.title,
-    required this.subtitle,
-    required this.trailing,
-  });
+Widget _buildBrandedSheetHeader(
+  BuildContext context, {
+  required IconData glyph,
+  required String? title,
+  required String? subtitle,
+  required Widget? trailing,
+}) {
+  final t = CatchTokens.of(context);
 
-  final IconData glyph;
-  final String? title;
-  final String? subtitle;
-  final Widget? trailing;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Row(
-      children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: t.ink,
-            borderRadius: BorderRadius.circular(
-              CatchLayout.sheetGlyphTileRadius,
-            ),
-          ),
-          child: SizedBox.square(
-            dimension: CatchLayout.sheetGlyphTileSize,
-            child: Icon(
-              glyph,
-              size: CatchLayout.sheetGlyphIconSize,
-              color: t.primaryInk,
-            ),
+  return Row(
+    children: [
+      DecoratedBox(
+        decoration: BoxDecoration(
+          color: t.ink,
+          borderRadius: BorderRadius.circular(CatchLayout.sheetGlyphTileRadius),
+        ),
+        child: SizedBox.square(
+          dimension: CatchLayout.sheetGlyphTileSize,
+          child: Icon(
+            glyph,
+            size: CatchLayout.sheetGlyphIconSize,
+            color: t.primaryInk,
           ),
         ),
-        const SizedBox(width: CatchLayout.sheetHeaderGap),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_hasText(title))
-                Text(title!, style: CatchTextStyles.titleL(context)),
-              if (_hasText(subtitle)) ...[
-                gapH2,
-                Text(
-                  subtitle!,
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
-                ),
-              ],
+      ),
+      const SizedBox(width: CatchLayout.sheetHeaderGap),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_hasText(title))
+              Text(title!, style: CatchTextStyles.titleL(context)),
+            if (_hasText(subtitle)) ...[
+              gapH2,
+              Text(
+                subtitle!,
+                style: CatchTextStyles.bodyS(context, color: t.ink2),
+              ),
             ],
-          ),
+          ],
         ),
-        if (trailing != null) ...[
-          const SizedBox(width: CatchLayout.sheetHeaderGap),
-          trailing!,
-        ],
+      ),
+      if (trailing != null) ...[
+        const SizedBox(width: CatchLayout.sheetHeaderGap),
+        trailing,
       ],
-    );
-  }
+    ],
+  );
 }
 
 bool _hasText(String? value) => value != null && value.isNotEmpty;

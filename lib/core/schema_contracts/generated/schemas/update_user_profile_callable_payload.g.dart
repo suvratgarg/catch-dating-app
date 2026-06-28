@@ -249,13 +249,17 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
           },
         },
         'city': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 120,
+              'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
-          'minLength': 1,
-          'maxLength': 80,
-          'pattern': '^[a-z0-9-]+\$',
         },
         'latitude': <String, Object?>{
           'type': <Object?>[

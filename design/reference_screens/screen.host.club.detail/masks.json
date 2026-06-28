@@ -37,7 +37,7 @@
       "reason": "Next-event date/time copy is dynamic club schedule data."
     },
     {
-      "id": "stats_strip",
+      "id": "club_metrics",
       "stateIds": ["host_public_view"],
       "rect": {
         "x": 20,

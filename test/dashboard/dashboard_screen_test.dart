@@ -17,7 +17,6 @@ import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendation
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_clubs_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
@@ -409,10 +408,20 @@ void main() {
       expect(find.byTooltip('Notifications'), findsOneWidget);
     });
 
-    testWidgets('dashboard clubs rail renders joined clubs from club ids', (
+    testWidgets('dashboard body renders followed clubs with horizontal rail', (
       tester,
     ) async {
       final joinedClub = buildClub(name: 'Home Run Club');
+      final user = buildUser();
+      final viewModel = buildDashboardFullViewModel(
+        signedUpEvents: const [],
+        uid: user.uid,
+        viewer: user,
+        attendedEventsAsync: const AsyncData<List<Event>>([]),
+        recommendedEventsAsync: _noRecommendationCandidates,
+        weeklyActivityAsync: _emptyWeeklyActivitySnapshot(),
+        now: DateTime(2026, 5, 13),
+      );
 
       await tester.pumpWidget(
         ProviderScope(
@@ -423,7 +432,17 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: const Scaffold(body: DashboardClubsRail(clubIds: ['club-1'])),
+            home: Scaffold(
+              body: CustomScrollView(
+                slivers: [
+                  DashboardFullSliverBody(
+                    viewModel: viewModel,
+                    user: user,
+                    followedClubIds: [joinedClub.id],
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       );

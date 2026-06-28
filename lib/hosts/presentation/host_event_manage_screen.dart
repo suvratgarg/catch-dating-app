@@ -15,11 +15,11 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -238,7 +238,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             ),
             if (!collapseHeaderCopy) ...[
               gapH8,
-              _HostManageMetaRow(event: event),
+              HostManageMetaRow(event: event),
             ],
           ],
         ),
@@ -251,7 +251,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               CatchSpacing.s5,
               CatchSpacing.s2,
             ),
-            child: _HostManageSectionPicker(
+            child: HostManageSectionPicker(
               selectedSection: _selectedSection,
               onChanged: (section) {
                 setState(() => _selectedSection = section);
@@ -293,12 +293,12 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     return switch (_selectedSection) {
       HostEventManageSection.setup => [
         if (_showsCapacityNotice(event)) ...[
-          const _HostFullCapacityBanner(),
+          const HostFullCapacityBanner(),
           gapH12,
         ],
-        _HostFullCapacityApron(event: event, roster: roster),
+        HostFullCapacityApron(event: event, roster: roster),
         gapH20,
-        _HostEventActionsSection(
+        HostEventActionsSection(
           club: club,
           event: event,
           hasKnownActivity: hasKnownActivity,
@@ -311,10 +311,10 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ),
         if (event.effectiveEventPolicy.usesInviteOnly) ...[
           gapH20,
-          _HostPrivateAccessCard(club: club, event: event),
+          HostPrivateAccessCard(club: club, event: event),
         ],
         gapH20,
-        _HostEventSummaryCard(club: club, event: event),
+        HostEventSummaryCard(club: club, event: event),
         gapH20,
         EventSuccessHostSection(
           event: event,
@@ -457,8 +457,8 @@ Object? _firstMutationError(Iterable<Object> mutations) {
   return null;
 }
 
-class _HostManageMetaRow extends StatelessWidget {
-  const _HostManageMetaRow({required this.event});
+class HostManageMetaRow extends StatelessWidget {
+  const HostManageMetaRow({super.key, required this.event});
 
   final Event event;
 
@@ -469,7 +469,7 @@ class _HostManageMetaRow extends StatelessWidget {
       children: [
         Expanded(
           flex: 5,
-          child: _HostManageMetaItem(
+          child: HostManageMetaItem(
             icon: CatchIcons.calendarTodayOutlined,
             label:
                 '${event.shortDateLabel} · ${EventFormatters.time(event.startTime)}',
@@ -479,7 +479,7 @@ class _HostManageMetaRow extends StatelessWidget {
         gapW12,
         Expanded(
           flex: 4,
-          child: _HostManageMetaItem(
+          child: HostManageMetaItem(
             icon: CatchIcons.pinOutlined,
             label: event.locationName,
             color: t.ink2,
@@ -488,7 +488,7 @@ class _HostManageMetaRow extends StatelessWidget {
         gapW12,
         Expanded(
           flex: 3,
-          child: _HostManageMetaItem(
+          child: HostManageMetaItem(
             icon: CatchIcons.groupsOutlined,
             label: event.spotsLabel,
             color: t.ink2,
@@ -499,8 +499,9 @@ class _HostManageMetaRow extends StatelessWidget {
   }
 }
 
-class _HostManageMetaItem extends StatelessWidget {
-  const _HostManageMetaItem({
+class HostManageMetaItem extends StatelessWidget {
+  const HostManageMetaItem({
+    super.key,
     required this.icon,
     required this.label,
     required this.color,
@@ -529,8 +530,9 @@ class _HostManageMetaItem extends StatelessWidget {
   }
 }
 
-class _HostManageSectionPicker extends StatelessWidget {
-  const _HostManageSectionPicker({
+class HostManageSectionPicker extends StatelessWidget {
+  const HostManageSectionPicker({
+    super.key,
     required this.selectedSection,
     required this.onChanged,
   });
@@ -564,8 +566,12 @@ extension on HostEventManageSection {
   }
 }
 
-class _HostPrivateAccessCard extends ConsumerWidget {
-  const _HostPrivateAccessCard({required this.club, required this.event});
+class HostPrivateAccessCard extends ConsumerWidget {
+  const HostPrivateAccessCard({
+    super.key,
+    required this.club,
+    required this.event,
+  });
 
   final Club club;
   final Event event;
@@ -576,7 +582,7 @@ class _HostPrivateAccessCard extends ConsumerWidget {
     final accessAsync = ref.watch(watchEventPrivateAccessProvider(event.id));
     return CatchAsyncValueView<EventPrivateAccess?>(
       value: accessAsync,
-      loadingBuilder: (_) => _PrivateAccessShell(
+      loadingBuilder: (_) => HostPrivateAccessShell(
         child: Row(
           children: [
             const HostInlineSkeletonIcon(),
@@ -600,13 +606,13 @@ class _HostPrivateAccessCard extends ConsumerWidget {
             ref.invalidate(watchEventPrivateAccessProvider(event.id)),
       ),
       builder: (context, access) =>
-          _PrivateAccessBody(club: club, event: event, access: access),
+          HostPrivateAccessBody(club: club, event: event, access: access),
     );
   }
 }
 
-class _PrivateAccessShell extends StatelessWidget {
-  const _PrivateAccessShell({required this.child});
+class HostPrivateAccessShell extends StatelessWidget {
+  const HostPrivateAccessShell({super.key, required this.child});
 
   final Widget child;
 
@@ -621,8 +627,9 @@ class _PrivateAccessShell extends StatelessWidget {
   }
 }
 
-class _PrivateAccessBody extends ConsumerWidget {
-  const _PrivateAccessBody({
+class HostPrivateAccessBody extends ConsumerWidget {
+  const HostPrivateAccessBody({
+    super.key,
     required this.club,
     required this.event,
     required this.access,
@@ -648,7 +655,7 @@ class _PrivateAccessBody extends ConsumerWidget {
             inviteCode: inviteCode,
           ).toString();
 
-    return _PrivateAccessShell(
+    return HostPrivateAccessShell(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -680,13 +687,13 @@ class _PrivateAccessBody extends ConsumerWidget {
           ),
           if (inviteCode != null && inviteCode.isNotEmpty) ...[
             gapH14,
-            _HostEventSummaryRow(
+            HostEventSummaryRow(
               icon: CatchIcons.passwordRounded,
               label: 'Code',
               value: inviteCode,
             ),
             if (inviteLink != null)
-              _HostEventSummaryRow(
+              HostEventSummaryRow(
                 icon: CatchIcons.linkRounded,
                 label: 'Link',
                 value: inviteLink,
@@ -719,7 +726,7 @@ class _PrivateAccessBody extends ConsumerWidget {
               fullWidth: true,
             ),
             gapH18,
-            _HostInviteLinksList(
+            HostInviteLinksList(
               event: event,
               inviteCode: inviteCode,
               linksAsync: inviteLinksAsync,
@@ -757,8 +764,9 @@ void _shareHostPrivateLink({
   );
 }
 
-class _HostInviteLinksList extends ConsumerWidget {
-  const _HostInviteLinksList({
+class HostInviteLinksList extends ConsumerWidget {
+  const HostInviteLinksList({
+    super.key,
     required this.event,
     required this.inviteCode,
     required this.linksAsync,
@@ -864,7 +872,7 @@ class _HostInviteLinksList extends ConsumerWidget {
               : Column(
                   children: [
                     for (final link in links)
-                      _HostInviteLinkRow(
+                      HostInviteLinkRow(
                         event: event,
                         inviteCode: inviteCode,
                         link: link,
@@ -899,8 +907,9 @@ class _HostInviteLinksList extends ConsumerWidget {
   }
 }
 
-class _HostInviteLinkRow extends ConsumerWidget {
-  const _HostInviteLinkRow({
+class HostInviteLinkRow extends ConsumerWidget {
+  const HostInviteLinkRow({
+    super.key,
     required this.event,
     required this.inviteCode,
     required this.link,
@@ -1090,19 +1099,19 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CatchTextField(
-                  label: 'Label',
+                CatchField(
+                  title: 'Label',
                   controller: labelController,
-                  hintText: 'Instagram bio',
+                  placeholder: 'Instagram bio',
                   textCapitalization: TextCapitalization.words,
                   onChanged: (_) => setState(() {}),
                 ),
                 gapH12,
-                CatchTextField(
-                  label: 'Source',
+                CatchField(
+                  title: 'Source',
                   isOptional: true,
                   controller: sourceController,
-                  hintText: 'instagram',
+                  placeholder: 'instagram',
                   onChanged: (_) => setState(() {}),
                 ),
               ],
@@ -1128,8 +1137,12 @@ String _inviteLinkStats(EventInviteLink link) {
   ].join(' | ');
 }
 
-class _HostFullCapacityApron extends StatelessWidget {
-  const _HostFullCapacityApron({required this.event, required this.roster});
+class HostFullCapacityApron extends StatelessWidget {
+  const HostFullCapacityApron({
+    super.key,
+    required this.event,
+    required this.roster,
+  });
 
   final Event event;
   final EventParticipationRoster? roster;
@@ -1153,7 +1166,7 @@ class _HostFullCapacityApron extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _HostCapacityTile(
+              child: HostCapacityTile(
                 value: '$booked',
                 suffix: '/${event.capacityLimit}',
                 label: 'Booked',
@@ -1162,7 +1175,7 @@ class _HostFullCapacityApron extends StatelessWidget {
             ),
             gapW10,
             Expanded(
-              child: _HostCapacityTile(
+              child: HostCapacityTile(
                 value: '$waitlisted',
                 label: 'Waitlist',
                 detail: waitlisted == 1
@@ -1176,14 +1189,14 @@ class _HostFullCapacityApron extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _HostCapacityTile(
+              child: HostCapacityTile(
                 value: revenueLabel,
                 label: 'Revenue est',
               ),
             ),
             gapW10,
             Expanded(
-              child: _HostCapacityTile(
+              child: HostCapacityTile(
                 value: refundPolicy,
                 label: 'Refund policy',
               ),
@@ -1195,8 +1208,8 @@ class _HostFullCapacityApron extends StatelessWidget {
   }
 }
 
-class _HostFullCapacityBanner extends StatelessWidget {
-  const _HostFullCapacityBanner();
+class HostFullCapacityBanner extends StatelessWidget {
+  const HostFullCapacityBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -1229,8 +1242,9 @@ class _HostFullCapacityBanner extends StatelessWidget {
   }
 }
 
-class _HostCapacityTile extends StatelessWidget {
-  const _HostCapacityTile({
+class HostCapacityTile extends StatelessWidget {
+  const HostCapacityTile({
+    super.key,
     required this.value,
     required this.label,
     this.suffix,
@@ -1289,8 +1303,9 @@ class _HostCapacityTile extends StatelessWidget {
   }
 }
 
-class _HostEventActionsSection extends ConsumerWidget {
-  const _HostEventActionsSection({
+class HostEventActionsSection extends ConsumerWidget {
+  const HostEventActionsSection({
+    super.key,
     required this.club,
     required this.event,
     required this.hasKnownActivity,
@@ -1358,13 +1373,13 @@ class _HostEventActionsSection extends ConsumerWidget {
           gapH8,
         ],
         if (!event.isCancelled)
-          _HostActionRow(
+          HostActionRow(
             label: 'Edit event details',
             detail: 'Schedule · location',
             onTap: isMutating ? null : onEditEvent,
           ),
         if (isInviteOnly)
-          _HostActionRow(
+          HostActionRow(
             label: 'Share private link',
             detail: shareDetail,
             onTap: inviteLink == null || shareMutation.isPending
@@ -1385,14 +1400,14 @@ class _HostEventActionsSection extends ConsumerWidget {
         ),
         gapH10,
         if (event.isCancelled)
-          const _HostActionRow(
+          const HostActionRow(
             label: 'Event cancelled',
             detail: 'Records are retained',
             destructive: true,
             showDivider: false,
           )
         else ...[
-          _HostActionRow(
+          HostActionRow(
             label: 'Cancel event',
             detail: cancelEventPending
                 ? 'Cancelling...'
@@ -1402,7 +1417,7 @@ class _HostEventActionsSection extends ConsumerWidget {
             showDivider: !hasKnownActivity,
           ),
           if (!hasKnownActivity)
-            _HostActionRow(
+            HostActionRow(
               label: 'Delete unused event',
               detail: deleteEventPending ? 'Deleting...' : 'Permanent removal',
               destructive: true,
@@ -1436,8 +1451,9 @@ String _privateShareDetail({
   return '$count invite links';
 }
 
-class _HostActionRow extends StatelessWidget {
-  const _HostActionRow({
+class HostActionRow extends StatelessWidget {
+  const HostActionRow({
+    super.key,
     required this.label,
     required this.detail,
     this.onTap,
@@ -1516,8 +1532,12 @@ class _HostActionRow extends StatelessWidget {
   }
 }
 
-class _HostEventSummaryCard extends StatelessWidget {
-  const _HostEventSummaryCard({required this.club, required this.event});
+class HostEventSummaryCard extends StatelessWidget {
+  const HostEventSummaryCard({
+    super.key,
+    required this.club,
+    required this.event,
+  });
 
   final Club club;
   final Event event;
@@ -1537,22 +1557,22 @@ class _HostEventSummaryCard extends StatelessWidget {
       borderColor: t.line,
       child: Column(
         children: [
-          _HostEventSummaryRow(
+          HostEventSummaryRow(
             icon: CatchIcons.groupsRounded,
             label: 'Club',
             value: club.name,
           ),
-          _HostEventSummaryRow(
+          HostEventSummaryRow(
             icon: CatchIcons.locationOnOutlined,
             label: 'Meet',
             value: event.locationName,
           ),
-          _HostEventSummaryRow(
+          HostEventSummaryRow(
             icon: CatchIcons.routeRounded,
             label: 'Event',
             value: event.activitySummaryLabel,
           ),
-          _HostEventSummaryRow(
+          HostEventSummaryRow(
             icon: CatchIcons.paymentsOutlined,
             label: 'Price',
             value: price,
@@ -1564,8 +1584,9 @@ class _HostEventSummaryCard extends StatelessWidget {
   }
 }
 
-class _HostEventSummaryRow extends StatelessWidget {
-  const _HostEventSummaryRow({
+class HostEventSummaryRow extends StatelessWidget {
+  const HostEventSummaryRow({
+    super.key,
     required this.icon,
     required this.label,
     required this.value,

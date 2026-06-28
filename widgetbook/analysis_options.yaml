@@ -1,1 +1,5 @@
 include: package:flutter_lints/flutter.yaml
+
+plugins:
+  catch_ui_lints:
+    path: ../packages/catch_ui_lints

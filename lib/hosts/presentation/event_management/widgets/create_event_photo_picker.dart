@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +19,11 @@ class CreateEventPhotoPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OrderedPhotoPicker(
-      label: const FieldLabel('Event photos', isOptional: true),
+      label: const CatchFormFieldLabel(
+        label: 'Event photos',
+        isOptional: true,
+        large: true,
+      ),
       photos: photos,
       onAddPhotos: onAddPhotos,
       onRemovePhoto: onRemovePhoto,

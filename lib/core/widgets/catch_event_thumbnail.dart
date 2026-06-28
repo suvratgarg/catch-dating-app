@@ -53,7 +53,8 @@ class CatchEventThumbnail extends StatelessWidget {
             child: CatchNetworkImage(
               url,
               fit: fit,
-              errorBuilder: (_, _, _) => _ActivityFallback(
+              errorBuilder: (context, _, _) => _buildActivityFallback(
+                context,
                 activityKind: activityKind,
                 iconAlignment: iconAlignment,
                 iconSize: fallbackIconSize,
@@ -62,7 +63,8 @@ class CatchEventThumbnail extends StatelessWidget {
               ),
               loadingBuilder: (context, child, progress) {
                 if (progress == null) return child;
-                return _ActivityFallback(
+                return _buildActivityFallback(
+                  context,
                   activityKind: activityKind,
                   iconAlignment: iconAlignment,
                   iconSize: fallbackIconSize,
@@ -73,88 +75,72 @@ class CatchEventThumbnail extends StatelessWidget {
             ),
           )
         else
-          _ActivityFallback(
+          _buildActivityFallback(
+            context,
             activityKind: activityKind,
             iconAlignment: iconAlignment,
             iconSize: fallbackIconSize,
             iconOpacity: fallbackIconOpacity,
             patternOpacity: fallbackPatternOpacity,
           ),
-        if (scrim != CatchEventThumbnailScrim.none) _Scrim(style: scrim),
+        if (scrim != CatchEventThumbnailScrim.none) _buildScrim(scrim),
       ],
     );
   }
 }
 
-class _ActivityFallback extends StatelessWidget {
-  const _ActivityFallback({
-    required this.activityKind,
-    required this.iconAlignment,
-    required this.iconSize,
-    required this.iconOpacity,
-    required this.patternOpacity,
-  });
-
-  final ActivityKind activityKind;
-  final Alignment iconAlignment;
-  final double? iconSize;
-  final double iconOpacity;
-  final double patternOpacity;
-
-  @override
-  Widget build(BuildContext context) {
-    return EventActivityBackdrop(
-      visual: eventActivityVisual(activityKind, context: context),
-      dense: true,
-      iconAlignment: iconAlignment,
-      iconSize: iconSize ?? CatchLayout.eventThumbnailBackdropIconSize,
-      iconOpacity: iconOpacity,
-      patternOpacity: patternOpacity,
-    );
-  }
+Widget _buildActivityFallback(
+  BuildContext context, {
+  required ActivityKind activityKind,
+  required Alignment iconAlignment,
+  required double? iconSize,
+  required double iconOpacity,
+  required double patternOpacity,
+}) {
+  return EventActivityBackdrop(
+    visual: eventActivityVisual(activityKind, context: context),
+    dense: true,
+    iconAlignment: iconAlignment,
+    iconSize: iconSize ?? CatchLayout.eventThumbnailBackdropIconSize,
+    iconOpacity: iconOpacity,
+    patternOpacity: patternOpacity,
+  );
 }
 
-class _Scrim extends StatelessWidget {
-  const _Scrim({required this.style});
-
-  final CatchEventThumbnailScrim style;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = switch (style) {
-      CatchEventThumbnailScrim.none => const [Colors.transparent],
-      CatchEventThumbnailScrim.bottom => [
-        Colors.transparent,
-        Colors.transparent,
-        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.mutedContent),
-        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.gradientBand),
-      ],
-      CatchEventThumbnailScrim.full => [
-        CatchTokens.editorialDark.withValues(
-          alpha: CatchOpacity.photoScrimBarelyVisible,
-        ),
-        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.mutedContent),
-        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.gradientBand),
-      ],
-    };
-    final stops = switch (style) {
-      CatchEventThumbnailScrim.none => null,
-      CatchEventThumbnailScrim.bottom => const [0.0, 0.45, 0.78, 1.0],
-      CatchEventThumbnailScrim.full => const [0.0, 0.55, 1.0],
-    };
-    return IgnorePointer(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: colors,
-            stops: stops,
-          ),
+Widget _buildScrim(CatchEventThumbnailScrim style) {
+  final colors = switch (style) {
+    CatchEventThumbnailScrim.none => const [Colors.transparent],
+    CatchEventThumbnailScrim.bottom => [
+      Colors.transparent,
+      Colors.transparent,
+      CatchTokens.editorialDark.withValues(alpha: CatchOpacity.mutedContent),
+      CatchTokens.editorialDark.withValues(alpha: CatchOpacity.gradientBand),
+    ],
+    CatchEventThumbnailScrim.full => [
+      CatchTokens.editorialDark.withValues(
+        alpha: CatchOpacity.photoScrimBarelyVisible,
+      ),
+      CatchTokens.editorialDark.withValues(alpha: CatchOpacity.mutedContent),
+      CatchTokens.editorialDark.withValues(alpha: CatchOpacity.gradientBand),
+    ],
+  };
+  final stops = switch (style) {
+    CatchEventThumbnailScrim.none => null,
+    CatchEventThumbnailScrim.bottom => const [0.0, 0.45, 0.78, 1.0],
+    CatchEventThumbnailScrim.full => const [0.0, 0.55, 1.0],
+  };
+  return IgnorePointer(
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: colors,
+          stops: stops,
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
 enum CatchEventThumbnailScrim { none, bottom, full }

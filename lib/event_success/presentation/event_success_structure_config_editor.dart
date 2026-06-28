@@ -82,7 +82,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
               children: [
                 SizedBox(
                   width: itemWidth,
-                  child: _StructureNumberField(
+                  child: StructureNumberField(
                     label: value.unitKind.peoplePerLabel,
                     detail: value.unitKind == EventSuccessUnitKind.wholeGroup
                         ? 'Whole-group formats use the target attendance.'
@@ -106,7 +106,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 ),
                 SizedBox(
                   width: itemWidth,
-                  child: _StructureNumberField(
+                  child: StructureNumberField(
                     label: value.unitKind.countLabel,
                     detail: value.unitKind.supportsUnitCount
                         ? 'Set a host-owned count or let Catch estimate it from attendance.'
@@ -182,7 +182,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           gapH12,
           Text('Assignment goals', style: CatchTextStyles.labelL(context)),
           gapH8,
-          _ActivityAttributeGoalChips(
+          ActivityAttributeGoalChips(
             title: 'Balance across units',
             attributes: value.balanceActivityAttributes,
             labelFor: (attribute) => attribute.balanceLabel,
@@ -201,7 +201,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             ),
           ),
           gapH8,
-          _ActivityAttributeGoalChips(
+          ActivityAttributeGoalChips(
             title: 'Cluster similar people',
             attributes: value.clusterActivityAttributes,
             labelFor: (attribute) => attribute.clusterLabel,
@@ -242,7 +242,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             ],
           ),
           gapH8,
-          _StructureNumberField(
+          StructureNumberField(
             label: 'Max meetings per pair',
             detail: 'Caps repeat pairings when the event has extra rounds.',
             child: CatchNumberStepper(
@@ -306,8 +306,8 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
   }
 }
 
-class _ActivityAttributeGoalChips extends StatelessWidget {
-  const _ActivityAttributeGoalChips({
+class ActivityAttributeGoalChips extends StatelessWidget {
+  const ActivityAttributeGoalChips({
     required this.title,
     required this.attributes,
     required this.labelFor,
@@ -348,8 +348,8 @@ class _ActivityAttributeGoalChips extends StatelessWidget {
   }
 }
 
-class _StructureNumberField extends StatelessWidget {
-  const _StructureNumberField({
+class StructureNumberField extends StatelessWidget {
+  const StructureNumberField({
     required this.label,
     required this.detail,
     required this.child,

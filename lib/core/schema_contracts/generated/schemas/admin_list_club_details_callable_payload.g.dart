@@ -22,13 +22,10 @@ const schemaAdminListClubDetailsCallablePayloadSchema = <String, Object?>{
     'citySlug': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': 'string',
           'minLength': 1,
-          'maxLength': 80,
-          'pattern': '^[a-z0-9-]+\$',
+          'maxLength': 120,
+          'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
         },
         <String, Object?>{
           'type': 'null',
@@ -40,13 +37,10 @@ const schemaAdminListClubDetailsCallablePayloadSchema = <String, Object?>{
         <String, Object?>{
           'type': 'array',
           'items': <String, Object?>{
-            'type': <Object?>[
-              'string',
-              'null',
-            ],
+            'type': 'string',
             'minLength': 1,
-            'maxLength': 80,
-            'pattern': '^[a-z0-9-]+\$',
+            'maxLength': 120,
+            'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
           },
           'minItems': 1,
           'maxItems': 10,

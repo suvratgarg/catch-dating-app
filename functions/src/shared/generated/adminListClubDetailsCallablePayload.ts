@@ -7,8 +7,8 @@
  */
 export interface AdminListClubDetailsCallablePayload {
   query?: string | null;
-  citySlug?: (string | null) | null;
-  citySlugs?: (string | null)[] | null;
+  citySlug?: string | null;
+  citySlugs?: string[] | null;
   publishStatus?:
     | "draft"
     | "qa"

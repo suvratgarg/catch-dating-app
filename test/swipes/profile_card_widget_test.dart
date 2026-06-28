@@ -17,7 +17,7 @@ Widget _profileCardHarness({required ThemeData theme}) {
   final profile = buildPublicProfile(
     name: 'Manan',
     age: 26,
-  ).copyWith(city: 'indore', relationshipGoal: RelationshipGoal.casual);
+  ).copyWith(city: 'in-mp-indore', relationshipGoal: RelationshipGoal.casual);
 
   return ProviderScope(
     child: MaterialApp(
@@ -84,7 +84,7 @@ void main() {
     tester,
   ) async {
     final profile = buildPublicProfile(name: 'Manan', age: 26).copyWith(
-      city: 'indore',
+      city: 'in-mp-indore',
       relationshipGoal: RelationshipGoal.relationship,
       height: 178,
       occupation: 'Product designer',
@@ -128,7 +128,7 @@ void main() {
   ) async {
     final profile = buildPublicProfile(name: 'Manan', age: 26).copyWith(
       profilePrompts: const [],
-      city: 'indore',
+      city: 'in-mp-indore',
       relationshipGoal: RelationshipGoal.casual,
     );
 
@@ -206,7 +206,7 @@ void main() {
                   'Long easy events, coffee after the finish, and a playlist that keeps the whole group moving without making the card feel cramped.',
             ),
           ).copyWith(
-            city: 'indore',
+            city: 'in-mp-indore',
             height: 180,
             occupation: 'Senior product designer with an unusually long title',
             company: 'A company with an unusually long name',
@@ -309,7 +309,7 @@ void main() {
     final profile = buildPublicProfile(
       name: 'Manan',
       age: 26,
-    ).copyWith(city: 'indore');
+    ).copyWith(city: 'in-mp-indore');
 
     await tester.pumpWidget(
       ProviderScope(

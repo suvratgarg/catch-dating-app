@@ -2,17 +2,14 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/analytics/app_analytics.dart';
-import 'package:catch_dating_app/core/data/city_repository.dart';
-import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_browse_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
@@ -63,23 +60,17 @@ class _ExploreBrowseHeaderState
     final query = ref.watch(exploreSearchQueryProvider);
     final searchActive = _searchOpen || query.isNotEmpty;
 
-    return CatchBrowseHeader(
-      title: 'Explore',
-      subtitle: 'Find an event worth showing up for.',
-      leading: const ExploreCityPicker(),
+    return _buildExploreBrowseHeader(
+      context,
       searchActive: searchActive,
       searchValue: query,
       onSearchChanged: (value) =>
           ref.read(exploreSearchQueryProvider.notifier).setQuery(value),
-      searchPlaceholder: 'Search events or clubs',
-      searchAutofocus: true,
       onSearchSubmitted: _closeEmptySearch,
       onSearchFocusChanged: _handleSearchFocusChanged,
-      onOpenSearch: () => setState(() => _searchOpen = true),
+      onSearchTap: () => setState(() => _searchOpen = true),
       onCloseSearch: () => setState(() => _searchOpen = false),
       searchActionVisible: widget.showSearchAction,
-      searchTooltip: 'Search events or clubs',
-      searchSemanticLabel: 'Search events or clubs',
       backgroundColor: widget.backgroundColor,
     );
   }
@@ -95,6 +86,183 @@ class _ExploreBrowseHeaderState
       setState(() => _searchOpen = false);
     }
   }
+}
+
+Widget _buildExploreBrowseHeader(
+  BuildContext context, {
+  required bool searchActive,
+  required String searchValue,
+  required ValueChanged<String> onSearchChanged,
+  required ValueChanged<String> onSearchSubmitted,
+  required ValueChanged<bool> onSearchFocusChanged,
+  required VoidCallback onSearchTap,
+  required VoidCallback onCloseSearch,
+  required bool searchActionVisible,
+  Color? backgroundColor,
+}) {
+  final t = CatchTokens.of(context);
+  final ambientScaler = MediaQuery.textScalerOf(context);
+  final clampedFactor = ambientScaler.scale(1.0).clamp(0.85, 1.0);
+  final clampedScaler = TextScaler.linear(clampedFactor);
+
+  return ColoredBox(
+    color: backgroundColor ?? t.bg,
+    child: Padding(
+      padding: CatchInsets.screenTitleBlock,
+      child: MediaQuery(
+        data: MediaQuery.of(context).copyWith(textScaler: clampedScaler),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SizedBox(
+              height: CatchLayout.browseHeaderContentHeight,
+              child: TweenAnimationBuilder<double>(
+                tween: Tween<double>(end: searchActive ? 1 : 0),
+                duration: CatchMotion.base,
+                curve: CatchMotion.standardCurve,
+                builder: (context, progress, _) {
+                  final showSearchControl =
+                      searchActionVisible || searchActive || progress > 0.001;
+                  return Stack(
+                    alignment: Alignment.centerRight,
+                    children: [
+                      ExcludeSemantics(
+                        excluding: progress > 0.5,
+                        child: IgnorePointer(
+                          ignoring: progress > 0.02,
+                          child: Opacity(
+                            opacity: (1 - (progress * 1.5)).clamp(0.0, 1.0),
+                            child: _buildExploreBrowseTitleLayout(
+                              context,
+                              reserveSearchAction: searchActionVisible,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (showSearchControl)
+                        _buildExploreBrowseSearchControl(
+                          context,
+                          progress: progress,
+                          maxWidth: constraints.maxWidth,
+                          value: searchValue,
+                          autofocus: searchActive,
+                          onSearchTap: onSearchTap,
+                          onCloseSearch: onCloseSearch,
+                          onChanged: onSearchChanged,
+                          onSubmitted: onSearchSubmitted,
+                          onFocusChanged: onSearchFocusChanged,
+                        ),
+                    ],
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    ),
+  );
+}
+
+Widget _buildExploreBrowseSearchControl(
+  BuildContext context, {
+  required double progress,
+  required double maxWidth,
+  required String value,
+  required bool autofocus,
+  required VoidCallback onSearchTap,
+  required VoidCallback onCloseSearch,
+  required ValueChanged<String> onChanged,
+  required ValueChanged<String> onSubmitted,
+  required ValueChanged<bool> onFocusChanged,
+}) {
+  final t = CatchTokens.of(context);
+  final clampedProgress = progress.clamp(0.0, 1.0);
+  final width =
+      CatchLayout.browseHeaderSearchExtent +
+      ((maxWidth - CatchLayout.browseHeaderSearchExtent) * clampedProgress);
+  final fieldOpacity = ((clampedProgress - 0.12) / 0.88).clamp(0.0, 1.0);
+  final showField = clampedProgress > 0.06;
+
+  return Align(
+    alignment: Alignment.centerRight,
+    child: SizedBox(
+      width: width,
+      height: CatchLayout.browseHeaderSearchExtent,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(CatchRadius.pill),
+        child: showField
+            ? Opacity(
+                opacity: fieldOpacity,
+                child: CatchSearchField(
+                  value: value,
+                  onChanged: onChanged,
+                  placeholder: 'Search events or clubs',
+                  autofocus: autofocus,
+                  onSubmitted: onSubmitted,
+                  onFocusChanged: onFocusChanged,
+                  semanticLabel: 'Search events or clubs',
+                  emptyTrailingIcon: CatchIcons.close,
+                  emptyTrailingTooltip: 'Close search',
+                  onEmptyTrailingPressed: onCloseSearch,
+                ),
+              )
+            : Tooltip(
+                message: 'Search events or clubs',
+                child: Semantics(
+                  button: true,
+                  label: 'Search events or clubs',
+                  child: CatchIconButton(
+                    size: CatchLayout.browseHeaderSearchExtent,
+                    onTap: onSearchTap,
+                    background: t.raised,
+                    child: Icon(
+                      CatchIcons.search,
+                      size: CatchIcon.control,
+                      color: t.ink,
+                    ),
+                  ),
+                ),
+              ),
+      ),
+    ),
+  );
+}
+
+Widget _buildExploreBrowseTitleLayout(
+  BuildContext context, {
+  required bool reserveSearchAction,
+}) {
+  return Row(
+    children: [
+      const ExploreCityPicker(),
+      gapW12,
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Explore',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.headline(context),
+            ),
+            const SizedBox(height: CatchGaps.headerTitleToSubtitle),
+            Text(
+              'Find an event worth showing up for.',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.supporting(context),
+            ),
+          ],
+        ),
+      ),
+      if (reserveSearchAction) ...[
+        gapW8,
+        const SizedBox.square(dimension: CatchLayout.browseHeaderSearchExtent),
+      ],
+    ],
+  );
 }
 
 class ExploreDiscoveryCoverHeader extends ConsumerStatefulWidget {
@@ -120,30 +288,22 @@ class _ExploreDiscoveryCoverHeaderState
         .featuredItem;
 
     if (searchActive || featuredItem == null) {
-      return CatchBrowseHeader(
-        title: 'Explore',
-        subtitle: 'Find an event worth showing up for.',
-        leading: const ExploreCityPicker(),
+      return _buildExploreTopBand(
+        context,
         searchActive: searchActive,
         searchValue: query,
+        onSearchTap: () => setState(() => _searchOpen = true),
         onSearchChanged: (value) =>
             ref.read(exploreSearchQueryProvider.notifier).setQuery(value),
-        searchPlaceholder: 'Search events or clubs',
-        searchAutofocus: true,
         onSearchSubmitted: _closeEmptySearch,
         onSearchFocusChanged: _handleSearchFocusChanged,
-        onOpenSearch: () => setState(() => _searchOpen = true),
         onCloseSearch: () => setState(() => _searchOpen = false),
-        searchTooltip: 'Search events or clubs',
-        searchSemanticLabel: 'Search events or clubs',
       );
     }
 
-    final city = ref.watch(selectedExploreCityProvider);
-    return _ExploreCoverHeaderContent(
+    return _buildExploreCoverHeaderContent(
+      context,
       item: featuredItem,
-      city: city,
-      onCityTap: () => _showCitySheet(context),
       onSearchTap: () => setState(() => _searchOpen = true),
       onClaimSeat: () => _openFeaturedEvent(context, featuredItem),
     );
@@ -159,24 +319,6 @@ class _ExploreDiscoveryCoverHeaderState
     if (ref.read(exploreSearchQueryProvider).trim().isEmpty) {
       setState(() => _searchOpen = false);
     }
-  }
-
-  Future<void> _showCitySheet(BuildContext context) async {
-    final cities = await ref.read(cityListProvider.future);
-    if (!context.mounted || cities.isEmpty) return;
-    await showModalBottomSheet<void>(
-      context: context,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) => _ExploreCoverCitySheet(
-        cities: cities,
-        selectedCity: ref.read(selectedExploreCityProvider),
-        onSelected: (city) {
-          ref.read(selectedExploreCityProvider.notifier).setCity(city);
-          Navigator.of(sheetContext).pop();
-        },
-      ),
-    );
   }
 
   void _openFeaturedEvent(BuildContext context, ExploreEventItem item) {
@@ -201,126 +343,214 @@ class _ExploreDiscoveryCoverHeaderState
   }
 }
 
-class _ExploreCoverHeaderContent extends StatelessWidget {
-  const _ExploreCoverHeaderContent({
-    required this.item,
-    required this.city,
-    required this.onCityTap,
-    required this.onSearchTap,
-    required this.onClaimSeat,
-  });
+Widget _buildExploreTopBand(
+  BuildContext context, {
+  required bool searchActive,
+  required String searchValue,
+  required VoidCallback onSearchTap,
+  required ValueChanged<String> onSearchChanged,
+  required ValueChanged<String> onSearchSubmitted,
+  required ValueChanged<bool> onSearchFocusChanged,
+  required VoidCallback onCloseSearch,
+}) {
+  final t = CatchTokens.of(context);
+  final topInset = MediaQuery.paddingOf(context).top;
+  return ColoredBox(
+    color: t.bg,
+    child: Padding(
+      padding: EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        topInset + CatchSpacing.s6,
+        CatchSpacing.s5,
+        CatchSpacing.s4,
+      ),
+      child: _buildExploreTopRow(
+        context,
+        cityPresentation: ExploreCityPickerPresentation.scopeLabel,
+        foreground: t.ink2,
+        searchActive: searchActive,
+        searchValue: searchValue,
+        searchButtonBackground: t.raised,
+        searchButtonForeground: t.ink,
+        onSearchTap: onSearchTap,
+        onSearchChanged: onSearchChanged,
+        onSearchSubmitted: onSearchSubmitted,
+        onSearchFocusChanged: onSearchFocusChanged,
+        onCloseSearch: onCloseSearch,
+      ),
+    ),
+  );
+}
 
-  final ExploreEventItem item;
-  final CityData city;
-  final VoidCallback onCityTap;
-  final VoidCallback onSearchTap;
-  final VoidCallback onClaimSeat;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final swatch = ActivityPalette.of(context).forKind(item.event.activityKind);
-    final foreground = CatchTokens.editorialLight;
-    return SizedBox(
-      height: CatchLayout.exploreDiscoveryCoverHeight,
-      child: DecoratedBox(
-        decoration: BoxDecoration(color: t.ink),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: CustomPaint(
-                painter: _ExploreCoverHeaderPainter(
-                  lineColor: foreground.withValues(alpha: 0.08),
-                  glowColor: swatch.accent.withValues(
-                    alpha: CatchOpacity.coverStoryGlow,
-                  ),
+Widget _buildExploreCoverHeaderContent(
+  BuildContext context, {
+  required ExploreEventItem item,
+  required VoidCallback onSearchTap,
+  required VoidCallback onClaimSeat,
+}) {
+  final t = CatchTokens.of(context);
+  final swatch = ActivityPalette.of(context).forKind(item.event.activityKind);
+  final foreground = CatchTokens.editorialLight;
+  final topInset = MediaQuery.paddingOf(context).top;
+  return SizedBox(
+    height: topInset + CatchLayout.exploreDiscoveryCoverHeight,
+    child: DecoratedBox(
+      decoration: BoxDecoration(color: t.ink),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _ExploreCoverHeaderPainter(
+                lineColor: foreground.withValues(alpha: 0.08),
+                glowColor: swatch.accent.withValues(
+                  alpha: CatchOpacity.coverStoryGlow,
                 ),
               ),
             ),
-            Positioned(
-              right: CatchSpacing.s5,
-              bottom: CatchSpacing.s2,
-              child: Icon(
-                _coverActivityIcon(item.event.activityKind),
-                size: CatchLayout.coverStoryGhostGlyphSize,
-                color: foreground.withValues(
-                  alpha: CatchOpacity.coverStoryGhostGlyph,
-                ),
+          ),
+          Positioned(
+            right: CatchSpacing.s5,
+            bottom: CatchSpacing.s2,
+            child: Icon(
+              _coverActivityIcon(item.event.activityKind),
+              size: CatchLayout.coverStoryGhostGlyphSize,
+              color: foreground.withValues(
+                alpha: CatchOpacity.coverStoryGhostGlyph,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s5,
-                CatchSpacing.s6,
-                CatchSpacing.s5,
-                CatchSpacing.s5,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _ExploreCoverScopeButton(
-                          city: city,
-                          foreground: foreground,
-                          onTap: onCityTap,
-                        ),
-                      ),
-                      gapW12,
-                      CatchIconButton(
-                        background: foreground.withValues(
-                          alpha: CatchOpacity.controlOverlayHover,
-                        ),
-                        onTap: onSearchTap,
-                        child: Icon(
-                          CatchIcons.search,
-                          size: CatchIcon.md,
-                          color: foreground,
-                        ),
-                      ),
-                    ],
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              CatchSpacing.s5,
+              topInset + CatchSpacing.s6,
+              CatchSpacing.s5,
+              CatchSpacing.s5,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildExploreTopRow(
+                  context,
+                  cityPresentation: ExploreCityPickerPresentation.scopeLabel,
+                  foreground: foreground,
+                  searchActive: false,
+                  searchValue: '',
+                  searchButtonBackground: foreground.withValues(
+                    alpha: CatchOpacity.controlOverlayHover,
                   ),
-                  const Spacer(),
-                  Text(
-                    _coverKicker(item).toUpperCase(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.kicker(
-                      context,
-                      color: swatch.accent,
+                  searchButtonForeground: foreground,
+                  onSearchTap: onSearchTap,
+                ),
+                const Spacer(),
+                Text(
+                  _coverKicker(item).toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.kicker(context, color: swatch.accent),
+                ),
+                gapH12,
+                Text(
+                  item.event.title,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.headline(context, color: foreground),
+                ),
+                gapH20,
+                Row(
+                  children: [
+                    Expanded(
+                      child: CatchButton(
+                        label: 'Claim a seat',
+                        onPressed: onClaimSeat,
+                        variant: CatchButtonVariant.light,
+                        fullWidth: true,
+                      ),
                     ),
-                  ),
-                  gapH12,
-                  Text(
-                    item.event.title,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.headline(context, color: foreground),
-                  ),
-                  gapH20,
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CatchButton(
-                          label: 'Claim a seat',
-                          onPressed: onClaimSeat,
-                          variant: CatchButtonVariant.light,
-                          fullWidth: true,
-                        ),
-                      ),
-                      gapW12,
-                      Expanded(child: _ExploreCoverMeta(item: item)),
-                    ],
-                  ),
-                ],
-              ),
+                    gapW12,
+                    Expanded(
+                      child: _buildExploreCoverMeta(context, item: item),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildExploreTopRow(
+  BuildContext context, {
+  required ExploreCityPickerPresentation cityPresentation,
+  required Color foreground,
+  required bool searchActive,
+  required String searchValue,
+  required Color searchButtonBackground,
+  required Color searchButtonForeground,
+  required VoidCallback onSearchTap,
+  ValueChanged<String>? onSearchChanged,
+  ValueChanged<String>? onSearchSubmitted,
+  ValueChanged<bool>? onSearchFocusChanged,
+  VoidCallback? onCloseSearch,
+}) {
+  if (searchActive) {
+    return SizedBox(
+      height: CatchLayout.browseHeaderSearchExtent,
+      child: CatchSearchField(
+        value: searchValue,
+        onChanged: onSearchChanged,
+        placeholder: 'Search events or clubs',
+        autofocus: true,
+        onSubmitted: onSearchSubmitted,
+        onFocusChanged: onSearchFocusChanged,
+        semanticLabel: 'Search events or clubs',
+        emptyTrailingIcon: CatchIcons.close,
+        emptyTrailingTooltip: 'Close search',
+        onEmptyTrailingPressed: onCloseSearch,
       ),
     );
   }
+
+  return SizedBox(
+    height: CatchLayout.browseHeaderSearchExtent,
+    child: Row(
+      children: [
+        Expanded(
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: ExploreCityPicker(
+              presentation: cityPresentation,
+              foregroundColor:
+                  cityPresentation == ExploreCityPickerPresentation.scopeLabel
+                  ? foreground.withValues(
+                      alpha: CatchOpacity.coverStoryLocation,
+                    )
+                  : null,
+            ),
+          ),
+        ),
+        gapW12,
+        Tooltip(
+          message: 'Search events or clubs',
+          child: Semantics(
+            button: true,
+            label: 'Search events or clubs',
+            child: CatchIconButton(
+              background: searchButtonBackground,
+              onTap: onSearchTap,
+              child: Icon(
+                CatchIcons.search,
+                size: CatchIcon.md,
+                color: searchButtonForeground,
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _ExploreCoverHeaderPainter extends CustomPainter {
@@ -360,147 +590,21 @@ class _ExploreCoverHeaderPainter extends CustomPainter {
       oldDelegate.lineColor != lineColor || oldDelegate.glowColor != glowColor;
 }
 
-class _ExploreCoverScopeButton extends StatelessWidget {
-  const _ExploreCoverScopeButton({
-    required this.city,
-    required this.foreground,
-    required this.onTap,
-  });
-
-  final CityData city;
-  final Color foreground;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: 'Choose city: ${city.label}',
-      child: Semantics(
-        button: true,
-        label: 'Choose city: ${city.label}',
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(CatchRadius.sm),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
-            child: Text(
-              'EXPLORE - ${city.label}'.toUpperCase(),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.kicker(
-                context,
-                color: foreground.withValues(
-                  alpha: CatchOpacity.coverStoryLocation,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ExploreCoverMeta extends StatelessWidget {
-  const _ExploreCoverMeta({required this.item});
-
-  final ExploreEventItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    final foreground = CatchTokens.editorialLight;
-    return Text(
-      '${EventFormatters.time(item.event.startTime)} - ${item.priceLabel}\n'
-      '${item.event.signedUpCount} going - ${_coverSpotsLabel(item)}',
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-      style: CatchTextStyles.kicker(
-        context,
-        color: foreground.withValues(alpha: CatchOpacity.coverStoryData),
-      ),
-    );
-  }
-}
-
-class _ExploreCoverCitySheet extends StatelessWidget {
-  const _ExploreCoverCitySheet({
-    required this.cities,
-    required this.selectedCity,
-    required this.onSelected,
-  });
-
-  final List<CityData> cities;
-  final CityData selectedCity;
-  final ValueChanged<CityData> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
-    return Material(
-      color: t.surface,
-      borderRadius: const BorderRadius.vertical(
-        top: Radius.circular(CatchRadius.lg),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: SafeArea(
-        top: false,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: maxHeight),
-          child: ListView.separated(
-            shrinkWrap: true,
-            padding: CatchInsets.pageBodyTight,
-            itemCount: cities.length,
-            separatorBuilder: (_, _) => gapH4,
-            itemBuilder: (context, index) {
-              final city = cities[index];
-              final selected = city.name == selectedCity.name;
-              return CatchSurface(
-                tone: selected
-                    ? CatchSurfaceTone.primarySoft
-                    : CatchSurfaceTone.transparent,
-                radius: CatchRadius.md,
-                borderColor: selected ? t.primarySoft : Colors.transparent,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CatchSpacing.s4,
-                  vertical: CatchSpacing.s3,
-                ),
-                onTap: () => onSelected(city),
-                child: Row(
-                  children: [
-                    Icon(
-                      selected
-                          ? CatchIcons.locationOnRounded
-                          : CatchIcons.locationOnOutlined,
-                      color: selected ? t.primary : t.ink3,
-                      size: CatchIcon.md,
-                    ),
-                    gapW12,
-                    Expanded(
-                      child: Text(
-                        city.label,
-                        style: CatchTextStyles.labelL(context),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (selected) ...[
-                      gapW12,
-                      Icon(
-                        CatchIcons.checkRounded,
-                        color: t.primary,
-                        size: CatchIcon.md,
-                      ),
-                    ],
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
+Widget _buildExploreCoverMeta(
+  BuildContext context, {
+  required ExploreEventItem item,
+}) {
+  final foreground = CatchTokens.editorialLight;
+  return Text(
+    '${EventFormatters.time(item.event.startTime)} - ${item.priceLabel}\n'
+    '${item.event.signedUpCount} going - ${_coverSpotsLabel(item)}',
+    maxLines: 2,
+    overflow: TextOverflow.ellipsis,
+    style: CatchTextStyles.kicker(
+      context,
+      color: foreground.withValues(alpha: CatchOpacity.coverStoryData),
+    ),
+  );
 }
 
 String _coverKicker(ExploreEventItem item) {

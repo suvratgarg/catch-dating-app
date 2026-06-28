@@ -10,7 +10,12 @@ import {UploadedPhoto} from "./uploadedPhoto";
 export interface ClubDocument {
   name: string;
   description: string;
-  location: string | null;
+  /**
+   * Canonical launch market id. Public URL slugs live under publicPage.citySlug.
+   */
+  location: string;
+  locationCityId: string;
+  locationMarketId: string;
   area: string;
   /**
    * Legacy primary host user id. Null for programmatically generated, unclaimed organizer profiles.
@@ -282,7 +287,7 @@ export interface ClubDocument {
   };
   publicPage?: {
     slug: string;
-    citySlug: string | null;
+    citySlug: string;
     canonicalPath: string;
     publishStatus: "draft" | "qa" | "published" | "suppressed" | "removed";
     indexStatus: "noindex" | "indexReady" | "indexed";

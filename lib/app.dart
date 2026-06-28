@@ -57,9 +57,17 @@ class MyApp extends ConsumerWidget {
       darkTheme: AppTheme.dark,
       routerConfig: goRouter,
       builder: (context, child) {
-        final content = _ForceUpdateLifecycleWrapper(
-          ref: ref,
-          child: _buildForceUpdateGate(ref, forceUpdate, child),
+        final content = ForceUpdateGate(
+          forceUpdate: forceUpdate,
+          onRetry: () {
+            unawaited(
+              ref.read(forceUpdateRefreshProvider)(
+                ref,
+                invalidatePackageInfo: true,
+              ),
+            );
+          },
+          child: child ?? const SizedBox.shrink(),
         );
 
         if (!AppConfig.shouldShowEnvironmentBanner) {
@@ -74,51 +82,27 @@ class MyApp extends ConsumerWidget {
       },
     );
   }
-
-  Widget _buildForceUpdateGate(
-    WidgetRef ref,
-    AsyncValue<bool> forceUpdate,
-    Widget? child,
-  ) {
-    if (forceUpdate.hasValue) {
-      return forceUpdate.requireValue
-          ? const UpdateRequiredScreen()
-          : (child ?? const SizedBox.shrink());
-    }
-
-    if (forceUpdate.hasError) {
-      return _ForceUpdateCheckErrorScreen(
-        error: forceUpdate.error,
-        onRetry: () {
-          unawaited(
-            ref.read(forceUpdateRefreshProvider)(
-              ref,
-              invalidatePackageInfo: true,
-            ),
-          );
-        },
-      );
-    }
-
-    return const _ForceUpdateCheckLoadingScreen();
-  }
 }
 
-/// Re-fetches Remote Config when the app is foregrounded so the force-update
-/// gate stays fresh during long-running app sessions.
-class _ForceUpdateLifecycleWrapper extends StatefulWidget {
-  const _ForceUpdateLifecycleWrapper({required this.ref, required this.child});
+class ForceUpdateGate extends ConsumerStatefulWidget {
+  const ForceUpdateGate({
+    super.key,
+    required this.forceUpdate,
+    required this.onRetry,
+    required this.child,
+    this.refreshOnResume = true,
+  });
 
-  final WidgetRef ref;
+  final AsyncValue<bool> forceUpdate;
+  final VoidCallback onRetry;
   final Widget child;
+  final bool refreshOnResume;
 
   @override
-  State<_ForceUpdateLifecycleWrapper> createState() =>
-      _ForceUpdateLifecycleWrapperState();
+  ConsumerState<ForceUpdateGate> createState() => _ForceUpdateGateState();
 }
 
-class _ForceUpdateLifecycleWrapperState
-    extends State<_ForceUpdateLifecycleWrapper>
+class _ForceUpdateGateState extends ConsumerState<ForceUpdateGate>
     with WidgetsBindingObserver {
   @override
   void initState() {
@@ -134,19 +118,37 @@ class _ForceUpdateLifecycleWrapperState
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      unawaited(
-        widget.ref.read(forceUpdateRefreshProvider)(
-          widget.ref,
-          invalidatePackageInfo: false,
-          shouldInvalidate: () => mounted,
-        ),
-      );
+    if (!widget.refreshOnResume || state != AppLifecycleState.resumed) {
+      return;
     }
+
+    unawaited(
+      ref.read(forceUpdateRefreshProvider)(
+        ref,
+        invalidatePackageInfo: false,
+        shouldInvalidate: () => mounted,
+      ),
+    );
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) {
+    final forceUpdate = widget.forceUpdate;
+    if (forceUpdate.hasValue) {
+      return forceUpdate.requireValue
+          ? const UpdateRequiredScreen()
+          : widget.child;
+    }
+
+    if (forceUpdate.hasError) {
+      return ForceUpdateCheckErrorScreen(
+        error: forceUpdate.error,
+        onRetry: widget.onRetry,
+      );
+    }
+
+    return const CatchStartupLoadingScreen();
+  }
 }
 
 Future<void> _refreshForceUpdateGate(
@@ -181,17 +183,9 @@ Future<void> _refreshForceUpdateGate(
   ref.invalidate(forceUpdateRequiredProvider);
 }
 
-class _ForceUpdateCheckLoadingScreen extends StatelessWidget {
-  const _ForceUpdateCheckLoadingScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return const CatchStartupLoadingScreen();
-  }
-}
-
-class _ForceUpdateCheckErrorScreen extends StatelessWidget {
-  const _ForceUpdateCheckErrorScreen({
+class ForceUpdateCheckErrorScreen extends StatelessWidget {
+  const ForceUpdateCheckErrorScreen({
+    super.key,
     required this.error,
     required this.onRetry,
   });

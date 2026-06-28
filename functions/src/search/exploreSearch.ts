@@ -122,20 +122,22 @@ export function buildAlgoliaExploreSearchBody(
   now: Date
 ) {
   const limit = payload.limit ?? defaultLimit;
-  const cityName = normalizeSearchCityName(payload.cityName);
+  const marketId = normalizeSearchMarketId(payload.cityName);
   return {
     requests: [
       {
         indexName: clubsIndexName(),
         query: payload.query,
         hitsPerPage: limit,
-        filters: cityName ? `location:${quoteFilterValue(cityName)}` : "",
+        filters: marketId ?
+          `locationMarketId:${quoteFilterValue(marketId)}` :
+          "",
       },
       {
         indexName: eventsIndexName(),
         query: payload.query,
         hitsPerPage: limit,
-        filters: eventFilters(cityName, now),
+        filters: eventFilters(marketId, now),
       },
     ],
     strategy: "none",
@@ -179,24 +181,24 @@ export function eventsIndexName(): string {
 
 /**
  * Builds Algolia filters for upcoming event search.
- * @param {string | undefined} cityName Optional city filter.
+ * @param {string | undefined} marketId Optional market filter.
  * @param {Date} now Current server time.
  * @return {string} Algolia filter expression.
  */
-function eventFilters(cityName: string | undefined, now: Date): string {
+function eventFilters(marketId: string | undefined, now: Date): string {
   const filters = [`startTimeEpoch >= ${Math.floor(now.getTime() / 1000)}`];
-  if (cityName) {
-    filters.unshift(`discoveryCityName:${quoteFilterValue(cityName)}`);
+  if (marketId) {
+    filters.unshift(`discoveryMarketId:${quoteFilterValue(marketId)}`);
   }
   return filters.join(" AND ");
 }
 
 /**
- * Normalizes city names used by Algolia Explore facet filters.
- * @param {string | null | undefined} value Raw city value.
- * @return {string | undefined} Lowercase city filter value.
+ * Normalizes market ids used by Algolia Explore facet filters.
+ * @param {string | null | undefined} value Raw market id.
+ * @return {string | undefined} Lowercase market filter value.
  */
-export function normalizeSearchCityName(
+export function normalizeSearchMarketId(
   value: string | null | undefined
 ): string | undefined {
   const normalized = (value ?? "").trim().toLowerCase();

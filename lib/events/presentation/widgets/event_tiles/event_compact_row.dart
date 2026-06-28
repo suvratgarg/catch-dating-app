@@ -65,7 +65,11 @@ class EventCompactRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _EventCompactDatePill(date: event.startTime, accent: visual.accent),
+          _eventCompactDatePill(
+            context,
+            date: event.startTime,
+            accent: visual.accent,
+          ),
           gapW12,
           Expanded(
             child: Column(
@@ -116,36 +120,32 @@ class EventCompactRow extends StatelessWidget {
   }
 }
 
-class _EventCompactDatePill extends StatelessWidget {
-  const _EventCompactDatePill({required this.date, required this.accent});
+Widget _eventCompactDatePill(
+  BuildContext context, {
+  required DateTime date,
+  required Color accent,
+}) {
+  final t = CatchTokens.of(context);
 
-  final DateTime date;
-  final Color accent;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      width: _datePillWidth,
-      height: _datePillHeight,
-      radius: CatchRadius.md,
-      backgroundColor: accent.withValues(alpha: CatchOpacity.subtleFill),
-      borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            EventFormatters.shortMonth(date).toUpperCase(),
-            style: CatchTextStyles.labelS(context, color: accent),
-          ),
-          gapH2,
-          Text(
-            '${date.day}',
-            style: CatchTextStyles.titleL(context, color: t.ink),
-          ),
-        ],
-      ),
-    );
-  }
+  return CatchSurface(
+    width: _datePillWidth,
+    height: _datePillHeight,
+    radius: CatchRadius.md,
+    backgroundColor: accent.withValues(alpha: CatchOpacity.subtleFill),
+    borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          EventFormatters.shortMonth(date).toUpperCase(),
+          style: CatchTextStyles.labelS(context, color: accent),
+        ),
+        gapH2,
+        Text(
+          '${date.day}',
+          style: CatchTextStyles.titleL(context, color: t.ink),
+        ),
+      ],
+    ),
+  );
 }

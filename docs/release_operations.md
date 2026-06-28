@@ -235,8 +235,10 @@ variables into Firebase Hosting predeploys when `hosting` is selected:
 `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`,
 `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`,
 `VITE_FIREBASE_MEASUREMENT_ID`, `VITE_WEBSITE_APPCHECK_SITE_KEY`,
-`VITE_GTM_ID`, `VITE_ADMIN_DATA_MODE`, `VITE_ADMIN_FIREBASE_ENV`, and
-`VITE_ADMIN_APPCHECK_SITE_KEY`. The environment-specific values must match the
+`VITE_ADMIN_DATA_MODE`, `VITE_ADMIN_FIREBASE_ENV`, and
+`VITE_ADMIN_APPCHECK_SITE_KEY`. `VITE_GTM_ID` is optional until the production
+GTM container exists; paid-acquisition readiness still requires setting it and
+validating consent-aware tags. The environment-specific values must match the
 selected Firebase alias; for prod, `VITE_FIREBASE_PROJECT_ID` must be
 `catch-dating-app-64e51` and `VITE_ADMIN_FIREBASE_ENV` must be `prod`.
 
@@ -432,6 +434,10 @@ complete for each target environment (`dev`, `staging`, and `prod`):
   Current non-prod/prod state has reused test-mode Razorpay secrets; replace
   them with the intended `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` values per
   Firebase project.
+- [ ] Replace the temporary `RAZORPAY_WEBHOOK_SECRET` values before enabling
+  real Razorpay webhooks. As of 2026-06-26, `dev`, `staging`, and `prod` each
+  have an enabled placeholder Secret Manager version so unrelated Functions
+  deploys are not blocked while Razorpay account approval is pending.
 - [ ] Deploy Functions after secrets and params are present:
   `./tool/deploy_firebase_targets.sh <env> functions`.
 - [ ] After callable Functions deploy, run

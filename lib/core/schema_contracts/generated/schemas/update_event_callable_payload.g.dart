@@ -68,18 +68,12 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
               'maxLength': 256,
             },
             'latitude': <String, Object?>{
-              'type': <Object?>[
-                'number',
-                'null',
-              ],
+              'type': 'number',
               'minimum': -90,
               'maximum': 90,
             },
             'longitude': <String, Object?>{
-              'type': <Object?>[
-                'number',
-                'null',
-              ],
+              'type': 'number',
               'minimum': -180,
               'maximum': 180,
             },

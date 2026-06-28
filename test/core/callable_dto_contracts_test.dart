@@ -149,7 +149,7 @@ void main() {
           clubId: 'club-1',
           name: 'Cubbon Runners',
           description: 'Weekly social runs.',
-          location: 'bengaluru',
+          location: 'in-ka-bengaluru',
           area: 'Cubbon Park',
           instagramHandle: 'cubbonrunners',
           email: 'hello@example.com',

@@ -4,12 +4,12 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_photo_picker.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
 import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -72,7 +72,7 @@ class EventDetailsStep extends StatelessWidget {
               onReorderPhoto: onReorderPhoto,
             ),
             gapH20,
-            const FieldLabel('Activity type'),
+            const CatchFormFieldLabel(label: 'Activity type', large: true),
             gapH8,
             Wrap(
               key: CreateEventFormKeys.activityType,
@@ -95,11 +95,11 @@ class EventDetailsStep extends StatelessWidget {
             ),
             if (selectedActivityKind == ActivityKind.openActivity) ...[
               gapH20,
-              CatchTextField(
+              CatchField(
                 key: CreateEventFormKeys.customActivityLabel,
-                label: 'Format name',
+                title: 'Format name',
                 controller: customActivityLabelController,
-                hintText: 'Salsa night',
+                placeholder: 'Salsa night',
                 prefixIcon: Icon(CatchIcons.eventAvailableOutlined),
                 textCapitalization: TextCapitalization.words,
                 textInputAction: TextInputAction.next,
@@ -112,7 +112,7 @@ class EventDetailsStep extends StatelessWidget {
                 },
               ),
               gapH20,
-              const FieldLabel('Format structure'),
+              const CatchFormFieldLabel(label: 'Format structure', large: true),
               gapH8,
               Wrap(
                 key: CreateEventFormKeys.customInteractionModel,
@@ -134,11 +134,11 @@ class EventDetailsStep extends StatelessWidget {
             ],
             if (selectedActivityKind.isDistanceBased) ...[
               gapH20,
-              CatchTextField(
+              CatchField(
                 key: CreateEventFormKeys.distance,
-                label: 'Distance (km)',
+                title: 'Distance (km)',
                 controller: distanceController,
-                hintText: '10',
+                placeholder: '10',
                 prefixIcon: Icon(CatchIcons.straightenOutlined),
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
@@ -156,7 +156,7 @@ class EventDetailsStep extends StatelessWidget {
                 },
               ),
               gapH20,
-              const FieldLabel('Pace level'),
+              const CatchFormFieldLabel(label: 'Pace level', large: true),
               gapH8,
               FormField<PaceLevel>(
                 initialValue: selectedPace,
@@ -202,12 +202,12 @@ class EventDetailsStep extends StatelessWidget {
               ),
             ],
             gapH20,
-            CatchTextField(
+            CatchField(
               key: CreateEventFormKeys.description,
-              label: 'Description',
+              title: 'Description',
               isOptional: true,
               controller: descriptionController,
-              hintText:
+              placeholder:
                   'What should attendees expect? Any tips for the route or venue?',
               prefixIcon: Icon(CatchIcons.editNoteOutlined),
               maxLines: 4,

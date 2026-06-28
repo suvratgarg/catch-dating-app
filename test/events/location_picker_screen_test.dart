@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -41,9 +41,9 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(find.byType(CatchTextField), findsOneWidget);
+      expect(find.byType(CatchField), findsOneWidget);
       final backButtonSize = tester.getSize(find.byType(CatchIconButton));
-      final searchFieldSize = tester.getSize(find.byType(CatchTextField));
+      final searchFieldSize = tester.getSize(find.byType(CatchField));
       expect(searchFieldSize.height, CatchControlMetrics.floatingMinHeight);
       expect(searchFieldSize.height, backButtonSize.height);
       expect(

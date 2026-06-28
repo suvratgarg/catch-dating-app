@@ -10,6 +10,12 @@
       "hosting": {
         "marketing": [
           "catch-dating-app-64e51"
+        ],
+        "app": [
+          "catchdates-app"
+        ],
+        "admin": [
+          "catchdates-admin"
         ]
       }
     }

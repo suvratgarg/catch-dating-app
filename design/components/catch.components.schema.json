@@ -56,6 +56,7 @@
         "dart",
         "design",
         "contract",
+        "governance",
         "handoff"
       ],
       "additionalProperties": false,
@@ -198,6 +199,72 @@
                 "type": "string"
               },
               "uniqueItems": true
+            },
+            "members": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/contractMember"
+              },
+              "uniqueItems": true
+            }
+          }
+        },
+        "governance": {
+          "type": "object",
+          "required": [
+            "role",
+            "canonicalFamily",
+            "publicApi",
+            "stateOwnership",
+            "asyncOwnership",
+            "layoutOwnership",
+            "actionOwnership",
+            "allowedDependencyLevel",
+            "reviewPolicy"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "role": {
+              "enum": ["atom", "composition", "pattern", "screen_contract"]
+            },
+            "canonicalFamily": {
+              "type": "string",
+              "pattern": "^catch\\.[a-z0-9_.-]+$"
+            },
+            "publicApi": {
+              "type": "boolean"
+            },
+            "stateOwnership": {
+              "enum": [
+                "none",
+                "local-ui-only",
+                "slot-state-only",
+                "display-state-only",
+                "screen-owned"
+              ]
+            },
+            "asyncOwnership": {
+              "enum": ["none", "display-state-only", "screen-owned"]
+            },
+            "layoutOwnership": {
+              "enum": ["internal-only", "slot-layout", "screen-layout"]
+            },
+            "actionOwnership": {
+              "enum": ["none", "callbacks-only", "route-owned"]
+            },
+            "allowedDependencyLevel": {
+              "enum": [
+                "tokens-and-primitives",
+                "primitives-and-slots",
+                "feature-display-models",
+                "route-boundary"
+              ]
+            },
+            "reviewPolicy": {
+              "enum": [
+                "contract-page-canonical",
+                "screen-contract-canonical"
+              ]
             }
           }
         },
@@ -287,6 +354,36 @@
         },
         "notes": {
           "type": "string"
+        }
+      }
+    },
+    "contractMember": {
+      "type": "object",
+      "required": ["id", "symbol", "summary", "states"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^catch\\.[a-z0-9_.-]+$"
+        },
+        "symbol": {
+          "type": "string",
+          "minLength": 1
+        },
+        "file": {
+          "type": "string",
+          "pattern": "^lib/.+\\.dart$"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
         }
       }
     }

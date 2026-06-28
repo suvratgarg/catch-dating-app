@@ -9,7 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
@@ -42,7 +42,7 @@ const EdgeInsets _disclosureSubtitlePadding = EdgeInsets.only(
 );
 
 /// Shared event-success setup body used by both the create-event last step
-/// (`EventSuccessDefaultsPanel`) and the Host Manage Setup tab (`_SetupTab`).
+/// (`EventSuccessDefaultsPanel`) and the Host Manage Setup tab (`SetupTab`).
 ///
 /// Owns the visual layout of the configuration UI — preset preview, guide
 /// notes, match clue questions, structure, and tools — and emits changes back
@@ -116,7 +116,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _PresetReviewCard(
+        PresetReviewCard(
           profile: profile,
           draft: draft,
           targetAttendeeCount: widget.targetAttendeeCount,
@@ -124,16 +124,16 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
           onReset: widget.onResetToRecommended,
         ),
         gapH8,
-        _SetupDisclosureSection(
+        SetupDisclosureSection(
           title: 'Guide notes',
           subtitle: _guideNotesSubtitle(draft, widget.attendeePrompt),
           initiallyExpanded: true,
           children: [
-            CatchTextField(
-              label: 'Host goal',
+            CatchField(
+              title: 'Host goal',
               controller: _hostGoalController,
               enabled: widget.editable,
-              hintText: draft.hostGoal,
+              placeholder: draft.hostGoal,
               inputFormatters: [LengthLimitingTextInputFormatter(300)],
               minLines: 2,
               maxLines: 4,
@@ -151,12 +151,12 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               },
             ),
             gapH12,
-            CatchTextField(
-              label: 'Attendee prompt',
+            CatchField(
+              title: 'Attendee prompt',
               isOptional: true,
               controller: _attendeePromptController,
               enabled: widget.editable,
-              hintText: 'Prompt attendees before or after the event.',
+              placeholder: 'Prompt attendees before or after the event.',
               inputFormatters: [LengthLimitingTextInputFormatter(300)],
               minLines: 2,
               maxLines: 4,
@@ -164,23 +164,23 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               textInputAction: TextInputAction.newline,
               onChanged: widget.onAttendeePromptChanged,
             ),
-            _AttendeePromptPreview(
+            AttendeePromptPreview(
               text: _attendeePromptPreview(profile, widget.attendeePrompt),
             ),
           ],
         ),
         gapH8,
-        _StageCard(
+        StageCard(
           title: 'When people arrive',
           subtitle:
               'Check-in stays reliable; optional rituals can start the room.',
           children: [
-            const _FoundationLine(
+            const FoundationLine(
               title: 'Check attendees in and confirm groups',
               subtitle:
                   'Arrival is the source of truth for assignments, feedback, and post-event matching.',
             ),
-            const _FoundationLine(
+            const FoundationLine(
               title: 'Read a brief welcome script',
               subtitle:
                   'A short host opener gives attendees permission to talk.',
@@ -189,7 +189,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               profile,
               _SetupLifecycleStage.arrival,
             ))
-              _RecommendationSwitch(
+              RecommendationSwitch(
                 recommendation: recommendation,
                 active: draft.isModuleSelected(recommendation.module.id),
                 onChanged: widget.editable && recommendation.selectable
@@ -199,7 +199,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
           ],
         ),
         gapH8,
-        _StageCard(
+        StageCard(
           title: 'During the event',
           subtitle:
               'Tools the host runs live. Pre-selected defaults match the activity.',
@@ -208,7 +208,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               profile,
               _SetupLifecycleStage.during,
             )) ...[
-              _RecommendationSwitch(
+              RecommendationSwitch(
                 recommendation: recommendation,
                 active: draft.isModuleSelected(recommendation.module.id),
                 onChanged: widget.editable && recommendation.selectable
@@ -220,7 +220,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                   draft.isModuleSelected(
                     EventSuccessModuleCatalog.guidedRotations.id,
                   ))
-                _RotationCadenceChips(
+                RotationCadenceChips(
                   value: draft.structureConfig.rotationIntervalMinutes,
                   enabled: widget.editable,
                   onChanged: (interval) {
@@ -238,7 +238,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                   draft.isModuleSelected(
                     EventSuccessModuleCatalog.liveReveal.id,
                   ))
-                _RevealCountdownChips(
+                RevealCountdownChips(
                   label: _revealCountdownLabel(draft),
                   value: draft.structureConfig.revealCountdownSeconds,
                   enabled: widget.editable,
@@ -256,7 +256,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
           ],
         ),
         gapH8,
-        _StageCard(
+        StageCard(
           title: 'After the event',
           subtitle: 'Wrap-up tools for matches and feedback.',
           children: [
@@ -264,26 +264,26 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               profile,
               _SetupLifecycleStage.after,
             ))
-              _RecommendationSwitch(
+              RecommendationSwitch(
                 recommendation: recommendation,
                 active: draft.isModuleSelected(recommendation.module.id),
                 onChanged: widget.editable && recommendation.selectable
                     ? (_) => _emitModuleToggle(draft, recommendation.module.id)
                     : null,
               ),
-            const _FoundationLine(
+            const FoundationLine(
               title: 'Collect quick attendee feedback',
               subtitle:
                   'Short ratings tell you what to improve, not who liked whom.',
             ),
-            const _FoundationLine(
+            const FoundationLine(
               title: 'Host coaching summary',
               subtitle: 'A short post-event recap, not a wall of metrics.',
             ),
           ],
         ),
         gapH8,
-        _SetupDisclosureSection(
+        SetupDisclosureSection(
           title: _structureSectionTitle(draft),
           subtitle: _structureSectionSubtitle(draft),
           children: [
@@ -298,11 +298,11 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
           ],
         ),
         gapH8,
-        _SetupDisclosureSection(
+        SetupDisclosureSection(
           title: 'Advanced',
           subtitle: _advancedSubtitle(draft),
           children: [
-            _QuestionnaireBlock(
+            QuestionnaireBlock(
               active: draft.isModuleSelected(
                 EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
               ),
@@ -332,7 +332,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
           ],
         ),
         gapH8,
-        const _SafetyFooter(),
+        const SafetyFooter(),
       ],
     );
   }
@@ -418,12 +418,8 @@ EventSuccessHostDraft _enforceFoundationSelections(
   return next;
 }
 
-class _StageCard extends StatelessWidget {
-  const _StageCard({
-    required this.title,
-    this.subtitle,
-    required this.children,
-  });
+class StageCard extends StatelessWidget {
+  const StageCard({required this.title, this.subtitle, required this.children});
 
   final String title;
   final String? subtitle;
@@ -454,8 +450,8 @@ class _StageCard extends StatelessWidget {
   }
 }
 
-class _FoundationLine extends StatelessWidget {
-  const _FoundationLine({required this.title, this.subtitle});
+class FoundationLine extends StatelessWidget {
+  const FoundationLine({required this.title, this.subtitle});
 
   final String title;
   final String? subtitle;
@@ -500,8 +496,8 @@ class _FoundationLine extends StatelessWidget {
 
 /// Inline rotation-cadence chips rendered beneath the "Timed partner
 /// rotations" toggle in the During stage card.
-class _RotationCadenceChips extends StatelessWidget {
-  const _RotationCadenceChips({
+class RotationCadenceChips extends StatelessWidget {
+  const RotationCadenceChips({
     required this.value,
     required this.enabled,
     required this.onChanged,
@@ -543,8 +539,8 @@ class _RotationCadenceChips extends StatelessWidget {
 
 /// Inline reveal-countdown chips rendered beneath the synchronized-reveal
 /// toggle in the During stage card.
-class _RevealCountdownChips extends StatelessWidget {
-  const _RevealCountdownChips({
+class RevealCountdownChips extends StatelessWidget {
+  const RevealCountdownChips({
     required this.label,
     required this.value,
     required this.enabled,
@@ -587,8 +583,8 @@ class _RevealCountdownChips extends StatelessWidget {
 /// Live preview rendered beneath the attendee-prompt field showing exactly
 /// what attendees will see — the host's typed prompt, or the playbook default
 /// when the field is empty.
-class _AttendeePromptPreview extends StatelessWidget {
-  const _AttendeePromptPreview({required this.text});
+class AttendeePromptPreview extends StatelessWidget {
+  const AttendeePromptPreview({required this.text});
 
   final String text;
 
@@ -621,8 +617,8 @@ class _AttendeePromptPreview extends StatelessWidget {
   }
 }
 
-class _SafetyFooter extends StatelessWidget {
-  const _SafetyFooter();
+class SafetyFooter extends StatelessWidget {
+  const SafetyFooter();
 
   @override
   Widget build(BuildContext context) {
@@ -646,8 +642,8 @@ class _SafetyFooter extends StatelessWidget {
   }
 }
 
-class _PresetReviewCard extends StatelessWidget {
-  const _PresetReviewCard({
+class PresetReviewCard extends StatelessWidget {
+  const PresetReviewCard({
     required this.profile,
     required this.draft,
     required this.targetAttendeeCount,
@@ -740,8 +736,8 @@ enum _QuestionnaireMode { off, cluesOnly, cluesAndPairing }
 /// Advanced disclosure (no disclosure shell of its own). Exposes a single
 /// 3-state chooser so the host doesn't have to reason about a separate
 /// "ask questions" and "guide pairings" switch pair.
-class _QuestionnaireBlock extends StatelessWidget {
-  const _QuestionnaireBlock({
+class QuestionnaireBlock extends StatelessWidget {
+  const QuestionnaireBlock({
     required this.active,
     required this.editable,
     required this.compatibilityAffectsRanking,
@@ -827,8 +823,8 @@ String _questionnaireModeSubtitle(_QuestionnaireMode mode) {
   }
 }
 
-class _SetupDisclosureSection extends StatefulWidget {
-  const _SetupDisclosureSection({
+class SetupDisclosureSection extends StatefulWidget {
+  const SetupDisclosureSection({
     required this.title,
     required this.subtitle,
     required this.children,
@@ -841,11 +837,10 @@ class _SetupDisclosureSection extends StatefulWidget {
   final bool initiallyExpanded;
 
   @override
-  State<_SetupDisclosureSection> createState() =>
-      _SetupDisclosureSectionState();
+  State<SetupDisclosureSection> createState() => _SetupDisclosureSectionState();
 }
 
-class _SetupDisclosureSectionState extends State<_SetupDisclosureSection> {
+class _SetupDisclosureSectionState extends State<SetupDisclosureSection> {
   late bool _expanded = widget.initiallyExpanded;
 
   @override
@@ -921,8 +916,8 @@ class _SetupDisclosureSectionState extends State<_SetupDisclosureSection> {
   }
 }
 
-class _RecommendationSwitch extends StatelessWidget {
-  const _RecommendationSwitch({
+class RecommendationSwitch extends StatelessWidget {
+  const RecommendationSwitch({
     required this.recommendation,
     required this.active,
     required this.onChanged,

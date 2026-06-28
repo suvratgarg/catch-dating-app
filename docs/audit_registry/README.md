@@ -1,7 +1,7 @@
 ---
 doc_id: audit_registry
-version: 2.2.0
-updated: 2026-05-06
+version: 2.3.0
+updated: 2026-06-27
 owner: recursive_audit_loop
 status: active
 ---
@@ -28,6 +28,8 @@ Use this registry before reading long tracker docs. The goal is to answer:
 | `doc_versions.json` | Version metadata for durable docs that Codex reads repeatedly. |
 | `backlog.json` | Active backlog, next-up order, stable debt ids, and scanner counts. |
 | `doc_summaries.json` | Compact read/skip policies for long docs. |
+| `widget_classification.json` | Generated registry of every Dart widget class, its role, ownership boundaries, catalog status, and allowed public remediation path. |
+| `widget_classification.schema.json` | JSON schema for the generated widget classification registry. |
 | `archive/` | Historical detail that should be searched only when a debt id or rule requires it. |
 
 ## Workflow
@@ -49,6 +51,18 @@ Use this registry before reading long tracker docs. The goal is to answer:
    ```
 
 3. Work in a focused batch and verify with scoped analyzer/tests/scanners.
+
+   For widget-system work, regenerate and check the exhaustive role registry:
+
+   ```sh
+   npm run design:widgets:classify
+   npm run design:widgets:check
+   ```
+
+   Private helper widgets are not an allowed destination. A widget that is too
+   local or too redundant must still resolve through a public catalog action:
+   merge into a canonical public widget, promote to the catalog, or inline/delete
+   the duplicate.
 
    For Riverpod, Freezed, json_serializable, envied, or other build_runner-backed
    source edits, keep generated files synchronized. During iterative cleanup

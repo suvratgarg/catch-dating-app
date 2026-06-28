@@ -675,7 +675,7 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-              "symbol": "_EventPolicySummary"
+              "symbol": "EventDetailPolicySummary"
             },
             "currentOwner": "EventDetailOverviewSection",
             "targetOwner": "registered event policy summary section",
@@ -703,7 +703,7 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/widgets/event_detail_body.dart",
-              "symbol": "_EventDetailHostsSection"
+              "symbol": "_eventDetailHostsSection"
             },
             "currentOwner": "EventDetailBody",
             "targetOwner": "registered host section plus host-card compound",
@@ -790,7 +790,7 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/widgets/event_detail_body.dart",
-              "symbol": "_EventCompanionEntry"
+              "symbol": "_eventCompanionEntry"
             },
             "currentOwner": "EventDetailBody",
             "targetOwner": "registered post-booking prompt section",
@@ -1097,7 +1097,7 @@
             "club_detail_host_public"
           ],
           "previewIds": [
-            "CatchClubDock/Dock states"
+            "CatchClubDock/Contract states"
           ],
           "tests": [
             "test/clubs/clubs_controllers_test.dart"
@@ -1123,7 +1123,7 @@
             "club_detail_join_pending"
           ],
           "previewIds": [
-            "CatchClubDock/Dock states"
+            "CatchClubDock/Contract states"
           ],
           "tests": [
             "test/clubs/clubs_controllers_test.dart"
@@ -1227,8 +1227,8 @@
               "MetricStrip"
             ],
             "flutter": {
-              "file": "lib/clubs/presentation/detail/widgets/stats_strip.dart",
-              "symbol": "StatsStrip"
+              "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+              "symbol": "CatchMetricStrip"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "screen-local section.club.stats until another product screen proves reuse",
@@ -1242,7 +1242,7 @@
               "empty_rating"
             ],
             "previewIds": [
-              "StatsStrip/Stats states"
+              "CatchMetricStrip/Contract states"
             ],
             "migration": "Keep screen-local for now; promote only if host club detail or another product screen reuses the same club metrics contract."
           },
@@ -1256,7 +1256,7 @@
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-              "symbol": "_ClubHostSection"
+              "symbol": "_buildClubHostSection"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "registered host identity section plus host-card compound",
@@ -1315,7 +1315,7 @@
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-              "symbol": "_ClubPhotoStrip"
+              "symbol": "_buildClubPhotoStrip"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "registered club photo strip compound",
@@ -1343,7 +1343,7 @@
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-              "symbol": "_ClubContactSection"
+              "symbol": "_buildClubContactSection"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "registered contact section with external-link intents",
@@ -1446,7 +1446,7 @@
               "owner_host_app"
             ],
             "previewIds": [
-              "CatchClubDock/Dock states"
+              "CatchClubDock/Contract states"
             ],
             "migration": "Keep provider-backed ClubMembershipDock screen-local and consumer-only; Host Club Detail suppresses this dock, so provider-free CatchClubDock should promote only if another host/member surface proves the same action dock contract."
           }
@@ -2055,7 +2055,7 @@
               "without_cta"
             ],
             "previewIds": [
-              "CatchCoverStory/CoverStory states"
+              "CatchCoverStory/Contract states"
             ],
             "migration": "Promote CoverStory into the component registry with activity pigment, data lines, CTA, and reduced-motion variants."
           },
@@ -2538,7 +2538,7 @@
           "id": "joined_clubs_rail",
           "kind": "populated",
           "status": "captured",
-          "source": "Active club memberships feed DashboardClubsRail, which resolves club display data and renders joined clubs when available.",
+          "source": "Active club memberships feed ClubAvatarRail through DashboardFullSliverBody, which resolves club display data and renders joined clubs when available.",
           "captureIds": [
             "dashboard_home"
           ],
@@ -2709,7 +2709,7 @@
             ],
             "flutter": {
               "file": "lib/dashboard/presentation/dashboard_screen.dart",
-              "symbol": "_NotificationsAction"
+              "symbol": "DashboardNotificationBellButton"
             },
             "currentOwner": "DashboardScreen",
             "targetOwner": "provider-free notification badge action fed by DashboardHomeScreenState",
@@ -2890,10 +2890,10 @@
               "ClubAvatarRail"
             ],
             "flutter": {
-              "file": "lib/dashboard/presentation/widgets/dashboard_clubs_rail.dart",
-              "symbol": "DashboardClubsRail"
+              "file": "lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart",
+              "symbol": "ClubAvatarRail"
             },
-            "currentOwner": "DashboardFullSliverBody via DashboardClubsRail and watchClubsByIdsProvider",
+            "currentOwner": "DashboardFullSliverBody via ClubAvatarRail and watchClubsByIdsProvider",
             "targetOwner": "provider-free joined clubs rail fed by pre-resolved dashboard club display data",
             "dependencies": [
               "catch.surface"
@@ -2904,7 +2904,7 @@
               "empty_hidden",
               "partial_error"
             ],
-            "migration": "DashboardClubsRail now uses the batched watchClubsByIdsProvider seam instead of one watchClubProvider per club id. Remaining work is to lift that resolved club display data into a Dashboard section adapter so the visual rail itself becomes provider-free.",
+            "migration": "ClubAvatarRail now uses the batched watchClubsByIdsProvider seam instead of one watchClubProvider per club id. Remaining work is to lift that resolved club display data into a Dashboard section adapter so the visual rail itself becomes provider-free.",
             "previewIds": [
               "DashboardScreen/Screen states"
             ]
@@ -3627,7 +3627,7 @@
             ],
             "flutter": {
               "file": "lib/event_success/presentation/event_success_companion_screen.dart",
-              "symbol": "_CompanionScaffold"
+              "symbol": "_companionScaffold"
             },
             "currentOwner": "EventSuccessCompanionRouteScreen",
             "targetOwner": "registered companion chrome section shared by loading/error/content states",
@@ -3659,7 +3659,7 @@
             ],
             "flutter": {
               "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-              "symbol": "_CompanionStageScaffold"
+              "symbol": "CompanionStageScaffold"
             },
             "currentOwner": "EventSuccessCompanionScreen",
             "targetOwner": "provider-free companion stage section fed by EventSuccessCompanionScreenState",
@@ -3692,7 +3692,7 @@
             ],
             "flutter": {
               "file": "lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart",
-              "symbol": "_FirstHelloCheckInCard"
+              "symbol": "FirstHelloCheckInCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
             "targetOwner": "provider-free First Hello section with start/complete/skip callbacks",
@@ -3722,7 +3722,7 @@
             ],
             "flutter": {
               "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
-              "symbol": "_PreCheckInPlanningCard"
+              "symbol": "PreCheckInPlanningCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
             "targetOwner": "provider-free pre-arrival planning section",
@@ -3753,7 +3753,7 @@
             ],
             "flutter": {
               "file": "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart",
-              "symbol": "_CompatibilityQuestionnaireSection"
+              "symbol": "CompatibilityQuestionnaireSection"
             },
             "currentOwner": "EventSuccessCompanionScreen",
             "targetOwner": "provider-free questionnaire section with mutation state and validation display data",
@@ -3785,7 +3785,7 @@
             ],
             "flutter": {
               "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
-              "symbol": "_LiveStepContextCard"
+              "symbol": "LiveStepContextCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
             "targetOwner": "registered live-context section family fed by runtime moment data",
@@ -3816,7 +3816,7 @@
             ],
             "flutter": {
               "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
-              "symbol": "_MicroPodCard"
+              "symbol": "MicroPodCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
             "targetOwner": "provider-free assignment section with peer loading and opt-out display states",
@@ -3879,14 +3879,14 @@
             ],
             "flutter": {
               "file": "lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart",
-              "symbol": "_WingmanRequestSection"
+              "symbol": "WingmanRequestSection"
             },
             "currentOwner": "EventSuccessCompanionScreen",
             "targetOwner": "provider-free wingman request section with consent and candidate state",
             "dependencies": [
               "catch.button",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "no_candidates",
@@ -3911,7 +3911,7 @@
             ],
             "flutter": {
               "file": "lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart",
-              "symbol": "_PrivateAfterglowRecapCard"
+              "symbol": "PrivateAfterglowRecapCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
             "targetOwner": "provider-free post-event recap section",
@@ -3950,7 +3950,7 @@
               "catch.button",
               "catch.icon_button",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "blank",
@@ -4943,7 +4943,7 @@
             "dependencies": [
               "catch.button",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "like",
@@ -5210,7 +5210,7 @@
           ],
           "tests": [
             "test/chats/matches_list_screen_test.dart",
-            "test/chats/chat_list_tile_test.dart"
+            "test/core/catch_person_row_test.dart"
           ],
           "nextAction": "Compare row hierarchy and timestamp/unread treatment against exported design references.",
           "previewIds": [
@@ -5223,7 +5223,7 @@
           "status": "captured",
           "source": "ChatsListViewModel separates newMatches, while current ChatsListBody merges new and active rows into one list with row-level new treatment.",
           "tests": [
-            "test/chats/chat_list_tile_test.dart"
+            "test/core/catch_person_row_test.dart"
           ],
           "nextAction": "Decide whether the unused ChatNewMatchesRail should be wired, deleted, or redesigned as a section contract.",
           "previewIds": [
@@ -5302,10 +5302,10 @@
           "id": "unread_state",
           "kind": "populated",
           "status": "captured",
-          "source": "ChatListTile shows row-level unread treatment and hides unread count for own latest message.",
+          "source": "CatchPersonRow shows row-level unread treatment and hides unread count for own latest message.",
           "tests": [
             "test/chats/matches_list_screen_test.dart",
-            "test/chats/chat_list_tile_test.dart"
+            "test/core/catch_person_row_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -5507,8 +5507,8 @@
               "NewMatchMarker"
             ],
             "flutter": {
-              "file": "lib/matches/presentation/chat_list_tile.dart",
-              "symbol": "ChatListTile"
+              "file": "lib/core/widgets/catch_person_row.dart",
+              "symbol": "CatchPersonRow"
             },
             "currentOwner": "ChatConversationsList",
             "targetOwner": "registered conversation row compound shared by consumer and host inbox",
@@ -5816,7 +5816,7 @@
           ],
           "tests": [
             "test/chats/message_bubble_test.dart",
-            "test/chats/chat_top_bar_test.dart"
+            "test/chats/chat_screen_test.dart"
           ],
           "nextAction": "Compare populated thread hierarchy against exported chat references.",
           "previewIds": [
@@ -5967,9 +5967,9 @@
           "id": "top_bar_actions",
           "kind": "populated",
           "status": "captured",
-          "source": "ChatTopBar opens profile from identity title and exposes share/report/block overflow actions without duplicating profile in menu.",
+          "source": "CatchTopBar.identity opens profile from identity title and exposes share/report/block overflow actions without duplicating profile in menu.",
           "tests": [
-            "test/chats/chat_top_bar_test.dart"
+            "test/chats/chat_screen_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -6041,7 +6041,7 @@
           "id": "keyboard_composer",
           "kind": "populated",
           "status": "captured",
-          "source": "ChatInputBar uses compact pill CatchTextField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
+          "source": "ChatInputBar uses compact pill CatchField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
             "ChatScreen/Route states"
@@ -6108,17 +6108,17 @@
         "targetLayout": "ChatScreen should resolve provider waves into MatchChatScreenState plus route effects, then compose provider-free top bar, context header, message list, composer, safety/share, and Suvbot sections with typed callbacks.",
         "sections": [
           {
-            "id": "section.matches.chat_top_bar",
+            "id": "section.matches.catch_top_bar_identity",
             "name": "Chat top bar and actions",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "ChatTopBar",
+              "CatchTopBar.identity",
               "ChatActionsMenu"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_top_bar.dart",
-              "symbol": "ChatTopBar"
+              "file": "lib/core/widgets/catch_top_bar.dart",
+              "symbol": "CatchTopBar.identity"
             },
             "currentOwner": "ChatScreen",
             "targetOwner": "provider-free chat top bar section",
@@ -6251,7 +6251,7 @@
             "targetOwner": "provider-free chat composer section",
             "dependencies": [
               "catch.icon_button",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "empty",
@@ -6316,7 +6316,7 @@
             "dependencies": [
               "catch.button",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "loaded",
@@ -6341,7 +6341,7 @@
             ],
             "flutter": {
               "file": "lib/chats/presentation/chat_screen.dart",
-              "symbol": "_ChatMutationListeners"
+              "symbol": "ChatScreen"
             },
             "currentOwner": "ChatScreen",
             "targetOwner": "route-level mutation listener wrapper",
@@ -6884,11 +6884,11 @@
             "layer": "section",
             "claudeComponents": [
               "ProfileInfoSection",
-              "ProfileInfoRow"
+              "ProfileFieldRow"
             ],
             "flutter": {
               "file": "lib/user_profile/presentation/widgets/profile_info_section.dart",
-              "symbol": "ProfileInfoSection"
+              "symbol": "profileInfoSection"
             },
             "currentOwner": "ProfileTabSliverBody",
             "targetOwner": "provider-free profile info section list",
@@ -6921,7 +6921,7 @@
             ],
             "flutter": {
               "file": "lib/user_profile/presentation/widgets/profile_inline_editors.dart",
-              "symbol": "ProfileInlineFieldScaffold"
+              "symbol": "profileInlineFieldScaffold"
             },
             "currentOwner": "ProfileTabSliverBody",
             "targetOwner": "registered inline profile editor compound",
@@ -6929,7 +6929,7 @@
               "catch.button",
               "catch.chip",
               "catch.field",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "closed",
@@ -6987,7 +6987,7 @@
             ],
             "flutter": {
               "file": "lib/user_profile/presentation/profile_screen.dart",
-              "symbol": "_ProfileUnavailableBody"
+              "symbol": "_profileUnavailableBody"
             },
             "currentOwner": "ProfileScreen",
             "targetOwner": "provider-free empty/access section",
@@ -8098,7 +8098,7 @@
             "migration": "Event loading/error/empty/populated mapping now lives in HostHomeEventsSectionState, event sorting/filtering lives in HostHomeEventRowsState, and provider-free HostEventsClubSection receives typed retry/create/manage callbacks. HostEventsClubCard remains the narrow provider adapter over watchEventsForClubProvider. Widgetbook states still cover content, loading, error, offline, empty, and cancelled-filtered lists.",
             "previewIds": [
               "HostOperationsHomeScreen/Route states",
-              "HostEventsClubCard/Event section states"
+              "hostHomeEventSectionStates"
             ]
           },
           {
@@ -8142,7 +8142,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "_HostEmptyState"
+              "symbol": "HostEmptyState"
             },
             "currentOwner": "_HostEventsScaffold",
             "targetOwner": "provider-free host empty section",
@@ -8172,7 +8172,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "_HostAuthRequiredScreen"
+              "symbol": "HostAuthRequiredScreen"
             },
             "currentOwner": "HostOperationsHomeScreen",
             "targetOwner": "provider-free host route state sections",
@@ -8893,14 +8893,14 @@
               "OrganizerHeader",
               "Callout",
               "MetricGrid",
-              "InfoRow",
+              "FieldRow",
               "HostTeamSummary",
               "TrendStrip",
-              "InfoGroup"
+              "FieldGroup"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "_HostClubOrganizerOverview"
+              "symbol": "HostClubOrganizerOverview"
             },
             "currentOwner": "_HostClubsScaffold",
             "targetOwner": "provider-free host organizer overview section",
@@ -8968,7 +8968,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "_HostClubTabRail"
+              "symbol": "HostClubTabRail"
             },
             "currentOwner": "_HostClubsScaffold",
             "targetOwner": "provider-free host club tab rail",
@@ -8999,7 +8999,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "_HostClubProfileCard"
+              "symbol": "HostClubProfileCard"
             },
             "currentOwner": "_HostClubsScaffold",
             "targetOwner": "provider-free host club profile editor section",
@@ -9032,12 +9032,12 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "_HostInlineTextEntryEditor"
+              "symbol": "HostInlineTextEntryEditor"
             },
             "currentOwner": "_HostClubProfileCard",
             "targetOwner": "shared inline editor compound after profile/host use cases converge",
             "dependencies": [
-              "catch.text_field",
+              "catch.field",
               "catch.button",
               "catch.field"
             ],
@@ -9064,7 +9064,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "_HostInlineOptionEditor"
+              "symbol": "HostInlineOptionEditor"
             },
             "currentOwner": "_HostClubProfileCard",
             "targetOwner": "provider-free host event defaults section",
@@ -9138,7 +9138,7 @@
               "catch.badge",
               "catch.icon_button",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "owner_rows",
@@ -9171,7 +9171,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "_HostClubInsightsPane"
+              "symbol": "HostClubInsightsPane"
             },
             "currentOwner": "_HostClubsScaffold",
             "targetOwner": "provider-free analytics section plus HostAnalytics controller adapter",
@@ -9210,7 +9210,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "_HostClubPreviewPane"
+              "symbol": "HostClubPreviewPane"
             },
             "currentOwner": "_HostClubsScaffold",
             "targetOwner": "provider-free host club preview section",
@@ -9237,7 +9237,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "_HostEmptyState"
+              "symbol": "HostEmptyState"
             },
             "currentOwner": "_HostClubsScaffold",
             "targetOwner": "provider-free host empty section",
@@ -9266,7 +9266,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "_HostAuthRequiredScreen"
+              "symbol": "HostAuthRequiredScreen"
             },
             "currentOwner": "HostClubsScreen",
             "targetOwner": "provider-free host route state sections",
@@ -9350,8 +9350,8 @@
             "symbol": "ClubScheduleSection"
           },
           {
-            "file": "lib/clubs/presentation/detail/widgets/stats_strip.dart",
-            "symbol": "StatsStrip"
+            "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+            "symbol": "CatchMetricStrip"
           },
           {
             "file": "lib/reviews/presentation/reviews_section.dart",
@@ -9850,11 +9850,11 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "StatsStrip"
+              "CatchMetricStrip"
             ],
             "flutter": {
-              "file": "lib/clubs/presentation/detail/widgets/stats_strip.dart",
-              "symbol": "StatsStrip"
+              "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+              "symbol": "CatchMetricStrip"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "shared club stats section if host references match consumer detail",
@@ -9883,7 +9883,7 @@
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-              "symbol": "_ClubHostSection"
+              "symbol": "_buildClubHostSection"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "provider-free public host identity section",
@@ -9916,7 +9916,7 @@
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-              "symbol": "_ClubContactSection"
+              "symbol": "_buildClubContactSection"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "provider-free club overview section group",
@@ -10886,7 +10886,7 @@
             "dependencies": [
               "catch.chip",
               "catch.field",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "default_activity",
@@ -10919,7 +10919,7 @@
             "targetOwner": "provider-free location step plus picker adapter",
             "dependencies": [
               "catch.button",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "blank",
@@ -10951,7 +10951,7 @@
             "targetOwner": "provider-free schedule step plus time adapter",
             "dependencies": [
               "catch.button",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "blank",
@@ -10983,7 +10983,7 @@
             "dependencies": [
               "catch.chip",
               "catch.field",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "open_capacity",
@@ -12063,7 +12063,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-              "symbol": "_HostManageSectionPicker"
+              "symbol": "HostManageSectionPicker"
             },
             "currentOwner": "HostEventManageScreen",
             "targetOwner": "provider-free host manage chrome section",
@@ -12133,7 +12133,7 @@
               "catch.button",
               "catch.field",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "setup",
@@ -12163,7 +12163,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-              "symbol": "_HostEventSummaryCard"
+              "symbol": "HostEventSummaryCard"
             },
             "currentOwner": "HostEventManageScreen",
             "targetOwner": "provider-free host event summary section",
@@ -12192,7 +12192,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-              "symbol": "_HostPrivateAccessCard"
+              "symbol": "HostPrivateAccessCard"
             },
             "currentOwner": "_HostPrivateAccessCard",
             "targetOwner": "private-access adapter plus provider-free section",
@@ -12224,7 +12224,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-              "symbol": "_HostInviteLinksList"
+              "symbol": "HostInviteLinksList"
             },
             "currentOwner": "_HostInviteLinksList",
             "targetOwner": "private-access adapter plus provider-free invite-link section",
@@ -12232,7 +12232,7 @@
               "catch.button",
               "catch.icon_button",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "loading",
@@ -12268,7 +12268,7 @@
               "catch.option_card",
               "catch.segmented_control",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "plan_loading",
@@ -12364,7 +12364,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-              "symbol": "_HostEventActionsSection"
+              "symbol": "HostEventActionsSection"
             },
             "currentOwner": "HostEventManageScreen + _HostEventActionsSection",
             "targetOwner": "HostEventManageScreenState action adapter plus provider-free action section",
@@ -12543,8 +12543,8 @@
             "symbol": "ChatConversationsList"
           },
           {
-            "file": "lib/matches/presentation/chat_list_tile.dart",
-            "symbol": "ChatListTile"
+            "file": "lib/core/widgets/catch_person_row.dart",
+            "symbol": "CatchPersonRow"
           },
           {
             "file": "lib/matches/presentation/widgets/chats_empty_state.dart",
@@ -12566,8 +12566,8 @@
           "id": "repo.chat-list-tile-tests",
           "kind": "repo",
           "status": "available",
-          "path": "test/chats/chat_list_tile_test.dart",
-          "notes": "Chat list tile tests cover unread semantics, timestamp/preview row behavior, and row visual states shared by Host Inbox."
+          "path": "test/core/catch_person_row_test.dart",
+          "notes": "Catch person row tests cover unread semantics, timestamp/preview row behavior, and row visual states shared by Host Inbox."
         },
         {
           "id": "claude.host-inbox",
@@ -12876,9 +12876,9 @@
           "id": "unread_rows",
           "kind": "populated",
           "status": "captured",
-          "source": "ChatListTile emphasizes unread/new rows through avatar ring, primary timestamp, preview color, unread badge, or new-match dot.",
+          "source": "CatchPersonRow emphasizes unread/new rows through avatar ring, primary timestamp, preview color, unread badge, or new-match dot.",
           "tests": [
-            "test/chats/chat_list_tile_test.dart"
+            "test/core/catch_person_row_test.dart"
           ],
           "nextAction": "Add 99+ unread capture only if product data can produce high host-inbox unread counts.",
           "previewIds": [
@@ -12893,7 +12893,7 @@
           "id": "host_inquiry_avatar_shape",
           "kind": "populated",
           "status": "captured",
-          "source": "ChatListTile uses square CatchPersonAvatar shape for club host inquiries and circular avatars for dating matches.",
+          "source": "CatchPersonRow uses square CatchPersonAvatar shape for club host inquiries and circular avatars for dating matches.",
           "nextAction": "Add fallback-avatar capture only if missing profile/club data becomes a visual parity concern.",
           "previewIds": [
             "ChatsListScreen/Host inbox states"
@@ -13185,11 +13185,11 @@
               "ChatThreadPreview"
             ],
             "flutter": {
-              "file": "lib/matches/presentation/chat_list_tile.dart",
-              "symbol": "ChatListTile"
+              "file": "lib/core/widgets/catch_person_row.dart",
+              "symbol": "CatchPersonRow"
             },
-            "currentOwner": "ChatListTile",
-            "targetOwner": "provider-free host inbox row primitive or shared chat row with host variant",
+            "currentOwner": "CatchPersonRow",
+            "targetOwner": "provider-free host inbox row primitive or shared person row with host variant",
             "dependencies": [
               "catch.badge"
             ],
@@ -13203,7 +13203,7 @@
               "long_preview",
               "timestamp"
             ],
-            "migration": "Keep shared row rendering but register host inquiry variants in Widgetbook and decide whether HostInboxRow should be a named variant of ChatListTile.",
+            "migration": "Keep shared row rendering and register host inquiry variants in Widgetbook as CatchPersonRow states.",
             "previewIds": [
               "ChatsListScreen/Host inbox states"
             ]
@@ -13319,8 +13319,8 @@
             "symbol": "ChatController"
           },
           {
-            "file": "lib/chats/presentation/widgets/chat_top_bar.dart",
-            "symbol": "ChatTopBar"
+            "file": "lib/core/widgets/catch_top_bar.dart",
+            "symbol": "CatchTopBar.identity"
           },
           {
             "file": "lib/chats/presentation/widgets/chat_event_context_header.dart",
@@ -13345,7 +13345,7 @@
             "symbol": "ConversationRepository"
           }
         ],
-        "notes": "Host Chat uses the shared ChatScreen implementation from the host inbox route. ChatRouteState now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState centralizes host inquiry identity, typed top-bar action availability, top-bar action intents, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy, and ChatThreadLookupState owns profile/event/host lookup keys; ChatTopBar is router/provider-free; Host Chat report/share/sheet-export transient feedback uses showCatchSnackBar; _ChatContent still owns text/scroll controllers, ConversationReadMarker.markRead side effects, retry invalidation, profile navigation, and mutation/share side-effect execution until the next adapter pass."
+        "notes": "Host Chat uses the shared ChatScreen implementation from the host inbox route. ChatRouteState now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState centralizes host inquiry identity, typed top-bar action availability, top-bar action intents, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy, and ChatThreadLookupState owns profile/event/host lookup keys; CatchTopBar.identity is router/provider-free; Host Chat report/share/sheet-export transient feedback uses showCatchSnackBar; _ChatContent still owns text/scroll controllers, ConversationReadMarker.markRead side effects, retry invalidation, profile navigation, and mutation/share side-effect execution until the next adapter pass."
       },
       "designRefs": [
         {
@@ -13359,7 +13359,7 @@
           "id": "repo.chat-top-bar-tests",
           "kind": "repo",
           "status": "available",
-          "path": "test/chats/chat_top_bar_test.dart",
+          "path": "test/chats/chat_screen_test.dart",
           "notes": "Top bar tests cover chat title/action behavior shared by professional host conversations."
         },
         {
@@ -13731,7 +13731,7 @@
           "id": "report_user_mutation",
           "kind": "mutation",
           "status": "implemented",
-          "source": "Report action is selected through typed ChatTopBarAction.report, disables while ChatController.reportUserMutation is pending, runs the mutation through ChatController, shows Report submitted snackbar on success, and surfaces failures through the shared chat mutation listener. Focused widget coverage verifies success, pending disabled state, and failure feedback.",
+          "source": "Report action is selected through typed ChatThreadAction.report, disables while ChatController.reportUserMutation is pending, runs the mutation through ChatController, shows Report submitted snackbar on success, and surfaces failures through the shared chat mutation listener. Focused widget coverage verifies success, pending disabled state, and failure feedback.",
           "nextAction": "Add host chat report pending/failure captures.",
           "previewIds": [
             "ChatScreen/Host chat states"
@@ -13741,7 +13741,7 @@
           "id": "block_user_mutation",
           "kind": "mutation",
           "status": "implemented",
-          "source": "Block action is selected through typed ChatTopBarAction.block, disables while ChatController.blockUserMutation is pending, confirms with showBlockUserDialog, runs the mutation through ChatController, and pops the route on success. Focused widget coverage verifies confirmation, success, pending disabled state, and failure feedback.",
+          "source": "Block action is selected through typed ChatThreadAction.block, disables while ChatController.blockUserMutation is pending, confirms with showBlockUserDialog, runs the mutation through ChatController, and pops the route on success. Focused widget coverage verifies confirmation, success, pending disabled state, and failure feedback.",
           "nextAction": "Add host chat block pending/failure captures.",
           "previewIds": [
             "ChatScreen/Host chat states"
@@ -13857,7 +13857,7 @@
             ]
           },
           {
-            "id": "section.host.chat_top_bar",
+            "id": "section.host.catch_top_bar_identity",
             "name": "Host chat top bar",
             "status": "implemented_local",
             "layer": "section",
@@ -13865,10 +13865,10 @@
               "HostConversationTopBar"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_top_bar.dart",
-              "symbol": "ChatTopBar"
+              "file": "lib/core/widgets/catch_top_bar.dart",
+              "symbol": "CatchTopBar.identity"
             },
-            "currentOwner": "ChatTopBar",
+            "currentOwner": "CatchTopBar.identity",
             "targetOwner": "provider-free host chat top bar section",
             "dependencies": [
               "catch.top_bar",
@@ -14020,7 +14020,7 @@
             ],
             "flutter": {
               "file": "lib/chats/presentation/chat_screen.dart",
-              "symbol": "_ChatContent"
+              "symbol": "ChatScreen"
             },
             "currentOwner": "_ChatContent",
             "targetOwner": "ChatController plus provider-free safety action section/menu",
@@ -14037,7 +14037,7 @@
               "block_error",
               "blocked"
             ],
-            "migration": "Report/block availability and pending disabled state now flow through HostChatScreenState and typed ChatTopBarAction values; focused tests verify success and failure feedback. Continue moving snackbar/pop effects into a host chat action adapter if they need persistent visual states.",
+            "migration": "Report/block availability and pending disabled state now flow through HostChatScreenState and typed ChatThreadAction values; focused tests verify success and failure feedback. Continue moving snackbar/pop effects into a host chat action adapter if they need persistent visual states.",
             "previewIds": [
               "ChatScreen/Host chat states"
             ]
@@ -14052,7 +14052,7 @@
             ],
             "flutter": {
               "file": "lib/chats/presentation/chat_screen.dart",
-              "symbol": "_ChatMutationListeners"
+              "symbol": "ChatScreen"
             },
             "currentOwner": "_ChatMutationListeners",
             "targetOwner": "shared mutation-feedback boundary with host chat fixtures",
@@ -14111,7 +14111,7 @@
         {
           "id": "DS-HOST-CHAT-002",
           "status": "open",
-          "nextAction": "ChatRouteState now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState owns host inquiry identity, typed top-bar action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks, while _ChatContent still executes the ConversationReadMarker.markRead side effect. ChatThreadLookupState owns other-participant, host-inquiry club, host profile, public-profile, event, and Suvbot lookup decisions before ChatRouteState performs the provider watches. Match-stream failures render the shared branded chat error state and execute HostChatRetryIntent.reloadMatch; message-list and Suvbot-control errors route through typed retry targets before invalidating their providers. ChatTopBar is router/provider-free and supports disabled menu actions, and Host Chat report/share/sheet-export transient feedback routes through showCatchSnackBar. _ChatContent still owns profile navigation, share-card presentation, scroll behavior, and report/block/share effect execution from typed intents. Continue moving remaining mark-read execution, scroll effects, and side-effect execution into this adapter/controller seam."
+          "nextAction": "ChatRouteState now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState owns host inquiry identity, typed top-bar action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks, while _ChatContent still executes the ConversationReadMarker.markRead side effect. ChatThreadLookupState owns other-participant, host-inquiry club, host profile, public-profile, event, and Suvbot lookup decisions before ChatRouteState performs the provider watches. Match-stream failures render the shared branded chat error state and execute HostChatRetryIntent.reloadMatch; message-list and Suvbot-control errors route through typed retry targets before invalidating their providers. CatchTopBar.identity is router/provider-free and supports disabled menu actions, and Host Chat report/share/sheet-export transient feedback routes through showCatchSnackBar. _ChatContent still owns profile navigation, share-card presentation, scroll behavior, and report/block/share effect execution from typed intents. Continue moving remaining mark-read execution, scroll effects, and side-effect execution into this adapter/controller seam."
         },
         {
           "id": "DS-HOST-CHAT-003",
@@ -14286,7 +14286,7 @@
             ],
             "flutter": {
               "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-              "symbol": "_WelcomeScene"
+              "symbol": "_buildWelcomeScene"
             },
             "currentOwner": "WelcomePage",
             "targetOwner": "provider-free welcome scene section",
@@ -14451,7 +14451,7 @@
           "id": "phone_entry",
           "kind": "populated",
           "status": "captured",
-          "source": "AuthScreen renders PhonePage while AuthController.step is AuthStep.phone, using OnboardingStepFrame and CatchTextField/CatchButton primitives.",
+          "source": "AuthScreen renders PhonePage while AuthController.step is AuthStep.phone, using OnboardingStepFrame and CatchField/CatchButton primitives.",
           "captureIds": [
             "auth_phone_entry"
           ],
@@ -14570,7 +14570,7 @@
             "currentOwner": "PhonePage",
             "targetOwner": "provider-free phone entry section",
             "dependencies": [
-              "catch.text_field",
+              "catch.field",
               "catch.button",
               "catch.field"
             ],
@@ -14943,7 +14943,7 @@
             ],
             "flutter": {
               "file": "lib/onboarding/presentation/onboarding_screen.dart",
-              "symbol": "_OnboardingTopBar"
+              "symbol": "_onboardingTopBar"
             },
             "currentOwner": "OnboardingScreen",
             "targetOwner": "provider-free onboarding step header section",
@@ -14998,7 +14998,7 @@
             "targetOwner": "provider-free identity step sections",
             "dependencies": [
               "catch.field",
-              "catch.text_field",
+              "catch.field",
               "catch.chip",
               "catch.button"
             ],
@@ -15303,7 +15303,7 @@
             ],
             "flutter": {
               "file": "lib/calendar/presentation/calendar_screen.dart",
-              "symbol": "_CalendarDateHeader"
+              "symbol": "_buildCalendarDateHeader"
             },
             "currentOwner": "CalendarScreen private header state",
             "targetOwner": "provider-free calendar date header section",
@@ -15327,7 +15327,7 @@
             ],
             "flutter": {
               "file": "lib/calendar/presentation/calendar_screen.dart",
-              "symbol": "_CalendarStatsHeader"
+              "symbol": "_buildCalendarStatsHeader"
             },
             "currentOwner": "CalendarScreen",
             "targetOwner": "provider-free calendar stats section",
@@ -15375,7 +15375,7 @@
             ],
             "flutter": {
               "file": "lib/calendar/presentation/calendar_screen.dart",
-              "symbol": "_CalendarMessage"
+              "symbol": "_buildCalendarMessage"
             },
             "currentOwner": "CalendarScreen",
             "targetOwner": "provider-free calendar state section",
@@ -15642,7 +15642,7 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/saved_events_screen.dart",
-              "symbol": "_SavedEventsMessage"
+              "symbol": "_savedEventsMessage"
             },
             "currentOwner": "SavedEventsScreen",
             "targetOwner": "provider-free saved-events state section",
@@ -16240,7 +16240,7 @@
             ],
             "flutter": {
               "file": "lib/swipes/presentation/event_recap_screen.dart",
-              "symbol": "_RecapHero"
+              "symbol": "_recapHero"
             },
             "currentOwner": "EventRecapScreen",
             "targetOwner": "provider-free recap hero section",
@@ -16288,7 +16288,7 @@
             ],
             "flutter": {
               "file": "lib/swipes/presentation/event_recap_screen.dart",
-              "symbol": "_VibeTile"
+              "symbol": "_vibeTile"
             },
             "currentOwner": "EventRecapScreen",
             "targetOwner": "shared recap attendee tile candidate",
@@ -16781,7 +16781,7 @@
             "currentOwner": "CreateClubScreen",
             "targetOwner": "provider-free club basics section",
             "dependencies": [
-              "catch.text_field",
+              "catch.field",
               "catch.field",
               "catch.button"
             ],
@@ -16807,7 +16807,7 @@
             "currentOwner": "CreateClubScreen",
             "targetOwner": "provider-free club details section",
             "dependencies": [
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "details_step",
@@ -16849,8 +16849,8 @@
               "CreateClubFooter"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/widgets/stepper_footer.dart",
-              "symbol": "StepperFooter"
+              "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
+              "symbol": "_buildStepperFooter"
             },
             "currentOwner": "CreateClubScreen",
             "targetOwner": "provider-free wizard footer",
@@ -16932,7 +16932,7 @@
           },
           {
             "file": "lib/core/widgets/catch_field.dart",
-            "symbol": "CatchFieldGroup"
+            "symbol": "CatchSection"
           }
         ],
         "mutationOwners": [
@@ -17149,7 +17149,7 @@
           "id": "validation_error",
           "kind": "error",
           "status": "captured",
-          "source": "Required owner edit fields validate through shared CatchField/CatchTextField validators plus the edit city FormField adapter.",
+          "source": "Required owner edit fields validate through shared CatchField/CatchField validators plus the edit city FormField adapter.",
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
@@ -17382,7 +17382,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-              "symbol": "_EditClubFooter"
+              "symbol": "_buildEditClubFooter"
             },
             "currentOwner": "CreateClubScreen private footer",
             "targetOwner": "provider-free edit footer",
@@ -17855,7 +17855,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-              "symbol": "_EditScopeNotice"
+              "symbol": "EditHostedEventScopeNotice"
             },
             "currentOwner": "EditHostedEventScreen private notice",
             "targetOwner": "provider-free scope notice section",
@@ -17881,7 +17881,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-              "symbol": "_ReadOnlyScheduleCard"
+              "symbol": "ReadOnlyHostedEventScheduleCard"
             },
             "currentOwner": "EditHostedEventScreen",
             "targetOwner": "provider-free schedule section",
@@ -17912,7 +17912,7 @@
             "currentOwner": "EditHostedEventScreen",
             "targetOwner": "provider-free location/details section",
             "dependencies": [
-              "catch.text_field",
+              "catch.field",
               "catch.surface"
             ],
             "states": [
@@ -17932,7 +17932,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-              "symbol": "_EditablePolicyCard"
+              "symbol": "EditableHostedEventPolicyCard"
             },
             "currentOwner": "EditHostedEventScreen private policy widgets",
             "targetOwner": "provider-free policy editor section",
@@ -17958,7 +17958,7 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-              "symbol": "_EditHostedEventFooter"
+              "symbol": "_buildEditHostedEventFooter"
             },
             "currentOwner": "EditHostedEventScreen private footer",
             "targetOwner": "provider-free mutation footer",
@@ -18537,7 +18537,7 @@
             "currentOwner": "HostAccountScreen private bottom sheet",
             "targetOwner": "provider-free host profile editor form",
             "dependencies": [
-              "catch.text_field",
+              "catch.field",
               "catch.button"
             ],
             "states": [
@@ -19025,7 +19025,7 @@
             "currentOwner": "HostProfileForm + HostProfileFields",
             "targetOwner": "provider-free professional profile form",
             "dependencies": [
-              "catch.text_field",
+              "catch.field",
               "catch.button",
               "catch.surface"
             ],
@@ -19905,7 +19905,7 @@
             ],
             "flutter": {
               "file": "lib/dashboard/presentation/widgets/activity_section.dart",
-              "symbol": "_NotificationDayGroups"
+              "symbol": "NotificationDayGroups"
             },
             "currentOwner": "NotificationsListState + _NotificationDayGroups",
             "targetOwner": "provider-free notification day groups",
@@ -20311,7 +20311,7 @@
             ],
             "flutter": {
               "file": "lib/reviews/presentation/reviews_history_screen.dart",
-              "symbol": "_ReviewsHistoryList"
+              "symbol": "reviewsHistoryList"
             },
             "currentOwner": "provider-free _ReviewsHistoryList",
             "targetOwner": "provider-free reviews history list",
@@ -20339,7 +20339,7 @@
             ],
             "flutter": {
               "file": "lib/reviews/presentation/reviews_history_screen.dart",
-              "symbol": "_ReviewHistoryItem"
+              "symbol": "ReviewHistoryItem"
             },
             "currentOwner": "provider-free _ReviewHistoryItem + ReviewsHistoryRow",
             "targetOwner": "provider-free review history row",
@@ -20367,7 +20367,7 @@
             ],
             "flutter": {
               "file": "lib/reviews/presentation/reviews_history_screen.dart",
-              "symbol": "_ReviewsHistoryEmpty"
+              "symbol": "reviewsHistoryEmpty"
             },
             "currentOwner": "_ReviewsHistoryEmpty",
             "targetOwner": "provider-free reviews history empty state",
@@ -20969,7 +20969,7 @@
             ],
             "flutter": {
               "file": "lib/safety/presentation/settings_screen.dart",
-              "symbol": "_SettingsSection"
+              "symbol": "_settingsSection"
             },
             "currentOwner": "_SettingsSection + CatchSettingsRow",
             "targetOwner": "provider-free settings account section",
@@ -20996,7 +20996,7 @@
             ],
             "flutter": {
               "file": "lib/safety/presentation/settings_screen.dart",
-              "symbol": "_SettingsSection"
+              "symbol": "_settingsSection"
             },
             "currentOwner": "_SettingsSection + CatchToggle",
             "targetOwner": "provider-free settings notification preferences section",
@@ -21023,7 +21023,7 @@
             ],
             "flutter": {
               "file": "lib/safety/presentation/settings_screen.dart",
-              "symbol": "_SettingsSection"
+              "symbol": "_settingsSection"
             },
             "currentOwner": "_SettingsSection + SettingsController",
             "targetOwner": "provider-free settings privacy and safety section",
@@ -21052,7 +21052,7 @@
             ],
             "flutter": {
               "file": "lib/safety/presentation/settings_screen.dart",
-              "symbol": "_BlockedAccountsSection"
+              "symbol": "_blockedAccountsSection"
             },
             "currentOwner": "_BlockedAccountsSection + publicProfilesByIdsProvider",
             "targetOwner": "provider-free blocked accounts footer",
@@ -21083,7 +21083,7 @@
             ],
             "flutter": {
               "file": "lib/safety/presentation/settings_screen.dart",
-              "symbol": "_SettingsSection"
+              "symbol": "_settingsSection"
             },
             "currentOwner": "_SettingsSection + AuthSessionController",
             "targetOwner": "provider-free settings about and sign-out sections",
@@ -21513,7 +21513,7 @@
             ],
             "flutter": {
               "file": "lib/payments/presentation/payment_history_screen.dart",
-              "symbol": "_PaymentList"
+              "symbol": "paymentHistoryList"
             },
             "currentOwner": "_PaymentList + paymentHistoryViewModelProvider",
             "targetOwner": "provider-free payment history list",
@@ -21541,7 +21541,7 @@
             ],
             "flutter": {
               "file": "lib/payments/presentation/payment_history_screen.dart",
-              "symbol": "_PaymentTile"
+              "symbol": "PaymentHistoryTile"
             },
             "currentOwner": "_PaymentTile + PaymentHistoryRow",
             "targetOwner": "provider-free payment transaction row",

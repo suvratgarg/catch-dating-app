@@ -1227,7 +1227,13 @@ Future<void> _submitValidEvent(WidgetTester tester) async {
 }
 
 Future<void> _pickMapPoint(WidgetTester tester) async {
-  await tester.tap(find.byKey(CreateEventFormKeys.mapPicker));
+  final mapPicker = find.byKey(
+    CreateEventFormKeys.mapPicker,
+    skipOffstage: false,
+  );
+  await Scrollable.ensureVisible(tester.element(mapPicker), alignment: 0.25);
+  await tester.pump();
+  await tester.tap(mapPicker);
   await _pumpTestAnimation(tester);
 
   final googleMap = tester.widget<gmaps.GoogleMap>(

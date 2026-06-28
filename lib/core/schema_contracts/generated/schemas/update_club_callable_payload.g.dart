@@ -38,13 +38,10 @@ const schemaUpdateClubCallablePayloadSchema = <String, Object?>{
           'maxLength': 2000,
         },
         'location': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': 'string',
           'minLength': 1,
-          'maxLength': 80,
-          'pattern': '^[a-z0-9-]+\$',
+          'maxLength': 120,
+          'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
         },
         'area': <String, Object?>{
           'type': 'string',

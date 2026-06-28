@@ -15,13 +15,17 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
+import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -35,9 +39,7 @@ import 'package:catch_dating_app/events/presentation/location_picker_screen.dart
 import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_policy_step.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/picker_tile.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -368,7 +370,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
           child: ListView(
             padding: CatchInsets.pageBody,
             children: [
-              _EditScopeNotice(
+              EditHostedEventScopeNotice(
                 isCancelled: widget.event.isCancelled,
                 scheduleLocked: _scheduleLocked,
                 policyLocked: _policyLocked,
@@ -381,21 +383,23 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 ),
               ],
               gapH20,
-              const FieldLabel('Schedule'),
+              const CatchFormFieldLabel(label: 'Schedule', large: true),
               gapH8,
               if (_scheduleLocked)
-                _ReadOnlyScheduleCard(event: widget.event)
+                ReadOnlyHostedEventScheduleCard(event: widget.event)
               else ...[
-                PickerTile(
+                _buildPickerTile(
                   key: CreateEventFormKeys.datePicker,
+                  context: context,
                   icon: CatchIcons.calendarTodayOutlined,
                   value: _dateController.text,
                   placeholder: 'Select a date',
                   onTap: _pickDate,
                 ),
                 gapH12,
-                PickerTile(
+                _buildPickerTile(
                   key: CreateEventFormKeys.timePicker,
+                  context: context,
                   icon: CatchIcons.scheduleOutlined,
                   value: _startTimeController.text,
                   placeholder: 'Select start time',
@@ -412,23 +416,30 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   ),
                 ],
                 gapH12,
-                const FieldLabel('Duration'),
+                const CatchFormFieldLabel(label: 'Duration', large: true),
                 gapH8,
-                _DurationStepper(
-                  durationMinutes: _durationMinutes,
+                CatchNumberStepper(
+                  value: _durationMinutes,
+                  min: CatchBusinessRules.eventMinDurationMinutes,
+                  max: CatchBusinessRules.eventMaxDurationMinutes,
+                  step: CatchBusinessRules.eventDurationStepMinutes,
+                  decreaseTooltip: 'Decrease duration',
+                  increaseTooltip: 'Increase duration',
+                  formatValue: (value) =>
+                      EventFormatters.durationMinutes(value.round()),
                   onChanged: (duration) =>
-                      setState(() => _durationMinutes = duration),
+                      setState(() => _durationMinutes = duration.round()),
                 ),
               ],
               gapH24,
-              const FieldLabel('Where'),
+              const CatchFormFieldLabel(label: 'Where', large: true),
               gapH8,
-              CatchTextField(
+              CatchField(
                 key: CreateEventFormKeys.meetingPoint,
-                label: 'Location name',
+                title: 'Location name',
                 controller: _meetingPointController,
                 enabled: _canEdit,
-                hintText: 'e.g. Bandstand Promenade, Bandra',
+                placeholder: 'e.g. Bandstand Promenade, Bandra',
                 helperText:
                     'This is what attendees see in event cards and details.',
                 prefixIcon: Icon(CatchIcons.locationOnOutlined),
@@ -447,13 +458,13 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 onTap: _pickLocation,
               ),
               gapH16,
-              CatchTextField(
+              CatchField(
                 key: CreateEventFormKeys.locationDetails,
-                label: 'Extra directions',
+                title: 'Extra directions',
                 isOptional: true,
                 controller: _locationDetailsController,
                 enabled: _canEdit,
-                hintText: 'e.g. Meet outside the blue gate, third entrance',
+                placeholder: 'e.g. Meet outside the blue gate, third entrance',
                 prefixIcon: Icon(CatchIcons.infoOutline),
                 maxLines: 3,
                 textCapitalization: TextCapitalization.sentences,
@@ -461,14 +472,14 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               ),
               if (widget.event.eventFormat.activityKind.isDistanceBased) ...[
                 gapH24,
-                const FieldLabel('Event details'),
+                const CatchFormFieldLabel(label: 'Event details', large: true),
                 gapH8,
-                CatchTextField(
+                CatchField(
                   key: CreateEventFormKeys.distance,
-                  label: 'Distance (km)',
+                  title: 'Distance (km)',
                   controller: _distanceController,
                   enabled: _canEdit,
-                  hintText: '10',
+                  placeholder: '10',
                   prefixIcon: Icon(CatchIcons.straightenOutlined),
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
@@ -507,13 +518,13 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 ),
               ],
               gapH24,
-              CatchTextField(
+              CatchField(
                 key: CreateEventFormKeys.description,
-                label: 'Description',
+                title: 'Description',
                 isOptional: true,
                 controller: _descriptionController,
                 enabled: _canEdit,
-                hintText:
+                placeholder:
                     'What should attendees expect? Any tips for the route or venue?',
                 prefixIcon: Icon(CatchIcons.editNoteOutlined),
                 maxLines: 4,
@@ -521,12 +532,12 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 textInputAction: TextInputAction.newline,
               ),
               gapH24,
-              const FieldLabel('Event policy'),
+              const CatchFormFieldLabel(label: 'Event policy', large: true),
               gapH8,
               if (_policyLocked)
-                _ReadOnlyPolicyCard(event: widget.event)
+                ReadOnlyHostedEventPolicyCard(event: widget.event)
               else
-                _EditablePolicyCard(
+                EditableHostedEventPolicyCard(
                   currencyCode: widget.event.currency,
                   capacityController: _capacityController,
                   priceController: _priceController,
@@ -572,12 +583,68 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: _EditHostedEventFooter(
-          isLoading: mutation.isPending,
-          onSave: !_canEdit || mutation.isPending ? null : _saveChanges,
-        ),
+      bottomNavigationBar: _buildEditHostedEventFooter(
+        isLoading: mutation.isPending,
+        onSave: !_canEdit || mutation.isPending ? null : _saveChanges,
+      ),
+    );
+  }
+
+  Widget _buildPickerTile({
+    required Key key,
+    required BuildContext context,
+    required IconData icon,
+    required String? value,
+    required String placeholder,
+    required VoidCallback onTap,
+  }) {
+    final t = CatchTokens.of(context);
+    return CatchControlShell(
+      key: key,
+      onTap: onTap,
+      tone: CatchControlTone.raised,
+      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
+      semanticButton: true,
+      child: Row(
+        children: [
+          Icon(icon, size: CatchIcon.control, color: t.ink2),
+          gapW12,
+          Expanded(
+            child: Text(
+              value == null || value.isEmpty ? placeholder : value,
+              style: value == null || value.isEmpty
+                  ? CatchTextStyles.bodyLead(context, color: t.ink3)
+                  : CatchTextStyles.bodyLead(context),
+            ),
+          ),
+          Icon(
+            CatchIcons.chevronRightRounded,
+            size: CatchIcon.md,
+            color: t.ink3,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEditHostedEventFooter({
+    required bool isLoading,
+    required VoidCallback? onSave,
+  }) {
+    return CatchBottomDock(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.s3,
+        CatchSpacing.s5,
+        CatchSpacing.micro18,
+      ),
+      child: CatchButton(
+        key: EditHostedEventKeys.saveButton,
+        label: 'Save changes',
+        onPressed: onSave,
+        isLoading: isLoading,
+        fullWidth: true,
+        icon: Icon(CatchIcons.saveOutlined),
       ),
     );
   }
@@ -787,8 +854,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   }
 }
 
-class _EditScopeNotice extends StatelessWidget {
-  const _EditScopeNotice({
+class EditHostedEventScopeNotice extends StatelessWidget {
+  const EditHostedEventScopeNotice({
+    super.key,
     required this.isCancelled,
     required this.scheduleLocked,
     required this.policyLocked,
@@ -857,8 +925,9 @@ class _EditScopeNotice extends StatelessWidget {
   }
 }
 
-class _EditablePolicyCard extends StatelessWidget {
-  const _EditablePolicyCard({
+class EditableHostedEventPolicyCard extends StatelessWidget {
+  const EditableHostedEventPolicyCard({
+    super.key,
     required this.currencyCode,
     required this.capacityController,
     required this.priceController,
@@ -917,8 +986,8 @@ class _EditablePolicyCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CatchTextField(
-                  label: 'Max attendees',
+                child: CatchField(
+                  title: 'Max attendees',
                   controller: capacityController,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -927,8 +996,8 @@ class _EditablePolicyCard extends StatelessWidget {
               ),
               gapW12,
               Expanded(
-                child: CatchTextField(
-                  label: 'Base price ($currencyCode)',
+                child: CatchField(
+                  title: 'Base price ($currencyCode)',
                   controller: priceController,
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
@@ -945,7 +1014,7 @@ class _EditablePolicyCard extends StatelessWidget {
             ],
           ),
           gapH18,
-          const FieldLabel('Admission format'),
+          const CatchFormFieldLabel(label: 'Admission format', large: true),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -973,10 +1042,10 @@ class _EditablePolicyCard extends StatelessWidget {
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             gapH8,
-            CatchTextField(
-              label: 'Invite code',
+            CatchField(
+              title: 'Invite code',
               controller: inviteCodeController,
-              hintText: 'CATCH-DELHI',
+              placeholder: 'CATCH-DELHI',
               prefixIcon: Icon(CatchIcons.lockOutlineRounded),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9_-]')),
@@ -1022,8 +1091,8 @@ class _EditablePolicyCard extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: CatchTextField(
-                      label: 'Max straight men',
+                    child: CatchField(
+                      title: 'Max straight men',
                       isOptional: true,
                       controller: maxMenController,
                       keyboardType: TextInputType.number,
@@ -1033,8 +1102,8 @@ class _EditablePolicyCard extends StatelessWidget {
                   ),
                   gapW12,
                   Expanded(
-                    child: CatchTextField(
-                      label: 'Max straight women',
+                    child: CatchField(
+                      title: 'Max straight women',
                       isOptional: true,
                       controller: maxWomenController,
                       keyboardType: TextInputType.number,
@@ -1089,8 +1158,8 @@ class _EditablePolicyCard extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: CatchTextField(
-                      label: 'Step ($currencyCode)',
+                    child: CatchField(
+                      title: 'Step ($currencyCode)',
                       controller: dynamicPricingStepController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -1099,8 +1168,8 @@ class _EditablePolicyCard extends StatelessWidget {
                   ),
                   gapW12,
                   Expanded(
-                    child: CatchTextField(
-                      label: 'Max ($currencyCode)',
+                    child: CatchField(
+                      title: 'Max ($currencyCode)',
                       controller: dynamicPricingMaxController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -1112,13 +1181,13 @@ class _EditablePolicyCard extends StatelessWidget {
             ],
           ],
           gapH18,
-          const FieldLabel('Age range'),
+          const CatchFormFieldLabel(label: 'Age range', large: true),
           gapH8,
           Row(
             children: [
               Expanded(
-                child: CatchTextField(
-                  label: 'Min age',
+                child: CatchField(
+                  title: 'Min age',
                   isOptional: true,
                   controller: minAgeController,
                   keyboardType: TextInputType.number,
@@ -1132,8 +1201,8 @@ class _EditablePolicyCard extends StatelessWidget {
               ),
               gapW12,
               Expanded(
-                child: CatchTextField(
-                  label: 'Max age',
+                child: CatchField(
+                  title: 'Max age',
                   isOptional: true,
                   controller: maxAgeController,
                   keyboardType: TextInputType.number,
@@ -1148,7 +1217,7 @@ class _EditablePolicyCard extends StatelessWidget {
             ],
           ),
           gapH18,
-          const FieldLabel('Cancellation policy'),
+          const CatchFormFieldLabel(label: 'Cancellation policy', large: true),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -1174,42 +1243,8 @@ class _EditablePolicyCard extends StatelessWidget {
   }
 }
 
-class _EditHostedEventFooter extends StatelessWidget {
-  const _EditHostedEventFooter({required this.isLoading, required this.onSave});
-
-  final bool isLoading;
-  final VoidCallback? onSave;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.bg,
-        border: Border(top: BorderSide(color: t.line)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s3,
-          CatchSpacing.s5,
-          CatchSpacing.micro18,
-        ),
-        child: CatchButton(
-          key: EditHostedEventKeys.saveButton,
-          label: 'Save changes',
-          onPressed: onSave,
-          isLoading: isLoading,
-          fullWidth: true,
-          icon: Icon(CatchIcons.saveOutlined),
-        ),
-      ),
-    );
-  }
-}
-
-class _ReadOnlyPolicyCard extends StatelessWidget {
-  const _ReadOnlyPolicyCard({required this.event});
+class ReadOnlyHostedEventPolicyCard extends StatelessWidget {
+  const ReadOnlyHostedEventPolicyCard({super.key, required this.event});
 
   final Event event;
 
@@ -1230,11 +1265,13 @@ class _ReadOnlyPolicyCard extends StatelessWidget {
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
-          _ReadOnlyPolicyRow(
+          _buildReadOnlyPolicyRow(
+            context: context,
             label: 'Capacity',
             value: '${event.capacityLimit}',
           ),
-          _ReadOnlyPolicyRow(
+          _buildReadOnlyPolicyRow(
+            context: context,
             label: 'Price',
             value: event.isFree
                 ? 'Free'
@@ -1243,11 +1280,13 @@ class _ReadOnlyPolicyCard extends StatelessWidget {
                     currencyCode: event.currency,
                   ),
           ),
-          _ReadOnlyPolicyRow(
+          _buildReadOnlyPolicyRow(
+            context: context,
             label: 'Admission',
             value: _admissionPresetFor(policy).title,
           ),
-          _ReadOnlyPolicyRow(
+          _buildReadOnlyPolicyRow(
+            context: context,
             label: 'Cancellation',
             value: policy.cancellationPolicy.title,
             showDivider: false,
@@ -1256,21 +1295,13 @@ class _ReadOnlyPolicyCard extends StatelessWidget {
       ),
     );
   }
-}
 
-class _ReadOnlyPolicyRow extends StatelessWidget {
-  const _ReadOnlyPolicyRow({
-    required this.label,
-    required this.value,
-    this.showDivider = true,
-  });
-
-  final String label;
-  final String value;
-  final bool showDivider;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildReadOnlyPolicyRow({
+    required BuildContext context,
+    required String label,
+    required String value,
+    bool showDivider = true,
+  }) {
     final t = CatchTokens.of(context);
     return Column(
       children: [
@@ -1296,8 +1327,8 @@ class _ReadOnlyPolicyRow extends StatelessWidget {
   }
 }
 
-class _ReadOnlyScheduleCard extends StatelessWidget {
-  const _ReadOnlyScheduleCard({required this.event});
+class ReadOnlyHostedEventScheduleCard extends StatelessWidget {
+  const ReadOnlyHostedEventScheduleCard({super.key, required this.event});
 
   final Event event;
 
@@ -1323,66 +1354,6 @@ class _ReadOnlyScheduleCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _DurationStepper extends StatelessWidget {
-  const _DurationStepper({
-    required this.durationMinutes,
-    required this.onChanged,
-  });
-
-  final int durationMinutes;
-  final ValueChanged<int> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: CatchButton(
-            label: '-15 min',
-            onPressed:
-                durationMinutes > CatchBusinessRules.eventMinDurationMinutes
-                ? () => onChanged(
-                    durationMinutes -
-                        CatchBusinessRules.eventDurationStepMinutes,
-                  )
-                : null,
-            variant: CatchButtonVariant.secondary,
-            icon: Icon(CatchIcons.removeRounded),
-          ),
-        ),
-        gapW10,
-        Expanded(
-          child: CatchSurface(
-            padding: CatchInsets.controlContent,
-            radius: CatchRadius.md,
-            child: Center(
-              child: Text(
-                EventFormatters.durationMinutes(durationMinutes),
-                style: CatchTextStyles.sectionTitle(context),
-              ),
-            ),
-          ),
-        ),
-        gapW10,
-        Expanded(
-          child: CatchButton(
-            label: '+15 min',
-            onPressed:
-                durationMinutes < CatchBusinessRules.eventMaxDurationMinutes
-                ? () => onChanged(
-                    durationMinutes +
-                        CatchBusinessRules.eventDurationStepMinutes,
-                  )
-                : null,
-            variant: CatchButtonVariant.secondary,
-            icon: Icon(CatchIcons.addRounded),
-          ),
-        ),
-      ],
     );
   }
 }

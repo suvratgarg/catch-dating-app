@@ -65,7 +65,7 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
       ),
       body: CatchAsyncValueView<String?>(
         value: uidAsync,
-        loadingBuilder: (_) => const _ActivityScreenLoading(),
+        loadingBuilder: (_) => _buildActivityScreenLoading(),
         errorBuilder: (_, _, _) => const ActivitySignedOutState(),
         builder: (context, uid) {
           if (uid == null) return const ActivitySignedOutState();
@@ -73,14 +73,14 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
             value:
                 notificationsAsync ??
                 const AsyncLoading<List<ActivityNotification>>(),
-            loadingBuilder: (_) => const _ActivityScreenLoading(),
-            errorBuilder: (context, error, _) => _ActivityScreenBody(
+            loadingBuilder: (_) => _buildActivityScreenLoading(),
+            errorBuilder: (context, error, _) => _buildActivityScreenBody(
               state: NotificationsActivityError(uid: uid, error: error),
               onRetry: () =>
                   ref.invalidate(watchActivityNotificationsProvider(uid)),
               onOpenRoute: _openNotificationRoute,
             ),
-            builder: (context, _) => _ActivityScreenBody(
+            builder: (context, _) => _buildActivityScreenBody(
               state: state,
               onRetry: state.uid == null
                   ? null
@@ -156,40 +156,26 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
   }
 }
 
-class _ActivityScreenLoading extends StatelessWidget {
-  const _ActivityScreenLoading();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: CatchInsets.pageBodyUnderHeader,
-      children: const [ActivitySectionSkeleton()],
-    );
-  }
+Widget _buildActivityScreenLoading() {
+  return ListView(
+    padding: CatchInsets.pageBodyUnderHeader,
+    children: const [ActivitySectionSkeleton()],
+  );
 }
 
-class _ActivityScreenBody extends StatelessWidget {
-  const _ActivityScreenBody({
-    required this.state,
-    required this.onRetry,
-    required this.onOpenRoute,
-  });
-
-  final NotificationsListState state;
-  final VoidCallback? onRetry;
-  final ValueChanged<String> onOpenRoute;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: CatchInsets.pageBodyUnderHeader,
-      children: [
-        ActivitySection.fromState(
-          state: state,
-          onRetry: onRetry,
-          onOpenRoute: onOpenRoute,
-        ),
-      ],
-    );
-  }
+Widget _buildActivityScreenBody({
+  required NotificationsListState state,
+  required VoidCallback? onRetry,
+  required ValueChanged<String> onOpenRoute,
+}) {
+  return ListView(
+    padding: CatchInsets.pageBodyUnderHeader,
+    children: [
+      ActivitySection.fromState(
+        state: state,
+        onRetry: onRetry,
+        onOpenRoute: onOpenRoute,
+      ),
+    ],
+  );
 }

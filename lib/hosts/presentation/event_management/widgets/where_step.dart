@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 
@@ -36,7 +36,7 @@ class WhereStep extends StatelessWidget {
       child: ListView(
         padding: CatchInsets.formStepBody,
         children: [
-          const FieldLabel('Meeting location'),
+          const CatchFormFieldLabel(label: 'Meeting location', large: true),
           gapH8,
           FormField<LocationCoordinate>(
             key: ValueKey(startingPoint),
@@ -65,11 +65,11 @@ class WhereStep extends StatelessWidget {
             ),
           ),
           gapH16,
-          CatchTextField(
+          CatchField(
             key: CreateEventFormKeys.meetingPoint,
-            label: 'Location name',
+            title: 'Location name',
             controller: meetingPointController,
-            hintText: 'e.g. Bandstand Promenade, Bandra',
+            placeholder: 'e.g. Bandstand Promenade, Bandra',
             helperText: startingPoint == null
                 ? 'Pick a map location first. Google Places fills this when available.'
                 : 'Edit this if attendees need a clearer name.',
@@ -85,12 +85,12 @@ class WhereStep extends StatelessWidget {
             },
           ),
           gapH20,
-          CatchTextField(
+          CatchField(
             key: CreateEventFormKeys.locationDetails,
-            label: 'Extra directions',
+            title: 'Extra directions',
             isOptional: true,
             controller: locationDetailsController,
-            hintText: 'e.g. Meet outside the blue gate, third entrance',
+            placeholder: 'e.g. Meet outside the blue gate, third entrance',
             helperText: 'Gate, entrance, floor, or landmark for the group.',
             prefixIcon: Icon(CatchIcons.infoOutline),
             maxLines: 3,

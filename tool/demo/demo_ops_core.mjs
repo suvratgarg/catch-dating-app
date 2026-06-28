@@ -745,7 +745,7 @@ export function buildSuvbotDocs({admin, marker, uid, now}) {
         gender: "other",
         profilePrompts: [],
         profilePhotos: [],
-        city: "mumbai",
+        city: "in-mh-mumbai",
         activityPreferences: {
           running: {
             paceMinSecsPerKm: 300,

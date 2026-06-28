@@ -3,9 +3,9 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Catch's typographic scale — one principled hierarchy across three roles:
-/// Archivo for *voice/head* (titles, heroes, names, prose), the platform system
-/// font for *function* (body, controls, dense UI), and IBM Plex Mono for *data*
-/// (kickers, numerics, labels).
+/// Archivo for *voice/head* (brand display, heroes, deliberate poster moments),
+/// the platform system font for *function* (body, controls, names, dense UI),
+/// and IBM Plex Mono for *data* (kickers, numerics, labels).
 ///
 /// **Fidelity rules** (the locked specimen, `docs/visual_references/catch_typography.html`):
 /// - Display voice is **Archivo w600 with zero tracking** — bold but still
@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 /// - Mono kickers/labels are uppercase with tracked caps (the `.t-*` spec sets
 ///   0.16em on kicker, 0.18em on kicker-lg, 0.13em on mono-label, 0.08em on
 ///   badge). Render the text already upper-cased; the style sets the tracking.
-/// - Body serif (`proseL`/`proseM`) uses generous leading (~1.55).
+/// - Body/prose roles use the platform system font with generous leading.
 ///
 /// **Scale discipline:** dramatic jumps in the display tier (no near-duplicate
 /// mid-sizes); fine steps only where function needs them (labels/body).
@@ -22,11 +22,11 @@ import 'package:flutter/material.dart';
 /// state (unread/disabled).
 abstract final class CatchTextStyles {
   // ===========================================================================
-  // VOICE — Archivo (display, titles, names, editorial body)
+  // VOICE — Archivo (brand display and deliberate poster moments)
   // ===========================================================================
 
-  /// Biggest hero moment — onboarding/celebration impact, live countdowns.
-  static TextStyle display(BuildContext context, {Color? color}) => _serif(
+  /// Biggest brand moment — onboarding/celebration impact, live countdowns.
+  static TextStyle display(BuildContext context, {Color? color}) => _voice(
     context,
     size: 44,
     weight: FontWeight.w600,
@@ -35,8 +35,8 @@ abstract final class CatchTextStyles {
     color: color,
   );
 
-  /// Screen titles and section heroes.
-  static TextStyle headline(BuildContext context, {Color? color}) => _serif(
+  /// Brand headline / section hero.
+  static TextStyle headline(BuildContext context, {Color? color}) => _voice(
     context,
     size: 32,
     weight: FontWeight.w600,
@@ -45,51 +45,13 @@ abstract final class CatchTextStyles {
     color: color,
   );
 
-  /// Sub-headlines and form questions — a step under [headline].
-  static TextStyle headlineS(BuildContext context, {Color? color}) => _serif(
+  /// Smaller brand headline — a step under [headline].
+  static TextStyle headlineS(BuildContext context, {Color? color}) => _voice(
     context,
     size: 26,
     weight: FontWeight.w600,
     height: 1.10,
     letterSpacing: -0.16,
-    color: color,
-  );
-
-  /// Voice card / section titles (club + event identity, editorial cards).
-  static TextStyle titleL(BuildContext context, {Color? color}) => _serif(
-    context,
-    size: 20,
-    weight: FontWeight.w600,
-    height: 1.16,
-    letterSpacing: -0.1,
-    color: color,
-  );
-
-  /// Profile prompt answers — editorial voice, a touch tighter leading.
-  static TextStyle profileAnswer(BuildContext context, {Color? color}) =>
-      _serif(
-        context,
-        size: 18,
-        weight: FontWeight.w600,
-        height: 1.28,
-        color: color,
-      );
-
-  /// Editorial prose — bios, event descriptions, long-form reading text.
-  static TextStyle proseL(BuildContext context, {Color? color}) => _serif(
-    context,
-    size: 16,
-    weight: FontWeight.w400,
-    height: 1.55,
-    color: color,
-  );
-
-  /// Editorial prose, smaller cut.
-  static TextStyle proseM(BuildContext context, {Color? color}) => _serif(
-    context,
-    size: 14,
-    weight: FontWeight.w400,
-    height: 1.55,
     color: color,
   );
 
@@ -163,18 +125,56 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink,
       );
 
-  /// Host/person row name treatment (`.t-name`).
-  static TextStyle name(BuildContext context, {Color? color}) =>
-      CatchFonts.head(
-        fontSize: 15,
-        height: 1.2,
-        letterSpacing: -0.1,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
   // ===========================================================================
   // FUNCTION — platform system font (UI titles, body, labels, controls)
   // ===========================================================================
+
+  /// Large UI title for sections, cards, and sheet headings.
+  static TextStyle titleL(BuildContext context, {Color? color}) => _sans(
+    context,
+    size: 20,
+    weight: FontWeight.w700,
+    height: 1.16,
+    letterSpacing: -0.1,
+    color: color,
+  );
+
+  /// Profile prompt answers — user-authored content, not brand voice.
+  static TextStyle profileAnswer(BuildContext context, {Color? color}) => _sans(
+    context,
+    size: 18,
+    weight: FontWeight.w600,
+    height: 1.28,
+    color: color,
+  );
+
+  /// Long-form app/user copy — bios, event descriptions, readable details.
+  static TextStyle proseL(BuildContext context, {Color? color}) => _sans(
+    context,
+    size: 16,
+    weight: FontWeight.w400,
+    height: 1.55,
+    color: color,
+  );
+
+  /// Long-form app/user copy, smaller cut.
+  static TextStyle proseM(BuildContext context, {Color? color}) => _sans(
+    context,
+    size: 14,
+    weight: FontWeight.w400,
+    height: 1.55,
+    color: color,
+  );
+
+  /// Host/person row name treatment (`.t-name`).
+  static TextStyle name(BuildContext context, {Color? color}) => _sans(
+    context,
+    size: 15,
+    weight: FontWeight.w700,
+    height: 1.2,
+    letterSpacing: -0.1,
+    color: color,
+  );
 
   /// Canonical sans section/card title.
   static TextStyle sectionTitle(BuildContext context, {Color? color}) => _sans(
@@ -194,8 +194,8 @@ abstract final class CatchTextStyles {
     color: color,
   );
 
-  /// CatchInfoRow primary text (`.t-title-s` in the design handoff).
-  static TextStyle infoRowTitle(BuildContext context, {Color? color}) => _sans(
+  /// CatchField primary text (`.t-title-s` in the design handoff).
+  static TextStyle fieldRowTitle(BuildContext context, {Color? color}) => _sans(
     context,
     size: 14,
     weight: FontWeight.w700,
@@ -346,7 +346,7 @@ abstract final class CatchTextStyles {
   static TextStyle chat(BuildContext context, {Color? color}) =>
       chatMessage(context, color: color);
 
-  /// Chat inbox preview copy (`ChatListTile` secondary line).
+  /// Chat inbox preview copy (`CatchPersonRow` chat-preview secondary line).
   static TextStyle chatPreview(BuildContext context, {Color? color}) => _sans(
     context,
     size: 13,
@@ -524,14 +524,14 @@ abstract final class CatchTextStyles {
   static TextStyle _tabular(TextStyle style) =>
       style.copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
 
-  static TextStyle _serif(
+  static TextStyle _voice(
     BuildContext context, {
     required double size,
     required FontWeight weight,
     required double height,
     double letterSpacing = 0,
     Color? color,
-  }) => CatchFonts.serif(
+  }) => CatchFonts.voice(
     fontSize: size,
     fontWeight: weight,
     height: height,

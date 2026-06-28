@@ -9,8 +9,8 @@ import 'package:flutter/services.dart';
 /// [Icon] falls back to missing-glyph boxes unless we load Material Icons and
 /// package icon fonts explicitly.
 Future<void> loadCatchTestFonts() async {
+  final platformFunctionFonts = _platformFunctionFontFiles();
   final loaders = <FontLoader>[
-    FontLoader('Inter')..addFont(_bytes('assets/fonts/Inter-Roman-VF.ttf')),
     FontLoader('Archivo')
       ..addFont(_bytes('assets/fonts/Archivo-Roman-VF.woff2')),
     FontLoader('IBM Plex Mono')
@@ -18,6 +18,11 @@ Future<void> loadCatchTestFonts() async {
       ..addFont(_bytes('assets/fonts/IBMPlexMono-Medium.ttf'))
       ..addFont(_bytes('assets/fonts/IBMPlexMono-SemiBold.ttf'))
       ..addFont(_bytes('assets/fonts/IBMPlexMono-Bold.ttf')),
+    for (final family in _platformFunctionFamilies)
+      FontLoader(family)
+        ..addFont(_fileBytes(platformFunctionFonts.regular))
+        ..addFont(_fileBytes(platformFunctionFonts.medium))
+        ..addFont(_fileBytes(platformFunctionFonts.bold)),
     FontLoader('MaterialIcons')..addFont(_fileBytes(_materialIconsFont())),
   ];
 
@@ -53,6 +58,50 @@ File _materialIconsFont() {
   throw StateError(
     'Unable to locate MaterialIcons-Regular.otf. Set FLUTTER_ROOT or run with '
     'a Flutter SDK that has material font artifacts.',
+  );
+}
+
+_PlatformFunctionFontFiles _platformFunctionFontFiles() {
+  final root = _flutterRootDirectory();
+  final fontDir = Directory('${root.path}/bin/cache/artifacts/material_fonts');
+  final regular = File('${fontDir.path}/Roboto-Regular.ttf');
+  final medium = File('${fontDir.path}/Roboto-Medium.ttf');
+  final bold = File('${fontDir.path}/Roboto-Bold.ttf');
+  final missing = [regular, medium, bold]
+      .where((file) => !file.existsSync())
+      .map((file) => file.path)
+      .toList(growable: false);
+
+  if (missing.isNotEmpty) {
+    throw StateError(
+      'Missing platform-function golden test font(s): ${missing.join(', ')}',
+    );
+  }
+
+  return _PlatformFunctionFontFiles(
+    regular: regular,
+    medium: medium,
+    bold: bold,
+  );
+}
+
+Directory _flutterRootDirectory() {
+  final flutterRoot = Platform.environment['FLUTTER_ROOT'];
+  if (flutterRoot != null && flutterRoot.isNotEmpty) {
+    return Directory(flutterRoot);
+  }
+
+  var dir = File(Platform.resolvedExecutable).parent;
+  for (var i = 0; i < 8; i += 1) {
+    final candidate = Directory('${dir.path}/bin/cache/artifacts');
+    if (candidate.existsSync()) return dir;
+    final parent = dir.parent;
+    if (parent.path == dir.path) break;
+    dir = parent;
+  }
+
+  throw StateError(
+    'Unable to locate Flutter root. Set FLUTTER_ROOT before running goldens.',
   );
 }
 
@@ -96,6 +145,18 @@ Directory _packageRoot(String packageName) {
   return Directory.fromUri(resolved);
 }
 
+class _PlatformFunctionFontFiles {
+  const _PlatformFunctionFontFiles({
+    required this.regular,
+    required this.medium,
+    required this.bold,
+  });
+
+  final File regular;
+  final File medium;
+  final File bold;
+}
+
 class _PackageFontSpec {
   const _PackageFontSpec(this.family, this.path);
 
@@ -111,3 +172,11 @@ const _phosphorFonts = <_PackageFontSpec>[
   _PackageFontSpec('PhosphorRegular', 'lib/fonts/Phosphor.ttf'),
   _PackageFontSpec('PhosphorThin', 'lib/fonts/Phosphor-Thin.ttf'),
 ];
+
+const _platformFunctionFamilies = <String>{
+  'Roboto',
+  'CupertinoSystemText',
+  'CupertinoSystemDisplay',
+  '.AppleSystemUIFont',
+  'Segoe UI',
+};

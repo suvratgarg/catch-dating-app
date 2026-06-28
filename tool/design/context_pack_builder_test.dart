@@ -311,8 +311,8 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
       },
       'rules': {
         'monoLabels': 'Render text pre-uppercased; tracking 0.12-0.18em.',
-        'displaySerif':
-            'Newsreader w600, negative tracking, automatic optical sizing.',
+        'displayVoice':
+            'Archivo w600, zero tracking, centralized through CatchFonts.',
         'color':
             'Base UI is paper and ink; chroma is reserved for activity meaning.',
       },
@@ -531,7 +531,7 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
 <title>Catch Design System Specimen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:opsz,wght@14..32,400..800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: ${color('bg', 'light')};
@@ -549,7 +549,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family: "Inter", sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 main { max-width: 1120px; margin: 0 auto; padding: 56px 28px 72px; }
 .kicker { ${sampleStyle('kicker')} color: var(--ink2); text-transform: uppercase; }
@@ -615,7 +615,7 @@ h1 { ${sampleStyle('display')} max-width: 760px; margin: 14px 0 18px; }
     <div class="panel">
       <div class="mono">Light browse register</div>
       <h2 class="headline">Hairlines, generous type, no brand hue</h2>
-      <p class="body">Newsreader provides the voice, Inter handles controls, and IBM Plex Mono carries metadata, time, counts, and labels.</p>
+      <p class="body">Archivo provides the voice, the platform system font handles controls, and IBM Plex Mono carries metadata, time, counts, and labels.</p>
       <span class="button">Primary action</span>
     </div>
     <div class="panel dark">
@@ -792,10 +792,14 @@ final _styleRegistry = <_StyleEntry>[
   _StyleEntry.single('display', 'voice', CatchTextStyles.display),
   _StyleEntry.single('headline', 'voice', CatchTextStyles.headline),
   _StyleEntry.single('headlineS', 'voice', CatchTextStyles.headlineS),
-  _StyleEntry.single('titleL', 'voice', CatchTextStyles.titleL),
-  _StyleEntry.single('profileAnswer', 'voice', CatchTextStyles.profileAnswer),
-  _StyleEntry.single('proseL', 'voice', CatchTextStyles.proseL),
-  _StyleEntry.single('proseM', 'voice', CatchTextStyles.proseM),
+  _StyleEntry.single('titleL', 'function', CatchTextStyles.titleL),
+  _StyleEntry.single(
+    'profileAnswer',
+    'function',
+    CatchTextStyles.profileAnswer,
+  ),
+  _StyleEntry.single('proseL', 'function', CatchTextStyles.proseL),
+  _StyleEntry.single('proseM', 'function', CatchTextStyles.proseM),
   _StyleEntry(
     name: 'clubDisplay',
     role: 'voice',
@@ -819,10 +823,14 @@ final _styleRegistry = <_StyleEntry>[
   _StyleEntry.single('eventTitle', 'voice', CatchTextStyles.eventTitle),
   _StyleEntry.single('consoleTitle', 'voice', CatchTextStyles.consoleTitle),
   _StyleEntry.single('hint', 'voice', CatchTextStyles.hint),
-  _StyleEntry.single('name', 'voice', CatchTextStyles.name),
+  _StyleEntry.single('name', 'function', CatchTextStyles.name),
   _StyleEntry.single('sectionTitle', 'function', CatchTextStyles.sectionTitle),
   _StyleEntry.single('titleS', 'function', CatchTextStyles.titleS),
-  _StyleEntry.single('infoRowTitle', 'function', CatchTextStyles.infoRowTitle),
+  _StyleEntry.single(
+    'fieldRowTitle',
+    'function',
+    CatchTextStyles.fieldRowTitle,
+  ),
   _StyleEntry.single('bodyLead', 'function', CatchTextStyles.bodyLead),
   _StyleEntry.single('bodyL', 'function', CatchTextStyles.bodyL),
   _StyleEntry.single('bodyM', 'function', CatchTextStyles.bodyM),

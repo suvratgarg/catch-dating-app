@@ -1,7 +1,7 @@
 part of '../event_success_companion_screen.dart';
 
-class _FirstHelloCheckInCard extends ConsumerStatefulWidget {
-  const _FirstHelloCheckInCard({
+class FirstHelloCheckInCard extends ConsumerStatefulWidget {
+  const FirstHelloCheckInCard({
     required this.mission,
     required this.onStart,
     required this.onComplete,
@@ -18,11 +18,11 @@ class _FirstHelloCheckInCard extends ConsumerStatefulWidget {
   final VoidCallback? onSkip;
 
   @override
-  ConsumerState<_FirstHelloCheckInCard> createState() =>
+  ConsumerState<FirstHelloCheckInCard> createState() =>
       _FirstHelloCheckInCardState();
 }
 
-class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
+class _FirstHelloCheckInCardState extends ConsumerState<FirstHelloCheckInCard>
     with SingleTickerProviderStateMixin {
   String? _answerId;
   bool _starting = false;
@@ -51,7 +51,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
     final t = CatchTokens.of(context);
     final mission = widget.mission;
     if (mission == null) {
-      return _StagePanel(
+      return StagePanel(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -60,12 +60,12 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
               runSpacing: CatchSpacing.s2,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                _StageSectionLabel(
+                StageSectionLabel(
                   icon: CatchIcons.wavingHandOutlined,
                   label: 'First Hello',
                   color: t.primary,
                 ),
-                const _PrivacyBadge(_PrivacyAudience.catchPrivate),
+                const PrivacyBadge(_PrivacyAudience.catchPrivate),
               ],
             ),
             gapH12,
@@ -79,7 +79,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
               style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
             gapH14,
-            _StageSoftBand(
+            StageSoftBand(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -99,7 +99,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
               ),
             ),
             gapH14,
-            _StageActionDock(
+            StageActionDock(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -131,7 +131,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
     final selectedAnswerId = _answerId;
     return Stack(
       children: [
-        _StagePanel(
+        StagePanel(
           child: _missionEditor(context, mission, selectedAnswerId, t),
         ),
         if (_celebrating)
@@ -196,12 +196,12 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
           runSpacing: CatchSpacing.s2,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            _StageSectionLabel(
+            StageSectionLabel(
               icon: CatchIcons.wavingHandOutlined,
               label: 'First Hello',
               color: t.primary,
             ),
-            const _PrivacyBadge(_PrivacyAudience.catchPrivate),
+            const PrivacyBadge(_PrivacyAudience.catchPrivate),
           ],
         ),
         gapH12,
@@ -215,7 +215,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
         gapH14,
-        _StageSoftBand(
+        StageSoftBand(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -240,7 +240,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
           runSpacing: CatchSpacing.s2,
           children: [
             for (final option in mission.answerOptions)
-              _StageBouncyChip(
+              StageBouncyChip(
                 label: option.label,
                 active: selectedAnswerId == option.id,
                 onTap: _saving
@@ -255,7 +255,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
         gapH14,
-        _StageActionDock(
+        StageActionDock(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

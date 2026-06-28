@@ -157,7 +157,10 @@
       "x-catch-ownership": "client-writable"
     },
     "city": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/citySlug",
+      "anyOf": [
+        {"$ref": "../shared/profile_common.schema.json#/definitions/marketId"},
+        {"type": "null"}
+      ],
       "x-catch-ownership": "client-writable"
     },
     "latitude": {

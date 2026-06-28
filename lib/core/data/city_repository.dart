@@ -33,6 +33,7 @@ class CityRepository {
         if (list != null && list.isNotEmpty) {
           return list
               .map((e) => CityData.fromJson(e as Map<String, dynamic>))
+              .where((city) => city.profileSelectable || city.exploreVisible)
               .toList(growable: false);
         }
       }
@@ -79,7 +80,7 @@ class CityRepository {
 
 // ── Fallback ───────────────────────────────────────────────────────────────
 
-final _defaultCities = defaultCityData;
+final _defaultCities = launchedDefaultCityData;
 
 // ── Haversine ──────────────────────────────────────────────────────────────
 

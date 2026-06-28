@@ -299,7 +299,7 @@ GoRouter goRouter(Ref ref) {
       GoRoute(
         path: Routes.loadingScreen.path,
         name: Routes.loadingScreen.name,
-        builder: (context, state) => const _RouterLoadingScreen(),
+        builder: (context, state) => const CatchStartupLoadingScreen(),
       ),
       GoRoute(
         path: Routes.startScreen.path,
@@ -1010,15 +1010,6 @@ bool _isTransientRoute(String path) =>
 bool _isHostRoute(String? path) =>
     path == Routes.hostHomeScreen.path ||
     (path?.startsWith('${Routes.hostHomeScreen.path}/') ?? false);
-
-class _RouterLoadingScreen extends StatelessWidget {
-  const _RouterLoadingScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return const CatchStartupLoadingScreen();
-  }
-}
 
 // Minimal ChangeNotifier used as GoRouter's refreshListenable.
 class _RouterRefreshNotifier extends ChangeNotifier {

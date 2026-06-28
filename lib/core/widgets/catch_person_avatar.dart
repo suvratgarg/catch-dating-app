@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_initializing_formals
 
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
@@ -12,7 +13,11 @@ import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CatchPersonAvatarItem {
-  const CatchPersonAvatarItem({required this.name, this.imageUrl, this.initials});
+  const CatchPersonAvatarItem({
+    required this.name,
+    this.imageUrl,
+    this.initials,
+  });
 
   final String name;
   final String? imageUrl;
@@ -63,6 +68,8 @@ class CatchPersonAvatar extends StatelessWidget {
     this.showStatusDot = false,
     this.obscured = false,
     this.shape = CatchPersonAvatarShape.circle,
+    this.activityKind,
+    this.activityDim = false,
   }) : _count = null;
 
   /// Overflow avatar — shows "+[count]" instead of a photo.
@@ -80,7 +87,9 @@ class CatchPersonAvatar extends StatelessWidget {
        initials = null,
        showStatusDot = false,
        obscured = false,
-       shape = CatchPersonAvatarShape.circle;
+       shape = CatchPersonAvatarShape.circle,
+       activityKind = null,
+       activityDim = false;
 
   final double size;
   final String name;
@@ -93,7 +102,11 @@ class CatchPersonAvatar extends StatelessWidget {
   final bool showStatusDot;
   final bool obscured;
   final CatchPersonAvatarShape shape;
+  final ActivityKind? activityKind;
+  final bool activityDim;
   final int? _count;
+
+  static String initialsOf(String value) => _initialsOf(value);
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +139,8 @@ class CatchPersonAvatar extends StatelessWidget {
         child: _obscureIfNeeded(
           child: CatchNetworkImage(
             imageUrl!,
-            errorBuilder: (_, _, _) => _InitialsPlaceholder(
+            errorBuilder: (context, _, _) => _buildInitialsPlaceholder(
+              context,
               name: name,
               initials: initials,
               size: innerSize,
@@ -134,11 +148,23 @@ class CatchPersonAvatar extends StatelessWidget {
           ),
         ),
       );
+    } else if (activityKind != null) {
+      avatar = _shell(
+        size: innerSize,
+        child: _buildActivityInitialsPlaceholder(
+          context,
+          kind: activityKind!,
+          initials: initials ?? _initialsOf(name),
+          size: innerSize,
+          dim: activityDim,
+        ),
+      );
     } else {
       avatar = _shell(
         size: innerSize,
         child: _obscureIfNeeded(
-          child: _InitialsPlaceholder(
+          child: _buildInitialsPlaceholder(
+            context,
             name: name,
             initials: initials,
             size: innerSize,
@@ -277,7 +303,8 @@ class CatchPersonAvatarStack extends StatelessWidget {
           obscured: obscured,
         ),
       for (var i = 0; i < shownVeiledCount; i++)
-        _VeiledPersonAvatar(
+        _buildVeiledPersonAvatar(
+          context,
           size: size,
           activityKind: activityKind,
           borderWidth: borderWidth,
@@ -307,82 +334,143 @@ class CatchPersonAvatarStack extends StatelessWidget {
   }
 }
 
-class _VeiledPersonAvatar extends StatelessWidget {
-  const _VeiledPersonAvatar({
-    required this.size,
-    required this.activityKind,
-    required this.borderWidth,
-    required this.borderColor,
-  });
+Widget _buildVeiledPersonAvatar(
+  BuildContext context, {
+  required double size,
+  required ActivityKind activityKind,
+  required double borderWidth,
+  required Color borderColor,
+}) {
+  final activity = ActivityPalette.resolve(context, activityKind);
+  final innerSize = size - borderWidth * 2;
 
-  final double size;
-  final ActivityKind activityKind;
-  final double borderWidth;
-  final Color borderColor;
+  return Container(
+    width: size,
+    height: size,
+    decoration: BoxDecoration(shape: BoxShape.circle, color: borderColor),
+    padding: EdgeInsets.all(borderWidth),
+    child: ClipOval(
+      child: ColoredBox(
+        color: activity.soft,
+        child: Center(
+          child: Icon(
+            CatchIcons.personOutlined,
+            size: innerSize * 0.38,
+            color: activity.deep.withValues(alpha: 0.75),
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    final activity = ActivityPalette.resolve(context, activityKind);
-    final innerSize = size - borderWidth * 2;
+Widget _buildActivityInitialsPlaceholder(
+  BuildContext context, {
+  required ActivityKind kind,
+  required String initials,
+  required double size,
+  required bool dim,
+}) {
+  final activity = ActivityPalette.resolve(context, kind);
+  final initialsSize = size * CatchLayout.activityAvatarInitialsScale;
 
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(shape: BoxShape.circle, color: borderColor),
-      padding: EdgeInsets.all(borderWidth),
-      child: ClipOval(
-        child: ColoredBox(
-          color: activity.soft,
-          child: Center(
-            child: Icon(
-              CatchIcons.personOutlined,
-              size: innerSize * 0.38,
-              color: activity.deep.withValues(alpha: 0.75),
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            transform: const GradientRotation(150 * math.pi / 180),
+            colors: [activity.accent, activity.deep],
+          ),
+          border: Border.all(
+            color: CatchTokens.editorialLight.withValues(
+              alpha: CatchOpacity.activityAvatarInnerRule,
             ),
           ),
         ),
       ),
-    );
-  }
-}
-
-class _InitialsPlaceholder extends StatelessWidget {
-  const _InitialsPlaceholder({
-    required this.name,
-    required this.initials,
-    required this.size,
-  });
-
-  final String name;
-  final String? initials;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final label = initials ?? _initialsOf(name);
-
-    // People are paper & ink, never activity pigment: a warm primary-soft tint
-    // with mono ink initials (design-system PersonAvatar fallback).
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        ColoredBox(color: t.primarySoft),
-        if (label.isNotEmpty)
-          Center(
-            child: Text(
-              label,
-              style: CatchFonts.mono(
-                fontSize: size * 0.34,
-                height: 1,
-                fontWeight: FontWeight.w700,
-                color: t.ink2,
-              ),
+      CustomPaint(painter: _ActivityAvatarTexturePainter()),
+      if (initials.isNotEmpty)
+        Center(
+          child: Text(
+            initials,
+            style: CatchFonts.mono(
+              fontSize: initialsSize,
+              height: 1,
+              fontWeight: FontWeight.w700,
+              letterSpacing: initialsSize * 0.02,
+              color: CatchTokens.editorialLight,
             ),
           ),
-      ],
-    );
+        ),
+      if (dim)
+        ColoredBox(
+          color: CatchTokens.editorialDark.withValues(
+            alpha: CatchOpacity.activityAvatarDim,
+          ),
+        ),
+    ],
+  );
+}
+
+class _ActivityAvatarTexturePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = CatchTokens.editorialLight.withValues(
+        alpha: CatchOpacity.activityAvatarPrint,
+      )
+      ..strokeWidth = CatchLayout.activityAvatarTextureStrokeWidth;
+    final stride = CatchLayout.activityAvatarTextureStride;
+    for (
+      double offset = -size.height;
+      offset < size.width + size.height;
+      offset += stride
+    ) {
+      canvas.drawLine(
+        Offset(offset, size.height),
+        Offset(offset + size.height, 0),
+        paint,
+      );
+    }
   }
+
+  @override
+  bool shouldRepaint(covariant _ActivityAvatarTexturePainter oldDelegate) =>
+      false;
+}
+
+Widget _buildInitialsPlaceholder(
+  BuildContext context, {
+  required String name,
+  required String? initials,
+  required double size,
+}) {
+  final t = CatchTokens.of(context);
+  final label = initials ?? _initialsOf(name);
+
+  // People are paper and ink, never activity pigment.
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      ColoredBox(color: t.primarySoft),
+      if (label.isNotEmpty)
+        Center(
+          child: Text(
+            label,
+            style: CatchFonts.mono(
+              fontSize: size * 0.34,
+              height: 1,
+              fontWeight: FontWeight.w700,
+              color: t.ink2,
+            ),
+          ),
+        ),
+    ],
+  );
 }
 
 String _initialsOf(String value) {

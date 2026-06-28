@@ -17,10 +17,9 @@ import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
@@ -335,19 +334,19 @@ class EventSuccessHostSectionSkeleton extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (showTabs) ...[const _EventSuccessTabPickerSkeleton(), gapH16],
+        if (showTabs) ...[const EventSuccessTabPickerSkeleton(), gapH16],
         switch (initialTab) {
-          EventSuccessHostTab.setup => const _EventSuccessSetupTabSkeleton(),
-          EventSuccessHostTab.live => const _EventSuccessLiveTabSkeleton(),
-          EventSuccessHostTab.report => const _EventSuccessReportTabSkeleton(),
+          EventSuccessHostTab.setup => const EventSuccessSetupTabSkeleton(),
+          EventSuccessHostTab.live => const EventSuccessLiveTabSkeleton(),
+          EventSuccessHostTab.report => const EventSuccessReportTabSkeleton(),
         },
       ],
     );
   }
 }
 
-class _EventSuccessTabPickerSkeleton extends StatelessWidget {
-  const _EventSuccessTabPickerSkeleton();
+class EventSuccessTabPickerSkeleton extends StatelessWidget {
+  const EventSuccessTabPickerSkeleton();
 
   @override
   Widget build(BuildContext context) {
@@ -367,8 +366,8 @@ class _EventSuccessTabPickerSkeleton extends StatelessWidget {
   }
 }
 
-class _EventSuccessSetupTabSkeleton extends StatelessWidget {
-  const _EventSuccessSetupTabSkeleton();
+class EventSuccessSetupTabSkeleton extends StatelessWidget {
+  const EventSuccessSetupTabSkeleton();
 
   @override
   Widget build(BuildContext context) {
@@ -376,13 +375,13 @@ class _EventSuccessSetupTabSkeleton extends StatelessWidget {
       padding: EdgeInsets.zero,
       gap: CatchSpacing.s3,
       children: [
-        _EventSuccessSkeletonSurface(
+        EventSuccessSkeletonSurface(
           titleWidth: 170,
           textLines: 3,
           trailingChips: 3,
         ),
-        _EventSuccessSetupControlsSkeleton(),
-        _EventSuccessSkeletonSurface(
+        EventSuccessSetupControlsSkeleton(),
+        EventSuccessSkeletonSurface(
           titleWidth: 150,
           textLines: 2,
           trailingChips: 2,
@@ -392,8 +391,8 @@ class _EventSuccessSetupTabSkeleton extends StatelessWidget {
   }
 }
 
-class _EventSuccessLiveTabSkeleton extends StatelessWidget {
-  const _EventSuccessLiveTabSkeleton();
+class EventSuccessLiveTabSkeleton extends StatelessWidget {
+  const EventSuccessLiveTabSkeleton();
 
   @override
   Widget build(BuildContext context) {
@@ -401,13 +400,13 @@ class _EventSuccessLiveTabSkeleton extends StatelessWidget {
       padding: EdgeInsets.zero,
       gap: CatchSpacing.s3,
       children: [
-        _EventSuccessSkeletonSurface(
+        EventSuccessSkeletonSurface(
           titleWidth: 148,
           textLines: 2,
           trailingChips: 2,
         ),
-        _EventSuccessLiveRosterSkeleton(),
-        _EventSuccessSkeletonSurface(
+        EventSuccessLiveRosterSkeleton(),
+        EventSuccessSkeletonSurface(
           titleWidth: 190,
           textLines: 3,
           trailingChips: 0,
@@ -417,8 +416,8 @@ class _EventSuccessLiveTabSkeleton extends StatelessWidget {
   }
 }
 
-class _EventSuccessReportTabSkeleton extends StatelessWidget {
-  const _EventSuccessReportTabSkeleton();
+class EventSuccessReportTabSkeleton extends StatelessWidget {
+  const EventSuccessReportTabSkeleton();
 
   @override
   Widget build(BuildContext context) {
@@ -426,13 +425,13 @@ class _EventSuccessReportTabSkeleton extends StatelessWidget {
       padding: EdgeInsets.zero,
       gap: CatchSpacing.s3,
       children: [
-        _EventSuccessReportMetricsSkeleton(),
-        _EventSuccessSkeletonSurface(
+        EventSuccessReportMetricsSkeleton(),
+        EventSuccessSkeletonSurface(
           titleWidth: 180,
           textLines: 3,
           trailingChips: 2,
         ),
-        _EventSuccessSkeletonSurface(
+        EventSuccessSkeletonSurface(
           titleWidth: 140,
           textLines: 2,
           trailingChips: 0,
@@ -442,8 +441,8 @@ class _EventSuccessReportTabSkeleton extends StatelessWidget {
   }
 }
 
-class _EventSuccessSkeletonSurface extends StatelessWidget {
-  const _EventSuccessSkeletonSurface({
+class EventSuccessSkeletonSurface extends StatelessWidget {
+  const EventSuccessSkeletonSurface({
     required this.titleWidth,
     required this.textLines,
     required this.trailingChips,
@@ -487,8 +486,8 @@ class _EventSuccessSkeletonSurface extends StatelessWidget {
   }
 }
 
-class _EventSuccessSetupControlsSkeleton extends StatelessWidget {
-  const _EventSuccessSetupControlsSkeleton();
+class EventSuccessSetupControlsSkeleton extends StatelessWidget {
+  const EventSuccessSetupControlsSkeleton();
 
   @override
   Widget build(BuildContext context) {
@@ -519,8 +518,8 @@ class _EventSuccessSetupControlsSkeleton extends StatelessWidget {
   }
 }
 
-class _EventSuccessLiveRosterSkeleton extends StatelessWidget {
-  const _EventSuccessLiveRosterSkeleton();
+class EventSuccessLiveRosterSkeleton extends StatelessWidget {
+  const EventSuccessLiveRosterSkeleton();
 
   @override
   Widget build(BuildContext context) {
@@ -569,8 +568,8 @@ class _EventSuccessLiveRosterSkeleton extends StatelessWidget {
   }
 }
 
-class _EventSuccessReportMetricsSkeleton extends StatelessWidget {
-  const _EventSuccessReportMetricsSkeleton();
+class EventSuccessReportMetricsSkeleton extends StatelessWidget {
+  const EventSuccessReportMetricsSkeleton();
 
   @override
   Widget build(BuildContext context) {
@@ -673,7 +672,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
     final body = _selectedBody();
     if (!widget.showTabs) return body;
 
-    final tabs = _EventSuccessTabPicker(
+    final tabs = EventSuccessTabPicker(
       selectedTab: _selectedTab,
       onChanged: (tab) => setState(() => _selectedTab = tab),
     );
@@ -704,7 +703,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         : CatchInsets.contentRelaxed;
 
     return switch (_selectedTab) {
-      EventSuccessHostTab.setup => _SetupTab(
+      EventSuccessHostTab.setup => SetupTab(
         event: widget.event,
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,
@@ -713,7 +712,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         physics: physics,
         padding: padding,
       ),
-      EventSuccessHostTab.live => _LiveTab(
+      EventSuccessHostTab.live => LiveTab(
         event: widget.event,
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,
@@ -732,7 +731,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         physics: physics,
         padding: padding,
       ),
-      EventSuccessHostTab.report => _ReportTab(
+      EventSuccessHostTab.report => ReportTab(
         event: widget.event,
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,

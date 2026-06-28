@@ -10,7 +10,7 @@ export interface AdminUpdateClubDetailsCallablePayload {
   fields: {
     name?: string;
     description?: string;
-    location?: string | null;
+    location?: string;
     area?: string;
     /**
      * @maxItems 20

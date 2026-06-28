@@ -29,8 +29,8 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
     final query = UserAnalyticsQuery(rangePreset: _rangePreset);
     final reportAsync = ref.watch(userAnalyticsProvider(query));
 
-    return CatchDesignSection(
-      kicker: UserAnalyticsCopy.sectionTitle,
+    return CatchSection(
+      title: UserAnalyticsCopy.sectionTitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -65,14 +65,15 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
           reportAsync.when(
             loading: () => Semantics(
               label: UserAnalyticsCopy.loadingLabel,
-              child: const _UserAnalyticsReportSkeleton(),
+              child: _buildUserAnalyticsReportSkeleton(context),
             ),
             error: (error, _) => CatchErrorState.fromError(
               error,
               context: AppErrorContext.profile,
               onRetry: () => ref.invalidate(userAnalyticsProvider(query)),
             ),
-            data: (report) => _UserAnalyticsReportView(report: report),
+            data: (report) =>
+                _buildUserAnalyticsReportView(context, report: report),
           ),
         ],
       ),
@@ -80,564 +81,514 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
   }
 }
 
-class _UserAnalyticsReportView extends StatelessWidget {
-  const _UserAnalyticsReportView({required this.report});
+Widget _buildUserAnalyticsReportView(
+  BuildContext context, {
+  required UserAnalyticsReport report,
+}) {
+  if (report.summaryCards.every(
+    (metric) => metric.status == UserAnalyticsMetricStatus.missing,
+  )) {
+    return _buildUserAnalyticsEmptyState(context);
+  }
 
-  final UserAnalyticsReport report;
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _buildUserAnalyticsMetricGrid(context, metrics: report.summaryCards),
+      gapH20,
+      _buildUserAnalyticsTrendPanel(context, points: report.trend),
+      if (report.coachingTipRefs.isNotEmpty) ...[
+        gapH20,
+        _buildUserAnalyticsTipsPanel(context, tips: report.coachingTipRefs),
+      ],
+      gapH20,
+      _buildUserAnalyticsDataQualityPanel(context, rows: report.dataQuality),
+    ],
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    if (report.summaryCards.every(
-      (metric) => metric.status == UserAnalyticsMetricStatus.missing,
-    )) {
-      return const _UserAnalyticsEmptyState();
-    }
-
-    return Column(
+Widget _buildUserAnalyticsEmptyState(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return CatchSurface(
+    padding: CatchInsets.content,
+    borderColor: t.line,
+    child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _UserAnalyticsMetricGrid(metrics: report.summaryCards),
-        gapH20,
-        _UserAnalyticsTrendPanel(points: report.trend),
-        if (report.coachingTipRefs.isNotEmpty) ...[
-          gapH20,
-          _UserAnalyticsTipsPanel(tips: report.coachingTipRefs),
-        ],
-        gapH20,
-        _UserAnalyticsDataQualityPanel(rows: report.dataQuality),
-      ],
-    );
-  }
-}
-
-class _UserAnalyticsEmptyState extends StatelessWidget {
-  const _UserAnalyticsEmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      padding: CatchInsets.content,
-      borderColor: t.line,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(CatchIcons.autoGraphRounded, color: t.ink2),
-          const SizedBox(width: CatchSpacing.s3),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  UserAnalyticsCopy.emptyTitle,
-                  style: CatchTextStyles.labelL(context, color: t.ink),
-                ),
-                gapH6,
-                Text(
-                  UserAnalyticsCopy.emptyBody,
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _UserAnalyticsReportSkeleton extends StatelessWidget {
-  const _UserAnalyticsReportSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final itemWidth = (constraints.maxWidth - CatchSpacing.s3) / 2;
-            return Wrap(
-              spacing: CatchSpacing.s3,
-              runSpacing: CatchSpacing.s3,
-              children: [
-                for (var index = 0; index < 4; index++)
-                  SizedBox(
-                    width: itemWidth,
-                    child: CatchSurface(
-                      padding: CatchInsets.content,
-                      borderColor: CatchTokens.of(context).line,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              CatchSkeleton.box(
-                                width: CatchIcon.sm,
-                                height: CatchIcon.sm,
-                              ),
-                              const Spacer(),
-                              CatchSkeleton.box(
-                                width: CatchSpacing.s8,
-                                height: CatchIcon.sm,
-                                radius: CatchRadius.pill,
-                              ),
-                            ],
-                          ),
-                          gapH12,
-                          CatchSkeleton.text(
-                            width: index.isEven
-                                ? CatchLayout.skeletonTextShortWidth
-                                : CatchLayout.skeletonTextTitleWidth,
-                          ),
-                          gapH8,
-                          CatchSkeleton.text(
-                            width: CatchLayout.skeletonTextShortWidth,
-                          ),
-                          gapH8,
-                          CatchSkeleton.textBlock(lines: 2),
-                        ],
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          },
-        ),
-        gapH20,
-        _UserAnalyticsSection(
-          label: UserAnalyticsCopy.trendTitle,
-          child: CatchSurface(
-            padding: CatchInsets.content,
-            borderColor: CatchTokens.of(context).line,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(child: CatchSkeleton.textBlock(lines: 2)),
-                    gapW16,
-                    Expanded(child: CatchSkeleton.textBlock(lines: 2)),
-                  ],
-                ),
-                gapH16,
-                SizedBox(
-                  height: CatchSpacing.s16,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      for (var index = 0; index < 12; index++) ...[
-                        if (index > 0)
-                          const SizedBox(width: CatchSpacing.micro6),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: FractionallySizedBox(
-                              heightFactor: 0.2 + ((index % 5) * 0.15),
-                              child: CatchSkeleton.box(height: double.infinity),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        gapH20,
-        _UserAnalyticsSection(
-          label: UserAnalyticsCopy.tipsTitle,
-          child: CatchSurface(
-            padding: CatchInsets.content,
-            borderColor: CatchTokens.of(context).line,
-            child: Column(
-              children: [
-                for (var index = 0; index < 2; index++) ...[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CatchSkeleton.box(
-                        width: CatchIcon.sm,
-                        height: CatchIcon.sm,
-                      ),
-                      gapW12,
-                      Expanded(child: CatchSkeleton.textBlock(lines: 2)),
-                    ],
-                  ),
-                  if (index == 0) gapH16,
-                ],
-              ],
-            ),
-          ),
-        ),
-        gapH20,
-        _UserAnalyticsSection(
-          label: UserAnalyticsCopy.dataQualityTitle,
-          child: CatchSurface(
-            padding: CatchInsets.content,
-            borderColor: CatchTokens.of(context).line,
-            child: Column(
-              children: [
-                for (var index = 0; index < 2; index++) ...[
-                  Row(
-                    children: [
-                      CatchSkeleton.box(
-                        width: CatchIcon.sm,
-                        height: CatchIcon.sm,
-                      ),
-                      gapW12,
-                      Expanded(child: CatchSkeleton.text()),
-                    ],
-                  ),
-                  if (index == 0) ...[
-                    gapH12,
-                    Divider(color: CatchTokens.of(context).line),
-                    gapH12,
-                  ],
-                ],
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _UserAnalyticsMetricGrid extends StatelessWidget {
-  const _UserAnalyticsMetricGrid({required this.metrics});
-
-  final List<UserAnalyticsMetricCard> metrics;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final itemWidth = (constraints.maxWidth - CatchSpacing.s3) / 2;
-        return Wrap(
-          spacing: CatchSpacing.s3,
-          runSpacing: CatchSpacing.s3,
-          children: [
-            for (final metric in metrics.take(6))
-              SizedBox(
-                width: itemWidth,
-                child: _UserAnalyticsMetricTile(metric: metric),
-              ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _UserAnalyticsMetricTile extends StatelessWidget {
-  const _UserAnalyticsMetricTile({required this.metric});
-
-  final UserAnalyticsMetricCard metric;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final muted = metric.status == UserAnalyticsMetricStatus.missing;
-    final badge = _statusBadge(metric.status);
-    return CatchSurface(
-      padding: CatchInsets.content,
-      borderColor: muted
-          ? t.warning.withValues(alpha: CatchOpacity.mutedBorderUrgent)
-          : t.line,
-      backgroundColor: muted
-          ? t.warning.withValues(alpha: CatchOpacity.warningFill)
-          : t.surface,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(_metricIcon(metric.id), size: CatchIcon.sm, color: t.ink2),
-              const Spacer(),
-              ?badge,
-            ],
-          ),
-          gapH12,
-          Text(
-            _formatMetricValue(metric),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.numericLarge(
-              context,
-              color: muted ? t.ink3 : t.ink,
-            ),
-          ),
-          gapH4,
-          Text(
-            UserAnalyticsCopy.metricLabel(metric.id, fallback: metric.label),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.labelM(context, color: t.ink2),
-          ),
-          if (UserAnalyticsCopy.metricCaption(
-                metric.id,
-                fallback: metric.caption,
-              )
-              case final caption? when caption.trim().isNotEmpty) ...[
-            gapH8,
-            Text(
-              caption,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.bodyS(context, color: t.ink3),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _UserAnalyticsTrendPanel extends StatelessWidget {
-  const _UserAnalyticsTrendPanel({required this.points});
-
-  final List<UserAnalyticsTrendPoint> points;
-
-  @override
-  Widget build(BuildContext context) {
-    final maxCaughtYou = points.fold<num>(0, (max, point) {
-      final value = point.metrics['caughtYou'] ?? 0;
-      return value > max ? value : max;
-    });
-    final totalCaughtYou = points.fold<num>(
-      0,
-      (sum, point) => sum + (point.metrics['caughtYou'] ?? 0),
-    );
-    final totalMatches = points.fold<num>(
-      0,
-      (sum, point) => sum + (point.metrics['mutualCatches'] ?? 0),
-    );
-
-    return _UserAnalyticsSection(
-      label: UserAnalyticsCopy.trendTitle,
-      child: CatchSurface(
-        padding: CatchInsets.content,
-        borderColor: CatchTokens.of(context).line,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: _UserAnalyticsInlineStat(
-                    label: UserAnalyticsCopy.trendMetricLabel('caughtYou'),
-                    value: _formatCount(totalCaughtYou),
-                  ),
-                ),
-                Expanded(
-                  child: _UserAnalyticsInlineStat(
-                    label: UserAnalyticsCopy.trendMetricLabel('mutualCatches'),
-                    value: _formatCount(totalMatches),
-                  ),
-                ),
-              ],
-            ),
-            gapH16,
-            SizedBox(
-              height: CatchSpacing.s16,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  for (final point in points.take(18)) ...[
-                    if (point != points.first)
-                      const SizedBox(width: CatchSpacing.micro6),
-                    Expanded(
-                      child: _UserAnalyticsBar(
-                        value: point.metrics['caughtYou'] ?? 0,
-                        maxValue: maxCaughtYou,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _UserAnalyticsBar extends StatelessWidget {
-  const _UserAnalyticsBar({required this.value, required this.maxValue});
-
-  final num value;
-  final num maxValue;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final ratio = maxValue <= 0 ? 0.02 : (value / maxValue).clamp(0.06, 1);
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: FractionallySizedBox(
-        heightFactor: ratio.toDouble(),
-        child: CatchSurface(
-          radius: CatchRadius.xs,
-          borderWidth: 0,
-          backgroundColor: value <= 0 ? t.line2 : t.ink,
-          child: const SizedBox.expand(),
-        ),
-      ),
-    );
-  }
-}
-
-class _UserAnalyticsTipsPanel extends StatelessWidget {
-  const _UserAnalyticsTipsPanel({required this.tips});
-
-  final List<UserAnalyticsCoachingTipRef> tips;
-
-  @override
-  Widget build(BuildContext context) {
-    return _UserAnalyticsSection(
-      label: UserAnalyticsCopy.tipsTitle,
-      child: CatchSurface(
-        padding: CatchInsets.content,
-        borderColor: CatchTokens.of(context).line,
-        child: Column(
-          children: [
-            for (final tip in tips) ...[
-              if (tip != tips.first) gapH16,
-              _UserAnalyticsTipRow(tip: tip),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _UserAnalyticsTipRow extends StatelessWidget {
-  const _UserAnalyticsTipRow({required this.tip});
-
-  final UserAnalyticsCoachingTipRef tip;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final copy = UserAnalyticsCopy.tip(tip.copyKey);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(CatchIcons.sparkle, size: CatchIcon.sm, color: t.ink2),
+        Icon(CatchIcons.autoGraphRounded, color: t.ink2),
         const SizedBox(width: CatchSpacing.s3),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                copy.title,
-                style: CatchTextStyles.labelM(context, color: t.ink),
+                UserAnalyticsCopy.emptyTitle,
+                style: CatchTextStyles.labelL(context, color: t.ink),
               ),
-              gapH4,
+              gapH6,
               Text(
-                copy.body,
+                UserAnalyticsCopy.emptyBody,
                 style: CatchTextStyles.bodyS(context, color: t.ink2),
               ),
             ],
           ),
         ),
       ],
-    );
-  }
+    ),
+  );
 }
 
-class _UserAnalyticsDataQualityPanel extends StatelessWidget {
-  const _UserAnalyticsDataQualityPanel({required this.rows});
-
-  final List<UserAnalyticsDataQuality> rows;
-
-  @override
-  Widget build(BuildContext context) {
-    return _UserAnalyticsSection(
-      label: UserAnalyticsCopy.dataQualityTitle,
-      child: CatchSurface(
-        padding: CatchInsets.content,
-        borderColor: CatchTokens.of(context).line,
-        child: Column(
-          children: [
-            for (final row in rows) ...[
-              if (row != rows.first)
-                Divider(color: CatchTokens.of(context).line),
-              _UserAnalyticsDataQualityRow(row: row),
+Widget _buildUserAnalyticsReportSkeleton(BuildContext context) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      LayoutBuilder(
+        builder: (context, constraints) {
+          final itemWidth = (constraints.maxWidth - CatchSpacing.s3) / 2;
+          return Wrap(
+            spacing: CatchSpacing.s3,
+            runSpacing: CatchSpacing.s3,
+            children: [
+              for (var index = 0; index < 4; index++)
+                SizedBox(
+                  width: itemWidth,
+                  child: CatchSurface(
+                    padding: CatchInsets.content,
+                    borderColor: CatchTokens.of(context).line,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            CatchSkeleton.box(
+                              width: CatchIcon.sm,
+                              height: CatchIcon.sm,
+                            ),
+                            const Spacer(),
+                            CatchSkeleton.box(
+                              width: CatchSpacing.s8,
+                              height: CatchIcon.sm,
+                              radius: CatchRadius.pill,
+                            ),
+                          ],
+                        ),
+                        gapH12,
+                        CatchSkeleton.text(
+                          width: index.isEven
+                              ? CatchLayout.skeletonTextShortWidth
+                              : CatchLayout.skeletonTextTitleWidth,
+                        ),
+                        gapH8,
+                        CatchSkeleton.text(
+                          width: CatchLayout.skeletonTextShortWidth,
+                        ),
+                        gapH8,
+                        CatchSkeleton.textBlock(lines: 2),
+                      ],
+                    ),
+                  ),
+                ),
             ],
+          );
+        },
+      ),
+      gapH20,
+      _buildUserAnalyticsSection(
+        context,
+        label: UserAnalyticsCopy.trendTitle,
+        child: CatchSurface(
+          padding: CatchInsets.content,
+          borderColor: CatchTokens.of(context).line,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(child: CatchSkeleton.textBlock(lines: 2)),
+                  gapW16,
+                  Expanded(child: CatchSkeleton.textBlock(lines: 2)),
+                ],
+              ),
+              gapH16,
+              SizedBox(
+                height: CatchSpacing.s16,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    for (var index = 0; index < 12; index++) ...[
+                      if (index > 0) const SizedBox(width: CatchSpacing.micro6),
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: FractionallySizedBox(
+                            heightFactor: 0.2 + ((index % 5) * 0.15),
+                            child: CatchSkeleton.box(height: double.infinity),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      gapH20,
+      _buildUserAnalyticsSection(
+        context,
+        label: UserAnalyticsCopy.tipsTitle,
+        child: CatchSurface(
+          padding: CatchInsets.content,
+          borderColor: CatchTokens.of(context).line,
+          child: Column(
+            children: [
+              for (var index = 0; index < 2; index++) ...[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CatchSkeleton.box(
+                      width: CatchIcon.sm,
+                      height: CatchIcon.sm,
+                    ),
+                    gapW12,
+                    Expanded(child: CatchSkeleton.textBlock(lines: 2)),
+                  ],
+                ),
+                if (index == 0) gapH16,
+              ],
+            ],
+          ),
+        ),
+      ),
+      gapH20,
+      _buildUserAnalyticsSection(
+        context,
+        label: UserAnalyticsCopy.dataQualityTitle,
+        child: CatchSurface(
+          padding: CatchInsets.content,
+          borderColor: CatchTokens.of(context).line,
+          child: Column(
+            children: [
+              for (var index = 0; index < 2; index++) ...[
+                Row(
+                  children: [
+                    CatchSkeleton.box(
+                      width: CatchIcon.sm,
+                      height: CatchIcon.sm,
+                    ),
+                    gapW12,
+                    Expanded(child: CatchSkeleton.text()),
+                  ],
+                ),
+                if (index == 0) ...[
+                  gapH12,
+                  Divider(color: CatchTokens.of(context).line),
+                  gapH12,
+                ],
+              ],
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+Widget _buildUserAnalyticsMetricGrid(
+  BuildContext context, {
+  required List<UserAnalyticsMetricCard> metrics,
+}) {
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      final itemWidth = (constraints.maxWidth - CatchSpacing.s3) / 2;
+      return Wrap(
+        spacing: CatchSpacing.s3,
+        runSpacing: CatchSpacing.s3,
+        children: [
+          for (final metric in metrics.take(6))
+            SizedBox(
+              width: itemWidth,
+              child: _buildUserAnalyticsMetricTile(context, metric: metric),
+            ),
+        ],
+      );
+    },
+  );
+}
+
+Widget _buildUserAnalyticsMetricTile(
+  BuildContext context, {
+  required UserAnalyticsMetricCard metric,
+}) {
+  final t = CatchTokens.of(context);
+  final muted = metric.status == UserAnalyticsMetricStatus.missing;
+  final badge = _statusBadge(metric.status);
+  return CatchSurface(
+    padding: CatchInsets.content,
+    borderColor: muted
+        ? t.warning.withValues(alpha: CatchOpacity.mutedBorderUrgent)
+        : t.line,
+    backgroundColor: muted
+        ? t.warning.withValues(alpha: CatchOpacity.warningFill)
+        : t.surface,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(_metricIcon(metric.id), size: CatchIcon.sm, color: t.ink2),
+            const Spacer(),
+            ?badge,
+          ],
+        ),
+        gapH12,
+        Text(
+          _formatMetricValue(metric),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.numericLarge(
+            context,
+            color: muted ? t.ink3 : t.ink,
+          ),
+        ),
+        gapH4,
+        Text(
+          UserAnalyticsCopy.metricLabel(metric.id, fallback: metric.label),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.labelM(context, color: t.ink2),
+        ),
+        if (UserAnalyticsCopy.metricCaption(metric.id, fallback: metric.caption)
+            case final caption? when caption.trim().isNotEmpty) ...[
+          gapH8,
+          Text(
+            caption,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.bodyS(context, color: t.ink3),
+          ),
+        ],
+      ],
+    ),
+  );
+}
+
+Widget _buildUserAnalyticsTrendPanel(
+  BuildContext context, {
+  required List<UserAnalyticsTrendPoint> points,
+}) {
+  final maxCaughtYou = points.fold<num>(0, (max, point) {
+    final value = point.metrics['caughtYou'] ?? 0;
+    return value > max ? value : max;
+  });
+  final totalCaughtYou = points.fold<num>(
+    0,
+    (sum, point) => sum + (point.metrics['caughtYou'] ?? 0),
+  );
+  final totalMatches = points.fold<num>(
+    0,
+    (sum, point) => sum + (point.metrics['mutualCatches'] ?? 0),
+  );
+
+  return _buildUserAnalyticsSection(
+    context,
+    label: UserAnalyticsCopy.trendTitle,
+    child: CatchSurface(
+      padding: CatchInsets.content,
+      borderColor: CatchTokens.of(context).line,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _buildUserAnalyticsInlineStat(
+                  context,
+                  label: UserAnalyticsCopy.trendMetricLabel('caughtYou'),
+                  value: _formatCount(totalCaughtYou),
+                ),
+              ),
+              Expanded(
+                child: _buildUserAnalyticsInlineStat(
+                  context,
+                  label: UserAnalyticsCopy.trendMetricLabel('mutualCatches'),
+                  value: _formatCount(totalMatches),
+                ),
+              ),
+            ],
+          ),
+          gapH16,
+          SizedBox(
+            height: CatchSpacing.s16,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                for (final point in points.take(18)) ...[
+                  if (point != points.first)
+                    const SizedBox(width: CatchSpacing.micro6),
+                  Expanded(
+                    child: _buildUserAnalyticsBar(
+                      context,
+                      value: point.metrics['caughtYou'] ?? 0,
+                      maxValue: maxCaughtYou,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildUserAnalyticsBar(
+  BuildContext context, {
+  required num value,
+  required num maxValue,
+}) {
+  final t = CatchTokens.of(context);
+  final ratio = maxValue <= 0 ? 0.02 : (value / maxValue).clamp(0.06, 1);
+  return Align(
+    alignment: Alignment.bottomCenter,
+    child: FractionallySizedBox(
+      heightFactor: ratio.toDouble(),
+      child: CatchSurface(
+        radius: CatchRadius.xs,
+        borderWidth: 0,
+        backgroundColor: value <= 0 ? t.line2 : t.ink,
+        child: const SizedBox.expand(),
+      ),
+    ),
+  );
+}
+
+Widget _buildUserAnalyticsTipsPanel(
+  BuildContext context, {
+  required List<UserAnalyticsCoachingTipRef> tips,
+}) {
+  return _buildUserAnalyticsSection(
+    context,
+    label: UserAnalyticsCopy.tipsTitle,
+    child: CatchSurface(
+      padding: CatchInsets.content,
+      borderColor: CatchTokens.of(context).line,
+      child: Column(
+        children: [
+          for (final tip in tips) ...[
+            if (tip != tips.first) gapH16,
+            _buildUserAnalyticsTipRow(context, tip: tip),
+          ],
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildUserAnalyticsTipRow(
+  BuildContext context, {
+  required UserAnalyticsCoachingTipRef tip,
+}) {
+  final t = CatchTokens.of(context);
+  final copy = UserAnalyticsCopy.tip(tip.copyKey);
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Icon(CatchIcons.sparkle, size: CatchIcon.sm, color: t.ink2),
+      const SizedBox(width: CatchSpacing.s3),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              copy.title,
+              style: CatchTextStyles.labelM(context, color: t.ink),
+            ),
+            gapH4,
+            Text(
+              copy.body,
+              style: CatchTextStyles.bodyS(context, color: t.ink2),
+            ),
           ],
         ),
       ),
-    );
-  }
+    ],
+  );
 }
 
-class _UserAnalyticsDataQualityRow extends StatelessWidget {
-  const _UserAnalyticsDataQualityRow({required this.row});
+Widget _buildUserAnalyticsDataQualityPanel(
+  BuildContext context, {
+  required List<UserAnalyticsDataQuality> rows,
+}) {
+  return _buildUserAnalyticsSection(
+    context,
+    label: UserAnalyticsCopy.dataQualityTitle,
+    child: CatchSurface(
+      padding: CatchInsets.content,
+      borderColor: CatchTokens.of(context).line,
+      child: Column(
+        children: [
+          for (final row in rows) ...[
+            if (row != rows.first) Divider(color: CatchTokens.of(context).line),
+            _buildUserAnalyticsDataQualityRow(context, row: row),
+          ],
+        ],
+      ),
+    ),
+  );
+}
 
-  final UserAnalyticsDataQuality row;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(_qualityIcon(row.state), size: CatchIcon.sm, color: t.ink2),
-        const SizedBox(width: CatchSpacing.s3),
-        Expanded(
-          child: Text(
-            row.detail,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
-          ),
+Widget _buildUserAnalyticsDataQualityRow(
+  BuildContext context, {
+  required UserAnalyticsDataQuality row,
+}) {
+  final t = CatchTokens.of(context);
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Icon(_qualityIcon(row.state), size: CatchIcon.sm, color: t.ink2),
+      const SizedBox(width: CatchSpacing.s3),
+      Expanded(
+        child: Text(
+          row.detail,
+          style: CatchTextStyles.bodyS(context, color: t.ink2),
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
 }
 
-class _UserAnalyticsSection extends StatelessWidget {
-  const _UserAnalyticsSection({required this.label, required this.child});
-
-  final String label;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(label, style: CatchTextStyles.labelL(context)),
-        gapH8,
-        child,
-      ],
-    );
-  }
+Widget _buildUserAnalyticsSection(
+  BuildContext context, {
+  required String label,
+  required Widget child,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text(label, style: CatchTextStyles.labelL(context)),
+      gapH8,
+      child,
+    ],
+  );
 }
 
-class _UserAnalyticsInlineStat extends StatelessWidget {
-  const _UserAnalyticsInlineStat({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(value, style: CatchTextStyles.numericLarge(context)),
-        gapH2,
-        Text(label, style: CatchTextStyles.bodyS(context, color: t.ink3)),
-      ],
-    );
-  }
+Widget _buildUserAnalyticsInlineStat(
+  BuildContext context, {
+  required String label,
+  required String value,
+}) {
+  final t = CatchTokens.of(context);
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(value, style: CatchTextStyles.numericLarge(context)),
+      gapH2,
+      Text(label, style: CatchTextStyles.bodyS(context, color: t.ink3)),
+    ],
+  );
 }
 
 CatchBadge? _statusBadge(UserAnalyticsMetricStatus status) {

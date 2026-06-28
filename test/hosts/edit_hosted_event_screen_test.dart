@@ -131,16 +131,15 @@ void main() {
     expect(find.text('Edit event'), findsOneWidget);
     _expectBuiltText('Published event');
     _expectBuiltText('Schedule');
-    await _expectVisibleText(tester, 'Where');
-    expect(find.text('Save changes'), findsOneWidget);
     expect(
-      find.textContaining(
-        'capacity, pricing, admission policy, and invite setup until the first booking',
-        findRichText: true,
+      find.text(
+        'You can edit schedule, location, event details, capacity, pricing, admission policy, and invite setup until the first booking or waitlist join.',
         skipOffstage: false,
       ),
       findsOneWidget,
     );
+    await _expectVisibleText(tester, 'Where');
+    expect(find.text('Save changes'), findsOneWidget);
 
     await _enterText(tester, CreateEventFormKeys.meetingPoint, 'New gate');
     await _scrollToFinder(

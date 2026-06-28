@@ -100,7 +100,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 child: Column(
                   children: [
                     if (data.step.showsProgress) ...[
-                      _OnboardingTopBar(
+                      _onboardingTopBar(
                         step: data.step,
                         profileCompletionOnly: widget.profileCompletionOnly,
                         runPreferencesOnly: widget.runPreferencesOnly,
@@ -140,42 +140,32 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 }
 
-class _OnboardingTopBar extends StatelessWidget {
-  const _OnboardingTopBar({
-    required this.step,
-    required this.profileCompletionOnly,
-    required this.runPreferencesOnly,
-    required this.onBack,
-  });
+Widget _onboardingTopBar({
+  required OnboardingStep step,
+  required bool profileCompletionOnly,
+  required bool runPreferencesOnly,
+  required VoidCallback? onBack,
+}) {
+  final socialOnly =
+      profileCompletionOnly && step.index >= OnboardingStep.photos.index;
+  final progressStep = runPreferencesOnly
+      ? 0
+      : socialOnly
+      ? step.index - OnboardingStep.photos.index
+      : step == OnboardingStep.genderInterest
+      ? 1
+      : 0;
+  final progressTotal = runPreferencesOnly ? 1 : 2;
+  final copy = step.headerCopy(
+    profileCompletionOnly: profileCompletionOnly,
+    runPreferencesOnly: runPreferencesOnly,
+  );
 
-  final OnboardingStep step;
-  final bool profileCompletionOnly;
-  final bool runPreferencesOnly;
-  final VoidCallback? onBack;
-
-  @override
-  Widget build(BuildContext context) {
-    final socialOnly =
-        profileCompletionOnly && step.index >= OnboardingStep.photos.index;
-    final progressStep = runPreferencesOnly
-        ? 0
-        : socialOnly
-        ? step.index - OnboardingStep.photos.index
-        : step == OnboardingStep.genderInterest
-        ? 1
-        : 0;
-    final progressTotal = runPreferencesOnly ? 1 : 2;
-    final copy = step.headerCopy(
-      profileCompletionOnly: profileCompletionOnly,
-      runPreferencesOnly: runPreferencesOnly,
-    );
-
-    return CatchStepFlowHeader(
-      title: copy.title,
-      subtitle: copy.subtitle,
-      currentStep: progressStep,
-      totalSteps: progressTotal,
-      onBack: onBack,
-    );
-  }
+  return CatchStepHeader(
+    title: copy.title,
+    subtitle: copy.subtitle,
+    step: progressStep + 1,
+    total: progressTotal,
+    onBack: onBack,
+  );
 }

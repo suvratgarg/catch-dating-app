@@ -165,13 +165,13 @@ scan_raw_material_buttons() {
 
 scan_raw_text_inputs() {
   echo
-  echo "==> Raw text input candidates that should use CatchTextField or a field-specific primitive"
+  echo "==> Raw text input candidates that should use CatchField.input or a field-specific primitive"
   local output
   output="$(rg -n \
     "${common_globs[@]}" \
     '(^|[^A-Za-z])(TextField|TextFormField)\(' \
     lib/core lib/*/presentation \
-    --glob '!lib/core/widgets/catch_text_field.dart' \
+    --glob '!lib/core/widgets/catch_field.dart' \
     --glob '!lib/core/widgets/catch_search_field.dart' \
     --glob '!lib/core/widgets/catch_otp_code_field.dart' || true)"
 

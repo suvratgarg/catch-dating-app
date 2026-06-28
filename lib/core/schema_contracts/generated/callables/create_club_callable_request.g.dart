@@ -28,7 +28,7 @@ final class CreateClubCallableRequest {
   final String? clubId;
   final String name;
   final String description;
-  final String? location;
+  final String location;
   final String area;
   final String? imageUrl;
   final String? profileImageUrl;

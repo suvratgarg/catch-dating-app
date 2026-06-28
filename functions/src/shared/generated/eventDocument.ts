@@ -27,16 +27,16 @@ export interface EventDocument {
   /**
    * Canonical meeting location selected from Google Places or a manually pinned map coordinate.
    */
-  meetingLocation?: {
+  meetingLocation: {
     name: string;
     address?: string | null;
     placeId?: string | null;
-    latitude: number | null;
-    longitude: number | null;
+    latitude: number;
+    longitude: number;
     notes?: string | null;
   };
-  startingPointLat: number | null;
-  startingPointLng: number | null;
+  startingPointLat: number;
+  startingPointLng: number;
   locationDetails: string | null;
   photoUrl?: string | null;
   /**
@@ -200,8 +200,9 @@ export interface EventDocument {
   waitlistedCohortCounts: {
     [k: string]: number;
   };
-  discoveryCityName?: string | null;
-  discoveryActivityKind?:
+  discoveryMarketId: string;
+  discoveryCityName: string;
+  discoveryActivityKind:
     | "socialRun"
     | "running"
     | "walking"
@@ -218,13 +219,13 @@ export interface EventDocument {
     | "dinner"
     | "singlesMixer"
     | "openActivity";
-  discoveryGeoCell?: string | null;
-  discoveryHasOpenSpots?: boolean;
-  discoveryAvailability?: "open" | "waitlist" | "gated" | "full" | "cancelled";
+  discoveryGeoCell: string | null;
+  discoveryHasOpenSpots: boolean;
+  discoveryAvailability: "open" | "waitlist" | "gated" | "full" | "cancelled";
   /**
    * @maxItems 4
    */
-  discoveryOpenCohorts?: (
+  discoveryOpenCohorts: (
     | "menInterestedInWomen"
     | "womenInterestedInMen"
     | "queerOrOpen"
@@ -233,17 +234,17 @@ export interface EventDocument {
   /**
    * @maxItems 4
    */
-  discoveryWaitlistCohorts?: (
+  discoveryWaitlistCohorts: (
     | "menInterestedInWomen"
     | "womenInterestedInMen"
     | "queerOrOpen"
     | "nonBinaryOrOther"
   )[];
-  discoveryInviteRequired?: boolean;
-  discoveryMembershipRequired?: boolean;
-  discoveryManualApprovalRequired?: boolean;
-  discoveryMinAge?: number;
-  discoveryMaxAge?: number;
+  discoveryInviteRequired: boolean;
+  discoveryMembershipRequired: boolean;
+  discoveryManualApprovalRequired: boolean;
+  discoveryMinAge: number;
+  discoveryMaxAge: number;
   /**
    * Server-owned deterministic search projection used by admin event publishing. Rebuildable from canonical event and organizer fields; not consumed by the app.
    */

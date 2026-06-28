@@ -127,6 +127,21 @@ type CreateEventPayloadWithPolicy = CreateEventCallablePayload & {
   };
 };
 type EventHostUpdateFields = UpdateEventCallablePayload["fields"];
+type EventDiscoveryField =
+  "discoveryMarketId" |
+  "discoveryCityName" |
+  "discoveryActivityKind" |
+  "discoveryGeoCell" |
+  "discoveryHasOpenSpots" |
+  "discoveryAvailability" |
+  "discoveryOpenCohorts" |
+  "discoveryWaitlistCohorts" |
+  "discoveryInviteRequired" |
+  "discoveryMembershipRequired" |
+  "discoveryManualApprovalRequired" |
+  "discoveryMinAge" |
+  "discoveryMaxAge";
+type EventDocumentBeforeDiscovery = Omit<EventDocument, EventDiscoveryField>;
 
 type NotificationUserDocument = {
   fcmToken?: string;
@@ -204,7 +219,7 @@ export async function createEventHandler(
       "ClubDocument"
     );
     clubName = club.name;
-    const eventBase: EventDocument = {
+    const eventBase: EventDocumentBeforeDiscovery = {
       ...buildCreateEventDoc(data, deps),
       clubId: data.clubId,
       bookedCount: 0,
@@ -220,6 +235,7 @@ export async function createEventHandler(
       ...eventDiscoveryProjection({
         event: eventBase,
         clubLocation: club.location,
+        clubLocationMarketId: club.locationMarketId,
       }),
     };
     const eventPolicy = event.eventPolicy;
@@ -376,6 +392,7 @@ export async function updateEventHandler(
       ...eventDiscoveryProjection({
         event: {...event, ...patch},
         clubLocation: club.location,
+        clubLocationMarketId: club.locationMarketId,
       }),
     };
     const nextPolicy = patch.eventPolicy ?? event.eventPolicy ?? null;
@@ -689,7 +706,7 @@ function buildCreateEventDoc(
   data: CreateEventCallablePayload,
   deps: EventMutationDeps
 ): Omit<EventDocument, "clubId" | "genderCounts" |
-  "status" | "cancelledAt" | "cancellationReason"> {
+  "status" | "cancelledAt" | "cancellationReason" | EventDiscoveryField> {
   const eventPhotos = normalizeUploadedPhotosForFirestore(data.eventPhotos);
   const meetingLocation = normalizeMeetingLocationForCreate(data);
   const maxMen = data.constraints?.maxMen;

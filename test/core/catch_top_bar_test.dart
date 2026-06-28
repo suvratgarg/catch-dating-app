@@ -226,7 +226,14 @@ void main() {
     await tester.pump();
 
     expect(find.text('Clubs'), findsNothing);
-    expect(find.byType(CatchSearchField), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSearchField &&
+            widget.mode == CatchSearchFieldMode.expanding,
+      ),
+      findsOneWidget,
+    );
     expect(find.byIcon(CatchIcons.clearCircle), findsOneWidget);
 
     await tester.tap(find.byIcon(CatchIcons.clearCircle));

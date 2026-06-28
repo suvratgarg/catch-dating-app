@@ -28,6 +28,12 @@ import {
   validateEventPublishingForm,
   type EventPublishingFormState,
 } from "./eventPublishingHelpers";
+import {
+  isLaunchMarketId,
+  isLaunchMarketSlug,
+  launchMarketIds,
+  launchMarketSlugs,
+} from "../../../shared/config/launchMarkets";
 
 export type EventPublishingFilter =
   | "launchCities"
@@ -47,14 +53,14 @@ export type ExternalEventSupplyFilter =
   | "active"
   | "cancelled";
 
+export type EventPublishingView = "list" | "detail" | "external";
+
 export interface ExternalEventPublishRequest {
   sourceActionId: string;
   targetPath: string;
   reviewNote: string;
   checklist: AdminPublishExternalEventPayload["checklist"];
 }
-
-const launchCitySlugs = new Set(["indore", "mumbai"]);
 
 export function useEventPublishingController({
   onError,
@@ -79,6 +85,7 @@ export function useEventPublishingController({
     useState<EventPublishingFilter>("launchCities");
   const [externalFilter, setExternalFilter] =
     useState<ExternalEventSupplyFilter>("reviewOpen");
+  const [view, setView] = useState<EventPublishingView>("list");
   const [eventId, setEventId] = useState("");
   const [event, setEvent] = useState<AdminEventDetails | null>(null);
   const [form, setForm] = useState<EventPublishingFormState | null>(null);
@@ -176,8 +183,19 @@ export function useEventPublishingController({
 
   const selectEvent = useCallback((nextEventId: string) => {
     setEventId(nextEventId);
+    setView("detail");
     void loadEvent(nextEventId);
   }, [loadEvent]);
+
+  const backToList = useCallback(() => {
+    setView("list");
+    onError(null);
+  }, [onError]);
+
+  const openExternalSupply = useCallback(() => {
+    setView("external");
+    onError(null);
+  }, [onError]);
 
   const diffRows = useMemo(
     () => diffEventProfile(event, form),
@@ -283,6 +301,7 @@ export function useEventPublishingController({
   }, [onError, onNotice, refreshExternalList, refreshSupplyReadiness]);
 
   return {
+    backToList,
     diffRows,
     event,
     eventId,
@@ -308,6 +327,8 @@ export function useEventPublishingController({
     selectedExternalImportReview,
     supplyReadiness,
     validationIssues,
+    view,
+    openExternalSupply,
     publishExternalEvent,
     refreshExternalList,
     refreshList,
@@ -331,7 +352,7 @@ export function filterEventRows(
 ): AdminEventListRow[] {
   const now = snapshotTimeMillis(generatedAt);
   return rows.filter((row) => {
-    if (filter === "launchCities" && !launchCitySlugs.has(row.citySlug ?? "")) {
+    if (filter === "launchCities" && !isLaunchMarketId(row.citySlug)) {
       return false;
     }
     if (filter === "launchCities" && row.status !== "active") return false;
@@ -363,7 +384,7 @@ export function buildEventListPayload(
 ): AdminListEventDetailsPayload {
   return {
     query: query.trim() || null,
-    citySlugs: filter === "launchCities" ? Array.from(launchCitySlugs) : null,
+    citySlugs: filter === "launchCities" ? Array.from(launchMarketIds) : null,
     status: eventStatusForFilter(filter),
     timeWindow: eventTimeWindowForFilter(filter),
     limit: 100,
@@ -378,10 +399,10 @@ export function filterExternalEventRows(
   const now = snapshotTimeMillis(generatedAt);
   return rows.filter((row) => {
     if (filter === "reviewOpen") {
-      return launchCitySlugs.has(row.citySlug ?? "") &&
+      return isLaunchMarketSlug(row.citySlug) &&
         externalEventNeedsReview(row);
     }
-    if (filter === "launchCities" && !launchCitySlugs.has(row.citySlug ?? "")) {
+    if (filter === "launchCities" && !isLaunchMarketSlug(row.citySlug)) {
       return false;
     }
     if (filter === "launchCities" && row.status !== "active") return false;
@@ -415,7 +436,7 @@ export function buildExternalEventListPayload(
     query: query.trim() || null,
     citySlugs:
       filter === "launchCities" || filter === "reviewOpen" ?
-        Array.from(launchCitySlugs) :
+        Array.from(launchMarketSlugs) :
         null,
     publicationStatus: externalPublicationStatusForFilter(filter),
     status: eventStatusForFilter(filter),

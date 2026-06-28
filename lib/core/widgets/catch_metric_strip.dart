@@ -19,7 +19,7 @@ class CatchMetricStripItem {
 /// Shared detail-page metric rail used anywhere compact value-over-label stats
 /// need to read as one consistent surface.
 class CatchMetricStrip extends StatelessWidget {
-  CatchMetricStrip({
+  const CatchMetricStrip({
     super.key,
     required this.items,
     this.padding = const EdgeInsets.symmetric(
@@ -32,7 +32,7 @@ class CatchMetricStrip extends StatelessWidget {
     this.valueColor,
     this.unitColor,
     this.labelColor,
-  }) : assert(items.isNotEmpty);
+  });
 
   final List<CatchMetricStripItem> items;
   final EdgeInsetsGeometry padding;
@@ -45,6 +45,8 @@ class CatchMetricStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    assert(items.isNotEmpty);
+
     final t = CatchTokens.of(context);
 
     return CatchSurface(
@@ -55,14 +57,15 @@ class CatchMetricStrip extends StatelessWidget {
       child: Row(
         children: [
           for (final item in items) ...[
-            _CatchMetricCell(
+            _buildCatchMetricCell(
+              context,
               item: item,
               valueColor: valueColor,
               unitColor: unitColor,
               labelColor: labelColor,
             ),
             if (item != items.last)
-              _CatchMetricDivider(color: dividerColor ?? t.line),
+              _buildCatchMetricDivider(dividerColor ?? t.line),
           ],
         ],
       ),
@@ -70,78 +73,62 @@ class CatchMetricStrip extends StatelessWidget {
   }
 }
 
-class _CatchMetricCell extends StatelessWidget {
-  const _CatchMetricCell({
-    required this.item,
-    this.valueColor,
-    this.unitColor,
-    this.labelColor,
-  });
+Widget _buildCatchMetricCell(
+  BuildContext context, {
+  required CatchMetricStripItem item,
+  Color? valueColor,
+  Color? unitColor,
+  Color? labelColor,
+}) {
+  final t = CatchTokens.of(context);
 
-  final CatchMetricStripItem item;
-  final Color? valueColor;
-  final Color? unitColor;
-  final Color? labelColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Expanded(
-      child: Column(
-        children: [
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
+  return Expanded(
+    child: Column(
+      children: [
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                item.value,
+                style: CatchTextStyles.mono(context, color: valueColor),
+              ),
+              if (item.unit.isNotEmpty) ...[
+                gapW2,
                 Text(
-                  item.value,
-                  style: CatchTextStyles.mono(context, color: valueColor),
-                ),
-                if (item.unit.isNotEmpty) ...[
-                  gapW2,
-                  Text(
-                    item.unit,
-                    style: CatchTextStyles.mono(
-                      context,
-                      color: unitColor ?? t.ink2,
-                    ),
+                  item.unit,
+                  style: CatchTextStyles.mono(
+                    context,
+                    color: unitColor ?? t.ink2,
                   ),
-                ],
+                ),
               ],
-            ),
+            ],
           ),
-          gapH2,
-          Text(
-            item.label,
-            style: CatchTextStyles.supporting(
-              context,
-              color: labelColor ?? t.ink3,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+        ),
+        gapH2,
+        Text(
+          item.label,
+          style: CatchTextStyles.supporting(
+            context,
+            color: labelColor ?? t.ink3,
           ),
-        ],
-      ),
-    );
-  }
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    ),
+  );
 }
 
-class _CatchMetricDivider extends StatelessWidget {
-  const _CatchMetricDivider({required this.color});
-
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: CatchStroke.hairline,
-      height: CatchSpacing.s9,
-      color: color,
-    );
-  }
+Widget _buildCatchMetricDivider(Color color) {
+  return Container(
+    width: CatchStroke.hairline,
+    height: CatchSpacing.s9,
+    color: color,
+  );
 }

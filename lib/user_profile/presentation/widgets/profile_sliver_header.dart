@@ -14,88 +14,74 @@ class ProfileSliverHeader {
 
   List<Widget> buildSlivers(BuildContext context) {
     final header = CatchSliverHeader(
-      title: const _ProfileTitle(),
+      title: _profileTitle(context),
       bottomHeight: 48,
-      bottom: _ProfileTabBar(controller: controller),
+      bottom: _profileTabBar(context, controller: controller),
     );
 
     return header.buildSlivers(context);
   }
 }
 
-class _ProfileTitle extends StatelessWidget {
-  const _ProfileTitle();
+Widget _profileTitle(BuildContext context) {
+  final t = CatchTokens.of(context);
 
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Material(
-      color: t.bg,
-      child: Padding(
-        padding: CatchInsets.screenTitleBlock,
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                'Your profile',
-                style: CatchTextStyles.headline(context),
-              ),
+  return Material(
+    color: t.bg,
+    child: Padding(
+      padding: CatchInsets.screenTitleBlock,
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              'Your profile',
+              style: CatchTextStyles.headline(context),
             ),
-            const SizedBox(width: CatchSpacing.s2),
-            const _SettingsButton(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ProfileTabBar extends StatelessWidget {
-  const _ProfileTabBar({required this.controller});
-
-  final TabController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Material(
-      color: t.bg,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: t.line)),
-        ),
-        child: Padding(
-          padding: CatchInsets.screenControlRow,
-          child: AnimatedBuilder(
-            animation: controller,
-            builder: (context, _) {
-              return CatchOptionGroup<int>(
-                selected: controller.index,
-                onChanged: controller.animateTo,
-                options: const [
-                  CatchOption(value: 0, label: 'Edit'),
-                  CatchOption(value: 1, label: 'Preview'),
-                ],
-              );
-            },
           ),
-        ),
+          const SizedBox(width: CatchSpacing.s2),
+          _settingsButton(context),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _SettingsButton extends StatelessWidget {
-  const _SettingsButton();
+Widget _profileTabBar(
+  BuildContext context, {
+  required TabController controller,
+}) {
+  final t = CatchTokens.of(context);
 
-  @override
-  Widget build(BuildContext context) {
-    return CatchTopBarIconAction(
-      icon: CatchIcons.settingsOutlined,
-      tooltip: 'Settings',
-      onPressed: () => context.pushNamed(Routes.settingsScreen.name),
-    );
-  }
+  return Material(
+    color: t.bg,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: t.line)),
+      ),
+      child: Padding(
+        padding: CatchInsets.screenControlRow,
+        child: AnimatedBuilder(
+          animation: controller,
+          builder: (context, _) {
+            return CatchOptionGroup<int>(
+              selected: controller.index,
+              onChanged: controller.animateTo,
+              options: const [
+                CatchOption(value: 0, label: 'Edit'),
+                CatchOption(value: 1, label: 'Preview'),
+              ],
+            );
+          },
+        ),
+      ),
+    ),
+  );
+}
+
+Widget _settingsButton(BuildContext context) {
+  return CatchTopBarIconAction(
+    icon: CatchIcons.settingsOutlined,
+    tooltip: 'Settings',
+    onPressed: () => context.pushNamed(Routes.settingsScreen.name),
+  );
 }

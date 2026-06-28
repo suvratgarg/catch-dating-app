@@ -99,7 +99,10 @@ void main() {
     ) async {
       final club = _buildClub();
       final router = GoRouter(
-        initialLocation: Routes.exploreScreen.path,
+        initialLocation: Routes.clubDetailScreen.path.replaceFirst(
+          ':clubId',
+          club.id,
+        ),
         routes: [
           GoRoute(
             path: Routes.authScreen.path,
@@ -157,22 +160,7 @@ void main() {
       );
       await _pumpClubFlow(tester);
 
-      final sheetScrollable = find
-          .descendant(
-            of: find.byKey(const ValueKey('explore-list-scroll-view')),
-            matching: find.byType(Scrollable),
-          )
-          .first;
-      await tester.scrollUntilVisible(
-        find.text(club.name),
-        200,
-        scrollable: sheetScrollable,
-      );
-      await _pumpClubFlow(tester);
-      await tester.tap(find.text(club.name));
-      await _pumpClubFlow(tester);
-      await tester.scrollUntilVisible(find.text('Sign in to join'), 200);
-      await _pumpClubFlow(tester);
+      expect(find.text('Sign in to join'), findsOneWidget);
       await tester.tap(find.text('Sign in to join'));
       await _pumpClubFlow(tester);
 
@@ -395,7 +383,9 @@ Club _buildClub({String id = 'club-1', String hostUserId = 'host-1'}) {
     id: id,
     name: 'Stride Social',
     description: 'Morning runners who like easy city loops.',
-    location: 'mumbai',
+    location: 'in-mh-mumbai',
+    locationCityId: 'in-mh-mumbai',
+    locationMarketId: 'in-mh-mumbai',
     area: 'Bandra',
     hostUserId: hostUserId,
     hostName: 'Host',

@@ -21,6 +21,8 @@
     "name",
     "description",
     "location",
+    "locationCityId",
+    "locationMarketId",
     "area",
     "hostUserId",
     "hostName",
@@ -59,7 +61,16 @@
       "x-catch-ownership": "callable-owned"
     },
     "location": {
-      "$ref": "../shared/event_common.schema.json#/definitions/citySlug",
+      "$ref": "../shared/event_common.schema.json#/definitions/marketId",
+      "description": "Canonical launch market id. Public URL slugs live under publicPage.citySlug.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "locationCityId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/cityId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "locationMarketId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/marketId",
       "x-catch-ownership": "callable-owned"
     },
     "area": {
@@ -385,7 +396,7 @@
           "pattern": "^[a-z0-9-]+$"
         },
         "citySlug": {
-          "$ref": "../shared/event_common.schema.json#/definitions/citySlug"
+          "$ref": "../shared/event_common.schema.json#/definitions/strictCitySlug"
         },
         "canonicalPath": {
           "type": "string",

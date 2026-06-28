@@ -81,7 +81,7 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => const _HostBroadcastComposerSheet(),
+      builder: (context) => const HostBroadcastComposerSheet(),
     );
   }
 }
@@ -133,8 +133,8 @@ class HostInboxScreenState {
   }
 }
 
-class _HostBroadcastComposerSheet extends StatelessWidget {
-  const _HostBroadcastComposerSheet();
+class HostBroadcastComposerSheet extends StatelessWidget {
+  const HostBroadcastComposerSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -175,12 +175,14 @@ class _HostBroadcastComposerSheet extends StatelessWidget {
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
               const SizedBox(height: CatchSpacing.s4),
-              const _HostBroadcastTemplateRow(
+              _buildTemplateRow(
+                context,
                 label: 'Reminder',
                 body: 'See you tonight at 8. Doors open at 7:45.',
               ),
               const SizedBox(height: CatchSpacing.s2),
-              const _HostBroadcastTemplateRow(
+              _buildTemplateRow(
+                context,
                 label: 'Meeting point',
                 body: 'Share arrival notes, parking, or table details.',
               ),
@@ -196,16 +198,12 @@ class _HostBroadcastComposerSheet extends StatelessWidget {
       ),
     );
   }
-}
 
-class _HostBroadcastTemplateRow extends StatelessWidget {
-  const _HostBroadcastTemplateRow({required this.label, required this.body});
-
-  final String label;
-  final String body;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildTemplateRow(
+    BuildContext context, {
+    required String label,
+    required String body,
+  }) {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
@@ -216,7 +214,7 @@ class _HostBroadcastTemplateRow extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: CatchTextStyles.infoRowTitle(context)),
+          Text(label, style: CatchTextStyles.fieldRowTitle(context)),
           const SizedBox(height: CatchSpacing.micro2),
           Text(body, style: CatchTextStyles.supporting(context, color: t.ink2)),
         ],

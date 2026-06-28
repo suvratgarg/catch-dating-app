@@ -138,6 +138,35 @@ test("seed event validation rejects stale enum values before writes", () => {
   );
 });
 
+test("seed event validation rejects missing discovery projection fields", () => {
+  const event = validEventDoc();
+  delete event.discoveryCityName;
+
+  assert.throws(
+    () => validateSeedDocuments({
+      docs: [{path: "events/event-1", data: event}],
+    }),
+    /events\/event-1 failed schema validation/
+  );
+});
+
+test("seed event validation rejects stale discovery projection fields", () => {
+  assert.throws(
+    () => validateSeedDocuments({
+      docs: [
+        {
+          path: "events/event-1",
+          data: {
+            ...validEventDoc(),
+            discoveryAvailability: "full",
+          },
+        },
+      ],
+    }),
+    /events\/event-1 synthetic event discovery projection is stale/
+  );
+});
+
 test("seed decision validation rejects stale reaction target types", () => {
   assert.throws(
     () => validateSeedDocuments({
@@ -403,7 +432,7 @@ function validUserProfileDoc() {
     email: "runner.one@example.test",
     profilePrompts: [validProfilePromptAnswer()],
     profilePhotos: validProfilePhotos(),
-    city: "mumbai",
+    city: "in-mh-mumbai",
     latitude: 19.076,
     longitude: 72.8777,
     interestedInGenders: ["man"],
@@ -442,7 +471,7 @@ function validPublicProfileDoc() {
     gender: "woman",
     profilePrompts: [validProfilePromptAnswer()],
     profilePhotos: validProfilePhotos(),
-    city: "mumbai",
+    city: "in-mh-mumbai",
     height: 168,
     occupation: "Designer",
     company: "Stride Labs",
@@ -466,7 +495,13 @@ function validClubDoc() {
     scenario: "schema-test",
     name: "Race Course Event Collective",
     description: "Social Indore events for easy kilometres and coffee stops.",
-    location: "indore",
+    location: "in-mp-indore",
+    locationCityId: "in-mp-indore",
+    locationMarketId: "in-mp-indore",
+    cityName: "Indore",
+    regionName: "Madhya Pradesh",
+    countryCode: "IN",
+    countryName: "India",
     area: "Race Course Road",
     hostUserId: "runner-1",
     hostName: "Runner One",
@@ -564,6 +599,24 @@ function validEventDoc() {
       womenInterestedInMen: 1,
     },
     waitlistedCohortCounts: {},
+    discoveryCityName: "indore",
+    discoveryMarketId: "in-mp-indore",
+    discoveryActivityKind: "socialRun",
+    discoveryGeoCell: "283:948",
+    discoveryHasOpenSpots: true,
+    discoveryAvailability: "open",
+    discoveryOpenCohorts: [
+      "menInterestedInWomen",
+      "womenInterestedInMen",
+      "queerOrOpen",
+      "nonBinaryOrOther",
+    ],
+    discoveryWaitlistCohorts: [],
+    discoveryInviteRequired: false,
+    discoveryMembershipRequired: false,
+    discoveryManualApprovalRequired: false,
+    discoveryMinAge: 21,
+    discoveryMaxAge: 45,
   };
 }
 

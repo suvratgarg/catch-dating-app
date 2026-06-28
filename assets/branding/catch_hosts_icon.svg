@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title">
   <title>Catch Hosts app icon</title>
   <rect width="1024" height="1024" fill="#16140F"/>
-  <text x="512" y="486" text-anchor="middle" font-family="Archivo, Inter, system-ui, sans-serif" font-size="254" font-weight="700" letter-spacing="0" fill="#F4F0E8">Catch</text>
-  <text x="512" y="690" text-anchor="middle" font-family="Archivo, Inter, system-ui, sans-serif" font-size="254" font-weight="700" letter-spacing="0" fill="#BAB2A7">Hosts</text>
+  <text x="512" y="486" text-anchor="middle" font-family="Archivo, system-ui, sans-serif" font-size="254" font-weight="700" letter-spacing="0" fill="#F4F0E8">Catch</text>
+  <text x="512" y="690" text-anchor="middle" font-family="Archivo, system-ui, sans-serif" font-size="254" font-weight="700" letter-spacing="0" fill="#BAB2A7">Hosts</text>
 </svg>

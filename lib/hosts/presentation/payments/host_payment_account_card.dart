@@ -14,8 +14,8 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
-import 'package:catch_dating_app/core/widgets/catch_settings_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
@@ -40,7 +40,7 @@ class _HostPaymentAccountCardState
     extends ConsumerState<HostPaymentAccountCard> {
   Future<void> _showPayoutsHandoff(
     HostPaymentAccount? account,
-    _HostPaymentPresentation presentation,
+    HostPaymentPresentation presentation,
     bool onboardingPending,
   ) async {
     final t = CatchTokens.of(context);
@@ -103,15 +103,15 @@ class _HostPaymentAccountCardState
                 ),
                 child: Column(
                   children: [
-                    CatchSettingsRow(
-                      label: 'Country',
-                      value: _countryLabel(country),
+                    CatchField(
+                      title: 'Country',
+                      valueText: _countryLabel(country),
                       icon: CatchIcons.locationOnOutlined,
                       showChevron: false,
                     ),
-                    CatchSettingsRow(
-                      label: 'Default currency',
-                      value: currency.toUpperCase(),
+                    CatchField(
+                      title: 'Default currency',
+                      valueText: currency.toUpperCase(),
                       icon: CatchIcons.paymentsOutlined,
                       divider: true,
                       showChevron: false,
@@ -182,14 +182,14 @@ class _HostPaymentAccountCardState
     );
     return CatchAsyncValueView<HostPaymentAccount?>(
       value: accountAsync,
-      loadingBuilder: (_) => const _HostPaymentAccountLoadingCard(),
-      errorBuilder: (_, error, _) => _HostPaymentAccountErrorCard(
+      loadingBuilder: (_) => const HostPaymentAccountLoadingCard(),
+      errorBuilder: (_, error, _) => HostPaymentAccountErrorCard(
         error: error,
         onRetry: uid == null
             ? null
             : () => ref.invalidate(watchHostPaymentAccountProvider(uid)),
       ),
-      builder: (context, account) => _HostPaymentAccountContentCard(
+      builder: (context, account) => HostPaymentAccountContentCard(
         account: account,
         actionError: _firstErrorMutation(onboardingMutation, refreshMutation),
         onboardingPending: onboardingMutation.isPending,
@@ -214,8 +214,9 @@ class _HostPaymentAccountCardState
   }
 }
 
-class _HostPaymentAccountContentCard extends StatelessWidget {
-  const _HostPaymentAccountContentCard({
+class HostPaymentAccountContentCard extends StatelessWidget {
+  const HostPaymentAccountContentCard({
+    super.key,
     required this.account,
     required this.actionError,
     required this.onboardingPending,
@@ -230,7 +231,7 @@ class _HostPaymentAccountContentCard extends StatelessWidget {
   final bool refreshPending;
   final Future<void> Function(
     HostPaymentAccount? account,
-    _HostPaymentPresentation presentation,
+    HostPaymentPresentation presentation,
   )
   onShowPayoutsHandoff;
   final Future<void> Function() onRefresh;
@@ -326,9 +327,9 @@ class _HostPaymentAccountContentCard extends StatelessWidget {
     );
   }
 
-  _HostPaymentPresentation _presentation(HostPaymentAccount? account) {
+  HostPaymentPresentation _presentation(HostPaymentAccount? account) {
     if (account == null) {
-      return const _HostPaymentPresentation(
+      return const HostPaymentPresentation(
         badge: 'Not set up',
         tone: CatchBadgeTone.warning,
         title: 'Set up international payouts',
@@ -337,7 +338,7 @@ class _HostPaymentAccountContentCard extends StatelessWidget {
       );
     }
     if (account.canAcceptInternationalPayments) {
-      return const _HostPaymentPresentation(
+      return const HostPaymentPresentation(
         badge: 'Ready',
         tone: CatchBadgeTone.success,
         title: 'International checkout is ready',
@@ -346,7 +347,7 @@ class _HostPaymentAccountContentCard extends StatelessWidget {
       );
     }
     if (account.onboardingStatus == HostPaymentOnboardingStatus.restricted) {
-      return _HostPaymentPresentation(
+      return HostPaymentPresentation(
         badge: 'Action needed',
         tone: CatchBadgeTone.warning,
         title: 'Stripe needs more information',
@@ -355,7 +356,7 @@ class _HostPaymentAccountContentCard extends StatelessWidget {
             'Finish the outstanding Stripe requirements to accept payments.',
       );
     }
-    return const _HostPaymentPresentation(
+    return const HostPaymentPresentation(
       badge: 'Pending',
       tone: CatchBadgeTone.warning,
       title: 'Stripe onboarding is in progress',
@@ -365,8 +366,8 @@ class _HostPaymentAccountContentCard extends StatelessWidget {
   }
 }
 
-class _HostPaymentAccountLoadingCard extends StatelessWidget {
-  const _HostPaymentAccountLoadingCard();
+class HostPaymentAccountLoadingCard extends StatelessWidget {
+  const HostPaymentAccountLoadingCard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -402,8 +403,12 @@ class _HostPaymentAccountLoadingCard extends StatelessWidget {
   }
 }
 
-class _HostPaymentAccountErrorCard extends StatelessWidget {
-  const _HostPaymentAccountErrorCard({required this.error, this.onRetry});
+class HostPaymentAccountErrorCard extends StatelessWidget {
+  const HostPaymentAccountErrorCard({
+    super.key,
+    required this.error,
+    this.onRetry,
+  });
 
   final Object error;
   final VoidCallback? onRetry;
@@ -431,8 +436,8 @@ class _HostPaymentAccountErrorCard extends StatelessWidget {
   }
 }
 
-class _HostPaymentPresentation {
-  const _HostPaymentPresentation({
+class HostPaymentPresentation {
+  const HostPaymentPresentation({
     required this.badge,
     required this.tone,
     required this.title,

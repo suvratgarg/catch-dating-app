@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
@@ -701,7 +701,7 @@ void main() {
           of: find.byType(CatchBottomSheetScaffold),
           matching: find.text('Display name'),
         ),
-        matching: find.byType(CatchTextField),
+        matching: find.byType(CatchField),
       );
       await tester.enterText(
         find.descendant(of: displayNameField, matching: find.byType(TextField)),
@@ -837,7 +837,7 @@ void main() {
           of: editorSheet,
           matching: find.text('Display name'),
         ),
-        matching: find.byType(CatchTextField),
+        matching: find.byType(CatchField),
       );
       await tester.enterText(
         find.descendant(of: displayNameField, matching: find.byType(TextField)),
@@ -996,7 +996,7 @@ void main() {
     );
 
     final displayNameField = find.descendant(
-      of: find.widgetWithText(CatchTextField, 'Display name'),
+      of: find.widgetWithText(CatchField, 'Display name'),
       matching: find.byType(TextField),
     );
     await tester.enterText(displayNameField, '');

@@ -133,8 +133,8 @@ export interface EventMeetingLocation {
   name: string;
   address?: string | null;
   placeId?: string | null;
-  latitude: number | null;
-  longitude: number | null;
+  latitude: number;
+  longitude: number;
   notes?: string | null;
 }
 
@@ -417,22 +417,72 @@ export interface EventPolicyDemandPricingRuleDocument {
 }
 
 /**
- * Public city configuration stored at config/cities.
+ * Public launch-market configuration stored at config/cities. The app picks from launched markets; canonical market ids disambiguate same-name cities globally.
  */
 export interface ConfigCitiesDocument {
+  version: number;
+  /**
+   * Compatibility whitelist used by Firestore rules. Values are launched canonical market ids, not display city names.
+   *
+   * @minItems 1
+   */
+  cityNames: string[];
   /**
    * @minItems 1
    */
-  cityNames: (string | null)[];
-  cities?: {
-    name: string | null;
+  marketIds: string[];
+  /**
+   * @minItems 1
+   */
+  launchMarketIds: string[];
+  cities: {
+    /**
+     * App-facing selection id. Kept as name for existing CityData JSON, but stores the canonical market id.
+     */
+    name: string;
+    cityId: string;
+    marketId: string;
+    slug: string;
     label: string;
-    latitude: number | null;
-    longitude: number | null;
+    latitude: number;
+    longitude: number;
     countryIsoCode: string;
     currencyCode: string;
     dialCode: string;
     timeZone: string;
+    launchStatus: "launched" | "planned" | "paused" | "retired";
+    profileSelectable: boolean;
+    hostCreatable: boolean;
+    eventCreatable: boolean;
+    exploreVisible: boolean;
+  }[];
+  /**
+   * @minItems 1
+   */
+  markets: {
+    marketId: string;
+    cityId: string;
+    slug: string;
+    label: string;
+    cityLabel: string;
+    regionCode: string;
+    regionName: string;
+    countryIsoCode: string;
+    countryName: string;
+    currencyCode: string;
+    dialCode: string;
+    timeZone: string;
+    latitude: number;
+    longitude: number;
+    /**
+     * @maxItems 40
+     */
+    aliases: string[];
+    launchStatus: "launched" | "planned" | "paused" | "retired";
+    profileSelectable: boolean;
+    hostCreatable: boolean;
+    eventCreatable: boolean;
+    exploreVisible: boolean;
   }[];
 }
 
@@ -642,7 +692,12 @@ export interface PublicProfileDocument {
 export interface ClubDocument {
   name: string;
   description: string;
-  location: string | null;
+  /**
+   * Canonical launch market id. Public URL slugs live under publicPage.citySlug.
+   */
+  location: string;
+  locationCityId: string;
+  locationMarketId: string;
   area: string;
   /**
    * Legacy primary host user id. Null for programmatically generated, unclaimed organizer profiles.
@@ -737,7 +792,7 @@ export interface ClubDocument {
   };
   publicPage?: {
     slug: string;
-    citySlug: string | null;
+    citySlug: string;
     canonicalPath: string;
     publishStatus: "draft" | "qa" | "published" | "suppressed" | "removed";
     indexStatus: "noindex" | "indexReady" | "indexed";
@@ -896,9 +951,9 @@ export interface EventDocument {
   startTime: FirebaseFirestore.Timestamp;
   endTime: FirebaseFirestore.Timestamp;
   meetingPoint: string;
-  meetingLocation?: EventMeetingLocation | null;
-  startingPointLat?: number | null;
-  startingPointLng?: number | null;
+  meetingLocation: EventMeetingLocation | null;
+  startingPointLat?: number;
+  startingPointLng?: number;
   locationDetails?: string | null;
   photoUrl?: string | null;
   /**
@@ -929,8 +984,9 @@ export interface EventDocument {
   waitlistedCohortCounts: {
     [k: string]: number;
   };
-  discoveryCityName?: string | null;
-  discoveryActivityKind?:
+  discoveryMarketId: string;
+  discoveryCityName: string;
+  discoveryActivityKind:
     | "socialRun"
     | "running"
     | "walking"
@@ -947,13 +1003,13 @@ export interface EventDocument {
     | "dinner"
     | "singlesMixer"
     | "openActivity";
-  discoveryGeoCell?: string | null;
-  discoveryHasOpenSpots?: boolean;
-  discoveryAvailability?: "open" | "waitlist" | "gated" | "full" | "cancelled";
+  discoveryGeoCell: string | null;
+  discoveryHasOpenSpots: boolean;
+  discoveryAvailability: "open" | "waitlist" | "gated" | "full" | "cancelled";
   /**
    * @maxItems 4
    */
-  discoveryOpenCohorts?: (
+  discoveryOpenCohorts: (
     | "menInterestedInWomen"
     | "womenInterestedInMen"
     | "queerOrOpen"
@@ -962,17 +1018,17 @@ export interface EventDocument {
   /**
    * @maxItems 4
    */
-  discoveryWaitlistCohorts?: (
+  discoveryWaitlistCohorts: (
     | "menInterestedInWomen"
     | "womenInterestedInMen"
     | "queerOrOpen"
     | "nonBinaryOrOther"
   )[];
-  discoveryInviteRequired?: boolean;
-  discoveryMembershipRequired?: boolean;
-  discoveryManualApprovalRequired?: boolean;
-  discoveryMinAge?: number;
-  discoveryMaxAge?: number;
+  discoveryInviteRequired: boolean;
+  discoveryMembershipRequired: boolean;
+  discoveryManualApprovalRequired: boolean;
+  discoveryMinAge: number;
+  discoveryMaxAge: number;
   /**
    * Server-owned deterministic search projection used by admin event publishing. Rebuildable from canonical event and organizer fields; not consumed by the app.
    */

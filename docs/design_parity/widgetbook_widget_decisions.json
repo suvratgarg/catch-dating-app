@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "description": "Explicit Widgetbook coverage decisions for Flutter widget classes. Every lib widget class must either be directly cataloged, replaced by a cataloged primitive or screen state, promoted into Widgetbook, or deleted/merged. KEEP_PRIVATE is invalid.",
+  "decisions": []
+}

@@ -7,6 +7,9 @@
  */
 export interface ExploreSearchCallablePayload {
   query: string;
+  /**
+   * Canonical launch market id. The field name is retained for callable compatibility.
+   */
   cityName?: string;
   limit?: number;
 }

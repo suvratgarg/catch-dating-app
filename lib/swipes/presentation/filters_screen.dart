@@ -262,11 +262,11 @@ class FiltersContentSkeleton extends StatelessWidget {
               CatchSpacing.s5,
               CatchSpacing.s5,
             ),
-            children: const [
-              FiltersSection(title: 'Age', child: _AgeFilterSkeleton()),
+            children: [
+              FiltersSection(title: 'Age', child: _ageFilterSkeleton()),
               FiltersSection(
                 title: 'Interested in',
-                child: _GenderFilterSkeleton(),
+                child: _genderFilterSkeleton(),
               ),
             ],
           ),
@@ -290,65 +290,55 @@ class FiltersContentSkeleton extends StatelessWidget {
   }
 }
 
-class _AgeFilterSkeleton extends StatelessWidget {
-  const _AgeFilterSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-        gapH16,
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            CatchSkeleton.box(
-              width: double.infinity,
-              height: CatchStroke.selection,
-              radius: CatchRadius.pill,
-            ),
-            Row(
-              children: [
-                CatchSkeleton.circle(size: CatchSpacing.s6),
-                const Spacer(),
-                CatchSkeleton.circle(size: CatchSpacing.s6),
-              ],
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+Widget _ageFilterSkeleton() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+      gapH16,
+      Stack(
+        alignment: Alignment.center,
+        children: [
+          CatchSkeleton.box(
+            width: double.infinity,
+            height: CatchStroke.selection,
+            radius: CatchRadius.pill,
+          ),
+          Row(
+            children: [
+              CatchSkeleton.circle(size: CatchSpacing.s6),
+              const Spacer(),
+              CatchSkeleton.circle(size: CatchSpacing.s6),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
 }
 
-class _GenderFilterSkeleton extends StatelessWidget {
-  const _GenderFilterSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
-      children: [
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s7,
-          height: CatchSpacing.s9,
-          radius: CatchRadius.pill,
-        ),
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s10,
-          height: CatchSpacing.s9,
-          radius: CatchRadius.pill,
-        ),
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s4,
-          height: CatchSpacing.s9,
-          radius: CatchRadius.pill,
-        ),
-      ],
-    );
-  }
+Widget _genderFilterSkeleton() {
+  return Wrap(
+    spacing: CatchSpacing.s2,
+    runSpacing: CatchSpacing.s2,
+    children: [
+      CatchSkeleton.box(
+        width: CatchSpacing.s16 + CatchSpacing.s7,
+        height: CatchSpacing.s9,
+        radius: CatchRadius.pill,
+      ),
+      CatchSkeleton.box(
+        width: CatchSpacing.s16 + CatchSpacing.s10,
+        height: CatchSpacing.s9,
+        radius: CatchRadius.pill,
+      ),
+      CatchSkeleton.box(
+        width: CatchSpacing.s16 + CatchSpacing.s4,
+        height: CatchSpacing.s9,
+        radius: CatchRadius.pill,
+      ),
+    ],
+  );
 }
 
 class FiltersSection extends StatelessWidget {

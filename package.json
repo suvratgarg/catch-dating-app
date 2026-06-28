@@ -19,6 +19,10 @@
     "web:tokens": "dart run tool/design_tokens.dart",
     "web:tokens:check": "dart run tool/design_tokens.dart --check",
     "design:components:check": "node tool/design/check_component_contracts.mjs",
+    "design:widgets:classify": "node tool/design/generate_widget_classification.mjs",
+    "design:widgets:check": "node tool/design/check_widget_classification.mjs",
+    "design:widgets:variants": "node tool/design/generate_widget_variant_inventory.mjs",
+    "design:widgets:variants:check": "node tool/design/generate_widget_variant_inventory.mjs --check",
     "design:parity:check": "node tool/design/check_design_parity.mjs --check"
   },
   "devDependencies": {

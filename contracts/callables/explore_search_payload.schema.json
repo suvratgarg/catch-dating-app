@@ -8,7 +8,10 @@
   "required": ["query"],
   "properties": {
     "query": {"type": "string", "minLength": 2, "maxLength": 120},
-    "cityName": {"type": "string", "minLength": 1, "maxLength": 120},
+    "cityName": {
+      "$ref": "../shared/event_common.schema.json#/definitions/marketId",
+      "description": "Canonical launch market id. The field name is retained for callable compatibility."
+    },
     "limit": {"type": "integer", "minimum": 1, "maximum": 50}
   }
 }

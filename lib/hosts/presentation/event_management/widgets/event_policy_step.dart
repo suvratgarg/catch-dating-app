@@ -3,13 +3,13 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -140,11 +140,11 @@ class EventPolicyStep extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CatchTextField(
+                child: CatchField(
                   key: CreateEventFormKeys.capacity,
-                  label: 'Max attendees',
+                  title: 'Max attendees',
                   controller: capacityController,
-                  hintText: '20',
+                  placeholder: '20',
                   prefixIcon: Icon(CatchIcons.peopleOutline),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -159,11 +159,11 @@ class EventPolicyStep extends StatelessWidget {
               ),
               gapW12,
               Expanded(
-                child: CatchTextField(
+                child: CatchField(
                   key: CreateEventFormKeys.price,
-                  label: 'Base price ($currencyCode)',
+                  title: 'Base price ($currencyCode)',
                   controller: priceController,
-                  hintText: '0',
+                  placeholder: '0',
                   prefixIcon: Icon(CatchIcons.paymentsOutlined),
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
@@ -186,7 +186,7 @@ class EventPolicyStep extends StatelessWidget {
             ],
           ),
           gapH20,
-          const FieldLabel('Admission format'),
+          const CatchFormFieldLabel(label: 'Admission format', large: true),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -237,11 +237,11 @@ class EventPolicyStep extends StatelessWidget {
                     ],
                   ),
                   gapH12,
-                  CatchTextField(
+                  CatchField(
                     key: CreateEventFormKeys.inviteCode,
-                    label: 'Invite code',
+                    title: 'Invite code',
                     controller: inviteCodeController,
-                    hintText: 'CATCH-DELHI',
+                    placeholder: 'CATCH-DELHI',
                     prefixIcon: Icon(CatchIcons.lockOutlineRounded),
                     textInputAction: TextInputAction.next,
                     inputFormatters: [
@@ -302,12 +302,12 @@ class EventPolicyStep extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: CatchTextField(
+                          child: CatchField(
                             key: CreateEventFormKeys.maxMen,
-                            label: 'Max straight men',
+                            title: 'Max straight men',
                             isOptional: true,
                             controller: maxMenController,
-                            hintText: 'Max men',
+                            placeholder: 'Max men',
                             prefixIcon: Icon(CatchIcons.maleOutlined),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
@@ -321,12 +321,12 @@ class EventPolicyStep extends StatelessWidget {
                         ),
                         gapW12,
                         Expanded(
-                          child: CatchTextField(
+                          child: CatchField(
                             key: CreateEventFormKeys.maxWomen,
-                            label: 'Max straight women',
+                            title: 'Max straight women',
                             isOptional: true,
                             controller: maxWomenController,
-                            hintText: 'Max women',
+                            placeholder: 'Max women',
                             prefixIcon: Icon(CatchIcons.femaleOutlined),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
@@ -414,11 +414,11 @@ class EventPolicyStep extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: CatchTextField(
+                          child: CatchField(
                             key: CreateEventFormKeys.dynamicPricingStep,
-                            label: 'Step ($currencyCode)',
+                            title: 'Step ($currencyCode)',
                             controller: dynamicPricingStepController,
-                            hintText: '250',
+                            placeholder: '250',
                             prefixIcon: Icon(CatchIcons.trendingUpRounded),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
@@ -432,11 +432,11 @@ class EventPolicyStep extends StatelessWidget {
                         ),
                         gapW12,
                         Expanded(
-                          child: CatchTextField(
+                          child: CatchField(
                             key: CreateEventFormKeys.dynamicPricingMax,
-                            label: 'Max ($currencyCode)',
+                            title: 'Max ($currencyCode)',
                             controller: dynamicPricingMaxController,
-                            hintText: '1500',
+                            placeholder: '1500',
                             prefixIcon: Icon(CatchIcons.priceChangeOutlined),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
@@ -456,17 +456,17 @@ class EventPolicyStep extends StatelessWidget {
             ),
           ],
           gapH20,
-          const FieldLabel('Age range'),
+          const CatchFormFieldLabel(label: 'Age range', large: true),
           gapH8,
           Row(
             children: [
               Expanded(
-                child: CatchTextField(
+                child: CatchField(
                   key: CreateEventFormKeys.minAge,
-                  label: 'Min age',
+                  title: 'Min age',
                   isOptional: true,
                   controller: minAgeController,
-                  hintText: 'Min',
+                  placeholder: 'Min',
                   prefixIcon: Icon(CatchIcons.cakeOutlined),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -480,12 +480,12 @@ class EventPolicyStep extends StatelessWidget {
               ),
               gapW12,
               Expanded(
-                child: CatchTextField(
+                child: CatchField(
                   key: CreateEventFormKeys.maxAge,
-                  label: 'Max age',
+                  title: 'Max age',
                   isOptional: true,
                   controller: maxAgeController,
-                  hintText: 'Max',
+                  placeholder: 'Max',
                   prefixIcon: Icon(CatchIcons.cakeOutlined),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -500,7 +500,7 @@ class EventPolicyStep extends StatelessWidget {
             ],
           ),
           gapH20,
-          const FieldLabel('Cancellation policy'),
+          const CatchFormFieldLabel(label: 'Cancellation policy', large: true),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,

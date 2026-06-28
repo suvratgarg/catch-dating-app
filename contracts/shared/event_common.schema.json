@@ -54,6 +54,15 @@
     "citySlug": {
       "$ref": "profile_common.schema.json#/definitions/citySlug"
     },
+    "strictCitySlug": {
+      "$ref": "profile_common.schema.json#/definitions/strictCitySlug"
+    },
+    "cityId": {
+      "$ref": "profile_common.schema.json#/definitions/cityId"
+    },
+    "marketId": {
+      "$ref": "profile_common.schema.json#/definitions/marketId"
+    },
     "timestamp": {
       "$ref": "profile_common.schema.json#/definitions/timestamp"
     },
@@ -93,10 +102,10 @@
           "maxLength": 256
         },
         "latitude": {
-          "$ref": "#/definitions/latitude"
+          "$ref": "profile_common.schema.json#/definitions/strictLatitude"
         },
         "longitude": {
-          "$ref": "#/definitions/longitude"
+          "$ref": "profile_common.schema.json#/definitions/strictLongitude"
         },
         "notes": {
           "type": ["string", "null"],

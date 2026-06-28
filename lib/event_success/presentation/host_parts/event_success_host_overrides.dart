@@ -1,7 +1,7 @@
 part of '../event_success_host_screen.dart';
 
-class _MicroPodsHostCard extends ConsumerWidget {
-  const _MicroPodsHostCard({
+class MicroPodsHostCard extends ConsumerWidget {
+  const MicroPodsHostCard({
     required this.event,
     required this.eventId,
     required this.assignments,
@@ -85,9 +85,9 @@ class _MicroPodsHostCard extends ConsumerWidget {
           ),
           if (activeAssignments.isNotEmpty) ...[
             gapH12,
-            _PodGroupSummary(assignments: activeAssignments),
+            PodGroupSummary(assignments: activeAssignments),
             gapH10,
-            _AssignmentReasonSummary(assignments: activeAssignments),
+            AssignmentReasonSummary(assignments: activeAssignments),
           ],
           if (mutation.hasError) ...[
             gapH8,
@@ -176,7 +176,7 @@ Future<void> _showGroupOverrideSheet({
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (context) => _GroupOverrideSheet(
+    builder: (context) => GroupOverrideSheet(
       event: event,
       assignments: assignments,
       participantProfiles: participantProfiles,
@@ -185,8 +185,8 @@ Future<void> _showGroupOverrideSheet({
   );
 }
 
-class _GroupOverrideSheet extends ConsumerStatefulWidget {
-  const _GroupOverrideSheet({
+class GroupOverrideSheet extends ConsumerStatefulWidget {
+  const GroupOverrideSheet({
     required this.event,
     required this.assignments,
     required this.participantProfiles,
@@ -199,11 +199,10 @@ class _GroupOverrideSheet extends ConsumerStatefulWidget {
   final ValueChanged<List<EventSuccessGroupOverrideRound>>? onOverride;
 
   @override
-  ConsumerState<_GroupOverrideSheet> createState() =>
-      _GroupOverrideSheetState();
+  ConsumerState<GroupOverrideSheet> createState() => _GroupOverrideSheetState();
 }
 
-class _GroupOverrideSheetState extends ConsumerState<_GroupOverrideSheet> {
+class _GroupOverrideSheetState extends ConsumerState<GroupOverrideSheet> {
   late final List<String> _participantUids = _rotationParticipantUids(
     widget.assignments,
   );
@@ -262,7 +261,7 @@ class _GroupOverrideSheetState extends ConsumerState<_GroupOverrideSheet> {
           separatorBuilder: (_, _) => gapH12,
           itemBuilder: (context, index) {
             final round = _rounds[index];
-            return _GroupOverrideRoundEditor(
+            return GroupOverrideRoundEditor(
               round: round,
               participantUids: _participantUids,
               participantLabel: _participantLabel,
@@ -372,8 +371,8 @@ class _GroupOverrideSheetState extends ConsumerState<_GroupOverrideSheet> {
   }
 }
 
-class _GroupOverrideRoundEditor extends StatelessWidget {
-  const _GroupOverrideRoundEditor({
+class GroupOverrideRoundEditor extends StatelessWidget {
+  const GroupOverrideRoundEditor({
     required this.round,
     required this.participantUids,
     required this.participantLabel,
@@ -429,7 +428,7 @@ class _GroupOverrideRoundEditor extends StatelessWidget {
             )
           else
             for (final group in round.groups) ...[
-              _GroupOverrideUnitEditor(
+              GroupOverrideUnitEditor(
                 group: group,
                 participantUids: participantUids,
                 participantLabel: participantLabel,
@@ -446,8 +445,8 @@ class _GroupOverrideRoundEditor extends StatelessWidget {
   }
 }
 
-class _GroupOverrideUnitEditor extends StatelessWidget {
-  const _GroupOverrideUnitEditor({
+class GroupOverrideUnitEditor extends StatelessWidget {
+  const GroupOverrideUnitEditor({
     required this.group,
     required this.participantUids,
     required this.participantLabel,
@@ -479,8 +478,8 @@ class _GroupOverrideUnitEditor extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: CatchTextField(
-                  label: 'Group label',
+                child: CatchField(
+                  title: 'Group label',
                   initialValue: group.label,
                   textCapitalization: TextCapitalization.words,
                   onChanged: (value) {
@@ -490,7 +489,7 @@ class _GroupOverrideUnitEditor extends StatelessWidget {
                 ),
               ),
               gapW8,
-              _HostOverrideIconAction(
+              HostOverrideIconAction(
                 tooltip: 'Remove group',
                 icon: CatchIcons.deleteOutlineRounded,
                 color: t.danger,
@@ -504,7 +503,7 @@ class _GroupOverrideUnitEditor extends StatelessWidget {
             memberIndex < group.memberUids.length;
             memberIndex++
           ) ...[
-            _GroupOverrideMemberEditor(
+            GroupOverrideMemberEditor(
               value: group.memberUids[memberIndex],
               participantUids: participantUids,
               participantLabel: participantLabel,
@@ -529,8 +528,8 @@ class _GroupOverrideUnitEditor extends StatelessWidget {
   }
 }
 
-class _GroupOverrideMemberEditor extends StatelessWidget {
-  const _GroupOverrideMemberEditor({
+class GroupOverrideMemberEditor extends StatelessWidget {
+  const GroupOverrideMemberEditor({
     required this.value,
     required this.participantUids,
     required this.participantLabel,
@@ -549,17 +548,18 @@ class _GroupOverrideMemberEditor extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: CatchSelectMenu<String>(
+          child: CatchField.select<String>(
+            title: 'Group attendee',
             values: participantUids,
             value: value,
             itemLabel: participantLabel,
             hintText: 'Attendee',
-            semanticLabel: 'Group attendee',
+            showLabel: false,
             onChanged: onChanged,
           ),
         ),
         gapW8,
-        _HostOverrideIconAction(
+        HostOverrideIconAction(
           tooltip: 'Remove attendee',
           icon: CatchIcons.closeRounded,
           onPressed: onRemove,
@@ -569,8 +569,8 @@ class _GroupOverrideMemberEditor extends StatelessWidget {
   }
 }
 
-class _RotationsHostCard extends ConsumerWidget {
-  const _RotationsHostCard({
+class RotationsHostCard extends ConsumerWidget {
+  const RotationsHostCard({
     required this.event,
     required this.rotationIntervalMinutes,
     required this.assignments,
@@ -681,7 +681,7 @@ class _RotationsHostCard extends ConsumerWidget {
               ],
             ),
             gapH10,
-            _AssignmentReasonSummary(assignments: activeAssignments),
+            AssignmentReasonSummary(assignments: activeAssignments),
           ],
           if (mutation.hasError) ...[
             gapH8,
@@ -773,7 +773,7 @@ Future<void> _showRotationOverrideSheet({
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (context) => _RotationOverrideSheet(
+    builder: (context) => RotationOverrideSheet(
       event: event,
       assignments: assignments,
       participantProfiles: participantProfiles,
@@ -782,8 +782,8 @@ Future<void> _showRotationOverrideSheet({
   );
 }
 
-class _RotationOverrideSheet extends ConsumerStatefulWidget {
-  const _RotationOverrideSheet({
+class RotationOverrideSheet extends ConsumerStatefulWidget {
+  const RotationOverrideSheet({
     required this.event,
     required this.assignments,
     required this.participantProfiles,
@@ -796,12 +796,11 @@ class _RotationOverrideSheet extends ConsumerStatefulWidget {
   final ValueChanged<List<EventSuccessRotationOverrideRound>>? onOverride;
 
   @override
-  ConsumerState<_RotationOverrideSheet> createState() =>
+  ConsumerState<RotationOverrideSheet> createState() =>
       _RotationOverrideSheetState();
 }
 
-class _RotationOverrideSheetState
-    extends ConsumerState<_RotationOverrideSheet> {
+class _RotationOverrideSheetState extends ConsumerState<RotationOverrideSheet> {
   late final List<String> _participantUids = _rotationParticipantUids(
     widget.assignments,
   );
@@ -860,7 +859,7 @@ class _RotationOverrideSheetState
           separatorBuilder: (_, _) => gapH12,
           itemBuilder: (context, index) {
             final round = _rounds[index];
-            return _RotationOverrideRoundEditor(
+            return RotationOverrideRoundEditor(
               round: round,
               participantUids: _participantUids,
               participantLabel: _participantLabel,
@@ -948,8 +947,8 @@ class _RotationOverrideSheetState
   }
 }
 
-class _RotationOverrideRoundEditor extends StatelessWidget {
-  const _RotationOverrideRoundEditor({
+class RotationOverrideRoundEditor extends StatelessWidget {
+  const RotationOverrideRoundEditor({
     required this.round,
     required this.participantUids,
     required this.participantLabel,
@@ -1000,7 +999,7 @@ class _RotationOverrideRoundEditor extends StatelessWidget {
             )
           else
             for (final pair in round.pairings) ...[
-              _RotationOverridePairEditor(
+              RotationOverridePairEditor(
                 pair: pair,
                 participantUids: participantUids,
                 participantLabel: participantLabel,
@@ -1015,8 +1014,8 @@ class _RotationOverrideRoundEditor extends StatelessWidget {
   }
 }
 
-class _RotationOverridePairEditor extends StatelessWidget {
-  const _RotationOverridePairEditor({
+class RotationOverridePairEditor extends StatelessWidget {
+  const RotationOverridePairEditor({
     required this.pair,
     required this.participantUids,
     required this.participantLabel,
@@ -1035,12 +1034,13 @@ class _RotationOverridePairEditor extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: CatchSelectMenu<String>(
+          child: CatchField.select<String>(
+            title: 'First rotation attendee',
             values: participantUids,
             value: pair.uidA,
             itemLabel: participantLabel,
             hintText: 'Attendee',
-            semanticLabel: 'First rotation attendee',
+            showLabel: false,
             onChanged: (value) {
               pair.uidA = value;
               onChanged();
@@ -1049,12 +1049,13 @@ class _RotationOverridePairEditor extends StatelessWidget {
         ),
         gapW8,
         Expanded(
-          child: CatchSelectMenu<String>(
+          child: CatchField.select<String>(
+            title: 'Second rotation attendee',
             values: participantUids,
             value: pair.uidB,
             itemLabel: participantLabel,
             hintText: 'Partner',
-            semanticLabel: 'Second rotation attendee',
+            showLabel: false,
             onChanged: (value) {
               pair.uidB = value;
               onChanged();
@@ -1062,7 +1063,7 @@ class _RotationOverridePairEditor extends StatelessWidget {
           ),
         ),
         gapW8,
-        _HostOverrideIconAction(
+        HostOverrideIconAction(
           tooltip: 'Remove pair',
           icon: CatchIcons.deleteOutlineRounded,
           color: CatchTokens.of(context).danger,
@@ -1073,8 +1074,8 @@ class _RotationOverridePairEditor extends StatelessWidget {
   }
 }
 
-class _HostOverrideIconAction extends StatelessWidget {
-  const _HostOverrideIconAction({
+class HostOverrideIconAction extends StatelessWidget {
+  const HostOverrideIconAction({
     required this.tooltip,
     required this.icon,
     required this.onPressed,
@@ -1099,8 +1100,8 @@ class _HostOverrideIconAction extends StatelessWidget {
   }
 }
 
-class _PodGroupSummary extends StatelessWidget {
-  const _PodGroupSummary({required this.assignments});
+class PodGroupSummary extends StatelessWidget {
+  const PodGroupSummary({required this.assignments});
 
   final List<EventSuccessAssignment> assignments;
 
@@ -1121,8 +1122,8 @@ class _PodGroupSummary extends StatelessWidget {
   }
 }
 
-class _AssignmentReasonSummary extends StatelessWidget {
-  const _AssignmentReasonSummary({required this.assignments});
+class AssignmentReasonSummary extends StatelessWidget {
+  const AssignmentReasonSummary({required this.assignments});
 
   final List<EventSuccessAssignment> assignments;
 

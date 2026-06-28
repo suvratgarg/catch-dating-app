@@ -12,9 +12,10 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -70,7 +71,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
 
     return Form(
       key: _formKey,
-      child: OnboardingStepFrame(
+      child: onboardingStepLayout(
         footer: CatchButton(
           key: AuthFormKeys.sendCode,
           label: 'Send code',
@@ -81,9 +82,11 @@ class _PhonePageState extends ConsumerState<PhonePage> {
           size: CatchButtonSize.lg,
         ),
         children: [
-          const OnboardingStepHeader(
+          const CatchStepHeader(
             title: "What's your number?",
             subtitle: "We'll send you a one-time code to verify.",
+            showBack: false,
+            gutter: false,
           ),
           gapH28,
           const CatchFormFieldLabel(label: 'Mobile number'),
@@ -91,7 +94,8 @@ class _PhonePageState extends ConsumerState<PhonePage> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _CountryCodeSelector(
+              _countryCodeSelector(
+                context: context,
                 countryCode: ref.watch(
                   authControllerProvider.select((d) => d.countryCode),
                 ),
@@ -104,9 +108,9 @@ class _PhonePageState extends ConsumerState<PhonePage> {
               ),
               gapW8,
               Expanded(
-                child: CatchTextField(
+                child: CatchField(
                   key: AuthFormKeys.phoneField,
-                  label: 'Mobile number',
+                  title: 'Mobile number',
                   showLabel: false,
                   controller: _phoneController,
                   autofocus: shouldAutofocus,
@@ -119,7 +123,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                     FilteringTextInputFormatter.digitsOnly,
                     LengthLimitingTextInputFormatter(AuthInput.maxPhoneDigits),
                   ],
-                  hintText: '98765 43210',
+                  placeholder: '98765 43210',
                   validator: AuthInput.phoneNumberError,
                 ),
               ),
@@ -140,76 +144,69 @@ class _PhonePageState extends ConsumerState<PhonePage> {
   }
 }
 
-class _CountryCodeSelector extends StatelessWidget {
-  const _CountryCodeSelector({
-    required this.countryCode,
-    required this.onChanged,
-  });
+Widget _countryCodeSelector({
+  required BuildContext context,
+  required String countryCode,
+  required ValueChanged<String> onChanged,
+}) {
+  final t = CatchTokens.of(context);
 
-  final String countryCode;
-  final ValueChanged<String> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return SizedBox(
-      width: CatchLayout.countryCodeSelectorWidth,
-      height: CatchTextField.mdControlHeight,
-      child: CatchControlShell(
-        padding: EdgeInsets.zero,
-        child: CountryCodePicker(
-          initialSelection: countryIsoForDialCode(countryCode),
-          onChanged: (code) {
-            final dialCode = code.dialCode;
-            if (dialCode == null || dialCode.isEmpty) return;
-            onChanged(dialCode);
-          },
-          showFlagMain: true,
-          showFlagDialog: true,
-          showDropDownButton: true,
-          favorite: supportedCountryPickerFavorites,
-          textStyle: CatchTextStyles.bodyLead(context, color: t.ink),
-          dialogTextStyle: CatchTextStyles.bodyLead(context, color: t.ink),
-          searchStyle: CatchTextStyles.bodyLead(context, color: t.ink),
-          headerTextStyle: CatchTextStyles.sectionTitle(context, color: t.ink),
-          dialogBackgroundColor: t.surface,
-          backgroundColor: t.surface,
-          barrierColor: CatchTokens.editorialDark.withValues(
-            alpha: CatchOpacity.mutedBorder,
+  return SizedBox(
+    width: CatchLayout.countryCodeSelectorWidth,
+    height: CatchField.mdControlHeight,
+    child: CatchControlShell(
+      padding: EdgeInsets.zero,
+      child: CountryCodePicker(
+        initialSelection: countryIsoForDialCode(countryCode),
+        onChanged: (code) {
+          final dialCode = code.dialCode;
+          if (dialCode == null || dialCode.isEmpty) return;
+          onChanged(dialCode);
+        },
+        showFlagMain: true,
+        showFlagDialog: true,
+        showDropDownButton: true,
+        favorite: supportedCountryPickerFavorites,
+        textStyle: CatchTextStyles.bodyLead(context, color: t.ink),
+        dialogTextStyle: CatchTextStyles.bodyLead(context, color: t.ink),
+        searchStyle: CatchTextStyles.bodyLead(context, color: t.ink),
+        headerTextStyle: CatchTextStyles.sectionTitle(context, color: t.ink),
+        dialogBackgroundColor: t.surface,
+        backgroundColor: t.surface,
+        barrierColor: CatchTokens.editorialDark.withValues(
+          alpha: CatchOpacity.mutedBorder,
+        ),
+        boxDecoration: BoxDecoration(
+          color: t.surface,
+          borderRadius: BorderRadius.circular(CatchRadius.md),
+          border: Border.all(color: t.line),
+        ),
+        searchDecoration: InputDecoration(
+          hintText: 'Search country',
+          hintStyle: CatchTextStyles.bodyLead(context, color: t.ink3),
+          filled: true,
+          fillColor: t.raised,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(CatchRadius.sm),
+            borderSide: BorderSide(color: t.line),
           ),
-          boxDecoration: BoxDecoration(
-            color: t.surface,
-            borderRadius: BorderRadius.circular(CatchRadius.md),
-            border: Border.all(color: t.line),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(CatchRadius.sm),
+            borderSide: BorderSide(color: t.line),
           ),
-          searchDecoration: InputDecoration(
-            hintText: 'Search country',
-            hintStyle: CatchTextStyles.bodyLead(context, color: t.ink3),
-            filled: true,
-            fillColor: t.raised,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(CatchRadius.sm),
-              borderSide: BorderSide(color: t.line),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(CatchRadius.sm),
-              borderSide: BorderSide(color: t.line),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(CatchRadius.sm),
-              borderSide: BorderSide(color: t.primary),
-            ),
-          ),
-          closeIcon: Icon(CatchIcons.closeRounded, color: t.ink2),
-          padding: CatchInsets.inlineHorizontal,
-          margin: const EdgeInsets.only(right: CatchSpacing.micro6),
-          flagWidth: CatchSpacing.s6,
-          flagDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(CatchRadius.xs),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(CatchRadius.sm),
+            borderSide: BorderSide(color: t.primary),
           ),
         ),
+        closeIcon: Icon(CatchIcons.closeRounded, color: t.ink2),
+        padding: CatchInsets.inlineHorizontal,
+        margin: const EdgeInsets.only(right: CatchSpacing.micro6),
+        flagWidth: CatchSpacing.s6,
+        flagDecoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(CatchRadius.xs),
+        ),
       ),
-    );
-  }
+    ),
+  );
 }

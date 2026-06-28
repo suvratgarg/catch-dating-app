@@ -384,6 +384,8 @@ function event(overrides: FakeData = {}): FakeData {
     status: "active",
     cancelledAt: null,
     cancellationReason: null,
+    discoveryCityName: "mumbai",
+    discoveryMarketId: "in-mh-mumbai",
     constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null},
     genderCounts: {man: 1},
     cohortCounts: {menInterestedInWomen: 1},

@@ -12,7 +12,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "startTime", "mode": "ASCENDING"}
       ]
@@ -21,7 +21,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "discoveryOpenCohorts", "arrayConfig": "CONTAINS"},
         {"fieldPath": "startTime", "mode": "ASCENDING"}
@@ -31,7 +31,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "discoveryOpenCohorts", "arrayConfig": "CONTAINS"},
         {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
@@ -42,7 +42,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "discoveryOpenCohorts", "arrayConfig": "CONTAINS"},
         {"fieldPath": "discoveryGeoCell", "mode": "ASCENDING"},
@@ -53,7 +53,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "discoveryOpenCohorts", "arrayConfig": "CONTAINS"},
         {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
@@ -65,7 +65,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
         {"fieldPath": "startTime", "mode": "ASCENDING"}
@@ -75,7 +75,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "discoveryGeoCell", "mode": "ASCENDING"},
         {"fieldPath": "startTime", "mode": "ASCENDING"}
@@ -85,7 +85,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
         {"fieldPath": "discoveryGeoCell", "mode": "ASCENDING"},
@@ -96,7 +96,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "discoveryAvailability", "mode": "ASCENDING"},
         {"fieldPath": "startTime", "mode": "ASCENDING"}
@@ -106,7 +106,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "discoveryAvailability", "mode": "ASCENDING"},
         {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
@@ -161,7 +161,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"},
         {"fieldPath": "startTime", "mode": "ASCENDING"}
       ]
@@ -188,7 +188,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"},
         {"fieldPath": "startTime", "mode": "ASCENDING"}
@@ -198,7 +198,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
         {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"},
         {"fieldPath": "startTime", "mode": "ASCENDING"}
@@ -208,7 +208,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"},
@@ -236,7 +236,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
       ]
     },
@@ -260,7 +260,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
       ]
@@ -269,7 +269,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
         {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
       ]
@@ -278,7 +278,7 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryMarketId", "mode": "ASCENDING"},
         {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
@@ -374,7 +374,7 @@
       "collectionGroup": "clubs",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "location", "mode": "ASCENDING"},
+        {"fieldPath": "locationMarketId", "mode": "ASCENDING"},
         {"fieldPath": "createdAt", "mode": "DESCENDING"}
       ]
     },
@@ -382,7 +382,7 @@
       "collectionGroup": "clubs",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "location", "mode": "ASCENDING"},
+        {"fieldPath": "locationMarketId", "mode": "ASCENDING"},
         {"fieldPath": "rating", "mode": "DESCENDING"}
       ]
     },

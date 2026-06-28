@@ -13,6 +13,7 @@ const requireFromFunctions = createRequire(
 
 export const discoveryProjectionFields = [
   "discoveryCityName",
+  "discoveryMarketId",
   "discoveryActivityKind",
   "discoveryGeoCell",
   "discoveryHasOpenSpots",
@@ -90,11 +91,15 @@ export async function buildEventDiscoveryProjectionRepairPlan(
 
   for (const eventDoc of eventsSnap.docs) {
     const event = eventDoc.data();
-    const {clubLocation, warning} = citySourceForEvent(eventDoc, event, clubs);
+    const {
+      clubLocation,
+      clubLocationMarketId,
+      warning,
+    } = citySourceForEvent(eventDoc, event, clubs);
     if (warning) warnings.push(warning);
 
     const expected = pickDiscoveryProjection(
-      eventDiscoveryProjection({event, clubLocation})
+      eventDiscoveryProjection({event, clubLocation, clubLocationMarketId})
     );
     const current = pickDiscoveryProjection(event);
     if (!isDeepStrictEqual(current, expected)) {
@@ -142,24 +147,35 @@ export function pickDiscoveryProjection(data) {
 function citySourceForEvent(eventDoc, event, clubs) {
   const clubId = typeof event.clubId === "string" ? event.clubId : null;
   const club = clubId ? clubs.get(clubId) : null;
+  const clubLocationMarketId = stringOrNull(club?.locationMarketId);
   const clubLocation = stringOrNull(club?.location);
-  if (clubLocation) {
-    return {clubLocation, warning: null};
+  if (clubLocationMarketId || clubLocation) {
+    return {
+      clubLocation,
+      clubLocationMarketId,
+      warning: null,
+    };
   }
 
+  const fallbackMarketId = stringOrNull(event.discoveryMarketId);
   const fallbackCity = stringOrNull(event.discoveryCityName);
   const missingClubWarning = clubId ?
     `${eventDoc.ref.path} references missing clubs/${clubId}; ` +
-      "using existing discoveryCityName fallback." :
+      "using existing discovery market fallback." :
     `${eventDoc.ref.path} has no clubId; ` +
-      "using existing discoveryCityName fallback.";
-  if (fallbackCity) {
-    return {clubLocation: fallbackCity, warning: missingClubWarning};
+      "using existing discovery market fallback.";
+  if (fallbackMarketId || fallbackCity) {
+    return {
+      clubLocation: fallbackCity,
+      clubLocationMarketId: fallbackMarketId,
+      warning: missingClubWarning,
+    };
   }
 
   return {
     clubLocation: null,
-    warning: `${missingClubWarning} Event will not be discoverable by city ` +
+    clubLocationMarketId: null,
+    warning: `${missingClubWarning} Event will not be discoverable by market ` +
       "until its club link is repaired.",
   };
 }
@@ -271,14 +287,14 @@ Options:
 }
 
 function compactSummary(summary) {
-  const citylessRepairs = summary.repairs.filter(
-    (repair) => repair.expected.discoveryCityName == null
+  const marketlessRepairs = summary.repairs.filter(
+    (repair) => repair.expected.discoveryMarketId == null
   ).length;
   return {
     eventsScanned: summary.eventsScanned,
     clubsScanned: summary.clubsScanned,
     repairsNeeded: summary.repairsNeeded,
-    citylessRepairs,
+    marketlessRepairs,
     warningCount: summary.warnings.length,
     warnings: summary.warnings,
   };

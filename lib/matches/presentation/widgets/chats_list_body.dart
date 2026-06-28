@@ -108,7 +108,7 @@ class HostInboxBroadcastCard extends StatelessWidget {
                   'Message all $countLabel',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.infoRowTitle(
+                  style: CatchTextStyles.fieldRowTitle(
                     context,
                     color: t.primaryInk,
                   ),

@@ -6,8 +6,8 @@ void main() {
   test('Catch UI lint font-family drift set matches CatchFonts', () {
     expect(catchUiLintFontFamilies, {
       CatchFonts.serifFamily,
-      CatchFonts.sansFamily,
       CatchFonts.monoFamily,
+      ...CatchFonts.platformFunctionFamilies,
     });
   });
 }

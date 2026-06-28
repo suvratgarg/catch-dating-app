@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_cta.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -65,7 +65,7 @@ class EventBookingDock extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (error != null) CatchErrorBanner(message: error),
-        CatchBottomCta(
+        CatchBottomDock.cta(
           label: label,
           onPressed: onPressed,
           leadingContent: leadingContent,

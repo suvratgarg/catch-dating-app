@@ -6,14 +6,14 @@
 <title>Catch — Typography, legibility-first (v2)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400..700&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Playfair+Display:wght@400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&family=Playfair+Display:wght@400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#F4F4F1; --paper-2:#FCFCFB; --ink:#16140F; --ink-2:#544F47; --ink-3:#9C958A;
     --line:rgba(22,20,15,.12); --run:#C9542F;
-    --sans:'Inter',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --sans:system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
     /* recommended display+body serif */
-    --news:'Newsreader',Georgia,serif;
+    --news:'Archivo',system-ui,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;padding:48px 40px 100px;max-width:1080px;margin:0 auto;}
@@ -102,7 +102,7 @@
 <div class="note">Each: a display headline, a real body paragraph at 15px (the actual test), and the profile name. None are Didones; all read well small.</div>
 
 <div class="cand reco faces">
-  <div class="top"><span class="nm">Newsreader</span></div>
+  <div class="top"><span class="nm">Archivo</span></div>
   <div class="head news">Dinners for <em>people</em> who skip small talk.</div>
   <div class="body news" style="font-variation-settings:'opsz' 16;">Long run, longer brunch, and a bookshop I have no business being in. I'll out-walk you at any market and lose every argument about where to eat. Designer by trade, runner by accident — find me at the Sunday sea-face crew.</div>
   <div class="small news" style="font-variation-settings:'opsz' 16;">Aanya, 27 · Bandra · 2 mutual clubs</div>
@@ -122,11 +122,11 @@
   <div class="head lit">Dinners for <em>people</em> who skip small talk.</div>
   <div class="body lit">Long run, longer brunch, and a bookshop I have no business being in. I'll out-walk you at any market and lose every argument about where to eat. Designer by trade, runner by accident — find me at the Sunday sea-face crew.</div>
   <div class="small lit">Aanya, 27 · Bandra · 2 mutual clubs</div>
-  <div class="verdict">Google's e-reader face — warm, sturdy, very cozy for long reading. A little softer/rounder; less crisp than Newsreader at display, but the friendliest to read.</div>
+  <div class="verdict">Google's e-reader face — warm, sturdy, very cozy for long reading. A little softer/rounder; less crisp than Archivo at display, but the friendliest to read.</div>
 </div>
 
-<h2>4 · Proposed system — Newsreader + Inter + IBM Plex Mono</h2>
-<div class="note">Serif (Newsreader, optical-sized) for titles AND long-form body. Inter for functional UI/controls. IBM Plex Mono for data + tracked labels. Upright titles, italic as a single accent.</div>
+<h2>4 · Proposed system — Archivo + platform system font + IBM Plex Mono</h2>
+<div class="note">Serif (Archivo, optical-sized) for titles AND long-form body. platform system font for functional UI/controls. IBM Plex Mono for data + tracked labels. Upright titles, italic as a single accent.</div>
 <div class="situ">
   <div class="ticket">
     <div class="media"><span class="st">Social run</span></div>

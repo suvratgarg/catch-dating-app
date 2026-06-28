@@ -10,11 +10,18 @@ import 'package:catch_dating_app/events/presentation/widgets/event_ticket_surfac
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_visual_atoms.dart';
 import 'package:flutter/material.dart';
 
-/// Production ticket-style event card backed by the shared activity visual
-/// schema. The schema is presentation-only and can change without data
-/// migration as long as events keep exposing [ActivityKind].
-class CatchEventTicketCard extends StatelessWidget {
-  const CatchEventTicketCard({
+enum CatchEventCardVariant { ticket, spotlight, compact }
+
+abstract final class CatchEventCardMetrics {
+  static const double compactVisualSize = 72;
+}
+
+/// Production event card backed by the shared activity visual schema.
+///
+/// Use named constructors instead of separate public card classes so Explore,
+/// Dashboard, and map-sheet event cards share one configurable component API.
+class CatchEventCard extends StatelessWidget {
+  const CatchEventCard.ticket({
     super.key,
     required this.title,
     required this.subtitle,
@@ -28,23 +35,76 @@ class CatchEventTicketCard extends StatelessWidget {
     this.width,
     this.heroTag,
     this.onTap,
-  });
+  }) : variant = CatchEventCardVariant.ticket,
+       supportingLabel = null,
+       kicker = null,
+       visualHeroTag = null;
 
+  const CatchEventCard.spotlight({
+    super.key,
+    required this.title,
+    required this.supportingLabel,
+    required this.timeLabel,
+    required this.countdownLabel,
+    required this.priceLabel,
+    required this.capacityLabel,
+    required this.activityKind,
+    this.kicker = "This week's pick",
+    this.heroTag,
+    this.visualHeroTag,
+    this.onTap,
+  }) : variant = CatchEventCardVariant.spotlight,
+       subtitle = null,
+       statusLabel = null,
+       clockTime = null,
+       width = null;
+
+  const CatchEventCard.compact({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.timeLabel,
+    required this.countdownLabel,
+    required this.priceLabel,
+    required this.capacityLabel,
+    required this.activityKind,
+    this.statusLabel,
+    this.clockTime,
+    this.width,
+    this.heroTag,
+    this.onTap,
+  }) : variant = CatchEventCardVariant.compact,
+       supportingLabel = null,
+       kicker = null,
+       visualHeroTag = null;
+
+  final CatchEventCardVariant variant;
   final String title;
-  final String subtitle;
+  final String? subtitle;
+  final String? supportingLabel;
   final String timeLabel;
   final String countdownLabel;
   final String priceLabel;
   final String capacityLabel;
   final ActivityKind activityKind;
   final String? statusLabel;
+  final String? kicker;
   final TimeOfDay? clockTime;
   final double? width;
   final Object? heroTag;
+  final Object? visualHeroTag;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
+    return switch (variant) {
+      CatchEventCardVariant.ticket => _buildTicket(context),
+      CatchEventCardVariant.spotlight => _buildSpotlight(context),
+      CatchEventCardVariant.compact => _buildCompact(context),
+    };
+  }
+
+  Widget _buildTicket(BuildContext context) {
     final t = CatchTokens.of(context);
     final visual = eventActivityVisual(activityKind, context: context);
     final status = statusLabel?.trim();
@@ -82,7 +142,7 @@ class CatchEventTicketCard extends StatelessWidget {
                         Positioned(
                           left: CatchSpacing.s4,
                           bottom: CatchSpacing.s4,
-                          child: _OutlineStamp(label: visual.label),
+                          child: _buildOutlineStamp(context, visual.label),
                         ),
                         if (status != null && status.isNotEmpty)
                           Positioned(
@@ -157,7 +217,7 @@ class CatchEventTicketCard extends StatelessWidget {
                         ),
                         gapH6,
                         Text(
-                          subtitle,
+                          subtitle!,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: CatchTextStyles.supporting(
@@ -181,38 +241,8 @@ class CatchEventTicketCard extends StatelessWidget {
         ? card
         : eventHeroSurface(tag: heroTag!, child: card);
   }
-}
 
-class CatchEventSpotlightCard extends StatelessWidget {
-  const CatchEventSpotlightCard({
-    super.key,
-    required this.title,
-    required this.supportingLabel,
-    required this.timeLabel,
-    required this.countdownLabel,
-    required this.priceLabel,
-    required this.capacityLabel,
-    required this.activityKind,
-    this.kicker = "This week's pick",
-    this.heroTag,
-    this.visualHeroTag,
-    this.onTap,
-  });
-
-  final String title;
-  final String supportingLabel;
-  final String timeLabel;
-  final String countdownLabel;
-  final String priceLabel;
-  final String capacityLabel;
-  final ActivityKind activityKind;
-  final String kicker;
-  final Object? heroTag;
-  final Object? visualHeroTag;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildSpotlight(BuildContext context) {
     final t = CatchTokens.of(context);
     final visual = eventActivityVisual(activityKind, context: context);
     final backdrop = EventActivityBackdrop(
@@ -248,12 +278,13 @@ class CatchEventSpotlightCard extends StatelessWidget {
                 Positioned(
                   top: CatchSpacing.s4,
                   left: CatchSpacing.s4,
-                  child: _RoundGlyph(icon: visual.icon),
+                  child: _buildRoundGlyph(visual.icon),
                 ),
                 Positioned(
                   top: CatchSpacing.s4,
                   right: CatchSpacing.s4,
-                  child: _DarkTimeChip(
+                  child: _buildDarkTimeChip(
+                    context,
                     label: timeLabel,
                     sublabel: countdownLabel,
                   ),
@@ -270,7 +301,7 @@ class CatchEventSpotlightCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CatchMonoLabel(
-                    kicker.toUpperCase(),
+                    kicker!.toUpperCase(),
                     color: t.primarySoft.withValues(
                       alpha: CatchOpacity.scrimFill,
                     ),
@@ -288,7 +319,7 @@ class CatchEventSpotlightCard extends StatelessWidget {
                   ),
                   gapH10,
                   Text(
-                    supportingLabel,
+                    supportingLabel!,
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                     style: CatchTextStyles.supporting(
@@ -335,97 +366,163 @@ class CatchEventSpotlightCard extends StatelessWidget {
         ? card
         : eventHeroSurface(tag: heroTag!, child: card);
   }
-}
 
-class _OutlineStamp extends StatelessWidget {
-  const _OutlineStamp({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildCompact(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Transform.rotate(
-      angle: -0.08,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.all(color: t.accent, width: 1.5),
-          color: t.primaryInk.withValues(alpha: CatchOpacity.subtleFill),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CatchSpacing.s2,
-            vertical: CatchSpacing.s1,
-          ),
-          child: CatchMonoLabel(label.toUpperCase(), color: t.accent),
-        ),
-      ),
-    );
-  }
-}
-
-class _DarkTimeChip extends StatelessWidget {
-  const _DarkTimeChip({required this.label, required this.sublabel});
-
-  final String label;
-  final String sublabel;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      radius: CatchRadius.md,
-      backgroundColor: t.darkScrimFill,
-      borderWidth: 0,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s3,
-          vertical: CatchSpacing.s2,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
+    final visual = eventActivityVisual(activityKind, context: context);
+    final status = statusLabel?.trim();
+    final card = SizedBox(
+      width: width,
+      child: CatchSurface(
+        onTap: onTap,
+        padding: const EdgeInsets.all(CatchSpacing.s3),
+        borderColor: t.line2,
+        elevation: CatchSurfaceElevation.card,
+        child: Row(
           children: [
-            CatchMonoLabel(sublabel.toUpperCase(), color: t.darkMutedInk),
-            gapH2,
-            Text(
-              label,
-              style: CatchTextStyles.sectionTitle(
-                context,
-                color: t.darkPillInk,
-              ).copyWith(fontWeight: FontWeight.w800),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(CatchRadius.md),
+              child: SizedBox.square(
+                dimension: CatchEventCardMetrics.compactVisualSize,
+                child: EventActivityBackdrop(
+                  visual: visual,
+                  dense: true,
+                  iconSize: CatchIcon.lg,
+                  patternOpacity: 0.24,
+                ),
+              ),
+            ),
+            gapW12,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CatchMonoLabel(
+                          '$timeLabel / $countdownLabel',
+                          color: t.primary,
+                        ),
+                      ),
+                      if (status != null && status.isNotEmpty) ...[
+                        gapW8,
+                        EventStatusPill(label: status, color: visual.accent),
+                      ],
+                    ],
+                  ),
+                  gapH6,
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.fieldRowTitle(context),
+                  ),
+                  gapH3,
+                  Text(
+                    subtitle!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                  ),
+                  gapH6,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CatchMonoLabel(capacityLabel, color: t.ink2),
+                      ),
+                      gapW8,
+                      Text(
+                        priceLabel,
+                        style: CatchTextStyles.labelL(context, color: t.ink),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
     );
+    return heroTag == null
+        ? card
+        : eventHeroSurface(tag: heroTag!, child: card);
   }
 }
 
-class _RoundGlyph extends StatelessWidget {
-  const _RoundGlyph({required this.icon});
+Widget _buildOutlineStamp(BuildContext context, String label) {
+  final t = CatchTokens.of(context);
+  return Transform.rotate(
+    angle: -0.08,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border.all(color: t.accent, width: 1.5),
+        color: t.primaryInk.withValues(alpha: CatchOpacity.subtleFill),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.s2,
+          vertical: CatchSpacing.s1,
+        ),
+        child: CatchMonoLabel(label.toUpperCase(), color: t.accent),
+      ),
+    ),
+  );
+}
 
-  final IconData icon;
+Widget _buildDarkTimeChip(
+  BuildContext context, {
+  required String label,
+  required String sublabel,
+}) {
+  final t = CatchTokens.of(context);
+  return CatchSurface(
+    radius: CatchRadius.md,
+    backgroundColor: t.darkScrimFill,
+    borderWidth: 0,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s3,
+        vertical: CatchSpacing.s2,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CatchMonoLabel(sublabel.toUpperCase(), color: t.darkMutedInk),
+          gapH2,
+          Text(
+            label,
+            style: CatchTextStyles.sectionTitle(
+              context,
+              color: t.darkPillInk,
+            ).copyWith(fontWeight: FontWeight.w800),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return CatchSurface(
-      width: CatchLayout.eventActivityGlyphExtent,
-      height: CatchLayout.eventActivityGlyphExtent,
-      radius: CatchRadius.pill,
-      backgroundColor: CatchTokens.editorialLight.withValues(
-        alpha: CatchOpacity.lightOverlayFill,
-      ),
-      borderColor: CatchTokens.editorialLight.withValues(
-        alpha: CatchOpacity.lightOverlayBorder,
-      ),
-      child: Icon(
-        icon,
-        color: CatchTokens.editorialLight,
-        size: CatchLayout.eventActivityGlyphIconSize,
-      ),
-    );
-  }
+Widget _buildRoundGlyph(IconData icon) {
+  return CatchSurface(
+    width: CatchLayout.eventActivityGlyphExtent,
+    height: CatchLayout.eventActivityGlyphExtent,
+    radius: CatchRadius.pill,
+    backgroundColor: CatchTokens.editorialLight.withValues(
+      alpha: CatchOpacity.lightOverlayFill,
+    ),
+    borderColor: CatchTokens.editorialLight.withValues(
+      alpha: CatchOpacity.lightOverlayBorder,
+    ),
+    child: Icon(
+      icon,
+      color: CatchTokens.editorialLight,
+      size: CatchLayout.eventActivityGlyphIconSize,
+    ),
+  );
 }
 
 TimeOfDay _parseClockTimeLabel(String label) {

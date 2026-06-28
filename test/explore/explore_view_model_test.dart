@@ -35,6 +35,8 @@ import '../test_pump_helpers.dart';
 
 CityData _city(String name) => cityOptionByName(name)!.toCityData();
 
+String get _mumbaiMarketId => _city('mumbai').effectiveMarketId;
+
 ClubMembership _membership({required String clubId, String uid = 'runner-1'}) =>
     ClubMembership(
       id: clubMembershipId(clubId: clubId, uid: uid),
@@ -394,7 +396,7 @@ void main() {
                 _membership(clubId: 'followed-club'),
               ]),
             ),
-            watchClubsByLocationProvider('mumbai').overrideWith(
+            watchClubsByLocationProvider(_mumbaiMarketId).overrideWith(
               (ref) => Stream.value([
                 memberClub,
                 followedClub,
@@ -443,7 +445,7 @@ void main() {
           overrides: [
             uidProvider.overrideWith((ref) => const Stream.empty()),
             watchClubsByLocationProvider(
-              'mumbai',
+              _mumbaiMarketId,
             ).overrideWith((ref) => Stream.value(const <Club>[])),
           ],
         );
@@ -483,7 +485,7 @@ void main() {
               _FakeExploreSearchRepository(error: StateError('search offline')),
             ),
             watchClubsByLocationProvider(
-              'mumbai',
+              _mumbaiMarketId,
             ).overrideWith((ref) => Stream.value([bandraClub, ashaClub])),
           ],
         );
@@ -526,7 +528,7 @@ void main() {
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value(null)),
             watchClubsByLocationProvider(
-              'mumbai',
+              _mumbaiMarketId,
             ).overrideWith((ref) => Stream.value([club])),
             eventDiscoveryRepositoryProvider.overrideWithValue(
               _FakeEventDiscoveryRepository([far, near]),
@@ -583,7 +585,7 @@ void main() {
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value(null)),
             watchClubsByLocationProvider(
-              'mumbai',
+              _mumbaiMarketId,
             ).overrideWith((ref) => Stream.value(const <Club>[])),
             eventDiscoveryRepositoryProvider.overrideWithValue(
               _FakeEventDiscoveryRepository([]),
@@ -657,7 +659,7 @@ void main() {
             uidProvider.overrideWith((ref) => Stream.value(user.uid)),
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             watchClubsByLocationProvider(
-              'mumbai',
+              _mumbaiMarketId,
             ).overrideWith((ref) => Stream.value([club])),
             watchActiveClubMembershipsForUserProvider(
               user.uid,
@@ -745,7 +747,7 @@ void main() {
             uidProvider.overrideWith((ref) => Stream.value(user.uid)),
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             watchClubsByLocationProvider(
-              'mumbai',
+              _mumbaiMarketId,
             ).overrideWith((ref) => Stream.value([club])),
             watchActiveClubMembershipsForUserProvider(
               user.uid,

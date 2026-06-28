@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/config_cities.schema.json",
   "title": "ConfigCitiesDocument",
-  "description": "Public city configuration stored at config/cities.",
+  "description": "Public launch-market configuration stored at config/cities. The app picks from launched markets; canonical market ids disambiguate same-name cities globally.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "config_cities",
@@ -10,13 +10,229 @@
   "x-document-id-field": "cities",
   "x-owner": "admin city configuration tooling",
   "required": [
-    "cityNames"
+    "version",
+    "cityNames",
+    "marketIds",
+    "launchMarketIds",
+    "cities",
+    "markets"
   ],
+  "definitions": {
+    "launchStatus": {
+      "type": "string",
+      "enum": ["launched", "planned", "paused", "retired"]
+    },
+    "cityPickerMarket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "cityId",
+        "marketId",
+        "slug",
+        "label",
+        "latitude",
+        "longitude",
+        "countryIsoCode",
+        "currencyCode",
+        "dialCode",
+        "timeZone",
+        "launchStatus",
+        "profileSelectable",
+        "hostCreatable",
+        "eventCreatable",
+        "exploreVisible"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "../shared/event_common.schema.json#/definitions/marketId",
+          "description": "App-facing selection id. Kept as name for existing CityData JSON, but stores the canonical market id."
+        },
+        "cityId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/cityId"
+        },
+        "marketId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/marketId"
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "latitude": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/strictLatitude"
+        },
+        "longitude": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/strictLongitude"
+        },
+        "countryIsoCode": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "currencyCode": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "dialCode": {
+          "type": "string",
+          "pattern": "^\\+\\d{1,4}$"
+        },
+        "timeZone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "launchStatus": {
+          "$ref": "#/definitions/launchStatus"
+        },
+        "profileSelectable": {"type": "boolean"},
+        "hostCreatable": {"type": "boolean"},
+        "eventCreatable": {"type": "boolean"},
+        "exploreVisible": {"type": "boolean"}
+      }
+    },
+    "canonicalMarket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "marketId",
+        "cityId",
+        "slug",
+        "label",
+        "cityLabel",
+        "regionCode",
+        "regionName",
+        "countryIsoCode",
+        "countryName",
+        "currencyCode",
+        "dialCode",
+        "timeZone",
+        "latitude",
+        "longitude",
+        "aliases",
+        "launchStatus",
+        "profileSelectable",
+        "hostCreatable",
+        "eventCreatable",
+        "exploreVisible"
+      ],
+      "properties": {
+        "marketId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/marketId"
+        },
+        "cityId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/cityId"
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "cityLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "regionCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16,
+          "pattern": "^[A-Z0-9-]+$"
+        },
+        "regionName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "countryIsoCode": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "countryName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "currencyCode": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "dialCode": {
+          "type": "string",
+          "pattern": "^\\+\\d{1,4}$"
+        },
+        "timeZone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "latitude": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/strictLatitude"
+        },
+        "longitude": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/strictLongitude"
+        },
+        "aliases": {
+          "type": "array",
+          "maxItems": 40,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-z0-9-]+$"
+          }
+        },
+        "launchStatus": {
+          "$ref": "#/definitions/launchStatus"
+        },
+        "profileSelectable": {"type": "boolean"},
+        "hostCreatable": {"type": "boolean"},
+        "eventCreatable": {"type": "boolean"},
+        "exploreVisible": {"type": "boolean"}
+      }
+    }
+  },
   "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 2
+    },
     "cityNames": {
       "type": "array",
+      "description": "Compatibility whitelist used by Firestore rules. Values are launched canonical market ids, not display city names.",
       "items": {
-        "$ref": "../shared/event_common.schema.json#/definitions/citySlug"
+        "$ref": "../shared/event_common.schema.json#/definitions/marketId"
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "x-catch-ownership": "server-only"
+    },
+    "marketIds": {
+      "type": "array",
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/marketId"
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "x-catch-ownership": "server-only"
+    },
+    "launchMarketIds": {
+      "type": "array",
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/marketId"
       },
       "minItems": 1,
       "uniqueItems": true,
@@ -24,53 +240,14 @@
     },
     "cities": {
       "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "name",
-          "label",
-          "latitude",
-          "longitude",
-          "countryIsoCode",
-          "currencyCode",
-          "dialCode",
-          "timeZone"
-        ],
-        "properties": {
-          "name": {
-            "$ref": "../shared/event_common.schema.json#/definitions/citySlug"
-          },
-          "label": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 80
-          },
-          "latitude": {
-            "$ref": "../shared/event_common.schema.json#/definitions/latitude"
-          },
-          "longitude": {
-            "$ref": "../shared/event_common.schema.json#/definitions/longitude"
-          },
-          "countryIsoCode": {
-            "type": "string",
-            "pattern": "^[A-Z]{2}$"
-          },
-          "currencyCode": {
-            "type": "string",
-            "pattern": "^[A-Z]{3}$"
-          },
-          "dialCode": {
-            "type": "string",
-            "pattern": "^\\+\\d{1,4}$"
-          },
-          "timeZone": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 80
-          }
-        }
-      },
+      "items": {"$ref": "#/definitions/cityPickerMarket"},
+      "uniqueItems": true,
+      "x-catch-ownership": "server-only"
+    },
+    "markets": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/canonicalMarket"},
+      "minItems": 1,
       "uniqueItems": true,
       "x-catch-ownership": "server-only"
     }

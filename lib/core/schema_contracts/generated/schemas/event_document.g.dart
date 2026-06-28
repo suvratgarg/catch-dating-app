@@ -28,6 +28,7 @@ const schemaEventDocumentSchema = <String, Object?>{
     'startTime',
     'endTime',
     'meetingPoint',
+    'meetingLocation',
     'startingPointLat',
     'startingPointLng',
     'locationDetails',
@@ -47,6 +48,19 @@ const schemaEventDocumentSchema = <String, Object?>{
     'genderCounts',
     'cohortCounts',
     'waitlistedCohortCounts',
+    'discoveryMarketId',
+    'discoveryCityName',
+    'discoveryActivityKind',
+    'discoveryGeoCell',
+    'discoveryHasOpenSpots',
+    'discoveryAvailability',
+    'discoveryOpenCohorts',
+    'discoveryWaitlistCohorts',
+    'discoveryInviteRequired',
+    'discoveryMembershipRequired',
+    'discoveryManualApprovalRequired',
+    'discoveryMinAge',
+    'discoveryMaxAge',
   ],
   'properties': <String, Object?>{
     'clubId': <String, Object?>{
@@ -134,18 +148,12 @@ const schemaEventDocumentSchema = <String, Object?>{
           'maxLength': 256,
         },
         'latitude': <String, Object?>{
-          'type': <Object?>[
-            'number',
-            'null',
-          ],
+          'type': 'number',
           'minimum': -90,
           'maximum': 90,
         },
         'longitude': <String, Object?>{
-          'type': <Object?>[
-            'number',
-            'null',
-          ],
+          'type': 'number',
           'minimum': -180,
           'maximum': 180,
         },
@@ -160,19 +168,13 @@ const schemaEventDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'callable-owned',
     },
     'startingPointLat': <String, Object?>{
-      'type': <Object?>[
-        'number',
-        'null',
-      ],
+      'type': 'number',
       'minimum': -90,
       'maximum': 90,
       'x-catch-ownership': 'callable-owned',
     },
     'startingPointLng': <String, Object?>{
-      'type': <Object?>[
-        'number',
-        'null',
-      ],
+      'type': 'number',
       'minimum': -180,
       'maximum': 180,
       'x-catch-ownership': 'callable-owned',
@@ -914,11 +916,15 @@ const schemaEventDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'discoveryMarketId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+      'x-catch-ownership': 'callable-owned',
+    },
     'discoveryCityName': <String, Object?>{
-      'type': <Object?>[
-        'string',
-        'null',
-      ],
+      'type': 'string',
       'minLength': 1,
       'maxLength': 80,
       'pattern': '^[a-z0-9-]+\$',

@@ -2,7 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -187,13 +187,13 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
             keyBuilder: ReviewKeys.ratingStar,
           ),
           gapH16,
-          CatchTextField(
+          CatchField(
             key: ReviewKeys.commentField,
-            label: 'Review',
+            title: 'Review',
             isOptional: true,
             controller: _commentController,
             maxLines: 3,
-            hintText: 'Share your experience',
+            placeholder: 'Share your experience',
             textCapitalization: TextCapitalization.sentences,
             // Mirror the backend review-comment maxLength so the user can't type
             // past the limit and hit a server rejection on submit.

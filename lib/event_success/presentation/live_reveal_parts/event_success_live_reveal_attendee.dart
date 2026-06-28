@@ -24,7 +24,7 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return _RevealTicker(
+    return RevealTicker(
       enabled: now == null && plan.isRevealCountdownRunning(DateTime.now()),
       builder: (context, tickNow) {
         final referenceNow = now ?? tickNow;
@@ -141,35 +141,35 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
           if (assigned != null && !optedOut) ...[
             gapH16,
             if (isCountingDown)
-              _AttendeeCountdown(
+              AttendeeCountdown(
                 plan: plan,
                 now: referenceNow,
                 kind: kind,
                 clue: _attendeeClue(assigned, activeRound),
               )
             else if (!showAssignment)
-              _WaitingRevealCue(kind: kind)
+              WaitingRevealCue(kind: kind)
             else if (kind == EventSuccessRevealAssignmentKind.rotations)
-              _VisibleRotationSlots(
+              VisibleRotationSlots(
                 slots: visibleSlots,
                 profilesByUid: profilesByUid,
                 peersLoading: peersLoading,
               )
             else if (groupSlots.isNotEmpty)
-              _VisibleGroupRotationSlots(
+              VisibleGroupRotationSlots(
                 slots: visibleGroupSlots,
                 profilesByUid: profilesByUid,
                 peersLoading: peersLoading,
               )
             else
-              _VisiblePodAssignment(
+              VisiblePodAssignment(
                 assignment: assigned,
                 peerProfiles: peerProfiles,
                 peersLoading: peersLoading,
               ),
             if (roundCount > 1) ...[
               gapH12,
-              _RevealRoundRail(
+              RevealRoundRail(
                 roundCount: roundCount,
                 activeRoundIndex: activeRound,
                 revealedThrough: revealedThrough,

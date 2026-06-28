@@ -1,7 +1,7 @@
 part of '../event_success_companion_screen.dart';
 
-class _CompatibilityQuestionnaireSection extends ConsumerStatefulWidget {
-  const _CompatibilityQuestionnaireSection({
+class CompatibilityQuestionnaireSection extends ConsumerStatefulWidget {
+  const CompatibilityQuestionnaireSection({
     required this.event,
     required this.plan,
     required this.response,
@@ -14,18 +14,18 @@ class _CompatibilityQuestionnaireSection extends ConsumerStatefulWidget {
   final Future<void> Function(List<String> answerIds)? onSaveAnswers;
 
   @override
-  ConsumerState<_CompatibilityQuestionnaireSection> createState() =>
+  ConsumerState<CompatibilityQuestionnaireSection> createState() =>
       _CompatibilityQuestionnaireSectionState();
 }
 
 class _CompatibilityQuestionnaireSectionState
-    extends ConsumerState<_CompatibilityQuestionnaireSection> {
+    extends ConsumerState<CompatibilityQuestionnaireSection> {
   late List<String> _answerIds = _initialAnswerIds;
   int _activeQuestionIndex = 0;
   bool _fixtureSavePending = false;
 
   @override
-  void didUpdateWidget(covariant _CompatibilityQuestionnaireSection oldWidget) {
+  void didUpdateWidget(covariant CompatibilityQuestionnaireSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.response?.id != widget.response?.id ||
         oldWidget.plan.questionnaireConfig != widget.plan.questionnaireConfig ||
@@ -56,7 +56,7 @@ class _CompatibilityQuestionnaireSectionState
     final hasAnswers = _answerIds.isNotEmpty;
     final dirty = !_sameAnswers(_answerIds, widget.response?.answerIds);
     final saving = mutation.isPending || _fixtureSavePending;
-    return _StagePanel(
+    return StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -69,7 +69,7 @@ class _CompatibilityQuestionnaireSectionState
                 'A few quick questions',
                 style: CatchTextStyles.sectionTitle(context),
               ),
-              const _PrivacyBadge(_PrivacyAudience.catchPrivate),
+              const PrivacyBadge(_PrivacyAudience.catchPrivate),
               CatchBadge(
                 label: rankingOn ? 'Can guide pairings' : 'Clues only',
                 tone: rankingOn
@@ -95,7 +95,7 @@ class _CompatibilityQuestionnaireSectionState
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH16,
-          _QuestionProgressRail(
+          QuestionProgressRail(
             activeIndex: _activeQuestionIndex,
             answeredCount: answeredQuestionCount,
             questionCount: questions.length,
@@ -103,7 +103,7 @@ class _CompatibilityQuestionnaireSectionState
           ),
           if ((widget.event.checkedInCount ?? 0) > 0) ...[
             gapH8,
-            _LiveOthersInRoomLine(
+            LiveOthersInRoomLine(
               checkedInCount: widget.event.checkedInCount ?? 0,
             ),
           ],
@@ -127,7 +127,7 @@ class _CompatibilityQuestionnaireSectionState
                     runSpacing: CatchSpacing.s2,
                     children: [
                       for (final option in activeQuestion.options)
-                        _StageBouncyChip(
+                        StageBouncyChip(
                           label: option.label,
                           active: _answerIds.contains(option.id),
                           onTap: () => setState(() {
@@ -158,7 +158,7 @@ class _CompatibilityQuestionnaireSectionState
             gapH10,
           ],
           gapH16,
-          _StageActionDock(
+          StageActionDock(
             child: CatchButton(
               label: widget.response == null ? 'Save clues' : 'Update clues',
               isLoading: saving,
@@ -228,8 +228,8 @@ class _CompatibilityQuestionnaireSectionState
   }
 }
 
-class _QuestionProgressRail extends StatelessWidget {
-  const _QuestionProgressRail({
+class QuestionProgressRail extends StatelessWidget {
+  const QuestionProgressRail({
     required this.activeIndex,
     required this.answeredCount,
     required this.questionCount,

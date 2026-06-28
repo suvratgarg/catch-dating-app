@@ -335,7 +335,7 @@ Options:
   --env <dev|staging|prod>       Validate one environment. Defaults to all.
   --platform <ios|android|all>   Validate one platform. Defaults to all.
   --ios-built-plist <path>       Also validate GoogleMapsApiKey in a built
-                                 Runner.app Info.plist.
+                                 iOS app Info.plist.
   --include-places-secret        Also validate GOOGLE_MAPS_PLACES_API_KEY
                                  from Secret Manager via gcloud.
   --project <project-id>         Override the Firebase project used for the

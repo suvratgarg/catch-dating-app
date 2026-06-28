@@ -77,9 +77,9 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
               );
 
               return viewModel.isEmpty
-                  ? const _MapEmptyState()
+                  ? _mapEmptyState()
                   : !viewModel.hasPinnedEvents
-                  ? const _NoPinnedEventsState()
+                  ? _noPinnedEventsState()
                   : Stack(
                       children: [
                         Positioned.fill(
@@ -165,34 +165,24 @@ LocationCoordinate? _startingPointFor(Event? event) {
   );
 }
 
-class _NoPinnedEventsState extends StatelessWidget {
-  const _NoPinnedEventsState();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CatchEmptyState(
-        icon: CatchIcons.pinOutlined,
-        title: 'No exact pins yet',
-        message:
-            'These events are visible, but none have pinned starting points.',
-      ),
-    );
-  }
+Widget _noPinnedEventsState() {
+  return Center(
+    child: CatchEmptyState(
+      icon: CatchIcons.pinOutlined,
+      title: 'No exact pins yet',
+      message:
+          'These events are visible, but none have pinned starting points.',
+    ),
+  );
 }
 
-class _MapEmptyState extends StatelessWidget {
-  const _MapEmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CatchEmptyState(
-        icon: CatchIcons.map,
-        title: 'No mapped events yet',
-        message:
-            'Join clubs, book events, or save future events to see starting points here.',
-      ),
-    );
-  }
+Widget _mapEmptyState() {
+  return Center(
+    child: CatchEmptyState(
+      icon: CatchIcons.map,
+      title: 'No mapped events yet',
+      message:
+          'Join clubs, book events, or save future events to see starting points here.',
+    ),
+  );
 }

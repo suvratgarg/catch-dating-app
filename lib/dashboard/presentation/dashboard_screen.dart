@@ -30,21 +30,30 @@ class DashboardScreen extends ConsumerWidget {
     final state = ref.watch(dashboardHomeScreenStateProvider);
 
     return switch (state.status) {
-      DashboardHomeScreenStatus.loading => const _DashboardLoadingScreen(),
-      DashboardHomeScreenStatus.error => _DashboardErrorScreen(
+      DashboardHomeScreenStatus.loading => _buildDashboardLoadingScreen(
+        context,
+      ),
+      DashboardHomeScreenStatus.error => _buildDashboardErrorScreen(
         error: state.error!.error,
         fallbackMessage: state.error!.fallbackMessage,
         onRetry: () => _retryDashboardLoad(ref, state.error!),
       ),
-      DashboardHomeScreenStatus.empty => const _DashboardEmptyHomeScreen(),
-      DashboardHomeScreenStatus.full => _DashboardHomeScreen(
+      DashboardHomeScreenStatus.empty => _buildDashboardEmptyHomeScreen(
+        context,
+      ),
+      DashboardHomeScreenStatus.full => _buildDashboardHomeScreen(
+        context,
         header: state.header,
         dashboardSliver: DashboardFullSliverBody(
           viewModel: state.viewModel!,
           user: state.user!,
           followedClubIds: state.followedClubIds,
         ),
-        notificationAction: _NotificationsAction(uid: state.notificationUid!),
+        notificationAction: _buildNotificationsAction(
+          context,
+          ref,
+          uid: state.notificationUid!,
+        ),
       ),
     };
   }
@@ -67,88 +76,71 @@ void _retryDashboardLoad(WidgetRef ref, DashboardHomeLoadError error) {
   }
 }
 
-class _DashboardEmptyHomeScreen extends StatelessWidget {
-  const _DashboardEmptyHomeScreen();
+Widget _buildDashboardEmptyHomeScreen(BuildContext context) {
+  final t = CatchTokens.of(context);
 
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
+  return Scaffold(
+    backgroundColor: t.bg,
+    body: SafeArea(
+      bottom: false,
+      child: Semantics(
+        label: 'Home',
+        child: const CustomScrollView(slivers: [DashboardEmptySliverBody()]),
+      ),
+    ),
+  );
+}
 
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: Semantics(
-          label: 'Home',
-          child: const CustomScrollView(slivers: [DashboardEmptySliverBody()]),
+Widget _buildDashboardHomeScreen(
+  BuildContext context, {
+  required DashboardHomeHeaderModel header,
+  required Widget dashboardSliver,
+  Widget? notificationAction,
+}) {
+  final t = CatchTokens.of(context);
+
+  return Scaffold(
+    backgroundColor: t.bg,
+    body: SafeArea(
+      bottom: false,
+      child: Semantics(
+        label: 'Home',
+        child: CustomScrollView(
+          slivers: [
+            ...DashboardSliverHeader(
+              eyebrow: header.eyebrow,
+              title: header.title,
+              actions: [?notificationAction],
+            ).buildSlivers(context),
+            dashboardSliver,
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _DashboardHomeScreen extends StatelessWidget {
-  const _DashboardHomeScreen({
-    required this.header,
-    required this.dashboardSliver,
-    this.notificationAction,
-  });
+Widget _buildNotificationsAction(
+  BuildContext context,
+  WidgetRef ref, {
+  required String uid,
+}) {
+  final notificationsAsync = ref.watch(watchActivityNotificationsProvider(uid));
+  final unreadCount =
+      notificationsAsync.asData?.value
+          .where((notification) => notification.isUnread)
+          .length ??
+      0;
 
-  final DashboardHomeHeaderModel header;
-  final Widget dashboardSliver;
-  final Widget? notificationAction;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: Semantics(
-          label: 'Home',
-          child: CustomScrollView(
-            slivers: [
-              ...DashboardSliverHeader(
-                eyebrow: header.eyebrow,
-                title: header.title,
-                actions: [?notificationAction],
-              ).buildSlivers(context),
-              dashboardSliver,
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  return DashboardNotificationBellButton(
+    unreadCount: unreadCount,
+    onPressed: () => context.pushNamed(Routes.notificationsScreen.name),
+  );
 }
 
-class _NotificationsAction extends ConsumerWidget {
-  const _NotificationsAction({required this.uid});
-
-  final String uid;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final notificationsAsync = ref.watch(
-      watchActivityNotificationsProvider(uid),
-    );
-    final unreadCount =
-        notificationsAsync.asData?.value
-            .where((notification) => notification.isUnread)
-            .length ??
-        0;
-
-    return _NotificationBellButton(
-      unreadCount: unreadCount,
-      onPressed: () => context.pushNamed(Routes.notificationsScreen.name),
-    );
-  }
-}
-
-class _NotificationBellButton extends StatelessWidget {
-  const _NotificationBellButton({
+class DashboardNotificationBellButton extends StatelessWidget {
+  const DashboardNotificationBellButton({
+    super.key,
     required this.unreadCount,
     required this.onPressed,
   });
@@ -179,213 +171,174 @@ class _NotificationBellButton extends StatelessWidget {
   }
 }
 
-class _DashboardLoadingScreen extends StatelessWidget {
-  const _DashboardLoadingScreen();
+Widget _buildDashboardLoadingScreen(BuildContext context) {
+  final t = CatchTokens.of(context);
 
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            const SliverToBoxAdapter(child: _DashboardLoadingHeader()),
-            SliverToBoxAdapter(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: CatchLayout.maxContentWidth,
-                  ),
-                  child: const CatchSectionStack(
-                    padding: CatchInsets.pageBodyUnderHeader,
-                    gap: CatchSpacing.micro18,
-                    children: [
-                      _DashboardFocusLoadingCard(),
-                      _DashboardStrideLoadingCard(),
-                      _DashboardQuickActionsLoadingRow(),
-                      _DashboardRecommendedLoadingSection(),
-                    ],
-                  ),
+  return Scaffold(
+    backgroundColor: t.bg,
+    body: SafeArea(
+      bottom: false,
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(child: _buildDashboardLoadingHeader()),
+          SliverToBoxAdapter(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: CatchLayout.maxContentWidth,
                 ),
+                child: CatchSectionStack(
+                  padding: CatchInsets.pageBodyUnderHeader,
+                  gap: CatchSpacing.micro18,
+                  children: [
+                    _buildDashboardFocusLoadingCard(context),
+                    _buildDashboardStrideLoadingCard(context),
+                    _buildDashboardQuickActionsLoadingRow(),
+                    _buildDashboardRecommendedLoadingSection(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildDashboardLoadingHeader() {
+  return Padding(
+    padding: CatchInsets.screenTitleBlockCompact,
+    child: Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CatchSkeleton.text(width: CatchLayout.skeletonTextEyebrowWidth),
+              gapH8,
+              CatchSkeleton.text(width: CatchLayout.skeletonTextHeroWidth),
+            ],
+          ),
+        ),
+        gapW12,
+        CatchSkeleton.box(
+          width: CatchLayout.eventInfoTileExtent,
+          height: CatchLayout.eventInfoTileExtent,
+          radius: CatchRadius.sm,
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildDashboardFocusLoadingCard(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return CatchSurface(
+    borderColor: t.line,
+    padding: CatchInsets.content,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchSkeleton.text(width: CatchLayout.skeletonTextLabelWidth),
+        gapH12,
+        CatchSkeleton.text(width: CatchLayout.skeletonTextBannerWidth),
+        gapH12,
+        CatchSkeleton.textBlock(lines: 2),
+        gapH16,
+        Row(
+          children: [
+            Expanded(
+              child: CatchSkeleton.box(
+                height: CatchLayout.controlMdMinHeight,
+                radius: CatchRadius.sm,
+              ),
+            ),
+            gapW10,
+            Expanded(
+              child: CatchSkeleton.box(
+                height: CatchLayout.controlMdMinHeight,
+                radius: CatchRadius.sm,
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
+      ],
+    ),
+  );
 }
 
-class _DashboardLoadingHeader extends StatelessWidget {
-  const _DashboardLoadingHeader();
+Widget _buildDashboardStrideLoadingCard(BuildContext context) {
+  final t = CatchTokens.of(context);
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: CatchInsets.screenTitleBlockCompact,
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CatchSkeleton.text(width: CatchLayout.skeletonTextEyebrowWidth),
-                gapH8,
-                CatchSkeleton.text(width: CatchLayout.skeletonTextHeroWidth),
-              ],
-            ),
-          ),
-          gapW12,
-          CatchSkeleton.box(
-            width: CatchLayout.eventInfoTileExtent,
-            height: CatchLayout.eventInfoTileExtent,
-            radius: CatchRadius.sm,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DashboardFocusLoadingCard extends StatelessWidget {
-  const _DashboardFocusLoadingCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextLabelWidth),
-          gapH12,
-          CatchSkeleton.text(width: CatchLayout.skeletonTextBannerWidth),
-          gapH12,
-          CatchSkeleton.textBlock(lines: 2),
-          gapH16,
-          Row(
+  return CatchSurface(
+    borderColor: t.line,
+    padding: CatchInsets.content,
+    child: Row(
+      children: [
+        CatchSkeleton.circle(size: CatchLayout.skeletonMediaTileExtent),
+        gapW14,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: CatchSkeleton.box(
-                  height: CatchLayout.controlMdMinHeight,
-                  radius: CatchRadius.sm,
-                ),
-              ),
-              gapW10,
-              Expanded(
-                child: CatchSkeleton.box(
-                  height: CatchLayout.controlMdMinHeight,
-                  radius: CatchRadius.sm,
-                ),
-              ),
+              CatchSkeleton.text(width: CatchLayout.skeletonTextWideWidth),
+              gapH8,
+              CatchSkeleton.textBlock(lines: 2),
             ],
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DashboardStrideLoadingCard extends StatelessWidget {
-  const _DashboardStrideLoadingCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Row(
-        children: [
-          CatchSkeleton.circle(size: CatchLayout.skeletonMediaTileExtent),
-          gapW14,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CatchSkeleton.text(width: CatchLayout.skeletonTextWideWidth),
-                gapH8,
-                CatchSkeleton.textBlock(lines: 2),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DashboardQuickActionsLoadingRow extends StatelessWidget {
-  const _DashboardQuickActionsLoadingRow();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 0; i < 2; i++) ...[
-          Expanded(
-            child: CatchSkeleton.box(
-              height: CatchLayout.dashboardQuickActionSkeletonHeight,
-              radius: CatchRadius.md,
-            ),
-          ),
-          if (i == 0) gapW12,
-        ],
-      ],
-    );
-  }
-}
-
-class _DashboardRecommendedLoadingSection extends StatelessWidget {
-  const _DashboardRecommendedLoadingSection();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWidth),
-        gapH12,
-        const CatchSkeletonList(
-          count: 2,
-          height: CatchLayout.dashboardRecommendedEventSkeletonHeight,
         ),
       ],
-    );
-  }
+    ),
+  );
 }
 
-class _DashboardErrorScreen extends StatelessWidget {
-  const _DashboardErrorScreen({
-    required this.error,
-    required this.fallbackMessage,
-    required this.onRetry,
-  });
+Widget _buildDashboardQuickActionsLoadingRow() {
+  return Row(
+    children: [
+      for (var i = 0; i < 2; i++) ...[
+        Expanded(
+          child: CatchSkeleton.box(
+            height: CatchLayout.dashboardQuickActionSkeletonHeight,
+            radius: CatchRadius.md,
+          ),
+        ),
+        if (i == 0) gapW12,
+      ],
+    ],
+  );
+}
 
-  final Object error;
-  final String fallbackMessage;
-  final VoidCallback onRetry;
+Widget _buildDashboardRecommendedLoadingSection() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWidth),
+      gapH12,
+      const CatchSkeletonList(
+        count: 2,
+        height: CatchLayout.dashboardRecommendedEventSkeletonHeight,
+      ),
+    ],
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    if (error is AppException) {
-      return CatchErrorScaffold.fromError(
-        error,
-        context: AppErrorContext.dashboard,
-        onRetry: onRetry,
-      );
-    }
-    return CatchErrorScaffold(
-      title: 'Dashboard unavailable',
-      message: fallbackMessage,
+Widget _buildDashboardErrorScreen({
+  required Object error,
+  required String fallbackMessage,
+  required VoidCallback onRetry,
+}) {
+  if (error is AppException) {
+    return CatchErrorScaffold.fromError(
+      error,
+      context: AppErrorContext.dashboard,
       onRetry: onRetry,
     );
   }
+  return CatchErrorScaffold(
+    title: 'Dashboard unavailable',
+    message: fallbackMessage,
+    onRetry: onRetry,
+  );
 }

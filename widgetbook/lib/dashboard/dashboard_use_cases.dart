@@ -13,11 +13,20 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
+import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_section_state_card.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommend_card.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
 import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
@@ -42,6 +51,21 @@ final _strideActions = DashboardStrideSectionActions(
   onRetry: _noopTap,
   onConnect: _noopTap,
   onInstallHealthConnect: _noopTap,
+);
+final _eventFocusActions = EventFocusActions(
+  onViewEvent: (_) => _noopTap(),
+  onCheckIn: (_) => _noopTap(),
+  onOpenSwipe: (_) => _noopTap(),
+  onWriteReview: (_) => _noopTap(),
+  onOpenDirections: (_) => _noopTap(),
+  onAddToCalendar: (_) => _noopTap(),
+  onResetCheckInError: _noopTap,
+);
+final _dashboardRecommendation = DashboardEventRecommendation(
+  event: _recommendationEvent,
+  clubName: _club.name,
+  reasonLabel: 'Matches your 10K pace',
+  score: 0.92,
 );
 
 @widgetbook.UseCase(
@@ -189,106 +213,6 @@ Widget dashboardScreenStates(BuildContext context) {
             disableAnimations: true,
             child: _DashboardRouteScope(),
           ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Review states',
-  type: QuickActions,
-  path: '[P1 product surfaces]/Dashboard primitives',
-)
-Widget dashboardQuickActionsReviewStates(BuildContext context) {
-  return _DashboardCatalog(
-    title: 'QuickActions',
-    contractId: 'dashboard.primitives.quick_actions',
-    children: [
-      _StateCard(
-        label: 'normal primary actions',
-        child: _DashboardPrimitiveFrame(
-          child: QuickActions(
-            actions: dashboardQuickActions(
-              onCalendarPressed: _noopTap,
-              onSavedEventsPressed: _noopTap,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'one disabled action',
-        child: _DashboardPrimitiveFrame(
-          child: QuickActions(
-            actions: [
-              DashboardQuickAction(
-                icon: CatchIcons.calendarMonthOutlined,
-                label: 'Calendar',
-              ),
-              DashboardQuickAction(
-                icon: CatchIcons.bookmarkBorderRounded,
-                label: 'Saved events',
-                onPressed: _noopTap,
-              ),
-            ],
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'two-column action set',
-        child: _DashboardPrimitiveFrame(
-          maxWidth: 300,
-          child: QuickActions(
-            actions: [
-              DashboardQuickAction(
-                icon: CatchIcons.calendarMonthOutlined,
-                label: 'Calendar',
-                onPressed: _noopTap,
-              ),
-              DashboardQuickAction(
-                icon: CatchIcons.bookmarkBorderRounded,
-                label: 'Saved events',
-                onPressed: _noopTap,
-              ),
-              DashboardQuickAction(
-                icon: CatchIcons.mapOutlined,
-                label: 'Map view',
-                onPressed: _noopTap,
-              ),
-              DashboardQuickAction(
-                icon: CatchIcons.eventAvailableOutlined,
-                label: 'Event guide',
-                onPressed: _noopTap,
-              ),
-            ],
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'long copy truncation',
-        child: _DashboardPrimitiveFrame(
-          maxWidth: 300,
-          child: QuickActions(
-            actions: [
-              DashboardQuickAction(
-                icon: CatchIcons.calendarTodayOutlined,
-                label: 'Add every upcoming RSVP to calendar',
-                onPressed: _noopTap,
-              ),
-              DashboardQuickAction(
-                icon: CatchIcons.bookmarkBorderRounded,
-                label: 'Review saved events with longer venue names',
-                onPressed: _noopTap,
-              ),
-            ],
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'empty action list',
-        child: const _DashboardPrimitiveFrame(
-          maxWidth: 300,
-          child: QuickActions(actions: []),
         ),
       ),
     ],
@@ -538,6 +462,434 @@ Widget dashboardRecommendCardReviewStates(BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(
+  name: 'Signed-out state',
+  type: ActivitySignedOutState,
+  path: '[P1 product surfaces]/Dashboard activity',
+)
+Widget dashboardActivitySignedOutStateReview(BuildContext context) {
+  return const _DashboardCatalog(
+    title: 'ActivitySignedOutState',
+    contractId: 'dashboard.activity.signed_out',
+    children: [
+      _StateCard(
+        label: 'signed out',
+        child: _DashboardPrimitiveFrame(child: ActivitySignedOutState()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Grouped rows',
+  type: NotificationDayGroups,
+  path: '[P1 product surfaces]/Dashboard activity',
+)
+Widget dashboardNotificationDayGroupsReview(BuildContext context) {
+  return _DashboardCatalog(
+    title: 'NotificationDayGroups',
+    contractId: 'dashboard.activity.day_groups',
+    children: [
+      _StateCard(
+        label: 'today and earlier',
+        child: _DashboardPrimitiveFrame(
+          child: NotificationDayGroups(groups: _notificationDayGroups()),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Skeleton states',
+  type: ActivitySectionSkeleton,
+  path: '[P1 product surfaces]/Dashboard activity',
+)
+Widget dashboardActivitySectionSkeletonReview(BuildContext context) {
+  return const _DashboardCatalog(
+    title: 'ActivitySectionSkeleton',
+    contractId: 'dashboard.activity.skeleton',
+    children: [
+      _StateCard(
+        label: 'compact loading',
+        child: _DashboardPrimitiveFrame(
+          child: ActivitySectionSkeleton(count: 2),
+        ),
+      ),
+      _StateCard(
+        label: 'full loading',
+        child: _DashboardPrimitiveFrame(child: ActivitySectionSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Empty home sliver',
+  type: DashboardEmptySliverBody,
+  path: '[P1 product surfaces]/Dashboard home',
+)
+Widget dashboardEmptySliverBodyReview(BuildContext context) {
+  return const _DashboardCatalog(
+    title: 'DashboardEmptySliverBody',
+    contractId: 'dashboard.home.empty_sliver',
+    children: [
+      _StateCard(
+        label: 'first event education',
+        child: _DeviceFrame(
+          child: CustomScrollView(slivers: [DashboardEmptySliverBody()]),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Full home',
+  type: DashboardFull,
+  path: '[P1 product surfaces]/Dashboard home',
+)
+Widget dashboardFullReview(BuildContext context) {
+  return _DashboardCatalog(
+    title: 'DashboardFull',
+    contractId: 'dashboard.home.full',
+    children: [
+      _StateCard(
+        label: 'booked event with recommendations',
+        child: _DeviceFrame(
+          child: _DashboardRouteScope(
+            child: DashboardFull(
+              user: _viewer,
+              signedUpEvents: [_nextEvent],
+              followedClubIds: const [],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Full sliver body',
+  type: DashboardFullSliverBody,
+  path: '[P1 product surfaces]/Dashboard home',
+)
+Widget dashboardFullSliverBodyReview(BuildContext context) {
+  return _DashboardCatalog(
+    title: 'DashboardFullSliverBody',
+    contractId: 'dashboard.home.full_sliver_body',
+    children: [
+      _StateCard(
+        label: 'body content',
+        child: _DeviceFrame(
+          child: _DashboardRouteScope(
+            child: CustomScrollView(
+              slivers: [
+                DashboardFullSliverBody(
+                  viewModel: _dashboardFullViewModel(),
+                  user: _viewer,
+                  followedClubIds: const [],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Bell states',
+  type: DashboardNotificationBellButton,
+  path: '[P1 product surfaces]/Dashboard primitives',
+)
+Widget dashboardNotificationBellButtonReviewStates(BuildContext context) {
+  return _DashboardCatalog(
+    title: 'DashboardNotificationBellButton',
+    contractId: 'dashboard.primitives.notification_bell',
+    children: [
+      _StateCard(
+        label: 'no unread',
+        child: _DashboardPrimitiveFrame(
+          child: DashboardNotificationBellButton(
+            unreadCount: 0,
+            onPressed: _noopTap,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'unread count',
+        child: _DashboardPrimitiveFrame(
+          child: DashboardNotificationBellButton(
+            unreadCount: 3,
+            onPressed: _noopTap,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'overflow badge',
+        child: _DashboardPrimitiveFrame(
+          child: DashboardNotificationBellButton(
+            unreadCount: 124,
+            onPressed: _noopTap,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Review states',
+  type: DashboardSectionStateCard,
+  path: '[P1 product surfaces]/Dashboard primitives',
+)
+Widget dashboardSectionStateCardReviewStates(BuildContext context) {
+  return const _DashboardCatalog(
+    title: 'DashboardSectionStateCard',
+    contractId: 'dashboard.primitives.section_state_card',
+    children: [
+      _StateCard(
+        label: 'loading',
+        child: _DashboardPrimitiveFrame(
+          child: DashboardSectionStateCard(
+            message: 'Loading recommended events...',
+            isLoading: true,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'message',
+        child: _DashboardPrimitiveFrame(
+          child: DashboardSectionStateCard(
+            message: 'This section is temporarily unavailable.',
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Hero states',
+  type: EmptyHeroCard,
+  path: '[P1 product surfaces]/Dashboard home',
+)
+Widget dashboardEmptyHeroCardReviewStates(BuildContext context) {
+  return const _DashboardCatalog(
+    title: 'EmptyHeroCard',
+    contractId: 'dashboard.home.empty_hero',
+    children: [
+      _StateCard(
+        label: 'card',
+        child: _DashboardPrimitiveFrame(child: EmptyHeroCard()),
+      ),
+      _StateCard(
+        label: 'full bleed',
+        child: _DashboardPrimitiveFrame(child: EmptyHeroCard(fullBleed: true)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Rail states',
+  type: EventFocusRail,
+  path: '[P1 product surfaces]/Dashboard home',
+)
+Widget dashboardEventFocusRailReviewStates(BuildContext context) {
+  return _DashboardCatalog(
+    title: 'EventFocusRail',
+    contractId: 'dashboard.home.event_focus_rail',
+    children: [
+      _StateCard(
+        label: 'upcoming event',
+        child: _DashboardPrimitiveFrame(
+          child: EventFocusRail(
+            upcomingEvents: [_nextEvent],
+            actions: _eventFocusActions,
+            clubNameBuilder: (_) => _club.name,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'check-in pending',
+        child: _DashboardPrimitiveFrame(
+          child: EventFocusRail(
+            upcomingEvents: [_nextEvent],
+            arrivalAction: EventArrivalAction(
+              kind: EventArrivalActionKind.selfCheckIn,
+              event: _nextEvent,
+            ),
+            checkInState: const EventFocusCheckInState(isPending: true),
+            actions: _eventFocusActions,
+            clubNameBuilder: (_) => _club.name,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Tile states',
+  type: DashboardQuickActionTile,
+  path: '[P1 product surfaces]/Dashboard primitives',
+)
+Widget dashboardQuickActionTileReviewStates(BuildContext context) {
+  return _DashboardCatalog(
+    title: 'DashboardQuickActionTile',
+    contractId: 'dashboard.primitives.quick_action_tile',
+    children: [
+      _StateCard(
+        label: 'enabled',
+        child: _DashboardPrimitiveFrame(
+          maxWidth: 180,
+          child: DashboardQuickActionTile(
+            action: DashboardQuickAction(
+              icon: CatchIcons.calendarMonthOutlined,
+              label: 'Calendar',
+              onPressed: _noopTap,
+            ),
+            onTap: _noopTap,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: _DashboardPrimitiveFrame(
+          maxWidth: 180,
+          child: DashboardQuickActionTile(
+            action: DashboardQuickAction(
+              icon: CatchIcons.bookmarkBorderRounded,
+              label: 'Saved events',
+            ),
+            onTap: null,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Recommendation rail',
+  type: Recommendations,
+  path: '[P1 product surfaces]/Dashboard home',
+)
+Widget dashboardRecommendationsReview(BuildContext context) {
+  return _DashboardCatalog(
+    title: 'Recommendations',
+    contractId: 'dashboard.home.recommendations',
+    children: [
+      _StateCard(
+        label: 'ranked events',
+        child: _DashboardPrimitiveFrame(
+          child: Recommendations(
+            recommendations: [
+              _dashboardRecommendation,
+              DashboardEventRecommendation(
+                event: _recommendationVariant(
+                  id: 'widgetbook-recommend-rail-paid',
+                  startsIn: const Duration(days: 2),
+                  priceInPaise: 15000,
+                ),
+                clubName: _club.name,
+                reasonLabel: 'Popular with your clubs',
+                score: 0.84,
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Card states',
+  type: StrideCard,
+  path: '[P1 product surfaces]/Dashboard primitives',
+)
+Widget dashboardStrideCardReviewStates(BuildContext context) {
+  return _DashboardCatalog(
+    title: 'StrideCard',
+    contractId: 'dashboard.primitives.stride_card',
+    children: [
+      _StateCard(
+        label: 'connected',
+        child: _DashboardPrimitiveFrame(
+          child: StrideCard(
+            snapshot: DashboardSurfaceFixtures.connectedWeeklyActivity,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'permission CTA',
+        child: _DashboardPrimitiveFrame(
+          child: StrideCard(
+            snapshot: DashboardSurfaceFixtures.permissionWeeklyActivity,
+            onConnect: _noopTap,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Bar states',
+  type: StrideBarColumn,
+  path: '[P1 product surfaces]/Dashboard primitives',
+)
+Widget dashboardStrideBarColumnReviewStates(BuildContext context) {
+  return const _DashboardCatalog(
+    title: 'StrideBarColumn',
+    contractId: 'dashboard.primitives.stride_bar_column',
+    children: [
+      _StateCard(
+        label: 'weekly columns',
+        child: _DashboardPrimitiveFrame(
+          maxWidth: 280,
+          child: SizedBox(
+            height: 120,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: StrideBarColumn(
+                    fraction: 0.2,
+                    dayLabel: 'M',
+                    isToday: false,
+                  ),
+                ),
+                gapW6,
+                Expanded(
+                  child: StrideBarColumn(
+                    fraction: 0.72,
+                    dayLabel: 'T',
+                    isToday: true,
+                  ),
+                ),
+                gapW6,
+                Expanded(
+                  child: StrideBarColumn(
+                    fraction: 0,
+                    dayLabel: 'W',
+                    isToday: false,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 class _DashboardRouteScope extends StatelessWidget {
   const _DashboardRouteScope({
     this.profileStream,
@@ -588,6 +940,7 @@ class _DashboardRouteScope extends StatelessWidget {
     final focusClubQuery = ClubNameLookupQuery(
       effectiveSignedUpEvents.map((event) => event.clubId),
     );
+    final clubsByIdQuery = ClubsByIdQuery([_club.id]);
 
     return ProviderScope(
       overrides: [
@@ -627,6 +980,9 @@ class _DashboardRouteScope extends StatelessWidget {
         clubNameLookupProvider(
           focusClubQuery,
         ).overrideWith((ref) async => clubNames),
+        watchClubsByIdsProvider(
+          clubsByIdQuery,
+        ).overrideWith((ref) => Stream<List<Club>>.value([_club])),
         watchClubProvider(
           _club.id,
         ).overrideWith((ref) => Stream<Club?>.value(_club)),
@@ -769,6 +1125,68 @@ class _MediaOverride extends StatelessWidget {
       child: child,
     );
   }
+}
+
+List<NotificationDayGroup> _notificationDayGroups() {
+  return [
+    NotificationDayGroup(
+      label: 'Today',
+      rows: [
+        NotificationRowDisplay(
+          type: ActivityNotificationType.eventReminder,
+          title: 'Event starts tomorrow',
+          subtitle: 'Sea Face Social meets at Carter Road Jetty.',
+          createdAt: DashboardSurfaceFixtures.now,
+          timeLabel: '2h',
+          isUnread: true,
+        ),
+        NotificationRowDisplay(
+          type: ActivityNotificationType.match,
+          title: "It's a catch",
+          subtitle: 'You and Riya matched after Sunday socials.',
+          createdAt: DashboardSurfaceFixtures.now.subtract(
+            const Duration(hours: 6),
+          ),
+          timeLabel: '6h',
+          isUnread: false,
+        ),
+      ],
+    ),
+    NotificationDayGroup(
+      label: 'Earlier',
+      rows: [
+        NotificationRowDisplay(
+          type: ActivityNotificationType.clubUpdate,
+          title: 'New club update',
+          subtitle: 'Sea Face Social added a monsoon breakfast run.',
+          createdAt: DashboardSurfaceFixtures.now.subtract(
+            const Duration(days: 1),
+          ),
+          timeLabel: '1d',
+          isUnread: false,
+        ),
+      ],
+    ),
+  ];
+}
+
+DashboardFullViewModel _dashboardFullViewModel() {
+  return DashboardFullViewModel(
+    upcomingEvents: [_nextEvent],
+    nextEvent: _nextEvent,
+    arrivalAction: null,
+    activeSwipeEvent: null,
+    pendingReviewEvent: null,
+    attendedEventsSection: DashboardSectionModel.data([
+      DashboardSurfaceFixtures.attendedEvent,
+    ]),
+    weeklyActivitySection: DashboardSectionModel.data(
+      DashboardSurfaceFixtures.connectedWeeklyActivity,
+    ),
+    recommendationsSection: DashboardSectionModel.data([
+      _dashboardRecommendation,
+    ]),
+  );
 }
 
 Stream<T> _loadingStream<T>() => DashboardSurfaceFixtures.loadingStream<T>();

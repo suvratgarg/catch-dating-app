@@ -135,12 +135,13 @@ class EventDetailHeroAppBar extends StatelessWidget {
       flexibleSpace: FlexibleSpaceBar(
         collapseMode: CollapseMode.pin,
         background: isTicketPresentation
-            ? _EventDetailTicketHeroSurface(
+            ? _eventDetailTicketHeroSurface(
+                context,
                 event: event,
                 presentationMode: presentationMode,
                 heroTag: heroTag,
               )
-            : _LegacyEventHeroSurface(event: event),
+            : _legacyEventHeroSurface(context, event: event),
       ),
     );
   }
@@ -168,313 +169,276 @@ double _expandedHeightFor({
       .toDouble();
 }
 
-class _LegacyEventHeroSurface extends StatelessWidget {
-  const _LegacyEventHeroSurface({required this.event});
-
-  final Event event;
-
-  @override
-  Widget build(BuildContext context) {
-    const d = CatchTokens.dark;
-    final visual = eventActivityVisual(event.activityKind, context: context);
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        EventPhotoHeader(event: event),
-        Positioned(
-          left: CatchSpacing.s5,
-          right: CatchSpacing.s5,
-          bottom: CatchLayout.eventDetailHeroTitleBottomInset,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: _HeroActivityBadge(visual: visual),
+Widget _legacyEventHeroSurface(BuildContext context, {required Event event}) {
+  const d = CatchTokens.dark;
+  final visual = eventActivityVisual(event.activityKind, context: context);
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      EventPhotoHeader(event: event),
+      Positioned(
+        left: CatchSpacing.s5,
+        right: CatchSpacing.s5,
+        bottom: CatchLayout.eventDetailHeroTitleBottomInset,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: _heroActivityBadge(context, visual: visual),
+            ),
+            const SizedBox(height: CatchSpacing.s3),
+            Text(
+              event.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.eventDisplay(
+                context,
+                size: CatchLayout.eventDetailHeroStandardTitleSize,
+                height: CatchLayout.eventDetailTicketTitleLineHeight,
+                weight: FontWeight.w700,
+                color: d.ink,
               ),
-              const SizedBox(height: CatchSpacing.s3),
-              Text(
-                event.title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.eventDisplay(
-                  context,
-                  size: CatchLayout.eventDetailHeroStandardTitleSize,
-                  height: CatchLayout.eventDetailTicketTitleLineHeight,
-                  weight: FontWeight.w700,
-                  color: d.ink,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
 }
 
-class _EventDetailTicketHeroSurface extends StatelessWidget {
-  const _EventDetailTicketHeroSurface({
-    required this.event,
-    required this.presentationMode,
-    this.heroTag,
-  });
-
-  final Event event;
-  final EventDetailPresentationMode presentationMode;
-  final Object? heroTag;
-
-  @override
-  Widget build(BuildContext context) {
-    final surface = _EventDetailTicketSurface(
-      event: event,
-      presentationMode: presentationMode,
-    );
-    if (heroTag == null) return surface;
-    return eventHeroSurface(tag: heroTag!, child: surface);
-  }
+Widget _eventDetailTicketHeroSurface(
+  BuildContext context, {
+  required Event event,
+  required EventDetailPresentationMode presentationMode,
+  Object? heroTag,
+}) {
+  final surface = _eventDetailTicketSurface(
+    context,
+    event: event,
+    presentationMode: presentationMode,
+  );
+  if (heroTag == null) return surface;
+  return eventHeroSurface(tag: heroTag, child: surface);
 }
 
-class _EventDetailTicketSurface extends StatelessWidget {
-  const _EventDetailTicketSurface({
-    required this.event,
-    required this.presentationMode,
-  });
+Widget _eventDetailTicketSurface(
+  BuildContext context, {
+  required Event event,
+  required EventDetailPresentationMode presentationMode,
+}) {
+  const d = CatchTokens.dark;
+  final t = CatchTokens.of(context);
+  final visual = eventActivityVisual(event.activityKind, context: context);
+  final isSpotlight =
+      presentationMode == EventDetailPresentationMode.spotlightDark;
+  final bodyColor = isSpotlight ? t.ink : t.surface;
+  final titleColor = isSpotlight ? t.primaryInk : t.ink;
+  final metaColor = isSpotlight
+      ? t.primaryInk.withValues(alpha: CatchOpacity.eventHeroMutedInk)
+      : t.ink2;
+  final lineColor = isSpotlight ? d.line : t.line2;
 
-  final Event event;
-  final EventDetailPresentationMode presentationMode;
-
-  @override
-  Widget build(BuildContext context) {
-    const d = CatchTokens.dark;
-    final t = CatchTokens.of(context);
-    final visual = eventActivityVisual(event.activityKind, context: context);
-    final isSpotlight =
-        presentationMode == EventDetailPresentationMode.spotlightDark;
-    final bodyColor = isSpotlight ? t.ink : t.surface;
-    final titleColor = isSpotlight ? t.primaryInk : t.ink;
-    final metaColor = isSpotlight
-        ? t.primaryInk.withValues(alpha: CatchOpacity.eventHeroMutedInk)
-        : t.ink2;
-    final lineColor = isSpotlight ? d.line : t.line2;
-
-    return ColoredBox(
-      color: bodyColor,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final isCompactFlight =
-              constraints.maxHeight <
-              CatchLayout.eventDetailTicketCompactHeightThreshold;
-          final visualHeight =
-              (constraints.maxHeight *
-                      (isCompactFlight
-                          ? CatchLayout.eventDetailTicketVisualCompactRatio
-                          : CatchLayout.eventDetailTicketVisualExpandedRatio))
-                  .clamp(
-                    CatchLayout.eventDetailTicketVisualMinHeight,
-                    CatchLayout.eventDetailTicketVisualMaxHeight,
-                  )
-                  .toDouble();
-          final bodyPadding = isCompactFlight
-              ? const EdgeInsets.fromLTRB(
-                  CatchSpacing.s4,
-                  CatchSpacing.s2,
-                  CatchSpacing.s4,
-                  CatchSpacing.s3,
+  return ColoredBox(
+    color: bodyColor,
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompactFlight =
+            constraints.maxHeight <
+            CatchLayout.eventDetailTicketCompactHeightThreshold;
+        final visualHeight =
+            (constraints.maxHeight *
+                    (isCompactFlight
+                        ? CatchLayout.eventDetailTicketVisualCompactRatio
+                        : CatchLayout.eventDetailTicketVisualExpandedRatio))
+                .clamp(
+                  CatchLayout.eventDetailTicketVisualMinHeight,
+                  CatchLayout.eventDetailTicketVisualMaxHeight,
                 )
-              : const EdgeInsets.fromLTRB(
-                  CatchSpacing.s5,
-                  CatchSpacing.s4,
-                  CatchSpacing.s5,
-                  CatchSpacing.s5,
-                );
-          final bodyWidth = constraints.maxWidth > bodyPadding.horizontal
-              ? constraints.maxWidth - bodyPadding.horizontal
-              : 0.0;
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: visualHeight,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    CatchEventThumbnail(
-                      photoUrl: event.photoUrl,
-                      pace: event.pace,
-                      activityKind: event.activityKind,
-                      scrim: CatchEventThumbnailScrim.none,
-                      iconAlignment: Alignment.centerRight,
-                      fallbackIconSize: CatchLayout.eventHeroBackdropIconSize,
-                      fallbackIconOpacity: 0.15,
-                      fallbackPatternOpacity: 0.24,
-                    ),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            CatchTokens.editorialDark.withValues(
-                              alpha: CatchOpacity.eventHeroGradientMidScrim,
-                            ),
-                            CatchTokens.editorialDark.withValues(
-                              alpha: isSpotlight
-                                  ? CatchOpacity.eventHeroSpotlightBottomScrim
-                                  : CatchOpacity.eventHeroGradientBottomScrim,
-                            ),
-                          ],
-                          stops: const [0, 0.52, 1],
-                        ),
+                .toDouble();
+        final bodyPadding = isCompactFlight
+            ? const EdgeInsets.fromLTRB(
+                CatchSpacing.s4,
+                CatchSpacing.s2,
+                CatchSpacing.s4,
+                CatchSpacing.s3,
+              )
+            : const EdgeInsets.fromLTRB(
+                CatchSpacing.s5,
+                CatchSpacing.s4,
+                CatchSpacing.s5,
+                CatchSpacing.s5,
+              );
+        final bodyWidth = constraints.maxWidth > bodyPadding.horizontal
+            ? constraints.maxWidth - bodyPadding.horizontal
+            : 0.0;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: visualHeight,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  CatchEventThumbnail(
+                    photoUrl: event.photoUrl,
+                    pace: event.pace,
+                    activityKind: event.activityKind,
+                    scrim: CatchEventThumbnailScrim.none,
+                    iconAlignment: Alignment.centerRight,
+                    fallbackIconSize: CatchLayout.eventHeroBackdropIconSize,
+                    fallbackIconOpacity: 0.15,
+                    fallbackPatternOpacity: 0.24,
+                  ),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          CatchTokens.editorialDark.withValues(
+                            alpha: CatchOpacity.eventHeroGradientMidScrim,
+                          ),
+                          CatchTokens.editorialDark.withValues(
+                            alpha: isSpotlight
+                                ? CatchOpacity.eventHeroSpotlightBottomScrim
+                                : CatchOpacity.eventHeroGradientBottomScrim,
+                          ),
+                        ],
+                        stops: const [0, 0.52, 1],
                       ),
                     ),
-                    Positioned(
-                      left: CatchSpacing.s5,
-                      right: CatchSpacing.s5,
-                      bottom: CatchSpacing.s5,
-                      child: isCompactFlight
-                          ? const SizedBox.shrink()
-                          : Row(
-                              children: [
-                                _HeroActivityBadge(visual: visual),
-                                const Spacer(),
-                                _HeroTimeChip(event: event),
-                              ],
-                            ),
-                    ),
-                  ],
-                ),
+                  ),
+                  Positioned(
+                    left: CatchSpacing.s5,
+                    right: CatchSpacing.s5,
+                    bottom: CatchSpacing.s5,
+                    child: isCompactFlight
+                        ? const SizedBox.shrink()
+                        : Row(
+                            children: [
+                              _heroActivityBadge(context, visual: visual),
+                              const Spacer(),
+                              _heroTimeChip(context, event: event),
+                            ],
+                          ),
+                  ),
+                ],
               ),
-              EventTicketPerforatedDivider(lineColor: lineColor),
-              Expanded(
-                child: Padding(
-                  padding: bodyPadding,
-                  child: FittedBox(
-                    alignment: Alignment.centerLeft,
-                    fit: BoxFit.scaleDown,
-                    child: SizedBox(
-                      width: bodyWidth,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
+            ),
+            EventTicketPerforatedDivider(lineColor: lineColor),
+            Expanded(
+              child: Padding(
+                padding: bodyPadding,
+                child: FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.scaleDown,
+                  child: SizedBox(
+                    width: bodyWidth,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          event.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: CatchTextStyles.eventDisplay(
+                            context,
+                            size: isCompactFlight
+                                ? CatchLayout.eventDetailTicketTitleCompactSize
+                                : CatchLayout
+                                      .eventDetailTicketTitleExpandedSize,
+                            height:
+                                CatchLayout.eventDetailTicketTitleLineHeight,
+                            weight: FontWeight.w700,
+                            color: titleColor,
+                          ),
+                        ),
+                        if (!isCompactFlight) ...[
+                          const SizedBox(
+                            height: CatchLayout.detailScreenInlineRowGap,
+                          ),
                           Text(
-                            event.title,
+                            _heroSubtitle(event),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: CatchTextStyles.eventDisplay(
+                            style: CatchTextStyles.supporting(
                               context,
-                              size: isCompactFlight
-                                  ? CatchLayout
-                                        .eventDetailTicketTitleCompactSize
-                                  : CatchLayout
-                                        .eventDetailTicketTitleExpandedSize,
-                              height:
-                                  CatchLayout.eventDetailTicketTitleLineHeight,
-                              weight: FontWeight.w700,
-                              color: titleColor,
-                            ),
+                              color: metaColor,
+                            ).copyWith(fontWeight: FontWeight.w600),
                           ),
-                          if (!isCompactFlight) ...[
-                            const SizedBox(
-                              height: CatchLayout.detailScreenInlineRowGap,
-                            ),
-                            Text(
-                              _heroSubtitle(event),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: CatchTextStyles.supporting(
-                                context,
-                                color: metaColor,
-                              ).copyWith(fontWeight: FontWeight.w600),
-                            ),
-                          ],
                         ],
-                      ),
+                      ],
                     ),
                   ),
                 ),
               ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _HeroActivityBadge extends StatelessWidget {
-  const _HeroActivityBadge({required this.visual});
-
-  final EventActivityVisualSpec visual;
-
-  @override
-  Widget build(BuildContext context) {
-    const d = CatchTokens.dark;
-    // Design-system EventHero activity tag: frosted pill carrying the activity
-    // glyph + label (the only chroma is the glyph; chrome stays neutral).
-    return CatchSurface(
-      padding: CatchInsets.compactLabelContent,
-      radius: CatchRadius.pill,
-      backgroundColor: d.ink.withValues(alpha: CatchOpacity.lightOverlayFill),
-      borderColor: d.ink.withValues(alpha: CatchOpacity.lightOverlayBorder),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            visual.icon,
-            color: d.ink,
-            size: CatchLayout.activityChipIconSize,
-          ),
-          const SizedBox(width: CatchSpacing.micro6),
-          Text(
-            visual.label.toUpperCase(),
-            style: CatchTextStyles.monoLabel(context, color: d.ink),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _HeroTimeChip extends StatelessWidget {
-  const _HeroTimeChip({required this.event});
-
-  final Event event;
-
-  @override
-  Widget build(BuildContext context) {
-    const d = CatchTokens.dark;
-    return CatchSurface(
-      padding: CatchInsets.compactControlContent,
-      radius: CatchRadius.md,
-      backgroundColor: d.ink.withValues(alpha: CatchOpacity.subtleFill),
-      borderWidth: 0,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            EventFormatters.shortWeekday(event.startTime).toUpperCase(),
-            style: CatchTextStyles.monoLabel(
-              context,
-              color: d.ink.withValues(alpha: CatchOpacity.eventHeroMutedInk),
             ),
+          ],
+        );
+      },
+    ),
+  );
+}
+
+Widget _heroActivityBadge(
+  BuildContext context, {
+  required EventActivityVisualSpec visual,
+}) {
+  const d = CatchTokens.dark;
+  // Design-system EventHero activity tag: frosted pill carrying the activity
+  // glyph + label (the only chroma is the glyph; chrome stays neutral).
+  return CatchSurface(
+    padding: CatchInsets.compactLabelContent,
+    radius: CatchRadius.pill,
+    backgroundColor: d.ink.withValues(alpha: CatchOpacity.lightOverlayFill),
+    borderColor: d.ink.withValues(alpha: CatchOpacity.lightOverlayBorder),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(visual.icon, color: d.ink, size: CatchLayout.activityChipIconSize),
+        const SizedBox(width: CatchSpacing.micro6),
+        Text(
+          visual.label.toUpperCase(),
+          style: CatchTextStyles.monoLabel(context, color: d.ink),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _heroTimeChip(BuildContext context, {required Event event}) {
+  const d = CatchTokens.dark;
+  return CatchSurface(
+    padding: CatchInsets.compactControlContent,
+    radius: CatchRadius.md,
+    backgroundColor: d.ink.withValues(alpha: CatchOpacity.subtleFill),
+    borderWidth: 0,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          EventFormatters.shortWeekday(event.startTime).toUpperCase(),
+          style: CatchTextStyles.monoLabel(
+            context,
+            color: d.ink.withValues(alpha: CatchOpacity.eventHeroMutedInk),
           ),
-          gapH2,
-          Text(
-            EventFormatters.time(event.startTime),
-            style: CatchTextStyles.sectionTitle(
-              context,
-              color: d.ink,
-            ).copyWith(fontWeight: FontWeight.w800),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+        gapH2,
+        Text(
+          EventFormatters.time(event.startTime),
+          style: CatchTextStyles.sectionTitle(
+            context,
+            color: d.ink,
+          ).copyWith(fontWeight: FontWeight.w800),
+        ),
+      ],
+    ),
+  );
 }
 
 String _heroSubtitle(Event event) {

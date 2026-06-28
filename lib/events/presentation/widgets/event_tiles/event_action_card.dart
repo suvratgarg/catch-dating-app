@@ -93,7 +93,7 @@ class EventActionCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _EventActionCardHeader(badges: badges, indexLabel: indexLabel),
+                _eventActionCardHeader(badges: badges, indexLabel: indexLabel),
                 if (headerAccessory != null) ...[gapH10, headerAccessory!],
                 gapH12,
                 Text(
@@ -120,7 +120,7 @@ class EventActionCard extends StatelessWidget {
                 ],
                 if (actions.isNotEmpty) ...[
                   gapH16,
-                  _EventActionCardActions(actions: actions),
+                  _eventActionCardActions(actions: actions),
                 ],
               ],
             ),
@@ -167,71 +167,54 @@ class EventActionCardAction {
   final Color? accentColor;
 }
 
-class _EventActionCardHeader extends StatelessWidget {
-  const _EventActionCardHeader({
-    required this.badges,
-    required this.indexLabel,
-  });
-
-  final List<EventActionCardBadge> badges;
-  final String? indexLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    final effectiveIndex = indexLabel?.trim();
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s1,
-            children: [
-              for (final badge in badges)
-                CatchBadge(
-                  label: badge.label,
-                  tone: badge.tone,
-                  icon: badge.icon,
-                ),
-            ],
-          ),
+Widget _eventActionCardHeader({
+  required List<EventActionCardBadge> badges,
+  required String? indexLabel,
+}) {
+  final effectiveIndex = indexLabel?.trim();
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Expanded(
+        child: Wrap(
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s1,
+          children: [
+            for (final badge in badges)
+              CatchBadge(
+                label: badge.label,
+                tone: badge.tone,
+                icon: badge.icon,
+              ),
+          ],
         ),
-        if (effectiveIndex != null && effectiveIndex.isNotEmpty) ...[
-          gapW8,
-          CatchBadge(label: effectiveIndex),
-        ],
+      ),
+      if (effectiveIndex != null && effectiveIndex.isNotEmpty) ...[
+        gapW8,
+        CatchBadge(label: effectiveIndex),
       ],
-    );
-  }
+    ],
+  );
 }
 
-class _EventActionCardActions extends StatelessWidget {
-  const _EventActionCardActions({required this.actions});
-
-  final List<EventActionCardAction> actions;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (var index = 0; index < actions.length; index += 1) ...[
-          if (index > 0) gapH10,
-          CatchButton(
-            key: actions[index].key,
-            label: actions[index].label,
-            icon: Icon(actions[index].icon, size: CatchIcon.md),
-            variant: actions[index].variant,
-            accentColor: actions[index].accentColor,
-            fullWidth: true,
-            isLoading: actions[index].isLoading,
-            semanticsLabel: actions[index].semanticsLabel,
-            onPressed: actions[index].isLoading
-                ? null
-                : actions[index].onPressed,
-          ),
-        ],
+Widget _eventActionCardActions({required List<EventActionCardAction> actions}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      for (var index = 0; index < actions.length; index += 1) ...[
+        if (index > 0) gapH10,
+        CatchButton(
+          key: actions[index].key,
+          label: actions[index].label,
+          icon: Icon(actions[index].icon, size: CatchIcon.md),
+          variant: actions[index].variant,
+          accentColor: actions[index].accentColor,
+          fullWidth: true,
+          isLoading: actions[index].isLoading,
+          semanticsLabel: actions[index].semanticsLabel,
+          onPressed: actions[index].isLoading ? null : actions[index].onPressed,
+        ),
       ],
-    );
-  }
+    ],
+  );
 }

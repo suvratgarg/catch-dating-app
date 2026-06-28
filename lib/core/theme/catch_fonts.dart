@@ -1,11 +1,12 @@
 import 'package:catch_dating_app/core/theme/generated/catch_design_tokens.g.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Central font registry — the single swap point for the three-role type system.
 ///
-/// Voice/head: Archivo — titles, names, heroes, event/club poster moments, and
-/// editorial reading text. Function/body: the platform system font. Data: IBM
-/// Plex Mono for kickers, labels, time, price, counts, and codes.
+/// Voice/head: Archivo — brand voice, heroes, and deliberate event/club poster
+/// moments. Function/body: the platform system font. Data: IBM Plex Mono for
+/// kickers, labels, time, price, counts, and codes.
 ///
 /// The old serif/custom-sans direction is intentionally retired. Keep
 /// production text styles routed through this file so screens inherit the
@@ -15,14 +16,49 @@ abstract final class CatchFonts {
 
   static const String voiceFamily = GeneratedCatchFontFamilyTokens.voice;
   static const String headFamily = GeneratedCatchFontFamilyTokens.head;
-  static const String functionFamily = GeneratedCatchFontFamilyTokens.function;
+  static const String functionDesignTokenFamily =
+      GeneratedCatchFontFamilyTokens.function;
   static const String dataFamily = GeneratedCatchFontFamilyTokens.data;
   static const String monoFamily = GeneratedCatchFontFamilyTokens.mono;
+
+  /// Flutter's concrete platform font families for the function/body role.
+  ///
+  /// The DTCG token remains `system-ui` because it is platform-neutral design
+  /// language. Runtime Flutter styles need concrete family names so native
+  /// builds, Widgetbook, lints, and the design context pack are auditable.
+  static const Set<String> platformFunctionFamilies = <String>{
+    'Roboto',
+    'CupertinoSystemText',
+    'CupertinoSystemDisplay',
+    '.AppleSystemUIFont',
+    'Segoe UI',
+  };
+
+  static String get functionFamily =>
+      functionFamilyForPlatform(defaultTargetPlatform);
 
   /// Backward-compatible names while feature code moves from serif/sans
   /// language to voice/function/data language.
   static const String serifFamily = voiceFamily;
-  static const String sansFamily = functionFamily;
+  static String get sansFamily => functionFamily;
+
+  @visibleForTesting
+  static String functionFamilyForPlatform(
+    TargetPlatform platform, {
+    double? fontSize,
+  }) {
+    return switch (platform) {
+      TargetPlatform.iOS =>
+        (fontSize != null && fontSize >= 20)
+            ? 'CupertinoSystemDisplay'
+            : 'CupertinoSystemText',
+      TargetPlatform.macOS => '.AppleSystemUIFont',
+      TargetPlatform.windows => 'Segoe UI',
+      TargetPlatform.android ||
+      TargetPlatform.fuchsia ||
+      TargetPlatform.linux => 'Roboto',
+    };
+  }
 
   static const double _archivoWidthMin = 62;
   static const double _archivoWidthMax = 125;
@@ -77,7 +113,8 @@ abstract final class CatchFonts {
     letterSpacing: letterSpacing,
   );
 
-  /// Compatibility alias for older call sites.
+  /// Deprecated compatibility alias for older call sites. New typography roles
+  /// should call [voice] or [head] when they genuinely need Archivo.
   static TextStyle serif({
     required double fontSize,
     required double height,
@@ -93,8 +130,9 @@ abstract final class CatchFonts {
     letterSpacing: letterSpacing,
   );
 
-  /// Platform system font (function). No [fontFamily] is set on purpose: this
-  /// lets iOS render SF and Android render Roboto with native Dynamic Type.
+  /// Platform system font (function). Resolves to Flutter's concrete platform
+  /// family names: SF via CupertinoSystem* on iOS, Roboto on Android/Fuchsia/
+  /// Linux, .AppleSystemUIFont on macOS, and Segoe UI on Windows.
   static TextStyle sans({
     required double fontSize,
     required double height,
@@ -104,6 +142,10 @@ abstract final class CatchFonts {
     double letterSpacing = 0,
   }) {
     return TextStyle(
+      fontFamily: functionFamilyForPlatform(
+        defaultTargetPlatform,
+        fontSize: fontSize,
+      ),
       fontSize: fontSize,
       fontWeight: fontWeight,
       fontStyle: fontStyle,

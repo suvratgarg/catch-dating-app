@@ -342,7 +342,9 @@ function callableRequest(
 function clubDoc(overrides: FakeData = {}): FakeData {
   return {
     name: "AFTER FLY",
-    location: "indore",
+    location: "in-mp-indore",
+    locationCityId: "in-mp-indore",
+    locationMarketId: "in-mp-indore",
     cityName: "Indore",
     ...overrides,
   };
@@ -387,6 +389,7 @@ function eventDoc(overrides: FakeData = {}): FakeData {
     },
     waitlistedCohortCounts: {},
     discoveryCityName: "indore",
+    discoveryMarketId: "in-mp-indore",
     discoveryActivityKind: "socialRun",
     discoveryAvailability: "open",
     adminSearch: {
@@ -412,6 +415,7 @@ test("adminListEventDetailsHandler returns canonical event rows", async () => {
       clubId: "bandra-runners",
       meetingPoint: "Bandra Bandstand",
       discoveryCityName: "mumbai",
+      discoveryMarketId: "in-mh-mumbai",
       adminSearch: {
         tokens: ["bandra", "running", "mumbai"],
         sortKey: "bandra",
@@ -421,14 +425,16 @@ test("adminListEventDetailsHandler returns canonical event rows", async () => {
     }),
     "clubs/bandra-runners": clubDoc({
       name: "Bandra Runners",
-      location: "mumbai",
+      location: "in-mh-mumbai",
+      locationCityId: "in-mh-mumbai",
+      locationMarketId: "in-mh-mumbai",
       cityName: "Mumbai",
     }),
   });
 
   const result = await adminListEventDetailsHandler(
     callableRequest("admin-1", {
-      citySlug: "indore",
+      citySlug: "in-mp-indore",
       query: "afterfly",
       limit: 10,
     }, {support: true}),
@@ -438,7 +444,7 @@ test("adminListEventDetailsHandler returns canonical event rows", async () => {
   assert.equal(result.rows.length, 1);
   assert.equal(result.rows[0].eventId, "afterfly-social-run-1");
   assert.equal(result.rows[0].organizerName, "AFTER FLY");
-  assert.equal(result.rows[0].citySlug, "indore");
+  assert.equal(result.rows[0].citySlug, "in-mp-indore");
   assert.equal(result.rows[0].searchIndexStatus, "indexed");
   assert.equal(result.generatedAt, "2026-06-25T08:30:00.000Z");
 });
@@ -453,6 +459,7 @@ test(
         clubId: "bandra-runners",
         meetingPoint: "Bandra Bandstand",
         discoveryCityName: "mumbai",
+        discoveryMarketId: "in-mh-mumbai",
         adminSearch: {
           tokens: ["bandra", "running", "mumbai"],
           sortKey: "bandra",
@@ -464,6 +471,7 @@ test(
         clubId: "delhi-runners",
         meetingPoint: "Lodhi Garden",
         discoveryCityName: "delhi",
+        discoveryMarketId: "in-dl-delhi-ncr",
         adminSearch: {
           tokens: ["delhi", "running"],
           sortKey: "delhi",
@@ -473,14 +481,16 @@ test(
       }),
       "clubs/bandra-runners": clubDoc({
         name: "Bandra Runners",
-        location: "mumbai",
+        location: "in-mh-mumbai",
+        locationCityId: "in-mh-mumbai",
+        locationMarketId: "in-mh-mumbai",
         cityName: "Mumbai",
       }),
     });
 
     const result = await adminListEventDetailsHandler(
       callableRequest("admin-1", {
-        citySlugs: [" indore ", "mumbai", "indore"],
+        citySlugs: [" in-mp-indore ", "in-mh-mumbai", "in-mp-indore"],
         limit: 10,
       }, {support: true}),
       h.deps
@@ -499,6 +509,7 @@ test("adminListEventDetailsHandler applies upcoming time windows", async () => {
     "events/afterfly-old-run-1": eventDoc({
       startTime: new Date("2020-01-01T01:30:00.000Z"),
       discoveryCityName: "indore",
+      discoveryMarketId: "in-mp-indore",
       adminSearch: {
         tokens: ["afterfly", "old", "indore"],
         sortKey: "old",
@@ -509,6 +520,7 @@ test("adminListEventDetailsHandler applies upcoming time windows", async () => {
     "events/afterfly-future-run-1": eventDoc({
       startTime: new Date("2099-01-01T01:30:00.000Z"),
       discoveryCityName: "indore",
+      discoveryMarketId: "in-mp-indore",
       adminSearch: {
         tokens: ["afterfly", "future", "indore"],
         sortKey: "future",
@@ -520,6 +532,7 @@ test("adminListEventDetailsHandler applies upcoming time windows", async () => {
       clubId: "bandra-runners",
       startTime: new Date("2099-01-02T01:30:00.000Z"),
       discoveryCityName: "mumbai",
+      discoveryMarketId: "in-mh-mumbai",
       adminSearch: {
         tokens: ["bandra", "future", "mumbai"],
         sortKey: "bandra",
@@ -530,6 +543,7 @@ test("adminListEventDetailsHandler applies upcoming time windows", async () => {
     "events/delhi-future-run-1": eventDoc({
       startTime: new Date("2099-01-03T01:30:00.000Z"),
       discoveryCityName: "delhi",
+      discoveryMarketId: "in-dl-delhi-ncr",
       adminSearch: {
         tokens: ["delhi", "future"],
         sortKey: "delhi",
@@ -541,7 +555,7 @@ test("adminListEventDetailsHandler applies upcoming time windows", async () => {
 
   const result = await adminListEventDetailsHandler(
     callableRequest("admin-1", {
-      citySlugs: ["indore", "mumbai"],
+      citySlugs: ["in-mp-indore", "in-mh-mumbai"],
       status: "active",
       timeWindow: "upcoming",
     }, {support: true}),
@@ -571,7 +585,7 @@ test("adminGetEventDetailsHandler returns editable event details", async () => {
   assert.equal(result.event.organizerName, "AFTER FLY");
   assert.equal(result.event.description, "Source-backed social run.");
   assert.equal(result.event.eventFormat.activityKind, "socialRun");
-  assert.equal(result.event.discovery.citySlug, "indore");
+  assert.equal(result.event.discovery.citySlug, "in-mp-indore");
 });
 
 test("adminUpdateEventDetailsHandler saves audited safe fields", async () => {

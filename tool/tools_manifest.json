@@ -423,6 +423,16 @@
       "checks": ["node --check tool/data/backfill_algolia_explore_search.mjs"]
     },
     {
+      "id": "data:backfill-location-markets",
+      "category": "data",
+      "path": "tool/data/backfill_location_market_fields.mjs",
+      "command": "node tool/data/backfill_location_market_fields.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Audits and optionally backfills location, city, region, and market projection fields for clubs, users, public profiles, and config cities.",
+      "checks": ["node --check tool/data/backfill_location_market_fields.mjs"]
+    },
+    {
       "id": "data:hygiene-media-paths",
       "category": "data",
       "path": "tool/data/hygiene_media_paths.mjs",
@@ -1646,6 +1656,42 @@
       ]
     },
     {
+      "id": "design:widget-classification-generate",
+      "category": "design",
+      "path": "tool/design/generate_widget_classification.mjs",
+      "command": "node tool/design/generate_widget_classification.mjs",
+      "safety": "local-writes-audit-json",
+      "status": "active",
+      "description": "Generates the exhaustive widget role, ownership, catalog, and consolidation classification registry from Dart source, component contracts, and Widgetbook.",
+      "checks": ["node --check tool/design/generate_widget_classification.mjs"]
+    },
+    {
+      "id": "design:widget-classification-check",
+      "category": "design",
+      "path": "tool/design/check_widget_classification.mjs",
+      "command": "node tool/design/check_widget_classification.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates the generated widget classification registry and blocks private-helper remediation paths.",
+      "checks": [
+        "node --check tool/design/check_widget_classification.mjs",
+        "node tool/design/check_widget_classification.mjs"
+      ]
+    },
+    {
+      "id": "design:widget-variant-inventory",
+      "category": "design",
+      "path": "tool/design/generate_widget_variant_inventory.mjs",
+      "command": "node tool/design/generate_widget_variant_inventory.mjs",
+      "safety": "local-writes-audit-json",
+      "status": "active",
+      "description": "Generates and validates the Widgetbook variant inventory used to prune oversized state matrices.",
+      "checks": [
+        "node --check tool/design/generate_widget_variant_inventory.mjs",
+        "node tool/design/generate_widget_variant_inventory.mjs --check"
+      ]
+    },
+    {
       "id": "design:parity-matrix",
       "category": "design",
       "path": "tool/design/check_design_parity_matrix.mjs",
@@ -1698,6 +1744,36 @@
       ]
     },
     {
+      "id": "design:widgetbook-coverage",
+      "category": "design",
+      "path": "tool/design/check_widgetbook_coverage.mjs",
+      "command": "node tool/design/check_widgetbook_coverage.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Scans production Flutter widget classes against generated Widgetbook component listings and the widget decision ledger.",
+      "checks": ["node --check tool/design/check_widgetbook_coverage.mjs"]
+    },
+    {
+      "id": "design:widgetbook-compare-build",
+      "category": "design",
+      "path": "tool/design/build_widgetbook_compare.mjs",
+      "command": "node tool/design/build_widgetbook_compare.mjs",
+      "safety": "local-writes-docs",
+      "status": "active",
+      "description": "Builds the static Widgetbook comparison review page from Claude Design exports, component contracts, and generated Widgetbook directories.",
+      "checks": ["node --check tool/design/build_widgetbook_compare.mjs"]
+    },
+    {
+      "id": "design:widgetbook-compare-server",
+      "category": "design",
+      "path": "tool/design/widgetbook_compare_server.mjs",
+      "command": "node tool/design/widgetbook_compare_server.mjs",
+      "safety": "local-server",
+      "status": "active",
+      "description": "Serves the interactive Widgetbook comparison and decision logging UI for consolidation review.",
+      "checks": ["node --check tool/design/widgetbook_compare_server.mjs"]
+    },
+    {
       "id": "design:screen-contract-hygiene",
       "category": "design",
       "path": "tool/design/check_screen_contract_hygiene.mjs",
@@ -1730,7 +1806,7 @@
       "command": "node tool/design/check_design_parity.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Runs the standard local design parity gate across component contracts, routes, captures, screen contracts, Widgetbook refs, and advisory hygiene scanners.",
+      "description": "Runs the standard local design parity gate across component contracts, widget classification, routes, captures, screen contracts, Widgetbook refs, and advisory hygiene scanners.",
       "checks": [
         "node --check tool/design/check_design_parity.mjs",
         "node tool/design/check_design_parity.mjs --check"
