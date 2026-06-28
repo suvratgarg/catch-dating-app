@@ -1,5 +1,6 @@
 import {useMemo, useState} from "react";
 import {
+  ArrowLeft,
   CalendarDays,
   CheckCircle2,
   Clock3,
@@ -34,6 +35,7 @@ import {
   CheckboxField,
   DataTable,
   EmptyState,
+  PageHeader,
   Panel,
   SearchField,
   SegmentedControl,
@@ -64,6 +66,9 @@ import {
   type EventPublishingFormState,
   type EventValidationIssue,
 } from "../controllers/eventPublishingHelpers";
+import {isLaunchMarketId} from "../../../shared/config/launchMarkets";
+
+type EventPublishingController = ReturnType<typeof useEventPublishingController>;
 
 type EventImportReadinessFilter =
   | "needsAction"
@@ -106,7 +111,7 @@ export function EventPublishingScreen({
   const fullCount = controller.rows.filter(eventIsFull).length;
   const searchIssueCount = controller.rows.filter(eventNeedsSearchBackfill).length;
   const launchCityCount = controller.rows.filter((row) =>
-    row.citySlug === "indore" || row.citySlug === "mumbai"
+    isLaunchMarketId(row.citySlug)
   ).length;
   const externalReviewCount =
     controller.externalRows.filter(externalEventNeedsReview).length;
@@ -118,8 +123,61 @@ export function EventPublishingScreen({
     controller.supplyReadiness?.importPlan.summary.proposedCreates ??
     0;
 
+  if (controller.view === "detail") {
+    return <EventDetailView controller={controller} />;
+  }
+
+  if (controller.view === "external") {
+    return <ExternalEventSupplyView controller={controller} />;
+  }
+
   return (
-    <div className="workbench-stack">
+    <EventDirectoryView
+      activeCount={activeCount}
+      controller={controller}
+      externalReviewCount={externalReviewCount}
+      fullCount={fullCount}
+      importBlockedCount={importBlockedCount}
+      launchCityCount={launchCityCount}
+      readOnlyImportCount={readOnlyImportCount}
+      searchIssueCount={searchIssueCount}
+    />
+  );
+}
+
+function EventDirectoryView({
+  activeCount,
+  controller,
+  externalReviewCount,
+  fullCount,
+  importBlockedCount,
+  launchCityCount,
+  readOnlyImportCount,
+  searchIssueCount,
+}: {
+  activeCount: number;
+  controller: EventPublishingController;
+  externalReviewCount: number;
+  fullCount: number;
+  importBlockedCount: number;
+  launchCityCount: number;
+  readOnlyImportCount: number;
+  searchIssueCount: number;
+}) {
+  return (
+    <div className="workbench-stack admin-directory-screen">
+      <PageHeader
+        actions={
+          <AdminButton
+            icon={<ExternalLink size={15} strokeWidth={1.9} />}
+            onClick={controller.openExternalSupply}
+          >
+            External supply
+          </AdminButton>
+        }
+        eyebrow="Events"
+        title="Canonical Event Directory"
+      />
       <section className="metric-grid" aria-label="Event publishing state">
         <Metric label="Canonical events" value={controller.rows.length} />
         <Metric label="External supply" value={controller.externalRows.length} />
@@ -148,165 +206,38 @@ export function EventPublishingScreen({
         />
       </section>
 
-      <Panel
-        className="span-2"
-        icon={<CalendarDays size={18} strokeWidth={1.9} />}
-        title="Canonical event directory"
-        action={controller.isListLoading ? "Loading" : `${controller.filteredRows.length} shown`}
-      >
-        <div className="workbench-toolbar">
-          <SegmentedControl<EventPublishingFilter>
-            ariaLabel="Event filters"
-            options={[
-              {id: "launchCities", label: "Indore + Mumbai"},
-              {id: "upcoming", label: "Upcoming"},
-              {id: "all", label: "All"},
-              {id: "active", label: "Active"},
-              {id: "cancelled", label: "Cancelled"},
-              {id: "full", label: "Full"},
-              {id: "searchIssues", label: "Search issues"},
-            ]}
-            value={controller.filter}
-            onChange={controller.setFilter}
-          />
-          <SearchField
-            ariaLabel="Search canonical events"
-            icon={<Search size={16} strokeWidth={1.8} />}
-            onChange={controller.setQuery}
-            placeholder="Search event, organizer, id, city, venue"
-            value={controller.query}
-          />
-          <AdminButton
-            disabled={controller.isListLoading || controller.isExternalListLoading}
-            icon={<RefreshCw size={15} strokeWidth={1.9} />}
-            onClick={() => {
-              void controller.refreshList();
-              void controller.refreshExternalList();
-              void controller.refreshSupplyReadiness();
-            }}
-          >
-            Refresh
-          </AdminButton>
-        </div>
-        <EventDirectoryTable
-          rows={controller.filteredRows}
-          selectedEventId={controller.event?.eventId ?? controller.eventId}
-          onSelect={controller.selectEvent}
-        />
-      </Panel>
-
-      <Panel
-        className="span-2"
-        icon={<ExternalLink size={18} strokeWidth={1.9} />}
-        title="Read-only external event supply"
-        action={
-          controller.isExternalListLoading ?
-            "Loading" :
-          `${controller.filteredExternalRows.length} shown`
-        }
-      >
-        <div className="workbench-toolbar">
-          <SegmentedControl<ExternalEventSupplyFilter>
-            ariaLabel="External event supply filters"
-            options={[
-              {id: "reviewOpen", label: "Review open"},
-              {id: "launchCities", label: "Indore + Mumbai"},
-              {id: "upcoming", label: "Upcoming"},
-              {id: "public", label: "Public"},
-              {id: "active", label: "Active"},
-              {id: "cancelled", label: "Cancelled"},
-              {id: "all", label: "All"},
-            ]}
-            value={controller.externalFilter}
-            onChange={controller.setExternalFilter}
-          />
-          <SearchField
-            ariaLabel="Search external event supply"
-            icon={<Search size={16} strokeWidth={1.8} />}
-            onChange={controller.setExternalQuery}
-            placeholder="Search source, organizer, candidate, venue"
-            value={controller.externalQuery}
-          />
-        </div>
-        <div className="event-supply-review-grid">
-          <ExternalEventSupplyTable
-            onSelect={controller.selectExternalEvent}
-            rows={controller.filteredExternalRows}
-            selectedEventId={controller.selectedExternalEventId}
-          />
-          <div className="event-supply-detail-stack">
-            <ExternalEventSupplyDetail event={controller.selectedExternalEvent} />
-            <ExternalEventImportReviewPanel
-              review={controller.selectedExternalImportReview}
-            />
-          </div>
-        </div>
-      </Panel>
-
-      <EventSupplyReadinessPanel
-        executionPlan={controller.supplyReadiness?.executionPlan ?? null}
-        generatedAt={controller.supplyReadiness?.generatedAt ?? null}
-        importPlan={controller.supplyReadiness?.importPlan ?? null}
-        isLoading={controller.isSupplyReadinessLoading}
-        onPublishExternalEvent={controller.publishExternalEvent}
-        publishingExternalActionId={controller.publishingExternalActionId}
-        source={controller.supplyReadiness?.source ?? null}
+      <EventDirectoryPanel controller={controller} />
+      <EventExternalSupplySummaryPanel
+        controller={controller}
+        externalReviewCount={externalReviewCount}
+        importBlockedCount={importBlockedCount}
+        readOnlyImportCount={readOnlyImportCount}
       />
+    </div>
+  );
+}
 
-      <Panel
-        icon={<Database size={18} strokeWidth={1.9} />}
-        title="Event contract"
-        action="events"
-      >
-        <div className="quality-list">
-          <StateRow label="Source of truth" value="Cloud Firestore events/{id}" />
-          <StateRow
-            label="Search/list"
-            value="adminListEventDetails + startTime window + adminSearch.tokens"
-          />
-          <StateRow
-            label="Canonical snapshot"
-            value={formatDateTime(controller.listGeneratedAt)}
-          />
-          <StateRow
-            label="External snapshot"
-            value={formatDateTime(controller.externalListGeneratedAt)}
-          />
-          <StateRow
-            label="Default"
-            value="Upcoming active events in Indore and Mumbai"
-          />
-          <StateRow
-            label="External default"
-            value="Open review queue for Indore and Mumbai supply"
-          />
-          <StateRow
-            label="Safe writes"
-            value="description, photoUrl, format, distance, pace"
-          />
-          <StateRow
-            label="Read-only here"
-            value="schedule, capacity, price, status, cancellation"
-          />
-          <StateRow
-            label="App title"
-            value="Flutter derives title from time + eventFormat"
-          />
-          <StateRow
-            label="Intake handoff"
-            value="Approved external candidates target externalEvents/{id}, not events/{id}"
-          />
-          <StateRow
-            label="External events"
-            value="Read-only, outbound-only, no Catch booking/payments/waitlist"
-          />
-          <StateRow
-            label="External publish"
-            value="One preflight-ready row at a time through adminPublishExternalEvent"
-          />
-        </div>
-      </Panel>
-
+function EventDetailView({
+  controller,
+}: {
+  controller: EventPublishingController;
+}) {
+  const title = controller.event?.title || controller.eventId || "Event";
+  return (
+    <div className="workbench-stack admin-detail-screen">
+      <PageHeader
+        actions={
+          <AdminButton
+            icon={<ArrowLeft size={15} strokeWidth={1.9} />}
+            onClick={controller.backToList}
+          >
+            Directory
+          </AdminButton>
+        }
+        eyebrow="Event detail"
+        title={title}
+      />
+      <EventDetailSummary controller={controller} />
       <EventEditor
         diffRows={controller.diffRows}
         event={controller.event}
@@ -320,7 +251,295 @@ export function EventPublishingScreen({
         onLoad={() => void controller.selectEvent(controller.eventId)}
         onSave={() => void controller.save()}
       />
+      <EventContractPanel
+        externalListGeneratedAt={controller.externalListGeneratedAt}
+        listGeneratedAt={controller.listGeneratedAt}
+      />
     </div>
+  );
+}
+
+function ExternalEventSupplyView({
+  controller,
+}: {
+  controller: EventPublishingController;
+}) {
+  return (
+    <div className="workbench-stack admin-detail-screen">
+      <PageHeader
+        actions={
+          <AdminButton
+            icon={<ArrowLeft size={15} strokeWidth={1.9} />}
+            onClick={controller.backToList}
+          >
+            Event directory
+          </AdminButton>
+        }
+        eyebrow="Events"
+        title="External Event Supply"
+      />
+      <ExternalEventSupplyPanel controller={controller} />
+      <EventSupplyReadinessPanel
+        executionPlan={controller.supplyReadiness?.executionPlan ?? null}
+        generatedAt={controller.supplyReadiness?.generatedAt ?? null}
+        importPlan={controller.supplyReadiness?.importPlan ?? null}
+        isLoading={controller.isSupplyReadinessLoading}
+        onPublishExternalEvent={controller.publishExternalEvent}
+        publishingExternalActionId={controller.publishingExternalActionId}
+        source={controller.supplyReadiness?.source ?? null}
+      />
+    </div>
+  );
+}
+
+function EventDirectoryPanel({
+  controller,
+}: {
+  controller: EventPublishingController;
+}) {
+  return (
+    <Panel
+      className="span-2"
+      icon={<CalendarDays size={18} strokeWidth={1.9} />}
+      title="Canonical event directory"
+      action={
+        controller.isListLoading ?
+          "Loading" :
+          `${controller.filteredRows.length} shown`
+      }
+    >
+      <div className="workbench-toolbar">
+        <SegmentedControl<EventPublishingFilter>
+          ariaLabel="Event filters"
+          options={[
+            {id: "launchCities", label: "Indore + Mumbai"},
+            {id: "upcoming", label: "Upcoming"},
+            {id: "all", label: "All"},
+            {id: "active", label: "Active"},
+            {id: "cancelled", label: "Cancelled"},
+            {id: "full", label: "Full"},
+            {id: "searchIssues", label: "Search issues"},
+          ]}
+          value={controller.filter}
+          onChange={controller.setFilter}
+        />
+        <SearchField
+          ariaLabel="Search canonical events"
+          icon={<Search size={16} strokeWidth={1.8} />}
+          onChange={controller.setQuery}
+          placeholder="Search event, organizer, id, city, venue"
+          value={controller.query}
+        />
+        <AdminButton
+          disabled={controller.isListLoading || controller.isExternalListLoading}
+          icon={<RefreshCw size={15} strokeWidth={1.9} />}
+          onClick={() => {
+            void controller.refreshList();
+            void controller.refreshExternalList();
+            void controller.refreshSupplyReadiness();
+          }}
+        >
+          Refresh
+        </AdminButton>
+      </div>
+      <EventDirectoryTable
+        rows={controller.filteredRows}
+        selectedEventId={controller.event?.eventId ?? controller.eventId}
+        onSelect={controller.selectEvent}
+      />
+    </Panel>
+  );
+}
+
+function EventExternalSupplySummaryPanel({
+  controller,
+  externalReviewCount,
+  importBlockedCount,
+  readOnlyImportCount,
+}: {
+  controller: EventPublishingController;
+  externalReviewCount: number;
+  importBlockedCount: number;
+  readOnlyImportCount: number;
+}) {
+  return (
+    <Panel
+      icon={<ExternalLink size={18} strokeWidth={1.9} />}
+      title="External supply"
+      action={`${controller.filteredExternalRows.length} shown`}
+    >
+      <div className="admin-status-grid compact">
+        <StateRow label="Total" value={String(controller.externalRows.length)} />
+        <StateRow label="Review open" value={String(externalReviewCount)} />
+        <StateRow label="Read-only drafts" value={String(readOnlyImportCount)} />
+        <StateRow label="Import blockers" value={String(importBlockedCount)} />
+        <StateRow
+          label="Snapshot"
+          value={formatDateTime(controller.externalListGeneratedAt)}
+        />
+      </div>
+      <div className="admin-panel-actions">
+        <AdminButton
+          icon={<ExternalLink size={15} strokeWidth={1.9} />}
+          onClick={controller.openExternalSupply}
+        >
+          Review supply
+        </AdminButton>
+      </div>
+    </Panel>
+  );
+}
+
+function EventDetailSummary({
+  controller,
+}: {
+  controller: EventPublishingController;
+}) {
+  const event = controller.event;
+  return (
+    <Panel
+      className="span-2"
+      icon={<CalendarDays size={18} strokeWidth={1.9} />}
+      title="Event status"
+      action={event?.status ?? "Not loaded"}
+    >
+      <div className="admin-status-grid">
+        <StateRow label="Document" value={event?.eventId ?? controller.eventId} />
+        <StateRow label="Organizer" value={event?.organizerName} />
+        <StateRow label="City" value={event?.discovery.citySlug} />
+        <StateRow label="Venue" value={event?.meetingPoint} />
+        <StateRow label="Starts" value={formatDateTime(event?.startTime)} />
+        <StateRow
+          label="Capacity"
+          value={event ? `${event.bookedCount}/${event.capacityLimit}` : null}
+        />
+        <StateRow label="Search" value={event?.searchIndexStatus} />
+        <StateRow
+          label="Changes"
+          value={`${controller.diffRows.length} pending`}
+        />
+      </div>
+    </Panel>
+  );
+}
+
+function ExternalEventSupplyPanel({
+  controller,
+}: {
+  controller: EventPublishingController;
+}) {
+  return (
+    <Panel
+      className="span-2"
+      icon={<ExternalLink size={18} strokeWidth={1.9} />}
+      title="Read-only external event supply"
+      action={
+        controller.isExternalListLoading ?
+          "Loading" :
+          `${controller.filteredExternalRows.length} shown`
+      }
+    >
+      <div className="workbench-toolbar">
+        <SegmentedControl<ExternalEventSupplyFilter>
+          ariaLabel="External event supply filters"
+          options={[
+            {id: "reviewOpen", label: "Review open"},
+            {id: "launchCities", label: "Indore + Mumbai"},
+            {id: "upcoming", label: "Upcoming"},
+            {id: "public", label: "Public"},
+            {id: "active", label: "Active"},
+            {id: "cancelled", label: "Cancelled"},
+            {id: "all", label: "All"},
+          ]}
+          value={controller.externalFilter}
+          onChange={controller.setExternalFilter}
+        />
+        <SearchField
+          ariaLabel="Search external event supply"
+          icon={<Search size={16} strokeWidth={1.8} />}
+          onChange={controller.setExternalQuery}
+          placeholder="Search source, organizer, candidate, venue"
+          value={controller.externalQuery}
+        />
+      </div>
+      <div className="event-supply-review-grid">
+        <ExternalEventSupplyTable
+          onSelect={controller.selectExternalEvent}
+          rows={controller.filteredExternalRows}
+          selectedEventId={controller.selectedExternalEventId}
+        />
+        <div className="event-supply-detail-stack">
+          <ExternalEventSupplyDetail event={controller.selectedExternalEvent} />
+          <ExternalEventImportReviewPanel
+            review={controller.selectedExternalImportReview}
+          />
+        </div>
+      </div>
+    </Panel>
+  );
+}
+
+function EventContractPanel({
+  externalListGeneratedAt,
+  listGeneratedAt,
+}: {
+  externalListGeneratedAt: string | null;
+  listGeneratedAt: string | null;
+}) {
+  return (
+    <Panel
+      icon={<Database size={18} strokeWidth={1.9} />}
+      title="Event contract"
+      action="events"
+    >
+      <div className="quality-list">
+        <StateRow label="Source of truth" value="Cloud Firestore events/{id}" />
+        <StateRow
+          label="Search/list"
+          value="adminListEventDetails + startTime window + adminSearch.tokens"
+        />
+        <StateRow
+          label="Canonical snapshot"
+          value={formatDateTime(listGeneratedAt)}
+        />
+        <StateRow
+          label="External snapshot"
+          value={formatDateTime(externalListGeneratedAt)}
+        />
+        <StateRow
+          label="Default"
+          value="Upcoming active events in Indore and Mumbai"
+        />
+        <StateRow
+          label="External default"
+          value="Open review queue for Indore and Mumbai supply"
+        />
+        <StateRow
+          label="Safe writes"
+          value="description, photoUrl, format, distance, pace"
+        />
+        <StateRow
+          label="Read-only here"
+          value="schedule, capacity, price, status, cancellation"
+        />
+        <StateRow
+          label="App title"
+          value="Flutter derives title from time + eventFormat"
+        />
+        <StateRow
+          label="Intake handoff"
+          value="Approved external candidates target externalEvents/{id}, not events/{id}"
+        />
+        <StateRow
+          label="External events"
+          value="Read-only, outbound-only, no Catch booking/payments/waitlist"
+        />
+        <StateRow
+          label="External publish"
+          value="One preflight-ready row at a time through adminPublishExternalEvent"
+        />
+      </div>
+    </Panel>
   );
 }
 

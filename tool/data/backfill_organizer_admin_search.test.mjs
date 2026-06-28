@@ -12,12 +12,14 @@ test("buildOrganizerAdminSearchRepairPlan detects missing and stale search",
       clubs: {
         "club-1": {
           name: "AFTER FLY",
-          location: "indore",
+          location: "in-mp-indore",
+          locationMarketId: "in-mp-indore",
           publicPage: {citySlug: "indore"},
         },
         "club-2": {
           name: "Bandra Social Run",
-          location: "mumbai",
+          location: "in-mh-mumbai",
+          locationMarketId: "in-mh-mumbai",
           publicPage: {citySlug: "mumbai"},
           adminSearch: {
             tokens: [
@@ -36,7 +38,8 @@ test("buildOrganizerAdminSearchRepairPlan detects missing and stale search",
         },
         "club-3": {
           name: "Stale Club",
-          location: "mumbai",
+          location: "in-mh-mumbai",
+          locationMarketId: "in-mh-mumbai",
           adminSearch: {
             tokens: ["stale"],
             sortKey: "stale",
@@ -52,11 +55,12 @@ test("buildOrganizerAdminSearchRepairPlan detects missing and stale search",
     );
 
     assert.equal(plan.summary.clubsScanned, 3);
-    assert.equal(plan.summary.repairsNeeded, 2);
+    assert.equal(plan.summary.repairsNeeded, 3);
     assert.equal(plan.summary.missingSearch, 1);
-    assert.equal(plan.summary.staleSearch, 1);
+    assert.equal(plan.summary.staleSearch, 2);
     assert.deepEqual(plan.summary.repairs.map((repair) => repair.clubId), [
       "club-1",
+      "club-2",
       "club-3",
     ]);
     assert.equal(

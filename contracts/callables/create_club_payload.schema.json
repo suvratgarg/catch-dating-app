@@ -10,7 +10,7 @@
     "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "name": {"type": "string", "minLength": 1, "maxLength": 120},
     "description": {"type": "string", "minLength": 1, "maxLength": 2000},
-    "location": {"$ref": "../shared/event_common.schema.json#/definitions/citySlug"},
+    "location": {"$ref": "../shared/event_common.schema.json#/definitions/marketId"},
     "area": {"type": "string", "minLength": 1, "maxLength": 120},
     "imageUrl": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
     "profileImageUrl": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},

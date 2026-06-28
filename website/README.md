@@ -42,6 +42,8 @@ host-visible organizer metrics through `recordOrganizerAnalyticsEvent` in
 `src/firebase.ts`.
 
 - Set `VITE_GTM_ID` from `env.example` to load Google Tag Manager after consent.
+  GTM is optional for Hosting deploys until the production container exists; the
+  site skips GTM when the variable is unset.
 - Configure GA4, Google Ads, Meta Pixel, LinkedIn Insight Tag, and other pixels in
   GTM against the pushed `dataLayer` events.
 - Set `VITE_WEBSITE_APPCHECK_SITE_KEY` and the Firebase web config in

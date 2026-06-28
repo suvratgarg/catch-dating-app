@@ -216,6 +216,7 @@ export async function signUpUserForEvent(
       ...eventDiscoveryProjection({
         event,
         clubLocation: event.discoveryCityName,
+        clubLocationMarketId: event.discoveryMarketId,
         bookedCount: nextBookedCount,
       }),
     };

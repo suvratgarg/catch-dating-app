@@ -1,4 +1,5 @@
 import {EventDocument} from "../shared/generated/firestoreAdminTypes";
+import {marketForIdOrAlias} from "../locations/marketConfig";
 import {
   cohortIds,
   EventCohortId,
@@ -14,10 +15,32 @@ type DiscoveryAvailability = "open" | "waitlist" | "gated" | "full" |
   "cancelled";
 
 type EventDiscoveryProjectionInput = {
-  event: EventDocument;
+  event: EventDiscoveryProjectionSource;
   clubLocation?: string | null;
+  clubLocationMarketId?: string | null;
   bookedCount?: number;
 };
+
+type EventDiscoveryField =
+  "discoveryMarketId" |
+  "discoveryCityName" |
+  "discoveryActivityKind" |
+  "discoveryGeoCell" |
+  "discoveryHasOpenSpots" |
+  "discoveryAvailability" |
+  "discoveryOpenCohorts" |
+  "discoveryWaitlistCohorts" |
+  "discoveryInviteRequired" |
+  "discoveryMembershipRequired" |
+  "discoveryManualApprovalRequired" |
+  "discoveryMinAge" |
+  "discoveryMaxAge";
+
+type EventDiscoveryProjection = Pick<EventDocument, EventDiscoveryField>;
+
+type EventDiscoveryProjectionSource =
+  Omit<EventDocument, EventDiscoveryField> &
+  Partial<Pick<EventDocument, EventDiscoveryField>>;
 
 const discoveryCohortIds = Object.values(cohortIds) as EventCohortId[];
 
@@ -28,14 +51,14 @@ const discoveryCohortIds = Object.values(cohortIds) as EventCohortId[];
  */
 export function eventDiscoveryProjection(
   input: EventDiscoveryProjectionInput
-): Partial<EventDocument> {
+): EventDiscoveryProjection {
   const event = input.event;
-  const policy = eventPolicyFromEvent(event);
+  const policy = eventPolicyFromEvent(event as EventDocument);
   const bookedCount = Math.max(0, Math.trunc(
     input.bookedCount ?? event.bookedCount ?? 0
   ));
   const projectedEvent = {...event, bookedCount};
-  const roster = rosterFromEvent(projectedEvent);
+  const roster = rosterFromEvent(projectedEvent as EventDocument);
   const isCancelled = event.status === "cancelled";
   const hasOpenSpots =
     !isCancelled && bookedCount < policy.admission.capacityLimit;
@@ -71,7 +94,14 @@ export function eventDiscoveryProjection(
   });
 
   return {
-    discoveryCityName: normalizeDiscoveryCityName(input.clubLocation),
+    discoveryMarketId: normalizeDiscoveryMarketId({
+      marketId: input.clubLocationMarketId,
+      location: input.clubLocation,
+    }),
+    discoveryCityName: normalizeDiscoveryCityName({
+      location: input.clubLocation,
+      marketId: input.clubLocationMarketId,
+    }),
     discoveryActivityKind:
       event.eventFormat?.activityKind ?? "socialRun",
     discoveryGeoCell: latitude == null || longitude == null ?
@@ -97,14 +127,38 @@ export function eventDiscoveryProjection(
 
 /**
  * Normalizes a club city/location slug for event discovery indexes.
- * @param {string|null|undefined} value Raw club location.
+ * @param {{location?: string | null, marketId?: string | null}} input Raw
+ * club location and canonical market id.
  * @return {string} Lowercase city slug.
  */
-export function normalizeDiscoveryCityName(
-  value: string | null | undefined
-): string | null {
-  const normalized = (value ?? "").trim().toLowerCase();
-  return normalized.length > 0 ? normalized : null;
+export function normalizeDiscoveryCityName(input: {
+  location?: string | null;
+  marketId?: string | null;
+}): string {
+  const market = marketForIdOrAlias(input.marketId) ??
+    marketForIdOrAlias(input.location);
+  if (market) return market.slug;
+  const normalized = (input.location ?? "").trim().toLowerCase();
+  if (normalized.length > 0) return normalized;
+  throw new Error("Event discovery projection requires a club city slug.");
+}
+
+/**
+ * Normalizes canonical market identity for event discovery indexes.
+ * @param {{marketId?: string | null, location?: string | null}} input Club
+ * market projection and legacy location fallback.
+ * @return {string} Canonical market id.
+ */
+export function normalizeDiscoveryMarketId(input: {
+  marketId?: string | null;
+  location?: string | null;
+}): string {
+  const market = marketForIdOrAlias(input.marketId) ??
+    marketForIdOrAlias(input.location);
+  if (!market) {
+    throw new Error("Event discovery projection requires a club market id.");
+  }
+  return market.marketId;
 }
 
 /**

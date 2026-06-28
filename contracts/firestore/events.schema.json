@@ -22,6 +22,7 @@
     "startTime",
     "endTime",
     "meetingPoint",
+    "meetingLocation",
     "startingPointLat",
     "startingPointLng",
     "locationDetails",
@@ -40,7 +41,20 @@
     "constraints",
     "genderCounts",
     "cohortCounts",
-    "waitlistedCohortCounts"
+    "waitlistedCohortCounts",
+    "discoveryMarketId",
+    "discoveryCityName",
+    "discoveryActivityKind",
+    "discoveryGeoCell",
+    "discoveryHasOpenSpots",
+    "discoveryAvailability",
+    "discoveryOpenCohorts",
+    "discoveryWaitlistCohorts",
+    "discoveryInviteRequired",
+    "discoveryMembershipRequired",
+    "discoveryManualApprovalRequired",
+    "discoveryMinAge",
+    "discoveryMaxAge"
   ],
   "properties": {
     "clubId": {
@@ -66,11 +80,11 @@
       "x-catch-ownership": "callable-owned"
     },
     "startingPointLat": {
-      "$ref": "../shared/event_common.schema.json#/definitions/latitude",
+      "$ref": "../shared/profile_common.schema.json#/definitions/strictLatitude",
       "x-catch-ownership": "callable-owned"
     },
     "startingPointLng": {
-      "$ref": "../shared/event_common.schema.json#/definitions/longitude",
+      "$ref": "../shared/profile_common.schema.json#/definitions/strictLongitude",
       "x-catch-ownership": "callable-owned"
     },
     "locationDetails": {
@@ -186,8 +200,12 @@
       },
       "x-catch-ownership": "callable-owned"
     },
+    "discoveryMarketId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/marketId",
+      "x-catch-ownership": "callable-owned"
+    },
     "discoveryCityName": {
-      "$ref": "../shared/event_common.schema.json#/definitions/citySlug",
+      "$ref": "../shared/event_common.schema.json#/definitions/strictCitySlug",
       "x-catch-ownership": "callable-owned"
     },
     "discoveryActivityKind": {

@@ -4,7 +4,7 @@ import {buildAlgoliaExploreSearchBody} from "./exploreSearch.js";
 
 test("buildAlgoliaExploreSearchBody targets club and event indices", () => {
   const body = buildAlgoliaExploreSearchBody(
-    {query: "saket", cityName: "Indore", limit: 12},
+    {query: "saket", cityName: "in-mp-indore", limit: 12},
     new Date("2026-05-28T10:30:00.000Z")
   );
 
@@ -14,12 +14,13 @@ test("buildAlgoliaExploreSearchBody targets club and event indices", () => {
     indexName: "clubs",
     query: "saket",
     hitsPerPage: 12,
-    filters: "location:\"indore\"",
+    filters: "locationMarketId:\"in-mp-indore\"",
   });
   assert.deepEqual(body.requests[1], {
     indexName: "events",
     query: "saket",
     hitsPerPage: 12,
-    filters: "discoveryCityName:\"indore\" AND startTimeEpoch >= 1779964200",
+    filters: "discoveryMarketId:\"in-mp-indore\"" +
+      " AND startTimeEpoch >= 1779964200",
   });
 });

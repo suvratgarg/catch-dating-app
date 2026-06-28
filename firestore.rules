@@ -65,34 +65,19 @@ service cloud.firestore {
 
     function isDefaultCity(city) {
       return city in [
-        'mumbai',
-        'delhi',
-        'bangalore',
-        'hyderabad',
-        'chennai',
-	        'kolkata',
-	        'pune',
-	        'ahmedabad',
-	        'indore',
-	        'kathmandu',
-	        'pokhara',
-	        'sydney',
-	        'melbourne',
-	        'brisbane',
-	        'new-york',
-	        'san-francisco',
-	        'los-angeles'
-	      ];
-	    }
+        'in-mh-mumbai',
+        'in-mp-indore'
+      ];
+    }
 
     function isConfiguredCity(city) {
       return exists(/databases/$(database)/documents/config/cities)
         && get(/databases/$(database)/documents/config/cities)
-            .data.keys().hasAny(['cityNames'])
+            .data.keys().hasAny(['launchMarketIds'])
         && get(/databases/$(database)/documents/config/cities)
-            .data.cityNames is list
+            .data.launchMarketIds is list
         && city in get(/databases/$(database)/documents/config/cities)
-            .data.cityNames;
+            .data.launchMarketIds;
     }
 
     function isValidCity(city) {

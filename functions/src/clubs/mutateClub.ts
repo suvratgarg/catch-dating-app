@@ -29,6 +29,7 @@ import {
   normalizeClubIdPayload,
   normalizeUpdateClubPayload,
 } from "./clubPayloadNormalization";
+import {marketForIdOrAlias} from "../locations/marketConfig";
 
 interface ClubLifecycleDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -248,6 +249,22 @@ function clubPatchWithLegacyFields(
   fields: UpdateClubCallablePayload["fields"]
 ): Record<string, unknown> {
   const patch: Record<string, unknown> = {...fields};
+  if (fields.location !== undefined) {
+    const market = marketForIdOrAlias(fields.location);
+    if (!market || !market.hostCreatable) {
+      throw new HttpsError(
+        "failed-precondition",
+        "This city is not open for host creation yet."
+      );
+    }
+    patch.location = market.marketId;
+    patch.locationCityId = market.cityId;
+    patch.locationMarketId = market.marketId;
+    patch.cityName = market.cityLabel;
+    patch.regionName = market.regionName;
+    patch.countryCode = market.countryIsoCode;
+    patch.countryName = market.countryName;
+  }
   if (fields.clubPhotos !== undefined) {
     const clubPhotos = normalizeUploadedPhotosForFirestore(fields.clubPhotos);
     patch.clubPhotos = clubPhotos;

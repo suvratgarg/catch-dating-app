@@ -51,5 +51,23 @@
     "menInterestedInWomen": 2,
     "womenInterestedInMen": 2
   },
-  "waitlistedCohortCounts": {}
+  "waitlistedCohortCounts": {},
+  "discoveryCityName": "indore",
+  "discoveryMarketId": "in-mp-indore",
+  "discoveryActivityKind": "socialRun",
+  "discoveryGeoCell": "283:948",
+  "discoveryHasOpenSpots": true,
+  "discoveryAvailability": "open",
+  "discoveryOpenCohorts": [
+    "menInterestedInWomen",
+    "womenInterestedInMen",
+    "queerOrOpen",
+    "nonBinaryOrOther"
+  ],
+  "discoveryWaitlistCohorts": [],
+  "discoveryInviteRequired": false,
+  "discoveryMembershipRequired": false,
+  "discoveryManualApprovalRequired": false,
+  "discoveryMinAge": 21,
+  "discoveryMaxAge": 45
 }

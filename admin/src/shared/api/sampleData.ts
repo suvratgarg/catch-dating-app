@@ -10,6 +10,38 @@ import {
   UserAnalyticsResponse,
 } from "../types/adminTypes";
 
+const sampleMarketsBySlug: Record<
+  string,
+  {
+    cityId: string;
+    marketId: string;
+    citySlug: string;
+    cityName: string;
+    regionName: string;
+    countryCode: string;
+    countryName: string;
+  }
+> = {
+  indore: {
+    cityId: "in-mp-indore",
+    marketId: "in-mp-indore",
+    citySlug: "indore",
+    cityName: "Indore",
+    regionName: "Madhya Pradesh",
+    countryCode: "IN",
+    countryName: "India",
+  },
+  mumbai: {
+    cityId: "in-mh-mumbai",
+    marketId: "in-mh-mumbai",
+    citySlug: "mumbai",
+    cityName: "Mumbai",
+    regionName: "Maharashtra",
+    countryCode: "IN",
+    countryName: "India",
+  },
+};
+
 export const sampleOverview: AdminOverviewResponse = {
   generatedAt: "2026-06-01T08:30:00.000Z",
   timezone: "UTC",
@@ -740,6 +772,9 @@ function sampleCanonicalEvent(
 ): AdminEventDetails {
   const label = config.customActivityLabel ?? config.title;
   const hasOpenSpots = config.bookedCount < config.capacityLimit;
+  const market = sampleMarketsBySlug[config.citySlug] ?? {
+    marketId: config.citySlug,
+  };
   return {
     eventId: config.eventId,
     clubId: config.clubId,
@@ -769,7 +804,7 @@ function sampleCanonicalEvent(
     status: "active",
     cancellationReason: null,
     discovery: {
-      citySlug: config.citySlug,
+      citySlug: market.marketId,
       activityKind: config.activityKind,
       availability: hasOpenSpots ? "open" : "waitlist",
       hasOpenSpots,
@@ -886,11 +921,19 @@ function sampleOrganizer(config: {
   fitNotes: string[];
   missingEvidence: string[];
 }): AdminClubDetails {
+  const market = sampleMarketsBySlug[config.citySlug] ?? {
+    cityId: config.citySlug,
+    marketId: config.citySlug,
+    cityName: config.cityName,
+    regionName: config.cityName,
+    countryCode: "IN",
+    countryName: "India",
+  };
   return {
     clubId: config.clubId,
     name: config.name,
     description: config.description,
-    location: config.citySlug,
+    location: market.marketId,
     area: config.cityName,
     tags: config.tags,
     instagramHandle: config.instagramHandle,
@@ -901,10 +944,10 @@ function sampleOrganizer(config: {
     entityKind: config.entityKind,
     entitySubtypes: config.entitySubtypes,
     displayCategory: config.displayCategory,
-    cityName: config.cityName,
-    regionName: config.cityName,
-    countryCode: "IN",
-    countryName: "India",
+    cityName: market.cityName,
+    regionName: market.regionName,
+    countryCode: market.countryCode,
+    countryName: market.countryName,
     appVisibility: config.appVisibility,
     ownershipState: "programmatic",
     claimState: config.claimState,

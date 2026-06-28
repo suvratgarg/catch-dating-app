@@ -1525,7 +1525,7 @@ function sampleClubListRow(club: AdminGetClubDetailsResponse["club"]):
     name: club.name,
     displayCategory: club.displayCategory,
     cityName: club.cityName ?? club.area,
-    citySlug: club.publicPage.citySlug ?? club.location,
+    citySlug: club.location ?? club.publicPage.citySlug,
     regionName: club.regionName,
     countryCode: club.countryCode,
     appVisibility: club.appVisibility,

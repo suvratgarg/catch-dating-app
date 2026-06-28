@@ -44,6 +44,7 @@ import {
   validateUserEventScheduleLockDocument,
   validateUserProfileDocument,
 } from "../contracts/generated/schema_contract_validators.mjs";
+import {marketForIdOrAlias} from "../lib/location_markets.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
@@ -51,6 +52,9 @@ const requireFromFunctions = createRequire(
   path.join(repoRoot, "functions/package.json")
 );
 const admin = requireFromFunctions("firebase-admin");
+const {
+  eventDiscoveryProjection,
+} = requireFromFunctions("./lib/events/eventDiscoveryProjection.js");
 
 const DEFAULT_SEED_PREFIX = "demo_beta_2026";
 const DEFAULT_MAX_BATCH_WRITES = 450;
@@ -62,6 +66,21 @@ const DEFAULT_PERSONA_PROFILE_PROJECTION_PATH = path.join(
 
 const profilePromptsById = promptsById(profilePromptCatalog);
 const photoPromptsById = promptsById(photoPromptCatalog);
+const requiredEventDiscoveryProjectionFields = Object.freeze([
+  "discoveryCityName",
+  "discoveryMarketId",
+  "discoveryActivityKind",
+  "discoveryGeoCell",
+  "discoveryHasOpenSpots",
+  "discoveryAvailability",
+  "discoveryOpenCohorts",
+  "discoveryWaitlistCohorts",
+  "discoveryInviteRequired",
+  "discoveryMembershipRequired",
+  "discoveryManualApprovalRequired",
+  "discoveryMinAge",
+  "discoveryMaxAge",
+]);
 
 const cityData = {
   mumbai: {label: "Mumbai", lat: 19.076, lng: 72.8777, areas: ["Bandra", "Marine Drive", "Powai"]},
@@ -87,6 +106,42 @@ const allCities = [
   "ahmedabad",
   "indore",
 ];
+
+function marketForScenarioCity(city) {
+  const market = marketForIdOrAlias(city);
+  if (!market) {
+    throw new Error(
+      `Scenario city "${city}" is not in the canonical market catalog.`
+    );
+  }
+  return market;
+}
+
+function cityMetaForScenarioCity(city) {
+  const market = marketForScenarioCity(city);
+  const legacyMeta = cityData[city] ?? cityData[market.slug];
+  return {
+    ...(legacyMeta ?? {
+      label: market.label,
+      lat: market.latitude,
+      lng: market.longitude,
+      areas: [market.label],
+    }),
+    label: market.label,
+    lat: market.latitude,
+    lng: market.longitude,
+    market,
+  };
+}
+
+function scenarioCityKeyForMarket(market) {
+  for (const city of Object.keys(cityData)) {
+    if (marketForIdOrAlias(city)?.marketId === market.marketId) {
+      return city;
+    }
+  }
+  return market.slug;
+}
 
 const scenarios = {
   smoke: {
@@ -405,7 +460,10 @@ export async function main(argv = process.argv.slice(2)) {
     return;
   }
 
-  const scenario = resolveSeedScenario(args.scenario);
+  const scenario = applyCityOverride(
+    resolveSeedScenario(args.scenario),
+    args.cities
+  );
 
   const projectId = resolveProjectId(args);
   const isProdTarget = isProductionTarget(args, projectId);
@@ -510,6 +568,7 @@ function parseArgs(argv) {
     project: null,
     scenario: "beta-full",
     seedPrefix: DEFAULT_SEED_PREFIX,
+    cities: null,
     anchorUsers: [],
     anchorPhones: [],
     anchorFile: null,
@@ -545,6 +604,7 @@ function parseArgs(argv) {
     else if (arg === "--project") parsed.project = requireValue(argv, ++i, arg);
     else if (arg === "--scenario") parsed.scenario = requireValue(argv, ++i, arg);
     else if (arg === "--seed-prefix") parsed.seedPrefix = requireValue(argv, ++i, arg);
+    else if (arg === "--cities") parsed.cities = splitCsv(requireValue(argv, ++i, arg));
     else if (arg === "--anchor-users") parsed.anchorUsers = splitCsv(requireValue(argv, ++i, arg));
     else if (arg === "--anchor-phones") parsed.anchorPhones = splitCsv(requireValue(argv, ++i, arg));
     else if (arg === "--anchor-file") parsed.anchorFile = requireValue(argv, ++i, arg);
@@ -552,6 +612,26 @@ function parseArgs(argv) {
   }
 
   return parsed;
+}
+
+function applyCityOverride(scenario, rawCities) {
+  if (rawCities == null || rawCities.length === 0) return scenario;
+  const cities = [];
+  const seen = new Set();
+  for (const rawCity of rawCities) {
+    const market = marketForIdOrAlias(rawCity);
+    if (!market) {
+      throw new Error(`Unknown seed city or market: ${rawCity}`);
+    }
+    const city = scenarioCityKeyForMarket(market);
+    if (seen.has(city)) continue;
+    seen.add(city);
+    cities.push(city);
+  }
+  return {
+    ...scenario,
+    cities,
+  };
 }
 
 function resolveSeedScenario(name) {
@@ -666,6 +746,8 @@ async function loadAnchorProfiles(firestore, anchorSpecs) {
 }
 
 function anchorProfileFromUserDoc(uid, data) {
+  const market = marketForIdOrAlias(data.city) ?? marketForScenarioCity("mumbai");
+  const scenarioCity = scenarioCityKeyForMarket(market);
   const firstName = data.firstName || firstWord(data.displayName || data.name || "Runner");
   const displayName = data.displayName || firstName;
   const gender = validGender(data.gender) ? data.gender : "other";
@@ -676,9 +758,10 @@ function anchorProfileFromUserDoc(uid, data) {
     name: data.name || displayName,
     displayName,
     gender,
-    city: validCity(data.city) ? data.city : "mumbai",
-    latitude: typeof data.latitude === "number" ? data.latitude : cityData.mumbai.lat,
-    longitude: typeof data.longitude === "number" ? data.longitude : cityData.mumbai.lng,
+    city: scenarioCity,
+    marketId: market.marketId,
+    latitude: typeof data.latitude === "number" ? data.latitude : market.latitude,
+    longitude: typeof data.longitude === "number" ? data.longitude : market.longitude,
     age: ageFromTimestamp(data.dateOfBirth) ?? 30,
     profilePhotos,
     source: "anchor",
@@ -877,7 +960,8 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker, personaProjectio
   const personas = personaProjection.personas;
   let index = 0;
   for (const city of scenario.cities) {
-    const cityMeta = cityData[city];
+    const cityMeta = cityMetaForScenarioCity(city);
+    const market = cityMeta.market;
     for (let cityUserIndex = 0; cityUserIndex < scenario.usersPerCity; cityUserIndex += 1) {
       const uid = `${seedPrefix}_user_${String(index + 1).padStart(3, "0")}`;
       const persona = personas[index % personas.length];
@@ -923,7 +1007,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker, personaProjectio
         profilePrompts,
         instagramHandle: `${firstName.toLowerCase()}events${index + 1}`,
         profilePhotos: profilePhotosForUser,
-        city,
+        city: market.marketId,
         latitude: lat,
         longitude: lng,
         interestedInGenders: interestedInFor(gender, index),
@@ -957,6 +1041,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker, personaProjectio
         displayName,
         gender,
         city,
+        marketId: market.marketId,
         age,
         latitude: lat,
         longitude: lng,
@@ -1178,7 +1263,8 @@ function profilePhotoIdForStoragePath(storagePath, position) {
 }
 
 function buildClub({seedPrefix, seedMarker, city, clubIndex, host}) {
-  const cityMeta = cityData[city];
+  const cityMeta = cityMetaForScenarioCity(city);
+  const market = cityMeta.market;
   const area = cityMeta.areas[clubIndex % cityMeta.areas.length];
   const id = `${seedPrefix}_club_${city}_${String(clubIndex + 1).padStart(2, "0")}`;
   const hostName = host.displayName || host.firstName;
@@ -1190,7 +1276,13 @@ function buildClub({seedPrefix, seedMarker, city, clubIndex, host}) {
       ...seedMarker,
       name: `${area} Event Collective`,
       description: `Social ${cityMeta.label} events for easy kilometres, coffee stops, and reliable weekend training.`,
-      location: city,
+      location: market.marketId,
+      locationCityId: market.cityId,
+      locationMarketId: market.marketId,
+      cityName: market.cityLabel,
+      regionName: market.regionName,
+      countryCode: market.countryIsoCode,
+      countryName: market.countryName,
       area,
       hostUserId: host.uid,
       hostName,
@@ -1251,7 +1343,8 @@ function buildEvent({
   now,
   preferPaid,
 }) {
-  const cityMeta = cityData[city];
+  const cityMeta = cityMetaForScenarioCity(city);
+  const market = cityMeta.market;
   const patterns = scenario.eventPatterns ?? defaultEventPatterns(preferPaid);
   const pattern = patterns[runIndex % patterns.length];
   const start = offsetDate(now, {hours: pattern.offsetHours + clubIndex * 8 + runIndex * 2});
@@ -1273,6 +1366,7 @@ function buildEvent({
     id,
     clubId: club.id,
     city,
+    cityMarketId: market.marketId,
     kind: pattern.kind,
     priceInPaise: pattern.price,
     doc: {
@@ -1405,7 +1499,7 @@ function meetingPointForRun({city, clubIndex, runIndex, key = null}) {
     if (point) return point;
   }
   if (points.length === 0) {
-    const cityMeta = cityData[city];
+    const cityMeta = cityMetaForScenarioCity(city);
     return {
       label: `${cityMeta.label} demo meeting point`,
       lat: cityMeta.lat,
@@ -1542,6 +1636,19 @@ function applyRosterAggregates(event, roster) {
     event.doc.waitlistedCohortCounts[cohort] =
       (event.doc.waitlistedCohortCounts[cohort] ?? 0) + 1;
   }
+  applySeedEventDiscoveryProjection(event);
+}
+
+function applySeedEventDiscoveryProjection(event) {
+  Object.assign(
+    event.doc,
+    eventDiscoveryProjection({
+      event: event.doc,
+      clubLocation: event.city,
+      clubLocationMarketId: event.cityMarketId,
+      bookedCount: event.doc.bookedCount,
+    })
+  );
 }
 
 function cohortIdForSeedPerson(person) {
@@ -2028,7 +2135,7 @@ function buildSuvbotSeedDocs({seedPrefix, seedMarker, anchorProfiles, now}) {
         gender: "other",
         profilePrompts: [],
         profilePhotos: [],
-        city: "mumbai",
+        city: marketForScenarioCity("mumbai").marketId,
         activityPreferences: {
           running: {
             paceMinSecsPerKm: 300,
@@ -2342,11 +2449,16 @@ export function validateSeedDocuments(writePlan) {
       );
       result.clubMemberships += 1;
     } else if (isRunPath(doc.path)) {
+      const data = schemaSerializableFirestoreData(doc.data);
       assertValidSchemaPayload(
         validateEventDocument,
-        schemaSerializableFirestoreData(doc.data),
+        data,
         doc.path
       );
+      assertSyntheticEventDiscoveryProjection({
+        path: doc.path,
+        data,
+      });
       result.events += 1;
     } else if (isEventParticipationPath(doc.path)) {
       assertValidSchemaPayload(
@@ -2495,6 +2607,35 @@ export function validateSeedDocuments(writePlan) {
   }
 
   return result;
+}
+
+function assertSyntheticEventDiscoveryProjection({path: docPath, data}) {
+  if (data.synthetic !== true) return;
+  const missing = requiredEventDiscoveryProjectionFields.filter((field) =>
+    data[field] === undefined
+  );
+  if (missing.length > 0) {
+    throw new Error(
+      `${docPath} synthetic event is missing discovery projection fields: ` +
+        missing.join(", ")
+    );
+  }
+
+  const expected = eventDiscoveryProjection({
+    event: data,
+    clubLocation: data.discoveryCityName,
+    clubLocationMarketId: data.discoveryMarketId,
+    bookedCount: data.bookedCount,
+  });
+  const mismatches = requiredEventDiscoveryProjectionFields.filter((field) =>
+    !isDeepStrictEqual(data[field], expected[field])
+  );
+  if (mismatches.length > 0) {
+    throw new Error(
+      `${docPath} synthetic event discovery projection is stale: ` +
+        mismatches.join(", ")
+    );
+  }
 }
 
 export const validateSeedProfileDocuments = validateSeedDocuments;
@@ -3272,6 +3413,8 @@ function summary({
     emulatorHost: args.emulatorHost,
     scenario: args.scenario,
     scenarioDescription: scenario.description,
+    scenarioCities: scenario.cities,
+    cityOverride: args.cities,
     seedPrefix: args.seedPrefix,
     apply: args.apply,
     resetSynthetic: args.resetSynthetic,
@@ -3314,6 +3457,8 @@ Options:
   --project <firebase-project>   Explicit Firebase/GCP project id.
   --scenario <name>              Scenario to generate. Default: beta-full.
   --list-scenarios               Print scenario names and exit.
+  --cities <city,...>            Override scenario cities with canonical
+                                 cities/markets, e.g. in-mp-indore.
   --seed-prefix <prefix>         Stable document prefix. Default: ${DEFAULT_SEED_PREFIX}.
   --anchor-users <uid,...>       Real TestFlight user UIDs to seed around.
   --anchor-phones <phone,...>    Resolve real users by users.phoneNumber.
@@ -3452,10 +3597,6 @@ function firstWord(value) {
 
 function validGender(value) {
   return ["man", "woman", "nonBinary", "other"].includes(value);
-}
-
-function validCity(value) {
-  return Object.prototype.hasOwnProperty.call(cityData, value);
 }
 
 function interestedInFor(gender, index) {

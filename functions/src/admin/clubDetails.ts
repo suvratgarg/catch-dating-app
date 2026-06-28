@@ -29,6 +29,7 @@ import {
   clubWithAdminFieldsForSearch,
   organizerAdminSearchQueryTokens,
 } from "./organizerAdminSearch";
+import {marketForIdOrAlias} from "../locations/marketConfig";
 
 const clubDetailsRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -195,9 +196,9 @@ export async function adminListClubDetailsHandler(
     );
   }
   if (data.citySlug) {
-    query = query.where("publicPage.citySlug", "==", data.citySlug);
+    query = query.where("locationMarketId", "==", data.citySlug);
   } else if (data.citySlugs && data.citySlugs.length > 0) {
-    query = query.where("publicPage.citySlug", "in", data.citySlugs);
+    query = query.where("locationMarketId", "in", data.citySlugs);
   }
   if (data.publishStatus) {
     query = query.where("publicPage.publishStatus", "==", data.publishStatus);
@@ -280,7 +281,24 @@ export async function adminUpdateClubDetailsHandler(
         });
       }
     }
-    const nextClubForSearch = clubWithAdminFieldsForSearch(before, data.fields);
+    const nextClubForSearch = clubWithAdminFieldsForSearch(before, {
+      ...data.fields,
+      ...(patch.location !== undefined ? {location: patch.location} : {}),
+      ...(patch.locationCityId !== undefined ?
+        {locationCityId: patch.locationCityId} :
+        {}),
+      ...(patch.locationMarketId !== undefined ?
+        {locationMarketId: patch.locationMarketId} :
+        {}),
+      ...(patch.cityName !== undefined ? {cityName: patch.cityName} : {}),
+      ...(patch.regionName !== undefined ? {regionName: patch.regionName} : {}),
+      ...(patch.countryCode !== undefined ?
+        {countryCode: patch.countryCode} :
+        {}),
+      ...(patch.countryName !== undefined ?
+        {countryName: patch.countryName} :
+        {}),
+    });
     patch.adminSearch = buildOrganizerAdminSearchProjection(
       data.clubId,
       nextClubForSearch,
@@ -378,7 +396,7 @@ function publicClubListRow(
     name: club.name,
     displayCategory: club.displayCategory ?? null,
     cityName: club.cityName ?? club.area ?? null,
-    citySlug: club.publicPage?.citySlug ?? club.location ?? null,
+    citySlug: club.locationMarketId ?? club.location ?? null,
     regionName: club.regionName ?? null,
     countryCode: club.countryCode ?? null,
     appVisibility: club.appVisibility ?? null,
@@ -473,6 +491,22 @@ function buildFirestorePatch(
     "countryName",
     "appVisibility",
   ]);
+  if (fields.location !== undefined) {
+    const market = marketForIdOrAlias(fields.location);
+    if (!market || !market.hostCreatable) {
+      throw new HttpsError(
+        "failed-precondition",
+        "This city is not open for organizer publishing yet."
+      );
+    }
+    patch.location = market.marketId;
+    patch.locationCityId = market.cityId;
+    patch.locationMarketId = market.marketId;
+    patch.cityName = market.cityLabel;
+    patch.regionName = market.regionName;
+    patch.countryCode = market.countryIsoCode;
+    patch.countryName = market.countryName;
+  }
   copyNestedDefined(patch, "publicPage", fields.publicPage, [
     "slug",
     "citySlug",
@@ -558,8 +592,8 @@ function normalizeAdminListClubDetailsPayload(value: unknown): unknown {
   return {
     ...data,
     query: normalizeNullableString(data.query),
-    citySlug: normalizeNullableString(data.citySlug),
-    citySlugs: normalizeCitySlugs(data.citySlugs),
+    citySlug: normalizeNullableMarketId(data.citySlug),
+    citySlugs: normalizeCityMarketIds(data.citySlugs),
     publishStatus: normalizeNullableString(data.publishStatus),
     appVisibility: normalizeNullableString(data.appVisibility),
   };
@@ -723,16 +757,26 @@ function normalizeString(value: unknown): unknown {
 }
 
 /**
- * Normalizes bounded multi-city admin list filters.
- * @param {unknown} value Raw citySlugs payload.
- * @return {unknown} Unique normalized city slugs or validation passthrough.
+ * Normalizes a canonical market id while preserving schema failures.
+ * @param {unknown} value Raw market id.
+ * @return {unknown} Normalized market id, null, or validation passthrough.
  */
-function normalizeCitySlugs(value: unknown): unknown {
+function normalizeNullableMarketId(value: unknown): unknown {
+  const normalized = normalizeNullableString(value);
+  return typeof normalized === "string" ? normalized.toLowerCase() : normalized;
+}
+
+/**
+ * Normalizes bounded multi-market admin list filters.
+ * @param {unknown} value Raw citySlugs payload containing market ids.
+ * @return {unknown} Unique normalized market ids or validation passthrough.
+ */
+function normalizeCityMarketIds(value: unknown): unknown {
   if (value === undefined || value === null) return null;
   if (!Array.isArray(value)) return value;
   return Array.from(new Set(
     value
-      .map((item) => normalizeNullableString(item))
+      .map((item) => normalizeNullableMarketId(item))
       .filter((item): item is string => typeof item === "string")
   ));
 }

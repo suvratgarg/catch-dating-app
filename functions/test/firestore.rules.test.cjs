@@ -189,7 +189,7 @@ function userProfile(overrides = {}) {
     gender: "woman",
     profileComplete: true,
     profilePhotos: [],
-    city: "mumbai",
+    city: "in-mh-mumbai",
     latitude: null,
     longitude: null,
     interestedInGenders: ["man"],
@@ -853,8 +853,12 @@ describe("firestore.rules", () => {
   describe("public config", () => {
     it("allows public reads of config/cities and denies other config docs", async () => {
       await seed(["config", "cities"], {
-        cityNames: ["mumbai", "indore"],
+        version: 2,
+        cityNames: ["in-mh-mumbai", "in-mp-indore"],
+        marketIds: ["in-mh-mumbai", "in-mp-indore"],
+        launchMarketIds: ["in-mh-mumbai", "in-mp-indore"],
         cities: [],
+        markets: [],
       });
       await seed(["config", "private"], {secret: true});
 

@@ -113,6 +113,9 @@ function normalizeFields(
       result[field] = result[field].trim();
     }
   }
+  if (typeof result.location === "string") {
+    result.location = result.location.toLowerCase();
+  }
   for (const field of options.nullableStringFields ?? []) {
     if (typeof result[field] === "string") {
       result[field] = result[field].trim();

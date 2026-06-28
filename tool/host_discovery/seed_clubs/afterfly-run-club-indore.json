@@ -3,7 +3,9 @@
   "data": {
     "name": "AFTER FLY",
     "description": "AFTER FLY is an Indore run-and-rave organizer discovered through a public Luma event page. This unclaimed profile summarizes owner-safe public facts while claim, cadence, and contact details remain unverified.",
-    "location": "indore",
+    "location": "in-mp-indore",
+    "locationCityId": "in-mp-indore",
+    "locationMarketId": "in-mp-indore",
     "area": "Indore",
     "hostUserId": null,
     "hostName": null,

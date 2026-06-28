@@ -32,7 +32,13 @@ function club(overrides: Partial<ClubDocument> = {}): ClubDocument {
   return {
     name: "Saket Social Runners",
     description: "Run and coffee",
-    location: "Indore",
+    location: "in-mp-indore",
+    locationCityId: "in-mp-indore",
+    locationMarketId: "in-mp-indore",
+    cityName: "Indore",
+    regionName: "Madhya Pradesh",
+    countryCode: "IN",
+    countryName: "India",
     area: "Saket",
     hostUserId: "host-1",
     hostName: "Suvrat",
@@ -71,6 +77,10 @@ function event(overrides: Partial<EventDocument> = {}): EventDocument {
     startTime: timestamp("2026-05-30T01:30:00.000Z"),
     endTime: timestamp("2026-05-30T02:30:00.000Z"),
     meetingPoint: "Saket Square",
+    meetingLocation: null,
+    startingPointLat: 22.7196,
+    startingPointLng: 75.8577,
+    locationDetails: null,
     distanceKm: 5,
     eventFormat: {
       version: 1,
@@ -81,14 +91,28 @@ function event(overrides: Partial<EventDocument> = {}): EventDocument {
     capacityLimit: 20,
     description: "Easy community run",
     priceInPaise: 0,
+    currency: "INR",
+    bookedCount: 0,
+    checkedInCount: 0,
+    waitlistedCount: 0,
     genderCounts: {},
     cohortCounts: {},
     waitlistedCohortCounts: {},
     constraints: {minAge: 18, maxAge: 99},
     status: "active" as const,
     discoveryCityName: "indore",
+    discoveryMarketId: "in-mp-indore",
     discoveryActivityKind: "running" as const,
+    discoveryGeoCell: null,
+    discoveryHasOpenSpots: true,
     discoveryAvailability: "open" as const,
+    discoveryOpenCohorts: [],
+    discoveryWaitlistCohorts: [],
+    discoveryInviteRequired: false,
+    discoveryMembershipRequired: false,
+    discoveryManualApprovalRequired: false,
+    discoveryMinAge: 18,
+    discoveryMaxAge: 99,
     ...overrides,
   };
 }
@@ -97,7 +121,8 @@ test("buildClubSearchRecord normalizes city facets", () => {
   const record = buildClubSearchRecord("club-1", club());
 
   assert.equal(record?.objectID, "club-1");
-  assert.equal(record?.location, "indore");
+  assert.equal(record?.location, "Indore");
+  assert.equal(record?.locationMarketId, "in-mp-indore");
   assert.equal(record?.nextEventAtEpoch, 1780104600);
   assert.equal(record?.memberCount, 12);
 });
@@ -115,6 +140,7 @@ test("buildEventSearchRecord uses the club city and event time", () => {
   assert.equal(record?.objectID, "event-1");
   assert.equal(record?.clubName, "Saket Social Runners");
   assert.equal(record?.discoveryCityName, "indore");
+  assert.equal(record?.discoveryMarketId, "in-mp-indore");
   assert.equal(record?.startTimeEpoch, 1780104600);
 });
 
@@ -127,12 +153,12 @@ test("buildEventSearchRecord omits cancelled events", () => {
 
 test("index settings expose required filters", () => {
   assert.deepEqual(clubSearchIndexSettings().attributesForFaceting, [
-    "filterOnly(location)",
+    "filterOnly(locationMarketId)",
     "filterOnly(status)",
     "filterOnly(archived)",
   ]);
   assert.deepEqual(eventSearchIndexSettings().attributesForFaceting, [
-    "filterOnly(discoveryCityName)",
+    "filterOnly(discoveryMarketId)",
     "filterOnly(status)",
     "filterOnly(clubId)",
   ]);

@@ -47,7 +47,7 @@ HOST_FLAVORS = {
     firebase_role: 'host',
     firebase_role_path: 'host/',
     app_icon: 'AppIcon-host-dev',
-    ios_url_scheme: '',
+    ios_url_scheme: 'app-1-619661127800-ios-730bbfd6550efac0077d8d',
     maps_key_suffix: 'DEV'
   },
   'host-staging' => {
@@ -57,7 +57,7 @@ HOST_FLAVORS = {
     firebase_role: 'host',
     firebase_role_path: 'host/',
     app_icon: 'AppIcon-host-staging',
-    ios_url_scheme: '',
+    ios_url_scheme: 'app-1-822303414140-ios-1faa9261df8f53970c76f9',
     maps_key_suffix: 'STAGING'
   },
   'host-prod' => {
@@ -67,7 +67,7 @@ HOST_FLAVORS = {
     firebase_role: 'host',
     firebase_role_path: 'host/',
     app_icon: 'AppIcon-host-prod',
-    ios_url_scheme: '',
+    ios_url_scheme: 'app-1-574779808785-ios-dafe636b607e071f8ea5b0',
     maps_key_suffix: 'PROD'
   }
 }.freeze
@@ -107,11 +107,15 @@ def ensure_target_config(target, name, type, base_ref, build_settings, template_
   config
 end
 
-def write_scheme(source_scheme_path, destination_path, flavor)
-  xml = File.read(source_scheme_path)
+def write_scheme(source_scheme_path, destination_path, flavor, settings)
+  xml = File.exist?(destination_path) ? File.read(destination_path) : File.read(source_scheme_path)
   BUILD_MODES.each_key do |mode|
-    xml = xml.gsub(%(buildConfiguration = "#{mode}"), %(buildConfiguration = "#{mode}-#{flavor}"))
+    xml = xml.gsub(
+      /buildConfiguration = "#{mode}(?:-[^"]+)?"/,
+      %(buildConfiguration = "#{mode}-#{flavor}")
+    )
   end
+  xml = xml.gsub(/BuildableName = "[^"]+\.app"/, %(BuildableName = "#{settings[:app_name]}.app"))
   File.write(destination_path, xml)
 end
 
@@ -183,6 +187,7 @@ def configure_ios
           #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.#{config_name.downcase}.xcconfig"
           #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.#{pod_config}.xcconfig"
           #include "Generated.xcconfig"
+          #include "CatchBuildSettings.xcconfig"
           #include? "GoogleMapsKeys.xcconfig"
           APS_ENVIRONMENT=#{aps_environment(mode, settings)}
           APP_ATTEST_ENVIRONMENT=#{app_attest_environment(mode)}
@@ -200,6 +205,7 @@ def configure_ios
         base_ref,
         {
           'PRODUCT_BUNDLE_IDENTIFIER' => settings[:bundle_id],
+          'PRODUCT_NAME' => settings[:app_name],
           'APP_DISPLAY_NAME' => settings[:app_name],
           'ASSETCATALOG_COMPILER_APPICON_NAME' => settings[:app_icon],
           'FIREBASE_ENV' => settings[:firebase_env],
@@ -228,8 +234,8 @@ def configure_ios
   scheme_dir = File.join(REPO_ROOT, 'ios', 'Runner.xcodeproj', 'xcshareddata', 'xcschemes')
   FileUtils.mkdir_p(scheme_dir)
   source_scheme = File.join(scheme_dir, 'Runner.xcscheme')
-  FLAVORS.each_key do |flavor|
-    write_scheme(source_scheme, File.join(scheme_dir, "#{flavor}.xcscheme"), flavor)
+  FLAVORS.each do |flavor, settings|
+    write_scheme(source_scheme, File.join(scheme_dir, "#{flavor}.xcscheme"), flavor, settings)
   end
 end
 
@@ -296,8 +302,8 @@ def configure_macos
   scheme_dir = File.join(REPO_ROOT, 'macos', 'Runner.xcodeproj', 'xcshareddata', 'xcschemes')
   FileUtils.mkdir_p(scheme_dir)
   source_scheme = File.join(scheme_dir, 'Runner.xcscheme')
-  FLAVORS.each_key do |flavor|
-    write_scheme(source_scheme, File.join(scheme_dir, "#{flavor}.xcscheme"), flavor)
+  FLAVORS.each do |flavor, settings|
+    write_scheme(source_scheme, File.join(scheme_dir, "#{flavor}.xcscheme"), flavor, settings)
   end
 end
 

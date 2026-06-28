@@ -20,8 +20,8 @@ export interface UpdateEventCallablePayload {
       name: string;
       address?: string | null;
       placeId?: string | null;
-      latitude: number | null;
-      longitude: number | null;
+      latitude: number;
+      longitude: number;
       notes?: string | null;
     };
     startingPointLat?: (number | null) | null;

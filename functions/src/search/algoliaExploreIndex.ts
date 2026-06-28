@@ -10,7 +10,7 @@ import {
   algoliaAppId,
   clubsIndexName,
   eventsIndexName,
-  normalizeSearchCityName,
+  normalizeSearchMarketId,
 } from "./exploreSearch";
 
 export const algoliaWriteApiKey = defineSecret("ALGOLIA_WRITE_API_KEY");
@@ -43,6 +43,7 @@ export interface AlgoliaClubSearchRecord {
   reviewCount: number;
   status: ClubDocument["status"];
   archived: boolean;
+  locationMarketId: string;
   nextEventAtEpoch: number | null;
   nextEventLabel: string | null;
 }
@@ -56,6 +57,7 @@ export interface AlgoliaEventSearchRecord {
   locationDetails: string | null;
   description: string;
   discoveryCityName: string;
+  discoveryMarketId: string;
   discoveryActivityKind: string;
   discoveryAvailability: string | null;
   startTimeEpoch: number;
@@ -77,7 +79,7 @@ export function clubSearchIndexSettings(): Record<string, unknown> {
       "description",
     ],
     attributesForFaceting: [
-      "filterOnly(location)",
+      "filterOnly(locationMarketId)",
       "filterOnly(status)",
       "filterOnly(archived)",
     ],
@@ -103,7 +105,7 @@ export function eventSearchIndexSettings(): Record<string, unknown> {
       "discoveryActivityKind",
     ],
     attributesForFaceting: [
-      "filterOnly(discoveryCityName)",
+      "filterOnly(discoveryMarketId)",
       "filterOnly(status)",
       "filterOnly(clubId)",
     ],
@@ -123,12 +125,14 @@ export function buildClubSearchRecord(
   clubId: string,
   club: ClubDocument
 ): AlgoliaClubSearchRecord | null {
-  const location = normalizeSearchCityName(club.location);
+  const locationMarketId = normalizeSearchMarketId(
+    club.locationMarketId ?? club.location
+  );
   if (
     club.status !== "active" ||
     club.archived ||
     club.appVisibility === "hidden" ||
-    !location ||
+    !locationMarketId ||
     club.name.trim().length === 0
   ) {
     return null;
@@ -139,7 +143,8 @@ export function buildClubSearchRecord(
     type: "club",
     name: club.name,
     description: club.description,
-    location,
+    location: club.cityName ?? club.location,
+    locationMarketId,
     area: club.area,
     hostName: club.hostName ?? club.name,
     tags: Array.isArray(club.tags) ? club.tags : [],
@@ -166,14 +171,18 @@ export function buildEventSearchRecord(
   club: ClubDocument
 ): AlgoliaEventSearchRecord | null {
   const startTimeEpoch = timestampEpochSeconds(event.startTime);
-  const discoveryCityName =
-    normalizeSearchCityName(club.location) ??
-    normalizeSearchCityName(event.discoveryCityName);
+  const discoveryMarketId = normalizeSearchMarketId(
+    event.discoveryMarketId ?? club.locationMarketId ?? club.location
+  );
+  const discoveryCityName = normalizedSearchText(event.discoveryCityName) ??
+    normalizedSearchText(club.publicPage?.citySlug) ??
+    discoveryMarketId;
   if (
     event.status !== "active" ||
     club.status !== "active" ||
     club.archived ||
     club.appVisibility === "hidden" ||
+    !discoveryMarketId ||
     !discoveryCityName ||
     startTimeEpoch == null
   ) {
@@ -189,6 +198,7 @@ export function buildEventSearchRecord(
     locationDetails: event.locationDetails ?? null,
     description: event.description,
     discoveryCityName,
+    discoveryMarketId,
     discoveryActivityKind:
       event.discoveryActivityKind ??
       event.eventFormat?.activityKind ??
@@ -404,6 +414,18 @@ function timestampEpochSeconds(
 ): number | null {
   if (!value) return null;
   return Math.floor(value.toMillis() / 1000);
+}
+
+/**
+ * Normalizes optional text fields used as searchable fallbacks.
+ * @param {string | null | undefined} value Candidate text.
+ * @return {string | undefined} Lowercase non-empty text, or undefined.
+ */
+function normalizedSearchText(
+  value: string | null | undefined
+): string | undefined {
+  const normalized = (value ?? "").trim().toLowerCase();
+  return normalized.length > 0 ? normalized : undefined;
 }
 
 /**

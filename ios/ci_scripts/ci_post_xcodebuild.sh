@@ -11,7 +11,18 @@ if [[ "${CI_XCODEBUILD_ACTION:-}" != "archive" || -z "${CI_ARCHIVE_PATH:-}" ]]; 
   exit 0
 fi
 
-info_plist="$CI_ARCHIVE_PATH/Products/Applications/Runner.app/Info.plist"
+applications_dir="$CI_ARCHIVE_PATH/Products/Applications"
+shopt -s nullglob
+app_bundles=("$applications_dir"/*.app)
+shopt -u nullglob
+
+if (( ${#app_bundles[@]} != 1 )); then
+  echo "Expected exactly one archived app in: $applications_dir"
+  printf 'Found archived apps: %s\n' "${app_bundles[@]:-none}"
+  exit 1
+fi
+
+info_plist="${app_bundles[0]}/Info.plist"
 if [[ ! -f "$info_plist" ]]; then
   echo "Could not find archived Info.plist at: $info_plist"
   exit 1

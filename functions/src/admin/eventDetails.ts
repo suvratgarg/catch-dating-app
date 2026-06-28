@@ -164,9 +164,9 @@ export async function adminListEventDetailsHandler(
   }
   if (data.clubId) query = query.where("clubId", "==", data.clubId);
   if (data.citySlug) {
-    query = query.where("discoveryCityName", "==", data.citySlug);
+    query = query.where("discoveryMarketId", "==", data.citySlug);
   } else if (data.citySlugs && data.citySlugs.length > 0) {
-    query = query.where("discoveryCityName", "in", data.citySlugs);
+    query = query.where("discoveryMarketId", "in", data.citySlugs);
   }
   if (data.activityKind) {
     query = query.where("discoveryActivityKind", "==", data.activityKind);
@@ -281,6 +281,7 @@ export async function adminUpdateEventDetailsHandler(
       ...eventDiscoveryProjection({
         event: nextEvent,
         clubLocation: club?.location,
+        clubLocationMarketId: club?.locationMarketId,
       }),
       adminSearch: buildEventAdminSearchProjection(
         data.eventId,
@@ -330,7 +331,7 @@ function publicEventListRow(
     activityKind: event.eventFormat.activityKind,
     activityLabel: eventFormatLabel(event.eventFormat),
     startTime: timestampIso(event.startTime),
-    citySlug: event.discoveryCityName ?? null,
+    citySlug: event.discoveryMarketId ?? null,
     meetingPoint: event.meetingPoint,
     status: event.status,
     availability: event.discoveryAvailability ?? null,
@@ -385,7 +386,7 @@ function publicEventDetails(
     status: event.status,
     cancellationReason: event.cancellationReason ?? null,
     discovery: {
-      citySlug: event.discoveryCityName ?? null,
+      citySlug: event.discoveryMarketId ?? null,
       activityKind: event.discoveryActivityKind ?? null,
       availability: event.discoveryAvailability ?? null,
       hasOpenSpots: event.discoveryHasOpenSpots ?? null,
@@ -524,8 +525,8 @@ function normalizeAdminListEventDetailsPayload(value: unknown): unknown {
     ...data,
     query: normalizeNullableString(data.query),
     clubId: normalizeNullableString(data.clubId),
-    citySlug: normalizeNullableString(data.citySlug),
-    citySlugs: normalizeCitySlugs(data.citySlugs),
+    citySlug: normalizeNullableMarketId(data.citySlug),
+    citySlugs: normalizeCityMarketIds(data.citySlugs),
     activityKind: normalizeNullableString(data.activityKind),
     status: normalizeNullableString(data.status),
     timeWindow: normalizeNullableString(data.timeWindow),
@@ -624,16 +625,26 @@ function normalizeOptionalNullableString(value: unknown): unknown {
 }
 
 /**
- * Normalizes bounded multi-city list filters.
- * @param {unknown} value Raw citySlugs payload.
- * @return {unknown} Unique normalized city slugs or validation passthrough.
+ * Normalizes a canonical market id while preserving schema failures.
+ * @param {unknown} value Raw market id.
+ * @return {unknown} Normalized market id, null, or validation passthrough.
  */
-function normalizeCitySlugs(value: unknown): unknown {
+function normalizeNullableMarketId(value: unknown): unknown {
+  const normalized = normalizeNullableString(value);
+  return typeof normalized === "string" ? normalized.toLowerCase() : normalized;
+}
+
+/**
+ * Normalizes bounded multi-market list filters.
+ * @param {unknown} value Raw citySlugs payload containing market ids.
+ * @return {unknown} Unique normalized market ids or validation passthrough.
+ */
+function normalizeCityMarketIds(value: unknown): unknown {
   if (value === undefined || value === null) return null;
   if (!Array.isArray(value)) return value;
   return Array.from(new Set(
     value
-      .map((item) => normalizeNullableString(item))
+      .map((item) => normalizeNullableMarketId(item))
       .filter((item): item is string => typeof item === "string")
   ));
 }

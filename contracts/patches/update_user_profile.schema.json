@@ -155,7 +155,10 @@
           }
         },
         "city": {
-          "$ref": "../shared/profile_common.schema.json#/definitions/citySlug"
+          "anyOf": [
+            {"$ref": "../shared/profile_common.schema.json#/definitions/marketId"},
+            {"type": "null"}
+          ]
         },
         "latitude": {
           "$ref": "../shared/profile_common.schema.json#/definitions/latitude"

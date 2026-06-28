@@ -1755,7 +1755,7 @@ function suvbotPublicProfileDoc(): FirebaseFirestore.DocumentData {
     gender: "other",
     profilePrompts: [],
     profilePhotos: [],
-    city: "mumbai",
+    city: "in-mh-mumbai",
     activityPreferences: {
       running: {
         paceMinSecsPerKm: 300,

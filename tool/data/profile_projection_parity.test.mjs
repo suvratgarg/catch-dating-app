@@ -55,7 +55,7 @@ function validUserProfileDoc() {
       createdAt: fakeTimestamp("1970-01-01T00:00:00.000Z"),
       updatedAt: fakeTimestamp("1970-01-01T00:00:00.000Z"),
     }],
-    city: "mumbai",
+    city: "in-mh-mumbai",
     latitude: 19.076,
     longitude: 72.8777,
     interestedInGenders: ["man"],

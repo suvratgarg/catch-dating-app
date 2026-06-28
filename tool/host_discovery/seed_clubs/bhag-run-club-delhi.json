@@ -3,7 +3,9 @@
   "data": {
     "name": "Bhag Club",
     "description": "Bhag Club is a running community and activewear brand discovered through its official website and public Luma event pages. This Delhi-targeted profile is unclaimed on Catch; the Delhi city association is user-supplied until a stable Delhi-specific source is verified.",
-    "location": "delhi",
+    "location": "in-dl-delhi-ncr",
+    "locationCityId": "in-dl-new-delhi",
+    "locationMarketId": "in-dl-delhi-ncr",
     "area": "Delhi",
     "hostUserId": null,
     "hostName": null,

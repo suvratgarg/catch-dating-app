@@ -8,8 +8,8 @@
 export interface AdminListEventDetailsCallablePayload {
   query?: string | null;
   clubId?: string | null;
-  citySlug?: (string | null) | null;
-  citySlugs?: (string | null)[] | null;
+  citySlug?: string | null;
+  citySlugs?: string[] | null;
   activityKind?:
     | "socialRun"
     | "running"

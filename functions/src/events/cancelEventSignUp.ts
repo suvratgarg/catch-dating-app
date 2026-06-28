@@ -372,6 +372,7 @@ export async function cancelEventSignUpHandler(
       ...eventDiscoveryProjection({
         event,
         clubLocation: event.discoveryCityName,
+        clubLocationMarketId: event.discoveryMarketId,
         bookedCount: nextBookedCount,
       }),
     });

@@ -289,7 +289,9 @@ function clubDoc(overrides: FakeData = {}): FakeData {
   return {
     name: "AFTER FLY",
     description: "Movement and music community in Indore.",
-    location: "indore",
+    location: "in-mp-indore",
+    locationCityId: "in-mp-indore",
+    locationMarketId: "in-mp-indore",
     area: "Indore",
     tags: ["run club"],
     instagramHandle: "afterfly.in",
@@ -385,7 +387,9 @@ test("adminListClubDetailsHandler returns canonical organizer rows",
       "clubs/afterfly-run-club-indore": clubDoc(),
       "clubs/bandra-social-run": clubDoc({
         name: "Bandra Social Run",
-        location: "mumbai",
+        location: "in-mh-mumbai",
+        locationCityId: "in-mh-mumbai",
+        locationMarketId: "in-mh-mumbai",
         cityName: "Mumbai",
         publicPage: {
           slug: "bandra-social-run",
@@ -414,7 +418,7 @@ test("adminListClubDetailsHandler returns canonical organizer rows",
 
     const result = await adminListClubDetailsHandler(
       callableRequest("admin-1", {
-        citySlug: "mumbai",
+        citySlug: "in-mh-mumbai",
         query: "bandra",
         limit: 10,
       }, {support: true}),
@@ -438,7 +442,9 @@ test(
       "clubs/afterfly-run-club-indore": clubDoc(),
       "clubs/bandra-social-run": clubDoc({
         name: "Bandra Social Run",
-        location: "mumbai",
+        location: "in-mh-mumbai",
+        locationCityId: "in-mh-mumbai",
+        locationMarketId: "in-mh-mumbai",
         cityName: "Mumbai",
         publicPage: {
           slug: "bandra-social-run",
@@ -454,7 +460,9 @@ test(
       }),
       "clubs/delhi-run-club": clubDoc({
         name: "Delhi Run Club",
-        location: "delhi",
+        location: "in-dl-delhi-ncr",
+        locationCityId: "in-dl-new-delhi",
+        locationMarketId: "in-dl-delhi-ncr",
         cityName: "Delhi",
         publicPage: {
           slug: "delhi-run-club",
@@ -472,7 +480,7 @@ test(
 
     const result = await adminListClubDetailsHandler(
       callableRequest("admin-1", {
-        citySlugs: [" indore ", "mumbai", "indore"],
+        citySlugs: [" in-mp-indore ", "in-mh-mumbai", "in-mp-indore"],
         limit: 10,
       }, {support: true}),
       h.deps

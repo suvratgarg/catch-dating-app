@@ -1,4 +1,5 @@
 import {
+  ArrowLeft,
   CheckCircle2,
   Clock3,
   Database,
@@ -29,6 +30,7 @@ import {
   CheckboxField,
   DataTable,
   EmptyState,
+  PageHeader,
   Panel,
   SearchField,
   SegmentedControl,
@@ -51,6 +53,10 @@ import type {
   OrganizerValidationIssue,
   PublishChecklistState,
 } from "../controllers/organizerPublishingHelpers";
+
+type OrganizerPublishingController = ReturnType<
+  typeof useOrganizerPublishingController
+>;
 
 const defaultPublicSiteOrigin = "https://catchdates.com";
 const publicSiteOrigin = String(
@@ -77,8 +83,37 @@ export function OrganizerPublishingScreen({
     row.searchIndexStatus !== "indexed"
   ).length;
 
+  if (controller.view === "detail") {
+    return <OrganizerDetailView controller={controller} />;
+  }
+
   return (
-    <div className="workbench-stack">
+    <OrganizerDirectoryView
+      controller={controller}
+      needsPublishCount={needsPublishCount}
+      publishedCount={publishedCount}
+      routeIssueCount={routeIssueCount}
+      searchIssueCount={searchIssueCount}
+    />
+  );
+}
+
+function OrganizerDirectoryView({
+  controller,
+  needsPublishCount,
+  publishedCount,
+  routeIssueCount,
+  searchIssueCount,
+}: {
+  controller: OrganizerPublishingController;
+  needsPublishCount: number;
+  publishedCount: number;
+  routeIssueCount: number;
+  searchIssueCount: number;
+}) {
+  return (
+    <div className="workbench-stack admin-directory-screen">
+      <PageHeader eyebrow="Organizers" title="Canonical Organizer Directory" />
       <section className="metric-grid" aria-label="Organizer publishing state">
         <Metric label="Canonical organizers" value={controller.rows.length} />
         <Metric
@@ -99,79 +134,36 @@ export function OrganizerPublishingScreen({
         />
       </section>
 
-      <Panel
-        className="span-2"
-        icon={<Users size={18} strokeWidth={1.9} />}
-        title="Canonical organizer directory"
-        action={controller.isListLoading ? "Loading" : `${controller.filteredRows.length} shown`}
-      >
-        <div className="workbench-toolbar">
-          <SegmentedControl<OrganizerPublishingFilter>
-            ariaLabel="Organizer filters"
-            options={[
-              {id: "launchCities", label: "Indore + Mumbai"},
-              {id: "all", label: "All"},
-              {id: "needsPublish", label: "Needs review"},
-              {id: "published", label: "Published"},
-              {id: "appHidden", label: "App hidden"},
-              {id: "routeIssues", label: "Route issues"},
-              {id: "searchIssues", label: "Search issues"},
-            ]}
-            value={controller.filter}
-            onChange={controller.setFilter}
-          />
-          <SearchField
-            ariaLabel="Search canonical organizers"
-            icon={<Search size={16} strokeWidth={1.8} />}
-            onChange={controller.setQuery}
-            placeholder="Search name, id, path, city, status"
-            value={controller.query}
-          />
+      <OrganizerDirectoryPanel controller={controller} />
+    </div>
+  );
+}
+
+function OrganizerDetailView({
+  controller,
+}: {
+  controller: OrganizerPublishingController;
+}) {
+  const title =
+    controller.club?.name ||
+    controller.form?.name ||
+    controller.clubId ||
+    "Organizer";
+  return (
+    <div className="workbench-stack admin-detail-screen">
+      <PageHeader
+        actions={
           <AdminButton
-            disabled={controller.isListLoading}
-            icon={<RefreshCw size={15} strokeWidth={1.9} />}
-            onClick={() => void controller.refreshList()}
+            icon={<ArrowLeft size={15} strokeWidth={1.9} />}
+            onClick={controller.backToList}
           >
-            Refresh
+            Directory
           </AdminButton>
-        </div>
-        <OrganizerDirectoryTable
-          rows={controller.filteredRows}
-          selectedClubId={controller.club?.clubId ?? controller.clubId}
-          onSelect={controller.selectOrganizer}
-        />
-      </Panel>
-
-      <Panel
-        icon={<Database size={18} strokeWidth={1.9} />}
-        title="Publishing contract"
-        action="clubs"
-      >
-        <div className="quality-list">
-          <StateRow label="Source of truth" value="Cloud Firestore clubs/{id}" />
-          <StateRow
-            label="Search/list"
-            value="adminListClubDetails + adminSearch.tokens"
-          />
-          <StateRow
-            label="Canonical snapshot"
-            value={formatDateTime(controller.listGeneratedAt)}
-          />
-          <StateRow
-            label="Writes"
-            value="Audited partial update + index publish callable"
-          />
-          <StateRow
-            label="Route guard"
-            value="canonicalPath shape + publicRouteReservations"
-          />
-          <StateRow
-            label="Action cardinality"
-            value="One publish state per organizer document"
-          />
-        </div>
-      </Panel>
-
+        }
+        eyebrow="Organizer detail"
+        title={title}
+      />
+      <OrganizerDetailSummary controller={controller} />
       <OrganizerEditor
         checklist={controller.checklist}
         club={controller.club}
@@ -191,7 +183,143 @@ export function OrganizerPublishingScreen({
         onSave={() => void controller.save()}
         validationIssues={controller.validationIssues}
       />
+      <OrganizerPublishingContractPanel
+        generatedAt={controller.listGeneratedAt}
+      />
     </div>
+  );
+}
+
+function OrganizerDirectoryPanel({
+  controller,
+}: {
+  controller: OrganizerPublishingController;
+}) {
+  return (
+    <Panel
+      className="span-2"
+      icon={<Users size={18} strokeWidth={1.9} />}
+      title="Canonical organizer directory"
+      action={
+        controller.isListLoading ?
+          "Loading" :
+          `${controller.filteredRows.length} shown`
+      }
+    >
+      <div className="workbench-toolbar">
+        <SegmentedControl<OrganizerPublishingFilter>
+          ariaLabel="Organizer filters"
+          options={[
+            {id: "launchCities", label: "Indore + Mumbai"},
+            {id: "all", label: "All"},
+            {id: "needsPublish", label: "Needs review"},
+            {id: "published", label: "Published"},
+            {id: "appHidden", label: "App hidden"},
+            {id: "routeIssues", label: "Route issues"},
+            {id: "searchIssues", label: "Search issues"},
+          ]}
+          value={controller.filter}
+          onChange={controller.setFilter}
+        />
+        <SearchField
+          ariaLabel="Search canonical organizers"
+          icon={<Search size={16} strokeWidth={1.8} />}
+          onChange={controller.setQuery}
+          placeholder="Search name, id, path, city, status"
+          value={controller.query}
+        />
+        <AdminButton
+          disabled={controller.isListLoading}
+          icon={<RefreshCw size={15} strokeWidth={1.9} />}
+          onClick={() => void controller.refreshList()}
+        >
+          Refresh
+        </AdminButton>
+      </div>
+      <OrganizerDirectoryTable
+        rows={controller.filteredRows}
+        selectedClubId={controller.club?.clubId ?? controller.clubId}
+        onSelect={controller.selectOrganizer}
+      />
+    </Panel>
+  );
+}
+
+function OrganizerDetailSummary({
+  controller,
+}: {
+  controller: OrganizerPublishingController;
+}) {
+  const club = controller.club;
+  const form = controller.form;
+  return (
+    <Panel
+      className="span-2"
+      icon={<Users size={18} strokeWidth={1.9} />}
+      title="Profile status"
+      action={club?.publicPage.publishStatus ?? "Not loaded"}
+    >
+      <div className="admin-status-grid">
+        <StateRow label="Document" value={club?.clubId ?? controller.clubId} />
+        <StateRow label="City" value={form?.cityName || club?.cityName} />
+        <StateRow
+          label="Public path"
+          value={form?.canonicalPath || club?.publicPage.canonicalPath}
+        />
+        <StateRow
+          label="App visibility"
+          value={form?.appVisibility ?? club?.appVisibility}
+        />
+        <StateRow label="Claim" value={club?.claimState} />
+        <StateRow
+          label="Verification"
+          value={club?.provenance.verificationStatus}
+        />
+        <StateRow label="Index" value={club?.publicPage.indexStatus} />
+        <StateRow
+          label="Changes"
+          value={`${controller.diffRows.length} pending`}
+        />
+      </div>
+    </Panel>
+  );
+}
+
+function OrganizerPublishingContractPanel({
+  generatedAt,
+}: {
+  generatedAt: string | null;
+}) {
+  return (
+    <Panel
+      icon={<Database size={18} strokeWidth={1.9} />}
+      title="Publishing contract"
+      action="clubs"
+    >
+      <div className="quality-list">
+        <StateRow label="Source of truth" value="Cloud Firestore clubs/{id}" />
+        <StateRow
+          label="Search/list"
+          value="adminListClubDetails + adminSearch.tokens"
+        />
+        <StateRow
+          label="Canonical snapshot"
+          value={formatDateTime(generatedAt)}
+        />
+        <StateRow
+          label="Writes"
+          value="Audited partial update + index publish callable"
+        />
+        <StateRow
+          label="Route guard"
+          value="canonicalPath shape + publicRouteReservations"
+        />
+        <StateRow
+          label="Action cardinality"
+          value="One publish state per organizer document"
+        />
+      </div>
+    </Panel>
   );
 }
 

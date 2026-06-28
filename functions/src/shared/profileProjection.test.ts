@@ -50,7 +50,7 @@ function completeUser(
       createdAt: timestamp(new Date("2026-01-01T00:00:00.000Z")),
       updatedAt: timestamp(new Date("2026-01-01T00:00:00.000Z")),
     }],
-    city: "mumbai",
+    city: "in-mh-mumbai",
     interestedInGenders: ["man"],
     minAgePreference: 24,
     maxAgePreference: 42,

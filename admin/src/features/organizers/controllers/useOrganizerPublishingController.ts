@@ -24,6 +24,10 @@ import {
   formFromOrganizerProfile,
   validateOrganizerPublishingForm,
 } from "./organizerPublishingHelpers";
+import {
+  isLaunchMarketId,
+  launchMarketIds,
+} from "../../../shared/config/launchMarkets";
 
 export type OrganizerPublishingFilter =
   | "launchCities"
@@ -34,7 +38,7 @@ export type OrganizerPublishingFilter =
   | "routeIssues"
   | "searchIssues";
 
-const launchCitySlugs = new Set(["indore", "mumbai"]);
+export type OrganizerPublishingView = "list" | "detail";
 
 export function useOrganizerPublishingController({
   onError,
@@ -48,6 +52,7 @@ export function useOrganizerPublishingController({
   const [query, setQuery] = useState("");
   const [filter, setFilter] =
     useState<OrganizerPublishingFilter>("launchCities");
+  const [view, setView] = useState<OrganizerPublishingView>("list");
   const [clubId, setClubId] = useState("");
   const [club, setClub] = useState<AdminClubDetails | null>(null);
   const [form, setForm] = useState<OrganizerPublishingFormState | null>(null);
@@ -105,8 +110,14 @@ export function useOrganizerPublishingController({
 
   const selectOrganizer = useCallback((nextClubId: string) => {
     setClubId(nextClubId);
+    setView("detail");
     void loadClub(nextClubId);
   }, [loadClub]);
+
+  const backToList = useCallback(() => {
+    setView("list");
+    onError(null);
+  }, [onError]);
 
   const diffRows = useMemo(
     () => diffOrganizerProfile(club, form),
@@ -206,6 +217,7 @@ export function useOrganizerPublishingController({
   }, [checklist, club, form, onError, onNotice, refreshList, save]);
 
   return {
+    backToList,
     checklist,
     club,
     clubId,
@@ -221,6 +233,7 @@ export function useOrganizerPublishingController({
     query,
     rows,
     validationIssues,
+    view,
     filteredRows: filterOrganizerRows(rows, filter),
     completeChecklist: completePublishChecklist(checklist),
     refreshList,
@@ -240,7 +253,7 @@ export function filterOrganizerRows(
   filter: OrganizerPublishingFilter
 ): AdminClubListRow[] {
   return rows.filter((row) => {
-    if (filter === "launchCities" && !launchCitySlugs.has(row.citySlug ?? "")) {
+    if (filter === "launchCities" && !isLaunchMarketId(row.citySlug)) {
       return false;
     }
     if (filter === "needsPublish" && !organizerNeedsPublish(row)) {
@@ -296,7 +309,7 @@ export function buildOrganizerListPayload(
     query: query.trim() || null,
   };
   if (filter === "launchCities") {
-    payload.citySlugs = Array.from(launchCitySlugs);
+    payload.citySlugs = Array.from(launchMarketIds);
   }
   if (filter === "published") payload.publishStatus = "published";
   if (filter === "appHidden") payload.appVisibility = "hidden";

@@ -9,7 +9,7 @@
     "query": {"type": ["string", "null"], "maxLength": 160},
     "citySlug": {
       "anyOf": [
-        {"$ref": "../shared/event_common.schema.json#/definitions/citySlug"},
+        {"$ref": "../shared/event_common.schema.json#/definitions/marketId"},
         {"type": "null"}
       ]
     },
@@ -18,7 +18,7 @@
         {
           "type": "array",
           "items": {
-            "$ref": "../shared/event_common.schema.json#/definitions/citySlug"
+            "$ref": "../shared/event_common.schema.json#/definitions/marketId"
           },
           "minItems": 1,
           "maxItems": 10,
