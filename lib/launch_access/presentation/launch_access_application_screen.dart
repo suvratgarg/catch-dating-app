@@ -10,7 +10,6 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_config_provider.dart';
@@ -294,45 +293,20 @@ class _LaunchAccessApplicationFormState
               },
             ),
             gapH24,
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'I might host',
-                        style: CatchTextStyles.sectionTitle(
-                          context,
-                          color: t.ink,
-                        ),
-                      ),
-                      gapH4,
-                      Text(
-                        'Useful if you already run a club, venue, or social format.',
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                gapW12,
-                CatchToggle(
-                  value: draft.wantsToHost,
-                  semanticLabel: 'I might host',
-                  onChanged: (value) {
-                    LaunchAccessController.submitMutation.reset(ref);
-                    ref
-                        .read(launchAccessControllerProvider.notifier)
-                        .setWantsToHost(value);
-                  },
-                ),
-              ],
+            CatchField.toggle(
+              title: 'I might host',
+              body:
+                  'Useful if you already run a club, venue, or social format.',
+              value: draft.wantsToHost,
+              onChanged: (value) {
+                LaunchAccessController.submitMutation.reset(ref);
+                ref
+                    .read(launchAccessControllerProvider.notifier)
+                    .setWantsToHost(value);
+              },
             ),
             gapH24,
-            CatchField(
+            CatchField.input(
               title: 'Invite code',
               isOptional: true,
               controller: _inviteCodeController,
@@ -346,7 +320,7 @@ class _LaunchAccessApplicationFormState
               },
             ),
             gapH16,
-            CatchField(
+            CatchField.input(
               title: 'Instagram',
               isOptional: true,
               controller: _instagramController,
@@ -360,7 +334,7 @@ class _LaunchAccessApplicationFormState
               },
             ),
             gapH16,
-            CatchField(
+            CatchField.input(
               title: 'Who referred you?',
               isOptional: true,
               controller: _referralController,
@@ -373,7 +347,7 @@ class _LaunchAccessApplicationFormState
               },
             ),
             gapH16,
-            CatchField(
+            CatchField.input(
               title: 'Why do you want to join?',
               controller: _whyController,
               maxLines: 4,

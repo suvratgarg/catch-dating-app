@@ -570,7 +570,7 @@ Widget _eventDetailHostsSection(
       currentUid != null &&
       currentUid != hostUid;
 
-  return CatchSection(
+  return CatchSection.divided(
     title: 'Your hosts',
     dividerColor: style?.dividerColor,
     titleColor: style?.headingColor,

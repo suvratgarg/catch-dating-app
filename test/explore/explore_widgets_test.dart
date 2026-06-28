@@ -33,7 +33,6 @@ import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
@@ -3361,14 +3360,14 @@ void main() {
         await _pumpClubUi(tester);
 
         expect(find.text('Default event policy'), findsOneWidget);
-        expect(find.byType(CatchToggle), findsOneWidget);
+        expect(_field('Cohort caps'), findsOneWidget);
         expect(_selectChip('OPEN', active: true), findsOneWidget);
 
         await tester.tap(find.text('Next'));
         await _pumpClubUi(tester);
 
         expect(find.text('Default event success'), findsOneWidget);
-        expect(find.byType(CatchToggle), findsWidgets);
+        expect(_field('Default event success'), findsOneWidget);
 
         await tester.tap(find.text('Create club'));
         await _pumpClubUi(tester);
@@ -3393,6 +3392,12 @@ Finder _selectChip(String label, {bool? active}) {
         widget is CatchSelectChip &&
         widget.label == label &&
         (active == null || widget.active == active),
+  );
+}
+
+Finder _field(String label) {
+  return find.byWidgetPredicate(
+    (widget) => widget is CatchField && widget.title == label,
   );
 }
 

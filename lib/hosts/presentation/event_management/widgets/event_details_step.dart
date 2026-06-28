@@ -95,7 +95,7 @@ class EventDetailsStep extends StatelessWidget {
             ),
             if (selectedActivityKind == ActivityKind.openActivity) ...[
               gapH20,
-              CatchField(
+              CatchField.input(
                 key: CreateEventFormKeys.customActivityLabel,
                 title: 'Format name',
                 controller: customActivityLabelController,
@@ -134,7 +134,7 @@ class EventDetailsStep extends StatelessWidget {
             ],
             if (selectedActivityKind.isDistanceBased) ...[
               gapH20,
-              CatchField(
+              CatchField.input(
                 key: CreateEventFormKeys.distance,
                 title: 'Distance (km)',
                 controller: distanceController,
@@ -202,7 +202,7 @@ class EventDetailsStep extends StatelessWidget {
               ),
             ],
             gapH20,
-            CatchField(
+            CatchField.input(
               key: CreateEventFormKeys.description,
               title: 'Description',
               isOptional: true,

@@ -17,7 +17,6 @@ import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
@@ -197,23 +196,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 ref.invalidate(watchUserProfileProvider),
                           ),
                           children: [
-                            CatchField(
+                            CatchField.read(
                               title: 'Phone number',
                               valueText: state.profile.phoneNumber,
                               icon: CatchIcons.phoneOutlined,
                             ),
-                            CatchField(
+                            CatchField.read(
                               title: 'Email',
                               valueText: state.profile.email,
                               icon: CatchIcons.emailOutlined,
                             ),
-                            CatchField(
+                            CatchField.nav(
                               title: 'Edit profile',
                               icon: CatchIcons.personOutlined,
                               onTap: () =>
                                   context.pushNamed(Routes.profileScreen.name),
                             ),
-                            CatchField(
+                            CatchField.nav(
                               key: SettingsKeys.reviewHistoryRow,
                               title: 'Review history',
                               valueText: 'Events you reviewed',
@@ -222,7 +221,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 Routes.reviewsHistoryScreen.name,
                               ),
                             ),
-                            CatchField(
+                            CatchField.nav(
                               key: SettingsKeys.paymentHistoryRow,
                               title: 'Payment history',
                               valueText: 'Bookings and receipts',
@@ -231,7 +230,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 Routes.paymentHistoryScreen.name,
                               ),
                             ),
-                            CatchField(
+                            CatchField.nav(
                               key: SettingsKeys.hostAppRow,
                               title: 'Catch Host',
                               valueText: 'Manage events and clubs',
@@ -246,7 +245,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             title: 'Development',
                             children: [
                               if (AppConfig.enableEventPolicyLab)
-                                CatchField(
+                                CatchField.nav(
                                   key: SettingsKeys.eventPolicyLabRow,
                                   title: 'Event policy lab',
                                   valueText: 'Static booking policy previews',
@@ -256,7 +255,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   ),
                                 ),
                               if (AppConfig.enableEventSuccessPreview)
-                                CatchField(
+                                CatchField.nav(
                                   key: SettingsKeys.eventSuccessLabRow,
                                   title: 'Event success lab',
                                   valueText:
@@ -267,7 +266,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   ),
                                 ),
                               if (AppConfig.enableEventSuccessPreview)
-                                CatchField(
+                                CatchField.nav(
                                   key: SettingsKeys.eventSuccessManualQaRow,
                                   title: 'Event success manual QA',
                                   valueText: 'Host and attendee side by side',
@@ -282,101 +281,81 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _settingsSection(
                           title: 'Notifications',
                           children: [
-                            CatchField(
+                            CatchField.toggle(
+                              key: SettingsKeys.newCatchesSwitch,
                               title: 'Push notifications',
                               icon: CatchIcons.favoriteOutline,
-                              action: CatchToggle(
-                                key: SettingsKeys.newCatchesSwitch,
-                                value: state.preferences.newCatches,
-                                semanticLabel: 'Push notifications',
-                                onChanged: state.mutations.savingPreference
-                                    ? null
-                                    : (value) => _savePref(
-                                        preference:
-                                            SettingsPreference.newCatches,
-                                        value: value,
-                                      ),
-                              ),
+                              value: state.preferences.newCatches,
+                              onChanged: state.mutations.savingPreference
+                                  ? null
+                                  : (value) => _savePref(
+                                      preference: SettingsPreference.newCatches,
+                                      value: value,
+                                    ),
                             ),
-                            CatchField(
+                            CatchField.toggle(
+                              key: SettingsKeys.messagesSwitch,
                               title: 'Messages',
                               icon: CatchIcons.chatBubbleOutlineRounded,
-                              action: CatchToggle(
-                                key: SettingsKeys.messagesSwitch,
-                                value: state.preferences.messages,
-                                semanticLabel: 'Messages',
-                                onChanged: state.mutations.savingPreference
-                                    ? null
-                                    : (value) => _savePref(
-                                        preference: SettingsPreference.messages,
-                                        value: value,
-                                      ),
-                              ),
+                              value: state.preferences.messages,
+                              onChanged: state.mutations.savingPreference
+                                  ? null
+                                  : (value) => _savePref(
+                                      preference: SettingsPreference.messages,
+                                      value: value,
+                                    ),
                             ),
-                            CatchField(
+                            CatchField.toggle(
+                              key: SettingsKeys.eventRemindersSwitch,
                               title: 'Event reminders',
                               icon: CatchIcons.directionsRunOutlined,
-                              action: CatchToggle(
-                                key: SettingsKeys.eventRemindersSwitch,
-                                value: state.preferences.eventReminders,
-                                semanticLabel: 'Event reminders',
-                                onChanged: state.mutations.savingPreference
-                                    ? null
-                                    : (value) => _savePref(
-                                        preference:
-                                            SettingsPreference.eventReminders,
-                                        value: value,
-                                      ),
-                              ),
+                              value: state.preferences.eventReminders,
+                              onChanged: state.mutations.savingPreference
+                                  ? null
+                                  : (value) => _savePref(
+                                      preference:
+                                          SettingsPreference.eventReminders,
+                                      value: value,
+                                    ),
                             ),
-                            CatchField(
+                            CatchField.toggle(
+                              key: SettingsKeys.eventStatusUpdatesSwitch,
                               title: 'Event changes and cancellations',
                               icon: CatchIcons.eventRepeatOutlined,
-                              action: CatchToggle(
-                                key: SettingsKeys.eventStatusUpdatesSwitch,
-                                value: state.preferences.eventStatusUpdates,
-                                semanticLabel:
-                                    'Event changes and cancellations',
-                                onChanged: state.mutations.savingPreference
-                                    ? null
-                                    : (value) => _savePref(
-                                        preference: SettingsPreference
-                                            .eventStatusUpdates,
-                                        value: value,
-                                      ),
-                              ),
+                              value: state.preferences.eventStatusUpdates,
+                              onChanged: state.mutations.savingPreference
+                                  ? null
+                                  : (value) => _savePref(
+                                      preference:
+                                          SettingsPreference.eventStatusUpdates,
+                                      value: value,
+                                    ),
                             ),
-                            CatchField(
+                            CatchField.toggle(
+                              key: SettingsKeys.clubUpdatesSwitch,
                               title: 'Club announcements',
                               icon: CatchIcons.notificationsActiveOutlined,
-                              action: CatchToggle(
-                                key: SettingsKeys.clubUpdatesSwitch,
-                                value: state.preferences.clubUpdates,
-                                semanticLabel: 'Club announcements',
-                                onChanged: state.mutations.savingPreference
-                                    ? null
-                                    : (value) => _savePref(
-                                        preference:
-                                            SettingsPreference.clubUpdates,
-                                        value: value,
-                                      ),
-                              ),
+                              value: state.preferences.clubUpdates,
+                              onChanged: state.mutations.savingPreference
+                                  ? null
+                                  : (value) => _savePref(
+                                      preference:
+                                          SettingsPreference.clubUpdates,
+                                      value: value,
+                                    ),
                             ),
-                            CatchField(
+                            CatchField.toggle(
+                              key: SettingsKeys.weeklyDigestSwitch,
                               title: 'Email updates',
                               icon: CatchIcons.markEmailReadOutlined,
-                              action: CatchToggle(
-                                key: SettingsKeys.weeklyDigestSwitch,
-                                value: state.preferences.weeklyDigest,
-                                semanticLabel: 'Email updates',
-                                onChanged: state.mutations.savingPreference
-                                    ? null
-                                    : (value) => _savePref(
-                                        preference:
-                                            SettingsPreference.weeklyDigest,
-                                        value: value,
-                                      ),
-                              ),
+                              value: state.preferences.weeklyDigest,
+                              onChanged: state.mutations.savingPreference
+                                  ? null
+                                  : (value) => _savePref(
+                                      preference:
+                                          SettingsPreference.weeklyDigest,
+                                      value: value,
+                                    ),
                             ),
                           ],
                         ),
@@ -390,41 +369,37 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             onUnblock: _unblockUser,
                           ),
                           children: [
-                            CatchField(
+                            CatchField.read(
                               title: 'Blocked users',
                               valueText: state.blockedAccounts.count
                                   ?.toString(),
                               icon: CatchIcons.shieldOutlined,
                             ),
-                            CatchField(
+                            CatchField.read(
                               title: 'Who can see you',
                               valueText: 'Runners on my events',
                               icon: CatchIcons.visibilityOutlined,
                             ),
-                            CatchField(
+                            CatchField.toggle(
+                              key: SettingsKeys.showOnMapSwitch,
                               title: 'Show me on map',
                               icon: CatchIcons.mapOutlined,
-                              action: CatchToggle(
-                                key: SettingsKeys.showOnMapSwitch,
-                                value: state.preferences.showOnMap,
-                                semanticLabel: 'Show me on map',
-                                onChanged: state.mutations.savingPreference
-                                    ? null
-                                    : (value) => _savePref(
-                                        preference:
-                                            SettingsPreference.showOnMap,
-                                        value: value,
-                                      ),
-                              ),
+                              value: state.preferences.showOnMap,
+                              onChanged: state.mutations.savingPreference
+                                  ? null
+                                  : (value) => _savePref(
+                                      preference: SettingsPreference.showOnMap,
+                                      value: value,
+                                    ),
                             ),
-                            CatchField(
+                            CatchField.nav(
                               title: 'Privacy policy',
                               icon: CatchIcons.lockOutline,
                               onTap: () => _openExternal(
                                 Uri.parse('https://catchdates.com/privacy'),
                               ),
                             ),
-                            CatchField(
+                            CatchField.nav(
                               key: SettingsKeys.deleteAccountRow,
                               title: 'Delete account',
                               icon: CatchIcons.deleteOutline,
@@ -446,7 +421,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _settingsSection(
                           title: 'About',
                           children: [
-                            CatchField(
+                            CatchField.nav(
                               title: 'Help & support',
                               valueText: 'Contact us',
                               icon: CatchIcons.helpOutline,
@@ -454,7 +429,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 Uri.parse('https://catchdates.com/help'),
                               ),
                             ),
-                            CatchField(
+                            CatchField.nav(
                               title: 'Terms',
                               valueText: 'Legal',
                               icon: CatchIcons.descriptionOutlined,
@@ -462,7 +437,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 Uri.parse('https://catchdates.com/terms'),
                               ),
                             ),
-                            CatchField(
+                            CatchField.read(
                               title: 'Version',
                               valueText: '1.0',
                               icon: CatchIcons.infoOutline,
@@ -473,7 +448,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           title: '',
                           hideTitle: true,
                           children: [
-                            CatchField(
+                            CatchField.nav(
                               key: SettingsKeys.signOutRow,
                               title: 'Log out',
                               icon: CatchIcons.logoutRounded,

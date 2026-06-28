@@ -108,7 +108,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
               ),
               gapW8,
               Expanded(
-                child: CatchField(
+                child: CatchField.input(
                   key: AuthFormKeys.phoneField,
                   title: 'Mobile number',
                   showLabel: false,

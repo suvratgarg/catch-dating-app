@@ -495,7 +495,7 @@ class _MatchTesterSheetState extends State<MatchTesterSheet> {
             style: CatchTextStyles.supporting(context),
           ),
           const SizedBox(height: CatchSpacing.s3),
-          CatchField(
+          CatchField.input(
             title: 'Phone number',
             controller: _controller,
             keyboardType: TextInputType.phone,

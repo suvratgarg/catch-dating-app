@@ -7,7 +7,6 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:flutter/material.dart';
@@ -140,7 +139,7 @@ class EventPolicyStep extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CatchField(
+                child: CatchField.input(
                   key: CreateEventFormKeys.capacity,
                   title: 'Max attendees',
                   controller: capacityController,
@@ -159,7 +158,7 @@ class EventPolicyStep extends StatelessWidget {
               ),
               gapW12,
               Expanded(
-                child: CatchField(
+                child: CatchField.input(
                   key: CreateEventFormKeys.price,
                   title: 'Base price ($currencyCode)',
                   controller: priceController,
@@ -237,7 +236,7 @@ class EventPolicyStep extends StatelessWidget {
                     ],
                   ),
                   gapH12,
-                  CatchField(
+                  CatchField.input(
                     key: CreateEventFormKeys.inviteCode,
                     title: 'Invite code',
                     controller: inviteCodeController,
@@ -267,42 +266,20 @@ class EventPolicyStep extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Cohort caps',
-                              style: CatchTextStyles.labelL(context),
-                            ),
-                            gapH4,
-                            Text(
-                              'Optionally cap straight men and straight women without making this a separate admission format.',
-                              style: CatchTextStyles.supporting(
-                                context,
-                                color: t.ink2,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      gapW12,
-                      CatchToggle(
-                        key: CreateEventFormKeys.cohortCapsToggle,
-                        value: cohortCapsEnabled,
-                        onChanged: onCohortCapsEnabledChanged,
-                        semanticLabel: 'Cohort caps',
-                      ),
-                    ],
+                  CatchField.toggle(
+                    key: CreateEventFormKeys.cohortCapsToggle,
+                    title: 'Cohort caps',
+                    body:
+                        'Optionally cap straight men and straight women without making this a separate admission format.',
+                    value: cohortCapsEnabled,
+                    onChanged: onCohortCapsEnabledChanged,
                   ),
                   if (cohortCapsEnabled) ...[
                     gapH12,
                     Row(
                       children: [
                         Expanded(
-                          child: CatchField(
+                          child: CatchField.input(
                             key: CreateEventFormKeys.maxMen,
                             title: 'Max straight men',
                             isOptional: true,
@@ -321,7 +298,7 @@ class EventPolicyStep extends StatelessWidget {
                         ),
                         gapW12,
                         Expanded(
-                          child: CatchField(
+                          child: CatchField.input(
                             key: CreateEventFormKeys.maxWomen,
                             title: 'Max straight women',
                             isOptional: true,
@@ -379,42 +356,20 @@ class EventPolicyStep extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Demand pricing',
-                              style: CatchTextStyles.labelL(context),
-                            ),
-                            gapH4,
-                            Text(
-                              'Increase the straight-men price when that cohort has more booked and waitlisted demand than the balancing cohort.',
-                              style: CatchTextStyles.supporting(
-                                context,
-                                color: t.ink2,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      gapW12,
-                      CatchToggle(
-                        key: CreateEventFormKeys.dynamicPricingToggle,
-                        value: dynamicPricingEnabled,
-                        onChanged: onDynamicPricingChanged,
-                        semanticLabel: 'Demand pricing',
-                      ),
-                    ],
+                  CatchField.toggle(
+                    key: CreateEventFormKeys.dynamicPricingToggle,
+                    title: 'Demand pricing',
+                    body:
+                        'Increase the straight-men price when that cohort has more booked and waitlisted demand than the balancing cohort.',
+                    value: dynamicPricingEnabled,
+                    onChanged: onDynamicPricingChanged,
                   ),
                   if (dynamicPricingEnabled) ...[
                     gapH12,
                     Row(
                       children: [
                         Expanded(
-                          child: CatchField(
+                          child: CatchField.input(
                             key: CreateEventFormKeys.dynamicPricingStep,
                             title: 'Step ($currencyCode)',
                             controller: dynamicPricingStepController,
@@ -432,7 +387,7 @@ class EventPolicyStep extends StatelessWidget {
                         ),
                         gapW12,
                         Expanded(
-                          child: CatchField(
+                          child: CatchField.input(
                             key: CreateEventFormKeys.dynamicPricingMax,
                             title: 'Max ($currencyCode)',
                             controller: dynamicPricingMaxController,
@@ -461,7 +416,7 @@ class EventPolicyStep extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CatchField(
+                child: CatchField.input(
                   key: CreateEventFormKeys.minAge,
                   title: 'Min age',
                   isOptional: true,
@@ -480,7 +435,7 @@ class EventPolicyStep extends StatelessWidget {
               ),
               gapW12,
               Expanded(
-                child: CatchField(
+                child: CatchField.input(
                   key: CreateEventFormKeys.maxAge,
                   title: 'Max age',
                   isOptional: true,

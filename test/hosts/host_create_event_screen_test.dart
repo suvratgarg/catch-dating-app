@@ -6,8 +6,8 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
@@ -112,7 +112,7 @@ void main() {
         await _pumpTestAnimation(tester);
 
         expect(find.text('Event policy'), findsOneWidget);
-        expect(find.byType(CatchToggle), findsOneWidget);
+        expect(_fieldToggle('Cohort caps'), findsOneWidget);
         expect(
           find.byWidgetPredicate(
             (widget) =>
@@ -1074,6 +1074,12 @@ void main() {
   });
 }
 
+Finder _fieldToggle(String label) {
+  return find.byWidgetPredicate(
+    (widget) => widget is CatchField && widget.title == label,
+  );
+}
+
 EventDraft _buildEventDraft({
   required String id,
   required DateTime savedAt,
@@ -1264,13 +1270,27 @@ Future<void> _enterCreateEventText(
   Key fieldKey,
   String text,
 ) async {
-  final field = find.descendant(
-    of: find.byKey(fieldKey, skipOffstage: false),
+  tester.testTextInput.hide();
+  await tester.pump();
+
+  final field = find.byKey(fieldKey);
+  await tester.ensureVisible(field);
+
+  final catchField = tester.widget<CatchField>(field);
+  final fieldTitle = catchField.title;
+  final tapTarget = fieldTitle == null
+      ? field
+      : find.descendant(of: field, matching: find.text(fieldTitle)).first;
+  await tester.tap(tapTarget);
+  await tester.pump();
+
+  final textField = find.descendant(
+    of: field,
     matching: find.byType(TextField),
   );
-  await tester.ensureVisible(field);
+  await tester.enterText(textField, text);
+  tester.testTextInput.hide();
   await tester.pump();
-  await tester.enterText(field, text);
 }
 
 Future<void> _tapActivityKind(WidgetTester tester, String label) async {

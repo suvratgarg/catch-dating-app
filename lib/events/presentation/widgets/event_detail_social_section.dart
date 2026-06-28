@@ -48,7 +48,7 @@ class EventDetailSocialSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchSection(
+        CatchSection.divided(
           title: "Who's going",
           count: event.signedUpCount,
           dividerColor: surfaceStyle?.dividerColor,
@@ -67,7 +67,7 @@ class EventDetailSocialSection extends StatelessWidget {
                 ),
         ),
         if (canShowMemberContext) ...[
-          CatchSection(
+          CatchSection.divided(
             title: 'Reviews',
             dividerColor: surfaceStyle?.dividerColor,
             titleColor: surfaceStyle?.headingColor,

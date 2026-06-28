@@ -1014,10 +1014,9 @@ class HostRosterSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSection(
-      variant: CatchSectionVariant.contained,
+    return CatchSection.contained(
       padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
-      child: CatchField(
+      child: CatchField.input(
         key: ValueKey('hostRosterSearch-$label'),
         title: label,
         showLabel: false,

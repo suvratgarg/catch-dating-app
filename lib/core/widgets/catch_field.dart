@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -24,7 +25,7 @@ enum CatchFieldSupportTone { neutral, brand, success }
 /// Stack fields in a CatchSection when the surrounding section owns box or
 /// divider chrome.
 class CatchField extends StatefulWidget {
-  const CatchField({
+  const CatchField._({
     super.key,
     this.title,
     this.body,
@@ -51,7 +52,6 @@ class CatchField extends StatefulWidget {
     this.errorText,
     this.valid = false,
     this.divider = false,
-    this.tint = true,
     this.onTap,
     this.controller,
     this.initialValue,
@@ -89,7 +89,266 @@ class CatchField extends StatefulWidget {
     this._selectValue,
     this._onSelectChanged,
     this._selectValidator,
-  });
+  }) : assert(
+         mode != CatchFieldMode.select ||
+             (_selectValues != null && _selectItemLabel != null),
+         'Use CatchField.select to build select fields.',
+       ),
+       assert(
+         controller == null || initialValue == null,
+         'CatchField.input cannot include both controller and initialValue.',
+       );
+
+  const CatchField.read({
+    Key? key,
+    String? title,
+    String? body,
+    Widget? action,
+    int titleMaxLines = 1,
+    int bodyMaxLines = 2,
+    CatchFieldEmphasis emphasis = CatchFieldEmphasis.body,
+    CatchFieldTone tone = CatchFieldTone.normal,
+    IconData? icon,
+    Color? iconColor,
+    String? valueText,
+    int valueMaxLines = 1,
+    String? placeholder,
+    bool valid = false,
+    bool divider = false,
+  }) : this._(
+         key: key,
+         title: title,
+         body: body,
+         action: action,
+         titleMaxLines: titleMaxLines,
+         bodyMaxLines: bodyMaxLines,
+         mode: CatchFieldMode.read,
+         emphasis: emphasis,
+         tone: tone,
+         icon: icon,
+         iconColor: iconColor,
+         valueText: valueText,
+         valueMaxLines: valueMaxLines,
+         placeholder: placeholder,
+         valid: valid,
+         divider: divider,
+       );
+
+  const CatchField.nav({
+    Key? key,
+    String? title,
+    String? body,
+    Widget? action,
+    VoidCallback? onTap,
+    int titleMaxLines = 1,
+    int bodyMaxLines = 2,
+    CatchFieldEmphasis emphasis = CatchFieldEmphasis.body,
+    CatchFieldTone tone = CatchFieldTone.normal,
+    IconData? icon,
+    Color? iconColor,
+    String? valueText,
+    int valueMaxLines = 1,
+    bool? showChevron,
+    String? placeholder,
+    String? error,
+    String? errorText,
+    bool valid = false,
+    bool divider = false,
+  }) : this._(
+         key: key,
+         title: title,
+         body: body,
+         action: action,
+         titleMaxLines: titleMaxLines,
+         bodyMaxLines: bodyMaxLines,
+         mode: CatchFieldMode.nav,
+         emphasis: emphasis,
+         tone: tone,
+         icon: icon,
+         iconColor: iconColor,
+         valueText: valueText,
+         valueMaxLines: valueMaxLines,
+         showChevron: showChevron,
+         placeholder: placeholder,
+         error: error,
+         errorText: errorText,
+         valid: valid,
+         divider: divider,
+         onTap: onTap,
+       );
+
+  const CatchField.toggle({
+    Key? key,
+    String? title,
+    String? body,
+    required bool value,
+    required ValueChanged<bool>? onChanged,
+    int titleMaxLines = 1,
+    int bodyMaxLines = 2,
+    CatchFieldEmphasis emphasis = CatchFieldEmphasis.body,
+    CatchFieldTone tone = CatchFieldTone.normal,
+    IconData? icon,
+    Color? iconColor,
+    bool divider = false,
+  }) : this._(
+         key: key,
+         title: title,
+         body: body,
+         titleMaxLines: titleMaxLines,
+         bodyMaxLines: bodyMaxLines,
+         mode: CatchFieldMode.toggle,
+         emphasis: emphasis,
+         tone: tone,
+         icon: icon,
+         iconColor: iconColor,
+         toggled: value,
+         onToggle: onChanged,
+         divider: divider,
+       );
+
+  const CatchField.input({
+    Key? key,
+    required String title,
+    String? placeholder,
+    TextEditingController? controller,
+    String? initialValue,
+    ValueChanged<String>? onChanged,
+    ValueChanged<String>? onSubmitted,
+    ValueChanged<bool>? onFocusChanged,
+    FormFieldValidator<String>? validator,
+    TextInputType? keyboardType,
+    TextInputAction? textInputAction,
+    TextCapitalization textCapitalization = TextCapitalization.none,
+    List<TextInputFormatter>? inputFormatters,
+    Iterable<String>? autofillHints,
+    bool obscureText = false,
+    int? maxLines = 1,
+    int? minLines,
+    bool readOnly = false,
+    bool autofocus = false,
+    bool enabled = true,
+    bool isOptional = false,
+    bool showLabel = true,
+    String? helperText,
+    CatchFieldSupportTone helperTone = CatchFieldSupportTone.neutral,
+    CatchFieldSize size = CatchFieldSize.md,
+    TextAlign textAlign = TextAlign.start,
+    bool focused = false,
+    bool mono = false,
+    Widget? prefixIcon,
+    String? prefixText,
+    Widget? suffixIcon,
+    String? suffixText,
+    bool showClearButton = false,
+    bool floatingLabel = true,
+    CatchFieldVariant variant = CatchFieldVariant.row,
+    IconData? icon,
+    Color? iconColor,
+    String? leadingUnit,
+    Widget? action,
+    String? error,
+    String? errorText,
+    bool divider = false,
+    VoidCallback? onTap,
+  }) : this._(
+         key: key,
+         title: title,
+         action: action,
+         mode: CatchFieldMode.edit,
+         variant: variant,
+         icon: icon,
+         iconColor: iconColor,
+         leadingUnit: leadingUnit,
+         placeholder: placeholder,
+         error: error,
+         errorText: errorText,
+         divider: divider,
+         onTap: onTap,
+         controller: controller,
+         initialValue: initialValue,
+         onChanged: onChanged,
+         onSubmitted: onSubmitted,
+         onFocusChanged: onFocusChanged,
+         validator: validator,
+         keyboardType: keyboardType,
+         textInputAction: textInputAction,
+         textCapitalization: textCapitalization,
+         inputFormatters: inputFormatters,
+         autofillHints: autofillHints,
+         obscureText: obscureText,
+         maxLines: maxLines,
+         minLines: minLines,
+         readOnly: readOnly,
+         autofocus: autofocus,
+         enabled: enabled,
+         isOptional: isOptional,
+         showLabel: showLabel,
+         helperText: helperText,
+         helperTone: helperTone,
+         size: size,
+         textAlign: textAlign,
+         focused: focused,
+         mono: mono,
+         prefixIcon: prefixIcon,
+         prefixText: prefixText,
+         suffixIcon: suffixIcon,
+         suffixText: suffixText,
+         showClearButton: showClearButton,
+         floatingLabel: floatingLabel,
+       );
+
+  const CatchField.expanding({
+    Key? key,
+    required String title,
+    String? body,
+    required Widget control,
+    bool initiallyExpanded = false,
+    int titleMaxLines = 1,
+    int bodyMaxLines = 2,
+    CatchFieldEmphasis emphasis = CatchFieldEmphasis.body,
+    CatchFieldTone tone = CatchFieldTone.normal,
+    IconData? icon,
+    Color? iconColor,
+    String? placeholder,
+    String? error,
+    String? errorText,
+    bool divider = false,
+    VoidCallback? onTap,
+  }) : this._(
+         key: key,
+         title: title,
+         body: body,
+         titleMaxLines: titleMaxLines,
+         bodyMaxLines: bodyMaxLines,
+         mode: CatchFieldMode.nav,
+         emphasis: emphasis,
+         tone: tone,
+         icon: icon,
+         iconColor: iconColor,
+         placeholder: placeholder,
+         control: control,
+         initiallyExpanded: initiallyExpanded,
+         error: error,
+         errorText: errorText,
+         divider: divider,
+         onTap: onTap,
+       );
+
+  const CatchField.add({
+    Key? key,
+    required String title,
+    VoidCallback? onTap,
+    IconData? icon,
+    CatchFieldTone tone = CatchFieldTone.primary,
+  }) : this._(
+         key: key,
+         title: title,
+         mode: CatchFieldMode.nav,
+         tone: tone,
+         icon: icon,
+         add: true,
+         onTap: onTap,
+       );
 
   static CatchField select<T>({
     Key? key,
@@ -102,30 +361,26 @@ class CatchField extends StatefulWidget {
     ValueChanged<T?>? onChanged,
     FormFieldValidator<T>? validator,
     bool enabled = true,
-    bool isOptional = false,
     bool showLabel = true,
     CatchFieldSize size = CatchFieldSize.md,
-    CatchFieldTone tone = CatchFieldTone.normal,
-    CatchFieldVariant variant = CatchFieldVariant.row,
     String? helperText,
     CatchFieldSupportTone helperTone = CatchFieldSupportTone.neutral,
-    bool floatingLabel = false,
   }) {
-    return CatchField(
+    assert(
+      values.toSet().length == values.length,
+      'CatchField.select values must be unique.',
+    );
+    return CatchField._(
       key: key,
       title: title,
       placeholder: hintText ?? 'Select ${title.toLowerCase()}',
       prefixIcon: prefixIcon,
       mode: CatchFieldMode.select,
       enabled: enabled,
-      isOptional: isOptional,
       showLabel: showLabel,
       size: size,
-      tone: tone,
-      variant: variant,
       helperText: helperText,
       helperTone: helperTone,
-      floatingLabel: floatingLabel,
       selectValues: List<Object?>.unmodifiable(values),
       selectValue: value,
       selectItemLabel: (item) => itemLabel(item as T),
@@ -182,7 +437,6 @@ class CatchField extends StatefulWidget {
   final String? errorText;
   final bool valid;
   final bool divider;
-  final bool tint;
   final VoidCallback? onTap;
 
   final TextEditingController? controller;
@@ -243,6 +497,8 @@ class _CatchFieldState extends State<CatchField> {
 
   bool _focused = false;
   late bool _open;
+  late bool _inputWasEmpty;
+  bool _textEntryHasValidationError = false;
 
   TextEditingController get _controller =>
       widget.controller ?? _internalController;
@@ -255,6 +511,7 @@ class _CatchFieldState extends State<CatchField> {
     _internalController = TextEditingController(
       text: widget.controller == null ? widget.initialValue : null,
     );
+    _inputWasEmpty = _controller.text.isEmpty;
     _attachControllerListener(_controller);
   }
 
@@ -264,15 +521,9 @@ class _CatchFieldState extends State<CatchField> {
     if (oldWidget.control != widget.control && widget.control == null) {
       _open = false;
     }
-    if (oldWidget._selectValue != widget._selectValue) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        final field = _selectFieldKey.currentState;
-        final value = _normalizedSelectValue(widget._selectValue);
-        if (field != null && field.value != value) {
-          field.didChange(value);
-        }
-      });
+    if (oldWidget._selectValue != widget._selectValue ||
+        !listEquals(oldWidget._selectValues, widget._selectValues)) {
+      _scheduleSelectFieldSync();
     }
 
     final oldController = oldWidget.controller ?? _internalController;
@@ -302,7 +553,9 @@ class _CatchFieldState extends State<CatchField> {
   }
 
   void _handleFocusChanged() {
-    _focused = _focusNode.hasFocus;
+    final focused = _focusNode.hasFocus;
+    if (_focused == focused) return;
+    _focused = focused;
     widget.onFocusChanged?.call(_focused);
     setState(() {});
   }
@@ -313,10 +566,47 @@ class _CatchFieldState extends State<CatchField> {
   }
 
   void _syncFieldValue() {
+    final text = _controller.text;
     final field = _fieldKey.currentState;
-    if (field != null && field.value != _controller.text) {
-      field.didChange(_controller.text);
+    if (field != null && field.value != text) {
+      field.didChange(text);
     }
+    final isEmpty = text.isEmpty;
+    final needsParentRebuild = isEmpty != _inputWasEmpty;
+    _inputWasEmpty = isEmpty;
+    if (mounted && needsParentRebuild) setState(() {});
+  }
+
+  void _scheduleSelectFieldSync() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final field = _selectFieldKey.currentState;
+      final value = _normalizedSelectValue(widget._selectValue);
+      if (field != null && field.value != value) {
+        field.didChange(value);
+      }
+    });
+  }
+
+  void _setTextEntryValidationError(bool hasError) {
+    if (_textEntryHasValidationError == hasError) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _textEntryHasValidationError == hasError) return;
+      setState(() => _textEntryHasValidationError = hasError);
+    });
+  }
+
+  void _expandAndFocusTextEntry() {
+    setState(() {
+      if (!_focused) {
+        _focused = true;
+        widget.onFocusChanged?.call(true);
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _focusNode.requestFocus();
+    });
   }
 
   CatchFieldMode get _mode => _hasSelect
@@ -334,9 +624,13 @@ class _CatchFieldState extends State<CatchField> {
   bool get _hasControl => widget.control != null;
   bool get _hasSelect =>
       widget._selectValues != null && widget._selectItemLabel != null;
-  bool get _hasError => _displayError != null && _displayError!.isNotEmpty;
-  bool get _active => _focused || _open;
+  bool get _hasFieldValidationError => _textEntryHasValidationError;
+  bool get _hasError =>
+      (_displayError != null && _displayError!.isNotEmpty) ||
+      _hasFieldValidationError;
+  bool get _active => _focused || widget.focused || _open;
   bool get _isEdit => _mode == CatchFieldMode.edit;
+  bool get _hasInputValue => !_inputWasEmpty;
   bool get _hasTextEntryConfiguration =>
       widget.controller != null ||
       widget.initialValue != null ||
@@ -358,11 +652,20 @@ class _CatchFieldState extends State<CatchField> {
       widget.suffixIcon != null ||
       widget.suffixText != null ||
       widget.showClearButton;
-  bool get _titlePrimary => widget.emphasis == CatchFieldEmphasis.title;
-  bool get _usesCanonicalContent =>
-      widget.title != null || widget.body != null || widget.action != null;
   bool get _usesUnderlineChrome =>
       _isEdit && widget.variant == CatchFieldVariant.underline;
+  bool get _usesRowPrefixIcon =>
+      _isEdit &&
+      !_usesUnderlineChrome &&
+      !_compactTextEntry &&
+      widget.showLabel &&
+      widget.prefixIcon != null;
+  bool get _usesRowTextEntryTrailing =>
+      _isEdit &&
+      !_usesUnderlineChrome &&
+      !_compactTextEntry &&
+      (widget.showClearButton || widget.suffixIcon != null || _action != null);
+  bool get _hasLeadingSlot => widget.icon != null || _usesRowPrefixIcon;
   String? get _title => widget.title;
   String? get _body => widget.body;
   Widget? get _action => widget.action;
@@ -374,11 +677,21 @@ class _CatchFieldState extends State<CatchField> {
           (widget.mode == CatchFieldMode.nav || _action == null) &&
           widget.tone != CatchFieldTone.danger);
 
-  /// A value-less read/nav/toggle row where the title is the primary text.
-  bool get _inline =>
-      !_isEdit && !_hasControl && !_hasValue && !_open && !_titlePrimary;
-
-  bool get _floated => !_isEdit || _hasValue || _active;
+  bool get _textEntryCanCollapse =>
+      _isEdit && widget.showLabel && (_title?.isNotEmpty ?? false);
+  bool get _textEntryExpanded =>
+      !_textEntryCanCollapse ||
+      _hasInputValue ||
+      _active ||
+      _hasError ||
+      widget.autofocus;
+  bool _textEntryExpandedWith({required bool hasError}) =>
+      !_textEntryCanCollapse ||
+      _hasInputValue ||
+      _active ||
+      hasError ||
+      widget.autofocus;
+  bool get _textEntryCollapsed => _textEntryCanCollapse && !_textEntryExpanded;
   bool get _compactTextEntry =>
       _isEdit && widget.size == CatchFieldSize.floating && !widget.showLabel;
 
@@ -394,7 +707,7 @@ class _CatchFieldState extends State<CatchField> {
         if (widget.divider && !_active)
           Positioned(
             top: 0,
-            left: widget.icon != null
+            left: _hasLeadingSlot
                 ? CatchLayout.settingsRowDividerIconInset
                 : CatchSpacing.s4,
             right: CatchSpacing.s4,
@@ -409,125 +722,238 @@ class _CatchFieldState extends State<CatchField> {
   }
 
   Widget _buildAdd(CatchTokens t) {
-    return InkWell(
+    return _CatchFieldRow.add(
       onTap: widget.onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s4,
-          vertical: CatchSpacing.micro14,
-        ),
-        child: Row(
-          children: [
-            Icon(
-              widget.icon ?? CatchIcons.add,
-              size: CatchIcon.md,
-              color: t.primary,
-            ),
-            const SizedBox(width: CatchSpacing.s3),
-            Text(
-              _title ?? '',
-              style: CatchTextStyles.titleS(
-                context,
-                color: _toneColor(t, primaryFallback: t.primary),
-              ),
-            ),
-          ],
+      leading: Icon(
+        widget.icon ?? CatchIcons.add,
+        size: CatchIcon.md,
+        color: t.primary,
+      ),
+      content: Text(
+        _title ?? '',
+        style: CatchTextStyles.titleS(
+          context,
+          color: _toneColor(t, primaryFallback: t.primary),
         ),
       ),
     );
   }
 
   Widget _buildRow(CatchTokens t) {
-    final clickable = _hasControl || (widget.onTap != null && !_isEdit);
-    final row = ConstrainedBox(
+    final canFocusCollapsedTextEntry =
+        _textEntryCollapsed &&
+        widget.enabled &&
+        (!widget.readOnly || widget.onTap != null);
+    final canToggleRow =
+        _mode == CatchFieldMode.toggle && widget.onToggle != null;
+    final clickable =
+        _hasControl ||
+        canToggleRow ||
+        (widget.onTap != null && !_isEdit) ||
+        canFocusCollapsedTextEntry;
+    return _CatchFieldRow.standard(
       constraints: _rowConstraints,
-      child: Padding(
-        padding: _rowPadding,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (widget.icon != null) ...[
-              Padding(
-                padding: const EdgeInsets.only(top: CatchSpacing.micro2),
-                child: Icon(
-                  widget.icon,
-                  size: CatchIcon.md,
-                  color:
-                      widget.iconColor ??
-                      (_focused ? t.ink : _toneColor(t, muted: true)),
-                ),
-              ),
-              const SizedBox(width: CatchSpacing.s3),
-            ],
-            Expanded(child: _buildBody(t)),
-            ..._buildEndControls(t),
-          ],
-        ),
-      ),
-    );
-
-    return InkWell(
+      padding: _rowPadding,
+      leading: _buildLeadingSlot(t),
+      trailing: _buildTrailingSlot(t),
       onTap: clickable
           ? () {
+              if (canFocusCollapsedTextEntry) {
+                if (widget.readOnly && widget.onTap != null) {
+                  widget.onTap!();
+                  return;
+                }
+                _expandAndFocusTextEntry();
+                return;
+              }
               if (_hasControl) setState(() => _open = !_open);
+              if (canToggleRow) {
+                widget.onToggle!(!widget.toggled);
+                return;
+              }
               widget.onTap?.call();
             }
           : null,
-      child: row,
+      content: _buildBody(t),
     );
   }
 
-  Widget _buildBody(CatchTokens t) {
-    if (_usesCanonicalContent && !_isEdit) return _buildCanonicalBody(t);
+  Widget? _buildLeadingSlot(CatchTokens t) {
+    if (widget.icon != null) {
+      return Icon(
+        widget.icon,
+        size: CatchIcon.md,
+        color:
+            widget.iconColor ?? (_focused ? t.ink : _toneColor(t, muted: true)),
+      );
+    }
 
-    final labelInPlace = _inline || _titlePrimary || _compactTextEntry;
-    return Padding(
-      padding: EdgeInsets.only(top: labelInPlace ? 0 : CatchSpacing.s4),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          if (_title != null && _title!.isNotEmpty)
-            labelInPlace
-                ? _buildFieldLabel(
-                    style: _titlePrimary
-                        ? CatchTextStyles.fieldRowTitle(
-                            context,
-                            color: _hasError
-                                ? t.danger
-                                : _toneColor(t, primaryFallback: t.ink),
-                          )
-                        : CatchTextStyles.bodyM(
-                            context,
-                            color: _hasError
-                                ? t.danger
-                                : _toneColor(t, primaryFallback: t.ink),
-                          ),
-                  )
-                : AnimatedPositioned(
-                    duration: CatchMotion.fast,
-                    curve: CatchMotion.standardCurve,
-                    left: 0,
-                    right: 0,
-                    top: _floated ? 0 : CatchSpacing.s4,
-                    child: _buildFieldLabel(
-                      style: _floated
-                          ? CatchTextStyles.fieldLabel(
-                              context,
-                              color: _hasError
-                                  ? t.danger
-                                  : _focused
-                                  ? t.ink
-                                  : t.ink3,
-                            )
-                          : CatchTextStyles.bodyM(
-                              context,
-                              color: _hasError ? t.danger : t.ink3,
-                            ),
-                    ),
-                  ),
-          _buildContent(t),
-        ],
+    if (_usesRowPrefixIcon) {
+      return IconTheme(
+        data: IconThemeData(
+          color: _hasError ? t.danger : t.ink2,
+          size: CatchIcon.md,
+        ),
+        child: widget.prefixIcon!,
+      );
+    }
+
+    return null;
+  }
+
+  Widget? _buildSelectLeadingSlot(CatchTokens t) {
+    if (widget.prefixIcon == null) return null;
+    return IconTheme(
+      data: IconThemeData(
+        color: widget.enabled ? t.ink2 : t.ink3,
+        size: CatchIcon.md,
       ),
+      child: widget.prefixIcon!,
+    );
+  }
+
+  Widget? _buildTrailingSlot(CatchTokens t) {
+    if (widget.valid && !_hasError) return _CatchFieldTrailing.valid();
+
+    if (_mode == CatchFieldMode.toggle) {
+      return _CatchFieldTrailing.toggle(
+        value: widget.toggled,
+        onChanged: widget.onToggle,
+        semanticLabel: _title,
+      );
+    }
+
+    if (_usesRowTextEntryTrailing) {
+      return _buildTextEntryTrailingSlot(t);
+    }
+
+    if (_hasControl) {
+      return _CatchFieldTrailing.rotatingChevron(
+        open: _open,
+        color: _active ? t.ink : t.ink3,
+        topPadding: _rowTrailingTopPadding,
+      );
+    }
+
+    if (_mode == CatchFieldMode.nav) {
+      return _buildTrailingGroup(t, includeChevron: _shouldShowChevron);
+    }
+
+    return _buildTrailingGroup(t);
+  }
+
+  Widget? _buildTextEntryTrailingSlot(CatchTokens t) {
+    final fallback = _buildCustomTrailingSlot(t, _action ?? widget.suffixIcon);
+    if (!widget.showClearButton) return fallback;
+
+    return ValueListenableBuilder<TextEditingValue>(
+      valueListenable: _controller,
+      builder: (_, value, _) {
+        if (value.text.isEmpty) return fallback ?? const SizedBox.shrink();
+        return _CatchFieldTrailing.clear(
+          tooltip: 'Clear ${_title ?? 'field'}',
+          onPressed: () {
+            _controller.clear();
+            widget.onChanged?.call('');
+          },
+          topPadding: _rowTrailingTopPadding,
+        );
+      },
+    );
+  }
+
+  Widget? _buildTrailingGroup(CatchTokens t, {bool includeChevron = false}) {
+    final children = <Widget>[];
+    final flexibleIndices = <int>{};
+    final valueText = widget.valueText?.trim();
+    if (valueText != null && valueText.isNotEmpty) {
+      flexibleIndices.add(children.length);
+      children.add(
+        _CatchFieldTrailing.valueText(
+          text: valueText,
+          maxLines: widget.valueMaxLines,
+          topPadding: _rowTrailingTopPadding,
+        ),
+      );
+    }
+
+    final custom = _buildCustomTrailingSlot(t, _action);
+    if (custom != null) children.add(custom);
+
+    if (includeChevron) {
+      children.add(
+        _CatchFieldTrailing.fixedChevron(
+          color: t.ink3,
+          topPadding: _rowTrailingTopPadding,
+        ),
+      );
+    }
+
+    if (children.isEmpty) return null;
+    if (children.length == 1) return children.single;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < children.length; i++) ...[
+          if (i > 0) const SizedBox(width: CatchSpacing.s2),
+          if (flexibleIndices.contains(i))
+            Flexible(child: children[i])
+          else
+            children[i],
+        ],
+      ],
+    );
+  }
+
+  Widget? _buildCustomTrailingSlot(CatchTokens t, Widget? child) {
+    if (child == null) return null;
+    return _CatchFieldTrailing.custom(
+      topPadding: _rowTrailingTopPadding,
+      color: t.ink3,
+      child: child,
+    );
+  }
+
+  double get _rowTrailingTopPadding {
+    if (!_isEdit && widget.emphasis == CatchFieldEmphasis.title) {
+      return CatchSpacing.micro2;
+    }
+
+    final textEntryValueLine =
+        _isEdit &&
+        !_textEntryCollapsed &&
+        widget.showLabel &&
+        (_title?.isNotEmpty ?? false);
+    final canonicalValueLine =
+        !_isEdit &&
+        ((_body?.trim().isNotEmpty ?? false) ||
+            (_placeholderText?.trim().isNotEmpty ?? false));
+    return textEntryValueLine || canonicalValueLine
+        ? CatchSpacing.micro18
+        : CatchSpacing.micro2;
+  }
+
+  Widget _buildBody(CatchTokens t) {
+    if (_isEdit) return _buildTextEntryBody(t);
+
+    final title = _title?.trim();
+    final value = _body?.trim().isNotEmpty == true
+        ? _body!.trim()
+        : _placeholderText?.trim();
+    final error = _displayError?.trim();
+    final hasValue = value != null && value.isNotEmpty;
+
+    return _buildFieldContent(
+      t,
+      label: title,
+      value: value,
+      supportText: error?.isNotEmpty == true ? error : null,
+      control: _open ? widget.control : null,
+      labelEmphasized: widget.emphasis == CatchFieldEmphasis.title || !hasValue,
+      valueIsPlaceholder: !_hasValue,
+      valueMaxLines: widget.bodyMaxLines,
+      hasError: error?.isNotEmpty == true,
     );
   }
 
@@ -551,20 +977,66 @@ class _CatchFieldState extends State<CatchField> {
     );
   }
 
-  Widget _buildCanonicalBody(CatchTokens t) {
-    final title = _title?.trim();
-    final body = _body?.trim().isNotEmpty == true
-        ? _body!.trim()
-        : _placeholderText?.trim();
-    final error = _displayError?.trim();
-    final hasTitle = title != null && title.isNotEmpty;
-    final hasBody = body != null && body.isNotEmpty;
-    final hasError = error != null && error.isNotEmpty;
-    final control = _open ? widget.control : null;
+  Widget _buildTextEntryBody(CatchTokens t) {
+    return _buildTextEntryField(
+      context,
+      showLabelOverride: false,
+      variantOverride: CatchFieldVariant.bare,
+      valueEmphasis: true,
+      rowBody: true,
+    );
+  }
 
-    if (!hasTitle && !hasBody && !hasError && control == null) {
+  Widget _buildFieldContent(
+    CatchTokens t, {
+    String? label,
+    String? value,
+    Widget? valueWidget,
+    String? supportText,
+    Widget? control,
+    bool hasError = false,
+    bool labelEmphasized = false,
+    bool valueIsPlaceholder = false,
+    int valueMaxLines = 1,
+    TextStyle? labelStyle,
+    TextStyle? valueStyle,
+  }) {
+    final labelText = label?.trim();
+    final valueText = value?.trim();
+    final hasLabel = labelText != null && labelText.isNotEmpty;
+    final hasValue =
+        valueWidget != null || (valueText != null && valueText.isNotEmpty);
+    final support = supportText?.trim();
+    final hasSupport = support != null && support.isNotEmpty;
+    final hasControl = control != null;
+
+    if (!hasLabel && !hasValue && !hasSupport && !hasControl) {
       return const SizedBox.shrink();
     }
+
+    final effectiveLabelStyle =
+        labelStyle ??
+        (labelEmphasized
+            ? CatchTextStyles.fieldRowTitle(
+                context,
+                color: hasError
+                    ? t.danger
+                    : _toneColor(t, primaryFallback: t.ink),
+              )
+            : CatchTextStyles.fieldLabel(
+                context,
+                color: hasError ? t.danger : t.ink3,
+              ));
+    final effectiveValueStyle =
+        valueStyle ??
+        (labelEmphasized
+            ? CatchTextStyles.bodyS(context, color: t.ink3)
+            : CatchTextStyles.fieldRowTitle(
+                context,
+                color: valueIsPlaceholder
+                    ? t.ink3
+                    : _toneColor(t, primaryFallback: t.ink),
+              ));
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: CatchSpacing.micro2),
@@ -572,38 +1044,37 @@ class _CatchFieldState extends State<CatchField> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (hasTitle)
+          if (hasLabel)
             Text(
-              title,
+              labelText,
               maxLines: widget.titleMaxLines,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.fieldRowTitle(
-                context,
-                color: _hasError
-                    ? t.danger
-                    : _toneColor(t, primaryFallback: t.ink),
-              ),
+              style: effectiveLabelStyle,
             ),
-          if (hasBody) ...[
-            if (hasTitle) const SizedBox(height: CatchSpacing.micro3),
-            Text(
-              body,
-              maxLines: widget.bodyMaxLines,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.bodyS(context, color: t.ink3),
-            ),
+          if (hasValue) ...[
+            if (hasLabel) const SizedBox(height: CatchSpacing.micro3),
+            valueWidget ??
+                Text(
+                  valueText!,
+                  maxLines: valueMaxLines,
+                  overflow: TextOverflow.ellipsis,
+                  style: effectiveValueStyle,
+                ),
           ],
-          if (hasError) ...[
-            if (hasTitle || hasBody) const SizedBox(height: CatchSpacing.s1),
+          if (hasSupport) ...[
+            if (hasLabel || hasValue) const SizedBox(height: CatchSpacing.s1),
             Text(
-              error,
+              support,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.supporting(context, color: t.danger),
+              style: CatchTextStyles.supporting(
+                context,
+                color: hasError ? t.danger : _supportColor(t),
+              ),
             ),
           ],
-          if (control != null) ...[
-            if (hasTitle || hasBody || hasError)
+          if (hasControl) ...[
+            if (hasLabel || hasValue || hasSupport)
               const SizedBox(height: CatchSpacing.s3),
             control,
           ],
@@ -612,77 +1083,12 @@ class _CatchFieldState extends State<CatchField> {
     );
   }
 
-  Widget _buildContent(CatchTokens t) {
-    if (_isEdit) {
-      return Padding(
-        padding: EdgeInsets.only(
-          top: _title == null || _title!.isEmpty || !widget.showLabel
-              ? 0
-              : CatchSpacing.s8,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            if (widget.leadingUnit != null) ...[
-              Text(
-                widget.leadingUnit!,
-                style: CatchTextStyles.titleS(context, color: t.ink2),
-              ),
-              const SizedBox(width: CatchSpacing.s1),
-            ],
-            Expanded(
-              child: _buildTextEntryField(
-                context,
-                showLabelOverride: false,
-                variantOverride: CatchFieldVariant.bare,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (_open && _hasControl) {
-      return Padding(
-        padding: const EdgeInsets.only(top: CatchSpacing.s1),
-        child: widget.control,
-      );
-    }
-
-    if (_titlePrimary) {
-      return _hasValue
-          ? Padding(
-              padding: const EdgeInsets.only(top: CatchSpacing.micro2),
-              child: Text(
-                _body!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.fieldLabel(
-                  context,
-                  color: _hasError ? t.danger : null,
-                ),
-              ),
-            )
-          : const SizedBox.shrink();
-    }
-
-    if (_inline) return const SizedBox.shrink();
-
-    return Text(
-      _hasValue ? _body! : (_placeholderText ?? ''),
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: _hasValue
-          ? CatchTextStyles.fieldRowTitle(context)
-          : CatchTextStyles.bodyM(context, color: t.ink3),
-    );
-  }
-
   Widget _buildTextEntryField(
     BuildContext context, {
     bool? showLabelOverride,
     CatchFieldVariant? variantOverride,
+    bool valueEmphasis = false,
+    bool rowBody = false,
   }) {
     final effectiveVariant = variantOverride ?? widget.variant;
     final effectiveShowLabel = showLabelOverride ?? widget.showLabel;
@@ -699,105 +1105,67 @@ class _CatchFieldState extends State<CatchField> {
             ? rawError!.trim()
             : null;
         final hasError = error != null;
+        _setTextEntryValidationError(state.hasError);
         final supportText = error ?? widget.helperText;
-        final canInteract = !widget.readOnly || widget.onTap != null;
-        final effectiveFocused = _focusNode.hasFocus || widget.focused;
-        final textField = TextField(
-          controller: _controller,
-          focusNode: _focusNode,
-          enabled: widget.enabled,
-          readOnly: widget.readOnly,
-          canRequestFocus: canInteract,
-          enableInteractiveSelection: canInteract,
-          autofocus: widget.autofocus,
-          keyboardType: widget.keyboardType,
-          textInputAction: widget.textInputAction ?? TextInputAction.done,
-          textCapitalization: widget.textCapitalization,
-          inputFormatters: widget.inputFormatters,
-          autofillHints: widget.autofillHints,
-          obscureText: widget.obscureText,
-          maxLines: widget.obscureText ? 1 : widget.maxLines,
-          minLines: widget.minLines,
-          textAlign: widget.textAlign,
-          textAlignVertical: _textAlignVertical,
-          onTap: widget.onTap,
-          onTapOutside: (_) => _focusNode.unfocus(),
-          onChanged: (value) {
-            state.didChange(value);
-            widget.onChanged?.call(value);
-          },
-          onSubmitted: _handleSubmitted,
-          style: _textStyle(context, color: widget.enabled ? t.ink : t.ink3),
-          cursorColor: t.primary,
-          decoration: InputDecoration(
-            isDense: true,
-            filled: false,
-            border: InputBorder.none,
-            enabledBorder: InputBorder.none,
-            focusedBorder: InputBorder.none,
-            disabledBorder: InputBorder.none,
-            errorBorder: InputBorder.none,
-            focusedErrorBorder: InputBorder.none,
-            contentPadding: _contentPadding(effectiveVariant),
-            labelText: _useFloatingLabel(effectiveVariant, effectiveShowLabel)
-                ? _title
-                : null,
-            labelStyle: _useFloatingLabel(effectiveVariant, effectiveShowLabel)
-                ? CatchTextStyles.bodyL(
-                    context,
-                    color: hasError ? t.danger : t.ink3,
-                  )
-                : null,
-            floatingLabelStyle:
-                _useFloatingLabel(effectiveVariant, effectiveShowLabel)
-                ? CatchTextStyles.fieldLabel(
+
+        if (rowBody) {
+          final expanded = _textEntryExpandedWith(hasError: hasError);
+          final body = expanded
+              ? _buildFieldContent(
+                  t,
+                  label: widget.showLabel ? _title : null,
+                  supportText: supportText,
+                  hasError: hasError,
+                  labelStyle: CatchTextStyles.fieldLabel(
                     context,
                     color: hasError
                         ? t.danger
-                        : effectiveFocused
+                        : _active
                         ? t.ink
                         : t.ink3,
-                  )
-                : null,
-            floatingLabelBehavior:
-                _useFloatingLabel(effectiveVariant, effectiveShowLabel)
-                ? FloatingLabelBehavior.auto
-                : FloatingLabelBehavior.never,
-            hintText: _placeholderText,
-            hintStyle: _textStyle(context, color: t.ink3),
-            prefixText: widget.prefixText,
-            prefixStyle: _textStyle(context, color: t.ink2),
-            suffixText: widget.suffixText,
-            suffixStyle: CatchTextStyles.bodyLead(context, color: t.ink2),
-            prefixIconConstraints: _iconConstraints,
-            prefixIcon: widget.prefixIcon == null
-                ? null
-                : IconTheme(
-                    data: IconThemeData(color: t.ink3, size: CatchIcon.md),
-                    child: widget.prefixIcon!,
                   ),
-            suffixIconConstraints: _suffixIconConstraints,
-            suffixIcon: _buildSuffixIcon(t),
-          ),
-        );
-        final inputShell = _buildFieldChrome(
-          context: context,
-          tokens: t,
-          hasError: hasError,
-          focused: effectiveFocused,
-          variant: effectiveVariant,
-          child: textField,
-        );
-        final singleLineControlHeight = _singleLineControlHeight(
-          effectiveVariant,
-        );
-        final sizedInputShell = singleLineControlHeight == null
-            ? inputShell
-            : SizedBox(height: singleLineControlHeight, child: inputShell);
+                  valueWidget: Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      if (widget.leadingUnit != null) ...[
+                        Text(
+                          widget.leadingUnit!,
+                          style: CatchTextStyles.titleS(context, color: t.ink2),
+                        ),
+                        const SizedBox(width: CatchSpacing.s1),
+                      ],
+                      Expanded(
+                        child: _buildTextEntryInput(
+                          context,
+                          state,
+                          variant: effectiveVariant,
+                          showLabel: effectiveShowLabel,
+                          valueEmphasis: valueEmphasis,
+                          hasError: hasError,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : _buildFieldLabel(
+                  style: CatchTextStyles.fieldRowTitle(
+                    context,
+                    color: _toneColor(t, primaryFallback: t.ink),
+                  ),
+                );
 
-        final field = effectiveShowLabel
-            ? sizedInputShell
-            : Semantics(label: _title, textField: true, child: sizedInputShell);
+          return _buildTextEntryMotion(context, child: body);
+        }
+
+        final field = _buildTextEntryInput(
+          context,
+          state,
+          variant: effectiveVariant,
+          showLabel: effectiveShowLabel,
+          valueEmphasis: valueEmphasis,
+          hasError: hasError,
+        );
 
         if (!effectiveShowLabel && supportText == null) {
           return field;
@@ -833,61 +1201,167 @@ class _CatchFieldState extends State<CatchField> {
     );
   }
 
+  Widget _buildTextEntryInput(
+    BuildContext context,
+    FormFieldState<String> state, {
+    required CatchFieldVariant variant,
+    required bool showLabel,
+    required bool valueEmphasis,
+    required bool hasError,
+  }) {
+    final t = CatchTokens.of(context);
+    final canInteract = !widget.readOnly || widget.onTap != null;
+    final effectiveFocused = _focusNode.hasFocus || widget.focused;
+    final inputStyle = valueEmphasis
+        ? CatchTextStyles.fieldRowTitle(
+            context,
+            color: widget.enabled ? t.ink : t.ink3,
+          )
+        : _textStyle(context, color: widget.enabled ? t.ink : t.ink3);
+    final hintStyle = valueEmphasis
+        ? CatchTextStyles.fieldRowTitle(context, color: t.ink3)
+        : _textStyle(context, color: t.ink3);
+    final textField = TextField(
+      controller: _controller,
+      focusNode: _focusNode,
+      enabled: widget.enabled,
+      readOnly: widget.readOnly,
+      canRequestFocus: canInteract,
+      enableInteractiveSelection: canInteract,
+      autofocus: widget.autofocus,
+      keyboardType: widget.keyboardType,
+      textInputAction: widget.textInputAction ?? TextInputAction.done,
+      textCapitalization: widget.textCapitalization,
+      inputFormatters: widget.inputFormatters,
+      autofillHints: widget.autofillHints,
+      obscureText: widget.obscureText,
+      maxLines: widget.obscureText ? 1 : widget.maxLines,
+      minLines: widget.minLines,
+      textAlign: widget.textAlign,
+      textAlignVertical: _textAlignVertical,
+      onTap: widget.onTap,
+      onTapOutside: (_) => _focusNode.unfocus(),
+      onChanged: (value) {
+        state.didChange(value);
+        widget.onChanged?.call(value);
+      },
+      onSubmitted: _handleSubmitted,
+      style: inputStyle,
+      cursorColor: t.primary,
+      decoration: InputDecoration(
+        isDense: true,
+        filled: false,
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
+        errorBorder: InputBorder.none,
+        focusedErrorBorder: InputBorder.none,
+        contentPadding: _contentPadding(variant),
+        labelText: _useFloatingLabel(variant, showLabel) ? _title : null,
+        labelStyle: _useFloatingLabel(variant, showLabel)
+            ? CatchTextStyles.bodyL(
+                context,
+                color: hasError ? t.danger : t.ink3,
+              )
+            : null,
+        floatingLabelStyle: _useFloatingLabel(variant, showLabel)
+            ? CatchTextStyles.fieldLabel(
+                context,
+                color: hasError
+                    ? t.danger
+                    : effectiveFocused
+                    ? t.ink
+                    : t.ink3,
+              )
+            : null,
+        floatingLabelBehavior: _useFloatingLabel(variant, showLabel)
+            ? FloatingLabelBehavior.auto
+            : FloatingLabelBehavior.never,
+        hintText: _placeholderText,
+        hintStyle: hintStyle,
+        prefixText: widget.prefixText,
+        prefixStyle: _textStyle(context, color: t.ink2),
+        suffixText: widget.suffixText,
+        suffixStyle: CatchTextStyles.bodyLead(context, color: t.ink2),
+        prefixIconConstraints: _iconConstraints,
+        prefixIcon: _usesRowPrefixIcon || widget.prefixIcon == null
+            ? null
+            : IconTheme(
+                data: IconThemeData(color: t.ink3, size: CatchIcon.md),
+                child: widget.prefixIcon!,
+              ),
+        suffixIconConstraints: _suffixIconConstraints,
+        suffixIcon: _usesRowTextEntryTrailing ? null : _buildSuffixIcon(t),
+      ),
+    );
+    final inputShell = _buildFieldChrome(
+      context: context,
+      tokens: t,
+      hasError: hasError,
+      focused: effectiveFocused,
+      variant: variant,
+      child: textField,
+    );
+    final singleLineControlHeight = _singleLineControlHeight(variant);
+    final sizedInputShell = singleLineControlHeight == null
+        ? inputShell
+        : SizedBox(height: singleLineControlHeight, child: inputShell);
+
+    if (showLabel) return sizedInputShell;
+    return Semantics(label: _title, textField: true, child: sizedInputShell);
+  }
+
+  Widget _buildTextEntryMotion(BuildContext context, {required Widget child}) {
+    return AnimatedSize(
+      duration: _motionDuration(context),
+      curve: CatchMotion.standardCurve,
+      alignment: Alignment.topCenter,
+      child: child,
+    );
+  }
+
+  Duration _motionDuration(BuildContext context) {
+    return _catchFieldMotionDuration(context);
+  }
+
   Widget _buildSelectField(BuildContext context) {
     return FormField<Object?>(
       key: _selectFieldKey,
       initialValue: _normalizedSelectValue(widget._selectValue),
-      validator: widget._selectValidator,
+      validator: (value) =>
+          widget._selectValidator?.call(_normalizedSelectValue(value)),
       enabled: widget.enabled,
       builder: (state) {
         final t = CatchTokens.of(context);
         final value = _normalizedSelectValue(state.value);
+        if (state.value != value) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            final field = _selectFieldKey.currentState;
+            if (field != null && field.value != value) {
+              field.didChange(value);
+            }
+          });
+        }
         final rawError = widget.errorText ?? widget.error ?? state.errorText;
         final error = rawError?.trim().isNotEmpty == true
             ? rawError!.trim()
             : null;
         final hasError = error != null;
         final supportText = error ?? widget.helperText;
-        final field = _buildSelectTrigger(
+        return _buildSelectTrigger(
           context: context,
           tokens: t,
           value: value,
           hasError: hasError,
+          supportText: supportText,
           onChanged: widget.enabled && widget._onSelectChanged != null
               ? (next) {
                   state.didChange(next);
                   widget._onSelectChanged?.call(next);
                 }
               : null,
-        );
-
-        if (!widget.showLabel && supportText == null) return field;
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (widget.showLabel &&
-                !_useFloatingLabel(widget.variant, widget.showLabel)) ...[
-              CatchFormFieldLabel(
-                label: _title ?? '',
-                isOptional: widget.isOptional,
-                hasError: hasError,
-              ),
-              const SizedBox(height: CatchSpacing.s2),
-            ],
-            field,
-            if (supportText != null) ...[
-              const SizedBox(height: CatchSpacing.s1),
-              Text(
-                supportText,
-                style: CatchTextStyles.supporting(
-                  context,
-                  color: hasError ? t.danger : _supportColor(t),
-                ),
-              ),
-            ],
-          ],
         );
       },
     );
@@ -898,6 +1372,7 @@ class _CatchFieldState extends State<CatchField> {
     required CatchTokens tokens,
     required Object? value,
     required bool hasError,
+    required String? supportText,
     required ValueChanged<Object?>? onChanged,
   }) {
     final values = widget._selectValues ?? const <Object?>[];
@@ -967,6 +1442,8 @@ class _CatchFieldState extends State<CatchField> {
               ),
           ],
           builder: (context, controller, child) {
+            final selectHasLabel =
+                widget.showLabel && (_title?.trim().isNotEmpty ?? false);
             return Semantics(
               button: true,
               enabled: canOpen,
@@ -974,7 +1451,7 @@ class _CatchFieldState extends State<CatchField> {
               value: label,
               child: Focus(
                 focusNode: _focusNode,
-                child: InkWell(
+                child: _CatchFieldRow.standard(
                   onTap: canOpen
                       ? () {
                           _focusNode.requestFocus();
@@ -983,40 +1460,33 @@ class _CatchFieldState extends State<CatchField> {
                               : controller.open();
                         }
                       : null,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: CatchControlMetrics.minHeight(_controlSize),
+                  constraints: _rowConstraints,
+                  padding: _rowPadding,
+                  leading: _buildSelectLeadingSlot(tokens),
+                  content: _buildFieldContent(
+                    tokens,
+                    label: widget.showLabel ? _title?.trim() : null,
+                    value: label ?? widget.placeholder ?? 'Select',
+                    supportText: supportText,
+                    hasError: hasError,
+                    valueIsPlaceholder: label == null,
+                    labelStyle: CatchTextStyles.fieldLabel(
+                      context,
+                      color: hasError ? tokens.danger : tokens.ink3,
                     ),
-                    child: Padding(
-                      padding: CatchControlMetrics.contentPadding(_controlSize),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (widget.prefixIcon != null) ...[
-                            IconTheme(
-                              data: IconThemeData(
-                                color: hasError ? tokens.danger : tokens.ink3,
-                                size: CatchIcon.md,
-                              ),
-                              child: widget.prefixIcon!,
-                            ),
-                            const SizedBox(width: CatchSpacing.s2),
-                          ],
-                          if (constraints.hasBoundedWidth)
-                            Expanded(child: _selectLabel(tokens, label))
-                          else
-                            _selectLabel(tokens, label),
-                          const SizedBox(width: CatchSpacing.s1),
-                          Icon(
-                            controller.isOpen
-                                ? CatchIcons.expandLessRounded
-                                : CatchIcons.expandMoreRounded,
-                            size: CatchIcon.md,
-                            color: hasError ? tokens.danger : tokens.ink3,
-                          ),
-                        ],
-                      ),
+                    valueStyle: CatchTextStyles.fieldRowTitle(
+                      context,
+                      color: label == null || !widget.enabled
+                          ? tokens.ink3
+                          : tokens.ink,
                     ),
+                  ),
+                  trailing: _CatchFieldTrailing.rotatingChevron(
+                    open: controller.isOpen,
+                    color: tokens.ink3,
+                    topPadding: selectHasLabel
+                        ? CatchSpacing.micro18
+                        : CatchSpacing.micro2,
                   ),
                 ),
               ),
@@ -1024,18 +1494,6 @@ class _CatchFieldState extends State<CatchField> {
           },
         );
       },
-    );
-  }
-
-  Widget _selectLabel(CatchTokens t, String? label) {
-    return Text(
-      label ?? widget.placeholder ?? 'Select',
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: CatchTextStyles.bodyL(
-        context,
-        color: label == null ? t.ink3 : t.ink,
-      ),
     );
   }
 
@@ -1053,7 +1511,7 @@ class _CatchFieldState extends State<CatchField> {
 
     final active = focused || hasError;
     return AnimatedContainer(
-      duration: CatchMotion.fast,
+      duration: _motionDuration(context),
       curve: CatchMotion.standardCurve,
       constraints: BoxConstraints(
         minHeight: CatchControlMetrics.minHeight(_controlSize),
@@ -1069,98 +1527,6 @@ class _CatchFieldState extends State<CatchField> {
       ),
       child: child,
     );
-  }
-
-  List<Widget> _buildEndControls(CatchTokens t) {
-    final top = const SizedBox(width: CatchSpacing.s2);
-    if (widget.valid && !_hasError) {
-      return [
-        top,
-        Padding(
-          padding: const EdgeInsets.only(top: CatchSpacing.micro3),
-          child: Icon(
-            CatchIcons.checkCircle,
-            size: CatchIcon.md,
-            color: t.success,
-          ),
-        ),
-      ];
-    }
-    if (_mode == CatchFieldMode.toggle) {
-      return [
-        top,
-        Padding(
-          padding: const EdgeInsets.only(top: CatchSpacing.micro2),
-          child: CatchToggle(value: widget.toggled, onChanged: widget.onToggle),
-        ),
-      ];
-    }
-    if (_hasControl) {
-      return [
-        top,
-        Padding(
-          padding: const EdgeInsets.only(top: CatchSpacing.micro3),
-          child: AnimatedRotation(
-            turns: _open ? 0.5 : 0,
-            duration: CatchMotion.fast,
-            child: Icon(
-              CatchIcons.expandMoreRounded,
-              size: CatchIcon.control,
-              color: _active ? t.ink : t.ink3,
-            ),
-          ),
-        ),
-      ];
-    }
-    if (_mode == CatchFieldMode.nav) {
-      return [
-        ..._buildAction(t),
-        if (_shouldShowChevron) ...[
-          top,
-          Padding(
-            padding: const EdgeInsets.only(top: CatchSpacing.micro3),
-            child: Icon(
-              CatchIcons.chevronRightRounded,
-              size: CatchIcon.control,
-              color: t.ink3,
-            ),
-          ),
-        ],
-      ];
-    }
-    return _buildAction(t);
-  }
-
-  List<Widget> _buildAction(CatchTokens t) {
-    final action = _action;
-    final valueText = widget.valueText?.trim();
-    if (action == null && (valueText == null || valueText.isEmpty)) {
-      return const [];
-    }
-    return [
-      if (valueText != null && valueText.isNotEmpty) ...[
-        const SizedBox(width: CatchSpacing.s3),
-        Flexible(
-          child: Padding(
-            padding: const EdgeInsets.only(top: CatchSpacing.micro2),
-            child: Text(
-              valueText,
-              textAlign: TextAlign.right,
-              maxLines: widget.valueMaxLines,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.bodyS(context, color: t.ink),
-            ),
-          ),
-        ),
-      ],
-      if (action != null) ...[
-        const SizedBox(width: CatchSpacing.s2),
-        Padding(
-          padding: const EdgeInsets.only(top: CatchSpacing.micro2),
-          child: action,
-        ),
-      ],
-    ];
   }
 
   Widget? _buildSuffixIcon(CatchTokens t) {
@@ -1343,6 +1709,224 @@ class _CatchFieldState extends State<CatchField> {
         minHeight: CatchControlMetrics.floatingMinHeight,
       );
     }
+    if (_mode == CatchFieldMode.select && !widget.showLabel) {
+      return BoxConstraints(
+        minHeight: CatchControlMetrics.minHeight(_controlSize),
+      );
+    }
     return const BoxConstraints();
   }
+}
+
+Duration _catchFieldMotionDuration(BuildContext context) {
+  final disableAnimations = MediaQuery.maybeOf(context)?.disableAnimations;
+  return disableAnimations == true ? Duration.zero : CatchMotion.fast;
+}
+
+class _CatchFieldRow extends StatelessWidget {
+  const _CatchFieldRow.standard({
+    required this.content,
+    this.leading,
+    this.trailing,
+    this.onTap,
+    this.constraints = const BoxConstraints(),
+    this.padding = _defaultPadding,
+  }) : leadingTopPadding = CatchSpacing.micro2,
+       leadingGap = CatchSpacing.s3,
+       trailingGap = CatchSpacing.s2;
+
+  const _CatchFieldRow.add({
+    required this.leading,
+    required this.content,
+    this.onTap,
+  }) : trailing = null,
+       constraints = const BoxConstraints(),
+       padding = const EdgeInsets.symmetric(
+         horizontal: CatchSpacing.s4,
+         vertical: CatchSpacing.micro14,
+       ),
+       leadingTopPadding = 0,
+       leadingGap = CatchSpacing.s3,
+       trailingGap = CatchSpacing.s2;
+
+  static const _defaultPadding = EdgeInsets.fromLTRB(
+    CatchSpacing.s4,
+    CatchSpacing.micro14,
+    CatchSpacing.s4,
+    CatchSpacing.micro14,
+  );
+
+  final Widget content;
+  final Widget? leading;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+  final BoxConstraints constraints;
+  final EdgeInsetsGeometry padding;
+  final double leadingTopPadding;
+  final double leadingGap;
+  final double trailingGap;
+
+  @override
+  Widget build(BuildContext context) {
+    final row = ConstrainedBox(
+      constraints: constraints,
+      child: Padding(
+        padding: padding,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (leading != null) ...[
+              Padding(
+                padding: EdgeInsets.only(top: leadingTopPadding),
+                child: leading,
+              ),
+              SizedBox(width: leadingGap),
+            ],
+            Expanded(child: content),
+            if (trailing != null) ...[
+              SizedBox(width: trailingGap),
+              Flexible(child: trailing!),
+            ],
+          ],
+        ),
+      ),
+    );
+
+    if (onTap == null) return row;
+    return InkWell(onTap: onTap, child: row);
+  }
+}
+
+class _CatchFieldTrailing extends StatelessWidget {
+  factory _CatchFieldTrailing.custom({
+    required Widget child,
+    Color? color,
+    double topPadding = CatchSpacing.micro2,
+  }) {
+    return _CatchFieldTrailing._(
+      topPadding: topPadding,
+      builder: (context) {
+        final t = CatchTokens.of(context);
+        final resolvedColor = color ?? t.ink3;
+        return IconTheme(
+          data: IconThemeData(color: resolvedColor, size: CatchIcon.md),
+          child: DefaultTextStyle.merge(
+            style: CatchTextStyles.bodyLead(context, color: resolvedColor),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
+  factory _CatchFieldTrailing.valueText({
+    required String text,
+    int maxLines = 1,
+    double topPadding = CatchSpacing.micro2,
+  }) {
+    return _CatchFieldTrailing._(
+      topPadding: topPadding,
+      builder: (context) {
+        final t = CatchTokens.of(context);
+        return ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 160),
+          child: Text(
+            text,
+            textAlign: TextAlign.right,
+            maxLines: maxLines,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.bodyS(context, color: t.ink),
+          ),
+        );
+      },
+    );
+  }
+
+  factory _CatchFieldTrailing.fixedChevron({
+    Color? color,
+    double topPadding = CatchSpacing.micro2,
+  }) => _CatchFieldTrailing._(
+    topPadding: topPadding,
+    builder: (context) => Icon(
+      CatchIcons.chevronRightRounded,
+      size: CatchIcon.control,
+      color: color ?? CatchTokens.of(context).ink3,
+    ),
+  );
+
+  factory _CatchFieldTrailing.rotatingChevron({
+    required bool open,
+    Color? color,
+    double topPadding = CatchSpacing.micro2,
+  }) => _CatchFieldTrailing._(
+    topPadding: topPadding,
+    builder: (context) => AnimatedRotation(
+      turns: open ? 0.5 : 0,
+      duration: _catchFieldMotionDuration(context),
+      child: Icon(
+        CatchIcons.expandMoreRounded,
+        size: CatchIcon.control,
+        color: color ?? CatchTokens.of(context).ink3,
+      ),
+    ),
+  );
+
+  factory _CatchFieldTrailing.toggle({
+    required bool value,
+    required ValueChanged<bool>? onChanged,
+    String? semanticLabel,
+    double topPadding = CatchSpacing.micro2,
+  }) => _CatchFieldTrailing._(
+    topPadding: topPadding,
+    builder: (_) => CatchToggle(
+      value: value,
+      semanticLabel: semanticLabel,
+      onChanged: onChanged,
+    ),
+  );
+
+  factory _CatchFieldTrailing.clear({
+    required String tooltip,
+    required VoidCallback onPressed,
+    double topPadding = CatchSpacing.micro2,
+  }) => _CatchFieldTrailing._(
+    topPadding: topPadding,
+    builder: (context) => IconButton(
+      tooltip: tooltip,
+      visualDensity: VisualDensity.compact,
+      padding: EdgeInsets.zero,
+      constraints: CatchControlMetrics.squareConstraints(CatchSpacing.s6),
+      icon: Icon(
+        CatchIcons.closeRounded,
+        size: CatchIcon.xs,
+        color: CatchTokens.of(context).ink3,
+      ),
+      onPressed: onPressed,
+    ),
+  );
+
+  factory _CatchFieldTrailing.valid({
+    double topPadding = CatchSpacing.micro2,
+  }) => _CatchFieldTrailing._(
+    topPadding: topPadding,
+    builder: (context) => Icon(
+      CatchIcons.checkCircle,
+      size: CatchIcon.md,
+      color: CatchTokens.of(context).success,
+    ),
+  );
+
+  const _CatchFieldTrailing._({
+    required this.builder,
+    this.topPadding = CatchSpacing.micro2,
+  });
+
+  final WidgetBuilder builder;
+  final double topPadding;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: EdgeInsets.only(top: topPadding),
+    child: builder(context),
+  );
 }

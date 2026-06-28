@@ -104,7 +104,7 @@ class _WingmanRequestSectionState extends ConsumerState<WingmanRequestSection> {
           ],
           gapH12,
           StageSoftBand(
-            child: CatchField(
+            child: CatchField.input(
               title: 'Private note to host',
               controller: _noteController,
               maxLines: 2,

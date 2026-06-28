@@ -14,13 +14,12 @@ Widget profileInfoTile({
   bool isAddAffordance = false,
   bool isExpanded = false,
 }) {
-  return CatchField(
+  return CatchField.nav(
     key: key,
     icon: icon,
     title: label,
     body: isAddAffordance ? '+ $value' : value,
     bodyMaxLines: 4,
-    mode: onTap == null ? CatchFieldMode.read : CatchFieldMode.nav,
     tone: isAddAffordance ? CatchFieldTone.primary : CatchFieldTone.normal,
     onTap: isExpanded ? null : onTap,
     showChevron: false,

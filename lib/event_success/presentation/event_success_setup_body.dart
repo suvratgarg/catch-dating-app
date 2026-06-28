@@ -6,11 +6,10 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
@@ -129,7 +128,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
           subtitle: _guideNotesSubtitle(draft, widget.attendeePrompt),
           initiallyExpanded: true,
           children: [
-            CatchField(
+            CatchField.input(
               title: 'Host goal',
               controller: _hostGoalController,
               enabled: widget.editable,
@@ -151,7 +150,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               },
             ),
             gapH12,
-            CatchField(
+            CatchField.input(
               title: 'Attendee prompt',
               isOptional: true,
               controller: _attendeePromptController,
@@ -918,6 +917,7 @@ class _SetupDisclosureSectionState extends State<SetupDisclosureSection> {
 
 class RecommendationSwitch extends StatelessWidget {
   const RecommendationSwitch({
+    super.key,
     required this.recommendation,
     required this.active,
     required this.onChanged,
@@ -929,46 +929,11 @@ class RecommendationSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final copy = Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              recommendation.module.title,
-              style: CatchTextStyles.labelL(context),
-            ),
-            gapH4,
-            Text(
-              recommendation.reason,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-          ],
-        );
-        final toggle = CatchToggle(
-          value: active,
-          semanticLabel: recommendation.module.title,
-          onChanged: onChanged,
-        );
-        if (constraints.maxWidth < 320) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              copy,
-              gapH10,
-              Align(alignment: Alignment.centerLeft, child: toggle),
-            ],
-          );
-        }
-        return Row(
-          children: [
-            Expanded(child: copy),
-            gapW12,
-            toggle,
-          ],
-        );
-      },
+    return CatchField.toggle(
+      title: recommendation.module.title,
+      body: recommendation.reason,
+      value: active,
+      onChanged: onChanged,
     );
   }
 }

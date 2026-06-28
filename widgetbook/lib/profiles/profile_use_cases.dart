@@ -1004,24 +1004,18 @@ class _InlineTextValueCatalog extends StatefulWidget {
 class _InlineTextValueCatalogState extends State<_InlineTextValueCatalog> {
   late final TextEditingController _displayController;
   late final TextEditingController _editingController;
-  late final FocusNode _displayFocusNode;
-  late final FocusNode _editingFocusNode;
 
   @override
   void initState() {
     super.initState();
     _displayController = TextEditingController(text: 'Neha');
     _editingController = TextEditingController(text: 'Product lead');
-    _displayFocusNode = FocusNode();
-    _editingFocusNode = FocusNode();
   }
 
   @override
   void dispose() {
     _displayController.dispose();
     _editingController.dispose();
-    _displayFocusNode.dispose();
-    _editingFocusNode.dispose();
     super.dispose();
   }
 
@@ -1034,7 +1028,6 @@ class _InlineTextValueCatalogState extends State<_InlineTextValueCatalog> {
           label: 'Display name',
           displayValue: 'Neha',
           controller: _displayController,
-          focusNode: _displayFocusNode,
           isEditing: false,
           enabled: true,
         ),
@@ -1043,7 +1036,6 @@ class _InlineTextValueCatalogState extends State<_InlineTextValueCatalog> {
           label: 'Job title',
           displayValue: 'Product lead',
           controller: _editingController,
-          focusNode: _editingFocusNode,
           isEditing: true,
           enabled: true,
         ),

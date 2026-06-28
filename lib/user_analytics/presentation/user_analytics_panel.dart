@@ -29,7 +29,7 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
     final query = UserAnalyticsQuery(rangePreset: _rangePreset);
     final reportAsync = ref.watch(userAnalyticsProvider(query));
 
-    return CatchSection(
+    return CatchSection.divided(
       title: UserAnalyticsCopy.sectionTitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -13,6 +13,11 @@ primitive is now `Catch`-prefixed and semantically named. Each row's **call site
 is the blast radius of redesigning that primitive — because feature code composes
 these seams, a redesigned component swaps in with no call-site churn.
 
+Current status note: this June snapshot is retained as audit history. Active
+field-like rows have since converged on `CatchField` and `CatchSection`;
+`CatchSettingsRow`, `CatchDesignSection`, and `CatchFieldGroup` are no longer
+active app primitives.
+
 ## Established single seams (redesign these in place; usage already routed through them)
 
 | Primitive | File | Call sites |

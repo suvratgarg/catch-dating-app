@@ -1122,12 +1122,17 @@
       "name": "CatchField",
       "status": "active",
       "kind": "composite",
-      "summary": "Unified field primitive for row, text-entry, nav, toggle, select, value-lane, expanded-control, add, validation, helper, and clearable states.",
+      "summary": "Unified field primitive with a stable row anatomy: optional leading icon, label/value column with configurable emphasis, and an optional trailing value, chevron, toggle, expanded control, select trigger, or add action.",
       "dart": {
         "symbol": "CatchField",
         "file": "lib/core/widgets/catch_field.dart",
         "constructors": [
-          "CatchField",
+          "CatchField.read",
+          "CatchField.nav",
+          "CatchField.toggle",
+          "CatchField.input",
+          "CatchField.expanding",
+          "CatchField.add",
           "CatchField.select"
         ]
       },
@@ -1172,19 +1177,6 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget?"
-          },
-          {
-            "name": "mode",
-            "type": "enum",
-            "required": false,
-            "dartType": "CatchFieldMode?",
-            "values": [
-              "edit",
-              "read",
-              "nav",
-              "toggle",
-              "select"
-            ]
           },
           {
             "name": "emphasis",
@@ -1289,6 +1281,27 @@
             "dartType": "bool"
           },
           {
+            "name": "valid",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "enabled",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          },
+          {
+            "name": "readOnly",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
             "name": "divider",
             "type": "bool",
             "required": false,
@@ -1297,23 +1310,28 @@
           }
         ],
         "states": [
-          "read",
-          "edit",
+          "row-value",
+          "row-title",
+          "value-line",
+          "chevron",
+          "toggle",
+          "expanded-control",
+          "text-entry",
           "edit-empty",
           "edit-filled",
           "edit-focused",
           "edit-disabled",
           "edit-read-only",
           "edit-helper",
+          "edit-success-helper",
           "edit-multiline",
           "edit-clearable",
-          "nav",
-          "toggle",
-          "value-lane",
-          "select",
-          "expanded-control",
+          "valid",
           "error",
           "focused",
+          "select",
+          "select-disabled",
+          "select-error",
           "add"
         ],
         "slots": [
@@ -1381,9 +1399,9 @@
           "catch.option_card"
         ],
         "notes": [
-          "CatchField is the only global field primitive. Use CatchField(mode: CatchFieldMode.edit, ...) for text-entry controls and the same constructor for grouped row composition.",
-          "Use title/body/action/placeholder as the canonical field API. Do not add row or input aliases.",
-          "Use variant row, underline, or bare instead of creating separate text-entry primitives.",
+          "CatchField is the only global field primitive. Its row anatomy is leadingIcon? | label/value column | trailingSlot?, and title/body emphasis is controlled by CatchFieldEmphasis.",
+          "Use the named constructors read, nav, toggle, input, select, expanding, and add so call sites select one field family explicitly.",
+          "Text entry collapses to the single-line row shape while empty and unfocused, then expands/floats the label when focused or populated.",
           "CatchField does not own rounded section or input-container chrome; use CatchSection contained focus/error chrome when fields need a grouped rounded surface.",
           "Field labels and support/error text belong to catch.field; shared container chrome belongs to CatchSection."
         ]
@@ -1405,12 +1423,14 @@
       "name": "CatchSection",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical information-grouping primitive for divided hairline sections, contained rounded sections, and plain titled content groups.",
+      "summary": "Canonical information-grouping primitive for divided hairline sections, contained rounded sections, and plain titled content groups. Call sites use the named constructors CatchSection.divided, CatchSection.contained, and CatchSection.plain so section anatomy is explicit.",
       "dart": {
         "symbol": "CatchSection",
         "file": "lib/core/widgets/catch_section_layout.dart",
         "constructors": [
-          "CatchSection"
+          "CatchSection.divided",
+          "CatchSection.contained",
+          "CatchSection.plain"
         ]
       },
       "design": {
@@ -1430,6 +1450,47 @@
         }
       },
       "contract": {
+        "constructorProps": {
+          "CatchSection.divided": [
+            "title",
+            "count",
+            "activityKind",
+            "lead",
+            "first",
+            "dividerColor",
+            "titleColor",
+            "bodyGap",
+            "showInternalDividers",
+            "children",
+            "child"
+          ],
+          "CatchSection.contained": [
+            "title",
+            "subtitle",
+            "trailing",
+            "count",
+            "titleColor",
+            "bodyGap",
+            "padding",
+            "showInternalDividers",
+            "focused",
+            "hasError",
+            "children",
+            "child"
+          ],
+          "CatchSection.plain": [
+            "title",
+            "subtitle",
+            "trailing",
+            "count",
+            "titleColor",
+            "bodyGap",
+            "padding",
+            "showInternalDividers",
+            "children",
+            "child"
+          ]
+        },
         "props": [
           {
             "name": "title",
@@ -1454,18 +1515,6 @@
             "type": "object",
             "required": false,
             "dartType": "Object?"
-          },
-          {
-            "name": "variant",
-            "type": "enum",
-            "required": false,
-            "default": "divided",
-            "dartType": "CatchSectionVariant",
-            "values": [
-              "divided",
-              "contained",
-              "plain"
-            ]
           },
           {
             "name": "first",
@@ -1518,6 +1567,38 @@
               "singlesMixer",
               "openActivity"
             ]
+          },
+          {
+            "name": "dividerColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "titleColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "bodyGap",
+            "type": "number",
+            "required": false,
+            "default": "space.s3",
+            "dartType": "double"
+          },
+          {
+            "name": "padding",
+            "type": "object",
+            "required": false,
+            "dartType": "EdgeInsetsGeometry?"
+          },
+          {
+            "name": "showInternalDividers",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
           },
           {
             "name": "children",
@@ -1578,7 +1659,6 @@
           "theme.light.color.ink2"
         ],
         "dartRoles": [
-          "CatchSectionVariant",
           "CatchSurface.card",
           "CatchField",
           "CatchKicker",
@@ -3158,7 +3238,7 @@
           "catch.option_card"
         ],
         "notes": [
-          "CatchSurface is the only global surface primitive. Use named constructors for card, tinted note, inline message, and section-card modes instead of creating wrapper classes.",
+          "CatchSurface is the only low-level surface primitive. Use CatchSurface.card, CatchSurface.tinted, and CatchSurface.message for surface chrome; use CatchSection.contained for section-card content chrome.",
           "Do not hand-roll Container/DecoratedBox cards in feature UI; request a Surface mode if this contract is missing a state.",
           "InlineMessageSurface is a member of catch.surface message grammar and should not become a separate surface family."
         ]

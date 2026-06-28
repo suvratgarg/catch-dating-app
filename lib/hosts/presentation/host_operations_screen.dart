@@ -943,7 +943,7 @@ class HostSettingsProfileSection extends StatelessWidget {
         label: 'Profile',
         first: true,
         children: [
-          CatchField(
+          CatchField.nav(
             title: 'Display name',
             valueText: creatingProfile
                 ? 'Creating profile...'
@@ -993,14 +993,14 @@ class HostSettingsProfileRows extends StatelessWidget {
           label: 'Profile',
           first: true,
           children: [
-            CatchField(
+            CatchField.nav(
               title: 'Display name',
               valueText: profile.displayName,
               icon: CatchIcons.personOutlineRounded,
               onTap: canEdit ? onEditProfile : null,
               showChevron: canEdit,
             ),
-            CatchField(
+            CatchField.nav(
               title: 'Role title',
               valueText: profile.roleTitle?.trim().isNotEmpty == true
                   ? profile.roleTitle!.trim()
@@ -1010,7 +1010,7 @@ class HostSettingsProfileRows extends StatelessWidget {
               onTap: canEdit ? onEditProfile : null,
               showChevron: canEdit,
             ),
-            CatchField(
+            CatchField.nav(
               title: 'Status',
               valueText: hostProfileStatusLabel(profile.status),
               icon: CatchIcons.checkCircleOutlineRounded,
@@ -1022,7 +1022,7 @@ class HostSettingsProfileRows extends StatelessWidget {
         HostSettingsSection(
           label: 'Bio',
           children: [
-            CatchField(
+            CatchField.nav(
               title: 'About you as a host',
               valueText: profile.bio?.trim().isNotEmpty == true
                   ? profile.bio!.trim()
@@ -1111,7 +1111,7 @@ class HostSettingsClubRows extends StatelessWidget {
     return Column(
       children: [
         for (final club in clubs)
-          CatchField(
+          CatchField.nav(
             title: club.isOwnedBy(uid) ? 'Owner' : 'Host team',
             valueText: club.name,
             icon: CatchIcons.groupOutlined,
@@ -1476,7 +1476,7 @@ class HostProfileFields extends StatelessWidget {
           ),
           gapH14,
         ],
-        CatchField(
+        CatchField.input(
           title: 'Display name',
           controller: displayNameController,
           textInputAction: TextInputAction.next,
@@ -1484,7 +1484,7 @@ class HostProfileFields extends StatelessWidget {
           validator: _requiredDisplayName,
         ),
         gapH14,
-        CatchField(
+        CatchField.input(
           title: 'Role title',
           isOptional: true,
           controller: roleTitleController,
@@ -1492,7 +1492,7 @@ class HostProfileFields extends StatelessWidget {
           textCapitalization: TextCapitalization.words,
         ),
         gapH14,
-        CatchField(
+        CatchField.input(
           title: 'Bio',
           isOptional: true,
           controller: bioController,
@@ -2815,7 +2815,7 @@ class HostEventRows extends StatelessWidget {
       children: [
         for (final row in rows.rows)
           HostEventRow(row: row, onTap: () => onManageEvent(club, row.event)),
-        CatchField(
+        CatchField.nav(
           title: 'Add event',
           icon: CatchIcons.addRounded,
           divider: !rows.isEmpty,
@@ -2946,14 +2946,12 @@ class HostClubOrganizerOverview extends ConsumerWidget {
           activeEventCount: activeEvents.length,
         ),
         gapH12,
-        CatchSection(
-          variant: CatchSectionVariant.contained,
+        CatchSection.contained(
           children: [
-            CatchField(
+            CatchField.nav(
               icon: CatchIcons.visibilityOutlined,
               title: 'How guests see you',
               body: 'Public page',
-              mode: CatchFieldMode.nav,
               onTap: () => onPreviewClub(club),
             ),
           ],
@@ -2984,27 +2982,23 @@ class HostClubOrganizerOverview extends ConsumerWidget {
         gapH24,
         const HostOrganizerSectionHeader(label: 'Manage'),
         gapH10,
-        CatchSection(
-          variant: CatchSectionVariant.contained,
+        CatchSection.contained(
           children: [
-            CatchField(
+            CatchField.nav(
               icon: CatchIcons.paymentsOutlined,
               title: 'Payouts',
               body: isOwner ? 'Manage' : 'Owner only',
-              mode: isOwner ? CatchFieldMode.nav : CatchFieldMode.read,
               onTap: isOwner ? () => onSelectTab(HostClubTab.edit) : null,
             ),
-            CatchField(
+            CatchField.nav(
               icon: CatchIcons.tuneRounded,
               title: 'Event defaults',
               body: 'Prefill new events',
-              mode: isOwner ? CatchFieldMode.nav : CatchFieldMode.read,
               onTap: isOwner ? () => onSelectTab(HostClubTab.edit) : null,
             ),
-            CatchField(
+            CatchField.nav(
               icon: CatchIcons.settingsOutlined,
               title: 'Settings',
-              mode: CatchFieldMode.nav,
               onTap: onOpenSettings,
             ),
           ],
@@ -3746,7 +3740,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
         HostSettingsSection(
           label: 'Public profile',
           children: [
-            CatchField(
+            CatchField.nav(
               title: 'Preview club page',
               valueText: 'Preview',
               icon: CatchIcons.visibilityOutlined,
@@ -3794,7 +3788,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
     Object? Function(String value)? toFieldValue,
   }) {
     if (!widget.isOwner) {
-      return CatchField(title: label, valueText: value, icon: icon);
+      return CatchField.read(title: label, valueText: value, icon: icon);
     }
 
     return HostInlineTextEntryEditor(
@@ -3828,7 +3822,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
     const fieldName = 'primaryActivityKind';
     final selected = club.hostDefaults.primaryActivityKind;
     if (!widget.isOwner) {
-      return CatchField(
+      return CatchField.read(
         title: 'Default activity',
         valueText: selected.label,
         icon: CatchIcons.eventOutlined,
@@ -3868,7 +3862,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
     const fieldName = 'admissionPreset';
     final selected = club.hostDefaults.eventPolicy.admissionPreset;
     if (!widget.isOwner) {
-      return CatchField(
+      return CatchField.read(
         title: 'Admission',
         valueText: _admissionDefaultLabel(selected),
         icon: CatchIcons.eventSeatOutlined,
@@ -3917,7 +3911,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
     final policy = club.hostDefaults.eventPolicy;
     final value = '${policy.minAge}–${policy.maxAge}';
     if (!widget.isOwner) {
-      return CatchField(
+      return CatchField.read(
         title: 'Age range',
         valueText: value,
         icon: CatchIcons.cakeOutlined,
@@ -3944,7 +3938,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
     final selected = club.hostDefaults.eventPolicy.cancellationPolicyId;
     final selectedPolicy = club.hostDefaults.eventPolicy.cancellationPolicy;
     if (!widget.isOwner) {
-      return CatchField(
+      return CatchField.read(
         title: 'Cancellation policy',
         valueText: selectedPolicy.title,
         icon: CatchIcons.eventBusyOutlined,
@@ -4982,18 +4976,13 @@ class _HostInlineTextEntryEditorState
     extends ConsumerState<HostInlineTextEntryEditor>
     with _HostInlineClubSaveState<HostInlineTextEntryEditor> {
   late final TextEditingController _controller;
-  late final FocusNode _focusNode;
   String? _validationError;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.currentValue);
-    _focusNode = FocusNode();
     _controller.addListener(_clearValidationError);
-    if (widget.isExpanded) {
-      _requestFocusAfterExpansionFrame();
-    }
   }
 
   @override
@@ -5003,31 +4992,18 @@ class _HostInlineTextEntryEditorState
         oldWidget.currentValue != widget.currentValue) {
       _controller.text = widget.currentValue;
     }
-    if (widget.isExpanded && !oldWidget.isExpanded) {
-      _requestFocusAfterExpansionFrame();
-    }
   }
 
   @override
   void dispose() {
     _controller.removeListener(_clearValidationError);
     _controller.dispose();
-    _focusNode.dispose();
     super.dispose();
   }
 
   void _clearValidationError() {
     if (_validationError == null) return;
     setState(() => _validationError = null);
-  }
-
-  void _requestFocusAfterExpansionFrame() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !widget.isExpanded || isSaving || _focusNode.hasFocus) {
-        return;
-      }
-      _focusNode.requestFocus();
-    });
   }
 
   void _cancel() {
@@ -5089,7 +5065,6 @@ class _HostInlineTextEntryEditorState
         displayValue: widget.value,
         placeholder: widget.placeholder,
         controller: _controller,
-        focusNode: _focusNode,
         isEditing: widget.isExpanded,
         enabled: !saving,
         keyboardType: widget.keyboardType,
@@ -5387,7 +5362,7 @@ class _HostInlineAgeRangeEditorState
         Row(
           children: [
             Expanded(
-              child: CatchField(
+              child: CatchField.input(
                 title: 'Min age',
                 isOptional: true,
                 controller: _minAgeController,
@@ -5398,7 +5373,7 @@ class _HostInlineAgeRangeEditorState
             ),
             gapW12,
             Expanded(
-              child: CatchField(
+              child: CatchField.input(
                 title: 'Max age',
                 isOptional: true,
                 controller: _maxAgeController,
@@ -5444,7 +5419,7 @@ class HostClubPreviewPane extends StatelessWidget {
           style: CatchTextStyles.bodyLead(context, color: t.ink),
         ),
         gapH18,
-        CatchField(
+        CatchField.nav(
           title: 'Open public preview',
           valueText: 'Preview',
           icon: CatchIcons.visibilityOutlined,
@@ -5584,7 +5559,7 @@ class HostEventRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchField(
+    return CatchField.nav(
       title: row.title,
       valueText: row.timeRangeLabel,
       icon: CatchIcons.calendarTodayOutlined,

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -40,7 +41,15 @@ void main() {
     await pumpFeatureUi(tester);
 
     await tester.tap(find.byKey(ReviewKeys.ratingStar(4)));
-    await tester.enterText(find.byType(TextField), '  Friendly crew.  ');
+    await tester.tap(find.widgetWithText(CatchField, 'Review'));
+    await pumpFeatureUi(tester);
+    await tester.enterText(
+      find.descendant(
+        of: find.widgetWithText(CatchField, 'Review'),
+        matching: find.byType(TextField),
+      ),
+      '  Friendly crew.  ',
+    );
     await tester.tap(find.byKey(ReviewKeys.submitReviewButton));
     await pumpFeatureUi(tester);
 
@@ -167,6 +176,8 @@ void main() {
     await tester.tap(find.byKey(ReviewKeys.respondToReviewButton(review.id)));
     await pumpFeatureUi(tester);
 
+    await tester.tap(find.byKey(ReviewKeys.ownerResponseField));
+    await pumpFeatureUi(tester);
     await tester.enterText(
       find.descendant(
         of: find.byKey(ReviewKeys.ownerResponseField),

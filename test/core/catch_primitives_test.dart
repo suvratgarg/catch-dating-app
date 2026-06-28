@@ -494,7 +494,7 @@ void main() {
       _wrap(
         SizedBox(
           width: 360,
-          child: CatchField(
+          child: CatchField.read(
             title: 'Help & support',
             valueText: 'Contact us',
             icon: CatchIcons.helpOutline,
@@ -509,8 +509,33 @@ void main() {
     final valueLeft = tester.getTopLeft(find.text('Contact us')).dx;
 
     expect(valueText.textAlign, TextAlign.right);
-    expect(valueBox.width, greaterThanOrEqualTo(110));
+    expect(valueBox.width, lessThanOrEqualTo(160));
     expect(valueLeft, greaterThan(labelRight));
+  });
+
+  testWidgets('CatchField valueText stays inside narrow row constraints', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 180,
+          child: CatchField.read(
+            title: 'Availability window',
+            valueText: 'Weeknights after work',
+            icon: CatchIcons.schedule,
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    final fieldRight = tester.getTopRight(find.byType(CatchField)).dx;
+    final valueRight = tester
+        .getTopRight(find.text('Weeknights after work'))
+        .dx;
+
+    expect(valueRight, lessThanOrEqualTo(fieldRight));
   });
 
   testWidgets('CatchToggle emits the next value on tap', (tester) async {
@@ -1176,25 +1201,23 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => CatchSection(
+          builder: (context, setState) => CatchSection.divided(
             title: 'Account',
             first: true,
             children: [
-              CatchField(
+              CatchField.nav(
                 icon: CatchIcons.personOutlineRounded,
                 title: 'Aanya',
                 body: 'Name',
-                mode: CatchFieldMode.nav,
                 onTap: () {},
               ),
-              const CatchField(title: '+ Add bio', add: true),
-              CatchField(
+              const CatchField.add(title: '+ Add bio'),
+              CatchField.toggle(
                 title: 'Visible',
-                mode: CatchFieldMode.toggle,
-                toggled: toggleValue,
-                onToggle: (value) => setState(() => toggleValue = value),
+                value: toggleValue,
+                onChanged: (value) => setState(() => toggleValue = value),
               ),
-              CatchField(
+              CatchField.read(
                 icon: CatchIcons.deleteOutline,
                 title: 'Delete account',
                 tone: CatchFieldTone.danger,
@@ -1211,6 +1234,10 @@ void main() {
     expect(find.text('+ Add bio'), findsOneWidget);
     expect(find.text('Delete account'), findsOneWidget);
     expect(find.byType(CatchKicker), findsOneWidget);
+    expect(
+      tester.widget<CatchToggle>(find.byType(CatchToggle)).semanticLabel,
+      'Visible',
+    );
 
     await tester.tap(find.byType(CatchToggle));
     await tester.pump();
@@ -1221,7 +1248,7 @@ void main() {
   testWidgets('CatchSection composes the shared kicker leaf', (tester) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchSection(
+        const CatchSection.divided(
           title: 'Why you might click',
           first: true,
           child: Text('Body copy'),
@@ -1241,12 +1268,12 @@ void main() {
       _wrap(
         const CatchSectionStack(
           children: [
-            CatchSection(
+            CatchSection.divided(
               title: 'First',
               first: true,
               child: Text('First body'),
             ),
-            CatchSection(title: 'Second', child: Text('Second body')),
+            CatchSection.divided(title: 'Second', child: Text('Second body')),
           ],
         ),
       ),
@@ -1353,14 +1380,14 @@ void main() {
             return const Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CatchSection(
+                CatchSection.divided(
                   title: 'The plan',
                   activityKind: ActivityKind.socialRun,
                   lead: true,
                   first: true,
                   child: Text('Lead body'),
                 ),
-                CatchSection(
+                CatchSection.divided(
                   title: 'Details',
                   activityKind: ActivityKind.socialRun,
                   child: Text('Neutral body'),
@@ -1405,12 +1432,7 @@ void main() {
                 trailing: const CatchMetaEntry(label: '2.3 km'),
               ),
               gapH12,
-              const CatchField(
-                title: 'Payment ID',
-                body: 'pay_123',
-                mode: CatchFieldMode.read,
-                variant: CatchFieldVariant.bare,
-              ),
+              const CatchField.read(title: 'Payment ID', body: 'pay_123'),
               gapH12,
               const CatchStatColumn(
                 value: '24',
@@ -1678,8 +1700,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchSection(
-          variant: CatchSectionVariant.contained,
+        const CatchSection.contained(
           title: 'Profile strength',
           subtitle: '3 of 7 profile basics complete',
           trailing: Text('28%'),
@@ -1693,12 +1714,72 @@ void main() {
     expect(find.text('28%'), findsOneWidget);
     expect(find.text('Section body'), findsOneWidget);
     expect(find.text('PROFILE STRENGTH'), findsNothing);
-    final section = tester.widget<CatchSection>(find.byType(CatchSection));
     final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
-    expect(section.variant, CatchSectionVariant.contained);
     expect(surface.role, CatchSurfaceRole.card);
     expect(surface.elevation, CatchSurfaceElevation.card);
   });
+
+  testWidgets('CatchSection contained reflects descendant focus', (
+    tester,
+  ) async {
+    final focusNode = FocusNode();
+    addTearDown(focusNode.dispose);
+
+    await tester.pumpWidget(
+      _wrap(CatchSection.contained(child: TextField(focusNode: focusNode))),
+    );
+
+    focusNode.requestFocus();
+    await tester.pump();
+
+    final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
+    expect(surface.borderColor, CatchTokens.sunsetLight.primary);
+    expect(
+      surface.boxShadow,
+      CatchElevation.focusRing(CatchTokens.sunsetLight),
+    );
+  });
+
+  testWidgets('CatchSection contained error owns the danger state', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchSection.contained(
+          focused: true,
+          hasError: true,
+          child: Text('Section body'),
+        ),
+      ),
+    );
+
+    final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
+    expect(surface.borderColor, CatchTokens.sunsetLight.danger);
+    expect(surface.boxShadow, isNull);
+  });
+
+  testWidgets(
+    'CatchSurface disables chrome animation when reduced motion is on',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const MediaQuery(
+            data: MediaQueryData(disableAnimations: true),
+            child: CatchSurface.card(child: Text('Panel')),
+          ),
+        ),
+      );
+
+      final surface = tester.widget<AnimatedContainer>(
+        find.descendant(
+          of: find.byType(CatchSurface),
+          matching: find.byType(AnimatedContainer),
+        ),
+      );
+
+      expect(surface.duration, Duration.zero);
+    },
+  );
 
   testWidgets('CatchFrameworkErrorView renders branded recovery UI', (
     tester,
@@ -2062,10 +2143,9 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchField(
+        const CatchField.expanding(
           title: 'Capacity',
           body: '24 seats',
-          mode: CatchFieldMode.nav,
           initiallyExpanded: true,
           control: Text('Capacity choices'),
         ),
@@ -2087,12 +2167,11 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchField(
+        CatchField.nav(
           icon: CatchIcons.personOutlined,
           title: 'Display name',
           body: 'Shown on your profile and event rosters',
           action: const Text('Edit'),
-          mode: CatchFieldMode.nav,
           onTap: () => tapped = true,
         ),
       ),
@@ -2113,6 +2192,37 @@ void main() {
     expect(tapped, isTrue);
   });
 
+  testWidgets('CatchField row fills loose bounded parent width', (
+    tester,
+  ) async {
+    var tapped = false;
+
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 360,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: CatchField.nav(
+              icon: CatchIcons.personOutlined,
+              title: 'Display name',
+              body: 'Shown on your profile and event rosters',
+              onTap: () => tapped = true,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final fieldRect = tester.getRect(find.byType(CatchField));
+    expect(fieldRect.width, 360);
+
+    await tester.tapAt(Offset(fieldRect.right - 4, fieldRect.center.dy));
+    await tester.pump();
+
+    expect(tapped, isTrue);
+  });
+
   testWidgets('CatchField renders label, helper text, changes, and errors', (
     tester,
   ) async {
@@ -2123,7 +2233,7 @@ void main() {
       _wrap(
         Form(
           key: formKey,
-          child: CatchField(
+          child: CatchField.input(
             title: 'Event title',
             placeholder: 'Short and memorable',
             helperText: 'Shows on event cards',
@@ -2136,6 +2246,12 @@ void main() {
     );
 
     expect(find.text('Event title'), findsOneWidget);
+    expect(find.text('Short and memorable'), findsNothing);
+    expect(find.text('Shows on event cards'), findsNothing);
+
+    await tester.tap(find.text('Event title'));
+    await tester.pump();
+    await tester.pump(CatchMotion.fast);
     expect(find.text('Short and memorable'), findsOneWidget);
     expect(find.text('Shows on event cards'), findsOneWidget);
 
@@ -2158,7 +2274,7 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchField(
+        CatchField.input(
           title: 'Name',
           controller: controller,
           onSubmitted: (value) => submitted = value,
@@ -2191,7 +2307,7 @@ void main() {
       _wrap(
         Form(
           key: formKey,
-          child: CatchField(
+          child: CatchField.input(
             title: 'Date of birth',
             controller: controller,
             readOnly: true,
@@ -2205,7 +2321,7 @@ void main() {
 
     expect(formKey.currentState!.validate(), isFalse);
 
-    await tester.tap(find.byType(TextField));
+    await tester.tap(find.text('Date of birth'));
     await tester.pump();
 
     expect(controller.text, '15/04/1997');
@@ -2220,7 +2336,7 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchField(
+        CatchField.input(
           title: 'Mobile number',
           controller: controller,
           readOnly: true,
@@ -2245,10 +2361,9 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        const CatchField(
+        const CatchField.input(
           title: 'Invite code',
           initialValue: 'ABC',
-          mode: CatchFieldMode.edit,
           error: error,
         ),
       ),
@@ -2264,9 +2379,8 @@ void main() {
   testWidgets('CatchField renders optional field marker', (tester) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchField(
+        const CatchField.input(
           title: 'Bio',
-          mode: CatchFieldMode.edit,
           isOptional: true,
           placeholder: 'Share a little about yourself',
         ),
@@ -2284,6 +2398,221 @@ void main() {
     );
   });
 
+  testWidgets('CatchField collapses empty text entry until focus', (
+    tester,
+  ) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 320,
+          child: CatchField.input(
+            title: 'Public name',
+            controller: controller,
+            placeholder: 'Add a public name',
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Public name'), findsOneWidget);
+    expect(find.byType(TextField), findsNothing);
+
+    await tester.tap(find.text('Public name'));
+    await tester.pump();
+    await tester.pump(CatchMotion.fast);
+
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text('Add a public name'), findsOneWidget);
+
+    var editableText = tester.widget<EditableText>(find.byType(EditableText));
+    expect(editableText.focusNode.hasFocus, isTrue);
+
+    await tester.enterText(find.byType(TextField), 'Aanya');
+    await tester.pump();
+
+    expect(controller.text, 'Aanya');
+    editableText = tester.widget<EditableText>(find.byType(EditableText));
+    expect(editableText.style.fontSize, 14);
+    expect(editableText.style.fontWeight, FontWeight.w700);
+
+    await tester.enterText(find.byType(TextField), '');
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pump();
+    await tester.pump(CatchMotion.fast);
+
+    expect(controller.text, isEmpty);
+    expect(find.byType(TextField), findsNothing);
+    expect(find.text('Public name'), findsOneWidget);
+  });
+
+  testWidgets('CatchField collapsed text entry reports focus changes', (
+    tester,
+  ) async {
+    final changes = <bool>[];
+
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 320,
+          child: CatchField.input(
+            title: 'Public name',
+            placeholder: 'Add a public name',
+            onFocusChanged: changes.add,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Public name'));
+    await tester.pump();
+    await tester.pump(CatchMotion.fast);
+
+    expect(changes, <bool>[true]);
+
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pump();
+
+    expect(changes, <bool>[true, false]);
+  });
+
+  testWidgets(
+    'CatchField expands collapsed text entry when validation fails before focus',
+    (tester) async {
+      final formKey = GlobalKey<FormState>();
+
+      await tester.pumpWidget(
+        _wrap(
+          Form(
+            key: formKey,
+            child: const SizedBox(
+              width: 320,
+              child: CatchField.input(
+                title: 'Public name',
+                placeholder: 'Add a public name',
+                validator: _requiredPublicName,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Public name'), findsOneWidget);
+      expect(find.byType(TextField), findsNothing);
+
+      expect(formKey.currentState!.validate(), isFalse);
+      await tester.pump();
+      await tester.pump(CatchMotion.fast);
+
+      expect(find.byType(TextField), findsOneWidget);
+      expect(find.text('Add a public name'), findsOneWidget);
+      expect(find.text('Public name is required'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'CatchField expands initial text and collapses after external clear',
+    (tester) async {
+      final controller = TextEditingController(text: 'Aanya');
+      addTearDown(controller.dispose);
+
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 320,
+            child: CatchField.input(
+              title: 'Public name',
+              controller: controller,
+              placeholder: 'Add a public name',
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(TextField), findsOneWidget);
+
+      controller.clear();
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pump();
+      await tester.pump(CatchMotion.fast);
+
+      expect(find.byType(TextField), findsNothing);
+      expect(find.text('Public name'), findsOneWidget);
+    },
+  );
+
+  testWidgets('CatchField clearable input uses the row trailing slot', (
+    tester,
+  ) async {
+    final controller = TextEditingController(text: 'Run');
+    addTearDown(controller.dispose);
+    var latest = 'Run';
+
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 320,
+          child: CatchField.input(
+            title: 'Search hosts',
+            controller: controller,
+            showClearButton: true,
+            suffixIcon: Icon(CatchIcons.search),
+            onChanged: (value) => latest = value,
+          ),
+        ),
+      ),
+    );
+
+    final fieldRect = tester.getRect(find.byType(TextField));
+    final clearRect = tester.getRect(find.byTooltip('Clear Search hosts'));
+
+    expect(clearRect.left, greaterThan(fieldRect.right));
+
+    await tester.tap(find.byTooltip('Clear Search hosts'));
+    await tester.pump();
+
+    expect(controller.text, isEmpty);
+    expect(latest, isEmpty);
+    expect(find.byIcon(CatchIcons.search), findsOneWidget);
+  });
+
+  testWidgets('CatchField valid row renders success trailing state', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchField.read(
+          title: 'Invite code',
+          body: 'RUNCLUB',
+          valid: true,
+        ),
+      ),
+    );
+
+    final validIcon = tester.widget<Icon>(find.byIcon(CatchIcons.checkCircle));
+    expect(validIcon.color, CatchTokens.sunsetLight.success);
+  });
+
+  testWidgets('CatchField success helper uses success support color', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchField.input(
+          title: 'Invite code',
+          initialValue: 'RUNCLUB',
+          helperText: 'Invite code is available.',
+          helperTone: CatchFieldSupportTone.success,
+        ),
+      ),
+    );
+
+    final helper = tester.widget<Text>(find.text('Invite code is available.'));
+    expect(helper.style?.color, CatchTokens.sunsetLight.success);
+  });
+
   testWidgets('CatchField supports underline, action suffix, and mono data', (
     tester,
   ) async {
@@ -2294,7 +2623,7 @@ void main() {
       _wrap(
         SizedBox(
           width: 320,
-          child: CatchField(
+          child: CatchField.input(
             title: 'Distance',
             controller: controller,
             variant: CatchFieldVariant.underline,
@@ -2328,6 +2657,39 @@ void main() {
     expect(border.bottom.width, CatchStroke.underline);
   });
 
+  testWidgets(
+    'CatchField disables field chrome animation when reduced motion is on',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const MediaQuery(
+            data: MediaQueryData(disableAnimations: true),
+            child: SizedBox(
+              width: 320,
+              child: CatchField.input(
+                title: 'Distance',
+                initialValue: '42',
+                variant: CatchFieldVariant.underline,
+                focused: true,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final chrome = tester.widget<AnimatedContainer>(
+        find
+            .descendant(
+              of: find.byType(CatchField),
+              matching: find.byType(AnimatedContainer),
+            )
+            .first,
+      );
+
+      expect(chrome.duration, Duration.zero);
+    },
+  );
+
   testWidgets('CatchField compact input centers hint and icon vertically', (
     tester,
   ) async {
@@ -2336,7 +2698,7 @@ void main() {
         Center(
           child: SizedBox(
             width: 320,
-            child: CatchField(
+            child: CatchField.input(
               title: 'Search',
               showLabel: false,
               placeholder: 'Search by name',
@@ -2498,6 +2860,7 @@ void main() {
             values: defaultCityOptions,
             itemLabel: (city) => city.label,
             value: selected,
+            prefixIcon: Icon(CatchIcons.locationOnOutlined),
             validator: (value) => value == null ? 'Please select a city' : null,
             onChanged: (value) => selected = value,
           ),
@@ -2505,9 +2868,30 @@ void main() {
       ),
     );
 
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.locationOnOutlined));
+    final titleRect = tester.getRect(find.text('City'));
+    final valueRect = tester.getRect(find.text('Select city'));
+
+    expect(iconRect.right, lessThan(titleRect.left));
+    expect((titleRect.left - valueRect.left).abs(), lessThanOrEqualTo(1));
+
     expect(formKey.currentState!.validate(), isFalse);
     await tester.pump();
     expect(find.text('Please select a city'), findsOneWidget);
+
+    final label = tester.widget<Text>(find.text('City'));
+    final value = tester.widget<Text>(find.text('Select city'));
+    final chevron = tester.widget<Icon>(
+      find.byIcon(CatchIcons.expandMoreRounded),
+    );
+    final iconTheme = IconTheme.of(
+      tester.element(find.byIcon(CatchIcons.locationOnOutlined)),
+    );
+
+    expect(label.style?.color, CatchTokens.sunsetLight.danger);
+    expect(value.style?.color, CatchTokens.sunsetLight.ink3);
+    expect(chevron.color, CatchTokens.sunsetLight.ink3);
+    expect(iconTheme.color, CatchTokens.sunsetLight.ink2);
 
     await tester.tap(find.byIcon(CatchIcons.expandMoreRounded));
     await pumpFeatureUi(tester);
@@ -2516,6 +2900,154 @@ void main() {
 
     expect(selected, cityOptionByName('mumbai')!);
     expect(formKey.currentState!.validate(), isTrue);
+  });
+
+  testWidgets(
+    'CatchField.select exposes button semantics with label and value',
+    (tester) async {
+      final selected = cityOptionByName('mumbai')!;
+
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 320,
+            child: CatchField.select<CityOption>(
+              title: 'City',
+              values: defaultCityOptions,
+              itemLabel: (city) => city.label,
+              value: selected,
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      final semantics = tester.widget<Semantics>(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics &&
+              widget.properties.label == 'City' &&
+              widget.properties.value == 'Mumbai',
+        ),
+      );
+
+      expect(semantics.properties.button, isTrue);
+      expect(semantics.properties.enabled, isTrue);
+    },
+  );
+
+  testWidgets('CatchField.select disabled state does not open menu', (
+    tester,
+  ) async {
+    final selected = cityOptionByName('mumbai')!;
+
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 320,
+          child: CatchField.select<CityOption>(
+            title: 'City',
+            values: defaultCityOptions,
+            itemLabel: (city) => city.label,
+            value: selected,
+            enabled: false,
+            onChanged: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    final semantics = tester.widget<Semantics>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Semantics &&
+            widget.properties.label == 'City' &&
+            widget.properties.value == 'Mumbai',
+      ),
+    );
+
+    expect(semantics.properties.button, isTrue);
+    expect(semantics.properties.enabled, isFalse);
+
+    await tester.tap(find.byIcon(CatchIcons.expandMoreRounded));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Delhi'), findsNothing);
+  });
+
+  testWidgets('CatchField.select clears form state when options remove value', (
+    tester,
+  ) async {
+    final formKey = GlobalKey<FormState>();
+    final mumbai = cityOptionByName('mumbai')!;
+    var selected = mumbai;
+    var values = [mumbai, cityOptionByName('delhi')!];
+    late StateSetter updateState;
+
+    await tester.pumpWidget(
+      _wrap(
+        Form(
+          key: formKey,
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              updateState = setState;
+              return SizedBox(
+                width: 320,
+                child: CatchField.select<CityOption>(
+                  title: 'City',
+                  values: values,
+                  itemLabel: (city) => city.label,
+                  value: selected,
+                  validator: (value) =>
+                      value == null ? 'Please select a city' : null,
+                  onChanged: (value) {
+                    if (value != null) selected = value;
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Mumbai'), findsOneWidget);
+    expect(formKey.currentState!.validate(), isTrue);
+
+    updateState(() {
+      values = [cityOptionByName('delhi')!];
+    });
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Select city'), findsOneWidget);
+    expect(formKey.currentState!.validate(), isFalse);
+    await tester.pump();
+
+    expect(find.text('Please select a city'), findsOneWidget);
+  });
+
+  test('CatchField guards ambiguous form configuration', () {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+
+    expect(
+      () => CatchField.input(
+        title: 'Name',
+        controller: controller,
+        initialValue: 'Aanya',
+      ),
+      throwsAssertionError,
+    );
+
+    expect(
+      () => CatchField.select<String>(
+        title: 'Activity',
+        values: const ['Run', 'Run'],
+        itemLabel: (value) => value,
+      ),
+      throwsAssertionError,
+    );
   });
 
   testWidgets('CatchMenu renders handoff rows and selection state', (
@@ -2648,4 +3180,8 @@ Widget _wrap(Widget child, {ThemeData? theme}) {
     theme: theme ?? AppTheme.light,
     home: Scaffold(body: Center(child: child)),
   );
+}
+
+String? _requiredPublicName(String? value) {
+  return value == null || value.isEmpty ? 'Public name is required' : null;
 }

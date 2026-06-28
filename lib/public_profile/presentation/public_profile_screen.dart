@@ -283,7 +283,7 @@ class PublicProfileReportReasonTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchField(
+    return CatchField.nav(
       title: label,
       icon: CatchIcons.flagOutlined,
       onTap: () => onSelected(value),

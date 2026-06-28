@@ -67,7 +67,7 @@ class _InstagramPageState extends ConsumerState<InstagramPage> {
         ],
       ),
       children: [
-        CatchField(
+        CatchField.input(
           controller: _controller,
           title: 'HANDLE',
           placeholder: '@yourhandle',

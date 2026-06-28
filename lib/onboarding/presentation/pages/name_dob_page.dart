@@ -122,7 +122,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
           size: CatchButtonSize.lg,
         ),
         children: [
-          CatchField(
+          CatchField.input(
             title: 'FIRST NAME',
             controller: _firstNameController,
             autofocus: shouldAutofocus,
@@ -134,7 +134,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
                 validateRequiredProfileName(v, label: 'First name'),
           ),
           gapH16,
-          CatchField(
+          CatchField.input(
             title: 'LAST NAME',
             controller: _lastNameController,
             textCapitalization: TextCapitalization.words,
@@ -145,7 +145,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
                 validateRequiredProfileName(v, label: 'Last name'),
           ),
           gapH16,
-          CatchField(
+          CatchField.input(
             title: 'DATE OF BIRTH',
             controller: _dateController,
             readOnly: true,
@@ -156,7 +156,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
             validator: (_) => validateRequiredDateOfBirth(_selectedDate),
           ),
           gapH16,
-          CatchField(
+          CatchField.input(
             title: 'PHONE',
             controller: _phoneController,
             readOnly: true,

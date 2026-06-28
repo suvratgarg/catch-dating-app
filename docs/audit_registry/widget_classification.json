@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 773,
-    "widgetClasses": 672,
+    "total": 775,
+    "widgetClasses": 674,
     "stateClasses": 101,
     "publicClasses": 671,
-    "privateClasses": 102,
+    "privateClasses": 104,
     "byRole": {
       "atom": 35,
-      "composition": 210,
+      "composition": 212,
       "feature-adapter": 181,
       "pattern": 14,
       "screen": 232,
@@ -28,13 +28,13 @@
       "keep-public-cataloged": 570,
       "keep-widget-state": 101,
       "review-promote-or-consolidate": 1,
-      "review-promote-or-inline": 1
+      "review-promote-or-inline": 3
     },
     "byCatalogStatus": {
       "cataloged": 571,
       "contracted": 100,
       "not-applicable": 101,
-      "uncataloged": 1
+      "uncataloged": 3
     }
   },
   "widgets": [
@@ -1986,6 +1986,33 @@
       "flags": []
     },
     {
+      "name": "_CatchFieldRow",
+      "file": "lib/core/widgets/catch_field.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "role": "composition",
+      "canonicalFamily": "catch.catch_field_row",
+      "publicApi": false,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-inline",
+      "remediationOptions": [
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "private-widget-publicization-required"
+      ]
+    },
+    {
       "name": "_CatchFieldState",
       "file": "lib/core/widgets/catch_field.dart",
       "classKind": "widget-state",
@@ -2007,6 +2034,33 @@
         "routeThroughScreenState"
       ],
       "flags": []
+    },
+    {
+      "name": "_CatchFieldTrailing",
+      "file": "lib/core/widgets/catch_field.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "role": "composition",
+      "canonicalFamily": "catch.catch_field_trailing",
+      "publicApi": false,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-inline",
+      "remediationOptions": [
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "private-widget-publicization-required"
+      ]
     },
     {
       "name": "CatchField",

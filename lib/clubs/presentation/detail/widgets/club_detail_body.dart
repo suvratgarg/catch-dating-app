@@ -163,7 +163,7 @@ class ClubDetailBody extends StatelessWidget {
                 CatchSectionStack(
                   padding: const EdgeInsets.only(top: CatchSpacing.screenPt),
                   children: [
-                    CatchSection(
+                    CatchSection.divided(
                       title: 'About',
                       first: true,
                       child: Text(
@@ -175,7 +175,7 @@ class ClubDetailBody extends StatelessWidget {
                       ),
                     ),
                     if (tags.isNotEmpty)
-                      CatchSection(
+                      CatchSection.divided(
                         title: 'What we do',
                         child: _buildClubActivitySection(
                           context,
@@ -184,11 +184,11 @@ class ClubDetailBody extends StatelessWidget {
                         ),
                       ),
                     if (club.clubPhotos.isNotEmpty)
-                      CatchSection(
+                      CatchSection.divided(
                         title: 'From the club',
                         child: _buildClubPhotoStrip(context, club: club),
                       ),
-                    CatchSection(
+                    CatchSection.divided(
                       title: 'Your hosts',
                       count: club.displayHostProfiles.length,
                       child: _buildClubHostSection(
@@ -203,7 +203,7 @@ class ClubDetailBody extends StatelessWidget {
                       ),
                     ),
                     if (hasContact)
-                      CatchSection(
+                      CatchSection.divided(
                         title: 'Get in touch',
                         child: _buildClubContactSection(
                           context,

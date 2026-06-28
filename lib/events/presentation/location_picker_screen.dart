@@ -369,11 +369,10 @@ Widget _placeSearchPanel({
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CatchSection(
-            variant: CatchSectionVariant.contained,
+          CatchSection.contained(
             hasError: errorText != null && errorText.trim().isNotEmpty,
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
-            child: CatchField(
+            child: CatchField.input(
               title: 'Search for a meeting point',
               showLabel: false,
               controller: controller,

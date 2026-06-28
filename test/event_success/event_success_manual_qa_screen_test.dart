@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_manual_qa_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
@@ -29,9 +29,8 @@ void main() {
     expect(find.text('Event success manual QA'), findsOneWidget);
     expect(find.text('Fixture scenario'), findsOneWidget);
     expect(_selectChip('Racket pairs', active: true), findsOneWidget);
-    expect(find.byType(CatchToggle), findsWidgets);
-    expect(find.bySemanticsLabel('Micro-pods opt-out'), findsOneWidget);
-    expect(find.bySemanticsLabel('Rotations opt-out'), findsOneWidget);
+    expect(_fieldToggle('Micro-pods opt-out'), findsOneWidget);
+    expect(_fieldToggle('Rotations opt-out'), findsOneWidget);
     expect(find.text('Attendee moment'), findsNothing);
     expect(find.text('Attendee choices'), findsOneWidget);
     expect(find.text('Host Manage'), findsOneWidget);
@@ -94,7 +93,7 @@ void main() {
     expect(find.textContaining('Timed partner rounds'), findsWidgets);
     expect(find.text('Sign in required'), findsNothing);
 
-    await tester.tap(find.bySemanticsLabel('Rotations opt-out'));
+    await tester.tap(_fieldToggle('Rotations opt-out'));
     await tester.pump();
 
     expect(find.text('rotations opted out'), findsOneWidget);
@@ -330,5 +329,11 @@ Finder _selectChip(String label, {bool? active}) {
         widget is CatchSelectChip &&
         widget.label == label &&
         (active == null || widget.active == active),
+  );
+}
+
+Finder _fieldToggle(String label) {
+  return find.byWidgetPredicate(
+    (widget) => widget is CatchField && widget.title == label,
   );
 }

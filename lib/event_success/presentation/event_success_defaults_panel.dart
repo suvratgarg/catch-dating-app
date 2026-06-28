@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:flutter/material.dart';
@@ -48,29 +47,12 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: CatchTextStyles.sectionTitle(context)),
-                    gapH4,
-                    Text(
-                      subtitle,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
-                    ),
-                  ],
-                ),
-              ),
-              gapW12,
-              CatchToggle(
-                value: normalized.enabled,
-                semanticLabel: title,
-                onChanged: (value) =>
-                    onChanged(normalized.copyWith(enabled: value)),
-              ),
-            ],
+          CatchField.toggle(
+            title: title,
+            body: subtitle,
+            value: normalized.enabled,
+            onChanged: (value) =>
+                onChanged(normalized.copyWith(enabled: value)),
           ),
           if (normalized.enabled) ...[
             gapH12,

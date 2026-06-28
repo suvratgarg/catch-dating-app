@@ -1,20 +1,10 @@
-import 'dart:math' as math;
-
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show
-        CatchLayout,
-        CatchMotion,
-        CatchIcon,
-        CatchOpacity,
-        CatchRadius,
-        CatchSpacing,
-        CatchStroke,
-        CatchTokens;
+    show CatchLayout, CatchIcon, CatchOpacity, CatchSpacing, CatchTokens;
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
@@ -168,7 +158,6 @@ class ProfileInlineTextValue extends StatelessWidget {
     required this.label,
     required this.displayValue,
     required this.controller,
-    required this.focusNode,
     required this.isEditing,
     required this.enabled,
     this.placeholder,
@@ -185,16 +174,10 @@ class ProfileInlineTextValue extends StatelessWidget {
     this.onSubmitted,
   });
 
-  static const double _minimumUnderlineWidth =
-      CatchLayout.profileInlineMinimumUnderlineWidth;
-  static const double _underlineGap = CatchSpacing.micro2;
-  static const double _underlineHeight = CatchStroke.underline;
-
   final String label;
   final String displayValue;
   final String? placeholder;
   final TextEditingController controller;
-  final FocusNode focusNode;
   final bool isEditing;
   final bool enabled;
   final bool isAddAffordance;
@@ -212,185 +195,47 @@ class ProfileInlineTextValue extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final direction = Directionality.of(context);
-    final textScaler = MediaQuery.textScalerOf(context);
     final valueStyle = CatchTextStyles.profileAnswer(
       context,
       color: isAddAffordance && !isEditing ? t.ink3 : t.ink,
     );
-    final lineHeight =
-        textScaler.scale(valueStyle.fontSize ?? 18) *
-        (valueStyle.height ?? 1.2);
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return AnimatedBuilder(
-          animation: controller,
-          builder: (context, _) {
-            if (!isEditing) {
-              return Text(
-                isAddAffordance ? '+ $displayValue' : displayValue,
-                key: ValueKey(
-                  'profile-inline-display-$label-$displayValue-$isAddAffordance',
-                ),
-                style: valueStyle,
-              );
-            }
+    if (!isEditing) {
+      return Text(
+        isAddAffordance ? '+ $displayValue' : displayValue,
+        key: ValueKey(
+          'profile-inline-display-$label-$displayValue-$isAddAffordance',
+        ),
+        style: valueStyle,
+      );
+    }
 
-            final inputText = controller.text;
-            final hintText = placeholder ?? displayValue;
-            final measuredText = inputText.isEmpty ? hintText : inputText;
-            final textMetrics = _measureInlineText(
-              text: measuredText,
-              style: valueStyle,
-              direction: direction,
-              textScaler: textScaler,
-              maxWidth: constraints.maxWidth,
-              maxLines: maxLines,
-            );
-            final visibleLineCount = math.max(
-              minLines ?? 1,
-              textMetrics.lineCount,
-            );
-            final editableTextHeight = lineHeight * visibleLineCount;
-            final editableHeight =
-                editableTextHeight + _underlineGap + _underlineHeight;
-            final isMultiline = maxLines != 1 || minLines != null;
-            final underlineTextWidth = isMultiline
-                ? textMetrics.maxLineWidth
-                : textMetrics.width;
-            final underlineWidth = underlineTextWidth
-                .clamp(_minimumUnderlineWidth, constraints.maxWidth)
-                .toDouble();
+    final inputFormatters = <TextInputFormatter>[
+      if (collapseStackedBlankLines) const _StackedBlankLinesFormatter(),
+      if (maxLength != null) LengthLimitingTextInputFormatter(maxLength),
+    ];
 
-            return SizedBox(
-              width: double.infinity,
-              height: editableHeight,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: editableTextHeight,
-                    child: Stack(
-                      alignment: Alignment.topLeft,
-                      children: [
-                        if (inputText.isEmpty && hintText.isNotEmpty)
-                          IgnorePointer(
-                            child: Text(
-                              hintText,
-                              style: CatchTextStyles.profileAnswer(
-                                context,
-                                color: t.ink3,
-                              ),
-                            ),
-                          ),
-                        Semantics(
-                          textField: true,
-                          label: label,
-                          child: EditableText(
-                            controller: controller,
-                            focusNode: focusNode,
-                            readOnly: !enabled,
-                            maxLines: maxLines,
-                            minLines: minLines,
-                            keyboardType: keyboardType,
-                            textCapitalization: textCapitalization,
-                            textInputAction:
-                                textInputAction ??
-                                (maxLines == 1
-                                    ? TextInputAction.done
-                                    : TextInputAction.newline),
-                            autofillHints: autofillHints,
-                            inputFormatters: [
-                              if (collapseStackedBlankLines)
-                                const _StackedBlankLinesFormatter(),
-                              if (maxLength != null)
-                                LengthLimitingTextInputFormatter(maxLength),
-                            ],
-                            onSubmitted: onSubmitted,
-                            style: valueStyle,
-                            strutStyle: StrutStyle.fromTextStyle(
-                              valueStyle,
-                              forceStrutHeight: true,
-                            ),
-                            cursorColor: t.primary,
-                            backgroundCursorColor: t.primary,
-                            selectionColor: t.primary.withValues(
-                              alpha: CatchOpacity.subtleBorder,
-                            ),
-                            cursorRadius: const Radius.circular(
-                              CatchRadius.pill,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: _underlineGap),
-                  AnimatedContainer(
-                    key: const ValueKey('profile-inline-underline'),
-                    width: underlineWidth,
-                    height: _underlineHeight,
-                    duration: CatchMotion.fast,
-                    curve: CatchMotion.standardCurve,
-                    decoration: BoxDecoration(
-                      color: t.primary.withValues(
-                        alpha: enabled
-                            ? CatchOpacity.profileInlineUnderlineActive
-                            : CatchOpacity.profileInlineUnderlineInactive,
-                      ),
-                      borderRadius: BorderRadius.circular(CatchRadius.pill),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+    return CatchField.input(
+      title: label,
+      placeholder: placeholder ?? displayValue,
+      controller: controller,
+      keyboardType: keyboardType,
+      textInputAction:
+          textInputAction ??
+          (maxLines == 1 ? TextInputAction.done : TextInputAction.newline),
+      textCapitalization: textCapitalization,
+      inputFormatters: inputFormatters.isEmpty ? null : inputFormatters,
+      autofillHints: autofillHints,
+      maxLines: maxLines,
+      minLines: minLines,
+      enabled: enabled,
+      autofocus: true,
+      showLabel: false,
+      size: CatchFieldSize.floating,
+      variant: CatchFieldVariant.underline,
+      onSubmitted: onSubmitted,
     );
   }
-}
-
-_InlineTextMetrics _measureInlineText({
-  required String text,
-  required TextStyle style,
-  required TextDirection direction,
-  required TextScaler textScaler,
-  required double maxWidth,
-  required int? maxLines,
-}) {
-  final measuredText = text.isEmpty ? ' ' : text;
-  final painter = TextPainter(
-    text: TextSpan(text: measuredText, style: style),
-    textDirection: direction,
-    textScaler: textScaler,
-    maxLines: maxLines,
-  )..layout(maxWidth: maxWidth);
-  final lines = painter.computeLineMetrics();
-  return _InlineTextMetrics(
-    width: text.isEmpty ? 0 : painter.width,
-    lineCount: math.max(1, lines.length),
-    lastLineWidth: lines.isEmpty ? 0 : lines.last.width,
-    maxLineWidth: lines.fold<double>(
-      0,
-      (maxWidth, line) => math.max(maxWidth, line.width),
-    ),
-  );
-}
-
-class _InlineTextMetrics {
-  const _InlineTextMetrics({
-    required this.width,
-    required this.lineCount,
-    required this.lastLineWidth,
-    required this.maxLineWidth,
-  });
-
-  final double width;
-  final int lineCount;
-  final double lastLineWidth;
-  final double maxLineWidth;
 }
 
 class ProfileInlineTextEntryEditor extends ConsumerStatefulWidget {
@@ -454,18 +299,13 @@ class _ProfileInlineTextEntryEditorState
     extends ConsumerState<ProfileInlineTextEntryEditor>
     with _InlineSaveState<ProfileInlineTextEntryEditor> {
   late final TextEditingController _controller;
-  late final FocusNode _focusNode;
   String? _validationError;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.currentValue);
-    _focusNode = FocusNode();
     _controller.addListener(_clearValidationError);
-    if (widget.isExpanded) {
-      _requestFocusAfterExpansionFrame();
-    }
   }
 
   @override
@@ -476,9 +316,6 @@ class _ProfileInlineTextEntryEditorState
           oldWidget.currentValue != widget.currentValue) {
         _controller.text = widget.currentValue;
       }
-      if (!oldWidget.isExpanded) {
-        _requestFocusAfterExpansionFrame();
-      }
     }
   }
 
@@ -486,22 +323,12 @@ class _ProfileInlineTextEntryEditorState
   void dispose() {
     _controller.removeListener(_clearValidationError);
     _controller.dispose();
-    _focusNode.dispose();
     super.dispose();
   }
 
   void _clearValidationError() {
     if (_validationError == null) return;
     setState(() => _validationError = null);
-  }
-
-  void _requestFocusAfterExpansionFrame() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !widget.isExpanded || isSaving || _focusNode.hasFocus) {
-        return;
-      }
-      _focusNode.requestFocus();
-    });
   }
 
   void _cancel() {
@@ -558,7 +385,6 @@ class _ProfileInlineTextEntryEditorState
         displayValue: widget.value,
         placeholder: widget.isAddAffordance ? widget.value : null,
         controller: _controller,
-        focusNode: _focusNode,
         isEditing: widget.isExpanded,
         enabled: !isSaving,
         isAddAffordance: widget.isAddAffordance,
@@ -634,7 +460,6 @@ class _ProfileInlinePromptEntryEditorState
     extends ConsumerState<ProfileInlinePromptEntryEditor>
     with _InlineSaveState<ProfileInlinePromptEntryEditor> {
   late final TextEditingController _controller;
-  late final FocusNode _focusNode;
   late String _selectedPromptId = _initialPromptId();
   String? _validationError;
 
@@ -642,11 +467,7 @@ class _ProfileInlinePromptEntryEditorState
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.currentAnswer);
-    _focusNode = FocusNode();
     _controller.addListener(_clearValidationError);
-    if (widget.isExpanded) {
-      _requestFocusAfterExpansionFrame();
-    }
   }
 
   @override
@@ -662,16 +483,12 @@ class _ProfileInlinePromptEntryEditorState
         !listEquals(oldWidget.availablePromptIds, widget.availablePromptIds)) {
       _selectedPromptId = _initialPromptId();
     }
-    if (!oldWidget.isExpanded) {
-      _requestFocusAfterExpansionFrame();
-    }
   }
 
   @override
   void dispose() {
     _controller.removeListener(_clearValidationError);
     _controller.dispose();
-    _focusNode.dispose();
     super.dispose();
   }
 
@@ -687,15 +504,6 @@ class _ProfileInlinePromptEntryEditorState
   void _clearValidationError() {
     if (_validationError == null) return;
     setState(() => _validationError = null);
-  }
-
-  void _requestFocusAfterExpansionFrame() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !widget.isExpanded || isSaving || _focusNode.hasFocus) {
-        return;
-      }
-      _focusNode.requestFocus();
-    });
   }
 
   void _cancel() {
@@ -753,7 +561,6 @@ class _ProfileInlinePromptEntryEditorState
         displayValue: widget.value,
         placeholder: selectedDefinition.placeholder,
         controller: _controller,
-        focusNode: _focusNode,
         isEditing: widget.isExpanded,
         enabled: !isSaving,
         isAddAffordance: widget.isAddAffordance,

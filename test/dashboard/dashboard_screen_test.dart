@@ -9,6 +9,7 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
@@ -577,6 +578,43 @@ void main() {
       await _pumpDashboardUi(tester);
 
       expect(find.text('Could not open this activity update.'), findsOneWidget);
+    });
+
+    testWidgets('notification rows compose the CatchField primitive', (
+      tester,
+    ) async {
+      var tapped = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: NotificationRow(
+              title: 'Event starts tomorrow',
+              time: '2h',
+              body: 'Sundowner 5K meets at Carter Road Jetty.',
+              unread: true,
+              onTap: () => tapped = true,
+            ),
+          ),
+        ),
+      );
+
+      final field = tester.widget<CatchField>(find.byType(CatchField));
+      expect(field.title, 'Event starts tomorrow');
+      expect(field.body, 'Sundowner 5K meets at Carter Road Jetty.');
+      expect(field.emphasis, CatchFieldEmphasis.title);
+      expect(field.showChevron, isFalse);
+
+      expect(find.text('2H'), findsOneWidget);
+      final titleTop = tester.getTopLeft(find.text('Event starts tomorrow')).dy;
+      final timeTop = tester.getTopLeft(find.text('2H')).dy;
+      expect((timeTop - titleTop).abs(), lessThan(10));
+
+      await tester.tap(find.text('2H'));
+      await tester.pump();
+
+      expect(tapped, isTrue);
     });
 
     testWidgets('notifications screen renders grouped notification rows', (

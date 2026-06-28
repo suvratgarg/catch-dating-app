@@ -378,7 +378,7 @@ class _HostTeamAddHostSheetState extends ConsumerState<HostTeamAddHostSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CatchField(
+          CatchField.input(
             title: 'Phone number',
             controller: _controller,
             prefixIcon: Icon(CatchIcons.phoneOutlined),

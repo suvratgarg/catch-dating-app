@@ -180,7 +180,8 @@ function readAnnotationValue(annotation, key) {
 
 function collectStateCards(body) {
   const rows = [];
-  const regex = /_StateCard\(\s*label:\s*(['"])(.*?)\1/gu;
+  const regex =
+    /_(?:StateCard|CatchFieldStatePreview)\(\s*label:\s*(['"])(.*?)\1/gu;
   for (const match of body.matchAll(regex)) {
     rows.push({
       label: match[2],
