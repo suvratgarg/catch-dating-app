@@ -144,7 +144,7 @@ gives Catch one voice face for dramatic headlines, names, prose, and condensed e
 surfaces without reintroducing a decorative brand accent. Function/body text stays native
 to the platform for legibility and Dynamic Type behavior.
 
-> The old Newsreader/Inter direction is retired. Keep the swap centralized in
+> The old serif/custom-sans direction is retired. Keep the swap centralized in
 > `CatchFonts`, `CatchTextStyles`, and `design/tokens/catch.tokens.json`.
 
 **Legibility-first craft:**
@@ -216,7 +216,7 @@ What we tried and why, so we don't relitigate it:
 - **Activity art re-grade:** candy gradients → deep duotone (too dark) → **confident
   mid-tone pigments**; abstract patterns → **bespoke emblems** (deferred); grading decided
   **display-time, non-destructive**.
-- **Typography:** earlier serif studies (Instrument Serif, Playfair/Bodoni, Newsreader,
+- **Typography:** earlier serif studies (Instrument Serif, Playfair/Bodoni,
   Source Serif 4, Literata) were retired. The current locked stack is Archivo for voice/head,
   platform system for function/body, and IBM Plex Mono for data.
 - **References studied:** Roadbook (warm-desaturated editorial, sans-leaning) + Wallpaper

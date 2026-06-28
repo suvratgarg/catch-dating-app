@@ -119,7 +119,7 @@
           ],
           "componentIds": [
             "catch.button",
-            "catch.text_field"
+            "catch.field"
           ],
           "captureIds": [
             "auth_phone_entry"
@@ -229,8 +229,7 @@
           "componentIds": [
             "catch.button",
             "catch.chip",
-            "catch.field",
-            "catch.text_field"
+            "catch.field"
           ],
           "captureIds": [
             "onboarding_welcome"
@@ -1056,7 +1055,6 @@
             "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
             "lib/clubs/presentation/detail/widgets/club_schedule_section.dart",
             "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
-            "lib/clubs/presentation/detail/widgets/stats_strip.dart",
             "lib/reviews/presentation/reviews_section.dart"
           ],
           "componentIds": [
@@ -1849,7 +1847,7 @@
             "catch.button",
             "catch.icon_button",
             "catch.surface",
-            "catch.text_field",
+            "catch.field",
             "catch.top_bar"
           ],
           "captureIds": [
@@ -2549,7 +2547,7 @@
             "catch.button",
             "catch.icon_button",
             "catch.surface",
-            "catch.text_field"
+            "catch.field"
           ],
           "captureIds": [
             "post_run_catch_window",
@@ -3162,7 +3160,7 @@
             "lib/chats/presentation/chat_screen.dart",
             "lib/chats/presentation/chat_controller.dart",
             "lib/chats/presentation/suvbot_controller.dart",
-            "lib/chats/presentation/widgets/chat_top_bar.dart",
+            "lib/core/widgets/catch_top_bar.dart",
             "lib/chats/presentation/widgets/chat_event_context_header.dart",
             "lib/chats/presentation/widgets/chat_message_list.dart",
             "lib/chats/presentation/widgets/message_bubble.dart",
@@ -3174,7 +3172,7 @@
             "catch.button",
             "catch.icon_button",
             "catch.surface",
-            "catch.text_field",
+            "catch.field",
             "catch.top_bar"
           ],
           "captureIds": [
@@ -3240,7 +3238,7 @@
               ],
               "tests": [
                 "test/chats/message_bubble_test.dart",
-                "test/chats/chat_top_bar_test.dart"
+                "test/chats/chat_screen_test.dart"
               ],
               "notes": "match_chat_context renders top bar, event context, grouped bubbles, composer, and share/report/block menu affordances.",
               "previewIds": [
@@ -3382,9 +3380,9 @@
               "kind": "populated",
               "status": "captured",
               "tests": [
-                "test/chats/chat_top_bar_test.dart"
+                "test/chats/chat_screen_test.dart"
               ],
-              "notes": "ChatTopBar opens profile from identity title and exposes share/report/block overflow actions without duplicating profile in menu.",
+              "notes": "CatchTopBar.identity opens profile from identity title and exposes share/report/block overflow actions without duplicating profile in menu.",
               "previewIds": [
                 "ChatScreen/Route states"
               ],
@@ -3450,7 +3448,7 @@
               "id": "keyboard_composer",
               "kind": "populated",
               "status": "captured",
-              "notes": "ChatInputBar uses compact pill CatchTextField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
+              "notes": "ChatInputBar uses compact pill CatchField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
               "previewIds": [
                 "ChatScreen/Route states"
               ],
@@ -3569,7 +3567,6 @@
             "catch.icon_button",
             "catch.segmented_control",
             "catch.surface",
-            "catch.text_field",
             "catch.top_bar"
           ],
           "captureIds": [
@@ -3967,7 +3964,7 @@
               "tests": [
                 "test/public_profile/public_profile_screen_test.dart"
               ],
-              "notes": "public_profile_report_sheet captures the extracted PublicProfileReportSheet with shared CatchBottomSheetScaffold and CatchSettingsRow reason choices.",
+              "notes": "public_profile_report_sheet captures the extracted PublicProfileReportSheet with shared CatchBottomSheetScaffold and CatchField reason choices.",
               "previewIds": [
                 "PublicProfileScreen/Safety action states"
               ],
@@ -4433,7 +4430,6 @@
             "catch.icon_button",
             "catch.segmented_control",
             "catch.surface",
-            "catch.text_field",
             "catch.top_bar"
           ],
           "captureIds": [
@@ -4853,7 +4849,6 @@
             "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
             "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
             "lib/clubs/presentation/detail/widgets/club_schedule_section.dart",
-            "lib/clubs/presentation/detail/widgets/stats_strip.dart",
             "lib/reviews/presentation/reviews_section.dart"
           ],
           "componentIds": [
@@ -5192,7 +5187,6 @@
             "catch.field",
             "catch.segmented_control",
             "catch.surface",
-            "catch.text_field",
             "catch.top_bar"
           ],
           "captureIds": [
@@ -5715,7 +5709,6 @@
             "catch.option_card",
             "catch.segmented_control",
             "catch.surface",
-            "catch.text_field",
             "catch.top_bar"
           ],
           "captureIds": [
@@ -6650,7 +6643,7 @@
               "id": "search_active",
               "kind": "populated",
               "status": "captured",
-              "notes": "Pinned chats header expands CatchExpandingSearch, binds chatSearchQueryProvider, clears query, and closes empty search on done/focus loss. Add host-specific search capture with attendee query copy and keyboard-safe layout. Keyboard-safe host search layout remains a future simulator/manual pass if needed.",
+              "notes": "Pinned chats header expands CatchSearchField expanding mode, binds chatSearchQueryProvider, clears query, and closes empty search on done/focus loss. Add host-specific search capture with attendee query copy and keyboard-safe layout. Keyboard-safe host search layout remains a future simulator/manual pass if needed.",
               "tests": [
                 "test/chats/matches_list_screen_test.dart"
               ],
@@ -6850,7 +6843,7 @@
             "lib/events/data/event_repository.dart",
             "lib/clubs/data/clubs_repository.dart",
             "lib/public_profile/data/public_profile_repository.dart",
-            "lib/chats/presentation/widgets/chat_top_bar.dart",
+            "lib/core/widgets/catch_top_bar.dart",
             "lib/chats/presentation/widgets/chat_event_context_header.dart",
             "lib/chats/presentation/widgets/chat_message_list.dart",
             "lib/chats/presentation/widgets/chat_input_bar.dart",
@@ -7144,7 +7137,7 @@
               "id": "top_bar_safety_actions",
               "kind": "populated",
               "status": "tested",
-              "notes": "ChatTopBar exposes Report and Block actions for non-Suvbot host inquiries while profile navigation and Share card are disabled; focused widget coverage verifies the menu.",
+              "notes": "CatchTopBar.identity exposes Report and Block actions for non-Suvbot host inquiries while profile navigation and Share card are disabled; focused widget coverage verifies the menu.",
               "previewIds": [
                 "ChatScreen/Host chat states"
               ],
@@ -7156,7 +7149,7 @@
               "id": "report_user_mutation",
               "kind": "mutation",
               "status": "implemented",
-              "notes": "Report action is selected through typed ChatTopBarAction.report, disables while ChatController.reportUserMutation is pending, runs the mutation through ChatController, shows Report submitted snackbar on success, and surfaces failures through the shared chat mutation listener. Focused widget coverage verifies success, pending disabled state, and failure feedback; add host chat report pending/failure captures.",
+              "notes": "Report action is selected through typed ChatThreadAction.report, disables while ChatController.reportUserMutation is pending, runs the mutation through ChatController, shows Report submitted snackbar on success, and surfaces failures through the shared chat mutation listener. Focused widget coverage verifies success, pending disabled state, and failure feedback; add host chat report pending/failure captures.",
               "previewIds": [
                 "ChatScreen/Host chat states"
               ]
@@ -7165,7 +7158,7 @@
               "id": "block_user_mutation",
               "kind": "mutation",
               "status": "implemented",
-              "notes": "Block action is selected through typed ChatTopBarAction.block, disables while ChatController.blockUserMutation is pending, confirms with showBlockUserDialog, runs the mutation through ChatController, and pops the route on success. Focused widget coverage verifies confirmation, success, pending disabled state, and failure feedback; add host chat block pending/failure captures.",
+              "notes": "Block action is selected through typed ChatThreadAction.block, disables while ChatController.blockUserMutation is pending, confirms with showBlockUserDialog, runs the mutation through ChatController, and pops the route on success. Focused widget coverage verifies confirmation, success, pending disabled state, and failure feedback; add host chat block pending/failure captures.",
               "previewIds": [
                 "ChatScreen/Host chat states"
               ]
@@ -7246,7 +7239,7 @@
             {
               "id": "DP-HOST-CHAT-002",
               "status": "open",
-              "nextAction": "ChatRouteState now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState owns host inquiry identity, typed top-bar action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks, while _ChatContent still executes the ConversationReadMarker.markRead side effect. ChatThreadLookupState owns other-participant, host-inquiry club, host profile, public-profile, event, and Suvbot lookup decisions before ChatRouteState performs the provider watches. Match-stream failures render the shared branded chat error state and execute HostChatRetryIntent.reloadMatch; message-list and Suvbot-control errors route through typed retry targets before invalidating their providers. ChatTopBar is router/provider-free and supports disabled menu actions, and Host Chat report/share/sheet-export transient feedback routes through showCatchSnackBar. _ChatContent still owns profile navigation, share-card presentation, scroll behavior, and report/block/share effect execution from typed intents. Continue moving remaining mark-read execution, scroll effects, and side-effect execution into this adapter/controller seam."
+              "nextAction": "ChatRouteState now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState owns host inquiry identity, typed top-bar action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks, while _ChatContent still executes the ConversationReadMarker.markRead side effect. ChatThreadLookupState owns other-participant, host-inquiry club, host profile, public-profile, event, and Suvbot lookup decisions before ChatRouteState performs the provider watches. Match-stream failures render the shared branded chat error state and execute HostChatRetryIntent.reloadMatch; message-list and Suvbot-control errors route through typed retry targets before invalidating their providers. CatchTopBar.identity is router/provider-free and supports disabled menu actions, and Host Chat report/share/sheet-export transient feedback routes through showCatchSnackBar. _ChatContent still owns profile navigation, share-card presentation, scroll behavior, and report/block/share effect execution from typed intents. Continue moving remaining mark-read execution, scroll effects, and side-effect execution into this adapter/controller seam."
             },
             {
               "id": "DP-HOST-CHAT-003",
@@ -7292,7 +7285,6 @@
           "componentIds": [
             "catch.button",
             "catch.field",
-            "catch.text_field",
             "catch.top_bar"
           ],
           "captureIds": [
@@ -7500,7 +7492,6 @@
           "componentIds": [
             "catch.button",
             "catch.field",
-            "catch.text_field",
             "catch.top_bar"
           ],
           "captureIds": [
@@ -7718,7 +7709,6 @@
             "catch.chip",
             "catch.field",
             "catch.surface",
-            "catch.text_field",
             "catch.top_bar"
           ],
           "captureIds": [
@@ -7962,7 +7952,7 @@
             "catch.button",
             "catch.segmented_control",
             "catch.surface",
-            "catch.text_field",
+            "catch.field",
             "catch.top_bar"
           ],
           "designRefs": [
@@ -8275,7 +8265,7 @@
           "componentIds": [
             "catch.button",
             "catch.surface",
-            "catch.text_field",
+            "catch.field",
             "catch.top_bar"
           ],
           "designRefs": [

@@ -3,7 +3,7 @@
   "source": "lib/core/theme/catch_text_styles.dart",
   "families": {
     "voice": "Archivo",
-    "function": "system-ui",
+    "function": "Roboto",
     "data": "IBM Plex Mono"
   },
   "opszAxis": {
@@ -18,7 +18,7 @@
   },
   "rules": {
     "monoLabels": "Render text pre-uppercased; tracking 0.12-0.18em.",
-    "displaySerif": "Newsreader w600, negative tracking, automatic optical sizing.",
+    "displayVoice": "Archivo w600, zero tracking, centralized through CatchFonts.",
     "color": "Base UI is paper and ink; chroma is reserved for activity meaning."
   },
   "registry": {
@@ -100,31 +100,21 @@
       ]
     },
     "titleL": {
-      "role": "voice",
-      "family": "Archivo",
+      "role": "function",
+      "family": "Roboto",
       "size": 20.0,
-      "weight": 600,
+      "weight": 700,
       "lineHeight": 1.16,
       "tracking": -0.1,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "wght",
-          "value": 600.0
-        },
-        {
-          "axis": "wdth",
-          "value": 100.0
-        }
-      ]
+      }
     },
     "profileAnswer": {
-      "role": "voice",
-      "family": "Archivo",
+      "role": "function",
+      "family": "Roboto",
       "size": 18.0,
       "weight": 600,
       "lineHeight": 1.28,
@@ -133,21 +123,11 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "wght",
-          "value": 600.0
-        },
-        {
-          "axis": "wdth",
-          "value": 100.0
-        }
-      ]
+      }
     },
     "proseL": {
-      "role": "voice",
-      "family": "Archivo",
+      "role": "function",
+      "family": "Roboto",
       "size": 16.0,
       "weight": 400,
       "lineHeight": 1.55,
@@ -156,21 +136,11 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "wght",
-          "value": 400.0
-        },
-        {
-          "axis": "wdth",
-          "value": 100.0
-        }
-      ]
+      }
     },
     "proseM": {
-      "role": "voice",
-      "family": "Archivo",
+      "role": "function",
+      "family": "Roboto",
       "size": 14.0,
       "weight": 400,
       "lineHeight": 1.55,
@@ -179,17 +149,7 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "wght",
-          "value": 400.0
-        },
-        {
-          "axis": "wdth",
-          "value": 100.0
-        }
-      ]
+      }
     },
     "clubDisplay": {
       "role": "voice",
@@ -411,8 +371,8 @@
       ]
     },
     "name": {
-      "role": "voice",
-      "family": "Archivo",
+      "role": "function",
+      "family": "Roboto",
       "size": 15.0,
       "weight": 700,
       "lineHeight": 1.2,
@@ -421,21 +381,11 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "wght",
-          "value": 700.0
-        },
-        {
-          "axis": "wdth",
-          "value": 92.0
-        }
-      ]
+      }
     },
     "sectionTitle": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 16.0,
       "weight": 700,
       "lineHeight": 1.22,
@@ -448,7 +398,7 @@
     },
     "titleS": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 14.0,
       "weight": 700,
       "lineHeight": 1.24,
@@ -459,9 +409,9 @@
         "dark": "#F4F0E8"
       }
     },
-    "infoRowTitle": {
+    "fieldRowTitle": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 14.0,
       "weight": 700,
       "lineHeight": 1.24,
@@ -474,7 +424,7 @@
     },
     "bodyLead": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 16.0,
       "weight": 500,
       "lineHeight": 1.42,
@@ -487,7 +437,7 @@
     },
     "bodyL": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 16.0,
       "weight": 400,
       "lineHeight": 1.5,
@@ -500,7 +450,7 @@
     },
     "bodyM": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 14.0,
       "weight": 400,
       "lineHeight": 1.5,
@@ -513,7 +463,7 @@
     },
     "bodyS": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 13.0,
       "weight": 400,
       "lineHeight": 1.45,
@@ -526,7 +476,7 @@
     },
     "appBarSubtitle": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 13.0,
       "weight": 400,
       "lineHeight": 1.45,
@@ -539,7 +489,7 @@
     },
     "supporting": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 13.0,
       "weight": 500,
       "lineHeight": 1.42,
@@ -552,7 +502,7 @@
     },
     "labelL": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 14.0,
       "weight": 700,
       "lineHeight": 1.24,
@@ -565,7 +515,7 @@
     },
     "fieldLabel": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 11.5,
       "weight": 500,
       "lineHeight": 1.2,
@@ -578,7 +528,7 @@
     },
     "labelM": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 11.0,
       "weight": 600,
       "lineHeight": 1.3,
@@ -591,7 +541,7 @@
     },
     "labelS": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 10.0,
       "weight": 700,
       "lineHeight": 1.2,
@@ -604,7 +554,7 @@
     },
     "statusLabel": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 10.0,
       "weight": 800,
       "lineHeight": 1.1,
@@ -617,7 +567,7 @@
     },
     "buttonSm": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 13.0,
       "weight": 600,
       "lineHeight": 1.0,
@@ -630,7 +580,7 @@
     },
     "buttonMd": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 15.0,
       "weight": 600,
       "lineHeight": 1.0,
@@ -643,7 +593,7 @@
     },
     "button": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 15.0,
       "weight": 600,
       "lineHeight": 1.0,
@@ -656,7 +606,7 @@
     },
     "buttonLg": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 16.0,
       "weight": 600,
       "lineHeight": 1.0,
@@ -673,7 +623,7 @@
       "samples": {
         "12": {
           "role": "function",
-          "family": null,
+          "family": "Roboto",
           "size": 12.0,
           "weight": 800,
           "lineHeight": 1.0,
@@ -686,7 +636,7 @@
         },
         "16": {
           "role": "function",
-          "family": null,
+          "family": "Roboto",
           "size": 16.0,
           "weight": 800,
           "lineHeight": 1.0,
@@ -699,7 +649,7 @@
         },
         "20": {
           "role": "function",
-          "family": null,
+          "family": "Roboto",
           "size": 20.0,
           "weight": 800,
           "lineHeight": 1.0,
@@ -730,7 +680,7 @@
     },
     "chatMessage": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 15.0,
       "weight": 400,
       "lineHeight": 1.4,
@@ -743,7 +693,7 @@
     },
     "chat": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 15.0,
       "weight": 400,
       "lineHeight": 1.4,
@@ -756,7 +706,7 @@
     },
     "chatPreview": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 13.0,
       "weight": 400,
       "lineHeight": 1.45,
@@ -769,7 +719,7 @@
     },
     "chatThreadContext": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 14.0,
       "weight": 600,
       "lineHeight": 1.35,
@@ -782,7 +732,7 @@
     },
     "statCompact": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 14.0,
       "weight": 700,
       "lineHeight": 1.15,
@@ -802,7 +752,7 @@
       "samples": {
         "1.0": {
           "role": "map",
-          "family": null,
+          "family": "Roboto",
           "size": 13.0,
           "weight": 700,
           "lineHeight": 1.2,
@@ -821,7 +771,7 @@
       "samples": {
         "1.0": {
           "role": "map",
-          "family": null,
+          "family": "Roboto",
           "size": 14.0,
           "weight": 800,
           "lineHeight": 1.2,
@@ -1012,7 +962,7 @@
     },
     "clubMemberSeal": {
       "role": "function",
-      "family": null,
+      "family": "Roboto",
       "size": 11.0,
       "weight": 600,
       "lineHeight": 1.05,

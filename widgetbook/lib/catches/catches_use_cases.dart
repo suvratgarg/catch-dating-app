@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -11,10 +12,18 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/labs/design_fixtures/catches_surface_fixtures.dart';
+import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_hub_screen_state.dart';
+import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
+import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/profile_card_content.dart';
+import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/presentation/profile_redesign/profile_view.dart';
+import 'package:catch_dating_app/swipes/presentation/profile_redesign/profile_view_mapper.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
@@ -22,6 +31,7 @@ import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_notifier.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/attended_event_tile.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/catches_pass_button.dart';
+import 'package:catch_dating_app/swipes/presentation/widgets/profile_info_chip.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_controls.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/swipe_empty_state.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -283,6 +293,220 @@ Widget catchesEventDeckRouteStates(BuildContext context) {
             child: _DeckRouteScope(event: openEvent),
           ),
         ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Event recap route states',
+  type: EventRecapScreen,
+  path: '[P1 product surfaces]/Catches',
+)
+Widget eventRecapScreenRouteStates(BuildContext context) {
+  final event = CatchesSurfaceFixtures.closedWindowEvent();
+  final attendeeIds = CatchesSurfaceFixtures.candidates
+      .map((profile) => profile.uid)
+      .toList(growable: false);
+
+  return _CatchesCatalog(
+    title: 'EventRecapScreen',
+    contractId: 'screen.catches.recap',
+    children: [
+      _StateCard(
+        label: 'recap loading',
+        child: _DeviceFrame(
+          child: _RecapRouteScope(
+            event: event,
+            recapValue: const AsyncLoading(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'checked-in roster',
+        child: _DeviceFrame(
+          child: _RecapRouteScope(
+            event: event,
+            recapValue: AsyncData(
+              EventRecapViewModel(
+                event: event,
+                attendeeIds: attendeeIds,
+                checkedInCount: attendeeIds.length + 1,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty roster',
+        child: _DeviceFrame(
+          child: _RecapRouteScope(
+            event: event,
+            recapValue: AsyncData(
+              EventRecapViewModel(
+                event: event,
+                attendeeIds: const [],
+                checkedInCount: 1,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'event missing',
+        child: _DeviceFrame(
+          child: _RecapRouteScope(
+            event: event,
+            recapValue: const AsyncData<EventRecapViewModel?>(null),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Loading composition',
+  type: EventRecapLoadingBody,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget eventRecapLoadingBodyStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'EventRecapLoadingBody',
+    contractId: 'screen.catches.recap.loading',
+    children: [
+      _StateCard(
+        label: 'content skeleton',
+        child: _DeviceFrame(child: EventRecapLoadingBody()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Filters loading composition',
+  type: FiltersContentSkeleton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget filtersContentSkeletonStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'FiltersContentSkeleton',
+    contractId: 'screen.catches.filters.loading',
+    children: [
+      _StateCard(
+        label: 'loading',
+        child: _DeviceFrame(child: FiltersContentSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Filter section states',
+  type: FiltersSection,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget filtersSectionStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'FiltersSection',
+    contractId: 'screen.catches.filters.section',
+    children: [
+      _StateCard(
+        label: 'value section',
+        child: _SectionFrame(
+          height: 140,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: FiltersSection(
+              title: 'Age',
+              child: FiltersValue(value: '24 - 36'),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Filter value states',
+  type: FiltersValue,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget filtersValueStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'FiltersValue',
+    contractId: 'screen.catches.filters.value',
+    children: [
+      _StateCard(
+        label: 'default',
+        child: _SectionFrame(
+          height: 96,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: FiltersValue(value: '24 - 36'),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Raw profile view states',
+  type: CatchProfileView,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget catchProfileViewStates(BuildContext context) {
+  return _CatchesCatalog(
+    title: 'CatchProfileView',
+    contractId: 'screen.catches.profile.raw',
+    children: [
+      _StateCard(
+        label: 'read only',
+        child: _DeviceFrame(child: CatchProfileView(data: _profileView())),
+      ),
+      _StateCard(
+        label: 'reactable',
+        child: _DeviceFrame(
+          child: CatchProfileView(data: _profileView(), onReact: _noopReaction),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile skeleton states',
+  type: ProfileSurfaceSkeleton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSurfaceSkeletonStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSurfaceSkeleton',
+    contractId: 'screen.catches.profile.skeleton',
+    children: [
+      _StateCard(
+        label: 'default',
+        child: _DeviceFrame(child: ProfileSurfaceSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Review skeleton states',
+  type: CatchesProfileReviewSkeleton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget catchesProfileReviewSkeletonStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'CatchesProfileReviewSkeleton',
+    contractId: 'screen.catches.event.review_skeleton',
+    children: [
+      _StateCard(
+        label: 'loading deck',
+        child: _DeviceFrame(child: CatchesProfileReviewSkeleton()),
       ),
     ],
   );
@@ -627,6 +851,64 @@ Widget catchesReactionControlStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Reaction comment sheet states',
+  type: ProfileReactionCommentSheet,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileReactionCommentSheetStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileReactionCommentSheet',
+    contractId: 'screen.catches.event.reaction_comment_sheet',
+    children: [
+      _StateCard(
+        label: 'prompt target',
+        child: _SectionFrame(
+          height: 440,
+          child: ProfileReactionCommentSheet(target: _reactionTarget),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile info chip states',
+  type: ProfileInfoChip,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileInfoChipStates(BuildContext context) {
+  return _CatchesCatalog(
+    title: 'ProfileInfoChip',
+    contractId: 'screen.catches.profile.info_chip',
+    children: [
+      _StateCard(
+        label: 'short and long labels',
+        child: _SectionFrame(
+          height: 160,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                ProfileInfoChip(
+                  icon: CatchIcons.locationOnOutlined,
+                  text: 'Bandra',
+                ),
+                ProfileInfoChip(
+                  icon: CatchIcons.directionsRunOutlined,
+                  text: 'Long run person who likes morning miles',
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Deck empty states',
   type: SwipeEmptyState,
   path: '[P1 product surfaces]/Catches/Sections',
@@ -807,6 +1089,31 @@ class _DeckRouteScope extends StatelessWidget {
   }
 }
 
+class _RecapRouteScope extends StatelessWidget {
+  const _RecapRouteScope({required this.event, required this.recapValue});
+
+  final Event event;
+  final AsyncValue<EventRecapViewModel?> recapValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final roster = {
+      for (final profile in CatchesSurfaceFixtures.candidates)
+        profile.uid: profile,
+    };
+
+    return ProviderScope(
+      overrides: [
+        eventRecapViewModelProvider(event.id).overrideWith((ref) => recapValue),
+        publicProfilesByIdsProvider(
+          PublicProfilesQuery(roster.keys),
+        ).overrideWith((ref) async => roster),
+      ],
+      child: EventRecapScreen(eventId: event.id),
+    );
+  }
+}
+
 const _reactionTarget = ProfileReactionTarget(
   id: 'design-catches-prompt',
   type: SwipeReactionTargetType.profilePrompt,
@@ -826,6 +1133,25 @@ CatchesHubReady _hubReadyState() {
   return CatchesHubReady(
     uid: CatchesSurfaceFixtures.viewerUid,
     rows: _hubRows(),
+  );
+}
+
+ProfileView _profileView() {
+  final profile = CatchesSurfaceFixtures.candidates.first;
+  final content = ProfileCardContent.fromProfile(
+    profile,
+    viewerProfile: CatchesSurfaceFixtures.viewer,
+    sharedRunTitle: CatchesSurfaceFixtures.openWindowEvent().title,
+  );
+
+  return profileViewFromCardContent(
+    content,
+    name: profile.name,
+    age: profile.age,
+    running: profile.activityPreferences.running,
+    kicker: 'Was at · ${CatchesSurfaceFixtures.openWindowEvent().title}',
+    kickerActivity: CatchesSurfaceFixtures.openWindowEvent().activityKind,
+    metaLine: profile.city,
   );
 }
 

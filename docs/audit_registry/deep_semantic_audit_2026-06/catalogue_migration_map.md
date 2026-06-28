@@ -20,7 +20,7 @@ these seams, a redesigned component swaps in with no call-site churn.
 | `CatchSurface` | core/widgets/catch_surface.dart | 222 |
 | `CatchBadge` | core/widgets/catch_badge.dart | 162 |
 | `CatchButton` | core/widgets/catch_button.dart | 130 |
-| `CatchTextField` | core/widgets/catch_text_field.dart | 77 |
+| `CatchField` | core/widgets/catch_field.dart | 77 |
 | `CatchLoadingIndicator` | core/widgets/catch_loading_indicator.dart | 53 |
 | `CatchSettingsRow` | core/widgets/settings_row.dart | 48 |
 | `CatchEmptyState` | core/widgets/catch_empty_state.dart | 26 |
@@ -88,10 +88,9 @@ these seams, a redesigned component swaps in with no call-site churn.
 | `CatchPanel` | core/widgets/catch_panel.dart | 1 |
 | `CatchDetailSliverSectionList` | core/widgets/catch_section_layout.dart | 1 |
 | `CatchTopBarTextAction` | core/widgets/catch_top_bar.dart | 1 |
-| `CatchViewportCurveFrame` | core/widgets/catch_viewport_curve_frame.dart | 1 |
-| `CatchStatStrip` | core/widgets/stat_strip.dart | 1 |
+| `CatchMetricStrip` | core/widgets/stat_strip.dart | 1 |
 
-_Primitives with 0 external call sites (composed only internally or pending adoption):_ `CatchActivityArt`, `CatchActivityAvatar`, `CatchDaySectionHeader`, `CatchSliverErrorState`, `CatchNotice`, `CatchCodeInput`, `CatchSectionCard`, `CatchPageBody`, `CatchScreenBody`, `CatchFormStepBody`, `CatchSliverPageBody`, `CatchSkeleton`, `CatchStatusBar`, `CatchStepHeader`, `CatchStepProgress`, `CatchTopBarTabBar`, `CatchVerticalSection`, `CatchDistanceRing`, `CatchInfoGroup`, `CatchInfoRow`, `CatchPrivacyBadge`, `CatchSectionLabel`, `CatchSoftBand`
+_Primitives with 0 external call sites (composed only internally or pending adoption):_ `CatchActivityArt`, `CatchActivityAvatar`, `CatchDaySectionHeader`, `CatchSliverErrorState`, `CatchNotice`, `CatchCodeInput`, `CatchSectionCard`, `CatchPageBody`, `CatchScreenBody`, `CatchFormStepBody`, `CatchSliverPageBody`, `CatchSkeleton`, `CatchStatusBar`, `CatchStepHeader`, `CatchStepProgress`, `CatchTopBarTabBar`, `CatchVerticalSection`, `CatchDistanceRing`, `CatchFieldGroup`, `CatchField`, `CatchPrivacyBadge`, `CatchSectionLabel`, `CatchSoftBand`
 
 ## Remaining non-catalogue surface to fold in
 

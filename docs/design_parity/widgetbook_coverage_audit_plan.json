@@ -1,0 +1,161 @@
+{
+  "generatedAt": "2026-06-26T18:36:59.118Z",
+  "invariant": "Every Flutter widget class in lib must be ALREADY_CATALOGED, REPLACE_WITH_EXISTING_CATALOG_ENTRY, PROMOTE_TO_WIDGETBOOK_CATALOG, or DELETE_OR_MERGE_DUPLICATE. KEEP_PRIVATE is invalid.",
+  "baselineCoverage": {
+    "totalWidgetClasses": 1083,
+    "publicAlreadyCatalogedByName": 175,
+    "privateNameMatchNeedsExplicitDecision": 1,
+    "privateNeedsRenameOrReplace": 683,
+    "publicNeedsCatalogOrReplace": 224,
+    "totalDecisionQueue": 908
+  },
+  "shardTotals": {
+    "core_and_shared": {
+      "total": 137,
+      "already": 81,
+      "replace": 39,
+      "promote": 10,
+      "deleteMerge": 7
+    },
+    "auth_onboarding_profile_safety": {
+      "total": 144,
+      "already": 21,
+      "replace": 46,
+      "promote": 49,
+      "deleteMerge": 28
+    },
+    "discovery_clubs_events_reviews": {
+      "total": 243,
+      "already": 78,
+      "replace": 136,
+      "promote": 26,
+      "deleteMerge": 3
+    },
+    "host_event_success_ops": {
+      "total": 396,
+      "already": 31,
+      "replace": 88,
+      "promote": 261,
+      "deleteMerge": 16
+    },
+    "comms": {
+      "total": 45,
+      "already": 6,
+      "replace": 31,
+      "promote": 6,
+      "deleteMerge": 2
+    },
+    "dashboard_payments_local": {
+      "total": 60,
+      "publicAlreadyCatalogedByName": 9,
+      "privateNameMatchNeedsExplicitDecision": 1,
+      "privateNeedsRenameOrReplace": 38,
+      "publicNeedsCatalogOrReplace": 12,
+      "knownFalsePositive": "lib/payments/presentation/payment_confirmation_screen.dart:469 _QuickActions collides with public QuickActions and should be consolidated, not counted as cataloged."
+    },
+    "labs_and_remaining": {
+      "total": 58,
+      "already": 1,
+      "replace": 23,
+      "promote": 27,
+      "deleteMerge": 7
+    }
+  },
+  "totalsFromClassifiedShards": {
+    "total": 1023,
+    "already": 218,
+    "replace": 363,
+    "promote": 379,
+    "deleteMerge": 63,
+    "note": "Dashboard/payments was locally coverage-classified, not fully converted into final classification counts yet. Its 60 rows remain in the first implementation batch with known obvious replacements."
+  },
+  "priorityBatches": [
+    {
+      "id": "coverage_gate",
+      "action": "Keep and use tool/design/check_widgetbook_coverage.mjs as the invariant scanner.",
+      "files": [
+        "tool/design/check_widgetbook_coverage.mjs",
+        "docs/design_parity/widgetbook_coverage_report.json",
+        "docs/design_parity/widgetbook_widget_decisions.json"
+      ]
+    },
+    {
+      "id": "core_shared_cleanup",
+      "action": "Fold private internals into existing core catalog entries, then promote the 10 missing shared primitives/modal/layout entries.",
+      "promote": [
+        "CatchNetworkImage",
+        "CatchCollapsedSliverTitle",
+        "CatchErrorIcon",
+        "CatchIconBadge",
+        "CatchCornerSash",
+        "CatchStatusDot",
+        "CatchFormDialog",
+        "_CupertinoPickerSheet",
+        "CatchSectionList",
+        "CatchDetailSliverSectionList"
+      ],
+      "deleteMerge": [
+        "CatchInlineMessageSurface",
+        "CatchMutationErrorBanner",
+        "CatchPageBody",
+        "CatchFormStepBody",
+        "CatchSliverPageBody",
+        "_OptionalBadge",
+        "CatchMutationErrorListeners"
+      ]
+    },
+    {
+      "id": "high_dup_replacements",
+      "action": "Replace/delete known duplicate local shells before adding more catalog entries.",
+      "items": [
+        "Club detail membership controls render through CatchClubDock",
+        "Event detail date/time/location affordances render through EventDetailOverviewSection and EventDetailMapCard",
+        "Auth and onboarding headers render through CatchStepHeader",
+        "Auth and onboarding page structure renders through CatchScreenBody and CatchBottomDock",
+        "Profile edit rows and groups render through CatchSection and CatchField",
+        "Payment confirmation actions render through QuickActions/action-grid grammar",
+        "New chat matches render through ChatConversationsList and ChatListTile",
+        "Card variation lab states live in Widgetbook samples"
+      ]
+    },
+    {
+      "id": "route_state_promotions",
+      "action": "Promote route/state groups to Widgetbook as feature categories, not core primitives.",
+      "groups": [
+        "auth_onboarding.flow",
+        "launch_access",
+        "photo_picker",
+        "profile.inline_editors",
+        "profile.surface",
+        "catches_recap",
+        "reviews history/response",
+        "ExploreScreen and ExploreDiscoveryCoverHeader",
+        "ClubShareCard and ClubIdentityAtoms",
+        "Calendar route/header",
+        "Event policy lab",
+        "Force update",
+        "Host/Event Success batches",
+        "Suvbot modal states",
+        "Host broadcast composer"
+      ]
+    },
+    {
+      "id": "host_event_success_big_batch",
+      "action": "Treat host/event-success as the largest migration batch: 396 widgets, 261 promotions, 88 replacements, 16 delete/merge findings.",
+      "groups": [
+        "Host operations private/body chunks",
+        "Event Success companion paper/stage chunks",
+        "Event Success live reveal widgets",
+        "Event Success feature blocks",
+        "Host Event Manage chunks",
+        "User analytics panel shared analytics primitives"
+      ]
+    }
+  ],
+  "implementationNotes": [
+    "Private Dart widgets cannot be imported from Widgetbook. To catalog them directly, they must be renamed/exported or folded into a public catalog harness in the same library.",
+    "Explicit fold/replace/promote/delete decisions live in docs/design_parity/widgetbook_widget_decisions.json and are validated by tool/design/check_widgetbook_coverage.mjs.",
+    "The scalable approach is not 907 isolated use cases. It is grouped Widgetbook entries where a screen/section catalog entry owns its private subwidgets as explicit states.",
+    "Coverage should ratchet down with check_widgetbook_coverage after each batch. A class leaves the queue when it is cataloged by name, deleted, or replaced by a cataloged parent/primitive and no longer exists as a separate widget class."
+  ]
+}

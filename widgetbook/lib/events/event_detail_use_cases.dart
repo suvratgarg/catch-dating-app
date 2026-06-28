@@ -1,32 +1,70 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
+import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/events/presentation/event_check_in_celebration_screen.dart';
+import 'package:catch_dating_app/events/presentation/event_joined_celebration_screen.dart';
+import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
+import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
+import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
+import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
+import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart';
 import 'package:catch_dating_app/events/presentation/widgets/booking_conflict_sheet.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_stats_grid.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_action_card.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_agenda_tile.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_compact_row.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_date_marker.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_date_rail_card.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_visual_atoms.dart';
+import 'package:catch_dating_app/events/presentation/widgets/map_overlay_controls.dart';
+import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
+import 'package:catch_dating_app/events/presentation/widgets/requirements_row.dart';
+import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
+import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -139,6 +177,16 @@ final _reviews = [
     rating: 5,
     comment: 'The group stayed together without feeling over-managed.',
     createdAt: _now.subtract(const Duration(hours: 8)),
+    ownerResponse: ReviewOwnerResponse(
+      hostUserId: 'host-mira',
+      hostName: 'Mira Shah',
+      hostAvatarUrl:
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&q=80',
+      message:
+          'Glad that felt balanced. We are keeping the regroup points next week.',
+      createdAt: _now.subtract(const Duration(hours: 7)),
+      updatedAt: _now.subtract(const Duration(hours: 7)),
+    ),
   ),
   Review(
     id: 'widgetbook-event-review-3',
@@ -320,6 +368,51 @@ Widget eventDetailOverviewSectionStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Policy summary states',
+  type: EventDetailPolicySummary,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailPolicySummaryStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'EventDetailPolicySummary',
+    catalogId: 'section.event.plan.policy_summary',
+    children: [
+      _StateCard(
+        label: 'open free event',
+        child: EventDetailPolicySummary(event: _event),
+      ),
+      _StateCard(
+        label: 'request to join paid event',
+        child: EventDetailPolicySummary(
+          event: _eventDetailEvent(
+            id: 'widgetbook-policy-paid-request',
+            activityKind: ActivityKind.dinner,
+            priceInPaise: 140000,
+            eventPolicy: EventPolicyBundle.requestToJoinEvent(
+              capacityLimit: 12,
+              basePriceInPaise: 140000,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Policy summary line',
+  type: EventDetailPolicySummaryLine,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailPolicySummaryLineState(BuildContext context) {
+  return EventDetailPolicySummaryLine(
+    icon: CatchIcons.groupOutlined,
+    title: 'Open booking',
+    body: 'Anyone who meets the event requirements can book instantly.',
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Social states',
   type: EventDetailSocialSection,
   path: '[Event Detail]/Sections',
@@ -448,6 +541,94 @@ Widget eventDetailReviewsSectionStates(BuildContext context) {
           currentUid: 'host-mira',
           userProfile: _viewer.copyWith(uid: 'host-mira', name: 'Mira Shah'),
           isHost: true,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Review history states',
+  type: ReviewsHistoryScreen,
+  path: '[Event Detail]/Screens',
+)
+Widget reviewsHistoryScreenStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ReviewsHistoryScreen',
+    catalogId: 'screen.reviews.history',
+    children: [
+      _StateCard(
+        label: 'signed out',
+        child: const _DeviceFrame(
+          child: _ReviewsHistoryFrame(
+            uid: null,
+            user: AsyncData<UserProfile?>(null),
+            reviews: AsyncData<List<Review>>([]),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'loading',
+        child: const _DeviceFrame(
+          child: _ReviewsHistoryFrame(
+            uid: _viewerUid,
+            user: AsyncLoading<UserProfile?>(),
+            reviews: AsyncLoading<List<Review>>(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'review history',
+        child: _DeviceFrame(
+          child: _ReviewsHistoryFrame(
+            uid: _viewerUid,
+            user: AsyncData(_viewer),
+            reviews: AsyncData(_reviews),
+            events: AsyncData([_pastEvent]),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reviews unavailable',
+        child: _DeviceFrame(
+          child: _ReviewsHistoryFrame(
+            uid: _viewerUid,
+            user: AsyncData(_viewer),
+            reviews: AsyncError<List<Review>>(
+              StateError('Widgetbook review history failed'),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Share card states',
+  type: EventShareCard,
+  path: '[Event Detail]/Cards',
+)
+Widget eventShareCardStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'EventShareCard',
+    catalogId: 'card.event.share',
+    children: [
+      _StateCard(
+        label: 'free event',
+        child: EventShareCard(event: _event),
+      ),
+      _StateCard(
+        label: 'paid limited spots',
+        child: EventShareCard(
+          event: _eventDetailEvent(
+            id: 'widgetbook-event-share-paid',
+            activityKind: ActivityKind.dinner,
+            priceInPaise: 160000,
+            capacityLimit: 12,
+            bookedCount: 11,
+          ),
         ),
       ),
     ],
@@ -751,6 +932,576 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(
+  name: 'Joined confirmation',
+  type: EventJoinedCelebrationScreen,
+  path: '[Event Detail]/Screens',
+)
+Widget eventJoinedCelebrationScreenState(BuildContext context) {
+  return _DeviceFrame(
+    child: EventJoinedCelebrationScreen(
+      event: _event,
+      clubName: _club.name,
+      paymentData: const PaymentConfirmationData(
+        paymentId: 'pay_widgetbook_123',
+        orderId: 'order_widgetbook_123',
+        amountInPaise: 140000,
+        currency: 'INR',
+        eventId: 'widgetbook-event-detail',
+      ),
+      onViewEvent: _noop,
+      onBackHome: _noop,
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Check-in confirmation',
+  type: EventCheckInCelebrationScreen,
+  path: '[Event Detail]/Screens',
+)
+Widget eventCheckInCelebrationScreenState(BuildContext context) {
+  return _DeviceFrame(
+    child: EventCheckInCelebrationScreen(
+      event: _event,
+      onViewEvent: _noop,
+      onBackHome: _noop,
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Saved states',
+  type: SavedEventsScreen,
+  path: '[Events]/Screens',
+)
+Widget savedEventsScreenStates(BuildContext context) {
+  final savedEvents = _agendaEvents();
+  return _CatalogScreen(
+    title: 'SavedEventsScreen',
+    catalogId: 'screen.events.saved',
+    children: [
+      _StateCard(
+        label: 'empty signed out',
+        child: _DeviceFrame(
+          child: ProviderScope(
+            overrides: [
+              uidProvider.overrideWithValue(const AsyncData<String?>(null)),
+            ],
+            child: const SavedEventsScreen(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'saved list',
+        child: _DeviceFrame(
+          child: ProviderScope(
+            overrides: [
+              uidProvider.overrideWithValue(
+                const AsyncData<String?>(_viewerUid),
+              ),
+              watchSavedEventDetailsForUserProvider(
+                _viewerUid,
+              ).overrideWithValue(AsyncData<List<Event>>(savedEvents)),
+              clubNameLookupProvider(
+                ClubNameLookupQuery(savedEvents.map((event) => event.clubId)),
+              ).overrideWithValue(AsyncData({_clubId: _club.name})),
+            ],
+            child: const SavedEventsScreen(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Picker states',
+  type: LocationPickerScreen,
+  path: '[Events]/Screens',
+)
+Widget locationPickerScreenStates(BuildContext context) {
+  return _DeviceFrame(
+    child: LocationPickerScreen(
+      initialLocation: _mapCenter,
+      initialLabel: 'Carter Road Jetty',
+      loadMapTiles: false,
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Map view states',
+  type: EventMapView,
+  path: '[Events]/Map',
+)
+Widget eventMapViewStates(BuildContext context) {
+  final items = _eventMapItems();
+  return _CatalogScreen(
+    title: 'EventMapView',
+    catalogId: 'screen.events.map',
+    children: [
+      _StateCard(
+        label: 'loading',
+        child: SizedBox(
+          height: 360,
+          child: ProviderScope(
+            overrides: [
+              deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            ],
+            child: const EventMapView(
+              viewModel: AsyncLoading<EventMapViewModel>(),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'pinned events',
+        child: SizedBox(
+          height: 360,
+          child: ProviderScope(
+            overrides: [
+              deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            ],
+            child: EventMapView(
+              enableNetworkTiles: false,
+              viewModel: AsyncData(
+                EventMapViewModel(
+                  events: [for (final item in items) item.event],
+                  pinnedEvents: [for (final item in items) item.event],
+                  items: items,
+                  pinnedItems: items,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: SizedBox(
+          height: 360,
+          child: ProviderScope(
+            overrides: [
+              deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            ],
+            child: const EventMapView(
+              viewModel: AsyncData(
+                EventMapViewModel(events: <Event>[], pinnedEvents: <Event>[]),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Location loading',
+  type: EventLocationMapLoadingBody,
+  path: '[Events]/Map',
+)
+Widget eventLocationMapLoadingBodyState(BuildContext context) {
+  return const SizedBox(height: 360, child: EventLocationMapLoadingBody());
+}
+
+@widgetbook.UseCase(
+  name: 'Map loading',
+  type: EventMapLoadingBody,
+  path: '[Events]/Map',
+)
+Widget eventMapLoadingBodyState(BuildContext context) {
+  return const SizedBox(height: 360, child: EventMapLoadingBody());
+}
+
+@widgetbook.UseCase(
+  name: 'Map placeholder',
+  type: EventPinsMap,
+  path: '[Events]/Map',
+)
+Widget eventPinsMapState(BuildContext context) {
+  return SizedBox(
+    height: 360,
+    child: EventPinsMap(
+      items: _eventMapItems(),
+      initialCenter: _mapCenter,
+      selectedEventId: _event.id,
+      selectedEventCenter: _mapCenter,
+      enableNetworkTiles: false,
+      userLocation: _mapCenter,
+      distanceRingRadiusKm: 3,
+      onEventSelected: (_) {},
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Overlay controls',
+  type: MapOverlayControls,
+  path: '[Events]/Map',
+)
+Widget mapOverlayControlsState(BuildContext context) {
+  return SizedBox(
+    height: 180,
+    child: Stack(
+      children: [
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: CatchTokens.of(context).primarySoft,
+            ),
+          ),
+        ),
+        MapOverlayControls(
+          trailing: Icon(CatchIcons.locationOnOutlined),
+          below: const MapPinTile(
+            startingPoint: _mapCenter,
+            selectedLabel: 'Carter Road Jetty',
+            onTap: _noop,
+          ),
+          onBack: _noop,
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Pin tile states',
+  type: MapPinTile,
+  path: '[Events]/Map',
+)
+Widget mapPinTileStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'MapPinTile',
+    catalogId: 'control.events.map_pin',
+    children: [
+      _StateCard(
+        label: 'selected',
+        child: MapPinTile(
+          startingPoint: _mapCenter,
+          selectedLabel: 'Carter Road Jetty',
+          onTap: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: MapPinTile(startingPoint: null, onTap: _noop),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Agenda list',
+  type: EventAgendaList,
+  path: '[Events]/Lists',
+)
+Widget eventAgendaListState(BuildContext context) {
+  return SizedBox(
+    height: 620,
+    child: EventAgendaList(
+      events: _agendaEvents(),
+      today: DateUtils.dateOnly(_now),
+      showClubName: true,
+      clubNameBuilder: (_) => _club.name,
+      statusBuilder: (_) => EventTileStatus.saved,
+      badgeLabel: 'SAVED',
+      onEventSelected: (_) {},
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Agenda sliver list',
+  type: EventAgendaSliverList,
+  path: '[Events]/Lists',
+)
+Widget eventAgendaSliverListState(BuildContext context) {
+  return SizedBox(
+    height: 620,
+    child: CustomScrollView(
+      slivers: [
+        EventAgendaSliverList(
+          events: _agendaEvents(),
+          today: DateUtils.dateOnly(_now),
+          showClubName: true,
+          clubNameBuilder: (_) => _club.name,
+          badgeLabel: 'OPEN',
+          onEventSelected: (_) {},
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Agenda skeleton',
+  type: EventAgendaSliverSkeleton,
+  path: '[Events]/Lists',
+)
+Widget eventAgendaSliverSkeletonState(BuildContext context) {
+  return const SizedBox(
+    height: 520,
+    child: CustomScrollView(slivers: [EventAgendaSliverSkeleton()]),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Agenda tile',
+  type: EventAgendaTile,
+  path: '[Events]/Tiles',
+)
+Widget eventAgendaTileState(BuildContext context) {
+  return EventAgendaTile(
+    data: _eventTileData(_event, status: EventTileStatus.joined),
+    showClubName: true,
+    badgeLabel: 'JOINED',
+    onTap: _noop,
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Action card',
+  type: EventActionCard,
+  path: '[Events]/Tiles',
+)
+Widget eventActionCardState(BuildContext context) {
+  return EventActionCard(
+    event: _event,
+    indexLabel: '1',
+    badges: [
+      EventActionCardBadge(
+        label: 'Booked',
+        tone: CatchBadgeTone.success,
+        icon: CatchIcons.checkCircleRounded,
+      ),
+    ],
+    metaRows: [
+      [
+        CatchMetaEntry(icon: CatchIcons.scheduleRounded, label: '6:30 AM'),
+        CatchMetaEntry(icon: CatchIcons.locationOnOutlined, label: 'Bandra'),
+      ],
+    ],
+    actions: [
+      EventActionCardAction(
+        label: 'Open event',
+        icon: CatchIcons.calendarMonthOutlined,
+        onPressed: _noop,
+        variant: CatchButtonVariant.primary,
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Compact row',
+  type: EventCompactRow,
+  path: '[Events]/Tiles',
+)
+Widget eventCompactRowState(BuildContext context) {
+  return EventCompactRow(event: _event, statusLabel: 'Saved', onTap: _noop);
+}
+
+@widgetbook.UseCase(
+  name: 'Date rail card',
+  type: EventDateRailCard,
+  path: '[Events]/Tiles',
+)
+Widget eventDateRailCardState(BuildContext context) {
+  return EventDateRailCard(
+    event: _event,
+    kicker: _club.name,
+    statusLabel: 'Open',
+    onTap: _noop,
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Date marker states',
+  type: EventDateMarker,
+  path: '[Events]/Calendar',
+)
+Widget eventDateMarkerStates(BuildContext context) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      EventDateMarker(
+        date: _event.startTime,
+        active: true,
+        hasEvent: true,
+        today: true,
+        onTap: _noop,
+      ),
+      gapW12,
+      EventDateMarker(
+        date: _event.startTime.add(const Duration(days: 1)),
+        active: false,
+        hasEvent: true,
+        layout: EventDateMarkerLayout.monthGrid,
+        onTap: _noop,
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Visual atom clock',
+  type: EventClockMark,
+  path: '[Events]/Tiles',
+)
+Widget eventClockMarkState(BuildContext context) {
+  return EventClockMark(
+    accent: CatchTokens.of(context).primary,
+    time: TimeOfDay.fromDateTime(_event.startTime),
+    size: 42,
+    centerDotRadius: 2,
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Visual atom status',
+  type: EventStatusPill,
+  path: '[Events]/Tiles',
+)
+Widget eventStatusPillState(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return Wrap(
+    spacing: CatchSpacing.s2,
+    children: [
+      EventStatusPill(label: 'Open', color: t.primary),
+      EventStatusPill(
+        label: 'Booked',
+        color: t.success,
+        tone: EventStatusPillTone.dark,
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Event photo header',
+  type: EventPhotoHeader,
+  path: '[Event Detail]/Sections',
+)
+Widget eventPhotoHeaderState(BuildContext context) {
+  return SizedBox(height: 240, child: EventPhotoHeader(event: _event));
+}
+
+@widgetbook.UseCase(
+  name: 'Event stats',
+  type: EventStatsGrid,
+  path: '[Event Detail]/Sections',
+)
+Widget eventStatsGridState(BuildContext context) {
+  return EventStatsGrid(event: _event);
+}
+
+@widgetbook.UseCase(
+  name: 'Requirements',
+  type: RequirementsRow,
+  path: '[Event Detail]/Sections',
+)
+Widget requirementsRowState(BuildContext context) {
+  return RequirementsRow(
+    event: _event.copyWith(
+      constraints: _event.constraints.copyWith(minAge: 24, maxAge: 36),
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Hype avatars',
+  type: EventHypeAvatarStack,
+  path: '[Event Detail]/Sections',
+)
+Widget eventHypeAvatarStackState(BuildContext context) {
+  return _EventScope(
+    event: _event,
+    avatarItems: _avatarItems,
+    child: EventHypeAvatarStack(
+      eventId: _event.id,
+      totalCount: 12,
+      viewerInterestedInGenders: _viewer.interestedInGenders,
+      obscured: false,
+      showOverflowCount: true,
+      activityKind: _event.activityKind,
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: "Who's going states",
+  type: WhoIsGoing,
+  path: '[Event Detail]/Sections',
+)
+Widget whoIsGoingStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'WhoIsGoing',
+    catalogId: 'section.event.who_is_going.roster',
+    children: [
+      _StateCard(
+        label: 'visible roster',
+        child: _EventScope(
+          event: _event,
+          roster: _roster(),
+          avatarItems: _avatarItems,
+          child: WhoIsGoing(event: _event, userProfile: _viewer),
+        ),
+      ),
+      _StateCard(
+        label: 'empty roster',
+        child: _EventScope(
+          event: _emptyEvent,
+          roster: EventParticipationRoster.empty(),
+          child: WhoIsGoing(event: _emptyEvent, userProfile: _viewer),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Price leading',
+  type: PriceLeading,
+  path: '[Event Detail]/Booking Dock',
+)
+Widget priceLeadingState(BuildContext context) {
+  return const PriceLeading(price: '₹1,400', note: '2 spots left', warn: true);
+}
+
+@widgetbook.UseCase(
+  name: 'Waitlist offer leading',
+  type: WaitlistOfferLeading,
+  path: '[Event Detail]/Booking Dock',
+)
+Widget waitlistOfferLeadingState(BuildContext context) {
+  return WaitlistOfferLeading(
+    expiresAt: _now.add(const Duration(hours: 5)),
+    isDeclining: false,
+    onDecline: _noop,
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Booked leading',
+  type: BookedLeading,
+  path: '[Event Detail]/Booking Dock',
+)
+Widget bookedLeadingState(BuildContext context) {
+  return const BookedLeading();
+}
+
+@widgetbook.UseCase(
+  name: 'Attended leading',
+  type: AttendedLeading,
+  path: '[Event Detail]/Booking Dock',
+)
+Widget attendedLeadingState(BuildContext context) {
+  return const AttendedLeading();
+}
+
 class _EventScope extends StatelessWidget {
   const _EventScope({
     required this.event,
@@ -792,6 +1543,61 @@ class _EventScope extends StatelessWidget {
       child: child,
     );
   }
+}
+
+class _ReviewsHistoryFrame extends StatelessWidget {
+  const _ReviewsHistoryFrame({
+    required this.uid,
+    required this.user,
+    required this.reviews,
+    this.events = const AsyncData<List<Event>>([]),
+  });
+
+  final String? uid;
+  final AsyncValue<UserProfile?> user;
+  final AsyncValue<List<Review>> reviews;
+  final AsyncValue<List<Event>> events;
+
+  @override
+  Widget build(BuildContext context) {
+    final effectiveUid = uid;
+    final eventIds = _eventIdsFor(reviews.asData?.value ?? const []);
+
+    return ProviderScope(
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream<String?>.value(effectiveUid)),
+        watchUserProfileProvider.overrideWith((ref) => _streamFor(user)),
+        if (effectiveUid != null)
+          watchReviewsByUserProvider(
+            effectiveUid,
+          ).overrideWith((ref) => _streamFor(reviews)),
+        if (effectiveUid != null && eventIds.isNotEmpty)
+          watchEventsByIdsProvider(
+            EventsByIdQuery(eventIds),
+          ).overrideWith((ref) => _streamFor(events)),
+      ],
+      child: const ReviewsHistoryScreen(),
+    );
+  }
+}
+
+List<String> _eventIdsFor(List<Review> reviews) {
+  final eventIds = <String>{
+    for (final review in reviews)
+      if (review.eventId != null) review.eventId!,
+  };
+  return eventIds.toList()..sort();
+}
+
+Stream<T> _streamFor<T>(AsyncValue<T> value) {
+  return switch (value) {
+    AsyncData(:final value) => Stream<T>.value(value),
+    AsyncError(:final error, :final stackTrace) => Stream<T>.error(
+      error,
+      stackTrace,
+    ),
+    _ => Stream<T>.empty(),
+  };
 }
 
 class _RouteFrame extends StatelessWidget {
@@ -872,6 +1678,11 @@ class _FakePaymentRepository implements PaymentRepository {
   void dispose() {}
 }
 
+class _NoDeviceLocation extends DeviceLocation {
+  @override
+  Future<LocationCoordinate?> build() async => null;
+}
+
 EventDetailViewModel _eventVm(
   Event event, {
   UserProfile? userProfile,
@@ -889,6 +1700,59 @@ EventDetailViewModel _eventVm(
     isSaved: isSaved,
     participation: participation,
   );
+}
+
+const _mapCenter = LocationCoordinate(19.0676, 72.8227);
+
+List<Event> _agendaEvents() {
+  return [
+    _event,
+    _eventDetailEvent(
+      id: 'widgetbook-event-agenda-pickleball',
+      activityKind: ActivityKind.pickleball,
+      startTime: _event.startTime.add(const Duration(days: 1, hours: 12)),
+      bookedCount: 6,
+    ),
+    _eventDetailEvent(
+      id: 'widgetbook-event-agenda-dinner',
+      activityKind: ActivityKind.dinner,
+      startTime: _event.startTime.add(const Duration(days: 3, hours: 13)),
+      capacityLimit: 10,
+      bookedCount: 8,
+      priceInPaise: 180000,
+    ),
+    _pastEvent,
+  ];
+}
+
+EventTileData _eventTileData(
+  Event event, {
+  EventTileStatus status = EventTileStatus.open,
+}) {
+  return EventTileData.fromEvent(
+    event: event,
+    status: status,
+    clubName: _club.name,
+  );
+}
+
+List<EventMapItem> _eventMapItems() {
+  final events = _agendaEvents().take(3).toList(growable: false);
+  return [
+    for (var index = 0; index < events.length; index += 1)
+      EventMapItem(
+        event: events[index].copyWith(
+          startingPointLat: _mapCenter.latitude + (index * 0.006),
+          startingPointLng: _mapCenter.longitude + (index * 0.004),
+        ),
+        status: switch (index) {
+          0 => EventTileStatus.joined,
+          1 => EventTileStatus.saved,
+          _ => EventTileStatus.recommended,
+        },
+        clubName: _club.name,
+      ),
+  ];
 }
 
 class _CatalogScreen extends StatelessWidget {

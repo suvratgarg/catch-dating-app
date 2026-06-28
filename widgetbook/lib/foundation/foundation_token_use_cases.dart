@@ -7,7 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
-import 'package:catch_dating_app/core/widgets/catch_stat_strip.dart';
+import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -271,10 +271,15 @@ class FoundationTypographyTokens extends StatelessWidget {
     return _FoundationScreen(
       title: 'Typography roles',
       contractId: 'foundation.typography',
-      states: const ['voice', 'function', 'data', 'special'],
+      states: const [
+        '54 public helpers',
+        'Archivo brand/display',
+        'platform body/UI',
+        'mono data',
+      ],
       children: [
         _SpecSection(
-          title: 'Voice and display',
+          title: 'Archivo brand/display',
           child: _TypeStack(
             rows: [
               _TypeSpec(
@@ -293,6 +298,38 @@ class FoundationTypographyTokens extends StatelessWidget {
                 CatchTextStyles.headlineS(context),
               ),
               _TypeSpec(
+                'clubDisplay(24)',
+                'Fort Greene Run Club',
+                CatchTextStyles.clubDisplay(context, size: 24),
+              ),
+              _TypeSpec(
+                'eventDisplay(24)',
+                'Thursday Social Run',
+                CatchTextStyles.eventDisplay(context, size: 24),
+              ),
+              _TypeSpec(
+                'eventTitle',
+                'Sundowner 5K',
+                CatchTextStyles.eventTitle(context),
+              ),
+              _TypeSpec(
+                'consoleTitle',
+                'Live check-in',
+                CatchTextStyles.consoleTitle(context),
+              ),
+              _TypeSpec(
+                'hint',
+                'Waitlist opened',
+                CatchTextStyles.hint(context),
+              ),
+            ],
+          ),
+        ),
+        _SpecSection(
+          title: 'Platform app/body',
+          child: _TypeStack(
+            rows: [
+              _TypeSpec(
                 'titleL',
                 'Professional profile',
                 CatchTextStyles.titleL(context),
@@ -307,17 +344,22 @@ class FoundationTypographyTokens extends StatelessWidget {
                 'Write the details hosts and guests need before they commit.',
                 CatchTextStyles.proseL(context),
               ),
-            ],
-          ),
-        ),
-        _SpecSection(
-          title: 'Function text',
-          child: _TypeStack(
-            rows: [
+              _TypeSpec(
+                'proseM',
+                'Smaller long-form copy for cards, sheets, and explanations.',
+                CatchTextStyles.proseM(context),
+              ),
+              _TypeSpec('name', 'Aanya Shah', CatchTextStyles.name(context)),
               _TypeSpec(
                 'sectionTitle',
                 'Profile',
                 CatchTextStyles.sectionTitle(context),
+              ),
+              _TypeSpec('titleS', 'About you', CatchTextStyles.titleS(context)),
+              _TypeSpec(
+                'fieldRowTitle',
+                'Event name',
+                CatchTextStyles.fieldRowTitle(context),
               ),
               _TypeSpec(
                 'bodyLead',
@@ -325,9 +367,24 @@ class FoundationTypographyTokens extends StatelessWidget {
                 CatchTextStyles.bodyLead(context),
               ),
               _TypeSpec(
+                'bodyL',
+                'Public event details should read clearly.',
+                CatchTextStyles.bodyL(context),
+              ),
+              _TypeSpec(
                 'bodyM',
                 'Clubs, profile rows, settings, and controls use this register.',
                 CatchTextStyles.bodyM(context),
+              ),
+              _TypeSpec(
+                'bodyS',
+                'Secondary row copy and compact descriptions.',
+                CatchTextStyles.bodyS(context),
+              ),
+              _TypeSpec(
+                'appBarSubtitle',
+                'Saturday - 8:30 PM',
+                CatchTextStyles.appBarSubtitle(context),
               ),
               _TypeSpec(
                 'supporting',
@@ -336,18 +393,91 @@ class FoundationTypographyTokens extends StatelessWidget {
               ),
               _TypeSpec('labelL', 'CONTINUE', CatchTextStyles.labelL(context)),
               _TypeSpec(
+                'fieldLabel',
+                'INVITE CODE',
+                CatchTextStyles.fieldLabel(context),
+              ),
+              _TypeSpec('labelM', 'Optional', CatchTextStyles.labelM(context)),
+              _TypeSpec('labelS', 'NEW', CatchTextStyles.labelS(context)),
+              _TypeSpec(
+                'statusLabel',
+                'OPEN',
+                CatchTextStyles.statusLabel(context),
+              ),
+              _TypeSpec(
+                'buttonSm',
+                'Cancel',
+                CatchTextStyles.buttonSm(context),
+              ),
+              _TypeSpec(
                 'buttonMd',
                 'Save profile',
                 CatchTextStyles.buttonMd(context),
+              ),
+              _TypeSpec(
+                'buttonLg',
+                'Create event',
+                CatchTextStyles.buttonLg(context),
+              ),
+              _TypeSpec(
+                'avatarCount(12)',
+                '+4',
+                CatchTextStyles.avatarCount(context, size: 12),
+              ),
+              _TypeSpec(
+                'chatMessage',
+                'I will meet you by the fountain.',
+                CatchTextStyles.chatMessage(context),
+              ),
+              _TypeSpec(
+                'chatPreview',
+                'You both ran the Sundowner 5K.',
+                CatchTextStyles.chatPreview(context),
+              ),
+              _TypeSpec(
+                'chatThreadContext',
+                'Thursday Social Run',
+                CatchTextStyles.chatThreadContext(context),
+              ),
+              _TypeSpec(
+                'statCompact',
+                '24',
+                CatchTextStyles.statCompact(context),
+              ),
+              _TypeSpec(
+                'mapPinTime(1x)',
+                '8:30',
+                CatchTextStyles.mapPinTime(
+                  scale: 1,
+                  color: CatchTokens.of(context).ink,
+                ),
+              ),
+              _TypeSpec(
+                'mapPinCluster(1x)',
+                '12',
+                CatchTextStyles.mapPinCluster(
+                  scale: 1,
+                  color: CatchTokens.of(context).ink,
+                ),
+              ),
+              _TypeSpec(
+                'clubMemberSeal',
+                '128',
+                CatchTextStyles.clubMemberSeal(context),
               ),
             ],
           ),
         ),
         _SpecSection(
-          title: 'Data and labels',
+          title: 'Mono data',
           child: _TypeStack(
             rows: [
               _TypeSpec('kicker', 'HOST MODE', CatchTextStyles.kicker(context)),
+              _TypeSpec(
+                'kickerLg',
+                "TONIGHT'S PICK",
+                CatchTextStyles.kickerLg(context),
+              ),
               _TypeSpec(
                 'monoLabel',
                 '8:30 PM - 24 SPOTS',
@@ -363,8 +493,42 @@ class FoundationTypographyTokens extends StatelessWidget {
                 '7 km - 4 min walk',
                 CatchTextStyles.numericMeta(context),
               ),
+              _TypeSpec('meta', 'WAITLIST', CatchTextStyles.meta(context)),
               _TypeSpec('badge', 'VERIFIED', CatchTextStyles.badge(context)),
               _TypeSpec('code', '4821', CatchTextStyles.code(context)),
+              _TypeSpec(
+                'statDisplay',
+                '128',
+                CatchTextStyles.statDisplay(context),
+              ),
+              _TypeSpec(
+                'debugDetails',
+                'FirebaseException(permission-denied)',
+                CatchTextStyles.debugDetails(context),
+              ),
+              _TypeSpec('otpDigit', '7', CatchTextStyles.otpDigit(context)),
+            ],
+          ),
+        ),
+        _SpecSection(
+          title: 'Aliases and technical',
+          child: _TypeStack(
+            rows: [
+              _TypeSpec(
+                'button',
+                'Alias of buttonMd',
+                CatchTextStyles.button(context),
+              ),
+              _TypeSpec(
+                'chat',
+                'Alias of chatMessage',
+                CatchTextStyles.chat(context),
+              ),
+              _TypeSpec(
+                'transparentInput',
+                'Invisible input carrier',
+                CatchTextStyles.transparentInput(),
+              ),
             ],
           ),
         ),
@@ -1081,12 +1245,26 @@ class _TypeStack extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      width: 132,
-                      child: Text(
-                        row.name,
-                        style: CatchTextStyles.monoLabel(context),
+                      width: 184,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            row.name,
+                            style: CatchTextStyles.monoLabel(context),
+                          ),
+                          gapH4,
+                          Text(
+                            _typeStyleSummary(row.style),
+                            style: CatchTextStyles.monoLabelS(
+                              context,
+                              color: t.ink3,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                    const SizedBox(width: CatchSpacing.s4),
                     Expanded(child: Text(row.sample, style: row.style)),
                   ],
                 ),
@@ -1456,21 +1634,21 @@ class _DataPairExamples extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: const [
-        CatchStatStrip(
-          items: [
-            CatchStatStripItem(value: '24', label: 'Spots'),
-            CatchStatStripItem(value: '8:30', label: 'Starts'),
-            CatchStatStripItem(value: '6 km', label: 'Away'),
+      children: [
+        CatchMetricStrip(
+          items: const [
+            CatchMetricStripItem(value: '24', label: 'spots'),
+            CatchMetricStripItem(value: '8:30', label: 'starts'),
+            CatchMetricStripItem(value: '6', unit: 'km', label: 'away'),
           ],
         ),
         gapH16,
-        CatchStatStrip(
-          items: [
-            CatchStatStripItem(value: '4.8', label: 'Rating'),
-            CatchStatStripItem(value: '126', label: 'Guests'),
-            CatchStatStripItem(value: '12', label: 'Hosts'),
-            CatchStatStripItem(value: '3', label: 'Rooms'),
+        CatchMetricStrip(
+          items: const [
+            CatchMetricStripItem(value: '4.8', label: 'rating'),
+            CatchMetricStripItem(value: '126', label: 'guests'),
+            CatchMetricStripItem(value: '12', label: 'hosts'),
+            CatchMetricStripItem(value: '3', label: 'rooms'),
           ],
         ),
       ],
@@ -1742,6 +1920,22 @@ class _TypeSpec {
   final String name;
   final String sample;
   final TextStyle style;
+}
+
+String _typeStyleSummary(TextStyle style) {
+  final family = switch (style.fontFamily) {
+    null => 'inherited',
+    'Archivo' => 'Archivo',
+    'IBM Plex Mono' => 'IBM Plex Mono',
+    final family => family,
+  };
+  final size = style.fontSize == null ? '-' : _number(style.fontSize!);
+  final weight = style.fontWeight?.value.toString() ?? '-';
+  final height = style.height == null ? '-' : _number(style.height!);
+  final tracking = style.letterSpacing == null
+      ? '0'
+      : _number(style.letterSpacing!);
+  return '$family / ${size}px / w$weight / h$height / ls$tracking';
 }
 
 String _colorHex(Color color) {

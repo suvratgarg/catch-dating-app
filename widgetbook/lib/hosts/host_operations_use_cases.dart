@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
@@ -11,13 +12,19 @@ import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -30,29 +37,53 @@ import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
+import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
+import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_basics_step.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_details_step.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_photo_picker.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_step_header.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_details_step.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_policy_step.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_success_step.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
+import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/labs/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -183,6 +214,91 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
   );
 }
 
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostEventsScaffold,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostSectionLabel,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostTodayDashboardCard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostTodayDashboardSection,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostTodayHeader,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostTodayClubPill,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostTodayLoadingBody,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostTodayEmptyEvents,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostTodayEventHero,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostTodayCountdownPill,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostTodayHeroMetric,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostTodayAvatarStack,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostTodayAvatarDot,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostTodayTaskCard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostEmptyState,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostAuthRequiredScreen,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host home route states',
+  type: HostLoadingScreen,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
 @widgetbook.UseCase(
   name: 'Route states',
   type: HostOperationsHomeScreen,
@@ -444,6 +560,16 @@ Widget hostHomeEventRowStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Covered by host event section states',
+  type: HostEventsClubSection,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event section states',
+  type: HostEventRows,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
   name: 'Event section states',
   type: HostEventsClubCard,
   path: '[P1 product surfaces]/Host operations/Sections',
@@ -543,6 +669,1009 @@ Widget hostHomeEventSectionStates(BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(
+  name: 'Skeleton states',
+  type: HostRouteLoadingBody,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+@widgetbook.UseCase(
+  name: 'Skeleton states',
+  type: HostSummarySkeleton,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+@widgetbook.UseCase(
+  name: 'Skeleton states',
+  type: HostTabRailSkeleton,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+@widgetbook.UseCase(
+  name: 'Skeleton states',
+  type: HostSettingsRowsSkeleton,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+@widgetbook.UseCase(
+  name: 'Skeleton states',
+  type: HostEventRowsSkeleton,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+@widgetbook.UseCase(
+  name: 'Skeleton states',
+  type: HostAnalyticsReportSkeleton,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+@widgetbook.UseCase(
+  name: 'Skeleton states',
+  type: HostChartSkeleton,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+@widgetbook.UseCase(
+  name: 'Skeleton states',
+  type: HostRosterSkeleton,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+@widgetbook.UseCase(
+  name: 'Skeleton states',
+  type: HostInlineSkeletonIcon,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'Host loading skeletons',
+    contractId: 'component.host.loading_skeletons',
+    children: [
+      _StateCard(
+        label: 'route loading body',
+        child: _DeviceFrame(
+          child: Scaffold(body: HostRouteLoadingBody(showTabRail: true)),
+        ),
+      ),
+      _StateCard(
+        label: 'summary and tab rail',
+        child: Column(
+          children: [HostTabRailSkeleton(), gapH12, HostSummarySkeleton()],
+        ),
+      ),
+      _StateCard(
+        label: 'row and settings groups',
+        child: Column(
+          children: [
+            HostEventRowsSkeleton(count: 2),
+            gapH12,
+            HostSettingsRowsSkeleton(rowCount: 2),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'analytics and roster',
+        child: Column(
+          children: [
+            HostAnalyticsReportSkeleton(),
+            gapH12,
+            HostRosterSkeleton(count: 3),
+            gapH12,
+            HostInlineSkeletonIcon(),
+          ],
+        ),
+      ),
+      _StateCard(label: 'chart', child: HostChartSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Roster primitive states',
+  type: CatchRosterTileCell,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+@widgetbook.UseCase(
+  name: 'Roster primitive states',
+  type: CatchRosterActionCell,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+@widgetbook.UseCase(
+  name: 'Roster primitive states',
+  type: CatchRosterDecideTarget,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+Widget hostRosterPrimitiveCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'Catch roster primitives',
+    contractId: 'component.host.roster_primitives',
+    children: [
+      _StateCard(
+        label: 'filter tiles',
+        child: CatchRosterTiles(
+          selected: 'booked',
+          onSelect: (_) {},
+          items: const [
+            CatchRosterTile(id: 'all', value: '42', label: 'All'),
+            CatchRosterTile(
+              id: 'booked',
+              value: '30',
+              label: 'Booked',
+              tone: CatchBadgeTone.success,
+            ),
+            CatchRosterTile(
+              id: 'waitlist',
+              value: '12',
+              label: 'Wait',
+              tone: CatchBadgeTone.warning,
+            ),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'decision row',
+        child: CatchRosterTable(
+          columns: const ['Guest', 'Signal', 'Host action'],
+          rows: [
+            CatchRosterRow(
+              person: 'Rhea Kapoor',
+              meta: 'Arriving 7:10 PM',
+              signal: 'Request',
+              tone: CatchBadgeTone.brand,
+              action: CatchRosterDecideAction(
+                onProfile: () {},
+                onApprove: () {},
+                onDecline: () {},
+              ),
+            ),
+            CatchRosterRow(
+              person: 'Aarav Mehta',
+              meta: 'Checked in',
+              signal: 'In',
+              tone: CatchBadgeTone.success,
+              action: CatchRosterButtonAction(label: 'Undo', onPressed: () {}),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Tool card states',
+  type: HostClubManagementPanel,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+@widgetbook.UseCase(
+  name: 'Tool card states',
+  type: HostStatChip,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+@widgetbook.UseCase(
+  name: 'Tool card states',
+  type: HostEventToolsCarousel,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+@widgetbook.UseCase(
+  name: 'Tool card states',
+  type: HostEventToolsPageIndicator,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+@widgetbook.UseCase(
+  name: 'Tool card states',
+  type: HostEventToolCard,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+Widget hostToolCardCatalogStates(BuildContext context) {
+  final tools = [
+    HostEventToolItem(
+      event: HostOperationsFixtures.upcomingEvent,
+      attendanceState: HostEventAttendanceState.open,
+    ),
+    HostEventToolItem(
+      event: HostOperationsFixtures.privateEvent,
+      attendanceState: HostEventAttendanceState.closed,
+    ),
+  ];
+  return _HostCatalog(
+    title: 'Host tool cards',
+    contractId: 'component.host.tool_cards',
+    children: [
+      _StateCard(
+        label: 'club management panel',
+        child: HostClubManagementPanel(
+          club: _club,
+          events: HostOperationsFixtures.eventsByClub[_club.id] ?? const [],
+          onEditClub: () {},
+          onCreateEvent: () {},
+        ),
+      ),
+      _StateCard(
+        label: 'stat chip',
+        child: HostStatChip(
+          label: 'Booked',
+          value: '30',
+          icon: CatchIcons.checkCircleOutlineRounded,
+        ),
+      ),
+      _StateCard(
+        label: 'event tools carousel',
+        child: HostEventToolsCarousel(
+          tools: tools,
+          onManageEvent: (_) {},
+          onTakeAttendance: (_) {},
+          onViewReport: (_) {},
+        ),
+      ),
+      _StateCard(
+        label: 'event tool card',
+        child: HostEventToolCard(
+          item: tools.first,
+          cardIndex: 0,
+          cardCount: tools.length,
+          onManageEvent: (_) {},
+          onTakeAttendance: (_) {},
+          onViewReport: (_) {},
+        ),
+      ),
+      const _StateCard(
+        label: 'page indicator',
+        child: HostEventToolsPageIndicator(selectedIndex: 0, itemCount: 2),
+      ),
+    ],
+  );
+}
+
+Widget _hostAnalyticsExactCatalog(BuildContext context, String focus) {
+  return _HostCatalog(
+    title: focus,
+    contractId: 'component.host.analytics.${_hostComponentSlug(focus)}',
+    children: [
+      _StateCard(
+        label: 'exact component',
+        child: _HostComponentFrame(child: _hostAnalyticsPreviewFor(focus)),
+      ),
+    ],
+  );
+}
+
+Widget _hostAnalyticsPreviewFor(String focus) {
+  final report = HostOperationsFixtures.analyticsReport;
+  return switch (focus) {
+    'HostAnalyticsBar' => const SizedBox(
+      height: 96,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(child: HostAnalyticsBar(value: 18, maxValue: 42)),
+          gapW8,
+          Expanded(child: HostAnalyticsBar(value: 32, maxValue: 42)),
+          gapW8,
+          Expanded(child: HostAnalyticsBar(value: 42, maxValue: 42)),
+        ],
+      ),
+    ),
+    'HostAnalyticsControls' => HostAnalyticsControls(
+      rangePreset: HostAnalyticsRangePreset.custom,
+      granularity: HostAnalyticsGranularity.week,
+      customStartDate: _hostAnalyticsDateDaysAgo(30),
+      customEndDate: _hostAnalyticsDateDaysAgo(0),
+      selectedEventId: report.topEvents.first.eventId,
+      onRangeChanged: (_) {},
+      onGranularityChanged: (_) {},
+      onPickStartDate: () {},
+      onPickEndDate: () {},
+      onClearEvent: () {},
+    ),
+    'HostAnalyticsDataQualityPanel' => HostAnalyticsDataQualityPanel(
+      rows: report.dataQuality,
+    ),
+    'HostAnalyticsDateButton' => HostAnalyticsDateButton(
+      label: 'Start',
+      value: _hostFormatAnalyticsDate(_hostAnalyticsDateDaysAgo(30)),
+      onTap: () {},
+    ),
+    'HostAnalyticsEventList' => HostAnalyticsEventList(
+      events: report.topEvents,
+      selectedEventId: report.topEvents.first.eventId,
+      onEventSelected: (_) {},
+      onClearEvent: () {},
+    ),
+    'HostAnalyticsEventTile' => HostAnalyticsEventTile(
+      event: report.topEvents.first,
+      divider: false,
+      selected: true,
+      onTap: () {},
+    ),
+    'HostAnalyticsInlineStat' => const HostAnalyticsInlineStat(
+      label: 'Bookings',
+      value: '126',
+    ),
+    'HostAnalyticsMetricGrid' => HostAnalyticsMetricGrid(
+      metrics: report.summaryCards,
+    ),
+    'HostAnalyticsMetricTile' => HostAnalyticsMetricTile(
+      metric: report.summaryCards.first,
+    ),
+    'HostAnalyticsReportView' => HostAnalyticsReportView(
+      report: report,
+      selectedEventId: report.topEvents.first.eventId,
+      onEventSelected: (_) {},
+      onClearEvent: () {},
+    ),
+    'HostAnalyticsReviewDiscoveryPanel' => HostAnalyticsReviewDiscoveryPanel(
+      report: report,
+    ),
+    'HostAnalyticsSection' => HostAnalyticsSection(
+      label: 'Section label',
+      child: HostAnalyticsMetricTile(metric: report.summaryCards.first),
+    ),
+    'HostAnalyticsTrendPanel' => HostAnalyticsTrendPanel(points: report.trend),
+    _ => Text('No exact preview registered for $focus.'),
+  };
+}
+
+Widget _hostHomeExactCatalog(BuildContext context, String focus) {
+  return _HostCatalog(
+    title: focus,
+    contractId: 'component.host.home.${_hostComponentSlug(focus)}',
+    children: [
+      _StateCard(
+        label: 'exact component',
+        child: _HostHomeSectionFrame(child: _hostHomePreviewFor(focus)),
+      ),
+    ],
+  );
+}
+
+Widget _hostHomePreviewFor(String focus) {
+  final club = HostOperationsFixtures.primaryClub;
+  final event = HostOperationsFixtures.upcomingEvent;
+  final clubs = HostOperationsFixtures.clubs;
+  final state = HostHomeTodayDashboardState.fromAsync(
+    AsyncData<List<Event>>([event, HostOperationsFixtures.privateEvent]),
+  );
+  final tasks = HostHomeTodayTaskData.forEvent(event);
+  return switch (focus) {
+    'HostEmptyState' => const HostEmptyState(
+      title: 'No clubs yet',
+      body: 'Create a club to start hosting events.',
+    ),
+    'HostSectionLabel' => const HostSectionLabel(label: 'TODAY'),
+    'HostTodayAvatarDot' => Builder(
+      builder: (context) {
+        final activity = ActivityPalette.resolve(
+          context,
+          club.hostDefaults.primaryActivityKind,
+        );
+        return SizedBox(
+          width: CatchSpacing.s16,
+          height: CatchSpacing.s8,
+          child: Stack(
+            children: [
+              HostTodayAvatarDot(left: 0, fill: activity.deep, label: 'M'),
+            ],
+          ),
+        );
+      },
+    ),
+    'HostTodayAvatarStack' => Builder(
+      builder: (context) => HostTodayAvatarStack(
+        activity: ActivityPalette.resolve(
+          context,
+          club.hostDefaults.primaryActivityKind,
+        ),
+      ),
+    ),
+    'HostTodayClubPill' => HostTodayClubPill(
+      club: club,
+      currentUid: _hostUid,
+      clubs: clubs,
+      showClubPicker: true,
+      onSwitchClubIndex: (_) {},
+    ),
+    'HostTodayCountdownPill' => HostTodayCountdownPill(event: event),
+    'HostTodayDashboardCard' => HostTodayDashboardCard(
+      club: club,
+      currentUid: _hostUid,
+      clubs: clubs,
+      showClubPicker: true,
+      onSwitchClubIndex: (_) {},
+      onViewEvents: () {},
+      onCreateEvent: (_) {},
+      onManageEvent: (_, _) {},
+    ),
+    'HostTodayDashboardSection' => HostTodayDashboardSection(
+      club: club,
+      currentUid: _hostUid,
+      clubs: clubs,
+      showClubPicker: true,
+      state: state,
+      onSwitchClubIndex: (_) {},
+      onViewEvents: () {},
+      onCreateEvent: (_) {},
+      onManageEvent: (_, _) {},
+    ),
+    'HostTodayEmptyEvents' => HostTodayEmptyEvents(
+      club: club,
+      onCreateEvent: (_) {},
+      onViewEvents: () {},
+    ),
+    'HostTodayEventHero' => HostTodayEventHero(event: event, onPressed: () {}),
+    'HostTodayHeader' => HostTodayHeader(
+      club: club,
+      currentUid: _hostUid,
+      clubs: clubs,
+      showClubPicker: true,
+      onSwitchClubIndex: (_) {},
+    ),
+    'HostTodayHeroMetric' => const HostTodayHeroMetric(
+      value: '10',
+      label: 'Going',
+    ),
+    'HostTodayLoadingBody' => const HostTodayLoadingBody(),
+    'HostTodayTaskCard' => HostTodayTaskCard(
+      task: tasks.first,
+      onPrimary: () {},
+    ),
+    _ => Text('No exact preview registered for $focus.'),
+  };
+}
+
+Widget _hostClubExactCatalog(BuildContext context, String focus) {
+  return _HostCatalog(
+    title: focus,
+    contractId: 'component.host.club.${_hostComponentSlug(focus)}',
+    children: [
+      _StateCard(
+        label: 'exact component',
+        child: _HostComponentFrame(child: _hostClubPreviewFor(focus)),
+      ),
+    ],
+  );
+}
+
+Widget _hostClubPreviewFor(String focus) {
+  final club = HostOperationsFixtures.primaryClub;
+  final events =
+      HostOperationsFixtures.eventsByClub[club.id] ?? const <Event>[];
+  final metricItems = [
+    const HostOrganizerMetricItem(value: '188', label: 'Members'),
+    const HostOrganizerMetricItem(value: '4.6', label: 'Rating'),
+  ];
+  final team = club.displayHostProfiles;
+  final payment = HostOperationsFixtures.readyPaymentAccount;
+  return switch (focus) {
+    'HostClubInsightsPane' => HostClubInsightsPane(club: club),
+    'HostClubOrganizerOverview' => HostClubOrganizerOverview(
+      club: club,
+      currentUid: _hostUid,
+      isOwner: true,
+      clubs: HostOperationsFixtures.clubs,
+      showClubPicker: true,
+      onSelectClubIndex: (_) {},
+      onSelectTab: (_) {},
+      onPreviewClub: (_) {},
+      onOpenSettings: () {},
+    ),
+    'HostClubPreviewPane' => HostClubPreviewPane(
+      club: club,
+      onPreviewClub: (_) {},
+    ),
+    'HostClubProfileCard' => HostClubProfileCard(
+      club: club,
+      currentUid: _hostUid,
+      isOwner: true,
+      onPreviewClub: (_) {},
+    ),
+    'HostClubTabRail' => HostClubTabRail(
+      selected: HostClubTab.organizer,
+      onChanged: (_) {},
+    ),
+    'HostEventsClubCard' => HostEventsClubCard(
+      club: club,
+      currentUid: _hostUid,
+      onCreateEvent: (_) {},
+      onManageEvent: (_, _) {},
+    ),
+    'HostInlineAgeRangeEditor' => HostClubProfileCard(
+      club: club,
+      currentUid: _hostUid,
+      isOwner: true,
+      initialExpandedField: 'ageRange',
+      onPreviewClub: (_) {},
+    ),
+    'HostInlineOptionEditor' => HostClubProfileCard(
+      club: club,
+      currentUid: _hostUid,
+      isOwner: true,
+      initialExpandedField: 'primaryActivityKind',
+      onPreviewClub: (_) {},
+    ),
+    'HostInlineTextEntryEditor' => HostClubProfileCard(
+      club: club,
+      currentUid: _hostUid,
+      isOwner: true,
+      initialExpandedField: 'name',
+      onPreviewClub: (_) {},
+    ),
+    'HostOrganizerHeader' => HostOrganizerHeader(club: club),
+    'HostOrganizerMetricGrid' => HostOrganizerMetricGrid(
+      club: club,
+      eventsLoaded: true,
+      eventCount: events.length,
+      activeEventCount: events.where((event) => !event.isCancelled).length,
+    ),
+    'HostOrganizerMetricRow' => HostOrganizerMetricRow(items: metricItems),
+    'HostOrganizerMetricTile' => HostOrganizerMetricTile(
+      item: metricItems.first,
+    ),
+    'HostOrganizerPayoutPrompt' => HostOrganizerPayoutPrompt(
+      uid: _hostUid,
+      onManagePayouts: () {},
+    ),
+    'HostOrganizerSectionHeader' => const HostOrganizerSectionHeader(
+      label: 'Team',
+      actionLabel: 'Manage',
+    ),
+    'HostOrganizerTeamCard' => HostOrganizerTeamCard(
+      profiles: team,
+      currentUid: _hostUid,
+    ),
+    'HostOrganizerTeamRow' => HostOrganizerTeamRow(
+      profile: team.first,
+      currentUid: _hostUid,
+      divider: false,
+    ),
+    'HostOrganizerTrendStrip' => HostOrganizerTrendStrip(
+      memberCount: club.memberCount,
+      activeEventCount: events.length,
+      onTap: () {},
+    ),
+    'HostPaymentAccountCard' => HostPaymentAccountCard(club: club),
+    'HostPaymentAccountContentCard' => HostPaymentAccountContentCard(
+      account: payment,
+      actionError: null,
+      onboardingPending: false,
+      refreshPending: false,
+      onShowPayoutsHandoff: (_, _) async {},
+      onRefresh: () async {},
+    ),
+    'HostPaymentAccountErrorCard' => HostPaymentAccountErrorCard(
+      error: StateError('Widgetbook payout status failed'),
+      onRetry: () {},
+    ),
+    'HostPaymentAccountLoadingCard' => const HostPaymentAccountLoadingCard(),
+    'HostTeamManagementSection' => HostTeamManagementSection(
+      club: club,
+      currentUid: _hostUid,
+    ),
+    'HostTeamOwnerHostRow' => HostTeamOwnerHostRow(
+      host: team.first,
+      canManage: true,
+      onTransfer: () {},
+      onRemove: () {},
+    ),
+    'HostTrendKpi' => const HostTrendKpi(value: '188', label: 'Members'),
+    _ => Text('No exact preview registered for $focus.'),
+  };
+}
+
+Widget _hostEventManageExactCatalog(BuildContext context, String focus) {
+  return _HostCatalog(
+    title: focus,
+    contractId: 'component.host.event_manage.${_hostComponentSlug(focus)}',
+    children: [
+      _StateCard(
+        label: 'exact component',
+        child: _HostManageComponentFrame(
+          child: _hostEventManagePreviewFor(focus),
+        ),
+      ),
+    ],
+  );
+}
+
+Widget _hostEventManagePreviewFor(String focus) {
+  final event = HostOperationsFixtures.privateEvent;
+  final club = HostOperationsFixtures.primaryClub;
+  final roster = EventParticipationRoster.fromParticipations(
+    HostOperationsFixtures.participations,
+  );
+  final viewModel = _hostAttendanceViewModel();
+  final profiles = _hostAttendeeProfiles();
+  final inviteCode = HostOperationsFixtures.privateAccess.inviteCode;
+  final filters = const [
+    HostRosterFilterSpec(
+      filter: HostRosterFilter.all,
+      label: 'All',
+      value: 3,
+      tone: CatchBadgeTone.solid,
+    ),
+    HostRosterFilterSpec(
+      filter: HostRosterFilter.booked,
+      label: 'Booked',
+      value: 2,
+      tone: CatchBadgeTone.success,
+    ),
+    HostRosterFilterSpec(
+      filter: HostRosterFilter.waitlist,
+      label: 'Waitlist',
+      value: 1,
+      tone: CatchBadgeTone.warning,
+    ),
+  ];
+  return switch (focus) {
+    'HostActionRow' => HostActionRow(
+      label: 'Edit event details',
+      detail: 'Schedule / location',
+      onTap: () {},
+    ),
+    'HostCapacityTile' => const HostCapacityTile(
+      value: '11',
+      suffix: '/12',
+      label: 'Booked',
+    ),
+    'HostEventActionsSection' => HostEventActionsSection(
+      club: club,
+      event: event,
+      hasKnownActivity: true,
+      cancelEventPending: false,
+      deleteEventPending: false,
+      actionError: null,
+      onEditEvent: () {},
+      onCancelEvent: () async {},
+      onDeleteEvent: () async {},
+    ),
+    'HostEventAttendancePanel' => HostEventAttendancePanel(eventId: event.id),
+    'HostEventParticipantsList' => HostEventParticipantsList(
+      viewModel: viewModel,
+      mode: HostEventParticipantsMode.live,
+      scrollable: false,
+      showSummaryHeader: true,
+      initialSearchQuery: '',
+    ),
+    'HostEventParticipantsPanel' => HostEventParticipantsPanel(
+      eventId: event.id,
+      mode: HostEventParticipantsMode.setup,
+    ),
+    'HostEventSummaryCard' => HostEventSummaryCard(club: club, event: event),
+    'HostEventSummaryRow' => HostEventSummaryRow(
+      icon: CatchIcons.locationOnOutlined,
+      label: 'Meet',
+      value: 'Carter Road Jetty',
+    ),
+    'HostExportReportButton' => HostExportReportButton(
+      label: 'Ops CSV',
+      isExporting: false,
+      onExport: () async {},
+    ),
+    'HostFullCapacityApron' => HostFullCapacityApron(
+      event: event,
+      roster: roster,
+    ),
+    'HostFullCapacityBanner' => const HostFullCapacityBanner(),
+    'HostInviteLinkRow' => HostInviteLinkRow(
+      event: event,
+      inviteCode: inviteCode,
+      link: HostOperationsFixtures.inviteLinks.first,
+      actionsDisabled: false,
+    ),
+    'HostInviteLinksList' => HostInviteLinksList(
+      event: event,
+      inviteCode: inviteCode,
+      linksAsync: AsyncData<List<EventInviteLink>>(
+        HostOperationsFixtures.inviteLinks,
+      ),
+    ),
+    'HostManageMetaItem' => Builder(
+      builder: (context) => HostManageMetaItem(
+        icon: CatchIcons.groupsOutlined,
+        label: '11 / 12 spots',
+        color: CatchTokens.of(context).ink2,
+      ),
+    ),
+    'HostManageMetaRow' => HostManageMetaRow(event: event),
+    'HostManageSectionPicker' => HostManageSectionPicker(
+      selectedSection: HostEventManageSection.setup,
+      onChanged: (_) {},
+    ),
+    'HostParticipationLifecycleBoard' => HostParticipationLifecycleBoard(
+      viewModel: viewModel,
+      mode: HostEventParticipantsMode.live,
+      profiles: profiles,
+      scrollable: false,
+      showHeader: true,
+      usesRequestApproval: false,
+      searchQuery: '',
+      selectedFilter: HostRosterFilter.all,
+      onSearchChanged: (_) {},
+      onFilterChanged: (_) {},
+    ),
+    'HostPrivateAccessBody' => HostPrivateAccessBody(
+      club: club,
+      event: event,
+      access: HostOperationsFixtures.privateAccess,
+    ),
+    'HostPrivateAccessCard' => HostPrivateAccessCard(club: club, event: event),
+    'HostPrivateAccessShell' => const HostPrivateAccessShell(
+      child: Text('Private access preview shell'),
+    ),
+    'HostRosterFilterHeader' => HostRosterFilterHeader(
+      title: 'Participation',
+      subtitle: 'Review booking status before launch.',
+      filters: filters,
+      selectedFilter: HostRosterFilter.all,
+      onFilterChanged: (_) {},
+    ),
+    'HostRosterSearchBar' => HostRosterSearchBar(
+      value: '',
+      label: 'Search roster',
+      onChanged: (_) {},
+    ),
+    'HostWaitlistBulkOfferAction' => HostWaitlistBulkOfferAction(
+      count: 1,
+      candidateCount: 3,
+      isPending: false,
+      onOffer: () {},
+    ),
+    _ => Text('No exact preview registered for $focus.'),
+  };
+}
+
+Widget _hostSettingsExactCatalog(BuildContext context, String focus) {
+  return _HostCatalog(
+    title: focus,
+    contractId: 'component.host.settings.${_hostComponentSlug(focus)}',
+    children: [
+      _StateCard(
+        label: 'exact component',
+        child: _hostSettingsPreviewFor(focus),
+      ),
+    ],
+  );
+}
+
+Widget _hostSettingsPreviewFor(String focus) {
+  final profile = _hostProfileVariant(HostProfileStatus.active);
+  return switch (focus) {
+    'HostProfileEditorSheet' => _HostComponentFrame(
+      child: HostProfileEditorSheet(profile: profile),
+    ),
+    'HostSettingsClubRows' => const _DeviceFrame(
+      child: _HostSettingsClubsFrame(),
+    ),
+    'HostSettingsClubsEmptyState' => const _DeviceFrame(
+      child: _HostSettingsClubsFrame(clubs: []),
+    ),
+    'HostSettingsProfileRows' => _DeviceFrame(
+      child: _HostSettingsProfileFrame(profile: profile),
+    ),
+    _ => Text('No exact preview registered for $focus.'),
+  };
+}
+
+AttendanceSheetViewModel _hostAttendanceViewModel() {
+  final value = buildAttendanceSheetViewModel(
+    eventAsync: AsyncData<Event?>(HostOperationsFixtures.privateEvent),
+    participationsAsync: AsyncData<List<EventParticipation>>(
+      HostOperationsFixtures.participations,
+    ),
+  );
+  return value.asData!.value!;
+}
+
+Map<String, (String, String?)> _hostAttendeeProfiles() {
+  return const {
+    HostOperationsFixtures.guestUid: ('Aarav Mehta', null),
+    HostOperationsFixtures.secondGuestUid: ('Rhea Kapoor', null),
+    HostOperationsFixtures.waitlistUid: ('Kabir Jain', null),
+  };
+}
+
+DateTime _hostAnalyticsDateDaysAgo(int days) {
+  final today = DateUtils.dateOnly(DateTime.now());
+  return DateTime(today.year, today.month, today.day - days);
+}
+
+String _hostFormatAnalyticsDate(DateTime date) {
+  final month = date.month.toString().padLeft(2, '0');
+  final day = date.day.toString().padLeft(2, '0');
+  return '$day/$month/${date.year}';
+}
+
+String _hostComponentSlug(String name) {
+  return name
+      .replaceAllMapped(
+        RegExp(r'([a-z0-9])([A-Z])'),
+        (match) => '${match.group(1)}_${match.group(2)}',
+      )
+      .toLowerCase();
+}
+
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostClubsScaffold,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostClubTabRail,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostClubOrganizerOverview,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostOrganizerHeader,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostOrganizerPayoutPrompt,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostOrganizerMetricGrid,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostOrganizerMetricRow,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostOrganizerMetricTile,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostOrganizerSectionHeader,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostOrganizerTeamCard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostOrganizerTeamRow,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostOrganizerTrendStrip,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostTrendKpi,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostClubProfileCard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostClubInsightsPane,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostAnalyticsControls,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostAnalyticsDateButton,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostAnalyticsReportView,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostAnalyticsMetricGrid,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostAnalyticsMetricTile,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostAnalyticsTrendPanel,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostAnalyticsBar,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostAnalyticsEventList,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostAnalyticsEventTile,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostAnalyticsReviewDiscoveryPanel,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostAnalyticsDataQualityPanel,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostAnalyticsInlineStat,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostAnalyticsSection,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostInlineTextEntryEditor,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostInlineOptionEditor,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostInlineAgeRangeEditor,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostClubPreviewPane,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostPaymentAccountCard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostPaymentAccountContentCard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostPaymentAccountLoadingCard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostPaymentAccountErrorCard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostTeamManagementSection,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostTeamOwnerHostRow,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
 @widgetbook.UseCase(
   name: 'Route states',
   type: HostClubsScreen,
@@ -970,6 +2099,31 @@ Widget hostTeamHostActionDialogStates(BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(
+  name: 'Covered by host settings route states',
+  type: HostSettingsSection,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host settings route states',
+  type: HostSettingsProfileRows,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host settings route states',
+  type: HostSettingsClubsEmptyState,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host settings route states',
+  type: HostSettingsClubRows,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host settings route states',
+  type: HostProfileEditorSheet,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
 @widgetbook.UseCase(
   name: 'Route states',
   type: HostAccountScreen,
@@ -2581,6 +3735,784 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Direct form states',
+  type: CreateClubScreen,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget createClubScreenCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'CreateClubScreen',
+    contractId: 'screen.host.club.create.form',
+    children: [
+      _StateCard(
+        label: 'draft restored',
+        child: _DeviceFrame(
+          child: _HostCreateClubScope(
+            child: CreateClubScreen(
+              initialDraft: HostOperationsFixtures.clubDraft,
+              restoreSavedDraft: false,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'media picked',
+        child: _DeviceFrame(
+          child: _HostCreateClubScope(
+            child: CreateClubScreen(
+              initialDraft: HostOperationsFixtures.clubDraft,
+              initialPickedClubPhotos: _createClubPickedPhotos(),
+              initialProfileImage: _createClubProfileImage(),
+              restoreSavedDraft: false,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'edit mode',
+        child: _DeviceFrame(
+          child: _HostCreateClubScope(
+            child: CreateClubScreen(
+              initialClub: _club,
+              restoreSavedDraft: false,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Form states',
+  type: ClubBasicsStep,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget clubBasicsStepCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'ClubBasicsStep',
+    contractId: 'component.host.club.basics_step',
+    children: [
+      _StateCard(
+        label: 'prefilled',
+        child: _DeviceFrame(child: _ClubBasicsStepFrame()),
+      ),
+      _StateCard(
+        label: 'validation',
+        child: _DeviceFrame(child: _ClubBasicsStepFrame(validate: true)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Form states',
+  type: ClubDetailsStep,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget clubDetailsStepCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'ClubDetailsStep',
+    contractId: 'component.host.club.details_step',
+    children: [
+      _StateCard(
+        label: 'prefilled',
+        child: _DeviceFrame(child: _ClubDetailsStepFrame()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contact states',
+  type: CreateClubContactFields,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget createClubContactFieldsCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'CreateClubContactFields',
+    contractId: 'component.host.club.contact_fields',
+    children: [
+      _StateCard(
+        label: 'filled',
+        child: _DeviceFrame(child: _CreateClubContactFieldsFrame()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Media states',
+  type: CreateClubPhotosPicker,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget createClubPhotosPickerCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'CreateClubPhotosPicker',
+    contractId: 'component.host.club.photos_picker',
+    children: [
+      _StateCard(
+        label: 'empty',
+        child: _DeviceFrame(
+          child: CreateClubPhotosPicker(
+            photos: const [],
+            onAddPhotos: () {},
+            onRemovePhoto: (_) {},
+            onReorderPhoto: (_, _) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'edit strip',
+        child: _DeviceFrame(
+          child: CreateClubPhotosPicker(
+            photos: _orderedPhotoPreviews('club-photo', 3),
+            onAddPhotos: () {},
+            onRemovePhoto: (_) {},
+            onReorderPhoto: (_, _) {},
+            variant: CreateClubPhotosPickerVariant.editStrip,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Image states',
+  type: CreateClubProfileImagePicker,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget createClubProfileImagePickerCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'CreateClubProfileImagePicker',
+    contractId: 'component.host.club.profile_image_picker',
+    children: [
+      _StateCard(
+        label: 'standard',
+        child: _DeviceFrame(
+          child: CreateClubProfileImagePicker(
+            imageBytes: _createClubPngBytes(),
+            onTap: () {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'edit logo',
+        child: _DeviceFrame(
+          child: CreateClubProfileImagePicker(
+            imageBytes: _createClubPngBytes(),
+            onTap: () {},
+            variant: CreateClubProfileImagePickerVariant.editLogo,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Defaults states',
+  type: ClubHostDefaultsStep,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget clubHostDefaultsStepCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'ClubHostDefaultsStep',
+    contractId: 'component.host.club.host_defaults_step',
+    children: [
+      _StateCard(
+        label: 'prefilled',
+        child: _DeviceFrame(child: _ClubHostDefaultsStepFrame()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Policy defaults states',
+  type: ClubPolicyDefaultsCard,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget clubPolicyDefaultsCardCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'ClubPolicyDefaultsCard',
+    contractId: 'component.host.club.policy_defaults_card',
+    children: [
+      _StateCard(
+        label: 'editable',
+        child: _DeviceFrame(child: _ClubPolicyDefaultsCardFrame()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Event success defaults states',
+  type: ClubEventSuccessDefaultsStep,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget clubEventSuccessDefaultsStepCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'ClubEventSuccessDefaultsStep',
+    contractId: 'component.host.club.event_success_defaults_step',
+    children: [
+      _StateCard(
+        label: 'activity-aware defaults',
+        child: _DeviceFrame(child: _ClubEventSuccessDefaultsStepFrame()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Direct screen states',
+  type: CreateEventScreen,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget createEventScreenCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'CreateEventScreen',
+    contractId: 'screen.host.event.create.form',
+    children: [
+      _StateCard(
+        label: 'draft restored',
+        child: _DeviceFrame(
+          child: _HostCreateEventScope(
+            child: CreateEventScreen(
+              club: _club,
+              initialDraft: HostOperationsFixtures.eventDraft,
+              loadMapTiles: false,
+              now: () => HostOperationsFixtures.now,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'validation',
+        child: _DeviceFrame(
+          child: _HostCreateEventScope(
+            child: CreateEventScreen(
+              club: _club,
+              formAutovalidateMode: AutovalidateMode.always,
+              loadMapTiles: false,
+              now: () => HostOperationsFixtures.now,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Success states',
+  type: CreateEventSuccessScreen,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget createEventSuccessScreenCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'CreateEventSuccessScreen',
+    contractId: 'screen.host.event.create.success',
+    children: [
+      _StateCard(
+        label: 'public event',
+        child: _DeviceFrame(
+          child: CreateEventSuccessScreen(
+            club: _club,
+            event: _editableEvent,
+            onManageEvent: () {},
+            onDone: () {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'invite only',
+        child: _DeviceFrame(
+          child: CreateEventSuccessScreen(
+            club: _club,
+            event: _privateEvent,
+            inviteCode: 'SEAFACE',
+            onManageEvent: () {},
+            onDone: () {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Header states',
+  type: CreateEventStepHeader,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget createEventStepHeaderCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'CreateEventStepHeader',
+    contractId: 'component.host.event.step_header',
+    children: [
+      _StateCard(
+        label: 'step 1',
+        child: _DeviceFrame(
+          child: CreateEventStepHeader(
+            title: 'Event basics',
+            clubName: _club.name,
+            currentStep: 0,
+            totalSteps: 5,
+            onBack: () {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Photo picker states',
+  type: CreateEventPhotoPicker,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget createEventPhotoPickerCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'CreateEventPhotoPicker',
+    contractId: 'component.host.event.photo_picker',
+    children: [
+      _StateCard(
+        label: 'empty',
+        child: _DeviceFrame(
+          child: CreateEventPhotoPicker(
+            photos: const [],
+            onAddPhotos: () {},
+            onRemovePhoto: (_) {},
+            onReorderPhoto: (_, _) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'filled',
+        child: _DeviceFrame(
+          child: CreateEventPhotoPicker(
+            photos: _orderedPhotoPreviews('event-photo', 3),
+            onAddPhotos: () {},
+            onRemovePhoto: (_) {},
+            onReorderPhoto: (_, _) {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Draft sheet states',
+  type: DraftPickerSheet,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget draftPickerSheetCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'DraftPickerSheet',
+    contractId: 'component.host.event.draft_picker_sheet',
+    children: [
+      _StateCard(
+        label: 'with drafts',
+        child: _DeviceFrame(
+          child: DraftPickerSheet(
+            drafts: [HostOperationsFixtures.eventDraft],
+            onSelectDraft: (_) {},
+            onStartFresh: () {},
+            onDeleteDraft: (_) async {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: _DeviceFrame(
+          child: DraftPickerSheet(
+            drafts: const [],
+            onSelectDraft: (_) {},
+            onStartFresh: () {},
+            onDeleteDraft: (_) async {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Details step states',
+  type: EventDetailsStep,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget eventDetailsStepCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'EventDetailsStep',
+    contractId: 'component.host.event.details_step',
+    children: [
+      _StateCard(
+        label: 'run event',
+        child: _DeviceFrame(child: _EventDetailsStepFrame()),
+      ),
+      _StateCard(
+        label: 'custom activity',
+        child: _DeviceFrame(
+          child: _EventDetailsStepFrame(customActivity: true),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Where step states',
+  type: WhereStep,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget whereStepCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'WhereStep',
+    contractId: 'component.host.event.where_step',
+    children: [
+      _StateCard(
+        label: 'selected location',
+        child: _DeviceFrame(child: _WhereStepFrame()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'When step states',
+  type: WhenStep,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget whenStepCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'WhenStep',
+    contractId: 'component.host.event.when_step',
+    children: [
+      _StateCard(
+        label: 'scheduled',
+        child: _DeviceFrame(child: _WhenStepFrame()),
+      ),
+      _StateCard(
+        label: 'schedule error',
+        child: _DeviceFrame(child: _WhenStepFrame(scheduleError: true)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Policy step states',
+  type: EventPolicyStep,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget eventPolicyStepCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'EventPolicyStep',
+    contractId: 'component.host.event.policy_step',
+    children: [
+      _StateCard(
+        label: 'open capacity',
+        child: _DeviceFrame(child: _EventPolicyStepFrame()),
+      ),
+      _StateCard(
+        label: 'invite only',
+        child: _DeviceFrame(child: _EventPolicyStepFrame(inviteOnly: true)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Event success step states',
+  type: EventSuccessStep,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget eventSuccessStepCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'EventSuccessStep',
+    contractId: 'component.host.event.success_step',
+    children: [
+      _StateCard(
+        label: 'run guide defaults',
+        child: _DeviceFrame(child: _EventSuccessStepFrame()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Direct screen states',
+  type: EditHostedEventScreen,
+  path: '[P1 product surfaces]/Host edit event',
+)
+Widget editHostedEventScreenCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'EditHostedEventScreen',
+    contractId: 'screen.host.event.edit.form',
+    children: [
+      _StateCard(
+        label: 'editable',
+        child: _DeviceFrame(
+          child: _HostEditEventScope(
+            child: EditHostedEventScreen(
+              club: _club,
+              event: _editableEvent,
+              loadMapTiles: false,
+              now: () => HostOperationsFixtures.now,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'policy locked',
+        child: _DeviceFrame(
+          child: _HostEditEventScope(
+            child: EditHostedEventScreen(
+              club: _club,
+              event: _privateEvent,
+              loadMapTiles: false,
+              now: () => HostOperationsFixtures.now,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Scope notice states',
+  type: EditHostedEventScopeNotice,
+  path: '[P1 product surfaces]/Host edit event',
+)
+Widget editHostedEventScopeNoticeCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'EditHostedEventScopeNotice',
+    contractId: 'component.host.event.edit_scope_notice',
+    children: [
+      _StateCard(
+        label: 'fully editable',
+        child: _DeviceFrame(
+          child: EditHostedEventScopeNotice(
+            isCancelled: false,
+            scheduleLocked: false,
+            policyLocked: false,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'schedule locked',
+        child: _DeviceFrame(
+          child: EditHostedEventScopeNotice(
+            isCancelled: false,
+            scheduleLocked: true,
+            policyLocked: true,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'cancelled',
+        child: _DeviceFrame(
+          child: EditHostedEventScopeNotice(
+            isCancelled: true,
+            scheduleLocked: true,
+            policyLocked: true,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Editable policy states',
+  type: EditableHostedEventPolicyCard,
+  path: '[P1 product surfaces]/Host edit event',
+)
+Widget editableHostedEventPolicyCardCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'EditableHostedEventPolicyCard',
+    contractId: 'component.host.event.edit_policy_card',
+    children: [
+      _StateCard(
+        label: 'open capacity',
+        child: _DeviceFrame(child: _EditableHostedEventPolicyCardFrame()),
+      ),
+      _StateCard(
+        label: 'invite only',
+        child: _DeviceFrame(
+          child: _EditableHostedEventPolicyCardFrame(inviteOnly: true),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Read-only policy states',
+  type: ReadOnlyHostedEventPolicyCard,
+  path: '[P1 product surfaces]/Host edit event',
+)
+Widget readOnlyHostedEventPolicyCardCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'ReadOnlyHostedEventPolicyCard',
+    contractId: 'component.host.event.read_only_policy_card',
+    children: [
+      _StateCard(
+        label: 'locked policy',
+        child: _DeviceFrame(
+          child: ReadOnlyHostedEventPolicyCard(event: _privateEvent),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Read-only schedule states',
+  type: ReadOnlyHostedEventScheduleCard,
+  path: '[P1 product surfaces]/Host edit event',
+)
+Widget readOnlyHostedEventScheduleCardCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'ReadOnlyHostedEventScheduleCard',
+    contractId: 'component.host.event.read_only_schedule_card',
+    children: [
+      _StateCard(
+        label: 'started event',
+        child: _DeviceFrame(
+          child: ReadOnlyHostedEventScheduleCard(event: _privateEvent),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostEventManageScreen,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostManageMetaRow,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostManageMetaItem,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostManageSectionPicker,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostPrivateAccessCard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostPrivateAccessShell,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostPrivateAccessBody,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostInviteLinksList,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostInviteLinkRow,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostFullCapacityApron,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostFullCapacityBanner,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostCapacityTile,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostEventActionsSection,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostActionRow,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostEventSummaryCard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostEventSummaryRow,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostEventAttendancePanel,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostEventParticipantsPanel,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostEventParticipantsList,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostParticipationLifecycleBoard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostRosterSearchBar,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostRosterFilterHeader,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostWaitlistBulkOfferAction,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host event manage route states',
+  type: HostExportReportButton,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
   name: 'Route and section states',
   type: HostEventManageRouteScreen,
   path: '[P1 product surfaces]/Host operations',
@@ -2932,6 +4864,821 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
   );
 }
 
+// Exact host coverage entries. These point narrow promoted classes at the
+// catalog route/component state that renders the owning workflow.
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: CatchRosterActionCell,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictCatchRosterActionCellCatalogStates(BuildContext context) =>
+    hostRosterPrimitiveCatalogStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: CatchRosterDecideTarget,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictCatchRosterDecideTargetCatalogStates(BuildContext context) =>
+    hostRosterPrimitiveCatalogStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAccountScreen,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAccountScreenCatalogStates(BuildContext context) =>
+    hostSettingsRouteStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostActionRow,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostActionRowCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostActionRow');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsBar,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsBarCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsBar');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsControls,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsControlsCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsControls');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsDataQualityPanel,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsDataQualityPanelCatalogStates(
+  BuildContext context,
+) => _hostAnalyticsExactCatalog(context, 'HostAnalyticsDataQualityPanel');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsDateButton,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsDateButtonCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsDateButton');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsEventList,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsEventListCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsEventList');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsEventTile,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsEventTileCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsEventTile');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsInlineStat,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsInlineStatCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsInlineStat');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsMetricGrid,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsMetricGridCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsMetricGrid');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsMetricTile,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsMetricTileCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsMetricTile');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsReportSkeleton,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsReportSkeletonCatalogStates(
+  BuildContext context,
+) => hostLoadingSkeletonCatalogStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsReportView,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsReportViewCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsReportView');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsReviewDiscoveryPanel,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsReviewDiscoveryPanelCatalogStates(
+  BuildContext context,
+) => _hostAnalyticsExactCatalog(context, 'HostAnalyticsReviewDiscoveryPanel');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsSection,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsSectionCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsSection');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAnalyticsTrendPanel,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAnalyticsTrendPanelCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsTrendPanel');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostAuthRequiredScreen,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostAuthRequiredScreenCatalogStates(BuildContext context) =>
+    hostHomeRouteStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostCapacityTile,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostCapacityTileCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostCapacityTile');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostChartSkeleton,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostChartSkeletonCatalogStates(BuildContext context) =>
+    hostLoadingSkeletonCatalogStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostClubInsightsPane,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostClubInsightsPaneCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostClubInsightsPane');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostClubOrganizerOverview,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostClubOrganizerOverviewCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostClubOrganizerOverview');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostClubPreviewPane,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostClubPreviewPaneCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostClubPreviewPane');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostClubProfileCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostClubProfileCardCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostClubProfileCard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostClubsScreen,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostClubsScreenCatalogStates(BuildContext context) =>
+    hostClubsRouteStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostClubTabRail,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostClubTabRailCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostClubTabRail');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEmptyState,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEmptyStateCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostEmptyState');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventActionsSection,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventActionsSectionCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostEventActionsSection');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventAttendancePanel,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventAttendancePanelCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostEventAttendancePanel');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventManageRouteScreen,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventManageRouteScreenCatalogStates(
+  BuildContext context,
+) => hostEventManageRouteAndSectionStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventParticipantsList,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventParticipantsListCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostEventParticipantsList');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventParticipantsPanel,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventParticipantsPanelCatalogStates(
+  BuildContext context,
+) => _hostEventManageExactCatalog(context, 'HostEventParticipantsPanel');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventRows,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventRowsCatalogStates(BuildContext context) =>
+    hostHomeEventSectionStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventRowsSkeleton,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventRowsSkeletonCatalogStates(BuildContext context) =>
+    hostLoadingSkeletonCatalogStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventsClubCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventsClubCardCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostEventsClubCard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventSummaryCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventSummaryCardCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostEventSummaryCard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventSummaryRow,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventSummaryRowCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostEventSummaryRow');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventToolCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventToolCardCatalogStates(BuildContext context) =>
+    hostToolCardCatalogStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventToolsCarousel,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventToolsCarouselCatalogStates(BuildContext context) =>
+    hostToolCardCatalogStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostEventToolsPageIndicator,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostEventToolsPageIndicatorCatalogStates(
+  BuildContext context,
+) => hostToolCardCatalogStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostExportReportButton,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostExportReportButtonCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostExportReportButton');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostFullCapacityApron,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostFullCapacityApronCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostFullCapacityApron');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostFullCapacityBanner,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostFullCapacityBannerCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostFullCapacityBanner');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostInlineAgeRangeEditor,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostInlineAgeRangeEditorCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostInlineAgeRangeEditor');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostInlineOptionEditor,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostInlineOptionEditorCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostInlineOptionEditor');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostInlineSkeletonIcon,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostInlineSkeletonIconCatalogStates(BuildContext context) =>
+    hostLoadingSkeletonCatalogStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostInlineTextEntryEditor,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostInlineTextEntryEditorCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostInlineTextEntryEditor');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostInviteLinkRow,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostInviteLinkRowCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostInviteLinkRow');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostInviteLinksList,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostInviteLinksListCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostInviteLinksList');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostLoadingScreen,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostLoadingScreenCatalogStates(BuildContext context) =>
+    hostHomeRouteStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostManageMetaItem,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostManageMetaItemCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostManageMetaItem');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostManageMetaRow,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostManageMetaRowCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostManageMetaRow');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostManageSectionPicker,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostManageSectionPickerCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostManageSectionPicker');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostOperationsHomeScreen,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostOperationsHomeScreenCatalogStates(BuildContext context) =>
+    hostHomeRouteStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostOrganizerHeader,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostOrganizerHeaderCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostOrganizerHeader');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostOrganizerMetricGrid,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostOrganizerMetricGridCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostOrganizerMetricGrid');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostOrganizerMetricRow,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostOrganizerMetricRowCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostOrganizerMetricRow');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostOrganizerMetricTile,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostOrganizerMetricTileCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostOrganizerMetricTile');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostOrganizerPayoutPrompt,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostOrganizerPayoutPromptCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostOrganizerPayoutPrompt');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostOrganizerSectionHeader,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostOrganizerSectionHeaderCatalogStates(
+  BuildContext context,
+) => _hostClubExactCatalog(context, 'HostOrganizerSectionHeader');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostOrganizerTeamCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostOrganizerTeamCardCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostOrganizerTeamCard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostOrganizerTeamRow,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostOrganizerTeamRowCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostOrganizerTeamRow');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostOrganizerTrendStrip,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostOrganizerTrendStripCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostOrganizerTrendStrip');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostParticipationLifecycleBoard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostParticipationLifecycleBoardCatalogStates(
+  BuildContext context,
+) => _hostEventManageExactCatalog(context, 'HostParticipationLifecycleBoard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostPaymentAccountCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostPaymentAccountCardCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostPaymentAccountCard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostPaymentAccountContentCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostPaymentAccountContentCardCatalogStates(
+  BuildContext context,
+) => _hostClubExactCatalog(context, 'HostPaymentAccountContentCard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostPaymentAccountErrorCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostPaymentAccountErrorCardCatalogStates(
+  BuildContext context,
+) => _hostClubExactCatalog(context, 'HostPaymentAccountErrorCard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostPaymentAccountLoadingCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostPaymentAccountLoadingCardCatalogStates(
+  BuildContext context,
+) => _hostClubExactCatalog(context, 'HostPaymentAccountLoadingCard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostPrivateAccessBody,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostPrivateAccessBodyCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostPrivateAccessBody');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostPrivateAccessCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostPrivateAccessCardCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostPrivateAccessCard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostPrivateAccessShell,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostPrivateAccessShellCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostPrivateAccessShell');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostProfileEditorSheet,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostProfileEditorSheetCatalogStates(BuildContext context) =>
+    _hostSettingsExactCatalog(context, 'HostProfileEditorSheet');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostRosterFilterHeader,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostRosterFilterHeaderCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostRosterFilterHeader');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostRosterSearchBar,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostRosterSearchBarCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostRosterSearchBar');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostRosterSkeleton,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostRosterSkeletonCatalogStates(BuildContext context) =>
+    hostLoadingSkeletonCatalogStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostSectionLabel,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostSectionLabelCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostSectionLabel');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostSettingsClubRows,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostSettingsClubRowsCatalogStates(BuildContext context) =>
+    _hostSettingsExactCatalog(context, 'HostSettingsClubRows');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostSettingsClubsEmptyState,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostSettingsClubsEmptyStateCatalogStates(
+  BuildContext context,
+) => _hostSettingsExactCatalog(context, 'HostSettingsClubsEmptyState');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostSettingsProfileRows,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostSettingsProfileRowsCatalogStates(BuildContext context) =>
+    _hostSettingsExactCatalog(context, 'HostSettingsProfileRows');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostSettingsRowsSkeleton,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostSettingsRowsSkeletonCatalogStates(BuildContext context) =>
+    hostLoadingSkeletonCatalogStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostStatChip,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostStatChipCatalogStates(BuildContext context) =>
+    hostToolCardCatalogStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostSummarySkeleton,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostSummarySkeletonCatalogStates(BuildContext context) =>
+    hostLoadingSkeletonCatalogStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTabRailSkeleton,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTabRailSkeletonCatalogStates(BuildContext context) =>
+    hostLoadingSkeletonCatalogStates(context);
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTeamManagementSection,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTeamManagementSectionCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostTeamManagementSection');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTeamOwnerHostRow,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTeamOwnerHostRowCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostTeamOwnerHostRow');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTodayAvatarDot,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTodayAvatarDotCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostTodayAvatarDot');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTodayAvatarStack,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTodayAvatarStackCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostTodayAvatarStack');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTodayClubPill,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTodayClubPillCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostTodayClubPill');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTodayCountdownPill,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTodayCountdownPillCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostTodayCountdownPill');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTodayDashboardCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTodayDashboardCardCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostTodayDashboardCard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTodayDashboardSection,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTodayDashboardSectionCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostTodayDashboardSection');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTodayEmptyEvents,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTodayEmptyEventsCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostTodayEmptyEvents');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTodayEventHero,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTodayEventHeroCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostTodayEventHero');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTodayHeader,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTodayHeaderCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostTodayHeader');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTodayHeroMetric,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTodayHeroMetricCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostTodayHeroMetric');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTodayLoadingBody,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTodayLoadingBodyCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostTodayLoadingBody');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTodayTaskCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTodayTaskCardCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostTodayTaskCard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostTrendKpi,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostTrendKpiCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostTrendKpi');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostWaitlistBulkOfferAction,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostWaitlistBulkOfferActionCatalogStates(
+  BuildContext context,
+) => _hostEventManageExactCatalog(context, 'HostWaitlistBulkOfferAction');
+
 const _createEventSteps = <int, String>{
   0: 'wizard basics step',
   1: 'wizard location step',
@@ -3020,6 +5767,593 @@ class _HostCreateEventMutationPreviewState
   Widget build(BuildContext context) => widget.child;
 }
 
+List<OrderedPhotoPreview> _orderedPhotoPreviews(String prefix, int count) {
+  final bytes = _createClubPngBytes();
+  return [
+    for (var index = 0; index < count; index++)
+      OrderedPhotoPreview(id: '$prefix-$index', bytes: bytes),
+  ];
+}
+
+class _ClubBasicsStepFrame extends StatefulWidget {
+  const _ClubBasicsStepFrame({this.validate = false});
+
+  final bool validate;
+
+  @override
+  State<_ClubBasicsStepFrame> createState() => _ClubBasicsStepFrameState();
+}
+
+class _ClubBasicsStepFrameState extends State<_ClubBasicsStepFrame> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _nameController;
+  late final TextEditingController _areaController;
+  CityOption? _selectedCity;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(
+      text: widget.validate ? '' : 'Sea Face Social Run Club',
+    );
+    _areaController = TextEditingController(
+      text: widget.validate ? '' : 'Bandra West',
+    );
+    _selectedCity = widget.validate ? null : cityOptionByName(_club.location);
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _areaController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClubBasicsStep(
+      formKey: _formKey,
+      autovalidateMode: widget.validate
+          ? AutovalidateMode.always
+          : AutovalidateMode.disabled,
+      nameController: _nameController,
+      selectedCity: _selectedCity,
+      onCityChanged: (city) => setState(() => _selectedCity = city),
+      areaController: _areaController,
+      clubPhotoPreviews: widget.validate
+          ? const []
+          : _orderedPhotoPreviews('club-basics-photo', 2),
+      existingImageUrl: null,
+      profileImageBytes: widget.validate ? null : _createClubPngBytes(),
+      existingProfileImageUrl: null,
+      onPickClubPhotos: () {},
+      onRemoveClubPhoto: (_) {},
+      onReorderClubPhoto: (_, _) {},
+      onPickProfileImage: () {},
+    );
+  }
+}
+
+class _ClubDetailsStepFrame extends StatefulWidget {
+  const _ClubDetailsStepFrame();
+
+  @override
+  State<_ClubDetailsStepFrame> createState() => _ClubDetailsStepFrameState();
+}
+
+class _ClubDetailsStepFrameState extends State<_ClubDetailsStepFrame> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _descriptionController;
+  late final TextEditingController _instagramController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _emailController;
+
+  @override
+  void initState() {
+    super.initState();
+    _descriptionController = TextEditingController(
+      text:
+          'Structured social runs with warm arrivals, conversational pacing, and a post-run cafe table.',
+    );
+    _instagramController = TextEditingController(text: 'seafaceruns');
+    _phoneController = TextEditingController(text: '9876543210');
+    _emailController = TextEditingController(text: 'hosts@seaface.example');
+  }
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    _instagramController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClubDetailsStep(
+      formKey: _formKey,
+      descriptionController: _descriptionController,
+      instagramController: _instagramController,
+      phoneController: _phoneController,
+      emailController: _emailController,
+    );
+  }
+}
+
+class _CreateClubContactFieldsFrame extends StatefulWidget {
+  const _CreateClubContactFieldsFrame();
+
+  @override
+  State<_CreateClubContactFieldsFrame> createState() =>
+      _CreateClubContactFieldsFrameState();
+}
+
+class _CreateClubContactFieldsFrameState
+    extends State<_CreateClubContactFieldsFrame> {
+  late final TextEditingController _instagramController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _emailController;
+
+  @override
+  void initState() {
+    super.initState();
+    _instagramController = TextEditingController(text: 'seafaceruns');
+    _phoneController = TextEditingController(text: '9876543210');
+    _emailController = TextEditingController(text: 'hosts@seaface.example');
+  }
+
+  @override
+  void dispose() {
+    _instagramController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: CatchInsets.content,
+      child: CreateClubContactFields(
+        instagramController: _instagramController,
+        phoneController: _phoneController,
+        emailController: _emailController,
+      ),
+    );
+  }
+}
+
+class _ClubHostDefaultsStepFrame extends StatefulWidget {
+  const _ClubHostDefaultsStepFrame();
+
+  @override
+  State<_ClubHostDefaultsStepFrame> createState() =>
+      _ClubHostDefaultsStepFrameState();
+}
+
+class _ClubHostDefaultsStepFrameState
+    extends State<_ClubHostDefaultsStepFrame> {
+  final _formKey = GlobalKey<FormState>();
+  var _defaults = _club.hostDefaults;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClubHostDefaultsStep(
+      formKey: _formKey,
+      defaults: _defaults,
+      currencyCode: currencyCodeForCityName(_club.location),
+      onChanged: (defaults) => setState(() => _defaults = defaults),
+    );
+  }
+}
+
+class _ClubPolicyDefaultsCardFrame extends StatefulWidget {
+  const _ClubPolicyDefaultsCardFrame();
+
+  @override
+  State<_ClubPolicyDefaultsCardFrame> createState() =>
+      _ClubPolicyDefaultsCardFrameState();
+}
+
+class _ClubPolicyDefaultsCardFrameState
+    extends State<_ClubPolicyDefaultsCardFrame> {
+  var _defaults = _club.hostDefaults.eventPolicy;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: CatchInsets.content,
+      child: ClubPolicyDefaultsCard(
+        defaults: _defaults,
+        currencyCode: currencyCodeForCityName(_club.location),
+        onChanged: (defaults) => setState(() => _defaults = defaults),
+      ),
+    );
+  }
+}
+
+class _ClubEventSuccessDefaultsStepFrame extends StatefulWidget {
+  const _ClubEventSuccessDefaultsStepFrame();
+
+  @override
+  State<_ClubEventSuccessDefaultsStepFrame> createState() =>
+      _ClubEventSuccessDefaultsStepFrameState();
+}
+
+class _ClubEventSuccessDefaultsStepFrameState
+    extends State<_ClubEventSuccessDefaultsStepFrame> {
+  final _formKey = GlobalKey<FormState>();
+  var _defaults = _club.hostDefaults;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClubEventSuccessDefaultsStep(
+      formKey: _formKey,
+      defaults: _defaults,
+      onChanged: (defaults) => setState(() => _defaults = defaults),
+    );
+  }
+}
+
+class _EventDetailsStepFrame extends StatefulWidget {
+  const _EventDetailsStepFrame({this.customActivity = false});
+
+  final bool customActivity;
+
+  @override
+  State<_EventDetailsStepFrame> createState() => _EventDetailsStepFrameState();
+}
+
+class _EventDetailsStepFrameState extends State<_EventDetailsStepFrame> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _distanceController;
+  late final TextEditingController _customActivityLabelController;
+  late final TextEditingController _descriptionController;
+  late ActivityKind _activityKind;
+  late EventInteractionModel _interactionModel;
+  PaceLevel? _pace = PaceLevel.easy;
+
+  @override
+  void initState() {
+    super.initState();
+    _activityKind = widget.customActivity
+        ? ActivityKind.openActivity
+        : ActivityKind.socialRun;
+    _interactionModel = _activityKind.defaultInteractionModel;
+    _distanceController = TextEditingController(text: '5');
+    _customActivityLabelController = TextEditingController(text: 'Salsa mixer');
+    _descriptionController = TextEditingController(
+      text: 'A relaxed format with clear arrival cues and a hosted welcome.',
+    );
+  }
+
+  @override
+  void dispose() {
+    _distanceController.dispose();
+    _customActivityLabelController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return EventDetailsStep(
+      formKey: _formKey,
+      photoPreviews: _orderedPhotoPreviews('event-details-photo', 2),
+      onPickPhotos: () {},
+      onRemovePhoto: (_) {},
+      onReorderPhoto: (_, _) {},
+      distanceController: _distanceController,
+      customActivityLabelController: _customActivityLabelController,
+      descriptionController: _descriptionController,
+      selectedActivityKind: _activityKind,
+      onActivityKindChanged: (activityKind) => setState(() {
+        _activityKind = activityKind;
+        _interactionModel = activityKind.defaultInteractionModel;
+      }),
+      selectedInteractionModel: _interactionModel,
+      onInteractionModelChanged: (model) =>
+          setState(() => _interactionModel = model),
+      selectedPace: _pace,
+      onPaceChanged: (pace) => setState(() => _pace = pace),
+    );
+  }
+}
+
+class _WhereStepFrame extends StatefulWidget {
+  const _WhereStepFrame();
+
+  @override
+  State<_WhereStepFrame> createState() => _WhereStepFrameState();
+}
+
+class _WhereStepFrameState extends State<_WhereStepFrame> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _meetingPointController;
+  late final TextEditingController _locationDetailsController;
+
+  @override
+  void initState() {
+    super.initState();
+    _meetingPointController = TextEditingController(
+      text: 'Carter Road Amphitheatre',
+    );
+    _locationDetailsController = TextEditingController(
+      text: 'Meet by the sea-facing steps.',
+    );
+  }
+
+  @override
+  void dispose() {
+    _meetingPointController.dispose();
+    _locationDetailsController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WhereStep(
+      formKey: _formKey,
+      meetingPointController: _meetingPointController,
+      locationDetailsController: _locationDetailsController,
+      startingPoint: const LocationCoordinate(19.0706, 72.8223),
+      onMeetingPointChanged: (_) {},
+      onPickLocation: () {},
+    );
+  }
+}
+
+class _WhenStepFrame extends StatefulWidget {
+  const _WhenStepFrame({this.scheduleError = false});
+
+  final bool scheduleError;
+
+  @override
+  State<_WhenStepFrame> createState() => _WhenStepFrameState();
+}
+
+class _WhenStepFrameState extends State<_WhenStepFrame> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _dateController;
+  late final TextEditingController _startTimeController;
+  var _durationMinutes = 75;
+
+  @override
+  void initState() {
+    super.initState();
+    _dateController = TextEditingController(text: '02/07/2030');
+    _startTimeController = TextEditingController(text: '6:30 PM');
+  }
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    _startTimeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WhenStep(
+      formKey: _formKey,
+      dateController: _dateController,
+      startTimeController: _startTimeController,
+      durationMinutes: _durationMinutes,
+      onPickDate: () {},
+      onPickTime: () {},
+      onDecreaseDuration: _durationMinutes > 30
+          ? () => setState(() => _durationMinutes -= 15)
+          : null,
+      onIncreaseDuration: _durationMinutes < 240
+          ? () => setState(() => _durationMinutes += 15)
+          : null,
+      formatDuration: EventFormatters.durationMinutes,
+      scheduleErrorText: widget.scheduleError
+          ? 'Choose a start time later than now'
+          : null,
+    );
+  }
+}
+
+class _EventPolicyStepFrame extends StatefulWidget {
+  const _EventPolicyStepFrame({this.inviteOnly = false});
+
+  final bool inviteOnly;
+
+  @override
+  State<_EventPolicyStepFrame> createState() => _EventPolicyStepFrameState();
+}
+
+class _EventPolicyStepFrameState extends State<_EventPolicyStepFrame> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _capacityController;
+  late final TextEditingController _priceController;
+  late final TextEditingController _inviteCodeController;
+  late final TextEditingController _dynamicPricingStepController;
+  late final TextEditingController _dynamicPricingMaxController;
+  late final TextEditingController _minAgeController;
+  late final TextEditingController _maxAgeController;
+  late final TextEditingController _maxMenController;
+  late final TextEditingController _maxWomenController;
+  late EventAdmissionPreset _admissionPreset;
+  var _cohortCapsEnabled = false;
+  var _dynamicPricingEnabled = false;
+  var _cancellationPolicyId = EventCancellationPolicyId.standard;
+
+  @override
+  void initState() {
+    super.initState();
+    _admissionPreset = widget.inviteOnly
+        ? EventAdmissionPreset.inviteOnly
+        : EventAdmissionPreset.openCapacity;
+    _capacityController = TextEditingController(text: '24');
+    _priceController = TextEditingController(text: '0');
+    _inviteCodeController = TextEditingController(text: 'SEAFACE');
+    _dynamicPricingStepController = TextEditingController(text: '250');
+    _dynamicPricingMaxController = TextEditingController(text: '1500');
+    _minAgeController = TextEditingController(text: '24');
+    _maxAgeController = TextEditingController(text: '38');
+    _maxMenController = TextEditingController(text: '12');
+    _maxWomenController = TextEditingController(text: '12');
+  }
+
+  @override
+  void dispose() {
+    _capacityController.dispose();
+    _priceController.dispose();
+    _inviteCodeController.dispose();
+    _dynamicPricingStepController.dispose();
+    _dynamicPricingMaxController.dispose();
+    _minAgeController.dispose();
+    _maxAgeController.dispose();
+    _maxMenController.dispose();
+    _maxWomenController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return EventPolicyStep(
+      formKey: _formKey,
+      capacityController: _capacityController,
+      priceController: _priceController,
+      currencyCode: currencyCodeForCityName(_club.location),
+      inviteCodeController: _inviteCodeController,
+      dynamicPricingStepController: _dynamicPricingStepController,
+      dynamicPricingMaxController: _dynamicPricingMaxController,
+      minAgeController: _minAgeController,
+      maxAgeController: _maxAgeController,
+      maxMenController: _maxMenController,
+      maxWomenController: _maxWomenController,
+      admissionPreset: _admissionPreset,
+      onAdmissionPresetChanged: (preset) =>
+          setState(() => _admissionPreset = preset),
+      cohortCapsEnabled: _cohortCapsEnabled,
+      onCohortCapsEnabledChanged: (enabled) =>
+          setState(() => _cohortCapsEnabled = enabled),
+      dynamicPricingEnabled: _dynamicPricingEnabled,
+      onDynamicPricingChanged: (enabled) =>
+          setState(() => _dynamicPricingEnabled = enabled),
+      cancellationPolicyId: _cancellationPolicyId,
+      onCancellationPolicyChanged: (policyId) =>
+          setState(() => _cancellationPolicyId = policyId),
+    );
+  }
+}
+
+class _EventSuccessStepFrame extends StatefulWidget {
+  const _EventSuccessStepFrame();
+
+  @override
+  State<_EventSuccessStepFrame> createState() => _EventSuccessStepFrameState();
+}
+
+class _EventSuccessStepFrameState extends State<_EventSuccessStepFrame> {
+  var _defaults = const EventSuccessDefaults();
+
+  @override
+  Widget build(BuildContext context) {
+    return EventSuccessStep(
+      activityKind: ActivityKind.socialRun,
+      eventSuccessDefaults: _defaults,
+      targetAttendeeCount: 24,
+      onEventSuccessDefaultsChanged: (defaults) =>
+          setState(() => _defaults = defaults),
+    );
+  }
+}
+
+class _EditableHostedEventPolicyCardFrame extends StatefulWidget {
+  const _EditableHostedEventPolicyCardFrame({this.inviteOnly = false});
+
+  final bool inviteOnly;
+
+  @override
+  State<_EditableHostedEventPolicyCardFrame> createState() =>
+      _EditableHostedEventPolicyCardFrameState();
+}
+
+class _EditableHostedEventPolicyCardFrameState
+    extends State<_EditableHostedEventPolicyCardFrame> {
+  late final TextEditingController _capacityController;
+  late final TextEditingController _priceController;
+  late final TextEditingController _minAgeController;
+  late final TextEditingController _maxAgeController;
+  late final TextEditingController _maxMenController;
+  late final TextEditingController _maxWomenController;
+  late final TextEditingController _inviteCodeController;
+  late final TextEditingController _dynamicPricingStepController;
+  late final TextEditingController _dynamicPricingMaxController;
+  late EventAdmissionPreset _admissionPreset;
+  var _cohortCapsEnabled = false;
+  var _dynamicPricingEnabled = false;
+  var _cancellationPolicyId = EventCancellationPolicyId.standard;
+
+  @override
+  void initState() {
+    super.initState();
+    _admissionPreset = widget.inviteOnly
+        ? EventAdmissionPreset.inviteOnly
+        : EventAdmissionPreset.openCapacity;
+    _capacityController = TextEditingController(text: '24');
+    _priceController = TextEditingController(text: '0');
+    _minAgeController = TextEditingController(text: '24');
+    _maxAgeController = TextEditingController(text: '38');
+    _maxMenController = TextEditingController(text: '12');
+    _maxWomenController = TextEditingController(text: '12');
+    _inviteCodeController = TextEditingController(text: 'SEAFACE');
+    _dynamicPricingStepController = TextEditingController(text: '250');
+    _dynamicPricingMaxController = TextEditingController(text: '1500');
+  }
+
+  @override
+  void dispose() {
+    _capacityController.dispose();
+    _priceController.dispose();
+    _minAgeController.dispose();
+    _maxAgeController.dispose();
+    _maxMenController.dispose();
+    _maxWomenController.dispose();
+    _inviteCodeController.dispose();
+    _dynamicPricingStepController.dispose();
+    _dynamicPricingMaxController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: CatchInsets.content,
+      child: EditableHostedEventPolicyCard(
+        currencyCode: currencyCodeForCityName(_club.location),
+        capacityController: _capacityController,
+        priceController: _priceController,
+        minAgeController: _minAgeController,
+        maxAgeController: _maxAgeController,
+        maxMenController: _maxMenController,
+        maxWomenController: _maxWomenController,
+        inviteCodeController: _inviteCodeController,
+        dynamicPricingStepController: _dynamicPricingStepController,
+        dynamicPricingMaxController: _dynamicPricingMaxController,
+        admissionPreset: _admissionPreset,
+        onAdmissionPresetChanged: (preset) =>
+            setState(() => _admissionPreset = preset),
+        cohortCapsEnabled: _cohortCapsEnabled,
+        onCohortCapsEnabledChanged: (enabled) =>
+            setState(() => _cohortCapsEnabled = enabled),
+        dynamicPricingEnabled: _dynamicPricingEnabled,
+        onDynamicPricingChanged: (enabled) =>
+            setState(() => _dynamicPricingEnabled = enabled),
+        cancellationPolicyId: _cancellationPolicyId,
+        onCancellationPolicyChanged: (policyId) =>
+            setState(() => _cancellationPolicyId = policyId),
+        privateAccessAsync: const AsyncData<Object?>(null),
+      ),
+    );
+  }
+}
+
 class _HostSettingsProfileFrame extends StatelessWidget {
   const _HostSettingsProfileFrame({
     this.profile,
@@ -3106,6 +6440,50 @@ class _HostSettingsClubsFrame extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _HostComponentFrame extends StatelessWidget {
+  const _HostComponentFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return _DeviceFrame(
+      child: _HostShellScope(child: _HostComponentScaffold(child: child)),
+    );
+  }
+}
+
+class _HostManageComponentFrame extends StatelessWidget {
+  const _HostManageComponentFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return _DeviceFrame(
+      child: _HostManageRouteScope(child: _HostComponentScaffold(child: child)),
+    );
+  }
+}
+
+class _HostComponentScaffold extends StatelessWidget {
+  const _HostComponentScaffold({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Scaffold(
+      backgroundColor: t.bg,
+      body: ListView(
+        padding: CatchInsets.pageBodyUnderHeader,
+        children: [child],
       ),
     );
   }
@@ -4262,6 +7640,7 @@ class _HostManageActionMutationPreviewState
 
 class _HostManageRouteScope extends StatelessWidget {
   const _HostManageRouteScope({
+    this.child,
     this.uid = 'design-host-owner',
     this.club,
     this.event,
@@ -4278,6 +7657,7 @@ class _HostManageRouteScope extends StatelessWidget {
     this.themeMode = ThemeMode.light,
   });
 
+  final Widget? child;
   final String? uid;
   final Club? club;
   final Event? event;
@@ -4369,13 +7749,15 @@ class _HostManageRouteScope extends StatelessWidget {
         ],
         child: _ThemedHostPreview(
           themeMode: themeMode,
-          child: HostEventManageRouteScreen(
-            clubId: effectiveClub.id,
-            eventId: effectiveEvent.id,
-            initialEvent: _initialManageEvent(eventValue, effectiveEvent),
-            initialSection: initialSection,
-            initialParticipantSearchQuery: initialParticipantSearchQuery,
-          ),
+          child:
+              child ??
+              HostEventManageRouteScreen(
+                clubId: effectiveClub.id,
+                eventId: effectiveEvent.id,
+                initialEvent: _initialManageEvent(eventValue, effectiveEvent),
+                initialSection: initialSection,
+                initialParticipantSearchQuery: initialParticipantSearchQuery,
+              ),
         ),
       ),
     );

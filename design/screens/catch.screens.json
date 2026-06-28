@@ -1227,8 +1227,8 @@
               "MetricStrip"
             ],
             "flutter": {
-              "file": "lib/clubs/presentation/detail/widgets/stats_strip.dart",
-              "symbol": "StatsStrip"
+              "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+              "symbol": "CatchMetricStrip"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "screen-local section.club.stats until another product screen proves reuse",
@@ -1242,7 +1242,7 @@
               "empty_rating"
             ],
             "previewIds": [
-              "StatsStrip/Stats states"
+              "CatchMetricStrip/Contract states"
             ],
             "migration": "Keep screen-local for now; promote only if host club detail or another product screen reuses the same club metrics contract."
           },
@@ -3886,7 +3886,7 @@
             "dependencies": [
               "catch.button",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "no_candidates",
@@ -3950,7 +3950,7 @@
               "catch.button",
               "catch.icon_button",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "blank",
@@ -4943,7 +4943,7 @@
             "dependencies": [
               "catch.button",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "like",
@@ -5816,7 +5816,7 @@
           ],
           "tests": [
             "test/chats/message_bubble_test.dart",
-            "test/chats/chat_top_bar_test.dart"
+            "test/chats/chat_screen_test.dart"
           ],
           "nextAction": "Compare populated thread hierarchy against exported chat references.",
           "previewIds": [
@@ -5967,9 +5967,9 @@
           "id": "top_bar_actions",
           "kind": "populated",
           "status": "captured",
-          "source": "ChatTopBar opens profile from identity title and exposes share/report/block overflow actions without duplicating profile in menu.",
+          "source": "CatchTopBar.identity opens profile from identity title and exposes share/report/block overflow actions without duplicating profile in menu.",
           "tests": [
-            "test/chats/chat_top_bar_test.dart"
+            "test/chats/chat_screen_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -6041,7 +6041,7 @@
           "id": "keyboard_composer",
           "kind": "populated",
           "status": "captured",
-          "source": "ChatInputBar uses compact pill CatchTextField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
+          "source": "ChatInputBar uses compact pill CatchField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
             "ChatScreen/Route states"
@@ -6108,17 +6108,17 @@
         "targetLayout": "ChatScreen should resolve provider waves into MatchChatScreenState plus route effects, then compose provider-free top bar, context header, message list, composer, safety/share, and Suvbot sections with typed callbacks.",
         "sections": [
           {
-            "id": "section.matches.chat_top_bar",
+            "id": "section.matches.catch_top_bar_identity",
             "name": "Chat top bar and actions",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "ChatTopBar",
+              "CatchTopBar.identity",
               "ChatActionsMenu"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_top_bar.dart",
-              "symbol": "ChatTopBar"
+              "file": "lib/core/widgets/catch_top_bar.dart",
+              "symbol": "CatchTopBar.identity"
             },
             "currentOwner": "ChatScreen",
             "targetOwner": "provider-free chat top bar section",
@@ -6251,7 +6251,7 @@
             "targetOwner": "provider-free chat composer section",
             "dependencies": [
               "catch.icon_button",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "empty",
@@ -6316,7 +6316,7 @@
             "dependencies": [
               "catch.button",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "loaded",
@@ -6884,7 +6884,7 @@
             "layer": "section",
             "claudeComponents": [
               "ProfileInfoSection",
-              "ProfileInfoRow"
+              "ProfileFieldRow"
             ],
             "flutter": {
               "file": "lib/user_profile/presentation/widgets/profile_info_section.dart",
@@ -6929,7 +6929,7 @@
               "catch.button",
               "catch.chip",
               "catch.field",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "closed",
@@ -8893,10 +8893,10 @@
               "OrganizerHeader",
               "Callout",
               "MetricGrid",
-              "InfoRow",
+              "FieldRow",
               "HostTeamSummary",
               "TrendStrip",
-              "InfoGroup"
+              "FieldGroup"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations_screen.dart",
@@ -9037,7 +9037,7 @@
             "currentOwner": "_HostClubProfileCard",
             "targetOwner": "shared inline editor compound after profile/host use cases converge",
             "dependencies": [
-              "catch.text_field",
+              "catch.field",
               "catch.button",
               "catch.field"
             ],
@@ -9138,7 +9138,7 @@
               "catch.badge",
               "catch.icon_button",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "owner_rows",
@@ -9350,8 +9350,8 @@
             "symbol": "ClubScheduleSection"
           },
           {
-            "file": "lib/clubs/presentation/detail/widgets/stats_strip.dart",
-            "symbol": "StatsStrip"
+            "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+            "symbol": "CatchMetricStrip"
           },
           {
             "file": "lib/reviews/presentation/reviews_section.dart",
@@ -9850,11 +9850,11 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "StatsStrip"
+              "CatchMetricStrip"
             ],
             "flutter": {
-              "file": "lib/clubs/presentation/detail/widgets/stats_strip.dart",
-              "symbol": "StatsStrip"
+              "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+              "symbol": "CatchMetricStrip"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "shared club stats section if host references match consumer detail",
@@ -10886,7 +10886,7 @@
             "dependencies": [
               "catch.chip",
               "catch.field",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "default_activity",
@@ -10919,7 +10919,7 @@
             "targetOwner": "provider-free location step plus picker adapter",
             "dependencies": [
               "catch.button",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "blank",
@@ -10951,7 +10951,7 @@
             "targetOwner": "provider-free schedule step plus time adapter",
             "dependencies": [
               "catch.button",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "blank",
@@ -10983,7 +10983,7 @@
             "dependencies": [
               "catch.chip",
               "catch.field",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "open_capacity",
@@ -12133,7 +12133,7 @@
               "catch.button",
               "catch.field",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "setup",
@@ -12232,7 +12232,7 @@
               "catch.button",
               "catch.icon_button",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "loading",
@@ -12268,7 +12268,7 @@
               "catch.option_card",
               "catch.segmented_control",
               "catch.surface",
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "plan_loading",
@@ -13319,8 +13319,8 @@
             "symbol": "ChatController"
           },
           {
-            "file": "lib/chats/presentation/widgets/chat_top_bar.dart",
-            "symbol": "ChatTopBar"
+            "file": "lib/core/widgets/catch_top_bar.dart",
+            "symbol": "CatchTopBar.identity"
           },
           {
             "file": "lib/chats/presentation/widgets/chat_event_context_header.dart",
@@ -13345,7 +13345,7 @@
             "symbol": "ConversationRepository"
           }
         ],
-        "notes": "Host Chat uses the shared ChatScreen implementation from the host inbox route. ChatRouteState now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState centralizes host inquiry identity, typed top-bar action availability, top-bar action intents, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy, and ChatThreadLookupState owns profile/event/host lookup keys; ChatTopBar is router/provider-free; Host Chat report/share/sheet-export transient feedback uses showCatchSnackBar; _ChatContent still owns text/scroll controllers, ConversationReadMarker.markRead side effects, retry invalidation, profile navigation, and mutation/share side-effect execution until the next adapter pass."
+        "notes": "Host Chat uses the shared ChatScreen implementation from the host inbox route. ChatRouteState now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState centralizes host inquiry identity, typed top-bar action availability, top-bar action intents, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy, and ChatThreadLookupState owns profile/event/host lookup keys; CatchTopBar.identity is router/provider-free; Host Chat report/share/sheet-export transient feedback uses showCatchSnackBar; _ChatContent still owns text/scroll controllers, ConversationReadMarker.markRead side effects, retry invalidation, profile navigation, and mutation/share side-effect execution until the next adapter pass."
       },
       "designRefs": [
         {
@@ -13359,7 +13359,7 @@
           "id": "repo.chat-top-bar-tests",
           "kind": "repo",
           "status": "available",
-          "path": "test/chats/chat_top_bar_test.dart",
+          "path": "test/chats/chat_screen_test.dart",
           "notes": "Top bar tests cover chat title/action behavior shared by professional host conversations."
         },
         {
@@ -13731,7 +13731,7 @@
           "id": "report_user_mutation",
           "kind": "mutation",
           "status": "implemented",
-          "source": "Report action is selected through typed ChatTopBarAction.report, disables while ChatController.reportUserMutation is pending, runs the mutation through ChatController, shows Report submitted snackbar on success, and surfaces failures through the shared chat mutation listener. Focused widget coverage verifies success, pending disabled state, and failure feedback.",
+          "source": "Report action is selected through typed ChatThreadAction.report, disables while ChatController.reportUserMutation is pending, runs the mutation through ChatController, shows Report submitted snackbar on success, and surfaces failures through the shared chat mutation listener. Focused widget coverage verifies success, pending disabled state, and failure feedback.",
           "nextAction": "Add host chat report pending/failure captures.",
           "previewIds": [
             "ChatScreen/Host chat states"
@@ -13741,7 +13741,7 @@
           "id": "block_user_mutation",
           "kind": "mutation",
           "status": "implemented",
-          "source": "Block action is selected through typed ChatTopBarAction.block, disables while ChatController.blockUserMutation is pending, confirms with showBlockUserDialog, runs the mutation through ChatController, and pops the route on success. Focused widget coverage verifies confirmation, success, pending disabled state, and failure feedback.",
+          "source": "Block action is selected through typed ChatThreadAction.block, disables while ChatController.blockUserMutation is pending, confirms with showBlockUserDialog, runs the mutation through ChatController, and pops the route on success. Focused widget coverage verifies confirmation, success, pending disabled state, and failure feedback.",
           "nextAction": "Add host chat block pending/failure captures.",
           "previewIds": [
             "ChatScreen/Host chat states"
@@ -13857,7 +13857,7 @@
             ]
           },
           {
-            "id": "section.host.chat_top_bar",
+            "id": "section.host.catch_top_bar_identity",
             "name": "Host chat top bar",
             "status": "implemented_local",
             "layer": "section",
@@ -13865,10 +13865,10 @@
               "HostConversationTopBar"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_top_bar.dart",
-              "symbol": "ChatTopBar"
+              "file": "lib/core/widgets/catch_top_bar.dart",
+              "symbol": "CatchTopBar.identity"
             },
-            "currentOwner": "ChatTopBar",
+            "currentOwner": "CatchTopBar.identity",
             "targetOwner": "provider-free host chat top bar section",
             "dependencies": [
               "catch.top_bar",
@@ -14037,7 +14037,7 @@
               "block_error",
               "blocked"
             ],
-            "migration": "Report/block availability and pending disabled state now flow through HostChatScreenState and typed ChatTopBarAction values; focused tests verify success and failure feedback. Continue moving snackbar/pop effects into a host chat action adapter if they need persistent visual states.",
+            "migration": "Report/block availability and pending disabled state now flow through HostChatScreenState and typed ChatThreadAction values; focused tests verify success and failure feedback. Continue moving snackbar/pop effects into a host chat action adapter if they need persistent visual states.",
             "previewIds": [
               "ChatScreen/Host chat states"
             ]
@@ -14111,7 +14111,7 @@
         {
           "id": "DS-HOST-CHAT-002",
           "status": "open",
-          "nextAction": "ChatRouteState now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState owns host inquiry identity, typed top-bar action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks, while _ChatContent still executes the ConversationReadMarker.markRead side effect. ChatThreadLookupState owns other-participant, host-inquiry club, host profile, public-profile, event, and Suvbot lookup decisions before ChatRouteState performs the provider watches. Match-stream failures render the shared branded chat error state and execute HostChatRetryIntent.reloadMatch; message-list and Suvbot-control errors route through typed retry targets before invalidating their providers. ChatTopBar is router/provider-free and supports disabled menu actions, and Host Chat report/share/sheet-export transient feedback routes through showCatchSnackBar. _ChatContent still owns profile navigation, share-card presentation, scroll behavior, and report/block/share effect execution from typed intents. Continue moving remaining mark-read execution, scroll effects, and side-effect execution into this adapter/controller seam."
+          "nextAction": "ChatRouteState now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState owns host inquiry identity, typed top-bar action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks, while _ChatContent still executes the ConversationReadMarker.markRead side effect. ChatThreadLookupState owns other-participant, host-inquiry club, host profile, public-profile, event, and Suvbot lookup decisions before ChatRouteState performs the provider watches. Match-stream failures render the shared branded chat error state and execute HostChatRetryIntent.reloadMatch; message-list and Suvbot-control errors route through typed retry targets before invalidating their providers. CatchTopBar.identity is router/provider-free and supports disabled menu actions, and Host Chat report/share/sheet-export transient feedback routes through showCatchSnackBar. _ChatContent still owns profile navigation, share-card presentation, scroll behavior, and report/block/share effect execution from typed intents. Continue moving remaining mark-read execution, scroll effects, and side-effect execution into this adapter/controller seam."
         },
         {
           "id": "DS-HOST-CHAT-003",
@@ -14451,7 +14451,7 @@
           "id": "phone_entry",
           "kind": "populated",
           "status": "captured",
-          "source": "AuthScreen renders PhonePage while AuthController.step is AuthStep.phone, using OnboardingStepFrame and CatchTextField/CatchButton primitives.",
+          "source": "AuthScreen renders PhonePage while AuthController.step is AuthStep.phone, using OnboardingStepFrame and CatchField/CatchButton primitives.",
           "captureIds": [
             "auth_phone_entry"
           ],
@@ -14570,7 +14570,7 @@
             "currentOwner": "PhonePage",
             "targetOwner": "provider-free phone entry section",
             "dependencies": [
-              "catch.text_field",
+              "catch.field",
               "catch.button",
               "catch.field"
             ],
@@ -14998,7 +14998,7 @@
             "targetOwner": "provider-free identity step sections",
             "dependencies": [
               "catch.field",
-              "catch.text_field",
+              "catch.field",
               "catch.chip",
               "catch.button"
             ],
@@ -16781,7 +16781,7 @@
             "currentOwner": "CreateClubScreen",
             "targetOwner": "provider-free club basics section",
             "dependencies": [
-              "catch.text_field",
+              "catch.field",
               "catch.field",
               "catch.button"
             ],
@@ -16807,7 +16807,7 @@
             "currentOwner": "CreateClubScreen",
             "targetOwner": "provider-free club details section",
             "dependencies": [
-              "catch.text_field"
+              "catch.field"
             ],
             "states": [
               "details_step",
@@ -16932,7 +16932,7 @@
           },
           {
             "file": "lib/core/widgets/catch_field.dart",
-            "symbol": "CatchFieldGroup"
+            "symbol": "CatchSection"
           }
         ],
         "mutationOwners": [
@@ -17149,7 +17149,7 @@
           "id": "validation_error",
           "kind": "error",
           "status": "captured",
-          "source": "Required owner edit fields validate through shared CatchField/CatchTextField validators plus the edit city FormField adapter.",
+          "source": "Required owner edit fields validate through shared CatchField/CatchField validators plus the edit city FormField adapter.",
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
@@ -17912,7 +17912,7 @@
             "currentOwner": "EditHostedEventScreen",
             "targetOwner": "provider-free location/details section",
             "dependencies": [
-              "catch.text_field",
+              "catch.field",
               "catch.surface"
             ],
             "states": [
@@ -18537,7 +18537,7 @@
             "currentOwner": "HostAccountScreen private bottom sheet",
             "targetOwner": "provider-free host profile editor form",
             "dependencies": [
-              "catch.text_field",
+              "catch.field",
               "catch.button"
             ],
             "states": [
@@ -19025,7 +19025,7 @@
             "currentOwner": "HostProfileForm + HostProfileFields",
             "targetOwner": "provider-free professional profile form",
             "dependencies": [
-              "catch.text_field",
+              "catch.field",
               "catch.button",
               "catch.surface"
             ],

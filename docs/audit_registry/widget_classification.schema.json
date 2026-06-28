@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://catch.local/docs/audit_registry/widget_classification.schema.json",
+  "title": "Catch Widget Classification Registry",
+  "type": "object",
+  "required": ["version", "updated", "sourceOfTruth", "summary", "widgets"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updated": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "sourceOfTruth": {
+      "type": "object",
+      "required": [
+        "scope",
+        "canonicalContracts",
+        "catalog",
+        "privateHelperPolicy",
+        "generator"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "type": "string"
+        },
+        "canonicalContracts": {
+          "type": "string"
+        },
+        "catalog": {
+          "type": "string"
+        },
+        "privateHelperPolicy": {
+          "type": "string"
+        },
+        "generator": {
+          "type": "string"
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "total",
+        "widgetClasses",
+        "stateClasses",
+        "publicClasses",
+        "privateClasses",
+        "byRole",
+        "byDecision",
+        "byCatalogStatus"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "widgetClasses": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stateClasses": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "publicClasses": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "privateClasses": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "byRole": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "byDecision": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "byCatalogStatus": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "widgets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/widget"
+      }
+    }
+  },
+  "$defs": {
+    "widget": {
+      "type": "object",
+      "required": [
+        "name",
+        "file",
+        "classKind",
+        "baseClass",
+        "visibility",
+        "role",
+        "canonicalFamily",
+        "publicApi",
+        "catalogStatus",
+        "contractId",
+        "allowedDependencyLevel",
+        "stateOwnership",
+        "asyncOwnership",
+        "layoutOwnership",
+        "actionOwnership",
+        "decision",
+        "remediationOptions",
+        "flags"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "file": {
+          "type": "string",
+          "pattern": "^lib/.+\\.dart$"
+        },
+        "classKind": {
+          "enum": ["widget", "widget-state"]
+        },
+        "baseClass": {
+          "type": "string",
+          "minLength": 1
+        },
+        "visibility": {
+          "enum": ["public", "private"]
+        },
+        "role": {
+          "enum": [
+            "atom",
+            "composition",
+            "pattern",
+            "feature-adapter",
+            "screen",
+            "widget-state"
+          ]
+        },
+        "canonicalFamily": {
+          "type": "string",
+          "pattern": "^(catch|screen|feature|state)\\.[a-z0-9_.-]+$"
+        },
+        "publicApi": {
+          "type": "boolean"
+        },
+        "catalogStatus": {
+          "enum": [
+            "contracted",
+            "cataloged",
+            "route-covered",
+            "uncataloged",
+            "not-applicable"
+          ]
+        },
+        "contractId": {
+          "type": ["string", "null"],
+          "pattern": "^catch\\.[a-z0-9_.-]+$"
+        },
+        "allowedDependencyLevel": {
+          "enum": [
+            "tokens-and-primitives",
+            "primitives-and-slots",
+            "feature-display-models",
+            "route-boundary",
+            "owning-widget-state"
+          ]
+        },
+        "stateOwnership": {
+          "enum": [
+            "none",
+            "local-ui-only",
+            "slot-state-only",
+            "feature-display-state",
+            "screen-owned",
+            "owning-widget-state"
+          ]
+        },
+        "asyncOwnership": {
+          "enum": [
+            "none",
+            "display-state-only",
+            "screen-owned",
+            "owning-widget-state"
+          ]
+        },
+        "layoutOwnership": {
+          "enum": [
+            "internal-only",
+            "slot-layout",
+            "feature-section-layout",
+            "page-safe-area-sliver",
+            "owning-widget-state"
+          ]
+        },
+        "actionOwnership": {
+          "enum": [
+            "none",
+            "callbacks-only",
+            "feature-callbacks",
+            "navigation-and-controller-calls",
+            "owning-widget-state"
+          ]
+        },
+        "decision": {
+          "enum": [
+            "keep-canonical-contract",
+            "keep-public-cataloged",
+            "review-catalog-coverage",
+            "review-promote-or-consolidate",
+            "review-promote-or-inline",
+            "review-screen-boundary",
+            "keep-widget-state"
+          ]
+        },
+        "remediationOptions": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "keepPublicCataloged",
+              "mergeIntoCanonical",
+              "promoteToCanonicalContract",
+              "promoteToPublicCatalog",
+              "inlineDelete",
+              "moveStateToController",
+              "routeThroughScreenState"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

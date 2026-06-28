@@ -1048,7 +1048,7 @@ tests, captures, Widgetbook, and audit receipts.
   - `catch.button`
   - `catch.chip`
   - `catch.field`
-  - `catch.field_group`
+  - `catch.section`
   - `catch.icon_button`
   - `catch.journey_steps`
   - `catch.option_card`
@@ -1060,7 +1060,7 @@ tests, captures, Widgetbook, and audit receipts.
   - `catch.section_stack`
   - `catch.segmented_control`
   - `catch.surface`
-  - `catch.text_field`
+  - `catch.field`
   - `catch.top_bar`
   - Proof: `widgetbook/lib/primitives/primitive_contract_use_cases.dart`
     contains formal previews for all 18 component contracts, and
@@ -1149,8 +1149,8 @@ tests, captures, Widgetbook, and audit receipts.
     gates the eight required foundation specimen pages. Remaining foundation
     reconciliation is detailed visual/value review against the Claude
     specimens plus local-only token classification.
-  - Core catalog Widgetbook entries now expose source-backed standalone review
-    pages for `CatchFieldGroup`, `CatchJourneySteps`, `CatchPrivacyBadge`,
+  - Core primitive Widgetbook entries now expose formal contract-state review
+    pages for `CatchSection`, `CatchJourneySteps`, `CatchPrivacyBadge`,
     `CatchScreenBody`, and `CatchSectionStack`, closing those Claude primitive
     inventory rows from "source candidate but no standalone entry."
   - Host roster primitives now expose source-backed standalone Widgetbook
@@ -1170,14 +1170,14 @@ tests, captures, Widgetbook, and audit receipts.
   - `CatchRosterTiles`, `CatchRosterRow`, and `CatchRosterTable` are now formal
     component contracts (`catch.roster_tiles`, `catch.roster_row`, and
     `catch.roster_table`) with matching contract-state Widgetbook previews.
-  - `CatchFieldGroup`, `CatchJourneySteps`, `CatchPrivacyBadge`,
+  - `CatchSection`, `CatchJourneySteps`, `CatchPrivacyBadge`,
     `CatchScreenBody`, and `CatchSectionStack` are now formal component
     contracts with matching contract-state Widgetbook previews, moving the
     reusable handoff composition layer from broad catalog-only coverage into
     the cross-tool contract registry.
   - Dashboard, messaging, and event-detail sheet sections now have standalone
     source-backed Widgetbook review entries for `QuickActions`,
-    `DashboardStrideSection`, `RecommendCard`, `ChatTopBar`,
+    `DashboardStrideSection`, `RecommendCard`, `CatchTopBar.identity`,
     `ChatEventContextHeader`, `MessageBubble`, `ChatInputBar`,
     `ChatListTile`, and `BookingConflictSheet`.
   - The inventory now classifies additional source-backed Claude aliases that
@@ -1523,7 +1523,7 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - captured: `match_loading`, `match_error`, `match_not_found`, `host_inquiry_identity`, `event_context_fallback`, `messages_loading`, `messages_error`, `empty_thread`, `populated_thread`, `composer_enabled`, `composer_disabled_loading`, `blocked_chat`, `send_message_pending`, `send_image_pending`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
   - tested: `host_profile_navigation_disabled`, `host_share_card_disabled`, `event_context_ready`, `auto_scroll_read_marker`, `read_marker_state`, `chat_thread_lookup_state`, `chat_route_state`, `send_failure`, `top_bar_typed_actions`, `top_bar_action_intents`, `disabled_top_bar_actions`, `share_empty_feedback`, `route_retry_intents`, `message_retry`, `suvbot_retry`, `blocked_host_chat`, `report_block_menu_success`, `report_block_failure_feedback`
   - DP-HOST-CHAT-001: Host Chat captures now cover match loading/error/missing, message loading/error/offline, empty, populated, event fallback, blocked, composer pending/disabled, text-scale, reduced-motion, and light/dark states. Remaining deterministic captures are keyboard-open safe-area, report/block mutation snackbar/dialog surfaces, provider-specific profile/club/event offline branches, image/day-separator variants, and pixel-reference variants.
-  - DP-HOST-CHAT-002: `ChatRouteState` now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before `_ChatContent` renders. `HostChatScreenState` owns host inquiry identity, top-bar typed action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. `ChatReadMarkerState` owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks, while `_ChatContent` still executes the `ConversationReadMarker.markRead` side effect. `ChatThreadLookupState` owns other-participant, host-inquiry club, host profile, public-profile, and event lookup decisions before `ChatRouteState` performs the provider watches. Match-stream failures render the shared branded chat error state and execute `HostChatRetryIntent.reloadMatch`; message-list and Suvbot-control errors route through typed retry targets before invalidating their providers. `ChatTopBar` is router/provider-free and supports disabled menu actions, and Host Chat report/share/sheet-export transient feedback routes through `showCatchSnackBar`. `_ChatContent` still owns profile navigation, share-card presentation, scroll behavior, and report/block/share effect execution from typed intents. Continue moving remaining mark-read execution, scroll effects, and side-effect execution into this adapter/controller seam.
+  - DP-HOST-CHAT-002: `ChatRouteState` now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before `_ChatContent` renders. `HostChatScreenState` owns host inquiry identity, top-bar typed action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. `ChatReadMarkerState` owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks, while `_ChatContent` still executes the `ConversationReadMarker.markRead` side effect. `ChatThreadLookupState` owns other-participant, host-inquiry club, host profile, public-profile, and event lookup decisions before `ChatRouteState` performs the provider watches. Match-stream failures render the shared branded chat error state and execute `HostChatRetryIntent.reloadMatch`; message-list and Suvbot-control errors route through typed retry targets before invalidating their providers. `CatchTopBar.identity` is router/provider-free and supports disabled menu actions, and Host Chat report/share/sheet-export transient feedback routes through `showCatchSnackBar`. `_ChatContent` still owns profile navigation, share-card presentation, scroll behavior, and report/block/share effect execution from typed intents. Continue moving remaining mark-read execution, scroll effects, and side-effect execution into this adapter/controller seam.
   - DP-HOST-CHAT-004: Closed. Host-specific tests now cover `ChatRouteState` provider composition, `HostChatScreenState` identity fallbacks, top-bar typed actions, disabled pending top-bar actions, route/message/Suvbot retry intents, match-route retry invalidation, message retry invalidation, Suvbot retry invalidation, blocked host chat composer behavior, profile navigation/share-card disabled behavior, report/block success behavior, and report/block failure feedback through the shared chat mutation listener.
   - DP-HOST-CHAT-005: Baseline shared Messaging-thread Host Chat reference and masks are registered; the advisory comparison against `host_chat_inquiry` is within threshold at 12.71% mismatch, meanDelta 5.28, maxDelta 240, masked 228552. Add dedicated Host Chat references for keyboard/safe-area, timestamps, remote photos, generated share-card rasterization if retained, dynamic message times, unread/read markers, host-shell chrome, accessibility, and theme states.
 - [ ] Feature-level drift/previews

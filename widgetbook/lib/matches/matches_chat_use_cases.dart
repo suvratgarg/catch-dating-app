@@ -6,26 +6,32 @@ import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_header.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_top_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/message_bubble.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/labs/design_fixtures/matches_chat_surface_fixtures.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/matches/presentation/chat_list_tile.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
 import 'package:catch_dating_app/matches/presentation/host_inbox_filter.dart';
 import 'package:catch_dating_app/matches/presentation/matches_list_screen.dart';
+import 'package:catch_dating_app/matches/presentation/widgets/chat_conversations_list.dart';
+import 'package:catch_dating_app/matches/presentation/widgets/chats_empty_state.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/chats_list.dart';
+import 'package:catch_dating_app/matches/presentation/widgets/chats_list_body.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/match_celebration_dialog.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -382,6 +388,364 @@ Widget matchesListHostInboxStates(BuildContext context) {
               themeMode: ThemeMode.dark,
               viewModel: AsyncData<ChatsListViewModel>(_hostInboxViewModel()),
               matches: _hostMatches,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Sheet states',
+  type: HostBroadcastComposerSheet,
+  path: '[P1 product surfaces]/Matches and chat/Host inbox',
+)
+Widget hostBroadcastComposerSheetStates(BuildContext context) {
+  return _AppRoleBoundary(
+    role: AppRole.host,
+    child: _MatchesCatalog(
+      title: 'HostBroadcastComposerSheet',
+      contractId: 'sheet.host.broadcast_composer',
+      children: const [
+        _StateCard(
+          label: 'template review surface',
+          child: _HostBroadcastComposerFrame(),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Sliver states',
+  type: ChatsList,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatsListSliverStates(BuildContext context) {
+  return _AppRoleBoundary(
+    role: AppRole.consumer,
+    child: _MatchesCatalog(
+      title: 'ChatsList',
+      contractId: 'component.messaging.chats_list',
+      children: [
+        _StateCard(
+          label: 'loaded sliver',
+          child: _DeviceFrame(
+            height: 420,
+            child: _MatchesListRouteScope(
+              viewModel: AsyncData<ChatsListViewModel>(_consumerViewModel()),
+              matches: _consumerMatches,
+              child: Scaffold(
+                body: SafeArea(
+                  child: CustomScrollView(
+                    slivers: [
+                      ChatsList(
+                        displayState: ChatsListContent(
+                          viewModel: _consumerViewModel(),
+                        ),
+                        onThreadSelected: (_) {},
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        _StateCard(
+          label: 'loading skeleton',
+          child: _DeviceFrame(
+            height: 360,
+            child: _MatchesListRouteScope(
+              viewModel: const AsyncLoading<ChatsListViewModel>(),
+              matches: _consumerMatches,
+              child: const Scaffold(
+                body: SafeArea(
+                  child: CustomScrollView(
+                    slivers: [ChatsList(displayState: ChatsListLoading())],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Header states',
+  type: ChatsBrowseHeader,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatsBrowseHeaderStates(BuildContext context) {
+  return _AppRoleBoundary(
+    role: AppRole.host,
+    child: _MatchesCatalog(
+      title: 'ChatsBrowseHeader',
+      contractId: 'component.messaging.chats_browse_header',
+      children: [
+        _StateCard(
+          label: 'host inbox filters',
+          child: _DeviceFrame(
+            height: 180,
+            child: _MatchesListRouteScope(
+              viewModel: AsyncData<ChatsListViewModel>(_hostInboxViewModel()),
+              matches: _hostMatches,
+              child: Scaffold(
+                body: SafeArea(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ChatsBrowseHeader(
+                        showSearchAction: true,
+                        hostFilter: HostInboxFilter.all,
+                        hostUnreadCount: 2,
+                        onHostFilterChanged: (_) {},
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Body states',
+  type: ChatsListBody,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatsListBodyStates(BuildContext context) {
+  return _AppRoleBoundary(
+    role: AppRole.consumer,
+    child: _MatchesCatalog(
+      title: 'ChatsListBody',
+      contractId: 'component.messaging.chats_list_body',
+      children: [
+        _StateCard(
+          label: 'consumer conversations',
+          child: _ChatSliverFrame(
+            slivers: [
+              ChatsListBody(
+                viewModel: _consumerViewModel(),
+                onThreadSelected: (_) {},
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Sliver states',
+  type: ChatConversationsList,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatConversationsListStates(BuildContext context) {
+  final viewModel = _consumerViewModel();
+  return _AppRoleBoundary(
+    role: AppRole.consumer,
+    child: _MatchesCatalog(
+      title: 'ChatConversationsList',
+      contractId: 'component.messaging.chat_conversations_list',
+      children: [
+        _StateCard(
+          label: 'contiguous rows',
+          child: _ChatSliverFrame(
+            height: 360,
+            slivers: [
+              ChatConversationsList(
+                matches: [...viewModel.newMatches, ...viewModel.conversations],
+                onThreadSelected: (_) {},
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Empty states',
+  type: ChatsEmptyState,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatsEmptyStateVariants(BuildContext context) {
+  return _AppRoleBoundary(
+    role: AppRole.consumer,
+    child: _MatchesCatalog(
+      title: 'ChatsEmptyState',
+      contractId: 'component.messaging.chats_empty_state',
+      children: const [
+        _StateCard(
+          label: 'no catches',
+          child: _PrimitiveReviewFrame(height: 360, child: ChatsEmptyState()),
+        ),
+        _StateCard(
+          label: 'search empty',
+          child: _PrimitiveReviewFrame(
+            height: 360,
+            child: ChatsEmptyState.noSearchResults(),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Card states',
+  type: HostInboxBroadcastCard,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget hostInboxBroadcastCardStates(BuildContext context) {
+  return _AppRoleBoundary(
+    role: AppRole.host,
+    child: _MatchesCatalog(
+      title: 'HostInboxBroadcastCard',
+      contractId: 'component.messaging.host_inbox_broadcast_card',
+      children: const [
+        _StateCard(
+          label: 'attendee blast affordance',
+          child: _PrimitiveReviewFrame(
+            height: 132,
+            child: Padding(
+              padding: CatchInsets.content,
+              child: HostInboxBroadcastCard(threadCount: 8),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Renderer states',
+  type: ChatMessageList,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatMessageListRendererStates(BuildContext context) {
+  return _AppRoleBoundary(
+    role: AppRole.consumer,
+    child: _MatchesCatalog(
+      title: 'ChatMessageList',
+      contractId: 'component.messaging.chat_message_list',
+      children: [
+        const _StateCard(
+          label: 'loading skeleton',
+          child: _ChatMessageListFrame(
+            messages: AsyncLoading<List<ChatMessage>>(),
+          ),
+        ),
+        _StateCard(
+          label: 'populated messages',
+          child: _ChatMessageListFrame(
+            messages: AsyncData<List<ChatMessage>>(
+              MatchesChatSurfaceFixtures.conversationMessages,
+            ),
+            event: _event,
+          ),
+        ),
+        _StateCard(
+          label: 'empty event-grounded prompt',
+          child: _ChatMessageListFrame(
+            messages: const AsyncData<List<ChatMessage>>([]),
+            event: _event,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Sheet states',
+  type: ChatShareCardSheet,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatShareCardSheetStates(BuildContext context) {
+  return _AppRoleBoundary(
+    role: AppRole.consumer,
+    child: _MatchesCatalog(
+      title: 'ChatShareCardSheet',
+      contractId: 'sheet.messaging.chat_share_card',
+      children: [
+        _StateCard(
+          label: 'export preview',
+          child: _DeviceFrame(
+            height: 640,
+            child: _ShareCardPreview(
+              messages: MatchesChatSurfaceFixtures.conversationMessages,
+              event: _event,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Card states',
+  type: ChatShareCard,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatShareCardStates(BuildContext context) {
+  return _AppRoleBoundary(
+    role: AppRole.consumer,
+    child: _MatchesCatalog(
+      title: 'ChatShareCard',
+      contractId: 'component.messaging.chat_share_card',
+      children: [
+        _StateCard(
+          label: 'event conversation card',
+          child: _PrimitiveReviewFrame(
+            height: 440,
+            child: Padding(
+              padding: CatchInsets.content,
+              child: ChatShareCard(
+                messages: MatchesChatSurfaceFixtures.conversationMessages,
+                currentUid: MatchesChatSurfaceFixtures.viewerUid,
+                event: _event,
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Dialog states',
+  type: MatchCelebrationDialog,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget matchCelebrationDialogStates(BuildContext context) {
+  return _AppRoleBoundary(
+    role: AppRole.consumer,
+    child: _MatchesCatalog(
+      title: 'MatchCelebrationDialog',
+      contractId: 'dialog.matches.celebration',
+      children: [
+        _StateCard(
+          label: 'new catch',
+          child: _DeviceFrame(
+            child: _MatchesListRouteScope(
+              viewModel: AsyncData<ChatsListViewModel>(_consumerViewModel()),
+              matches: _consumerMatches,
+              child: _CelebrationPreview(match: _taylorMatch),
             ),
           ),
         ),
@@ -767,53 +1131,6 @@ Widget hostChatRouteStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Primitive states',
-  type: ChatTopBar,
-  path: '[P1 product surfaces]/Matches and chat/Primitives',
-)
-Widget chatTopBarPrimitiveStates(BuildContext context) {
-  final taylor = MatchesChatSurfaceFixtures.profileFor(
-    MatchesChatSurfaceFixtures.taylorUid,
-  );
-
-  return _AppRoleBoundary(
-    role: AppRole.consumer,
-    child: _MatchesCatalog(
-      title: 'ChatTopBar',
-      contractId: 'primitive.messaging.chat_top_bar',
-      children: [
-        _StateCard(
-          label: 'default with profile and share action',
-          child: _ChatTopBarPrimitiveFrame(
-            name: taylor.name,
-            otherUid: taylor.uid,
-            profile: taylor,
-            onShareCard: () {},
-          ),
-        ),
-        _StateCard(
-          label: 'long name with profile navigation disabled',
-          child: _ChatTopBarPrimitiveFrame(
-            name: 'Taylor from the Sunday Evening Sea Face Social Run',
-            otherUid: taylor.uid,
-            profile: taylor,
-            profileNavigationEnabled: false,
-          ),
-        ),
-        _StateCard(
-          label: 'missing peer fallback',
-          child: const _ChatTopBarPrimitiveFrame(
-            name: 'Conversation unavailable',
-            otherUid: null,
-            profile: null,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Primitive states',
   type: ChatEventContextHeader,
   path: '[P1 product surfaces]/Matches and chat/Primitives',
 )
@@ -1020,10 +1337,121 @@ Widget chatInputBarPrimitiveStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Primitive states',
-  type: ChatListTile,
+  type: SuvbotActionBar,
   path: '[P1 product surfaces]/Matches and chat/Primitives',
 )
-Widget chatListTilePrimitiveStates(BuildContext context) {
+Widget suvbotActionBarPrimitiveStates(BuildContext context) {
+  return _AppRoleBoundary(
+    role: AppRole.consumer,
+    child: _MatchesCatalog(
+      title: 'SuvbotActionBar',
+      contractId: 'primitive.messaging.suvbot_action_bar',
+      children: [
+        _StateCard(
+          label: 'loaded actions',
+          child: _SuvbotActionBarPrimitiveFrame(
+            actions: AsyncData<List<SuvbotActionItem>>(
+              MatchesChatSurfaceFixtures.suvbotActions,
+            ),
+          ),
+        ),
+        _StateCard(
+          label: 'pending action',
+          child: _SuvbotActionBarPrimitiveFrame(
+            actions: AsyncData<List<SuvbotActionItem>>(
+              MatchesChatSurfaceFixtures.suvbotActions,
+            ),
+            pending: true,
+          ),
+        ),
+        const _StateCard(
+          label: 'loading',
+          child: _SuvbotActionBarPrimitiveFrame(
+            actions: AsyncLoading<List<SuvbotActionItem>>(),
+          ),
+        ),
+        _StateCard(
+          label: 'load error',
+          child: _SuvbotActionBarPrimitiveFrame(
+            actions: AsyncError<List<SuvbotActionItem>>(
+              StateError('Suvbot controls unavailable'),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Primitive states',
+  type: SuvbotResetActionRow,
+  path: '[P1 product surfaces]/Matches and chat/Primitives',
+)
+Widget suvbotResetActionRowPrimitiveStates(BuildContext context) {
+  const resetActionIds = {
+    'resetChats',
+    'resetBookings',
+    'resetNotifications',
+    'clearDemoState',
+  };
+  final resetActions = MatchesChatSurfaceFixtures.suvbotActions
+      .where((action) => resetActionIds.contains(action.id))
+      .toList(growable: false);
+
+  return _AppRoleBoundary(
+    role: AppRole.consumer,
+    child: _MatchesCatalog(
+      title: 'SuvbotResetActionRow',
+      contractId: 'primitive.messaging.suvbot_reset_action_row',
+      children: [
+        _StateCard(
+          label: 'destructive reset actions',
+          child: _SuvbotResetActionRowsFrame(actions: resetActions),
+        ),
+        _StateCard(
+          label: 'pending disabled',
+          child: _SuvbotResetActionRowsFrame(
+            actions: resetActions,
+            pending: true,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Sheet states',
+  type: MatchTesterSheet,
+  path: '[P1 product surfaces]/Matches and chat/Primitives',
+)
+Widget matchTesterSheetStates(BuildContext context) {
+  final action = MatchesChatSurfaceFixtures.suvbotActions.firstWhere(
+    (action) => action.id == 'matchTesterByPhone',
+  );
+
+  return _AppRoleBoundary(
+    role: AppRole.consumer,
+    child: _MatchesCatalog(
+      title: 'MatchTesterSheet',
+      contractId: 'sheet.messaging.match_tester',
+      children: [
+        _StateCard(
+          label: 'ready for phone input',
+          child: _MatchTesterSheetFrame(action: action),
+        ),
+        _StateCard(
+          label: 'pending submit',
+          child: _MatchTesterSheetFrame(action: action, pending: true),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget catchPersonRowChatPreviewPrimitiveStates(BuildContext context) {
   final readMatch = _taylorMatch.copyWith(unreadCounts: const {});
   final longCopyMatch = MatchesChatSurfaceFixtures.activeConversationMatch(
     id: 'design-match-long-copy',
@@ -1037,12 +1465,12 @@ Widget chatListTilePrimitiveStates(BuildContext context) {
   return _AppRoleBoundary(
     role: AppRole.consumer,
     child: _MatchesCatalog(
-      title: 'ChatListTile',
-      contractId: 'primitive.messaging.chat_list_tile',
+      title: 'CatchPersonRow chat previews',
+      contractId: 'primitive.messaging.person_row_chat_preview',
       children: [
         _StateCard(
           label: 'default read conversation',
-          child: _ChatListTilePrimitiveFrame(
+          child: _CatchPersonRowChatPreviewFrame(
             preview: _threadPreviewFor(
               match: readMatch,
               uid: MatchesChatSurfaceFixtures.viewerUid,
@@ -1051,7 +1479,7 @@ Widget chatListTilePrimitiveStates(BuildContext context) {
         ),
         _StateCard(
           label: 'unread active conversation',
-          child: _ChatListTilePrimitiveFrame(
+          child: _CatchPersonRowChatPreviewFrame(
             preview: _threadPreviewFor(
               match: _taylorMatch,
               uid: MatchesChatSurfaceFixtures.viewerUid,
@@ -1060,7 +1488,7 @@ Widget chatListTilePrimitiveStates(BuildContext context) {
         ),
         _StateCard(
           label: 'new match indicator',
-          child: _ChatListTilePrimitiveFrame(
+          child: _CatchPersonRowChatPreviewFrame(
             preview: _threadPreviewFor(
               match: MatchesChatSurfaceFixtures.newMatch(),
               uid: MatchesChatSurfaceFixtures.viewerUid,
@@ -1069,7 +1497,7 @@ Widget chatListTilePrimitiveStates(BuildContext context) {
         ),
         _StateCard(
           label: 'own latest message',
-          child: _ChatListTilePrimitiveFrame(
+          child: _CatchPersonRowChatPreviewFrame(
             preview: _threadPreviewFor(
               match: MatchesChatSurfaceFixtures.ownLatestMessageMatch(),
               uid: MatchesChatSurfaceFixtures.viewerUid,
@@ -1078,7 +1506,7 @@ Widget chatListTilePrimitiveStates(BuildContext context) {
         ),
         _StateCard(
           label: 'host inquiry unread',
-          child: _ChatListTilePrimitiveFrame(
+          child: _CatchPersonRowChatPreviewFrame(
             preview: _threadPreviewFor(
               match: _hostMatches.first,
               uid: MatchesChatSurfaceFixtures.hostUid,
@@ -1087,7 +1515,7 @@ Widget chatListTilePrimitiveStates(BuildContext context) {
         ),
         _StateCard(
           label: 'long preview truncation',
-          child: _ChatListTilePrimitiveFrame(
+          child: _CatchPersonRowChatPreviewFrame(
             preview: _threadPreviewFor(
               match: longCopyMatch,
               uid: MatchesChatSurfaceFixtures.viewerUid,
@@ -1097,6 +1525,80 @@ Widget chatListTilePrimitiveStates(BuildContext context) {
       ],
     ),
   );
+}
+
+class _ChatSliverFrame extends StatelessWidget {
+  const _ChatSliverFrame({required this.slivers, this.height = 420});
+
+  final List<Widget> slivers;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return _DeviceFrame(
+      height: height,
+      child: Builder(
+        builder: (context) {
+          final t = CatchTokens.of(context);
+          return Scaffold(
+            backgroundColor: t.bg,
+            body: SafeArea(child: CustomScrollView(slivers: slivers)),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ChatMessageListFrame extends StatefulWidget {
+  const _ChatMessageListFrame({required this.messages, this.event});
+
+  final AsyncValue<List<ChatMessage>> messages;
+  final Event? event;
+
+  @override
+  State<_ChatMessageListFrame> createState() => _ChatMessageListFrameState();
+}
+
+class _ChatMessageListFrameState extends State<_ChatMessageListFrame> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _DeviceFrame(
+      height: 420,
+      child: Builder(
+        builder: (context) {
+          final t = CatchTokens.of(context);
+          return Scaffold(
+            backgroundColor: t.bg,
+            body: SafeArea(
+              child: ChatMessageList(
+                messagesAsync: widget.messages,
+                currentUid: MatchesChatSurfaceFixtures.viewerUid,
+                otherName: 'Taylor',
+                event: widget.event,
+                scrollController: _scrollController,
+                onRetry: () {},
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
 
 class _MatchesListRouteScope extends StatelessWidget {
@@ -1425,9 +1927,64 @@ class _ThreadTileVariants extends StatelessWidget {
           padding: CatchInsets.chatListGutter,
           children: [
             for (final (index, preview) in previews.indexed)
-              ChatListTile(preview: preview, divider: index > 0, onTap: () {}),
+              _chatPersonRowForPreview(
+                preview,
+                divider: index > 0,
+                onTap: () {},
+              ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+CatchPersonRow _chatPersonRowForPreview(
+  ChatThreadPreview preview, {
+  bool divider = false,
+  VoidCallback? onTap,
+}) {
+  final unreadCount = preview.unreadCount;
+  final isNew = !preview.hasConversation;
+  return CatchPersonRow(
+    data: CatchPersonRowData(
+      name: preview.displayName,
+      imageUrl: preview.photoUrl,
+      lastMessage: preview.previewText,
+      timestamp: AppTimeFormatters.chatTimestamp(preview.timestamp),
+      unreadCount: unreadCount,
+      isFresh: unreadCount > 0 || isNew,
+      showFreshDot: unreadCount == 0 && isNew,
+      avatarShape: preview.match.isClubHostInquiry
+          ? CatchPersonAvatarShape.square
+          : CatchPersonAvatarShape.circle,
+    ),
+    avatarSize: CatchLayout.chatListAvatarExtent,
+    padding: CatchInsets.chatListTileVertical,
+    divider: divider,
+    showFreshBackground: false,
+    onTap: onTap,
+  );
+}
+
+class _HostBroadcastComposerFrame extends StatelessWidget {
+  const _HostBroadcastComposerFrame();
+
+  @override
+  Widget build(BuildContext context) {
+    return _DeviceFrame(
+      height: 420,
+      child: Builder(
+        builder: (context) {
+          final t = CatchTokens.of(context);
+          return Scaffold(
+            backgroundColor: t.bg,
+            body: const Align(
+              alignment: Alignment.bottomCenter,
+              child: HostBroadcastComposerSheet(),
+            ),
+          );
+        },
       ),
     );
   }
@@ -1515,59 +2072,6 @@ class _ComposerStatesPreviewState extends State<_ComposerStatesPreview> {
               onSendImage: null,
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ChatTopBarPrimitiveFrame extends StatelessWidget {
-  const _ChatTopBarPrimitiveFrame({
-    required this.name,
-    required this.otherUid,
-    required this.profile,
-    this.profileNavigationEnabled = true,
-    this.onShareCard,
-  });
-
-  final String name;
-  final String? otherUid;
-  final PublicProfile? profile;
-  final bool profileNavigationEnabled;
-  final VoidCallback? onShareCard;
-
-  @override
-  Widget build(BuildContext context) {
-    return _DeviceFrame(
-      height: 144,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        home: Scaffold(
-          appBar: ChatTopBar(
-            name: name,
-            photoUrl: profile?.primaryPhotoThumbnailUrl,
-            onProfileTap: otherUid == null || !profileNavigationEnabled
-                ? null
-                : () {},
-            actions: [
-              if (onShareCard != null) ChatTopBarAction.shareCard,
-              if (otherUid != null) ChatTopBarAction.report,
-              if (otherUid != null) ChatTopBarAction.block,
-            ],
-            onActionSelected: (action) {
-              if (action == ChatTopBarAction.shareCard) {
-                onShareCard?.call();
-              }
-            },
-          ),
-          body: Builder(
-            builder: (context) {
-              final t = CatchTokens.of(context);
-              return ColoredBox(color: t.bg, child: const SizedBox.expand());
-            },
-          ),
         ),
       ),
     );
@@ -1718,8 +2222,130 @@ class _ChatInputBarPrimitiveFrameState
   }
 }
 
-class _ChatListTilePrimitiveFrame extends StatelessWidget {
-  const _ChatListTilePrimitiveFrame({required this.preview});
+class _SuvbotActionBarPrimitiveFrame extends StatelessWidget {
+  const _SuvbotActionBarPrimitiveFrame({
+    required this.actions,
+    this.pending = false,
+  });
+
+  final AsyncValue<List<SuvbotActionItem>> actions;
+  final bool pending;
+
+  @override
+  Widget build(BuildContext context) {
+    return _DeviceFrame(
+      height: 340,
+      child: Builder(
+        builder: (context) {
+          final t = CatchTokens.of(context);
+          return Scaffold(
+            backgroundColor: t.bg,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  const Spacer(),
+                  SuvbotActionBar(
+                    actions: actions,
+                    pending: pending,
+                    onAction: (_) async {},
+                    onTextAction: (_, _) async {},
+                    onRetry: () {},
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _SuvbotResetActionRowsFrame extends StatelessWidget {
+  const _SuvbotResetActionRowsFrame({
+    required this.actions,
+    this.pending = false,
+  });
+
+  final List<SuvbotActionItem> actions;
+  final bool pending;
+
+  @override
+  Widget build(BuildContext context) {
+    return _DeviceFrame(
+      height: 280,
+      child: Builder(
+        builder: (context) {
+          final t = CatchTokens.of(context);
+          return Scaffold(
+            backgroundColor: t.bg,
+            body: SafeArea(
+              child: Padding(
+                padding: CatchInsets.content,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: t.surface,
+                    border: Border.all(color: t.line),
+                    borderRadius: BorderRadius.circular(CatchRadius.md),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (final (index, action) in actions.indexed) ...[
+                        SuvbotResetActionRow(
+                          action: action,
+                          pending: pending,
+                          onTap: () {},
+                        ),
+                        if (index != actions.length - 1)
+                          Divider(height: 1, color: t.line),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _MatchTesterSheetFrame extends StatelessWidget {
+  const _MatchTesterSheetFrame({required this.action, this.pending = false});
+
+  final SuvbotActionItem action;
+  final bool pending;
+
+  @override
+  Widget build(BuildContext context) {
+    return _DeviceFrame(
+      height: 340,
+      child: Builder(
+        builder: (context) {
+          final t = CatchTokens.of(context);
+          return Scaffold(
+            backgroundColor: t.bg,
+            body: SafeArea(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: MatchTesterSheet(
+                  action: action,
+                  pending: pending,
+                  onTextAction: (_, _) async {},
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _CatchPersonRowChatPreviewFrame extends StatelessWidget {
+  const _CatchPersonRowChatPreviewFrame({required this.preview});
 
   final ChatThreadPreview preview;
 
@@ -1735,7 +2361,7 @@ class _ChatListTilePrimitiveFrame extends StatelessWidget {
             body: SafeArea(
               child: ListView(
                 padding: CatchInsets.chatListGutter,
-                children: [ChatListTile(preview: preview, onTap: () {})],
+                children: [_chatPersonRowForPreview(preview, onTap: () {})],
               ),
             ),
           );
