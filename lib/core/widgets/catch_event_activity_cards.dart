@@ -12,6 +12,10 @@ import 'package:flutter/material.dart';
 
 enum CatchEventCardVariant { ticket, spotlight, compact }
 
+abstract final class CatchEventCardMetrics {
+  static const double compactVisualSize = 72;
+}
+
 /// Production event card backed by the shared activity visual schema.
 ///
 /// Use named constructors instead of separate public card classes so Explore,
@@ -379,7 +383,7 @@ class CatchEventCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(CatchRadius.md),
               child: SizedBox.square(
-                dimension: 72,
+                dimension: CatchEventCardMetrics.compactVisualSize,
                 child: EventActivityBackdrop(
                   visual: visual,
                   dense: true,
