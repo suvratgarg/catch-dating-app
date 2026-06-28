@@ -30,65 +30,54 @@ class CatchDetailHeroBackdrop extends StatelessWidget {
             child: CatchNetworkImage(
               resolvedImageUrl!,
               semanticLabel: semanticLabel,
-              errorBuilder: (_, _, _) => const _CatchDetailHeroFallback(),
+              errorBuilder: (context, _, _) =>
+                  _buildCatchDetailHeroFallback(context),
             ),
           )
         else
-          const _CatchDetailHeroFallback(),
-        if (showScrim) const _CatchDetailHeroScrim(),
+          _buildCatchDetailHeroFallback(context),
+        if (showScrim) _buildCatchDetailHeroScrim(),
       ],
     );
   }
 }
 
-class _CatchDetailHeroFallback extends StatelessWidget {
-  const _CatchDetailHeroFallback();
+Widget _buildCatchDetailHeroFallback(BuildContext context) {
+  final t = CatchTokens.of(context);
 
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            t.accent,
-            Color.lerp(t.accent, t.ink, 0.36)!,
-            Color.lerp(t.primary, t.ink, 0.50)!,
-          ],
-        ),
+  return DecoratedBox(
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          t.accent,
+          Color.lerp(t.accent, t.ink, 0.36)!,
+          Color.lerp(t.primary, t.ink, 0.50)!,
+        ],
       ),
-      child: const SizedBox.expand(),
-    );
-  }
+    ),
+    child: const SizedBox.expand(),
+  );
 }
 
-class _CatchDetailHeroScrim extends StatelessWidget {
-  const _CatchDetailHeroScrim();
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: const [0.0, 0.45, 1.0],
-          colors: [
-            CatchTokens.editorialDark.withValues(
-              alpha: CatchOpacity.photoScrimLight,
-            ),
-            CatchTokens.editorialDark.withValues(
-              alpha: CatchOpacity.photoScrimMedium,
-            ),
-            CatchTokens.editorialDark.withValues(
-              alpha: CatchOpacity.onDarkMuted,
-            ),
-          ],
-        ),
+Widget _buildCatchDetailHeroScrim() {
+  return DecoratedBox(
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        stops: const [0.0, 0.45, 1.0],
+        colors: [
+          CatchTokens.editorialDark.withValues(
+            alpha: CatchOpacity.photoScrimLight,
+          ),
+          CatchTokens.editorialDark.withValues(
+            alpha: CatchOpacity.photoScrimMedium,
+          ),
+          CatchTokens.editorialDark.withValues(alpha: CatchOpacity.onDarkMuted),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }

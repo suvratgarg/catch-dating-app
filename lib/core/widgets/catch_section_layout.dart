@@ -1,7 +1,9 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 /// Standard page body padding wrapper for non-sliver content.
@@ -174,7 +176,7 @@ class CatchSectionList extends StatelessWidget {
 
 /// Design-system `SectionStack`: standard body gutter for handoff sections.
 ///
-/// Section-to-section rhythm belongs to [CatchDesignSection] itself; this
+/// Section-to-section rhythm belongs to [CatchSection] itself; this
 /// wrapper intentionally defaults to no inserted gap.
 class CatchSectionStack extends StatelessWidget {
   const CatchSectionStack({
@@ -197,53 +199,89 @@ class CatchSectionStack extends StatelessWidget {
   }
 }
 
-/// Design-system `Section`: a kicker plus body with codified separators.
+enum CatchSectionVariant { divided, contained, plain }
+
+/// Design-system `Section`: the canonical primitive for grouping information.
 ///
 /// Screens that adopt the handoff composition should place these inside
 /// [CatchSectionStack] or [CatchDetailSliverSectionList] with no ad-hoc gaps.
-class CatchDesignSection extends StatelessWidget {
-  const CatchDesignSection({
+class CatchSection extends StatelessWidget {
+  const CatchSection({
     super.key,
-    required this.kicker,
-    required this.child,
+    this.title,
+    this.subtitle,
+    this.trailing,
     this.count,
     this.activityKind,
     this.lead = false,
     this.first = false,
+    this.variant = CatchSectionVariant.divided,
     this.dividerColor,
-    this.kickerColor,
+    this.titleColor,
     this.bodyGap = CatchSpacing.s3,
-  });
+    this.padding,
+    this.showInternalDividers = true,
+    this.focused = false,
+    this.hasError = false,
+    this.children,
+    this.child,
+  }) : assert(
+         child != null || children != null,
+         'CatchSection needs either child or children.',
+       ),
+       assert(
+         child == null || children == null,
+         'CatchSection accepts either child or children, not both.',
+       );
 
-  final String kicker;
+  final String? title;
+  final String? subtitle;
+  final Widget? trailing;
   final Object? count;
   final ActivityKind? activityKind;
   final bool lead;
   final bool first;
+  final CatchSectionVariant variant;
   final Color? dividerColor;
-  final Color? kickerColor;
+  final Color? titleColor;
   final double bodyGap;
-  final Widget child;
+  final EdgeInsetsGeometry? padding;
+  final bool showInternalDividers;
+  final bool focused;
+  final bool hasError;
+  final List<Widget>? children;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
+    return switch (variant) {
+      CatchSectionVariant.divided => _buildDivided(context),
+      CatchSectionVariant.contained => _buildContained(context),
+      CatchSectionVariant.plain => _buildPlain(context),
+    };
+  }
+
+  Widget _buildDivided(BuildContext context) {
     final t = CatchTokens.of(context);
     final activityAccent = activityKind == null
         ? null
         : ActivityPalette.resolve(context, activityKind!).accent;
-    final effectiveKickerColor =
-        kickerColor ??
-        (lead && activityAccent != null ? activityAccent : t.ink);
+    final effectiveTitleColor =
+        titleColor ?? (lead && activityAccent != null ? activityAccent : t.ink);
+    final displayTitle = title?.trim();
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _CatchSectionKicker(
-          text: kicker,
-          count: count,
-          color: effectiveKickerColor,
-        ),
-        SizedBox(height: bodyGap),
-        child,
+        if (displayTitle != null && displayTitle.isNotEmpty) ...[
+          _buildCatchSectionKicker(
+            context,
+            text: displayTitle,
+            count: count,
+            color: effectiveTitleColor,
+          ),
+          SizedBox(height: bodyGap),
+        ],
+        _body(context, t),
       ],
     );
 
@@ -262,45 +300,202 @@ class CatchDesignSection extends StatelessWidget {
       ),
     );
   }
-}
 
-class _CatchSectionKicker extends StatelessWidget {
-  const _CatchSectionKicker({
-    required this.text,
-    required this.color,
-    this.count,
-  });
-
-  final String text;
-  final Color color;
-  final Object? count;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildContained(BuildContext context) {
     final t = CatchTokens.of(context);
-    final count = this.count;
-    if (count == null || count.toString().isEmpty) {
-      return CatchKicker(label: text, color: color);
-    }
-    final style = CatchKicker.styleOf(context, color: color);
-    return Text.rich(
-      TextSpan(
-        text: text.toUpperCase(),
-        children: [
-          TextSpan(
-            text: ' · $count',
-            style: style.copyWith(color: t.ink3, fontWeight: FontWeight.w600),
+    return _CatchSectionFocusSurface(
+      padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),
+      focused: focused,
+      hasError: hasError,
+      child: _sectionContent(context, t, contained: true),
+    );
+  }
+
+  Widget _buildPlain(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Padding(
+      padding: padding ?? EdgeInsets.zero,
+      child: _sectionContent(context, t, contained: false),
+    );
+  }
+
+  Widget _sectionContent(
+    BuildContext context,
+    CatchTokens t, {
+    required bool contained,
+  }) {
+    final header = _header(context, t, contained: contained);
+    final body = _body(context, t);
+    if (header == null) return body;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        header,
+        SizedBox(height: bodyGap),
+        body,
+      ],
+    );
+  }
+
+  Widget? _header(
+    BuildContext context,
+    CatchTokens t, {
+    required bool contained,
+  }) {
+    final displayTitle = title?.trim();
+    final displaySubtitle = subtitle?.trim();
+    final hasTitle = displayTitle != null && displayTitle.isNotEmpty;
+    final hasSubtitle = displaySubtitle != null && displaySubtitle.isNotEmpty;
+    if (!hasTitle && !hasSubtitle && trailing == null) return null;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (hasTitle || hasSubtitle)
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (hasTitle)
+                  Text(
+                    count == null ? displayTitle : '$displayTitle · $count',
+                    style: contained
+                        ? CatchTextStyles.sectionTitle(
+                            context,
+                            color: titleColor ?? t.ink,
+                          )
+                        : CatchKicker.styleOf(
+                            context,
+                            color: titleColor ?? t.ink,
+                          ),
+                  ),
+                if (hasSubtitle) ...[
+                  const SizedBox(height: CatchSpacing.s1),
+                  Text(
+                    displaySubtitle,
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                  ),
+                ],
+              ],
+            ),
+          )
+        else
+          const Spacer(),
+        if (trailing != null) ...[
+          const SizedBox(width: CatchSpacing.s3),
+          DefaultTextStyle.merge(
+            style: CatchTextStyles.sectionTitle(context, color: t.ink),
+            child: trailing!,
           ),
         ],
-      ),
-      style: style,
+      ],
+    );
+  }
+
+  Widget _body(BuildContext context, CatchTokens t) {
+    final directChild = child;
+    if (directChild != null) return directChild;
+
+    final sectionChildren = children ?? const <Widget>[];
+    if (sectionChildren.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < sectionChildren.length; i++)
+          if (i == 0 || !showInternalDividers)
+            sectionChildren[i]
+          else
+            DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border(top: BorderSide(color: t.line)),
+              ),
+              child: sectionChildren[i],
+            ),
+      ],
     );
   }
 }
 
+class _CatchSectionFocusSurface extends StatefulWidget {
+  const _CatchSectionFocusSurface({
+    required this.child,
+    required this.padding,
+    required this.focused,
+    required this.hasError,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final bool focused;
+  final bool hasError;
+
+  @override
+  State<_CatchSectionFocusSurface> createState() =>
+      _CatchSectionFocusSurfaceState();
+}
+
+class _CatchSectionFocusSurfaceState extends State<_CatchSectionFocusSurface> {
+  bool _descendantFocused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final effectiveFocused = widget.focused || _descendantFocused;
+
+    return Focus(
+      canRequestFocus: false,
+      skipTraversal: true,
+      onFocusChange: (focused) {
+        if (_descendantFocused == focused) return;
+        setState(() => _descendantFocused = focused);
+      },
+      child: CatchSurface.card(
+        padding: widget.padding,
+        borderColor: widget.hasError
+            ? t.danger
+            : effectiveFocused
+            ? t.primary
+            : null,
+        boxShadow: effectiveFocused && !widget.hasError
+            ? CatchElevation.focusRing(t)
+            : null,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+Widget _buildCatchSectionKicker(
+  BuildContext context, {
+  required String text,
+  required Color color,
+  Object? count,
+}) {
+  final t = CatchTokens.of(context);
+  if (count == null || count.toString().isEmpty) {
+    return CatchKicker(label: text, color: color);
+  }
+  final style = CatchKicker.styleOf(context, color: color);
+  return Text.rich(
+    TextSpan(
+      text: text.toUpperCase(),
+      children: [
+        TextSpan(
+          text: ' · $count',
+          style: style.copyWith(color: t.ink3, fontWeight: FontWeight.w600),
+        ),
+      ],
+    ),
+    style: style,
+  );
+}
+
 /// Sliver-native detail body wrapper with Catch's detail-screen page insets.
 ///
-/// Defaults to no inserted gap so [CatchDesignSection] owns its delimiter and
+/// Defaults to no inserted gap so [CatchSection] owns its delimiter and
 /// top rhythm in sliver-native detail pages too.
 class CatchDetailSliverSectionList extends StatelessWidget {
   const CatchDetailSliverSectionList({

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 360" role="img" aria-labelledby="title">
   <title>Catch Hosts logo</title>
-  <text x="50%" y="232" text-anchor="middle" font-family="Archivo, Inter, system-ui, sans-serif" font-size="210" font-weight="700" letter-spacing="0">
+  <text x="50%" y="232" text-anchor="middle" font-family="Archivo, system-ui, sans-serif" font-size="210" font-weight="700" letter-spacing="0">
     <tspan fill="#F4F0E8">Catch</tspan><tspan dx="46" fill="#BAB2A7">Hosts</tspan>
   </text>
 </svg>

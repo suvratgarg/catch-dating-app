@@ -49,7 +49,7 @@ class CatchActivityChip extends StatelessWidget {
               label ?? activity.label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.infoRowTitle(
+              style: CatchTextStyles.fieldRowTitle(
                 context,
                 color: foreground,
               ).copyWith(height: 1),

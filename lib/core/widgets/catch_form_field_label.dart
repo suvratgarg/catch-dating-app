@@ -43,7 +43,7 @@ class CatchFormFieldLabel extends StatelessWidget {
           ),
           if (showOptionalBadge) ...[
             const SizedBox(width: CatchSpacing.s2),
-            _OptionalBadge(hasError: hasError),
+            _buildOptionalBadge(context, hasError),
           ],
         ],
       ),
@@ -51,34 +51,27 @@ class CatchFormFieldLabel extends StatelessWidget {
   }
 }
 
-class _OptionalBadge extends StatelessWidget {
-  const _OptionalBadge({required this.hasError});
+Widget _buildOptionalBadge(BuildContext context, bool hasError) {
+  final t = CatchTokens.of(context);
+  final color = hasError ? t.danger : t.ink3;
 
-  final bool hasError;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final color = hasError ? t.danger : t.ink3;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.micro6,
-        vertical: CatchSpacing.micro2,
-      ),
-      decoration: BoxDecoration(
-        color: hasError
-            ? t.danger.withValues(alpha: CatchOpacity.controlOverlayPressed)
-            : t.raised,
-        borderRadius: BorderRadius.circular(CatchRadius.sm),
-      ),
-      child: Text(
-        'Optional',
-        style: CatchTextStyles.supporting(
-          context,
-          color: color,
-        ).copyWith(fontWeight: FontWeight.w600),
-      ),
-    );
-  }
+  return Container(
+    padding: const EdgeInsets.symmetric(
+      horizontal: CatchSpacing.micro6,
+      vertical: CatchSpacing.micro2,
+    ),
+    decoration: BoxDecoration(
+      color: hasError
+          ? t.danger.withValues(alpha: CatchOpacity.controlOverlayPressed)
+          : t.raised,
+      borderRadius: BorderRadius.circular(CatchRadius.sm),
+    ),
+    child: Text(
+      'Optional',
+      style: CatchTextStyles.supporting(
+        context,
+        color: color,
+      ).copyWith(fontWeight: FontWeight.w600),
+    ),
+  );
 }

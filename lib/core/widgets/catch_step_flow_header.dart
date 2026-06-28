@@ -85,32 +85,3 @@ class CatchStepHeader extends StatelessWidget {
     );
   }
 }
-
-/// Compatibility wrapper for older zero-based multi-step flows.
-class CatchStepFlowHeader extends StatelessWidget {
-  const CatchStepFlowHeader({
-    super.key,
-    required this.title,
-    this.subtitle,
-    required this.currentStep,
-    required this.totalSteps,
-    this.onBack,
-  });
-
-  final String title;
-  final String? subtitle;
-  final int currentStep;
-  final int totalSteps;
-  final VoidCallback? onBack;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchStepHeader(
-      title: title,
-      subtitle: subtitle,
-      step: currentStep + 1,
-      total: totalSteps,
-      onBack: onBack,
-    );
-  }
-}

@@ -6,15 +6,13 @@
 
 const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/update_event_payload.schema.json',
+  '\$id':
+      'https://catch.app/contracts/callables/update_event_payload.schema.json',
   'title': 'UpdateEventCallablePayload',
   'description': 'Callable payload accepted by updateEvent.',
   'type': 'object',
   'additionalProperties': false,
-  'required': <Object?>[
-    'eventId',
-    'fields',
-  ],
+  'required': <Object?>['eventId', 'fields'],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
       'type': 'string',
@@ -26,12 +24,8 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
       'additionalProperties': false,
       'minProperties': 1,
       'properties': <String, Object?>{
-        'startTimeMillis': <String, Object?>{
-          'type': 'integer',
-        },
-        'endTimeMillis': <String, Object?>{
-          'type': 'integer',
-        },
+        'startTimeMillis': <String, Object?>{'type': 'integer'},
+        'endTimeMillis': <String, Object?>{'type': 'integer'},
         'meetingPoint': <String, Object?>{
           'type': 'string',
           'minLength': 1,
@@ -40,12 +34,9 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
         'meetingLocation': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
-          'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
-          'required': <Object?>[
-            'name',
-            'latitude',
-            'longitude',
-          ],
+          'description':
+              'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+          'required': <Object?>['name', 'latitude', 'longitude'],
           'properties': <String, Object?>{
             'name': <String, Object?>{
               'type': 'string',
@@ -53,41 +44,26 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
               'maxLength': 240,
             },
             'address': <String, Object?>{
-              'type': <Object?>[
-                'string',
-                'null',
-              ],
+              'type': <Object?>['string', 'null'],
               'maxLength': 500,
             },
             'placeId': <String, Object?>{
-              'type': <Object?>[
-                'string',
-                'null',
-              ],
+              'type': <Object?>['string', 'null'],
               'minLength': 1,
               'maxLength': 256,
             },
             'latitude': <String, Object?>{
-              'type': <Object?>[
-                'number',
-                'null',
-              ],
+              'type': 'number',
               'minimum': -90,
               'maximum': 90,
             },
             'longitude': <String, Object?>{
-              'type': <Object?>[
-                'number',
-                'null',
-              ],
+              'type': 'number',
               'minimum': -180,
               'maximum': 180,
             },
             'notes': <String, Object?>{
-              'type': <Object?>[
-                'string',
-                'null',
-              ],
+              'type': <Object?>['string', 'null'],
               'maxLength': 1000,
             },
           },
@@ -95,38 +71,25 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
         'startingPointLat': <String, Object?>{
           'anyOf': <Object?>[
             <String, Object?>{
-              'type': <Object?>[
-                'number',
-                'null',
-              ],
+              'type': <Object?>['number', 'null'],
               'minimum': -90,
               'maximum': 90,
             },
-            <String, Object?>{
-              'type': 'null',
-            },
+            <String, Object?>{'type': 'null'},
           ],
         },
         'startingPointLng': <String, Object?>{
           'anyOf': <Object?>[
             <String, Object?>{
-              'type': <Object?>[
-                'number',
-                'null',
-              ],
+              'type': <Object?>['number', 'null'],
               'minimum': -180,
               'maximum': 180,
             },
-            <String, Object?>{
-              'type': 'null',
-            },
+            <String, Object?>{'type': 'null'},
           ],
         },
         'locationDetails': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': <Object?>['string', 'null'],
           'maxLength': 1000,
         },
         'photoUrl': <String, Object?>{
@@ -136,9 +99,7 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
               'format': 'uri',
               'maxLength': 2048,
             },
-            <String, Object?>{
-              'type': 'null',
-            },
+            <String, Object?>{'type': 'null'},
           ],
         },
         'eventPhotos': <String, Object?>{
@@ -146,7 +107,8 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
           'maxItems': 12,
           'items': <String, Object?>{
             'title': 'UploadedPhoto',
-            'description': 'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
+            'description':
+                'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
             'type': 'object',
             'additionalProperties': false,
             'required': <Object?>[
@@ -184,9 +146,7 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
                     'format': 'uri',
                     'maxLength': 2048,
                   },
-                  <String, Object?>{
-                    'type': 'null',
-                  },
+                  <String, Object?>{'type': 'null'},
                 ],
               },
               'thumbnailStoragePath': <String, Object?>{
@@ -197,9 +157,7 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
                     'maxLength': 512,
                     'pattern': '^[^/\\u0000][^\\u0000]*\$',
                   },
-                  <String, Object?>{
-                    'type': 'null',
-                  },
+                  <String, Object?>{'type': 'null'},
                 ],
               },
               'position': <String, Object?>{
@@ -208,45 +166,29 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
                 'maximum': 19,
               },
               'moderation': <String, Object?>{
-                'type': <Object?>[
-                  'object',
-                  'null',
-                ],
+                'type': <Object?>['object', 'null'],
                 'additionalProperties': false,
-                'required': <Object?>[
-                  'status',
-                ],
+                'required': <Object?>['status'],
                 'properties': <String, Object?>{
                   'status': <String, Object?>{
                     'type': 'string',
-                    'enum': <Object?>[
-                      'pending',
-                      'approved',
-                      'rejected',
-                    ],
+                    'enum': <Object?>['pending', 'approved', 'rejected'],
                   },
                   'reason': <String, Object?>{
-                    'type': <Object?>[
-                      'string',
-                      'null',
-                    ],
+                    'type': <Object?>['string', 'null'],
                     'maxLength': 240,
                   },
                   'reviewedAt': <String, Object?>{
                     'anyOf': <Object?>[
                       <String, Object?>{
                         'type': 'object',
-                        'description': 'Serialized Firestore Timestamp fixture shape.',
+                        'description':
+                            'Serialized Firestore Timestamp fixture shape.',
                         'x-firestore-type': 'timestamp',
                         'additionalProperties': false,
-                        'required': <Object?>[
-                          '_seconds',
-                          '_nanoseconds',
-                        ],
+                        'required': <Object?>['_seconds', '_nanoseconds'],
                         'properties': <String, Object?>{
-                          '_seconds': <String, Object?>{
-                            'type': 'integer',
-                          },
+                          '_seconds': <String, Object?>{'type': 'integer'},
                           '_nanoseconds': <String, Object?>{
                             'type': 'integer',
                             'minimum': 0,
@@ -254,9 +196,7 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
                           },
                         },
                       },
-                      <String, Object?>{
-                        'type': 'null',
-                      },
+                      <String, Object?>{'type': 'null'},
                     ],
                   },
                 },
@@ -266,14 +206,9 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
                 'description': 'Serialized Firestore Timestamp fixture shape.',
                 'x-firestore-type': 'timestamp',
                 'additionalProperties': false,
-                'required': <Object?>[
-                  '_seconds',
-                  '_nanoseconds',
-                ],
+                'required': <Object?>['_seconds', '_nanoseconds'],
                 'properties': <String, Object?>{
-                  '_seconds': <String, Object?>{
-                    'type': 'integer',
-                  },
+                  '_seconds': <String, Object?>{'type': 'integer'},
                   '_nanoseconds': <String, Object?>{
                     'type': 'integer',
                     'minimum': 0,
@@ -286,14 +221,9 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
                 'description': 'Serialized Firestore Timestamp fixture shape.',
                 'x-firestore-type': 'timestamp',
                 'additionalProperties': false,
-                'required': <Object?>[
-                  '_seconds',
-                  '_nanoseconds',
-                ],
+                'required': <Object?>['_seconds', '_nanoseconds'],
                 'properties': <String, Object?>{
-                  '_seconds': <String, Object?>{
-                    'type': 'integer',
-                  },
+                  '_seconds': <String, Object?>{'type': 'integer'},
                   '_nanoseconds': <String, Object?>{
                     'type': 'integer',
                     'minimum': 0,
@@ -319,17 +249,9 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
         },
         'pace': <String, Object?>{
           'type': 'string',
-          'enum': <Object?>[
-            'easy',
-            'moderate',
-            'fast',
-            'competitive',
-          ],
+          'enum': <Object?>['easy', 'moderate', 'fast', 'competitive'],
         },
-        'description': <String, Object?>{
-          'type': 'string',
-          'maxLength': 2000,
-        },
+        'description': <String, Object?>{'type': 'string', 'maxLength': 2000},
         'capacityLimit': <String, Object?>{
           'type': 'integer',
           'minimum': 1,
@@ -355,17 +277,11 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
               'maximum': 120,
             },
             'maxMen': <String, Object?>{
-              'type': <Object?>[
-                'integer',
-                'null',
-              ],
+              'type': <Object?>['integer', 'null'],
               'minimum': 0,
             },
             'maxWomen': <String, Object?>{
-              'type': <Object?>[
-                'integer',
-                'null',
-              ],
+              'type': <Object?>['integer', 'null'],
               'minimum': 0,
             },
           },
@@ -381,10 +297,7 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
             'settlement',
           ],
           'properties': <String, Object?>{
-            'version': <String, Object?>{
-              'type': 'integer',
-              'const': 1,
-            },
+            'version': <String, Object?>{'type': 'integer', 'const': 1},
             'admission': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
@@ -419,10 +332,7 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
                 'waitlistPolicy': <String, Object?>{
                   'type': 'object',
                   'additionalProperties': false,
-                  'required': <Object?>[
-                    'mode',
-                    'offerWindowMinutes',
-                  ],
+                  'required': <Object?>['mode', 'offerWindowMinutes'],
                   'properties': <String, Object?>{
                     'mode': <String, Object?>{
                       'type': 'string',
@@ -440,15 +350,9 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
                     },
                   },
                 },
-                'inviteRequired': <String, Object?>{
-                  'type': 'boolean',
-                },
-                'membershipRequired': <String, Object?>{
-                  'type': 'boolean',
-                },
-                'manualApprovalRequired': <String, Object?>{
-                  'type': 'boolean',
-                },
+                'inviteRequired': <String, Object?>{'type': 'boolean'},
+                'membershipRequired': <String, Object?>{'type': 'boolean'},
+                'manualApprovalRequired': <String, Object?>{'type': 'boolean'},
                 'privateAccessPolicy': <String, Object?>{
                   'type': 'object',
                   'additionalProperties': false,
@@ -460,21 +364,13 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
                   'properties': <String, Object?>{
                     'mode': <String, Object?>{
                       'type': 'string',
-                      'enum': <Object?>[
-                        'none',
-                        'inviteCode',
-                      ],
+                      'enum': <Object?>['none', 'inviteCode'],
                     },
                     'inviteCodeHint': <String, Object?>{
-                      'type': <Object?>[
-                        'string',
-                        'null',
-                      ],
+                      'type': <Object?>['string', 'null'],
                       'maxLength': 64,
                     },
-                    'privateLinkEnabled': <String, Object?>{
-                      'type': 'boolean',
-                    },
+                    'privateLinkEnabled': <String, Object?>{'type': 'boolean'},
                   },
                 },
                 'cohortCapacityLimits': <String, Object?>{
@@ -485,10 +381,7 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
                   },
                 },
                 'balancedRatioPolicy': <String, Object?>{
-                  'type': <Object?>[
-                    'object',
-                    'null',
-                  ],
+                  'type': <Object?>['object', 'null'],
                   'additionalProperties': false,
                   'required': <Object?>[
                     'leftCohortId',
@@ -606,32 +499,22 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
             'cancellation': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
-              'required': <Object?>[
-                'policyId',
-              ],
+              'required': <Object?>['policyId'],
               'properties': <String, Object?>{
                 'policyId': <String, Object?>{
                   'type': 'string',
-                  'enum': <Object?>[
-                    'flexible',
-                    'standard',
-                    'strict',
-                  ],
+                  'enum': <Object?>['flexible', 'standard', 'strict'],
                 },
               },
             },
             'settlement': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
-              'required': <Object?>[
-                'hostPayoutTiming',
-              ],
+              'required': <Object?>['hostPayoutTiming'],
               'properties': <String, Object?>{
                 'hostPayoutTiming': <String, Object?>{
                   'type': 'string',
-                  'enum': <Object?>[
-                    'afterEventCompletion',
-                  ],
+                  'enum': <Object?>['afterEventCompletion'],
                 },
               },
             },
@@ -642,10 +525,7 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
           'additionalProperties': false,
           'properties': <String, Object?>{
             'inviteCode': <String, Object?>{
-              'type': <Object?>[
-                'string',
-                'null',
-              ],
+              'type': <Object?>['string', 'null'],
               'minLength': 4,
               'maxLength': 64,
               'pattern': '^[A-Za-z0-9_-]+\$',

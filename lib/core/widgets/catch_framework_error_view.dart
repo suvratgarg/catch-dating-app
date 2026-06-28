@@ -69,7 +69,7 @@ class CatchFrameworkErrorView extends StatelessWidget {
                       ),
                       if (showDebugDetails) ...[
                         gapH18,
-                        _DebugDetails(details: debugText),
+                        _buildDebugDetails(debugText),
                       ],
                     ],
                   ),
@@ -83,86 +83,78 @@ class CatchFrameworkErrorView extends StatelessWidget {
   }
 }
 
-class _DebugDetails extends StatefulWidget {
-  const _DebugDetails({required this.details});
+Widget _buildDebugDetails(String details) {
+  var expanded = false;
 
-  final String details;
+  return StatefulBuilder(
+    builder: (context, setState) {
+      final tokens = _tokensOf(context);
 
-  @override
-  State<_DebugDetails> createState() => _DebugDetailsState();
-}
-
-class _DebugDetailsState extends State<_DebugDetails> {
-  var _expanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final tokens = _tokensOf(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Semantics(
-          button: true,
-          expanded: _expanded,
-          child: CatchSurface(
-            tone: CatchSurfaceTone.transparent,
-            radius: 0,
-            borderWidth: 0,
-            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
-            onTap: () => setState(() => _expanded = !_expanded),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Developer details',
-                    style: CatchTextStyles.labelM(
-                      context,
-                      color: tokens.danger,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Semantics(
+            button: true,
+            expanded: expanded,
+            child: CatchSurface(
+              tone: CatchSurfaceTone.transparent,
+              radius: 0,
+              borderWidth: 0,
+              padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
+              onTap: () => setState(() => expanded = !expanded),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Developer details',
+                      style: CatchTextStyles.labelM(
+                        context,
+                        color: tokens.danger,
+                      ),
                     ),
                   ),
-                ),
-                gapW12,
-                AnimatedRotation(
-                  turns: _expanded ? 0.25 : 0,
-                  duration: CatchMotion.fast,
-                  curve: CatchMotion.standardCurve,
-                  child: Icon(
-                    CatchIcons.chevronRightRounded,
-                    color: tokens.danger,
-                    size: CatchIcon.sm,
+                  gapW12,
+                  AnimatedRotation(
+                    turns: expanded ? 0.25 : 0,
+                    duration: CatchMotion.fast,
+                    curve: CatchMotion.standardCurve,
+                    child: Icon(
+                      CatchIcons.chevronRightRounded,
+                      color: tokens.danger,
+                      size: CatchIcon.sm,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-        AnimatedSize(
-          duration: CatchMotion.fast,
-          curve: CatchMotion.standardCurve,
-          alignment: Alignment.topCenter,
-          child: _expanded
-              ? Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(CatchSpacing.s3),
-                  decoration: BoxDecoration(
-                    color: tokens.raised,
-                    borderRadius: BorderRadius.circular(CatchRadius.md),
-                    border: Border.all(color: tokens.line),
-                  ),
-                  child: Text(
-                    widget.details,
-                    style: CatchTextStyles.debugDetails(
-                      context,
-                      color: tokens.ink2,
+          AnimatedSize(
+            duration: CatchMotion.fast,
+            curve: CatchMotion.standardCurve,
+            alignment: Alignment.topCenter,
+            child: expanded
+                ? Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(CatchSpacing.s3),
+                    decoration: BoxDecoration(
+                      color: tokens.raised,
+                      borderRadius: BorderRadius.circular(CatchRadius.md),
+                      border: Border.all(color: tokens.line),
                     ),
-                  ),
-                )
-              : const SizedBox.shrink(),
-        ),
-      ],
-    );
-  }
+                    child: Text(
+                      details,
+                      style: CatchTextStyles.debugDetails(
+                        context,
+                        color: tokens.ink2,
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
+      );
+    },
+  );
 }
 
 CatchTokens _tokensOf(BuildContext context) {

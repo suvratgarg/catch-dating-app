@@ -6,7 +6,8 @@
 
 const schemaCreateEventCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/create_event_payload.schema.json',
+  '\$id':
+      'https://catch.app/contracts/callables/create_event_payload.schema.json',
   'title': 'CreateEventCallablePayload',
   'description': 'Callable payload accepted by createEvent.',
   'type': 'object',
@@ -35,12 +36,8 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
-    'startTimeMillis': <String, Object?>{
-      'type': 'integer',
-    },
-    'endTimeMillis': <String, Object?>{
-      'type': 'integer',
-    },
+    'startTimeMillis': <String, Object?>{'type': 'integer'},
+    'endTimeMillis': <String, Object?>{'type': 'integer'},
     'meetingPoint': <String, Object?>{
       'type': 'string',
       'minLength': 1,
@@ -49,12 +46,9 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
     'meetingLocation': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
-      'required': <Object?>[
-        'name',
-        'latitude',
-        'longitude',
-      ],
+      'description':
+          'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+      'required': <Object?>['name', 'latitude', 'longitude'],
       'properties': <String, Object?>{
         'name': <String, Object?>{
           'type': 'string',
@@ -62,41 +56,26 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
           'maxLength': 240,
         },
         'address': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': <Object?>['string', 'null'],
           'maxLength': 500,
         },
         'placeId': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': <Object?>['string', 'null'],
           'minLength': 1,
           'maxLength': 256,
         },
         'latitude': <String, Object?>{
-          'type': <Object?>[
-            'number',
-            'null',
-          ],
+          'type': 'number',
           'minimum': -90,
           'maximum': 90,
         },
         'longitude': <String, Object?>{
-          'type': <Object?>[
-            'number',
-            'null',
-          ],
+          'type': 'number',
           'minimum': -180,
           'maximum': 180,
         },
         'notes': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': <Object?>['string', 'null'],
           'maxLength': 1000,
         },
       },
@@ -112,22 +91,13 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
       'maximum': 180,
     },
     'locationDetails': <String, Object?>{
-      'type': <Object?>[
-        'string',
-        'null',
-      ],
+      'type': <Object?>['string', 'null'],
       'maxLength': 1000,
     },
     'photoUrl': <String, Object?>{
       'anyOf': <Object?>[
-        <String, Object?>{
-          'type': 'string',
-          'format': 'uri',
-          'maxLength': 2048,
-        },
-        <String, Object?>{
-          'type': 'null',
-        },
+        <String, Object?>{'type': 'string', 'format': 'uri', 'maxLength': 2048},
+        <String, Object?>{'type': 'null'},
       ],
     },
     'eventPhotos': <String, Object?>{
@@ -135,7 +105,8 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
       'maxItems': 12,
       'items': <String, Object?>{
         'title': 'UploadedPhoto',
-        'description': 'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
+        'description':
+            'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
         'type': 'object',
         'additionalProperties': false,
         'required': <Object?>[
@@ -173,9 +144,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
                 'format': 'uri',
                 'maxLength': 2048,
               },
-              <String, Object?>{
-                'type': 'null',
-              },
+              <String, Object?>{'type': 'null'},
             ],
           },
           'thumbnailStoragePath': <String, Object?>{
@@ -186,9 +155,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
                 'maxLength': 512,
                 'pattern': '^[^/\\u0000][^\\u0000]*\$',
               },
-              <String, Object?>{
-                'type': 'null',
-              },
+              <String, Object?>{'type': 'null'},
             ],
           },
           'position': <String, Object?>{
@@ -197,45 +164,29 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
             'maximum': 19,
           },
           'moderation': <String, Object?>{
-            'type': <Object?>[
-              'object',
-              'null',
-            ],
+            'type': <Object?>['object', 'null'],
             'additionalProperties': false,
-            'required': <Object?>[
-              'status',
-            ],
+            'required': <Object?>['status'],
             'properties': <String, Object?>{
               'status': <String, Object?>{
                 'type': 'string',
-                'enum': <Object?>[
-                  'pending',
-                  'approved',
-                  'rejected',
-                ],
+                'enum': <Object?>['pending', 'approved', 'rejected'],
               },
               'reason': <String, Object?>{
-                'type': <Object?>[
-                  'string',
-                  'null',
-                ],
+                'type': <Object?>['string', 'null'],
                 'maxLength': 240,
               },
               'reviewedAt': <String, Object?>{
                 'anyOf': <Object?>[
                   <String, Object?>{
                     'type': 'object',
-                    'description': 'Serialized Firestore Timestamp fixture shape.',
+                    'description':
+                        'Serialized Firestore Timestamp fixture shape.',
                     'x-firestore-type': 'timestamp',
                     'additionalProperties': false,
-                    'required': <Object?>[
-                      '_seconds',
-                      '_nanoseconds',
-                    ],
+                    'required': <Object?>['_seconds', '_nanoseconds'],
                     'properties': <String, Object?>{
-                      '_seconds': <String, Object?>{
-                        'type': 'integer',
-                      },
+                      '_seconds': <String, Object?>{'type': 'integer'},
                       '_nanoseconds': <String, Object?>{
                         'type': 'integer',
                         'minimum': 0,
@@ -243,9 +194,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
                       },
                     },
                   },
-                  <String, Object?>{
-                    'type': 'null',
-                  },
+                  <String, Object?>{'type': 'null'},
                 ],
               },
             },
@@ -255,14 +204,9 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
             'description': 'Serialized Firestore Timestamp fixture shape.',
             'x-firestore-type': 'timestamp',
             'additionalProperties': false,
-            'required': <Object?>[
-              '_seconds',
-              '_nanoseconds',
-            ],
+            'required': <Object?>['_seconds', '_nanoseconds'],
             'properties': <String, Object?>{
-              '_seconds': <String, Object?>{
-                'type': 'integer',
-              },
+              '_seconds': <String, Object?>{'type': 'integer'},
               '_nanoseconds': <String, Object?>{
                 'type': 'integer',
                 'minimum': 0,
@@ -275,14 +219,9 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
             'description': 'Serialized Firestore Timestamp fixture shape.',
             'x-firestore-type': 'timestamp',
             'additionalProperties': false,
-            'required': <Object?>[
-              '_seconds',
-              '_nanoseconds',
-            ],
+            'required': <Object?>['_seconds', '_nanoseconds'],
             'properties': <String, Object?>{
-              '_seconds': <String, Object?>{
-                'type': 'integer',
-              },
+              '_seconds': <String, Object?>{'type': 'integer'},
               '_nanoseconds': <String, Object?>{
                 'type': 'integer',
                 'minimum': 0,
@@ -308,31 +247,20 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
     },
     'pace': <String, Object?>{
       'type': 'string',
-      'enum': <Object?>[
-        'easy',
-        'moderate',
-        'fast',
-        'competitive',
-      ],
+      'enum': <Object?>['easy', 'moderate', 'fast', 'competitive'],
     },
     'capacityLimit': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
       'maximum': 1000,
     },
-    'description': <String, Object?>{
-      'type': 'string',
-      'maxLength': 2000,
-    },
+    'description': <String, Object?>{'type': 'string', 'maxLength': 2000},
     'priceInPaise': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 100000000,
     },
-    'currency': <String, Object?>{
-      'type': 'string',
-      'pattern': '^[A-Z]{3}\$',
-    },
+    'currency': <String, Object?>{'type': 'string', 'pattern': '^[A-Z]{3}\$'},
     'eventPolicy': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
@@ -344,10 +272,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
         'settlement',
       ],
       'properties': <String, Object?>{
-        'version': <String, Object?>{
-          'type': 'integer',
-          'const': 1,
-        },
+        'version': <String, Object?>{'type': 'integer', 'const': 1},
         'admission': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
@@ -382,10 +307,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
             'waitlistPolicy': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
-              'required': <Object?>[
-                'mode',
-                'offerWindowMinutes',
-              ],
+              'required': <Object?>['mode', 'offerWindowMinutes'],
               'properties': <String, Object?>{
                 'mode': <String, Object?>{
                   'type': 'string',
@@ -403,15 +325,9 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
                 },
               },
             },
-            'inviteRequired': <String, Object?>{
-              'type': 'boolean',
-            },
-            'membershipRequired': <String, Object?>{
-              'type': 'boolean',
-            },
-            'manualApprovalRequired': <String, Object?>{
-              'type': 'boolean',
-            },
+            'inviteRequired': <String, Object?>{'type': 'boolean'},
+            'membershipRequired': <String, Object?>{'type': 'boolean'},
+            'manualApprovalRequired': <String, Object?>{'type': 'boolean'},
             'privateAccessPolicy': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
@@ -423,21 +339,13 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'mode': <String, Object?>{
                   'type': 'string',
-                  'enum': <Object?>[
-                    'none',
-                    'inviteCode',
-                  ],
+                  'enum': <Object?>['none', 'inviteCode'],
                 },
                 'inviteCodeHint': <String, Object?>{
-                  'type': <Object?>[
-                    'string',
-                    'null',
-                  ],
+                  'type': <Object?>['string', 'null'],
                   'maxLength': 64,
                 },
-                'privateLinkEnabled': <String, Object?>{
-                  'type': 'boolean',
-                },
+                'privateLinkEnabled': <String, Object?>{'type': 'boolean'},
               },
             },
             'cohortCapacityLimits': <String, Object?>{
@@ -448,10 +356,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
               },
             },
             'balancedRatioPolicy': <String, Object?>{
-              'type': <Object?>[
-                'object',
-                'null',
-              ],
+              'type': <Object?>['object', 'null'],
               'additionalProperties': false,
               'required': <Object?>[
                 'leftCohortId',
@@ -569,32 +474,22 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
         'cancellation': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
-          'required': <Object?>[
-            'policyId',
-          ],
+          'required': <Object?>['policyId'],
           'properties': <String, Object?>{
             'policyId': <String, Object?>{
               'type': 'string',
-              'enum': <Object?>[
-                'flexible',
-                'standard',
-                'strict',
-              ],
+              'enum': <Object?>['flexible', 'standard', 'strict'],
             },
           },
         },
         'settlement': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
-          'required': <Object?>[
-            'hostPayoutTiming',
-          ],
+          'required': <Object?>['hostPayoutTiming'],
           'properties': <String, Object?>{
             'hostPayoutTiming': <String, Object?>{
               'type': 'string',
-              'enum': <Object?>[
-                'afterEventCompletion',
-              ],
+              'enum': <Object?>['afterEventCompletion'],
             },
           },
         },
@@ -615,16 +510,9 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
     'eventFormat': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'required': <Object?>[
-        'version',
-        'activityKind',
-        'interactionModel',
-      ],
+      'required': <Object?>['version', 'activityKind', 'interactionModel'],
       'properties': <String, Object?>{
-        'version': <String, Object?>{
-          'type': 'integer',
-          'const': 1,
-        },
+        'version': <String, Object?>{'type': 'integer', 'const': 1},
         'activityKind': <String, Object?>{
           'type': 'string',
           'enum': <Object?>[
@@ -681,7 +569,8 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
         'eventSuccessPrimitives': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
-          'description': 'Optional event-success behavior primitives for custom or unsupported activity formats. These fields translate a saved event format into the small set of primitives event success can reason about.',
+          'description':
+              'Optional event-success behavior primitives for custom or unsupported activity formats. These fields translate a saved event format into the small set of primitives event success can reason about.',
           'properties': <String, Object?>{
             'phoneAvailability': <String, Object?>{
               'type': 'string',
@@ -695,11 +584,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
             },
             'rotationSuitability': <String, Object?>{
               'type': 'string',
-              'enum': <Object?>[
-                'none',
-                'plannedBreaks',
-                'continuousRounds',
-              ],
+              'enum': <Object?>['none', 'plannedBreaks', 'continuousRounds'],
             },
             'assignmentAlgorithm': <String, Object?>{
               'type': 'string',
@@ -733,9 +618,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
       'properties': <String, Object?>{
-        'enabled': <String, Object?>{
-          'type': 'boolean',
-        },
+        'enabled': <String, Object?>{'type': 'boolean'},
         'playbookId': <String, Object?>{
           'type': 'string',
           'minLength': 1,
@@ -775,18 +658,12 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
               'maximum': 1000,
             },
             'unitCount': <String, Object?>{
-              'type': <Object?>[
-                'integer',
-                'null',
-              ],
+              'type': <Object?>['integer', 'null'],
               'minimum': 1,
               'maximum': 200,
             },
             'rotationIntervalMinutes': <String, Object?>{
-              'type': <Object?>[
-                'integer',
-                'null',
-              ],
+              'type': <Object?>['integer', 'null'],
               'minimum': 5,
               'maximum': 180,
             },
@@ -797,10 +674,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
             },
             'rotationRepeatStrategy': <String, Object?>{
               'type': 'string',
-              'enum': <Object?>[
-                'avoid',
-                'allowWhenExhausted',
-              ],
+              'enum': <Object?>['avoid', 'allowWhenExhausted'],
             },
             'maxPairMeetings': <String, Object?>{
               'type': 'integer',
@@ -813,11 +687,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
               'uniqueItems': true,
               'items': <String, Object?>{
                 'type': 'string',
-                'enum': <Object?>[
-                  'paceBand',
-                  'skillBand',
-                  'roleBand',
-                ],
+                'enum': <Object?>['paceBand', 'skillBand', 'roleBand'],
               },
             },
             'clusterActivityAttributes': <String, Object?>{
@@ -826,34 +696,19 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
               'uniqueItems': true,
               'items': <String, Object?>{
                 'type': 'string',
-                'enum': <Object?>[
-                  'paceBand',
-                  'skillBand',
-                  'roleBand',
-                ],
+                'enum': <Object?>['paceBand', 'skillBand', 'roleBand'],
               },
             },
           },
         },
-        'hostGoal': <String, Object?>{
-          'type': 'string',
-          'maxLength': 300,
-        },
-        'wingmanRequestsEnabled': <String, Object?>{
-          'type': 'boolean',
-        },
-        'contextualOpenersEnabled': <String, Object?>{
-          'type': 'boolean',
-        },
-        'compatibilityAffectsRanking': <String, Object?>{
-          'type': 'boolean',
-        },
+        'hostGoal': <String, Object?>{'type': 'string', 'maxLength': 300},
+        'wingmanRequestsEnabled': <String, Object?>{'type': 'boolean'},
+        'contextualOpenersEnabled': <String, Object?>{'type': 'boolean'},
+        'compatibilityAffectsRanking': <String, Object?>{'type': 'boolean'},
         'questionnaireConfig': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
-          'required': <Object?>[
-            'templateId',
-          ],
+          'required': <Object?>['templateId'],
           'properties': <String, Object?>{
             'templateId': <String, Object?>{
               'type': 'string',
@@ -861,10 +716,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
               'maxLength': 120,
             },
             'customTitle': <String, Object?>{
-              'type': <Object?>[
-                'string',
-                'null',
-              ],
+              'type': <Object?>['string', 'null'],
               'maxLength': 80,
             },
             'customQuestions': <String, Object?>{
@@ -873,11 +725,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
               'items': <String, Object?>{
                 'type': 'object',
                 'additionalProperties': false,
-                'required': <Object?>[
-                  'id',
-                  'prompt',
-                  'options',
-                ],
+                'required': <Object?>['id', 'prompt', 'options'],
                 'properties': <String, Object?>{
                   'id': <String, Object?>{
                     'type': 'string',
@@ -896,10 +744,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
                     'items': <String, Object?>{
                       'type': 'object',
                       'additionalProperties': false,
-                      'required': <Object?>[
-                        'id',
-                        'label',
-                      ],
+                      'required': <Object?>['id', 'label'],
                       'properties': <String, Object?>{
                         'id': <String, Object?>{
                           'type': 'string',
@@ -920,10 +765,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
           },
         },
         'attendeePrompt': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': <Object?>['string', 'null'],
           'maxLength': 300,
         },
       },
@@ -943,17 +785,11 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
           'maximum': 120,
         },
         'maxMen': <String, Object?>{
-          'type': <Object?>[
-            'integer',
-            'null',
-          ],
+          'type': <Object?>['integer', 'null'],
           'minimum': 0,
         },
         'maxWomen': <String, Object?>{
-          'type': <Object?>[
-            'integer',
-            'null',
-          ],
+          'type': <Object?>['integer', 'null'],
           'minimum': 0,
         },
       },

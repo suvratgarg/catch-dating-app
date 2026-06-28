@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 class CatchStatColumn extends StatelessWidget {
@@ -12,6 +13,9 @@ class CatchStatColumn extends StatelessWidget {
     this.highlight = false,
     this.monoValue = false,
     this.center = false,
+    this.surface = false,
+    this.padding,
+    this.borderColor,
   });
 
   final IconData? icon;
@@ -20,6 +24,9 @@ class CatchStatColumn extends StatelessWidget {
   final bool highlight;
   final bool monoValue;
   final bool center;
+  final bool surface;
+  final EdgeInsetsGeometry? padding;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +35,14 @@ class CatchStatColumn extends StatelessWidget {
     final labelColor = highlight ? t.primary : t.ink3;
     final align = center ? CrossAxisAlignment.center : CrossAxisAlignment.start;
 
-    return Column(
+    final content = Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: align,
       children: [
-        if (icon != null) ...[Icon(icon, color: t.primary, size: CatchIcon.md), gapH6],
+        if (icon != null) ...[
+          Icon(icon, color: t.primary, size: CatchIcon.md),
+          gapH6,
+        ],
         if (value != null)
           Text(
             value!,
@@ -52,6 +62,16 @@ class CatchStatColumn extends StatelessWidget {
           textAlign: center ? TextAlign.center : null,
         ),
       ],
+    );
+
+    if (!surface) {
+      return content;
+    }
+
+    return CatchSurface(
+      padding: padding ?? CatchInsets.contentDense,
+      borderColor: borderColor ?? t.line,
+      child: content,
     );
   }
 }

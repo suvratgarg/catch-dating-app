@@ -39,7 +39,8 @@ class CatchCodeInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _CodeInputRow(
+    return _buildCodeInputRow(
+      context,
       length: length,
       value: value,
       active: active,
@@ -92,7 +93,8 @@ class CatchOtpCodeField extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          _CodeInputRow(
+          _buildCodeInputRow(
+            context,
             length: length,
             value: controller.text,
             active: active,
@@ -133,109 +135,82 @@ class CatchOtpCodeField extends StatelessWidget {
   }
 }
 
-class _CodeInputRow extends StatelessWidget {
-  const _CodeInputRow({
-    required this.length,
-    required this.value,
-    required this.active,
-    required this.caret,
-    required this.height,
-    required this.gap,
-    required this.cellKeyPrefix,
-  });
+Widget _buildCodeInputRow(
+  BuildContext context, {
+  required int length,
+  required String value,
+  required int? active,
+  required bool caret,
+  required double height,
+  required double gap,
+  required String cellKeyPrefix,
+}) {
+  final tokens = CatchTokens.of(context);
+  final code = value.length > length ? value.substring(0, length) : value;
+  final done = code.length >= length;
+  final activeIndex =
+      active ?? (code.length < length ? code.length : length - 1);
+  final textStyle = CatchTextStyles.code(context, color: tokens.ink);
 
-  final int length;
-  final String value;
-  final int? active;
-  final bool caret;
-  final double height;
-  final double gap;
-  final String cellKeyPrefix;
-
-  @override
-  Widget build(BuildContext context) {
-    final tokens = CatchTokens.of(context);
-    final code = value.length > length ? value.substring(0, length) : value;
-    final done = code.length >= length;
-    final activeIndex =
-        active ?? (code.length < length ? code.length : length - 1);
-    final textStyle = CatchTextStyles.code(context, color: tokens.ink);
-
-    return Row(
-      children: [
-        for (var i = 0; i < length; i++) ...[
-          Expanded(
-            child: _CodeInputCell(
-              key: ValueKey('${cellKeyPrefix}_$i'),
-              digit: i < code.length ? code[i] : '',
-              isActive: !done && i == activeIndex,
-              showCaret: caret,
-              height: height,
-              textStyle: textStyle,
-            ),
+  return Row(
+    children: [
+      for (var i = 0; i < length; i++) ...[
+        Expanded(
+          child: _buildCodeInputCell(
+            digit: i < code.length ? code[i] : '',
+            isActive: !done && i == activeIndex,
+            showCaret: caret,
+            height: height,
+            textStyle: textStyle,
+            key: ValueKey('${cellKeyPrefix}_$i'),
+            tokens: tokens,
           ),
-          if (i < length - 1) SizedBox(width: gap),
-        ],
-      ],
-    );
-  }
-}
-
-class _CodeInputCell extends StatelessWidget {
-  const _CodeInputCell({
-    super.key,
-    required this.digit,
-    required this.isActive,
-    required this.showCaret,
-    required this.height,
-    required this.textStyle,
-  });
-
-  final String digit;
-  final bool isActive;
-  final bool showCaret;
-  final double height;
-  final TextStyle? textStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    final tokens = CatchTokens.of(context);
-    return AnimatedContainer(
-      duration: CatchMotion.fast,
-      height: height,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: tokens.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.interactiveTile),
-        border: Border.all(
-          color: isActive ? tokens.ink : tokens.line2,
-          width: isActive ? 1.5 : 1,
         ),
-      ),
-      child: digit.isNotEmpty
-          ? Text(digit, style: textStyle)
-          : isActive && showCaret
-          ? const _CodeInputCaret()
-          : null,
-    );
-  }
+        if (i < length - 1) SizedBox(width: gap),
+      ],
+    ],
+  );
 }
 
-class _CodeInputCaret extends StatelessWidget {
-  const _CodeInputCaret();
+Widget _buildCodeInputCell({
+  required Key key,
+  required String digit,
+  required bool isActive,
+  required bool showCaret,
+  required double height,
+  required TextStyle? textStyle,
+  required CatchTokens tokens,
+}) {
+  return AnimatedContainer(
+    key: key,
+    duration: CatchMotion.fast,
+    height: height,
+    alignment: Alignment.center,
+    decoration: BoxDecoration(
+      color: tokens.surface,
+      borderRadius: BorderRadius.circular(CatchRadius.interactiveTile),
+      border: Border.all(
+        color: isActive ? tokens.ink : tokens.line2,
+        width: isActive ? 1.5 : 1,
+      ),
+    ),
+    child: digit.isNotEmpty
+        ? Text(digit, style: textStyle)
+        : isActive && showCaret
+        ? _buildCodeInputCaret(tokens)
+        : null,
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    final tokens = CatchTokens.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: tokens.ink,
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-      ),
-      child: const SizedBox(
-        width: CatchLayout.otpCaretWidth,
-        height: CatchLayout.otpCaretHeight,
-      ),
-    );
-  }
+Widget _buildCodeInputCaret(CatchTokens tokens) {
+  return DecoratedBox(
+    decoration: BoxDecoration(
+      color: tokens.ink,
+      borderRadius: BorderRadius.circular(CatchRadius.pill),
+    ),
+    child: const SizedBox(
+      width: CatchLayout.otpCaretWidth,
+      height: CatchLayout.otpCaretHeight,
+    ),
+  );
 }

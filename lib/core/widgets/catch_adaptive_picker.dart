@@ -29,7 +29,8 @@ Future<DateTime?> showCatchDatePicker({
   return showCupertinoModalPopup<DateTime>(
     context: context,
     semanticsDismissible: true,
-    builder: (context) => _CupertinoPickerSheet(
+    builder: (context) => _buildCupertinoPickerSheet(
+      context,
       title: title,
       onCancel: () => Navigator.of(context).pop(),
       onDone: () => Navigator.of(context).pop(selectedDate),
@@ -76,7 +77,8 @@ Future<TimeOfDay?> showCatchTimePicker({
   return showCupertinoModalPopup<TimeOfDay>(
     context: context,
     semanticsDismissible: true,
-    builder: (context) => _CupertinoPickerSheet(
+    builder: (context) => _buildCupertinoPickerSheet(
+      context,
       title: title,
       onCancel: () => Navigator.of(context).pop(),
       onDone: () => Navigator.of(context).pop(selectedTime),
@@ -98,89 +100,77 @@ DateTime _clampDate(DateTime date, DateTime minimumDate, DateTime maximumDate) {
   return normalizedDate;
 }
 
-class _CupertinoPickerSheet extends StatelessWidget {
-  const _CupertinoPickerSheet({
-    required this.title,
-    required this.child,
-    required this.onCancel,
-    required this.onDone,
-  });
+Widget _buildCupertinoPickerSheet(
+  BuildContext context, {
+  required String title,
+  required Widget child,
+  required VoidCallback onCancel,
+  required VoidCallback onDone,
+}) {
+  final t = CatchTokens.of(context);
 
-  static const _pickerHeight = CatchLayout.iosPickerHeight;
-  static const _toolbarHeight = CatchLayout.iosPickerToolbarHeight;
-
-  final String title;
-  final Widget child;
-  final VoidCallback onCancel;
-  final VoidCallback onDone;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CupertinoPopupSurface(
-      child: ColoredBox(
-        color: t.surface,
-        child: SafeArea(
-          top: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: _toolbarHeight,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: CupertinoButton(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: CatchSpacing.s4,
-                        ),
-                        onPressed: onCancel,
-                        child: Text(
-                          'Cancel',
-                          style: CatchTextStyles.labelL(context, color: t.ink2),
-                        ),
-                      ),
-                    ),
-                    Padding(
+  return CupertinoPopupSurface(
+    child: ColoredBox(
+      color: t.surface,
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: CatchLayout.iosPickerToolbarHeight,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: CupertinoButton(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: CatchLayout.iosPickerTitleSidePadding,
+                        horizontal: CatchSpacing.s4,
                       ),
+                      onPressed: onCancel,
                       child: Text(
-                        title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: CatchTextStyles.labelL(context, color: t.ink),
+                        'Cancel',
+                        style: CatchTextStyles.labelL(context, color: t.ink2),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: CupertinoButton(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: CatchSpacing.s4,
-                        ),
-                        onPressed: onDone,
-                        child: Text(
-                          'Done',
-                          style: CatchTextStyles.labelL(
-                            context,
-                            color: t.primary,
-                          ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CatchLayout.iosPickerTitleSidePadding,
+                    ),
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: CatchTextStyles.labelL(context, color: t.ink),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: CupertinoButton(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: CatchSpacing.s4,
+                      ),
+                      onPressed: onDone,
+                      child: Text(
+                        'Done',
+                        style: CatchTextStyles.labelL(
+                          context,
+                          color: t.primary,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Divider(height: 1, thickness: 1, color: t.line),
-              SizedBox(height: _pickerHeight, child: child),
-            ],
-          ),
+            ),
+            Divider(height: 1, thickness: 1, color: t.line),
+            SizedBox(height: CatchLayout.iosPickerHeight, child: child),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }

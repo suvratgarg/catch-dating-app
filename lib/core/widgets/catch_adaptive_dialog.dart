@@ -127,7 +127,7 @@ class CatchConfirmDialog<T> extends StatelessWidget {
               ),
             ],
             gapH20,
-            _DialogActions(actions: actions),
+            _buildDialogActions<T>(context, actions),
           ],
         ),
       ),
@@ -185,52 +185,44 @@ class CatchFormDialog extends StatelessWidget {
   }
 }
 
-class _DialogActions<T> extends StatelessWidget {
-  const _DialogActions({required this.actions});
-
-  final List<CatchDialogAction<T>> actions;
-
-  @override
-  Widget build(BuildContext context) {
-    if (actions.length <= 2) {
-      return Row(
-        children: [
-          for (final indexed in actions.indexed) ...[
-            if (indexed.$1 > 0) gapW10,
-            Expanded(child: _DialogActionButton(action: indexed.$2)),
-          ],
-        ],
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+Widget _buildDialogActions<T>(
+  BuildContext context,
+  List<CatchDialogAction<T>> actions,
+) {
+  if (actions.length <= 2) {
+    return Row(
       children: [
         for (final indexed in actions.indexed) ...[
-          if (indexed.$1 > 0) gapH10,
-          _DialogActionButton(action: indexed.$2),
+          if (indexed.$1 > 0) gapW10,
+          Expanded(child: _buildDialogActionButton(context, indexed.$2)),
         ],
       ],
     );
   }
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      for (final indexed in actions.indexed) ...[
+        if (indexed.$1 > 0) gapH10,
+        _buildDialogActionButton(context, indexed.$2),
+      ],
+    ],
+  );
 }
 
-class _DialogActionButton<T> extends StatelessWidget {
-  const _DialogActionButton({required this.action});
-
-  final CatchDialogAction<T> action;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchButton(
-      label: action.label,
-      variant: action.isDestructive
-          ? CatchButtonVariant.danger
-          : action.isDefault
-          ? CatchButtonVariant.primary
-          : CatchButtonVariant.secondary,
-      fullWidth: true,
-      onPressed: () => Navigator.of(context).pop(action.value),
-    );
-  }
+Widget _buildDialogActionButton<T>(
+  BuildContext context,
+  CatchDialogAction<T> action,
+) {
+  return CatchButton(
+    label: action.label,
+    variant: action.isDestructive
+        ? CatchButtonVariant.danger
+        : action.isDefault
+        ? CatchButtonVariant.primary
+        : CatchButtonVariant.secondary,
+    fullWidth: true,
+    onPressed: () => Navigator.of(context).pop(action.value),
+  );
 }

@@ -6,16 +6,15 @@
 
 const schemaAdminUpdateClubDetailsCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/admin_update_club_details_payload.schema.json',
+  '\$id':
+      'https://catch.app/contracts/callables/admin_update_club_details_payload.schema.json',
   'title': 'AdminUpdateClubDetailsCallablePayload',
-  'description': 'Callable payload accepted by adminUpdateClubDetails. This edits owner-safe organizer listing fields through an audited admin callable.',
+  'description':
+      'Callable payload accepted by adminUpdateClubDetails. This edits owner-safe organizer listing fields through an audited admin callable.',
   'x-callable-shape': 'patch',
   'type': 'object',
   'additionalProperties': false,
-  'required': <Object?>[
-    'clubId',
-    'fields',
-  ],
+  'required': <Object?>['clubId', 'fields'],
   'properties': <String, Object?>{
     'clubId': <String, Object?>{
       'type': 'string',
@@ -38,13 +37,10 @@ const schemaAdminUpdateClubDetailsCallablePayloadSchema = <String, Object?>{
           'maxLength': 2000,
         },
         'location': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': 'string',
           'minLength': 1,
-          'maxLength': 80,
-          'pattern': '^[a-z0-9-]+\$',
+          'maxLength': 120,
+          'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
         },
         'area': <String, Object?>{
           'type': 'string',
@@ -62,24 +58,15 @@ const schemaAdminUpdateClubDetailsCallablePayloadSchema = <String, Object?>{
           },
         },
         'instagramHandle': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': <Object?>['string', 'null'],
           'maxLength': 320,
         },
         'phoneNumber': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': <Object?>['string', 'null'],
           'maxLength': 320,
         },
         'email': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': <Object?>['string', 'null'],
           'maxLength': 320,
         },
         'imageUrl': <String, Object?>{
@@ -89,9 +76,7 @@ const schemaAdminUpdateClubDetailsCallablePayloadSchema = <String, Object?>{
               'format': 'uri',
               'maxLength': 2048,
             },
-            <String, Object?>{
-              'type': 'null',
-            },
+            <String, Object?>{'type': 'null'},
           ],
         },
         'profileImageUrl': <String, Object?>{
@@ -101,9 +86,7 @@ const schemaAdminUpdateClubDetailsCallablePayloadSchema = <String, Object?>{
               'format': 'uri',
               'maxLength': 2048,
             },
-            <String, Object?>{
-              'type': 'null',
-            },
+            <String, Object?>{'type': 'null'},
           ],
         },
         'entityKind': <String, Object?>{
@@ -127,46 +110,28 @@ const schemaAdminUpdateClubDetailsCallablePayloadSchema = <String, Object?>{
           },
         },
         'displayCategory': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': <Object?>['string', 'null'],
           'maxLength': 120,
         },
         'cityName': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': <Object?>['string', 'null'],
           'maxLength': 120,
         },
         'regionName': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': <Object?>['string', 'null'],
           'maxLength': 120,
         },
         'countryCode': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': <Object?>['string', 'null'],
           'pattern': '^[A-Z]{2}\$',
         },
         'countryName': <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': <Object?>['string', 'null'],
           'maxLength': 120,
         },
         'appVisibility': <String, Object?>{
           'type': 'string',
-          'enum': <Object?>[
-            'discoverable',
-            'hidden',
-          ],
+          'enum': <Object?>['discoverable', 'hidden'],
         },
         'publicPage': <String, Object?>{
           'type': 'object',
@@ -180,10 +145,7 @@ const schemaAdminUpdateClubDetailsCallablePayloadSchema = <String, Object?>{
               'pattern': '^[a-z0-9-]+\$',
             },
             'citySlug': <String, Object?>{
-              'type': <Object?>[
-                'string',
-                'null',
-              ],
+              'type': <Object?>['string', 'null'],
               'minLength': 1,
               'maxLength': 80,
               'pattern': '^[a-z0-9-]+\$',
@@ -204,17 +166,11 @@ const schemaAdminUpdateClubDetailsCallablePayloadSchema = <String, Object?>{
               ],
             },
             'seoTitle': <String, Object?>{
-              'type': <Object?>[
-                'string',
-                'null',
-              ],
+              'type': <Object?>['string', 'null'],
               'maxLength': 120,
             },
             'seoDescription': <String, Object?>{
-              'type': <Object?>[
-                'string',
-                'null',
-              ],
+              'type': <Object?>['string', 'null'],
               'maxLength': 320,
             },
           },
@@ -236,11 +192,7 @@ const schemaAdminUpdateClubDetailsCallablePayloadSchema = <String, Object?>{
             },
             'verificationStatus': <String, Object?>{
               'type': 'string',
-              'enum': <Object?>[
-                'unverified',
-                'sourceBacked',
-                'ownerVerified',
-              ],
+              'enum': <Object?>['unverified', 'sourceBacked', 'ownerVerified'],
             },
           },
         },
@@ -250,24 +202,15 @@ const schemaAdminUpdateClubDetailsCallablePayloadSchema = <String, Object?>{
           'minProperties': 1,
           'properties': <String, Object?>{
             'headline': <String, Object?>{
-              'type': <Object?>[
-                'string',
-                'null',
-              ],
+              'type': <Object?>['string', 'null'],
               'maxLength': 160,
             },
             'summary': <String, Object?>{
-              'type': <Object?>[
-                'string',
-                'null',
-              ],
+              'type': <Object?>['string', 'null'],
               'maxLength': 800,
             },
             'sourceSummary': <String, Object?>{
-              'type': <Object?>[
-                'string',
-                'null',
-              ],
+              'type': <Object?>['string', 'null'],
               'maxLength': 800,
             },
             'formats': <String, Object?>{
@@ -302,10 +245,7 @@ const schemaAdminUpdateClubDetailsCallablePayloadSchema = <String, Object?>{
       },
     },
     'reviewNote': <String, Object?>{
-      'type': <Object?>[
-        'string',
-        'null',
-      ],
+      'type': <Object?>['string', 'null'],
       'maxLength': 1000,
     },
   },

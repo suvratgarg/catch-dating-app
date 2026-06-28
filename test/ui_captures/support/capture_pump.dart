@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -212,8 +213,10 @@ Widget _frame({
 
 ThemeData _captureTheme(ThemeData theme) {
   return theme.copyWith(
-    textTheme: theme.textTheme.apply(fontFamily: 'Inter'),
-    primaryTextTheme: theme.primaryTextTheme.apply(fontFamily: 'Inter'),
+    textTheme: theme.textTheme.apply(fontFamily: CatchFonts.sansFamily),
+    primaryTextTheme: theme.primaryTextTheme.apply(
+      fontFamily: CatchFonts.sansFamily,
+    ),
   );
 }
 

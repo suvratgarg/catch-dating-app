@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:flutter/material.dart';
 
@@ -14,8 +15,7 @@ import 'package:flutter/material.dart';
 ///   last message text.
 /// [lastMessage] — if supplied, the row enters chat-thread layout with the
 ///   message, timestamp, and optional unread badge.
-/// [isFresh] — draws an orange ring around the avatar and a [primarySoft]
-///   row background (new match / unread catch).
+/// [isFresh] — marks the row as new/unread and draws a primary avatar ring.
 class CatchPersonRowData {
   const CatchPersonRowData({
     required this.name,
@@ -28,6 +28,8 @@ class CatchPersonRowData {
     this.timestamp,
     this.unreadCount = 0,
     this.isFresh = false,
+    this.showFreshDot = false,
+    this.avatarShape = CatchPersonAvatarShape.circle,
   });
 
   final String name;
@@ -50,8 +52,16 @@ class CatchPersonRowData {
   final String? timestamp;
   final int unreadCount;
 
-  /// Draws a primary-colour ring and soft row background.
+  /// Draws a primary-colour ring. The row decides whether that also paints a
+  /// soft background through [CatchPersonRow.showFreshBackground].
   final bool isFresh;
+
+  /// Shows a small primary dot in chat-preview trailing content when there is
+  /// no numeric unread count.
+  final bool showFreshDot;
+
+  /// Avatar shape for row variants such as host inquiries.
+  final CatchPersonAvatarShape avatarShape;
 }
 
 // ── CatchPersonRow ─────────────────────────────────────────────────────────────────
@@ -83,6 +93,13 @@ class CatchPersonRow extends StatelessWidget {
     this.trailing,
     this.onTap,
     this.avatarSize = 48,
+    this.padding = const EdgeInsets.symmetric(
+      horizontal: CatchSpacing.s5,
+      vertical: CatchSpacing.micro10,
+    ),
+    this.divider = false,
+    this.dividerInset = CatchLayout.chatListDividerInset,
+    this.showFreshBackground = true,
   });
 
   final CatchPersonRowData data;
@@ -91,43 +108,65 @@ class CatchPersonRow extends StatelessWidget {
   final Widget? trailing;
   final VoidCallback? onTap;
   final double avatarSize;
+  final EdgeInsetsGeometry padding;
+  final bool divider;
+  final double dividerInset;
+  final bool showFreshBackground;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final isChatMode = data.lastMessage != null;
 
-    return InkWell(
-      onTap: onTap,
-      child: ColoredBox(
-        color: data.isFresh ? t.primarySoft : Colors.transparent,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CatchSpacing.s5,
-            vertical: CatchSpacing.micro10,
-          ),
-          child: Row(
-            children: [
-              // Avatar
-              CatchPersonAvatar(
-                size: avatarSize,
-                name: data.name,
-                imageUrl: data.imageUrl,
-                borderWidth: data.isFresh ? 2 : 0,
-                borderColor: data.isFresh ? t.primary : null,
+    final trailingContent =
+        trailing ?? (isChatMode ? _buildChatTrailing(context, data) : null);
+    final row = ColoredBox(
+      color: showFreshBackground && data.isFresh
+          ? t.primarySoft
+          : Colors.transparent,
+      child: Stack(
+        children: [
+          if (divider)
+            Positioned(
+              top: 0,
+              left: dividerInset,
+              right: 0,
+              child: ColoredBox(
+                color: t.line.withValues(alpha: CatchOpacity.fieldRowDivider),
+                child: const SizedBox(height: CatchStroke.hairline),
               ),
-              gapW12,
-              // Text column
-              Expanded(
-                child: isChatMode
-                    ? _ChatLayout(data: data)
-                    : _RosterLayout(data: data),
-              ),
-              // Trailing widget (chip, button, etc.)
-              if (trailing != null) ...[gapW10, trailing!],
-            ],
+            ),
+          Padding(
+            padding: padding,
+            child: Row(
+              children: [
+                CatchPersonAvatar(
+                  size: avatarSize,
+                  name: data.name,
+                  imageUrl: data.imageUrl,
+                  borderWidth: data.isFresh ? CatchStroke.underline : 0,
+                  borderColor: data.isFresh ? t.primary : null,
+                  shape: data.avatarShape,
+                ),
+                gapW12,
+                Expanded(
+                  child: isChatMode
+                      ? _buildChatLayout(context, data)
+                      : _buildRosterLayout(context, data),
+                ),
+                if (trailingContent != null) ...[gapW10, trailingContent],
+              ],
+            ),
           ),
-        ),
+        ],
+      ),
+    );
+
+    return Semantics(
+      button: onTap != null,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(onTap: onTap, child: row),
       ),
     );
   }
@@ -135,151 +174,161 @@ class CatchPersonRow extends StatelessWidget {
 
 // ── Chat-thread layout ────────────────────────────────────────────────────────
 
-class _ChatLayout extends StatelessWidget {
-  const _ChatLayout({required this.data});
-  final CatchPersonRowData data;
+Widget _buildChatLayout(BuildContext context, CatchPersonRowData data) {
+  final t = CatchTokens.of(context);
+  final hasUnread = data.unreadCount > 0;
+  final emphasized = hasUnread || data.isFresh || data.showFreshDot;
 
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Name + timestamp
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                data.name,
-                style: CatchTextStyles.sectionTitle(context),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            if (data.timestamp != null)
-              Text(data.timestamp!, style: CatchTextStyles.supporting(context)),
-          ],
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(
+        data.name,
+        style: CatchTextStyles.fieldRowTitle(
+          context,
+          color: emphasized ? t.ink : t.ink2,
         ),
-        // Event context with route icon
-        if (data.contextLine != null) ...[
-          gapH2,
-          Row(
-            children: [
-              Icon(
-                CatchIcons.directionsRunRounded,
-                size: CatchIcon.micro,
-                color: t.ink3,
-              ),
-              gapW3,
-              Expanded(
-                child: Text(
-                  data.contextLine!,
-                  style: CatchTextStyles.supporting(context),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ],
-        // Last message + unread badge
-        gapH4,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      // Event context with route icon
+      if (data.contextLine != null) ...[
+        gapH2,
         Row(
           children: [
+            Icon(
+              CatchIcons.directionsRunRounded,
+              size: CatchIcon.micro,
+              color: t.ink3,
+            ),
+            gapW3,
             Expanded(
               child: Text(
-                data.isTyping ? 'Typing…' : data.lastMessage!,
-                style:
-                    CatchTextStyles.supporting(
-                      context,
-                      color: data.isTyping ? t.primary : t.ink2,
-                    ).copyWith(
-                      fontWeight: data.isTyping
-                          ? FontWeight.w500
-                          : FontWeight.w400,
-                    ),
+                data.contextLine!,
+                style: CatchTextStyles.supporting(context),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            if (data.unreadCount > 0) ...[
-              gapW8,
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CatchLayout.personUnreadBadgeHorizontalPadding,
-                  vertical: CatchSpacing.micro2,
-                ),
-                decoration: BoxDecoration(
-                  color: t.primary,
-                  borderRadius: BorderRadius.circular(CatchRadius.pill),
-                ),
-                child: Text(
-                  '${data.unreadCount}',
-                  style: CatchTextStyles.statusLabel(
-                    context,
-                    color: t.primaryInk,
-                  ),
-                ),
-              ),
-            ],
           ],
         ),
       ],
-    );
-  }
+      gapH4,
+      Text(
+        data.isTyping ? 'Typing...' : data.lastMessage!,
+        style: CatchTextStyles.chatPreview(
+          context,
+          color: data.isTyping
+              ? t.primary
+              : data.showFreshDot
+              ? t.primary
+              : hasUnread
+              ? t.ink
+              : t.ink2,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    ],
+  );
+}
+
+Widget _buildChatTrailing(BuildContext context, CatchPersonRowData data) {
+  final t = CatchTokens.of(context);
+  final hasUnread = data.unreadCount > 0;
+  final emphasized = hasUnread || data.isFresh || data.showFreshDot;
+
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.end,
+    children: [
+      if (data.timestamp != null)
+        Text(
+          data.timestamp!,
+          style: CatchTextStyles.meta(
+            context,
+            color: emphasized ? t.primary : t.ink3,
+          ),
+        ),
+      if (hasUnread) ...[
+        const SizedBox(height: CatchSpacing.micro6),
+        _buildUnreadCountPill(context, count: data.unreadCount),
+      ] else if (data.showFreshDot) ...[
+        const SizedBox(height: CatchSpacing.micro6),
+        Semantics(
+          label: 'New match',
+          child: ClipOval(
+            child: ColoredBox(
+              color: t.primary,
+              child: const SizedBox.square(dimension: CatchSpacing.s2),
+            ),
+          ),
+        ),
+      ],
+    ],
+  );
+}
+
+Widget _buildUnreadCountPill(BuildContext context, {required int count}) {
+  final t = CatchTokens.of(context);
+  final label = count > 99 ? '99+' : '$count';
+
+  return Semantics(
+    label: count == 1 ? 'Unread chat' : '$label unread chats',
+    child: CatchBadge(
+      label: label,
+      tone: CatchBadgeTone.brand,
+      backgroundColor: t.primary,
+      foregroundColor: t.primaryInk,
+      borderColor: t.primary,
+    ),
+  );
 }
 
 // ── Roster layout ─────────────────────────────────────────────────────────────
 
-class _RosterLayout extends StatelessWidget {
-  const _RosterLayout({required this.data});
-  final CatchPersonRowData data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
+Widget _buildRosterLayout(BuildContext context, CatchPersonRowData data) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(
+        data.name,
+        style: CatchTextStyles.sectionTitle(context),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      if (data.metaLine != null) ...[
+        gapH3,
         Text(
-          data.name,
-          style: CatchTextStyles.sectionTitle(context),
+          data.metaLine!,
+          style: CatchTextStyles.supporting(context),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        if (data.metaLine != null) ...[
-          gapH3,
-          Text(
-            data.metaLine!,
-            style: CatchTextStyles.supporting(context),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-        if (data.contextLine != null) ...[
-          gapH2,
-          Row(
-            children: [
-              Icon(
-                CatchIcons.directionsRunRounded,
-                size: 11,
-                color: CatchTokens.of(context).ink3,
-              ),
-              gapW3,
-              Expanded(
-                child: Text(
-                  data.contextLine!,
-                  style: CatchTextStyles.supporting(context),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ],
       ],
-    );
-  }
+      if (data.contextLine != null) ...[
+        gapH2,
+        Row(
+          children: [
+            Icon(
+              CatchIcons.directionsRunRounded,
+              size: 11,
+              color: CatchTokens.of(context).ink3,
+            ),
+            gapW3,
+            Expanded(
+              child: Text(
+                data.contextLine!,
+                style: CatchTextStyles.supporting(context),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ],
+    ],
+  );
 }

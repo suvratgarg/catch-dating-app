@@ -60,7 +60,11 @@ class CatchMenu<T> extends StatelessWidget {
                 thickness: CatchStroke.hairline,
                 color: t.line,
               ),
-            _CatchMenuRow<T>(item: indexed.$2, onSelected: onSelected),
+            _buildCatchMenuRow<T>(
+              context,
+              item: indexed.$2,
+              onSelected: onSelected,
+            ),
           ],
         ],
       ),
@@ -68,92 +72,88 @@ class CatchMenu<T> extends StatelessWidget {
   }
 }
 
-class _CatchMenuRow<T> extends StatelessWidget {
-  const _CatchMenuRow({required this.item, required this.onSelected});
+Widget _buildCatchMenuRow<T>(
+  BuildContext context, {
+  required CatchMenuItem<T> item,
+  required void Function(T value, CatchMenuItem<T> item)? onSelected,
+}) {
+  final t = CatchTokens.of(context);
+  final color = _menuItemColor(t, item);
+  final onTap = item.enabled
+      ? () {
+          item.onSelected?.call(item.value);
+          onSelected?.call(item.value, item);
+        }
+      : null;
 
-  final CatchMenuItem<T> item;
-  final void Function(T value, CatchMenuItem<T> item)? onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final color = _itemColor(t);
-    final onTap = item.enabled
-        ? () {
-            item.onSelected?.call(item.value);
-            onSelected?.call(item.value, item);
-          }
-        : null;
-
-    return Semantics(
-      button: true,
-      enabled: item.enabled,
-      selected: item.selected,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CatchSpacing.micro14,
-              vertical: CatchLayout.menuRowVerticalPadding,
-            ),
-            child: Row(
-              children: [
-                if (item.icon != null) ...[
-                  Icon(
-                    item.icon,
-                    size: CatchLayout.menuRowIconSize,
-                    color: item.danger ? t.danger : t.ink2,
-                  ),
-                  const SizedBox(width: CatchLayout.menuRowGap),
-                ],
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
+  return Semantics(
+    button: true,
+    enabled: item.enabled,
+    selected: item.selected,
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CatchSpacing.micro14,
+            vertical: CatchLayout.menuRowVerticalPadding,
+          ),
+          child: Row(
+            children: [
+              if (item.icon != null) ...[
+                Icon(
+                  item.icon,
+                  size: CatchLayout.menuRowIconSize,
+                  color: item.danger ? t.danger : t.ink2,
+                ),
+                const SizedBox(width: CatchLayout.menuRowGap),
+              ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      item.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.labelL(context, color: color),
+                    ),
+                    if (item.sublabel != null &&
+                        item.sublabel!.trim().isNotEmpty) ...[
+                      const SizedBox(height: CatchSpacing.micro2),
                       Text(
-                        item.label,
+                        item.sublabel!,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.labelL(context, color: color),
+                        style: CatchTextStyles.monoLabel(
+                          context,
+                          color: t.ink3,
+                        ).copyWith(fontSize: CatchLayout.menuRowSublabelSize),
                       ),
-                      if (item.sublabel != null &&
-                          item.sublabel!.trim().isNotEmpty) ...[
-                        const SizedBox(height: CatchSpacing.micro2),
-                        Text(
-                          item.sublabel!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.monoLabel(
-                            context,
-                            color: t.ink3,
-                          ).copyWith(fontSize: CatchLayout.menuRowSublabelSize),
-                        ),
-                      ],
                     ],
-                  ),
+                  ],
                 ),
-                if (item.selected) ...[
-                  const SizedBox(width: CatchLayout.menuRowGap),
-                  Icon(
-                    CatchIcons.check,
-                    size: CatchLayout.menuRowCheckSize,
-                    color: t.ink,
-                  ),
-                ],
+              ),
+              if (item.selected) ...[
+                const SizedBox(width: CatchLayout.menuRowGap),
+                Icon(
+                  CatchIcons.check,
+                  size: CatchLayout.menuRowCheckSize,
+                  color: t.ink,
+                ),
               ],
-            ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
-  Color _itemColor(CatchTokens t) {
-    if (!item.enabled) return t.ink3;
-    if (item.danger) return t.danger;
-    return t.ink;
-  }
+Color _menuItemColor<T>(CatchTokens t, CatchMenuItem<T> item) {
+  if (!item.enabled) return t.ink3;
+  if (item.danger) return t.danger;
+  return t.ink;
 }

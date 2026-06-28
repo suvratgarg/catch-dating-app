@@ -2,7 +2,10 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:flutter/material.dart';
+
+enum CatchSearchFieldMode { field, expanding, expanded }
 
 /// Handoff `SearchField`: raised pill input with search glyph and quiet clear
 /// target.
@@ -21,6 +24,14 @@ class CatchSearchField extends StatefulWidget {
     this.emptyTrailingIcon,
     this.emptyTrailingTooltip,
     this.onEmptyTrailingPressed,
+    this.mode = CatchSearchFieldMode.field,
+    this.expanded = true,
+    this.progress,
+    this.maxWidth,
+    this.onOpenSearch,
+    this.onCloseSearch,
+    this.tooltip = 'Search',
+    this.collapsedExtent = CatchLayout.browseHeaderSearchExtent,
   });
 
   final String value;
@@ -35,6 +46,14 @@ class CatchSearchField extends StatefulWidget {
   final IconData? emptyTrailingIcon;
   final String? emptyTrailingTooltip;
   final VoidCallback? onEmptyTrailingPressed;
+  final CatchSearchFieldMode mode;
+  final bool expanded;
+  final double? progress;
+  final double? maxWidth;
+  final VoidCallback? onOpenSearch;
+  final VoidCallback? onCloseSearch;
+  final String tooltip;
+  final double collapsedExtent;
 
   @override
   State<CatchSearchField> createState() => _CatchSearchFieldState();
@@ -90,6 +109,10 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.mode != CatchSearchFieldMode.field) {
+      return _buildExpandingSearch(context);
+    }
+
     final t = CatchTokens.of(context);
 
     return Semantics(
@@ -193,6 +216,78 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExpandingSearch(BuildContext context) {
+    final targetProgress = widget.mode == CatchSearchFieldMode.expanded
+        ? 1.0
+        : (widget.progress ?? (widget.expanded ? 1.0 : 0.0));
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(end: targetProgress),
+      duration: CatchMotion.base,
+      curve: CatchMotion.standardCurve,
+      builder: (context, progress, _) =>
+          _buildExpandingSearchAt(context, progress),
+    );
+  }
+
+  Widget _buildExpandingSearchAt(BuildContext context, double progress) {
+    final t = CatchTokens.of(context);
+    final maxWidth = widget.maxWidth ?? widget.collapsedExtent;
+    final clampedProgress = progress.clamp(0.0, 1.0);
+    final width =
+        widget.collapsedExtent +
+        ((maxWidth - widget.collapsedExtent) * clampedProgress);
+    final fieldOpacity = ((clampedProgress - 0.12) / 0.88).clamp(0.0, 1.0);
+    final showField = clampedProgress > 0.06;
+
+    return Align(
+      alignment: Alignment.centerRight,
+      child: SizedBox(
+        width: width,
+        height: widget.collapsedExtent,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(CatchRadius.pill),
+          child: showField
+              ? Opacity(
+                  opacity: fieldOpacity,
+                  child: CatchSearchField(
+                    value: widget.value,
+                    onChanged: widget.onChanged,
+                    placeholder: widget.placeholder,
+                    autofocus: widget.autofocus,
+                    enabled: widget.enabled,
+                    textInputAction: widget.textInputAction,
+                    onSubmitted: widget.onSubmitted,
+                    onFocusChanged: widget.onFocusChanged,
+                    semanticLabel: widget.semanticLabel ?? widget.placeholder,
+                    emptyTrailingIcon: CatchIcons.close,
+                    emptyTrailingTooltip: 'Close search',
+                    onEmptyTrailingPressed:
+                        widget.onCloseSearch ?? widget.onEmptyTrailingPressed,
+                  ),
+                )
+              : Tooltip(
+                  message: widget.tooltip,
+                  child: Semantics(
+                    button: true,
+                    label: widget.semanticLabel ?? widget.tooltip,
+                    child: CatchIconButton(
+                      size: widget.collapsedExtent,
+                      onTap: widget.onOpenSearch,
+                      background: t.raised,
+                      child: Icon(
+                        CatchIcons.search,
+                        size: CatchIcon.control,
+                        color: t.ink,
+                      ),
+                    ),
+                  ),
+                ),
         ),
       ),
     );

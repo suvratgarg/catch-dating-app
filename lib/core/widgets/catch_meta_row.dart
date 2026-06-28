@@ -35,7 +35,8 @@ class CatchMetaDotRow extends StatelessWidget {
       children: [
         Expanded(
           child: ClipRect(
-            child: _MetaEntryFlow(
+            child: _buildMetaEntryFlow(
+              context,
               entries: entries,
               color: inkColor,
               iconSize: iconSize,
@@ -59,53 +60,39 @@ class CatchMetaDotRow extends StatelessWidget {
   }
 }
 
-/// Renders the dot-separated entries as a Row that ellipsises the *last*
-/// visible entry rather than overflowing. Dots are siblings to entries so a
-/// trailing dot can be hidden when the next entry doesn't fit.
-class _MetaEntryFlow extends StatelessWidget {
-  const _MetaEntryFlow({
-    required this.entries,
-    required this.color,
-    required this.iconSize,
-    required this.maxLines,
-  });
-
-  final List<CatchMetaEntry> entries;
-  final Color color;
-  final double iconSize;
-  final int maxLines;
-
-  @override
-  Widget build(BuildContext context) {
-    final children = <Widget>[];
-    for (var i = 0; i < entries.length; i++) {
-      if (i > 0) {
-        children.add(
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CatchSpacing.micro6,
-            ),
-            child: Text(
-              '·',
-              style: CatchTextStyles.numericMeta(context, color: color),
-            ),
-          ),
-        );
-      }
+Widget _buildMetaEntryFlow(
+  BuildContext context, {
+  required List<CatchMetaEntry> entries,
+  required Color color,
+  required double iconSize,
+  required int maxLines,
+}) {
+  final children = <Widget>[];
+  for (var i = 0; i < entries.length; i++) {
+    if (i > 0) {
       children.add(
-        Flexible(
-          child: _buildEntry(
-            context,
-            entries[i],
-            color,
-            iconSize: iconSize,
-            maxLines: maxLines,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.micro6),
+          child: Text(
+            '·',
+            style: CatchTextStyles.numericMeta(context, color: color),
           ),
         ),
       );
     }
-    return Row(mainAxisSize: MainAxisSize.min, children: children);
+    children.add(
+      Flexible(
+        child: _buildEntry(
+          context,
+          entries[i],
+          color,
+          iconSize: iconSize,
+          maxLines: maxLines,
+        ),
+      ),
+    );
   }
+  return Row(mainAxisSize: MainAxisSize.min, children: children);
 }
 
 Widget _buildEntry(

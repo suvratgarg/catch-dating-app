@@ -132,11 +132,11 @@ class AppShell extends ConsumerWidget {
         ),
       ),
       bottomNavigationBar: isAuthenticated
-          ? _AppShellNavigationBar(
+          ? appShellNavigationBar(
               navigationShell: navigationShell,
               unreadCount: unreadCount,
             )
-          : const _GuestAuthCtaBar(),
+          : const GuestAuthCtaBar(),
     );
   }
 }
@@ -151,8 +151,8 @@ void _syncObservabilityUserId(
   analytics.setUserId(normalizedUid);
 }
 
-class _GuestAuthCtaBar extends StatelessWidget {
-  const _GuestAuthCtaBar();
+class GuestAuthCtaBar extends StatelessWidget {
+  const GuestAuthCtaBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -183,28 +183,20 @@ class _GuestAuthCtaBar extends StatelessWidget {
   }
 }
 
-class _AppShellNavigationBar extends StatelessWidget {
-  const _AppShellNavigationBar({
-    required this.navigationShell,
-    required this.unreadCount,
-  });
+Widget appShellNavigationBar({
+  required StatefulNavigationShell navigationShell,
+  required int unreadCount,
+}) {
+  final selectedIndex = navigationShell.currentIndex;
 
-  final StatefulNavigationShell navigationShell;
-  final int unreadCount;
-
-  @override
-  Widget build(BuildContext context) {
-    final selectedIndex = navigationShell.currentIndex;
-
-    return AppShellNavigationBar(
-      currentIndex: selectedIndex,
-      unreadCount: unreadCount,
-      onDestinationSelected: (index) => navigationShell.goBranch(
-        index,
-        initialLocation: index == selectedIndex,
-      ),
-    );
-  }
+  return AppShellNavigationBar(
+    currentIndex: selectedIndex,
+    unreadCount: unreadCount,
+    onDestinationSelected: (index) => navigationShell.goBranch(
+      index,
+      initialLocation: index == selectedIndex,
+    ),
+  );
 }
 
 class AppShellNavigationBar extends StatelessWidget {

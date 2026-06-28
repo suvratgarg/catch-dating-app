@@ -4,9 +4,10 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_expanding_search.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,8 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.border = false,
     this.divider,
     this.gutter = true,
+    this.applySafeArea = true,
+    this.contentPadding,
     this.height = CatchLayout.topBarHeight,
     this.bottom,
     this.actionIcon,
@@ -47,15 +50,74 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.onAction,
     this.trailing,
     this.searchValue,
+    this.searchEnabled,
+    this.searchExpanded,
+    this.onSearchExpandedChanged,
     this.onSearch,
     this.searchPlaceholder = 'Search',
-  });
+    this.searchAutofocus = false,
+    this.searchTextInputAction = TextInputAction.done,
+    this.onSearchSubmitted,
+    this.onSearchFocusChanged,
+    this.searchTooltip = 'Search',
+    this.searchSemanticLabel,
+    this.searchCollapsedExtent = CatchIconButton.navSize,
+  }) : identityName = null,
+       identityPhotoUrl = null,
+       onIdentityTap = null;
+
+  const CatchTopBar.identity({
+    super.key,
+    required this.identityName,
+    this.identityPhotoUrl,
+    this.onIdentityTap,
+    this.leading,
+    this.leadingType = CatchTopBarLeading.auto,
+    this.actions = const <Widget>[],
+    this.showBackButton,
+    this.onBack,
+    this.backgroundColor,
+    this.surface = false,
+    this.border = false,
+    this.divider,
+    this.gutter = true,
+    this.applySafeArea = true,
+    this.contentPadding,
+    this.height = CatchLayout.topBarHeight,
+    this.bottom,
+    this.trailing,
+  }) : title = null,
+       subtitle = null,
+       kicker = null,
+       large = false,
+       titleWidget = null,
+       actionIcon = null,
+       actionVariant = CatchIconButtonVariant.plain,
+       actionLabel = null,
+       actionText = null,
+       onAction = null,
+       searchValue = null,
+       searchEnabled = null,
+       searchExpanded = null,
+       onSearchExpandedChanged = null,
+       onSearch = null,
+       searchPlaceholder = 'Search',
+       searchAutofocus = false,
+       searchTextInputAction = TextInputAction.done,
+       onSearchSubmitted = null,
+       onSearchFocusChanged = null,
+       searchTooltip = 'Search',
+       searchSemanticLabel = null,
+       searchCollapsedExtent = CatchIconButton.navSize;
 
   final String? title;
   final String? subtitle;
   final String? kicker;
   final bool? large;
   final Widget? titleWidget;
+  final String? identityName;
+  final String? identityPhotoUrl;
+  final VoidCallback? onIdentityTap;
   final Widget? leading;
   final CatchTopBarLeading leadingType;
   final List<Widget> actions;
@@ -66,6 +128,8 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   final bool border;
   final bool? divider;
   final bool gutter;
+  final bool applySafeArea;
+  final EdgeInsetsGeometry? contentPadding;
   final double height;
   final PreferredSizeWidget? bottom;
   final IconData? actionIcon;
@@ -75,8 +139,18 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onAction;
   final Widget? trailing;
   final String? searchValue;
+  final bool? searchEnabled;
+  final bool? searchExpanded;
+  final ValueChanged<bool>? onSearchExpandedChanged;
   final ValueChanged<String>? onSearch;
   final String searchPlaceholder;
+  final bool searchAutofocus;
+  final TextInputAction searchTextInputAction;
+  final ValueChanged<String>? onSearchSubmitted;
+  final ValueChanged<bool>? onSearchFocusChanged;
+  final String searchTooltip;
+  final String? searchSemanticLabel;
+  final double searchCollapsedExtent;
 
   @override
   Size get preferredSize => Size.fromHeight(
@@ -94,7 +168,13 @@ class _CatchTopBarState extends State<CatchTopBar> {
   bool _searchOpen = false;
 
   bool get _searchEnabled =>
-      widget.onSearch != null || widget.searchValue != null;
+      widget.searchEnabled ??
+      (widget.onSearch != null || widget.searchValue != null);
+
+  bool get _searchOpenEffective {
+    if (!_searchEnabled) return false;
+    return widget.searchExpanded ?? _searchOpen;
+  }
 
   @override
   void didUpdateWidget(covariant CatchTopBar oldWidget) {
@@ -109,48 +189,53 @@ class _CatchTopBarState extends State<CatchTopBar> {
     final background =
         widget.backgroundColor ?? (widget.surface ? t.surface : t.bg);
 
+    final content = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (widget.isLarge)
+          _buildLargeTopBarFrame(
+            context,
+            height: CatchLayout.topBarLargeHeight,
+            gutter: widget.gutter,
+            contentPadding: widget.contentPadding,
+            showDivider: showDivider && widget.bottom == null,
+            leading: _buildLeading(context),
+            title: _buildTitleBlock(context),
+            searchOpen: _searchOpenEffective,
+            search: _buildSearch,
+            trailing: _buildTrailingActions(context),
+          )
+        else
+          _buildCompactTopBarFrame(
+            context,
+            height: widget.height,
+            gutter: widget.gutter,
+            contentPadding: widget.contentPadding,
+            showDivider: showDivider && widget.bottom == null,
+            leading: _buildLeading(context),
+            title: _buildTitleBlock(context),
+            searchOpen: _searchOpenEffective,
+            search: _buildSearch,
+            trailing: _buildTrailingActions(context),
+          ),
+        if (widget.bottom != null)
+          DecoratedBox(
+            decoration: BoxDecoration(
+              border: showDivider
+                  ? Border(bottom: BorderSide(color: t.line))
+                  : const Border(),
+            ),
+            child: widget.bottom!,
+          ),
+      ],
+    );
+
     return Material(
       color: background,
       surfaceTintColor: Colors.transparent,
-      child: SafeArea(
-        bottom: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (widget.isLarge)
-              _LargeTopBarFrame(
-                height: CatchLayout.topBarLargeHeight,
-                gutter: widget.gutter,
-                showDivider: showDivider && widget.bottom == null,
-                leading: _buildLeading(context),
-                title: _buildTitleBlock(context),
-                searchOpen: _searchOpen,
-                search: _buildSearch,
-                trailing: _buildTrailingActions(context),
-              )
-            else
-              _CompactTopBarFrame(
-                height: widget.height,
-                gutter: widget.gutter,
-                showDivider: showDivider && widget.bottom == null,
-                leading: _buildLeading(context),
-                title: _buildTitleBlock(context),
-                searchOpen: _searchOpen,
-                search: _buildSearch,
-                trailing: _buildTrailingActions(context),
-              ),
-            if (widget.bottom != null)
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  border: showDivider
-                      ? Border(bottom: BorderSide(color: t.line))
-                      : const Border(),
-                ),
-                child: widget.bottom!,
-              ),
-          ],
-        ),
-      ),
+      child: widget.applySafeArea
+          ? SafeArea(bottom: false, child: content)
+          : content,
     );
   }
 
@@ -194,9 +279,17 @@ class _CatchTopBarState extends State<CatchTopBar> {
             if (hasSubtitle && !showSubtitle) widget.subtitle!,
           ].join('. ')
         : null;
+    final identityName = widget.identityName;
     final titleWidget =
         widget.titleWidget ??
-        (widget.title == null || widget.title!.isEmpty
+        (identityName != null && identityName.isNotEmpty
+            ? _buildCatchTopBarIdentityTitle(
+                context,
+                name: identityName,
+                photoUrl: widget.identityPhotoUrl,
+                onTap: widget.onIdentityTap,
+              )
+            : widget.title == null || widget.title!.isEmpty
             ? const SizedBox.shrink()
             : Text(
                 widget.title!,
@@ -227,7 +320,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
 
   Widget? _buildTrailingActions(BuildContext context) {
     if (widget.actions.isNotEmpty) {
-      return _TopBarActionRow(actions: widget.actions);
+      return _buildTopBarActionRow(widget.actions);
     }
     if (widget.actionIcon != null) {
       return CatchTopBarIconAction(
@@ -249,192 +342,205 @@ class _CatchTopBarState extends State<CatchTopBar> {
 
   Widget? _buildSearch(double maxWidth) {
     if (!_searchEnabled) return null;
-    return CatchExpandingSearch(
-      progress: _searchOpen ? 1 : 0,
+    return CatchSearchField(
+      mode: CatchSearchFieldMode.expanding,
+      expanded: _searchOpenEffective,
       maxWidth: maxWidth,
       value: widget.searchValue ?? '',
       onChanged: widget.onSearch,
       placeholder: widget.searchPlaceholder,
-      onOpenSearch: () => setState(() => _searchOpen = true),
-      onCloseSearch: () => setState(() => _searchOpen = false),
-      collapsedExtent: CatchIconButton.navSize,
+      autofocus: widget.searchAutofocus,
+      textInputAction: widget.searchTextInputAction,
+      onSubmitted: widget.onSearchSubmitted,
+      onFocusChanged: widget.onSearchFocusChanged,
+      semanticLabel: widget.searchSemanticLabel,
+      onOpenSearch: () => _setSearchOpen(true),
+      onCloseSearch: () => _setSearchOpen(false),
+      tooltip: widget.searchTooltip,
+      collapsedExtent: widget.searchCollapsedExtent,
     );
+  }
+
+  void _setSearchOpen(bool value) {
+    widget.onSearchExpandedChanged?.call(value);
+    if (widget.searchExpanded == null) {
+      setState(() => _searchOpen = value);
+    }
   }
 }
 
-class _CompactTopBarFrame extends StatelessWidget {
-  const _CompactTopBarFrame({
-    required this.height,
-    required this.gutter,
-    required this.showDivider,
-    required this.leading,
-    required this.title,
-    required this.searchOpen,
-    required this.search,
-    required this.trailing,
-  });
-
-  final double height;
-  final bool gutter;
-  final bool showDivider;
-  final Widget? leading;
-  final Widget title;
-  final bool searchOpen;
-  final Widget? Function(double maxWidth) search;
-  final Widget? trailing;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Container(
-      height: height,
-      padding: EdgeInsets.symmetric(
-        horizontal: gutter ? CatchSpacing.screenPx : CatchSpacing.s0,
-      ),
-      decoration: BoxDecoration(
-        border: showDivider
-            ? Border(bottom: BorderSide(color: t.line))
-            : const Border(),
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) => Row(
-          children: [
-            if (leading != null) ...[leading!, gapW12],
-            if (searchOpen)
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) =>
-                      search(constraints.maxWidth) ?? const SizedBox.shrink(),
-                ),
-              )
-            else ...[
-              Expanded(
-                child: Align(alignment: Alignment.centerLeft, child: title),
-              ),
-              _TopBarTrailingEdge(
-                maxWidth:
-                    constraints.maxWidth * CatchLayout.topBarTrailingMaxRatio,
-                search: search(CatchIconButton.navSize),
-                trailing: trailing,
-              ),
-            ],
-          ],
+Widget _buildCompactTopBarFrame(
+  BuildContext context, {
+  required double height,
+  required bool gutter,
+  required EdgeInsetsGeometry? contentPadding,
+  required bool showDivider,
+  required Widget? leading,
+  required Widget title,
+  required bool searchOpen,
+  required Widget? Function(double maxWidth) search,
+  required Widget? trailing,
+}) {
+  final t = CatchTokens.of(context);
+  return Container(
+    height: height,
+    padding:
+        contentPadding ??
+        EdgeInsets.symmetric(
+          horizontal: gutter ? CatchSpacing.screenPx : CatchSpacing.s0,
         ),
-      ),
-    );
-  }
-}
-
-class _LargeTopBarFrame extends StatelessWidget {
-  const _LargeTopBarFrame({
-    required this.height,
-    required this.gutter,
-    required this.showDivider,
-    required this.leading,
-    required this.title,
-    required this.searchOpen,
-    required this.search,
-    required this.trailing,
-  });
-
-  final double height;
-  final bool gutter;
-  final bool showDivider;
-  final Widget? leading;
-  final Widget title;
-  final bool searchOpen;
-  final Widget? Function(double maxWidth) search;
-  final Widget? trailing;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Container(
-      height: height,
-      padding: EdgeInsets.fromLTRB(
-        gutter ? CatchSpacing.screenPx : CatchSpacing.s0,
-        CatchSpacing.s3,
-        gutter ? CatchSpacing.screenPx : CatchSpacing.s0,
-        CatchSpacing.s0,
-      ),
-      decoration: BoxDecoration(
-        border: showDivider
-            ? Border(bottom: BorderSide(color: t.line))
-            : const Border(),
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) => Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (leading != null) ...[leading!, gapW12],
-            if (searchOpen)
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) =>
-                      search(constraints.maxWidth) ?? const SizedBox.shrink(),
-                ),
-              )
-            else ...[
-              Expanded(child: title),
-              _TopBarTrailingEdge(
-                maxWidth:
-                    constraints.maxWidth * CatchLayout.topBarTrailingMaxRatio,
-                search: search(CatchIconButton.navSize),
-                trailing: trailing,
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TopBarTrailingEdge extends StatelessWidget {
-  const _TopBarTrailingEdge({
-    required this.maxWidth,
-    required this.search,
-    required this.trailing,
-  });
-
-  final double maxWidth;
-  final Widget? search;
-  final Widget? trailing;
-
-  @override
-  Widget build(BuildContext context) {
-    if (search == null && trailing == null) return const SizedBox.shrink();
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: maxWidth),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+    decoration: BoxDecoration(
+      border: showDivider
+          ? Border(bottom: BorderSide(color: t.line))
+          : const Border(),
+    ),
+    child: LayoutBuilder(
+      builder: (context, constraints) => Row(
         children: [
-          ?search,
-          if (search != null && trailing != null) gapW4,
-          if (trailing != null) Flexible(child: trailing!),
+          if (leading != null) ...[leading, gapW12],
+          if (searchOpen)
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) =>
+                    search(constraints.maxWidth) ?? const SizedBox.shrink(),
+              ),
+            )
+          else ...[
+            Expanded(
+              child: Align(alignment: Alignment.centerLeft, child: title),
+            ),
+            _buildTopBarTrailingEdge(
+              maxWidth:
+                  constraints.maxWidth * CatchLayout.topBarTrailingMaxRatio,
+              search: search(CatchIconButton.navSize),
+              trailing: trailing,
+            ),
+          ],
         ],
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _TopBarActionRow extends StatelessWidget {
-  const _TopBarActionRow({required this.actions});
+Widget _buildLargeTopBarFrame(
+  BuildContext context, {
+  required double height,
+  required bool gutter,
+  required EdgeInsetsGeometry? contentPadding,
+  required bool showDivider,
+  required Widget? leading,
+  required Widget title,
+  required bool searchOpen,
+  required Widget? Function(double maxWidth) search,
+  required Widget? trailing,
+}) {
+  final t = CatchTokens.of(context);
+  return Container(
+    height: height,
+    padding:
+        contentPadding ??
+        EdgeInsets.fromLTRB(
+          gutter ? CatchSpacing.screenPx : CatchSpacing.s0,
+          CatchSpacing.s3,
+          gutter ? CatchSpacing.screenPx : CatchSpacing.s0,
+          CatchSpacing.s0,
+        ),
+    decoration: BoxDecoration(
+      border: showDivider
+          ? Border(bottom: BorderSide(color: t.line))
+          : const Border(),
+    ),
+    child: LayoutBuilder(
+      builder: (context, constraints) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (leading != null) ...[leading, gapW12],
+          if (searchOpen)
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) =>
+                    search(constraints.maxWidth) ?? const SizedBox.shrink(),
+              ),
+            )
+          else ...[
+            Expanded(child: title),
+            _buildTopBarTrailingEdge(
+              maxWidth:
+                  constraints.maxWidth * CatchLayout.topBarTrailingMaxRatio,
+              search: search(CatchIconButton.navSize),
+              trailing: trailing,
+            ),
+          ],
+        ],
+      ),
+    ),
+  );
+}
 
-  final List<Widget> actions;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
+Widget _buildTopBarTrailingEdge({
+  required double maxWidth,
+  required Widget? search,
+  required Widget? trailing,
+}) {
+  if (search == null && trailing == null) return const SizedBox.shrink();
+  return ConstrainedBox(
+    constraints: BoxConstraints(maxWidth: maxWidth),
+    child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        for (var index = 0; index < actions.length; index++) ...[
-          Flexible(child: actions[index]),
-          if (index != actions.length - 1) gapW8,
-        ],
+        ?search,
+        if (search != null && trailing != null) gapW4,
+        if (trailing != null) Flexible(child: trailing),
       ],
-    );
-  }
+    ),
+  );
+}
+
+Widget _buildTopBarActionRow(List<Widget> actions) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      for (var index = 0; index < actions.length; index++) ...[
+        Flexible(child: actions[index]),
+        if (index != actions.length - 1) gapW8,
+      ],
+    ],
+  );
+}
+
+Widget _buildCatchTopBarIdentityTitle(
+  BuildContext context, {
+  required String name,
+  required String? photoUrl,
+  required VoidCallback? onTap,
+}) {
+  final t = CatchTokens.of(context);
+
+  return Semantics(
+    button: onTap != null,
+    label: onTap == null ? null : 'View $name profile',
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(CatchRadius.lg),
+      child: Padding(
+        padding: CatchInsets.controlVerticalTight,
+        child: Row(
+          children: [
+            CatchPersonAvatar(size: 36, name: name, imageUrl: photoUrl),
+            gapW10,
+            Expanded(
+              child: Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.titleL(context, color: t.ink),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 class CatchTopBarTabBar extends StatefulWidget implements PreferredSizeWidget {
@@ -507,7 +613,8 @@ class _CatchTopBarTabBarState extends State<CatchTopBarTabBar> {
             },
             children: {
               for (var index = 0; index < widget.tabs.length; index++)
-                index: _CupertinoTabLabel(
+                index: _buildCupertinoTabLabel(
+                  context,
                   tab: widget.tabs[index],
                   selected: index == _controller!.index,
                 ),
@@ -530,44 +637,39 @@ class _CatchTopBarTabBarState extends State<CatchTopBarTabBar> {
   }
 }
 
-class _CupertinoTabLabel extends StatelessWidget {
-  const _CupertinoTabLabel({required this.tab, required this.selected});
+Widget _buildCupertinoTabLabel(
+  BuildContext context, {
+  required Widget tab,
+  required bool selected,
+}) {
+  final t = CatchTokens.of(context);
+  final color = selected ? t.ink : t.ink2;
+  final style = CatchTextStyles.labelL(context, color: color);
 
-  final Widget tab;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final color = selected ? t.ink : t.ink2;
-    final style = CatchTextStyles.labelL(context, color: color);
-
-    return Center(
-      child: DefaultTextStyle(
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.center,
-        style: style,
-        child: IconTheme(
-          data: IconThemeData(color: color, size: CatchIcon.sm),
-          child: _tabChild(style),
-        ),
+  return Center(
+    child: DefaultTextStyle(
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
+      style: style,
+      child: IconTheme(
+        data: IconThemeData(color: color, size: CatchIcon.sm),
+        child: _tabChild(tab, style),
       ),
-    );
-  }
+    ),
+  );
+}
 
-  Widget _tabChild(TextStyle style) {
-    final tab = this.tab;
-    if (tab is Tab) {
-      final text = tab.text;
-      if (text != null) return Text(text, style: style);
-      final child = tab.child;
-      if (child != null) return child;
-      final icon = tab.icon;
-      if (icon != null) return icon;
-    }
-    return tab;
+Widget _tabChild(Widget tab, TextStyle style) {
+  if (tab is Tab) {
+    final text = tab.text;
+    if (text != null) return Text(text, style: style);
+    final child = tab.child;
+    if (child != null) return child;
+    final icon = tab.icon;
+    if (icon != null) return icon;
   }
+  return tab;
 }
 
 class CatchTopBarMenuAction<T> extends StatelessWidget {

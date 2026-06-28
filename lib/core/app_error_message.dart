@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 enum AppErrorContext {
   generic,
   dashboard,
+  explore,
   profile,
   event,
   club,
@@ -43,7 +44,7 @@ AppErrorDescriptor appErrorDescriptor(
   final appException = _normalizeForPresentation(error);
   return AppErrorDescriptor(
     title: _titleFor(error, appException, context),
-    message: _messageFor(error, appException),
+    message: _messageFor(error, appException, context),
     icon: _iconFor(error, appException),
     retryLabel: _retryLabelFor(appException, context),
     retryable: _isRetryable(error, appException),
@@ -76,7 +77,15 @@ AppException? _normalizeForPresentation(Object error) {
   return null;
 }
 
-String _messageFor(Object error, AppException? appException) {
+String _messageFor(
+  Object error,
+  AppException? appException,
+  AppErrorContext context,
+) {
+  if (context == AppErrorContext.explore &&
+      _isFirestoreIndexPrecondition(appException)) {
+    return 'Explore is still getting set up. Please try again in a moment.';
+  }
   if (appException == null) return backendErrorMessage(error);
   return appException.message;
 }
@@ -123,6 +132,7 @@ String _titleFor(
 String _contextTitle(AppErrorContext context) {
   return switch (context) {
     AppErrorContext.dashboard => 'Dashboard unavailable',
+    AppErrorContext.explore => 'Explore unavailable',
     AppErrorContext.profile => 'Profile unavailable',
     AppErrorContext.event => 'Event unavailable',
     AppErrorContext.club => 'Club unavailable',
@@ -178,6 +188,7 @@ String _retryLabelFor(AppException? appException, AppErrorContext context) {
   }
   return switch (context) {
     AppErrorContext.chat => 'Reload messages',
+    AppErrorContext.explore => 'Reload Explore',
     AppErrorContext.profile => 'Reload profile',
     AppErrorContext.event => 'Reload event',
     AppErrorContext.club => 'Reload club',
@@ -224,6 +235,7 @@ bool _isNotFoundError(Object error, AppException? appException) =>
 String _notFoundTitle(AppErrorContext context) {
   return switch (context) {
     AppErrorContext.profile => 'Profile not found',
+    AppErrorContext.explore => 'Explore item not found',
     AppErrorContext.event => 'Event not found',
     AppErrorContext.club => 'Club not found',
     AppErrorContext.chat => 'Chat not found',
@@ -231,4 +243,11 @@ String _notFoundTitle(AppErrorContext context) {
     AppErrorContext.payments => 'Payment not found',
     _ => 'Not found',
   };
+}
+
+bool _isFirestoreIndexPrecondition(AppException? appException) {
+  if (appException is! BackendOperationException) return false;
+  return appException.code == 'failed-precondition' &&
+      appException.context?.service == BackendService.firestore &&
+      (appException.debugMessage?.contains('required index') ?? false);
 }

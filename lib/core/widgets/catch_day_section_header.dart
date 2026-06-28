@@ -46,7 +46,7 @@ class CatchDaySectionHeader extends StatelessWidget {
               style: CatchTextStyles.kickerLg(context, color: t.primary),
             ),
           ),
-          if (count != null) _AnimatedCount(count: count!, color: t.ink2),
+          if (count != null) _buildAnimatedCount(context, count!, t.ink2),
         ],
       ),
     );
@@ -56,49 +56,38 @@ class CatchDaySectionHeader extends StatelessWidget {
   }
 }
 
-/// Ticker that slides + fades the count when it changes (e.g. when the
-/// filter row narrows or widens the day's matches). The outgoing number
-/// rises out of view as the incoming one rises into view from below.
-class _AnimatedCount extends StatelessWidget {
-  const _AnimatedCount({required this.count, required this.color});
-
-  final int count;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: CatchMotion.base,
-      switchInCurve: CatchMotion.springCurve,
-      switchOutCurve: CatchMotion.standardCurve,
-      transitionBuilder: (child, animation) {
-        final slide = Tween<Offset>(
-          begin: const Offset(0, 0.4),
-          end: Offset.zero,
-        ).animate(animation);
-        return ClipRect(
-          child: FadeTransition(
-            opacity: animation,
-            child: SlideTransition(position: slide, child: child),
-          ),
-        );
-      },
-      layoutBuilder: (currentChild, previousChildren) {
-        return Stack(
-          alignment: Alignment.centerRight,
-          children: [...previousChildren, ?currentChild],
-        );
-      },
-      child: Text(
-        count.toString(),
-        key: ValueKey<int>(count),
-        style: CatchTextStyles.numericMeta(
-          context,
-          color: color,
-        ).copyWith(fontWeight: FontWeight.w700),
-      ),
-    );
-  }
+Widget _buildAnimatedCount(BuildContext context, int count, Color color) {
+  return AnimatedSwitcher(
+    duration: CatchMotion.base,
+    switchInCurve: CatchMotion.springCurve,
+    switchOutCurve: CatchMotion.standardCurve,
+    transitionBuilder: (child, animation) {
+      final slide = Tween<Offset>(
+        begin: const Offset(0, 0.4),
+        end: Offset.zero,
+      ).animate(animation);
+      return ClipRect(
+        child: FadeTransition(
+          opacity: animation,
+          child: SlideTransition(position: slide, child: child),
+        ),
+      );
+    },
+    layoutBuilder: (currentChild, previousChildren) {
+      return Stack(
+        alignment: Alignment.centerRight,
+        children: [...previousChildren, ?currentChild],
+      );
+    },
+    child: Text(
+      count.toString(),
+      key: ValueKey<int>(count),
+      style: CatchTextStyles.numericMeta(
+        context,
+        color: color,
+      ).copyWith(fontWeight: FontWeight.w700),
+    ),
+  );
 }
 
 /// Sliver persistent-header delegate that pins a [CatchDaySectionHeader].

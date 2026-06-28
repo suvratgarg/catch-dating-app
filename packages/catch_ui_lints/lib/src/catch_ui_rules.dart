@@ -137,9 +137,47 @@ const _rawStrokeConstructors = <String>{
 
 const _assetPathConstructors = <String>{'AssetImage', 'ExactAssetImage'};
 
+const _roundedAffordanceConstructors = <String>{
+  'CatchActivityChip',
+  'CatchBadge',
+  'CatchButton',
+  'CatchChip',
+  'CatchIconButton',
+  'CatchPersonAvatar',
+  'CatchPersonAvatarStack',
+  'CatchSearchField',
+  'CatchSkeleton',
+  'CatchToggle',
+};
+
+const _roundedAffordanceNameFragments = <String>{
+  'Avatar',
+  'Badge',
+  'Button',
+  'Chip',
+  'IconTile',
+  'Image',
+  'PageDots',
+  'Pill',
+  'Progress',
+  'Sash',
+  'SearchField',
+  'Segmented',
+  'Skeleton',
+  'Slider',
+  'StatusDot',
+  'Switch',
+  'Thumbnail',
+  'Toggle',
+};
+
 const catchUiLintFontFamilies = <String>{
   'Archivo',
-  'system-ui',
+  'Roboto',
+  'CupertinoSystemText',
+  'CupertinoSystemDisplay',
+  '.AppleSystemUIFont',
+  'Segoe UI',
   'IBM Plex Mono',
 };
 
@@ -284,6 +322,12 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     severity: DiagnosticSeverity.INFO,
   );
 
+  static const noNestedRoundedRectangles = LintCode(
+    'catch_no_nested_rounded_rectangles',
+    'Avoid nesting rounded rectangle surfaces. Use a divided section, hairline delimiter, or flattened layout inside the rounded container.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
   static const iconButtonRequiresTooltip = LintCode(
     'catch_icon_button_requires_tooltip',
     'Icon-only buttons need a tooltip or an enclosing semantic label.',
@@ -329,6 +373,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     noRawSurfaceShell,
     noRawStrokeWidth,
     noRawAssetPath,
+    noNestedRoundedRectangles,
     iconButtonRequiresTooltip,
     noAllowDebt,
     noWidgetReturningMethod,
@@ -503,6 +548,11 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
     if (_isLocalDecoratedSurfaceShell(node, typeName)) {
       _reportAtNode(node, CatchUiLayoutRules.noRawSurfaceShell);
+    }
+
+    if (isUiSystemScannerPath &&
+        _isNestedRoundedRectangleSurface(node, typeName)) {
+      _reportAtNode(node, CatchUiLayoutRules.noNestedRoundedRectangles);
     }
 
     if (isUiSystemScannerPath && _iconButtonMissingTooltip(node)) {
@@ -856,6 +906,160 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         text.contains('Border.all') ||
         text.contains('boxShadow:') ||
         text.contains('shape:');
+  }
+
+  bool _isNestedRoundedRectangleSurface(
+    InstanceCreationExpression node,
+    String typeName,
+  ) {
+    if (!_isRoundedRectangleSurface(node, typeName)) return false;
+
+    var current = node.parent;
+    while (current != null) {
+      if (current is InstanceCreationExpression &&
+          _isRoundedRectangleSurface(current, _constructorTypeName(current))) {
+        return true;
+      }
+
+      if (current is Statement ||
+          current is FunctionBody ||
+          current is ClassDeclaration ||
+          current is CompilationUnit) {
+        return false;
+      }
+
+      current = current.parent;
+    }
+
+    return false;
+  }
+
+  bool _isRoundedRectangleSurface(
+    InstanceCreationExpression node,
+    String typeName,
+  ) {
+    if (_isRoundedAffordanceConstructor(typeName)) return false;
+
+    if (typeName == 'CatchSurface') {
+      return _isDisplayCatchSurface(node);
+    }
+
+    if (typeName == 'CatchSection') {
+      return _isContainedCatchSection(node);
+    }
+
+    if (typeName == 'CatchField') {
+      return _isRoundedCatchField(node);
+    }
+
+    if (typeName == 'Card') return true;
+
+    if (typeName == 'Material') {
+      return _hasNamedArgument(node, 'borderRadius') ||
+          _namedArgumentSourceContains(node, 'shape', 'RoundedRectangleBorder');
+    }
+
+    if (!_surfaceShellConstructors.contains(typeName)) return false;
+    return _hasRoundedRectangleDecoration(node);
+  }
+
+  bool _isRoundedAffordanceConstructor(String typeName) {
+    return _roundedAffordanceConstructors.contains(typeName) ||
+        _roundedAffordanceNameFragments.any(typeName.contains);
+  }
+
+  bool _isDisplayCatchSurface(InstanceCreationExpression node) {
+    final constructorName = _constructorMemberName(node);
+    if (constructorName == 'tinted' || constructorName == 'message') {
+      return false;
+    }
+
+    if (_namedArgumentSourceContains(node, 'role', 'CatchSurfaceRole.tinted')) {
+      return false;
+    }
+
+    if (_namedArgumentSourceContains(
+      node,
+      'role',
+      'CatchSurfaceRole.message',
+    )) {
+      return false;
+    }
+
+    if (_namedArgumentSourceContains(
+      node,
+      'tone',
+      'CatchSurfaceTone.transparent',
+    )) {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool _isContainedCatchSection(InstanceCreationExpression node) {
+    return _namedArgumentSourceContains(
+      node,
+      'variant',
+      'CatchSectionVariant.contained',
+    );
+  }
+
+  bool _isRoundedCatchField(InstanceCreationExpression node) {
+    if (_namedArgumentSourceContains(
+      node,
+      'variant',
+      'CatchFieldVariant.row',
+    )) {
+      return false;
+    }
+
+    if (_namedArgumentSourceContains(
+      node,
+      'variant',
+      'CatchFieldVariant.bare',
+    )) {
+      return false;
+    }
+
+    if (_namedArgumentSourceContains(
+      node,
+      'variant',
+      'CatchFieldVariant.underline',
+    )) {
+      return false;
+    }
+
+    return _namedArgumentSourceContains(
+      node,
+      'variant',
+      'CatchFieldVariant.box',
+    );
+  }
+
+  bool _hasRoundedRectangleDecoration(InstanceCreationExpression node) {
+    final decoration = _namedArgument(node, 'decoration');
+    if (decoration is! InstanceCreationExpression) return false;
+    if (_constructorTypeName(decoration) != 'BoxDecoration') return false;
+
+    final text = decoration.toSource();
+    if (text.contains('shape: BoxShape.circle')) return false;
+    if (text.contains('CatchRadius.pill')) return false;
+    return text.contains('borderRadius:') ||
+        text.contains('RoundedRectangleBorder');
+  }
+
+  bool _hasNamedArgument(InstanceCreationExpression node, String name) {
+    return _namedArgument(node, name) != null;
+  }
+
+  bool _namedArgumentSourceContains(
+    InstanceCreationExpression node,
+    String name,
+    String text,
+  ) {
+    final expression = _namedArgument(node, name);
+    return expression != null && expression.toSource().contains(text);
   }
 
   bool _isRawBreakpointComparison(BinaryExpression node) {

@@ -6,33 +6,27 @@
 
 const schemaAdminListClubDetailsCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/admin_list_club_details_payload.schema.json',
+  '\$id':
+      'https://catch.app/contracts/callables/admin_list_club_details_payload.schema.json',
   'title': 'AdminListClubDetailsCallablePayload',
-  'description': 'Callable payload accepted by adminListClubDetails. This lists canonical organizer profile rows from clubs/{clubId} for the admin publishing workspace.',
+  'description':
+      'Callable payload accepted by adminListClubDetails. This lists canonical organizer profile rows from clubs/{clubId} for the admin publishing workspace.',
   'type': 'object',
   'additionalProperties': false,
   'properties': <String, Object?>{
     'query': <String, Object?>{
-      'type': <Object?>[
-        'string',
-        'null',
-      ],
+      'type': <Object?>['string', 'null'],
       'maxLength': 160,
     },
     'citySlug': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{
-          'type': <Object?>[
-            'string',
-            'null',
-          ],
+          'type': 'string',
           'minLength': 1,
-          'maxLength': 80,
-          'pattern': '^[a-z0-9-]+\$',
+          'maxLength': 120,
+          'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
         },
-        <String, Object?>{
-          'type': 'null',
-        },
+        <String, Object?>{'type': 'null'},
       ],
     },
     'citySlugs': <String, Object?>{
@@ -40,28 +34,20 @@ const schemaAdminListClubDetailsCallablePayloadSchema = <String, Object?>{
         <String, Object?>{
           'type': 'array',
           'items': <String, Object?>{
-            'type': <Object?>[
-              'string',
-              'null',
-            ],
+            'type': 'string',
             'minLength': 1,
-            'maxLength': 80,
-            'pattern': '^[a-z0-9-]+\$',
+            'maxLength': 120,
+            'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
           },
           'minItems': 1,
           'maxItems': 10,
           'uniqueItems': true,
         },
-        <String, Object?>{
-          'type': 'null',
-        },
+        <String, Object?>{'type': 'null'},
       ],
     },
     'publishStatus': <String, Object?>{
-      'type': <Object?>[
-        'string',
-        'null',
-      ],
+      'type': <Object?>['string', 'null'],
       'enum': <Object?>[
         'draft',
         'qa',
@@ -72,20 +58,9 @@ const schemaAdminListClubDetailsCallablePayloadSchema = <String, Object?>{
       ],
     },
     'appVisibility': <String, Object?>{
-      'type': <Object?>[
-        'string',
-        'null',
-      ],
-      'enum': <Object?>[
-        'discoverable',
-        'hidden',
-        null,
-      ],
+      'type': <Object?>['string', 'null'],
+      'enum': <Object?>['discoverable', 'hidden', null],
     },
-    'limit': <String, Object?>{
-      'type': 'integer',
-      'minimum': 1,
-      'maximum': 100,
-    },
+    'limit': <String, Object?>{'type': 'integer', 'minimum': 1, 'maximum': 100},
   },
 };

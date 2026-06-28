@@ -54,7 +54,8 @@ class CatchOptionGroup<T> extends StatelessWidget {
                   if (option != options.first) SizedBox(width: gap),
                   Flexible(
                     flex: option.label.length,
-                    child: _CatchOptionGroupItem<T>(
+                    child: _buildCatchOptionGroupItem<T>(
+                      context,
                       option: option,
                       selected: option.value == selected,
                       selectedRule: selectedRule,
@@ -81,66 +82,56 @@ class CatchOptionGroup<T> extends StatelessWidget {
   }
 }
 
-class _CatchOptionGroupItem<T> extends StatelessWidget {
-  const _CatchOptionGroupItem({
-    required this.option,
-    required this.selected,
-    required this.selectedRule,
-    required this.variant,
-    this.onTap,
-  });
+Widget _buildCatchOptionGroupItem<T>(
+  BuildContext context, {
+  required CatchOption<T> option,
+  required bool selected,
+  required Color selectedRule,
+  required CatchOptionGroupVariant variant,
+  VoidCallback? onTap,
+}) {
+  final t = CatchTokens.of(context);
+  final foreground = selected ? t.ink : t.ink3;
+  final style = switch (variant) {
+    CatchOptionGroupVariant.label => CatchTextStyles.labelL(
+      context,
+      color: foreground,
+    ),
+    CatchOptionGroupVariant.mono => CatchTextStyles.monoLabel(
+      context,
+      color: foreground,
+    ),
+  };
+  final label = variant == CatchOptionGroupVariant.mono
+      ? option.label.toUpperCase()
+      : option.label;
 
-  final CatchOption<T> option;
-  final bool selected;
-  final Color selectedRule;
-  final CatchOptionGroupVariant variant;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final foreground = selected ? t.ink : t.ink3;
-    final style = switch (variant) {
-      CatchOptionGroupVariant.label => CatchTextStyles.labelL(
-        context,
-        color: foreground,
-      ),
-      CatchOptionGroupVariant.mono => CatchTextStyles.monoLabel(
-        context,
-        color: foreground,
-      ),
-    };
-    final label = variant == CatchOptionGroupVariant.mono
-        ? option.label.toUpperCase()
-        : option.label;
-
-    return Semantics(
-      button: onTap != null,
-      selected: selected,
-      child: InkWell(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: CatchMotion.fast,
-          curve: CatchMotion.standardCurve,
-          padding: EdgeInsets.only(
-            bottom: selected ? CatchSpacing.micro10 : CatchSpacing.s3,
-          ),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: selected ? selectedRule : Colors.transparent,
-                width: CatchSpacing.micro3,
-              ),
+  return Semantics(
+    button: onTap != null,
+    selected: selected,
+    child: InkWell(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: CatchMotion.fast,
+        curve: CatchMotion.standardCurve,
+        padding: EdgeInsets.only(
+          bottom: selected ? CatchSpacing.micro10 : CatchSpacing.s3,
+        ),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: selected ? selectedRule : Colors.transparent,
+              width: CatchSpacing.micro3,
             ),
           ),
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: style,
-          ),
+        ),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: style,
         ),
       ),
-    );
-  }
+    ),
+  );
 }
