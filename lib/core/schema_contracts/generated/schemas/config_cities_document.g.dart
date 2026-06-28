@@ -8,8 +8,7 @@ const schemaConfigCitiesDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/config_cities.schema.json',
   'title': 'ConfigCitiesDocument',
-  'description':
-      'Public launch-market configuration stored at config/cities. The app picks from launched markets; canonical market ids disambiguate same-name cities globally.',
+  'description': 'Public launch-market configuration stored at config/cities. The app picks from launched markets; canonical market ids disambiguate same-name cities globally.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'config_cities',
@@ -27,7 +26,12 @@ const schemaConfigCitiesDocumentSchema = <String, Object?>{
   'definitions': <String, Object?>{
     'launchStatus': <String, Object?>{
       'type': 'string',
-      'enum': <Object?>['launched', 'planned', 'paused', 'retired'],
+      'enum': <Object?>[
+        'launched',
+        'planned',
+        'paused',
+        'retired',
+      ],
     },
     'cityPickerMarket': <String, Object?>{
       'type': 'object',
@@ -56,8 +60,7 @@ const schemaConfigCitiesDocumentSchema = <String, Object?>{
           'minLength': 1,
           'maxLength': 120,
           'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
-          'description':
-              'App-facing selection id. Kept as name for existing CityData JSON, but stores the canonical market id.',
+          'description': 'App-facing selection id. Kept as name for existing CityData JSON, but stores the canonical market id.',
         },
         'cityId': <String, Object?>{
           'type': 'string',
@@ -111,12 +114,25 @@ const schemaConfigCitiesDocumentSchema = <String, Object?>{
         },
         'launchStatus': <String, Object?>{
           'type': 'string',
-          'enum': <Object?>['launched', 'planned', 'paused', 'retired'],
+          'enum': <Object?>[
+            'launched',
+            'planned',
+            'paused',
+            'retired',
+          ],
         },
-        'profileSelectable': <String, Object?>{'type': 'boolean'},
-        'hostCreatable': <String, Object?>{'type': 'boolean'},
-        'eventCreatable': <String, Object?>{'type': 'boolean'},
-        'exploreVisible': <String, Object?>{'type': 'boolean'},
+        'profileSelectable': <String, Object?>{
+          'type': 'boolean',
+        },
+        'hostCreatable': <String, Object?>{
+          'type': 'boolean',
+        },
+        'eventCreatable': <String, Object?>{
+          'type': 'boolean',
+        },
+        'exploreVisible': <String, Object?>{
+          'type': 'boolean',
+        },
       },
     },
     'canonicalMarket': <String, Object?>{
@@ -229,21 +245,36 @@ const schemaConfigCitiesDocumentSchema = <String, Object?>{
         },
         'launchStatus': <String, Object?>{
           'type': 'string',
-          'enum': <Object?>['launched', 'planned', 'paused', 'retired'],
+          'enum': <Object?>[
+            'launched',
+            'planned',
+            'paused',
+            'retired',
+          ],
         },
-        'profileSelectable': <String, Object?>{'type': 'boolean'},
-        'hostCreatable': <String, Object?>{'type': 'boolean'},
-        'eventCreatable': <String, Object?>{'type': 'boolean'},
-        'exploreVisible': <String, Object?>{'type': 'boolean'},
+        'profileSelectable': <String, Object?>{
+          'type': 'boolean',
+        },
+        'hostCreatable': <String, Object?>{
+          'type': 'boolean',
+        },
+        'eventCreatable': <String, Object?>{
+          'type': 'boolean',
+        },
+        'exploreVisible': <String, Object?>{
+          'type': 'boolean',
+        },
       },
     },
   },
   'properties': <String, Object?>{
-    'version': <String, Object?>{'type': 'integer', 'minimum': 2},
+    'version': <String, Object?>{
+      'type': 'integer',
+      'minimum': 2,
+    },
     'cityNames': <String, Object?>{
       'type': 'array',
-      'description':
-          'Compatibility whitelist used by Firestore rules. Values are launched canonical market ids, not display city names.',
+      'description': 'Compatibility whitelist used by Firestore rules. Values are launched canonical market ids, not display city names.',
       'items': <String, Object?>{
         'type': 'string',
         'minLength': 1,
@@ -307,8 +338,7 @@ const schemaConfigCitiesDocumentSchema = <String, Object?>{
             'minLength': 1,
             'maxLength': 120,
             'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
-            'description':
-                'App-facing selection id. Kept as name for existing CityData JSON, but stores the canonical market id.',
+            'description': 'App-facing selection id. Kept as name for existing CityData JSON, but stores the canonical market id.',
           },
           'cityId': <String, Object?>{
             'type': 'string',
@@ -362,12 +392,25 @@ const schemaConfigCitiesDocumentSchema = <String, Object?>{
           },
           'launchStatus': <String, Object?>{
             'type': 'string',
-            'enum': <Object?>['launched', 'planned', 'paused', 'retired'],
+            'enum': <Object?>[
+              'launched',
+              'planned',
+              'paused',
+              'retired',
+            ],
           },
-          'profileSelectable': <String, Object?>{'type': 'boolean'},
-          'hostCreatable': <String, Object?>{'type': 'boolean'},
-          'eventCreatable': <String, Object?>{'type': 'boolean'},
-          'exploreVisible': <String, Object?>{'type': 'boolean'},
+          'profileSelectable': <String, Object?>{
+            'type': 'boolean',
+          },
+          'hostCreatable': <String, Object?>{
+            'type': 'boolean',
+          },
+          'eventCreatable': <String, Object?>{
+            'type': 'boolean',
+          },
+          'exploreVisible': <String, Object?>{
+            'type': 'boolean',
+          },
         },
       },
       'uniqueItems': true,
@@ -485,12 +528,25 @@ const schemaConfigCitiesDocumentSchema = <String, Object?>{
           },
           'launchStatus': <String, Object?>{
             'type': 'string',
-            'enum': <Object?>['launched', 'planned', 'paused', 'retired'],
+            'enum': <Object?>[
+              'launched',
+              'planned',
+              'paused',
+              'retired',
+            ],
           },
-          'profileSelectable': <String, Object?>{'type': 'boolean'},
-          'hostCreatable': <String, Object?>{'type': 'boolean'},
-          'eventCreatable': <String, Object?>{'type': 'boolean'},
-          'exploreVisible': <String, Object?>{'type': 'boolean'},
+          'profileSelectable': <String, Object?>{
+            'type': 'boolean',
+          },
+          'hostCreatable': <String, Object?>{
+            'type': 'boolean',
+          },
+          'eventCreatable': <String, Object?>{
+            'type': 'boolean',
+          },
+          'exploreVisible': <String, Object?>{
+            'type': 'boolean',
+          },
         },
       },
       'minItems': 1,

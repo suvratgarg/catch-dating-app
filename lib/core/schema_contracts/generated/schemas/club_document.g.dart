@@ -8,15 +8,13 @@ const schemaClubDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/clubs.schema.json',
   'title': 'ClubDocument',
-  'description':
-      'Canonical club document stored at clubs/{clubId}. The club id is the document id and is not stored in document data.',
+  'description': 'Canonical club document stored at clubs/{clubId}. The club id is the document id and is not stored in document data.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'clubs',
   'x-firestore-path': 'clubs/{clubId}',
   'x-document-id-field': 'id',
-  'x-owner':
-      'create/update/archive/delete club callables; aggregate projections are trigger-owned',
+  'x-owner': 'create/update/archive/delete club callables; aggregate projections are trigger-owned',
   'x-internal-demo-fields': <Object?>[
     'synthetic',
     'seedPrefix',
@@ -73,8 +71,7 @@ const schemaClubDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 120,
       'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
-      'description':
-          'Canonical launch market id. Public URL slugs live under publicPage.citySlug.',
+      'description': 'Canonical launch market id. Public URL slugs live under publicPage.citySlug.',
       'x-catch-ownership': 'callable-owned',
     },
     'locationCityId': <String, Object?>{
@@ -99,34 +96,52 @@ const schemaClubDocumentSchema = <String, Object?>{
     },
     'hostUserId': <String, Object?>{
       'anyOf': <Object?>[
-        <String, Object?>{'type': 'string', 'minLength': 1, 'maxLength': 180},
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
-      'description':
-          'Legacy primary host user id. Null for programmatically generated, unclaimed organizer profiles.',
+      'description': 'Legacy primary host user id. Null for programmatically generated, unclaimed organizer profiles.',
       'x-catch-ownership': 'callable-owned',
     },
     'hostName': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 120,
-      'description':
-          'Legacy host display projection. Null when the organizer has not been claimed by a Catch user.',
+      'description': 'Legacy host display projection. Null when the organizer has not been claimed by a Catch user.',
       'x-catch-ownership': 'callable-owned',
     },
     'hostAvatarUrl': <String, Object?>{
       'anyOf': <Object?>[
-        <String, Object?>{'type': 'string', 'format': 'uri', 'maxLength': 2048},
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'string',
+          'format': 'uri',
+          'maxLength': 2048,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
       'x-catch-ownership': 'callable-owned',
     },
     'ownerUserId': <String, Object?>{
       'anyOf': <Object?>[
-        <String, Object?>{'type': 'string', 'minLength': 1, 'maxLength': 180},
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
-      'description':
-          'Canonical owner user id after claim or user-created setup. Null for unclaimed programmatic profiles.',
+      'description': 'Canonical owner user id after claim or user-created setup. Null for unclaimed programmatic profiles.',
       'x-catch-ownership': 'callable-owned',
     },
     'hostUserIds': <String, Object?>{
@@ -146,7 +161,12 @@ const schemaClubDocumentSchema = <String, Object?>{
       'items': <String, Object?>{
         'type': 'object',
         'additionalProperties': false,
-        'required': <Object?>['uid', 'displayName', 'avatarUrl', 'role'],
+        'required': <Object?>[
+          'uid',
+          'displayName',
+          'avatarUrl',
+          'role',
+        ],
         'properties': <String, Object?>{
           'uid': <String, Object?>{
             'type': 'string',
@@ -165,12 +185,17 @@ const schemaClubDocumentSchema = <String, Object?>{
                 'format': 'uri',
                 'maxLength': 2048,
               },
-              <String, Object?>{'type': 'null'},
+              <String, Object?>{
+                'type': 'null',
+              },
             ],
           },
           'role': <String, Object?>{
             'type': 'string',
-            'enum': <Object?>['owner', 'host'],
+            'enum': <Object?>[
+              'owner',
+              'host',
+            ],
           },
         },
       },
@@ -181,9 +206,14 @@ const schemaClubDocumentSchema = <String, Object?>{
       'description': 'Serialized Firestore Timestamp fixture shape.',
       'x-firestore-type': 'timestamp',
       'additionalProperties': false,
-      'required': <Object?>['_seconds', '_nanoseconds'],
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
       'properties': <String, Object?>{
-        '_seconds': <String, Object?>{'type': 'integer'},
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
         '_nanoseconds': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
@@ -194,15 +224,27 @@ const schemaClubDocumentSchema = <String, Object?>{
     },
     'imageUrl': <String, Object?>{
       'anyOf': <Object?>[
-        <String, Object?>{'type': 'string', 'format': 'uri', 'maxLength': 2048},
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'string',
+          'format': 'uri',
+          'maxLength': 2048,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
       'x-catch-ownership': 'callable-owned',
     },
     'profileImageUrl': <String, Object?>{
       'anyOf': <Object?>[
-        <String, Object?>{'type': 'string', 'format': 'uri', 'maxLength': 2048},
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'string',
+          'format': 'uri',
+          'maxLength': 2048,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
       'x-catch-ownership': 'callable-owned',
     },
@@ -211,8 +253,7 @@ const schemaClubDocumentSchema = <String, Object?>{
       'maxItems': 12,
       'items': <String, Object?>{
         'title': 'UploadedPhoto',
-        'description':
-            'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
+        'description': 'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
         'type': 'object',
         'additionalProperties': false,
         'required': <Object?>[
@@ -250,7 +291,9 @@ const schemaClubDocumentSchema = <String, Object?>{
                 'format': 'uri',
                 'maxLength': 2048,
               },
-              <String, Object?>{'type': 'null'},
+              <String, Object?>{
+                'type': 'null',
+              },
             ],
           },
           'thumbnailStoragePath': <String, Object?>{
@@ -261,7 +304,9 @@ const schemaClubDocumentSchema = <String, Object?>{
                 'maxLength': 512,
                 'pattern': '^[^/\\u0000][^\\u0000]*\$',
               },
-              <String, Object?>{'type': 'null'},
+              <String, Object?>{
+                'type': 'null',
+              },
             ],
           },
           'position': <String, Object?>{
@@ -270,29 +315,45 @@ const schemaClubDocumentSchema = <String, Object?>{
             'maximum': 19,
           },
           'moderation': <String, Object?>{
-            'type': <Object?>['object', 'null'],
+            'type': <Object?>[
+              'object',
+              'null',
+            ],
             'additionalProperties': false,
-            'required': <Object?>['status'],
+            'required': <Object?>[
+              'status',
+            ],
             'properties': <String, Object?>{
               'status': <String, Object?>{
                 'type': 'string',
-                'enum': <Object?>['pending', 'approved', 'rejected'],
+                'enum': <Object?>[
+                  'pending',
+                  'approved',
+                  'rejected',
+                ],
               },
               'reason': <String, Object?>{
-                'type': <Object?>['string', 'null'],
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
                 'maxLength': 240,
               },
               'reviewedAt': <String, Object?>{
                 'anyOf': <Object?>[
                   <String, Object?>{
                     'type': 'object',
-                    'description':
-                        'Serialized Firestore Timestamp fixture shape.',
+                    'description': 'Serialized Firestore Timestamp fixture shape.',
                     'x-firestore-type': 'timestamp',
                     'additionalProperties': false,
-                    'required': <Object?>['_seconds', '_nanoseconds'],
+                    'required': <Object?>[
+                      '_seconds',
+                      '_nanoseconds',
+                    ],
                     'properties': <String, Object?>{
-                      '_seconds': <String, Object?>{'type': 'integer'},
+                      '_seconds': <String, Object?>{
+                        'type': 'integer',
+                      },
                       '_nanoseconds': <String, Object?>{
                         'type': 'integer',
                         'minimum': 0,
@@ -300,7 +361,9 @@ const schemaClubDocumentSchema = <String, Object?>{
                       },
                     },
                   },
-                  <String, Object?>{'type': 'null'},
+                  <String, Object?>{
+                    'type': 'null',
+                  },
                 ],
               },
             },
@@ -310,9 +373,14 @@ const schemaClubDocumentSchema = <String, Object?>{
             'description': 'Serialized Firestore Timestamp fixture shape.',
             'x-firestore-type': 'timestamp',
             'additionalProperties': false,
-            'required': <Object?>['_seconds', '_nanoseconds'],
+            'required': <Object?>[
+              '_seconds',
+              '_nanoseconds',
+            ],
             'properties': <String, Object?>{
-              '_seconds': <String, Object?>{'type': 'integer'},
+              '_seconds': <String, Object?>{
+                'type': 'integer',
+              },
               '_nanoseconds': <String, Object?>{
                 'type': 'integer',
                 'minimum': 0,
@@ -325,9 +393,14 @@ const schemaClubDocumentSchema = <String, Object?>{
             'description': 'Serialized Firestore Timestamp fixture shape.',
             'x-firestore-type': 'timestamp',
             'additionalProperties': false,
-            'required': <Object?>['_seconds', '_nanoseconds'],
+            'required': <Object?>[
+              '_seconds',
+              '_nanoseconds',
+            ],
             'properties': <String, Object?>{
-              '_seconds': <String, Object?>{'type': 'integer'},
+              '_seconds': <String, Object?>{
+                'type': 'integer',
+              },
               '_nanoseconds': <String, Object?>{
                 'type': 'integer',
                 'minimum': 0,
@@ -351,8 +424,7 @@ const schemaClubDocumentSchema = <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{
           'title': 'UploadedPhoto',
-          'description':
-              'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
+          'description': 'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
           'type': 'object',
           'additionalProperties': false,
           'required': <Object?>[
@@ -390,7 +462,9 @@ const schemaClubDocumentSchema = <String, Object?>{
                   'format': 'uri',
                   'maxLength': 2048,
                 },
-                <String, Object?>{'type': 'null'},
+                <String, Object?>{
+                  'type': 'null',
+                },
               ],
             },
             'thumbnailStoragePath': <String, Object?>{
@@ -401,7 +475,9 @@ const schemaClubDocumentSchema = <String, Object?>{
                   'maxLength': 512,
                   'pattern': '^[^/\\u0000][^\\u0000]*\$',
                 },
-                <String, Object?>{'type': 'null'},
+                <String, Object?>{
+                  'type': 'null',
+                },
               ],
             },
             'position': <String, Object?>{
@@ -410,29 +486,45 @@ const schemaClubDocumentSchema = <String, Object?>{
               'maximum': 19,
             },
             'moderation': <String, Object?>{
-              'type': <Object?>['object', 'null'],
+              'type': <Object?>[
+                'object',
+                'null',
+              ],
               'additionalProperties': false,
-              'required': <Object?>['status'],
+              'required': <Object?>[
+                'status',
+              ],
               'properties': <String, Object?>{
                 'status': <String, Object?>{
                   'type': 'string',
-                  'enum': <Object?>['pending', 'approved', 'rejected'],
+                  'enum': <Object?>[
+                    'pending',
+                    'approved',
+                    'rejected',
+                  ],
                 },
                 'reason': <String, Object?>{
-                  'type': <Object?>['string', 'null'],
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
                   'maxLength': 240,
                 },
                 'reviewedAt': <String, Object?>{
                   'anyOf': <Object?>[
                     <String, Object?>{
                       'type': 'object',
-                      'description':
-                          'Serialized Firestore Timestamp fixture shape.',
+                      'description': 'Serialized Firestore Timestamp fixture shape.',
                       'x-firestore-type': 'timestamp',
                       'additionalProperties': false,
-                      'required': <Object?>['_seconds', '_nanoseconds'],
+                      'required': <Object?>[
+                        '_seconds',
+                        '_nanoseconds',
+                      ],
                       'properties': <String, Object?>{
-                        '_seconds': <String, Object?>{'type': 'integer'},
+                        '_seconds': <String, Object?>{
+                          'type': 'integer',
+                        },
                         '_nanoseconds': <String, Object?>{
                           'type': 'integer',
                           'minimum': 0,
@@ -440,7 +532,9 @@ const schemaClubDocumentSchema = <String, Object?>{
                         },
                       },
                     },
-                    <String, Object?>{'type': 'null'},
+                    <String, Object?>{
+                      'type': 'null',
+                    },
                   ],
                 },
               },
@@ -450,9 +544,14 @@ const schemaClubDocumentSchema = <String, Object?>{
               'description': 'Serialized Firestore Timestamp fixture shape.',
               'x-firestore-type': 'timestamp',
               'additionalProperties': false,
-              'required': <Object?>['_seconds', '_nanoseconds'],
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
               'properties': <String, Object?>{
-                '_seconds': <String, Object?>{'type': 'integer'},
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
                 '_nanoseconds': <String, Object?>{
                   'type': 'integer',
                   'minimum': 0,
@@ -465,9 +564,14 @@ const schemaClubDocumentSchema = <String, Object?>{
               'description': 'Serialized Firestore Timestamp fixture shape.',
               'x-firestore-type': 'timestamp',
               'additionalProperties': false,
-              'required': <Object?>['_seconds', '_nanoseconds'],
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
               'properties': <String, Object?>{
-                '_seconds': <String, Object?>{'type': 'integer'},
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
                 '_nanoseconds': <String, Object?>{
                   'type': 'integer',
                   'minimum': 0,
@@ -485,7 +589,9 @@ const schemaClubDocumentSchema = <String, Object?>{
             },
           },
         },
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
       'x-catch-ownership': 'callable-owned',
     },
@@ -519,8 +625,7 @@ const schemaClubDocumentSchema = <String, Object?>{
     'verifiedReviewCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
-      'description':
-          'Published reviews that are verified (attended a Catch event). Only these back the headline rating; unverified public reviews cannot move the score.',
+      'description': 'Published reviews that are verified (attended a Catch event). Only these back the headline rating; unverified public reviews cannot move the score.',
       'x-catch-ownership': 'trigger-owned',
     },
     'nextEventAt': <String, Object?>{
@@ -530,9 +635,14 @@ const schemaClubDocumentSchema = <String, Object?>{
           'description': 'Serialized Firestore Timestamp fixture shape.',
           'x-firestore-type': 'timestamp',
           'additionalProperties': false,
-          'required': <Object?>['_seconds', '_nanoseconds'],
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
           'properties': <String, Object?>{
-            '_seconds': <String, Object?>{'type': 'integer'},
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
             '_nanoseconds': <String, Object?>{
               'type': 'integer',
               'minimum': 0,
@@ -540,33 +650,50 @@ const schemaClubDocumentSchema = <String, Object?>{
             },
           },
         },
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
       'x-catch-ownership': 'trigger-owned',
     },
     'nextEventLabel': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 240,
       'x-catch-ownership': 'trigger-owned',
     },
     'instagramHandle': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 320,
       'x-catch-ownership': 'callable-owned',
     },
     'phoneNumber': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 320,
       'x-catch-ownership': 'callable-owned',
     },
     'email': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 320,
       'x-catch-ownership': 'callable-owned',
     },
     'status': <String, Object?>{
       'type': 'string',
-      'enum': <Object?>['active', 'archived'],
+      'enum': <Object?>[
+        'active',
+        'archived',
+      ],
       'x-catch-ownership': 'callable-owned',
     },
     'archived': <String, Object?>{
@@ -580,9 +707,14 @@ const schemaClubDocumentSchema = <String, Object?>{
           'description': 'Serialized Firestore Timestamp fixture shape.',
           'x-firestore-type': 'timestamp',
           'additionalProperties': false,
-          'required': <Object?>['_seconds', '_nanoseconds'],
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
           'properties': <String, Object?>{
-            '_seconds': <String, Object?>{'type': 'integer'},
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
             '_nanoseconds': <String, Object?>{
               'type': 'integer',
               'minimum': 0,
@@ -590,12 +722,17 @@ const schemaClubDocumentSchema = <String, Object?>{
             },
           },
         },
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
       'x-catch-ownership': 'callable-owned',
     },
     'archiveReason': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 500,
       'x-catch-ownership': 'callable-owned',
     },
@@ -674,27 +811,45 @@ const schemaClubDocumentSchema = <String, Object?>{
               'maximum': 120,
             },
             'maxMen': <String, Object?>{
-              'type': <Object?>['integer', 'null'],
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
               'minimum': 0,
             },
             'maxWomen': <String, Object?>{
-              'type': <Object?>['integer', 'null'],
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
               'minimum': 0,
             },
-            'dynamicPricingEnabled': <String, Object?>{'type': 'boolean'},
+            'dynamicPricingEnabled': <String, Object?>{
+              'type': 'boolean',
+            },
             'dynamicPricingStepInPaise': <String, Object?>{
-              'type': <Object?>['integer', 'null'],
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
               'minimum': 0,
               'maximum': 100000000,
             },
             'dynamicPricingMaxInPaise': <String, Object?>{
-              'type': <Object?>['integer', 'null'],
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
               'minimum': 0,
               'maximum': 100000000,
             },
             'cancellationPolicyId': <String, Object?>{
               'type': 'string',
-              'enum': <Object?>['flexible', 'standard', 'strict'],
+              'enum': <Object?>[
+                'flexible',
+                'standard',
+                'strict',
+              ],
             },
           },
         },
@@ -702,7 +857,9 @@ const schemaClubDocumentSchema = <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
           'properties': <String, Object?>{
-            'enabled': <String, Object?>{'type': 'boolean'},
+            'enabled': <String, Object?>{
+              'type': 'boolean',
+            },
             'playbookId': <String, Object?>{
               'type': 'string',
               'minLength': 1,
@@ -742,12 +899,18 @@ const schemaClubDocumentSchema = <String, Object?>{
                   'maximum': 1000,
                 },
                 'unitCount': <String, Object?>{
-                  'type': <Object?>['integer', 'null'],
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
                   'minimum': 1,
                   'maximum': 200,
                 },
                 'rotationIntervalMinutes': <String, Object?>{
-                  'type': <Object?>['integer', 'null'],
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
                   'minimum': 5,
                   'maximum': 180,
                 },
@@ -758,7 +921,10 @@ const schemaClubDocumentSchema = <String, Object?>{
                 },
                 'rotationRepeatStrategy': <String, Object?>{
                   'type': 'string',
-                  'enum': <Object?>['avoid', 'allowWhenExhausted'],
+                  'enum': <Object?>[
+                    'avoid',
+                    'allowWhenExhausted',
+                  ],
                 },
                 'maxPairMeetings': <String, Object?>{
                   'type': 'integer',
@@ -771,7 +937,11 @@ const schemaClubDocumentSchema = <String, Object?>{
                   'uniqueItems': true,
                   'items': <String, Object?>{
                     'type': 'string',
-                    'enum': <Object?>['paceBand', 'skillBand', 'roleBand'],
+                    'enum': <Object?>[
+                      'paceBand',
+                      'skillBand',
+                      'roleBand',
+                    ],
                   },
                 },
                 'clusterActivityAttributes': <String, Object?>{
@@ -780,19 +950,34 @@ const schemaClubDocumentSchema = <String, Object?>{
                   'uniqueItems': true,
                   'items': <String, Object?>{
                     'type': 'string',
-                    'enum': <Object?>['paceBand', 'skillBand', 'roleBand'],
+                    'enum': <Object?>[
+                      'paceBand',
+                      'skillBand',
+                      'roleBand',
+                    ],
                   },
                 },
               },
             },
-            'hostGoal': <String, Object?>{'type': 'string', 'maxLength': 300},
-            'wingmanRequestsEnabled': <String, Object?>{'type': 'boolean'},
-            'contextualOpenersEnabled': <String, Object?>{'type': 'boolean'},
-            'compatibilityAffectsRanking': <String, Object?>{'type': 'boolean'},
+            'hostGoal': <String, Object?>{
+              'type': 'string',
+              'maxLength': 300,
+            },
+            'wingmanRequestsEnabled': <String, Object?>{
+              'type': 'boolean',
+            },
+            'contextualOpenersEnabled': <String, Object?>{
+              'type': 'boolean',
+            },
+            'compatibilityAffectsRanking': <String, Object?>{
+              'type': 'boolean',
+            },
             'questionnaireConfig': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
-              'required': <Object?>['templateId'],
+              'required': <Object?>[
+                'templateId',
+              ],
               'properties': <String, Object?>{
                 'templateId': <String, Object?>{
                   'type': 'string',
@@ -800,7 +985,10 @@ const schemaClubDocumentSchema = <String, Object?>{
                   'maxLength': 120,
                 },
                 'customTitle': <String, Object?>{
-                  'type': <Object?>['string', 'null'],
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
                   'maxLength': 80,
                 },
                 'customQuestions': <String, Object?>{
@@ -809,7 +997,11 @@ const schemaClubDocumentSchema = <String, Object?>{
                   'items': <String, Object?>{
                     'type': 'object',
                     'additionalProperties': false,
-                    'required': <Object?>['id', 'prompt', 'options'],
+                    'required': <Object?>[
+                      'id',
+                      'prompt',
+                      'options',
+                    ],
                     'properties': <String, Object?>{
                       'id': <String, Object?>{
                         'type': 'string',
@@ -828,7 +1020,10 @@ const schemaClubDocumentSchema = <String, Object?>{
                         'items': <String, Object?>{
                           'type': 'object',
                           'additionalProperties': false,
-                          'required': <Object?>['id', 'label'],
+                          'required': <Object?>[
+                            'id',
+                            'label',
+                          ],
                           'properties': <String, Object?>{
                             'id': <String, Object?>{
                               'type': 'string',
@@ -849,7 +1044,10 @@ const schemaClubDocumentSchema = <String, Object?>{
               },
             },
             'attendeePrompt': <String, Object?>{
-              'type': <Object?>['string', 'null'],
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
               'maxLength': 300,
             },
           },
@@ -861,7 +1059,9 @@ const schemaClubDocumentSchema = <String, Object?>{
             'type': 'object',
             'additionalProperties': false,
             'properties': <String, Object?>{
-              'enabled': <String, Object?>{'type': 'boolean'},
+              'enabled': <String, Object?>{
+                'type': 'boolean',
+              },
               'playbookId': <String, Object?>{
                 'type': 'string',
                 'minLength': 1,
@@ -901,12 +1101,18 @@ const schemaClubDocumentSchema = <String, Object?>{
                     'maximum': 1000,
                   },
                   'unitCount': <String, Object?>{
-                    'type': <Object?>['integer', 'null'],
+                    'type': <Object?>[
+                      'integer',
+                      'null',
+                    ],
                     'minimum': 1,
                     'maximum': 200,
                   },
                   'rotationIntervalMinutes': <String, Object?>{
-                    'type': <Object?>['integer', 'null'],
+                    'type': <Object?>[
+                      'integer',
+                      'null',
+                    ],
                     'minimum': 5,
                     'maximum': 180,
                   },
@@ -917,7 +1123,10 @@ const schemaClubDocumentSchema = <String, Object?>{
                   },
                   'rotationRepeatStrategy': <String, Object?>{
                     'type': 'string',
-                    'enum': <Object?>['avoid', 'allowWhenExhausted'],
+                    'enum': <Object?>[
+                      'avoid',
+                      'allowWhenExhausted',
+                    ],
                   },
                   'maxPairMeetings': <String, Object?>{
                     'type': 'integer',
@@ -930,7 +1139,11 @@ const schemaClubDocumentSchema = <String, Object?>{
                     'uniqueItems': true,
                     'items': <String, Object?>{
                       'type': 'string',
-                      'enum': <Object?>['paceBand', 'skillBand', 'roleBand'],
+                      'enum': <Object?>[
+                        'paceBand',
+                        'skillBand',
+                        'roleBand',
+                      ],
                     },
                   },
                   'clusterActivityAttributes': <String, Object?>{
@@ -939,21 +1152,34 @@ const schemaClubDocumentSchema = <String, Object?>{
                     'uniqueItems': true,
                     'items': <String, Object?>{
                       'type': 'string',
-                      'enum': <Object?>['paceBand', 'skillBand', 'roleBand'],
+                      'enum': <Object?>[
+                        'paceBand',
+                        'skillBand',
+                        'roleBand',
+                      ],
                     },
                   },
                 },
               },
-              'hostGoal': <String, Object?>{'type': 'string', 'maxLength': 300},
-              'wingmanRequestsEnabled': <String, Object?>{'type': 'boolean'},
-              'contextualOpenersEnabled': <String, Object?>{'type': 'boolean'},
+              'hostGoal': <String, Object?>{
+                'type': 'string',
+                'maxLength': 300,
+              },
+              'wingmanRequestsEnabled': <String, Object?>{
+                'type': 'boolean',
+              },
+              'contextualOpenersEnabled': <String, Object?>{
+                'type': 'boolean',
+              },
               'compatibilityAffectsRanking': <String, Object?>{
                 'type': 'boolean',
               },
               'questionnaireConfig': <String, Object?>{
                 'type': 'object',
                 'additionalProperties': false,
-                'required': <Object?>['templateId'],
+                'required': <Object?>[
+                  'templateId',
+                ],
                 'properties': <String, Object?>{
                   'templateId': <String, Object?>{
                     'type': 'string',
@@ -961,7 +1187,10 @@ const schemaClubDocumentSchema = <String, Object?>{
                     'maxLength': 120,
                   },
                   'customTitle': <String, Object?>{
-                    'type': <Object?>['string', 'null'],
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
                     'maxLength': 80,
                   },
                   'customQuestions': <String, Object?>{
@@ -970,7 +1199,11 @@ const schemaClubDocumentSchema = <String, Object?>{
                     'items': <String, Object?>{
                       'type': 'object',
                       'additionalProperties': false,
-                      'required': <Object?>['id', 'prompt', 'options'],
+                      'required': <Object?>[
+                        'id',
+                        'prompt',
+                        'options',
+                      ],
                       'properties': <String, Object?>{
                         'id': <String, Object?>{
                           'type': 'string',
@@ -989,7 +1222,10 @@ const schemaClubDocumentSchema = <String, Object?>{
                           'items': <String, Object?>{
                             'type': 'object',
                             'additionalProperties': false,
-                            'required': <Object?>['id', 'label'],
+                            'required': <Object?>[
+                              'id',
+                              'label',
+                            ],
                             'properties': <String, Object?>{
                               'id': <String, Object?>{
                                 'type': 'string',
@@ -1010,7 +1246,10 @@ const schemaClubDocumentSchema = <String, Object?>{
                 },
               },
               'attendeePrompt': <String, Object?>{
-                'type': <Object?>['string', 'null'],
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
                 'maxLength': 300,
               },
             },
@@ -1028,8 +1267,7 @@ const schemaClubDocumentSchema = <String, Object?>{
         'creatorCommunity',
         'brand',
       ],
-      'description':
-          'Broad organizer identity. Keeps clubs as one subtype rather than forcing every host into club nomenclature.',
+      'description': 'Broad organizer identity. Keeps clubs as one subtype rather than forcing every host into club nomenclature.',
       'x-catch-ownership': 'callable-owned',
     },
     'entitySubtypes': <String, Object?>{
@@ -1044,44 +1282,59 @@ const schemaClubDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'callable-owned',
     },
     'displayCategory': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 120,
-      'description':
-          'Reader-facing category label for web and discovery surfaces.',
+      'description': 'Reader-facing category label for web and discovery surfaces.',
       'x-catch-ownership': 'callable-owned',
     },
     'cityName': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 120,
       'x-catch-ownership': 'callable-owned',
     },
     'regionName': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 120,
       'x-catch-ownership': 'callable-owned',
     },
     'countryCode': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'pattern': '^[A-Z]{2}\$',
       'x-catch-ownership': 'callable-owned',
     },
     'countryName': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 120,
       'x-catch-ownership': 'callable-owned',
     },
     'appVisibility': <String, Object?>{
       'type': 'string',
-      'enum': <Object?>['discoverable', 'hidden'],
-      'description':
-          'Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.',
+      'enum': <Object?>[
+        'discoverable',
+        'hidden',
+      ],
+      'description': 'Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.',
       'x-catch-ownership': 'callable-owned',
     },
     'ownership': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'description':
-          'Claim-aware organizer ownership state. This is the forward-looking owner model; legacy host fields are maintained for app compatibility.',
+      'description': 'Claim-aware organizer ownership state. This is the forward-looking owner model; legacy host fields are maintained for app compatibility.',
       'required': <Object?>[
         'state',
         'ownerUserId',
@@ -1107,7 +1360,9 @@ const schemaClubDocumentSchema = <String, Object?>{
               'minLength': 1,
               'maxLength': 180,
             },
-            <String, Object?>{'type': 'null'},
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
         },
         'primaryHostUserId': <String, Object?>{
@@ -1117,7 +1372,9 @@ const schemaClubDocumentSchema = <String, Object?>{
               'minLength': 1,
               'maxLength': 180,
             },
-            <String, Object?>{'type': 'null'},
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
         },
         'hostUserIds': <String, Object?>{
@@ -1137,9 +1394,14 @@ const schemaClubDocumentSchema = <String, Object?>{
               'description': 'Serialized Firestore Timestamp fixture shape.',
               'x-firestore-type': 'timestamp',
               'additionalProperties': false,
-              'required': <Object?>['_seconds', '_nanoseconds'],
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
               'properties': <String, Object?>{
-                '_seconds': <String, Object?>{'type': 'integer'},
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
                 '_nanoseconds': <String, Object?>{
                   'type': 'integer',
                   'minimum': 0,
@@ -1147,7 +1409,9 @@ const schemaClubDocumentSchema = <String, Object?>{
                 },
               },
             },
-            <String, Object?>{'type': 'null'},
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
         },
         'claimedByUid': <String, Object?>{
@@ -1157,7 +1421,9 @@ const schemaClubDocumentSchema = <String, Object?>{
               'minLength': 1,
               'maxLength': 180,
             },
-            <String, Object?>{'type': 'null'},
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
         },
       },
@@ -1166,7 +1432,11 @@ const schemaClubDocumentSchema = <String, Object?>{
     'claim': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'required': <Object?>['state', 'claimHref', 'lastClaimRequestId'],
+      'required': <Object?>[
+        'state',
+        'claimHref',
+        'lastClaimRequestId',
+      ],
       'properties': <String, Object?>{
         'state': <String, Object?>{
           'type': 'string',
@@ -1179,7 +1449,10 @@ const schemaClubDocumentSchema = <String, Object?>{
           ],
         },
         'claimHref': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 240,
         },
         'lastClaimRequestId': <String, Object?>{
@@ -1189,7 +1462,9 @@ const schemaClubDocumentSchema = <String, Object?>{
               'minLength': 1,
               'maxLength': 180,
             },
-            <String, Object?>{'type': 'null'},
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
         },
       },
@@ -1239,18 +1514,31 @@ const schemaClubDocumentSchema = <String, Object?>{
         },
         'indexStatus': <String, Object?>{
           'type': 'string',
-          'enum': <Object?>['noindex', 'indexReady', 'indexed'],
+          'enum': <Object?>[
+            'noindex',
+            'indexReady',
+            'indexed',
+          ],
         },
         'robots': <String, Object?>{
           'type': 'string',
-          'enum': <Object?>['noindex, follow', 'index, follow'],
+          'enum': <Object?>[
+            'noindex, follow',
+            'index, follow',
+          ],
         },
         'seoTitle': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 120,
         },
         'seoDescription': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 320,
         },
         'lastRenderedAt': <String, Object?>{
@@ -1260,9 +1548,14 @@ const schemaClubDocumentSchema = <String, Object?>{
               'description': 'Serialized Firestore Timestamp fixture shape.',
               'x-firestore-type': 'timestamp',
               'additionalProperties': false,
-              'required': <Object?>['_seconds', '_nanoseconds'],
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
               'properties': <String, Object?>{
-                '_seconds': <String, Object?>{'type': 'integer'},
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
                 '_nanoseconds': <String, Object?>{
                   'type': 'integer',
                   'minimum': 0,
@@ -1270,11 +1563,16 @@ const schemaClubDocumentSchema = <String, Object?>{
                 },
               },
             },
-            <String, Object?>{'type': 'null'},
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
         },
         'indexReview': <String, Object?>{
-          'type': <Object?>['object', 'null'],
+          'type': <Object?>[
+            'object',
+            'null',
+          ],
           'additionalProperties': false,
           'required': <Object?>[
             'reviewedAt',
@@ -1289,9 +1587,14 @@ const schemaClubDocumentSchema = <String, Object?>{
               'description': 'Serialized Firestore Timestamp fixture shape.',
               'x-firestore-type': 'timestamp',
               'additionalProperties': false,
-              'required': <Object?>['_seconds', '_nanoseconds'],
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
               'properties': <String, Object?>{
-                '_seconds': <String, Object?>{'type': 'integer'},
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
                 '_nanoseconds': <String, Object?>{
                   'type': 'integer',
                   'minimum': 0,
@@ -1306,7 +1609,11 @@ const schemaClubDocumentSchema = <String, Object?>{
             },
             'indexStatus': <String, Object?>{
               'type': 'string',
-              'enum': <Object?>['noindex', 'indexReady', 'indexed'],
+              'enum': <Object?>[
+                'noindex',
+                'indexReady',
+                'indexed',
+              ],
             },
             'checklist': <String, Object?>{
               'type': 'object',
@@ -1318,14 +1625,25 @@ const schemaClubDocumentSchema = <String, Object?>{
                 'ownerContactVerified',
               ],
               'properties': <String, Object?>{
-                'sourceEvidenceVerified': <String, Object?>{'type': 'boolean'},
-                'mediaRightsVerified': <String, Object?>{'type': 'boolean'},
-                'cadenceVerified': <String, Object?>{'type': 'boolean'},
-                'ownerContactVerified': <String, Object?>{'type': 'boolean'},
+                'sourceEvidenceVerified': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'mediaRightsVerified': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'cadenceVerified': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'ownerContactVerified': <String, Object?>{
+                  'type': 'boolean',
+                },
               },
             },
             'reviewNote': <String, Object?>{
-              'type': <Object?>['string', 'null'],
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
               'maxLength': 1000,
             },
           },
@@ -1345,7 +1663,12 @@ const schemaClubDocumentSchema = <String, Object?>{
       'properties': <String, Object?>{
         'origin': <String, Object?>{
           'type': 'string',
-          'enum': <Object?>['userCreated', 'scraper', 'adminSeed', 'import'],
+          'enum': <Object?>[
+            'userCreated',
+            'scraper',
+            'adminSeed',
+            'import',
+          ],
         },
         'sourceConfidence': <String, Object?>{
           'type': 'string',
@@ -1359,7 +1682,11 @@ const schemaClubDocumentSchema = <String, Object?>{
         },
         'verificationStatus': <String, Object?>{
           'type': 'string',
-          'enum': <Object?>['unverified', 'sourceBacked', 'ownerVerified'],
+          'enum': <Object?>[
+            'unverified',
+            'sourceBacked',
+            'ownerVerified',
+          ],
         },
         'lastVerifiedAt': <String, Object?>{
           'anyOf': <Object?>[
@@ -1368,9 +1695,14 @@ const schemaClubDocumentSchema = <String, Object?>{
               'description': 'Serialized Firestore Timestamp fixture shape.',
               'x-firestore-type': 'timestamp',
               'additionalProperties': false,
-              'required': <Object?>['_seconds', '_nanoseconds'],
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
               'properties': <String, Object?>{
-                '_seconds': <String, Object?>{'type': 'integer'},
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
                 '_nanoseconds': <String, Object?>{
                   'type': 'integer',
                   'minimum': 0,
@@ -1378,7 +1710,9 @@ const schemaClubDocumentSchema = <String, Object?>{
                 },
               },
             },
-            <String, Object?>{'type': 'null'},
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
         },
       },
@@ -1387,8 +1721,7 @@ const schemaClubDocumentSchema = <String, Object?>{
     'adminSearch': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'description':
-          'Server-owned deterministic search projection used by admin organizer publishing. Rebuildable from canonical club fields; not consumed by the app.',
+      'description': 'Server-owned deterministic search projection used by admin organizer publishing. Rebuildable from canonical club fields; not consumed by the app.',
       'required': <Object?>[
         'tokens',
         'sortKey',
@@ -1418,9 +1751,14 @@ const schemaClubDocumentSchema = <String, Object?>{
           'description': 'Serialized Firestore Timestamp fixture shape.',
           'x-firestore-type': 'timestamp',
           'additionalProperties': false,
-          'required': <Object?>['_seconds', '_nanoseconds'],
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
           'properties': <String, Object?>{
-            '_seconds': <String, Object?>{'type': 'integer'},
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
             '_nanoseconds': <String, Object?>{
               'type': 'integer',
               'minimum': 0,
@@ -1442,19 +1780,27 @@ const schemaClubDocumentSchema = <String, Object?>{
     'publicProfile': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'description':
-          'Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.',
+      'description': 'Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.',
       'properties': <String, Object?>{
         'headline': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 160,
         },
         'summary': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 800,
         },
         'sourceSummary': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 800,
         },
         'formats': <String, Object?>{
@@ -1472,7 +1818,10 @@ const schemaClubDocumentSchema = <String, Object?>{
           'items': <String, Object?>{
             'type': 'object',
             'additionalProperties': false,
-            'required': <Object?>['label', 'value'],
+            'required': <Object?>[
+              'label',
+              'value',
+            ],
             'properties': <String, Object?>{
               'label': <String, Object?>{
                 'type': 'string',
@@ -1603,12 +1952,18 @@ const schemaClubDocumentSchema = <String, Object?>{
                 'format': 'uri',
                 'maxLength': 2048,
               },
-              <String, Object?>{'type': 'null'},
+              <String, Object?>{
+                'type': 'null',
+              },
             ],
           },
           'confidence': <String, Object?>{
             'type': 'string',
-            'enum': <Object?>['low', 'medium', 'high'],
+            'enum': <Object?>[
+              'low',
+              'medium',
+              'high',
+            ],
           },
           'lastCheckedAt': <String, Object?>{
             'anyOf': <Object?>[
@@ -1617,9 +1972,14 @@ const schemaClubDocumentSchema = <String, Object?>{
                 'description': 'Serialized Firestore Timestamp fixture shape.',
                 'x-firestore-type': 'timestamp',
                 'additionalProperties': false,
-                'required': <Object?>['_seconds', '_nanoseconds'],
+                'required': <Object?>[
+                  '_seconds',
+                  '_nanoseconds',
+                ],
                 'properties': <String, Object?>{
-                  '_seconds': <String, Object?>{'type': 'integer'},
+                  '_seconds': <String, Object?>{
+                    'type': 'integer',
+                  },
                   '_nanoseconds': <String, Object?>{
                     'type': 'integer',
                     'minimum': 0,
@@ -1627,7 +1987,9 @@ const schemaClubDocumentSchema = <String, Object?>{
                   },
                 },
               },
-              <String, Object?>{'type': 'null'},
+              <String, Object?>{
+                'type': 'null',
+              },
             ],
           },
         },
@@ -1636,41 +1998,35 @@ const schemaClubDocumentSchema = <String, Object?>{
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
-      'description':
-          'Internal demo seed marker used for cleanup and diagnostics.',
+      'description': 'Internal demo seed marker used for cleanup and diagnostics.',
     },
     'seedPrefix': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
-      'description':
-          'Internal demo seed prefix used for cleanup and diagnostics.',
+      'description': 'Internal demo seed prefix used for cleanup and diagnostics.',
     },
     'scenario': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
-      'description':
-          'Internal demo seed scenario name used for cleanup and diagnostics.',
+      'description': 'Internal demo seed scenario name used for cleanup and diagnostics.',
     },
     'demoOps': <String, Object?>{
       'type': 'boolean',
-      'description':
-          'Internal demo-operations marker used for cleanup and diagnostics.',
+      'description': 'Internal demo-operations marker used for cleanup and diagnostics.',
     },
     'demoOpsId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
-      'description':
-          'Internal demo-operations id used for cleanup and diagnostics.',
+      'description': 'Internal demo-operations id used for cleanup and diagnostics.',
     },
     'demoOpsCommand': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 80,
-      'description':
-          'Internal demo-operations command name used for cleanup and diagnostics.',
+      'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
     },
   },
 };

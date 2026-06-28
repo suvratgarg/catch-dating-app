@@ -8,8 +8,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/public_profiles.schema.json',
   'title': 'PublicProfileDocument',
-  'description':
-      'Backend-owned public profile projection stored at publicProfiles/{uid}. The uid is the document id and is not stored in document data.',
+  'description': 'Backend-owned public profile projection stored at publicProfiles/{uid}. The uid is the document id and is not stored in document data.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'publicProfiles',
@@ -40,57 +39,59 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
     },
     'gender': <String, Object?>{
       'type': 'string',
-      'enum': <Object?>['man', 'woman', 'nonBinary', 'other'],
+      'enum': <Object?>[
+        'man',
+        'woman',
+        'nonBinary',
+        'other',
+      ],
       'x-catch-ownership': 'trigger-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
-      'description':
-          'Internal demo seed marker used for cleanup and diagnostics.',
+      'description': 'Internal demo seed marker used for cleanup and diagnostics.',
     },
     'seedPrefix': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
-      'description':
-          'Internal demo seed prefix used for cleanup and diagnostics.',
+      'description': 'Internal demo seed prefix used for cleanup and diagnostics.',
     },
     'scenario': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
-      'description':
-          'Internal demo seed scenario name used for cleanup and diagnostics.',
+      'description': 'Internal demo seed scenario name used for cleanup and diagnostics.',
     },
     'demoOps': <String, Object?>{
       'type': 'boolean',
-      'description':
-          'Internal demo-operations marker used for cleanup and diagnostics.',
+      'description': 'Internal demo-operations marker used for cleanup and diagnostics.',
     },
     'demoOpsId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
-      'description':
-          'Internal demo-operations id used for cleanup and diagnostics.',
+      'description': 'Internal demo-operations id used for cleanup and diagnostics.',
     },
     'demoOpsCommand': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 80,
-      'description':
-          'Internal demo-operations command name used for cleanup and diagnostics.',
+      'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
     },
     'profilePrompts': <String, Object?>{
       'type': 'array',
       'maxItems': 3,
       'items': <String, Object?>{
         'title': 'ProfilePromptAnswer',
-        'description':
-            'One structured written profile prompt answer stored on users and publicProfiles.',
+        'description': 'One structured written profile prompt answer stored on users and publicProfiles.',
         'type': 'object',
         'additionalProperties': false,
-        'required': <Object?>['promptId', 'prompt', 'answer'],
+        'required': <Object?>[
+          'promptId',
+          'prompt',
+          'answer',
+        ],
         'properties': <String, Object?>{
           'promptId': <String, Object?>{
             'type': 'string',
@@ -102,7 +103,10 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
             'minLength': 1,
             'maxLength': 140,
           },
-          'answer': <String, Object?>{'type': 'string', 'maxLength': 300},
+          'answer': <String, Object?>{
+            'type': 'string',
+            'maxLength': 300,
+          },
         },
         'x-catch-catalog': '../catalogs/profile_prompts.json',
       },
@@ -113,8 +117,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
       'maxItems': 6,
       'items': <String, Object?>{
         'title': 'ProfilePhoto',
-        'description':
-            'Future canonical profile-photo object that groups display URLs, Firebase Storage object paths, prompt metadata, moderation state, order, and lifecycle timestamps.',
+        'description': 'Future canonical profile-photo object that groups display URLs, Firebase Storage object paths, prompt metadata, moderation state, order, and lifecycle timestamps.',
         'type': 'object',
         'additionalProperties': false,
         'required': <Object?>[
@@ -160,11 +163,14 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
             'anyOf': <Object?>[
               <String, Object?>{
                 'title': 'PhotoPromptAnswer',
-                'description':
-                    'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
+                'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
                 'type': 'object',
                 'additionalProperties': false,
-                'required': <Object?>['photoIndex', 'promptId', 'prompt'],
+                'required': <Object?>[
+                  'photoIndex',
+                  'promptId',
+                  'prompt',
+                ],
                 'properties': <String, Object?>{
                   'photoIndex': <String, Object?>{
                     'type': 'integer',
@@ -185,39 +191,56 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
                     'type': 'string',
                     'maxLength': 140,
                     'deprecated': true,
-                    'description':
-                        'Legacy user-entered caption retained for compatibility with older documents.',
+                    'description': 'Legacy user-entered caption retained for compatibility with older documents.',
                   },
                 },
                 'x-catch-catalog': '../catalogs/photo_prompts.json',
               },
-              <String, Object?>{'type': 'null'},
+              <String, Object?>{
+                'type': 'null',
+              },
             ],
           },
           'moderation': <String, Object?>{
-            'type': <Object?>['object', 'null'],
+            'type': <Object?>[
+              'object',
+              'null',
+            ],
             'additionalProperties': false,
-            'required': <Object?>['status'],
+            'required': <Object?>[
+              'status',
+            ],
             'properties': <String, Object?>{
               'status': <String, Object?>{
                 'type': 'string',
-                'enum': <Object?>['pending', 'approved', 'rejected'],
+                'enum': <Object?>[
+                  'pending',
+                  'approved',
+                  'rejected',
+                ],
               },
               'reason': <String, Object?>{
-                'type': <Object?>['string', 'null'],
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
                 'maxLength': 240,
               },
               'reviewedAt': <String, Object?>{
                 'anyOf': <Object?>[
                   <String, Object?>{
                     'type': 'object',
-                    'description':
-                        'Serialized Firestore Timestamp fixture shape.',
+                    'description': 'Serialized Firestore Timestamp fixture shape.',
                     'x-firestore-type': 'timestamp',
                     'additionalProperties': false,
-                    'required': <Object?>['_seconds', '_nanoseconds'],
+                    'required': <Object?>[
+                      '_seconds',
+                      '_nanoseconds',
+                    ],
                     'properties': <String, Object?>{
-                      '_seconds': <String, Object?>{'type': 'integer'},
+                      '_seconds': <String, Object?>{
+                        'type': 'integer',
+                      },
                       '_nanoseconds': <String, Object?>{
                         'type': 'integer',
                         'minimum': 0,
@@ -225,7 +248,9 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
                       },
                     },
                   },
-                  <String, Object?>{'type': 'null'},
+                  <String, Object?>{
+                    'type': 'null',
+                  },
                 ],
               },
             },
@@ -240,9 +265,14 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
             'description': 'Serialized Firestore Timestamp fixture shape.',
             'x-firestore-type': 'timestamp',
             'additionalProperties': false,
-            'required': <Object?>['_seconds', '_nanoseconds'],
+            'required': <Object?>[
+              '_seconds',
+              '_nanoseconds',
+            ],
             'properties': <String, Object?>{
-              '_seconds': <String, Object?>{'type': 'integer'},
+              '_seconds': <String, Object?>{
+                'type': 'integer',
+              },
               '_nanoseconds': <String, Object?>{
                 'type': 'integer',
                 'minimum': 0,
@@ -255,9 +285,14 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
             'description': 'Serialized Firestore Timestamp fixture shape.',
             'x-firestore-type': 'timestamp',
             'additionalProperties': false,
-            'required': <Object?>['_seconds', '_nanoseconds'],
+            'required': <Object?>[
+              '_seconds',
+              '_nanoseconds',
+            ],
             'properties': <String, Object?>{
-              '_seconds': <String, Object?>{'type': 'integer'},
+              '_seconds': <String, Object?>{
+                'type': 'integer',
+              },
               '_nanoseconds': <String, Object?>{
                 'type': 'integer',
                 'minimum': 0,
@@ -288,28 +323,42 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
           'maxLength': 120,
           'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
         },
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
       'x-catch-ownership': 'trigger-owned',
     },
     'height': <String, Object?>{
-      'type': <Object?>['integer', 'null'],
+      'type': <Object?>[
+        'integer',
+        'null',
+      ],
       'minimum': 120,
       'maximum': 220,
       'x-catch-ownership': 'trigger-owned',
     },
     'occupation': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 120,
       'x-catch-ownership': 'trigger-owned',
     },
     'company': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 120,
       'x-catch-ownership': 'trigger-owned',
     },
     'education': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'enum': <Object?>[
         'highSchool',
         'someCollege',
@@ -323,7 +372,10 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'trigger-owned',
     },
     'religion': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'enum': <Object?>[
         'hindu',
         'muslim',
@@ -361,7 +413,10 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'trigger-owned',
     },
     'relationshipGoal': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'enum': <Object?>[
         'relationship',
         'casual',
@@ -373,22 +428,50 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'trigger-owned',
     },
     'drinking': <String, Object?>{
-      'type': <Object?>['string', 'null'],
-      'enum': <Object?>['never', 'socially', 'often', null],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'never',
+        'socially',
+        'often',
+        null,
+      ],
       'x-catch-ownership': 'trigger-owned',
     },
     'smoking': <String, Object?>{
-      'type': <Object?>['string', 'null'],
-      'enum': <Object?>['never', 'occasionally', 'often', null],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'never',
+        'occasionally',
+        'often',
+        null,
+      ],
       'x-catch-ownership': 'trigger-owned',
     },
     'workout': <String, Object?>{
-      'type': <Object?>['string', 'null'],
-      'enum': <Object?>['never', 'sometimes', 'often', 'everyday', null],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'never',
+        'sometimes',
+        'often',
+        'everyday',
+        null,
+      ],
       'x-catch-ownership': 'trigger-owned',
     },
     'diet': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'enum': <Object?>[
         'omnivore',
         'vegetarian',
@@ -400,7 +483,10 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'trigger-owned',
     },
     'children': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'enum': <Object?>[
         'dontHave',
         'haveWantMore',
@@ -413,11 +499,12 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
     },
     'activityPreferences': <String, Object?>{
       'title': 'ActivityPreferences',
-      'description':
-          'Per-activity user preferences. Running is the first migrated activity-specific preference object; other activity kinds can be added without new root profile fields.',
+      'description': 'Per-activity user preferences. Running is the first migrated activity-specific preference object; other activity kinds can be added without new root profile fields.',
       'type': 'object',
       'additionalProperties': false,
-      'required': <Object?>['running'],
+      'required': <Object?>[
+        'running',
+      ],
       'properties': <String, Object?>{
         'running': <String, Object?>{
           'type': 'object',
@@ -445,7 +532,12 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
               'uniqueItems': true,
               'items': <String, Object?>{
                 'type': 'string',
-                'enum': <Object?>['fiveK', 'tenK', 'halfMarathon', 'marathon'],
+                'enum': <Object?>[
+                  'fiveK',
+                  'tenK',
+                  'halfMarathon',
+                  'marathon',
+                ],
               },
             },
             'runningReasons': <String, Object?>{
@@ -480,7 +572,10 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
                 ],
               },
             },
-            'version': <String, Object?>{'type': 'integer', 'minimum': 0},
+            'version': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
           },
         },
       },
@@ -495,7 +590,9 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
     'demoOpsId',
     'demoOpsCommand',
   ],
-  'x-legacy-tolerated-fields': <Object?>['bio'],
+  'x-legacy-tolerated-fields': <Object?>[
+    'bio',
+  ],
   'x-hidden-fields': <Object?>[
     'phoneNumber',
     'email',

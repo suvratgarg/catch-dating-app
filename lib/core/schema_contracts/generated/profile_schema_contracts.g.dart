@@ -31,25 +31,33 @@ const schemaMaxProfilePromptAnswers = 3;
 const schemaMaxPhotoPromptCaptions = 6;
 const schemaMinimumProfilePhotos = 2;
 const schemaMaximumProfilePhotos = 6;
-const schemaProfilePhotoAspectRatioWidth = 3;
-const schemaProfilePhotoAspectRatioHeight = 4;
+const schemaProfilePhotoAspectRatioWidth =
+    3;
+const schemaProfilePhotoAspectRatioHeight =
+    4;
 const schemaProfilePhotoThumbnailSize = 160;
 const schemaProfilePhotoMaxUploadBytes = 8388608;
-const schemaMaximumProfilePromptAnswerLength = 300;
+const schemaMaximumProfilePromptAnswerLength =
+    300;
 const schemaMaximumPhotoPromptCaptionLength = 140;
 const schemaMinimumProfileAge = 18;
 const schemaMaximumPreferredMatchAge = 99;
 const schemaMinimumHeightCm = 120;
 const schemaMaximumHeightCm = 220;
-const schemaProfileDecisionLogicalName = 'profileDecision';
+const schemaProfileDecisionLogicalName =
+    'profileDecision';
 const schemaProfileDecisionPathTemplate =
     'profileDecisions/{userId}/outgoing/{targetId}';
-const schemaProfileDecisionCollectionPath = 'profileDecisions';
-const schemaProfileDecisionOutgoingSubcollectionPath = 'outgoing';
+const schemaProfileDecisionCollectionPath =
+    'profileDecisions';
+const schemaProfileDecisionOutgoingSubcollectionPath =
+    'outgoing';
 const schemaProfileDecisionFuturePathTemplate =
     'profileDecisions/{userId}/outgoing/{targetId}';
-const schemaProfileDecisionFutureCollectionPath = 'profileDecisions';
-const schemaProfileDecisionFutureOutgoingSubcollectionPath = 'outgoing';
+const schemaProfileDecisionFutureCollectionPath =
+    'profileDecisions';
+const schemaProfileDecisionFutureOutgoingSubcollectionPath =
+    'outgoing';
 
 const schemaDefaultProfilePromptIds = <String>[
   'perfectRun',
@@ -58,76 +66,34 @@ const schemaDefaultProfilePromptIds = <String>[
 ];
 
 const schemaProfilePromptCatalog = <SchemaProfilePromptDefinition>[
-  SchemaProfilePromptDefinition(
-    id: 'perfectRun',
-    title: 'A perfect event with me looks like...',
-    placeholder: 'Tell people what kind of event feels like you.',
-  ),
-  SchemaProfilePromptDefinition(
-    id: 'afterEvent',
-    title: 'After an event, you can usually find me...',
-    placeholder: 'Coffee, dosa, stretching, playlists...',
-  ),
-  SchemaProfilePromptDefinition(
-    id: 'greenFlag',
-    title: 'My green flag is...',
-    placeholder: 'Share something specific and easy to respond to.',
-  ),
-  SchemaProfilePromptDefinition(
-    id: 'getAlongIf',
-    title: 'We\'ll get along if...',
-    placeholder: 'Name the energy, habits, or humor you like.',
-  ),
-  SchemaProfilePromptDefinition(
-    id: 'favoriteRoute',
-    title: 'My favorite running route has...',
-    placeholder: 'Shade, chaos, hills, street food, sunrise...',
-  ),
+  SchemaProfilePromptDefinition(id: 'perfectRun', title: 'A perfect event with me looks like...', placeholder: 'Tell people what kind of event feels like you.',),
+  SchemaProfilePromptDefinition(id: 'afterEvent', title: 'After an event, you can usually find me...', placeholder: 'Coffee, dosa, stretching, playlists...',),
+  SchemaProfilePromptDefinition(id: 'greenFlag', title: 'My green flag is...', placeholder: 'Share something specific and easy to respond to.',),
+  SchemaProfilePromptDefinition(id: 'getAlongIf', title: 'We\'ll get along if...', placeholder: 'Name the energy, habits, or humor you like.',),
+  SchemaProfilePromptDefinition(id: 'favoriteRoute', title: 'My favorite running route has...', placeholder: 'Shade, chaos, hills, street food, sunrise...',),
 ];
 
 const schemaPhotoPromptCatalog = <SchemaPhotoPromptDefinition>[
-  SchemaPhotoPromptDefinition(
-    id: 'proofIRun',
-    title: 'Proof I actually run',
-    placeholder: 'Choose this when the photo is the proof.',
-  ),
-  SchemaPhotoPromptDefinition(
-    id: 'finishLine',
-    title: 'After the finish line',
-    placeholder: 'What was happening in this moment?',
-  ),
-  SchemaPhotoPromptDefinition(
-    id: 'notRunning',
-    title: 'When I\'m not running',
-    placeholder: 'Show another side of your life.',
-  ),
-  SchemaPhotoPromptDefinition(
-    id: 'favoritePeople',
-    title: 'My favorite people know me as',
-    placeholder: 'A small detail friends would recognize.',
-  ),
-  SchemaPhotoPromptDefinition(
-    id: 'weekendEnergy',
-    title: 'Weekend energy',
-    placeholder: 'What does this photo say about your weekends?',
-  ),
-  SchemaPhotoPromptDefinition(
-    id: 'captionThis',
-    title: 'First thought?',
-    placeholder: 'Give people an easy opening line.',
-  ),
+  SchemaPhotoPromptDefinition(id: 'proofIRun', title: 'Proof I actually run', placeholder: 'Choose this when the photo is the proof.',),
+  SchemaPhotoPromptDefinition(id: 'finishLine', title: 'After the finish line', placeholder: 'What was happening in this moment?',),
+  SchemaPhotoPromptDefinition(id: 'notRunning', title: 'When I\'m not running', placeholder: 'Show another side of your life.',),
+  SchemaPhotoPromptDefinition(id: 'favoritePeople', title: 'My favorite people know me as', placeholder: 'A small detail friends would recognize.',),
+  SchemaPhotoPromptDefinition(id: 'weekendEnergy', title: 'Weekend energy', placeholder: 'What does this photo say about your weekends?',),
+  SchemaPhotoPromptDefinition(id: 'captionThis', title: 'First thought?', placeholder: 'Give people an easy opening line.',),
 ];
 
 const schemaProfilePromptAnswerSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id':
-      'https://catch.app/contracts/embedded/profile_prompt_answer.schema.json',
+  '\$id': 'https://catch.app/contracts/embedded/profile_prompt_answer.schema.json',
   'title': 'ProfilePromptAnswer',
-  'description':
-      'One structured written profile prompt answer stored on users and publicProfiles.',
+  'description': 'One structured written profile prompt answer stored on users and publicProfiles.',
   'type': 'object',
   'additionalProperties': false,
-  'required': <Object?>['promptId', 'prompt', 'answer'],
+  'required': <Object?>[
+    'promptId',
+    'prompt',
+    'answer',
+  ],
   'properties': <String, Object?>{
     'promptId': <String, Object?>{
       'type': 'string',
@@ -139,21 +105,26 @@ const schemaProfilePromptAnswerSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 140,
     },
-    'answer': <String, Object?>{'type': 'string', 'maxLength': 300},
+    'answer': <String, Object?>{
+      'type': 'string',
+      'maxLength': 300,
+    },
   },
   'x-catch-catalog': '../catalogs/profile_prompts.json',
 };
 
 const schemaPhotoPromptAnswerSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id':
-      'https://catch.app/contracts/embedded/photo_prompt_answer.schema.json',
+  '\$id': 'https://catch.app/contracts/embedded/photo_prompt_answer.schema.json',
   'title': 'PhotoPromptAnswer',
-  'description':
-      'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
+  'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
   'type': 'object',
   'additionalProperties': false,
-  'required': <Object?>['photoIndex', 'promptId', 'prompt'],
+  'required': <Object?>[
+    'photoIndex',
+    'promptId',
+    'prompt',
+  ],
   'properties': <String, Object?>{
     'photoIndex': <String, Object?>{
       'type': 'integer',
@@ -174,8 +145,7 @@ const schemaPhotoPromptAnswerSchema = <String, Object?>{
       'type': 'string',
       'maxLength': 140,
       'deprecated': true,
-      'description':
-          'Legacy user-entered caption retained for compatibility with older documents.',
+      'description': 'Legacy user-entered caption retained for compatibility with older documents.',
     },
   },
   'x-catch-catalog': '../catalogs/photo_prompts.json',
@@ -185,8 +155,7 @@ const schemaProfilePhotoSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/embedded/profile_photo.schema.json',
   'title': 'ProfilePhoto',
-  'description':
-      'Future canonical profile-photo object that groups display URLs, Firebase Storage object paths, prompt metadata, moderation state, order, and lifecycle timestamps.',
+  'description': 'Future canonical profile-photo object that groups display URLs, Firebase Storage object paths, prompt metadata, moderation state, order, and lifecycle timestamps.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -232,11 +201,14 @@ const schemaProfilePhotoSchema = <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{
           'title': 'PhotoPromptAnswer',
-          'description':
-              'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
+          'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
           'type': 'object',
           'additionalProperties': false,
-          'required': <Object?>['photoIndex', 'promptId', 'prompt'],
+          'required': <Object?>[
+            'photoIndex',
+            'promptId',
+            'prompt',
+          ],
           'properties': <String, Object?>{
             'photoIndex': <String, Object?>{
               'type': 'integer',
@@ -257,26 +229,39 @@ const schemaProfilePhotoSchema = <String, Object?>{
               'type': 'string',
               'maxLength': 140,
               'deprecated': true,
-              'description':
-                  'Legacy user-entered caption retained for compatibility with older documents.',
+              'description': 'Legacy user-entered caption retained for compatibility with older documents.',
             },
           },
           'x-catch-catalog': '../catalogs/photo_prompts.json',
         },
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
     },
     'moderation': <String, Object?>{
-      'type': <Object?>['object', 'null'],
+      'type': <Object?>[
+        'object',
+        'null',
+      ],
       'additionalProperties': false,
-      'required': <Object?>['status'],
+      'required': <Object?>[
+        'status',
+      ],
       'properties': <String, Object?>{
         'status': <String, Object?>{
           'type': 'string',
-          'enum': <Object?>['pending', 'approved', 'rejected'],
+          'enum': <Object?>[
+            'pending',
+            'approved',
+            'rejected',
+          ],
         },
         'reason': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 240,
         },
         'reviewedAt': <String, Object?>{
@@ -286,9 +271,14 @@ const schemaProfilePhotoSchema = <String, Object?>{
               'description': 'Serialized Firestore Timestamp fixture shape.',
               'x-firestore-type': 'timestamp',
               'additionalProperties': false,
-              'required': <Object?>['_seconds', '_nanoseconds'],
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
               'properties': <String, Object?>{
-                '_seconds': <String, Object?>{'type': 'integer'},
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
                 '_nanoseconds': <String, Object?>{
                   'type': 'integer',
                   'minimum': 0,
@@ -296,7 +286,9 @@ const schemaProfilePhotoSchema = <String, Object?>{
                 },
               },
             },
-            <String, Object?>{'type': 'null'},
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
         },
       },
@@ -311,9 +303,14 @@ const schemaProfilePhotoSchema = <String, Object?>{
       'description': 'Serialized Firestore Timestamp fixture shape.',
       'x-firestore-type': 'timestamp',
       'additionalProperties': false,
-      'required': <Object?>['_seconds', '_nanoseconds'],
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
       'properties': <String, Object?>{
-        '_seconds': <String, Object?>{'type': 'integer'},
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
         '_nanoseconds': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
@@ -326,9 +323,14 @@ const schemaProfilePhotoSchema = <String, Object?>{
       'description': 'Serialized Firestore Timestamp fixture shape.',
       'x-firestore-type': 'timestamp',
       'additionalProperties': false,
-      'required': <Object?>['_seconds', '_nanoseconds'],
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
       'properties': <String, Object?>{
-        '_seconds': <String, Object?>{'type': 'integer'},
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
         '_nanoseconds': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
@@ -350,16 +352,18 @@ const schemaProfilePhotoSchema = <String, Object?>{
   'x-migration-contract': '../migrations/profile_photos_storage.json',
 };
 
-const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
+const schemaUpdateUserProfileCallablePayloadSchema =
+    <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/patches/update_user_profile.schema.json',
   'title': 'UpdateUserProfileCallablePayload',
-  'description':
-      'Callable request body for updateUserProfile. Values are normalized before Firestore writes.',
+  'description': 'Callable request body for updateUserProfile. Values are normalized before Firestore writes.',
   'x-callable-shape': 'patch',
   'type': 'object',
   'additionalProperties': false,
-  'required': <Object?>['fields'],
+  'required': <Object?>[
+    'fields',
+  ],
   'properties': <String, Object?>{
     'fields': <String, Object?>{
       'type': 'object',
@@ -379,7 +383,9 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
         },
         'email': <String, Object?>{
           'anyOf': <Object?>[
-            <String, Object?>{'const': ''},
+            <String, Object?>{
+              'const': '',
+            },
             <String, Object?>{
               'type': 'string',
               'format': 'email',
@@ -395,7 +401,9 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
               'maxLength': 30,
               'pattern': '^[A-Za-z0-9._]{1,30}\$',
             },
-            <String, Object?>{'type': 'null'},
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
         },
         'profilePrompts': <String, Object?>{
@@ -403,11 +411,14 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
           'maxItems': 3,
           'items': <String, Object?>{
             'title': 'ProfilePromptAnswer',
-            'description':
-                'One structured written profile prompt answer stored on users and publicProfiles.',
+            'description': 'One structured written profile prompt answer stored on users and publicProfiles.',
             'type': 'object',
             'additionalProperties': false,
-            'required': <Object?>['promptId', 'prompt', 'answer'],
+            'required': <Object?>[
+              'promptId',
+              'prompt',
+              'answer',
+            ],
             'properties': <String, Object?>{
               'promptId': <String, Object?>{
                 'type': 'string',
@@ -419,7 +430,10 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
                 'minLength': 1,
                 'maxLength': 140,
               },
-              'answer': <String, Object?>{'type': 'string', 'maxLength': 300},
+              'answer': <String, Object?>{
+                'type': 'string',
+                'maxLength': 300,
+              },
             },
             'x-catch-catalog': '../catalogs/profile_prompts.json',
           },
@@ -432,14 +446,20 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
         'dateOfBirth': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
-          'description':
-              'Milliseconds since epoch before conversion to Firestore Timestamp.',
+          'description': 'Milliseconds since epoch before conversion to Firestore Timestamp.',
         },
         'gender': <String, Object?>{
           'type': 'string',
-          'enum': <Object?>['man', 'woman', 'nonBinary', 'other'],
+          'enum': <Object?>[
+            'man',
+            'woman',
+            'nonBinary',
+            'other',
+          ],
         },
-        'profileComplete': <String, Object?>{'type': 'boolean'},
+        'profileComplete': <String, Object?>{
+          'type': 'boolean',
+        },
         'profilePhotos': <String, Object?>{
           'type': 'array',
           'maxItems': 6,
@@ -489,11 +509,14 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
                 'anyOf': <Object?>[
                   <String, Object?>{
                     'title': 'PhotoPromptAnswer',
-                    'description':
-                        'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
+                    'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
                     'type': 'object',
                     'additionalProperties': false,
-                    'required': <Object?>['photoIndex', 'promptId', 'prompt'],
+                    'required': <Object?>[
+                      'photoIndex',
+                      'promptId',
+                      'prompt',
+                    ],
                     'properties': <String, Object?>{
                       'photoIndex': <String, Object?>{
                         'type': 'integer',
@@ -514,30 +537,46 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
                         'type': 'string',
                         'maxLength': 140,
                         'deprecated': true,
-                        'description':
-                            'Legacy user-entered caption retained for compatibility with older documents.',
+                        'description': 'Legacy user-entered caption retained for compatibility with older documents.',
                       },
                     },
                     'x-catch-catalog': '../catalogs/photo_prompts.json',
                   },
-                  <String, Object?>{'type': 'null'},
+                  <String, Object?>{
+                    'type': 'null',
+                  },
                 ],
               },
               'moderation': <String, Object?>{
-                'type': <Object?>['object', 'null'],
+                'type': <Object?>[
+                  'object',
+                  'null',
+                ],
                 'additionalProperties': false,
-                'required': <Object?>['status'],
+                'required': <Object?>[
+                  'status',
+                ],
                 'properties': <String, Object?>{
                   'status': <String, Object?>{
                     'type': 'string',
-                    'enum': <Object?>['pending', 'approved', 'rejected'],
+                    'enum': <Object?>[
+                      'pending',
+                      'approved',
+                      'rejected',
+                    ],
                   },
                   'reason': <String, Object?>{
-                    'type': <Object?>['string', 'null'],
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
                     'maxLength': 240,
                   },
                   'reviewedAt': <String, Object?>{
-                    'type': <Object?>['integer', 'null'],
+                    'type': <Object?>[
+                      'integer',
+                      'null',
+                    ],
                     'minimum': 0,
                   },
                 },
@@ -547,8 +586,14 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
                 'minimum': 0,
                 'maximum': 11,
               },
-              'createdAt': <String, Object?>{'type': 'integer', 'minimum': 0},
-              'updatedAt': <String, Object?>{'type': 'integer', 'minimum': 0},
+              'createdAt': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'updatedAt': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
             },
           },
         },
@@ -560,16 +605,24 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
               'maxLength': 120,
               'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
             },
-            <String, Object?>{'type': 'null'},
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
         },
         'latitude': <String, Object?>{
-          'type': <Object?>['number', 'null'],
+          'type': <Object?>[
+            'number',
+            'null',
+          ],
           'minimum': -90,
           'maximum': 90,
         },
         'longitude': <String, Object?>{
-          'type': <Object?>['number', 'null'],
+          'type': <Object?>[
+            'number',
+            'null',
+          ],
           'minimum': -180,
           'maximum': 180,
         },
@@ -580,7 +633,12 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
           'uniqueItems': true,
           'items': <String, Object?>{
             'type': 'string',
-            'enum': <Object?>['man', 'woman', 'nonBinary', 'other'],
+            'enum': <Object?>[
+              'man',
+              'woman',
+              'nonBinary',
+              'other',
+            ],
           },
         },
         'minAgePreference': <String, Object?>{
@@ -594,20 +652,32 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
           'maximum': 99,
         },
         'height': <String, Object?>{
-          'type': <Object?>['integer', 'null'],
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
           'minimum': 120,
           'maximum': 220,
         },
         'occupation': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 120,
         },
         'company': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 120,
         },
         'education': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'enum': <Object?>[
             'highSchool',
             'someCollege',
@@ -620,7 +690,10 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
           ],
         },
         'religion': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'enum': <Object?>[
             'hindu',
             'muslim',
@@ -656,7 +729,10 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
           },
         },
         'relationshipGoal': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'enum': <Object?>[
             'relationship',
             'casual',
@@ -667,19 +743,47 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
           ],
         },
         'drinking': <String, Object?>{
-          'type': <Object?>['string', 'null'],
-          'enum': <Object?>['never', 'socially', 'often', null],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'enum': <Object?>[
+            'never',
+            'socially',
+            'often',
+            null,
+          ],
         },
         'smoking': <String, Object?>{
-          'type': <Object?>['string', 'null'],
-          'enum': <Object?>['never', 'occasionally', 'often', null],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'enum': <Object?>[
+            'never',
+            'occasionally',
+            'often',
+            null,
+          ],
         },
         'workout': <String, Object?>{
-          'type': <Object?>['string', 'null'],
-          'enum': <Object?>['never', 'sometimes', 'often', 'everyday', null],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'enum': <Object?>[
+            'never',
+            'sometimes',
+            'often',
+            'everyday',
+            null,
+          ],
         },
         'diet': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'enum': <Object?>[
             'omnivore',
             'vegetarian',
@@ -690,7 +794,10 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
           ],
         },
         'children': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'enum': <Object?>[
             'dontHave',
             'haveWantMore',
@@ -702,11 +809,12 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
         },
         'activityPreferences': <String, Object?>{
           'title': 'ActivityPreferences',
-          'description':
-              'Per-activity user preferences. Running is the first migrated activity-specific preference object; other activity kinds can be added without new root profile fields.',
+          'description': 'Per-activity user preferences. Running is the first migrated activity-specific preference object; other activity kinds can be added without new root profile fields.',
           'type': 'object',
           'additionalProperties': false,
-          'required': <Object?>['running'],
+          'required': <Object?>[
+            'running',
+          ],
           'properties': <String, Object?>{
             'running': <String, Object?>{
               'type': 'object',
@@ -774,18 +882,35 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
                     ],
                   },
                 },
-                'version': <String, Object?>{'type': 'integer', 'minimum': 0},
+                'version': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                },
               },
             },
           },
         },
-        'prefsNewCatches': <String, Object?>{'type': 'boolean'},
-        'prefsMessages': <String, Object?>{'type': 'boolean'},
-        'prefsEventReminders': <String, Object?>{'type': 'boolean'},
-        'prefsRunStatusUpdates': <String, Object?>{'type': 'boolean'},
-        'prefsClubUpdates': <String, Object?>{'type': 'boolean'},
-        'prefsWeeklyDigest': <String, Object?>{'type': 'boolean'},
-        'prefsShowOnMap': <String, Object?>{'type': 'boolean'},
+        'prefsNewCatches': <String, Object?>{
+          'type': 'boolean',
+        },
+        'prefsMessages': <String, Object?>{
+          'type': 'boolean',
+        },
+        'prefsEventReminders': <String, Object?>{
+          'type': 'boolean',
+        },
+        'prefsRunStatusUpdates': <String, Object?>{
+          'type': 'boolean',
+        },
+        'prefsClubUpdates': <String, Object?>{
+          'type': 'boolean',
+        },
+        'prefsWeeklyDigest': <String, Object?>{
+          'type': 'boolean',
+        },
+        'prefsShowOnMap': <String, Object?>{
+          'type': 'boolean',
+        },
       },
     },
   },

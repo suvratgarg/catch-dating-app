@@ -8,15 +8,13 @@ const schemaEventDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/events.schema.json',
   'title': 'EventDocument',
-  'description':
-      'Canonical event document stored at events/{eventId}. The event id is the document id and is not stored in document data.',
+  'description': 'Canonical event document stored at events/{eventId}. The event id is the document id and is not stored in document data.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'events',
   'x-firestore-path': 'events/{eventId}',
   'x-document-id-field': 'id',
-  'x-owner':
-      'host create/update/cancel/delete callables; booking and attendance aggregates are callable-owned',
+  'x-owner': 'host create/update/cancel/delete callables; booking and attendance aggregates are callable-owned',
   'x-internal-demo-fields': <Object?>[
     'synthetic',
     'seedPrefix',
@@ -76,9 +74,14 @@ const schemaEventDocumentSchema = <String, Object?>{
       'description': 'Serialized Firestore Timestamp fixture shape.',
       'x-firestore-type': 'timestamp',
       'additionalProperties': false,
-      'required': <Object?>['_seconds', '_nanoseconds'],
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
       'properties': <String, Object?>{
-        '_seconds': <String, Object?>{'type': 'integer'},
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
         '_nanoseconds': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
@@ -92,9 +95,14 @@ const schemaEventDocumentSchema = <String, Object?>{
       'description': 'Serialized Firestore Timestamp fixture shape.',
       'x-firestore-type': 'timestamp',
       'additionalProperties': false,
-      'required': <Object?>['_seconds', '_nanoseconds'],
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
       'properties': <String, Object?>{
-        '_seconds': <String, Object?>{'type': 'integer'},
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
         '_nanoseconds': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
@@ -112,9 +120,12 @@ const schemaEventDocumentSchema = <String, Object?>{
     'meetingLocation': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'description':
-          'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
-      'required': <Object?>['name', 'latitude', 'longitude'],
+      'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+      'required': <Object?>[
+        'name',
+        'latitude',
+        'longitude',
+      ],
       'properties': <String, Object?>{
         'name': <String, Object?>{
           'type': 'string',
@@ -122,11 +133,17 @@ const schemaEventDocumentSchema = <String, Object?>{
           'maxLength': 240,
         },
         'address': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 500,
         },
         'placeId': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'minLength': 1,
           'maxLength': 256,
         },
@@ -141,7 +158,10 @@ const schemaEventDocumentSchema = <String, Object?>{
           'maximum': 180,
         },
         'notes': <String, Object?>{
-          'type': <Object?>['string', 'null'],
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
           'maxLength': 1000,
         },
       },
@@ -160,14 +180,23 @@ const schemaEventDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'callable-owned',
     },
     'locationDetails': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 1000,
       'x-catch-ownership': 'callable-owned',
     },
     'photoUrl': <String, Object?>{
       'anyOf': <Object?>[
-        <String, Object?>{'type': 'string', 'format': 'uri', 'maxLength': 2048},
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'string',
+          'format': 'uri',
+          'maxLength': 2048,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
       'x-catch-ownership': 'callable-owned',
     },
@@ -176,8 +205,7 @@ const schemaEventDocumentSchema = <String, Object?>{
       'maxItems': 12,
       'items': <String, Object?>{
         'title': 'UploadedPhoto',
-        'description':
-            'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
+        'description': 'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
         'type': 'object',
         'additionalProperties': false,
         'required': <Object?>[
@@ -215,7 +243,9 @@ const schemaEventDocumentSchema = <String, Object?>{
                 'format': 'uri',
                 'maxLength': 2048,
               },
-              <String, Object?>{'type': 'null'},
+              <String, Object?>{
+                'type': 'null',
+              },
             ],
           },
           'thumbnailStoragePath': <String, Object?>{
@@ -226,7 +256,9 @@ const schemaEventDocumentSchema = <String, Object?>{
                 'maxLength': 512,
                 'pattern': '^[^/\\u0000][^\\u0000]*\$',
               },
-              <String, Object?>{'type': 'null'},
+              <String, Object?>{
+                'type': 'null',
+              },
             ],
           },
           'position': <String, Object?>{
@@ -235,29 +267,45 @@ const schemaEventDocumentSchema = <String, Object?>{
             'maximum': 19,
           },
           'moderation': <String, Object?>{
-            'type': <Object?>['object', 'null'],
+            'type': <Object?>[
+              'object',
+              'null',
+            ],
             'additionalProperties': false,
-            'required': <Object?>['status'],
+            'required': <Object?>[
+              'status',
+            ],
             'properties': <String, Object?>{
               'status': <String, Object?>{
                 'type': 'string',
-                'enum': <Object?>['pending', 'approved', 'rejected'],
+                'enum': <Object?>[
+                  'pending',
+                  'approved',
+                  'rejected',
+                ],
               },
               'reason': <String, Object?>{
-                'type': <Object?>['string', 'null'],
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
                 'maxLength': 240,
               },
               'reviewedAt': <String, Object?>{
                 'anyOf': <Object?>[
                   <String, Object?>{
                     'type': 'object',
-                    'description':
-                        'Serialized Firestore Timestamp fixture shape.',
+                    'description': 'Serialized Firestore Timestamp fixture shape.',
                     'x-firestore-type': 'timestamp',
                     'additionalProperties': false,
-                    'required': <Object?>['_seconds', '_nanoseconds'],
+                    'required': <Object?>[
+                      '_seconds',
+                      '_nanoseconds',
+                    ],
                     'properties': <String, Object?>{
-                      '_seconds': <String, Object?>{'type': 'integer'},
+                      '_seconds': <String, Object?>{
+                        'type': 'integer',
+                      },
                       '_nanoseconds': <String, Object?>{
                         'type': 'integer',
                         'minimum': 0,
@@ -265,7 +313,9 @@ const schemaEventDocumentSchema = <String, Object?>{
                       },
                     },
                   },
-                  <String, Object?>{'type': 'null'},
+                  <String, Object?>{
+                    'type': 'null',
+                  },
                 ],
               },
             },
@@ -275,9 +325,14 @@ const schemaEventDocumentSchema = <String, Object?>{
             'description': 'Serialized Firestore Timestamp fixture shape.',
             'x-firestore-type': 'timestamp',
             'additionalProperties': false,
-            'required': <Object?>['_seconds', '_nanoseconds'],
+            'required': <Object?>[
+              '_seconds',
+              '_nanoseconds',
+            ],
             'properties': <String, Object?>{
-              '_seconds': <String, Object?>{'type': 'integer'},
+              '_seconds': <String, Object?>{
+                'type': 'integer',
+              },
               '_nanoseconds': <String, Object?>{
                 'type': 'integer',
                 'minimum': 0,
@@ -290,9 +345,14 @@ const schemaEventDocumentSchema = <String, Object?>{
             'description': 'Serialized Firestore Timestamp fixture shape.',
             'x-firestore-type': 'timestamp',
             'additionalProperties': false,
-            'required': <Object?>['_seconds', '_nanoseconds'],
+            'required': <Object?>[
+              '_seconds',
+              '_nanoseconds',
+            ],
             'properties': <String, Object?>{
-              '_seconds': <String, Object?>{'type': 'integer'},
+              '_seconds': <String, Object?>{
+                'type': 'integer',
+              },
               '_nanoseconds': <String, Object?>{
                 'type': 'integer',
                 'minimum': 0,
@@ -321,9 +381,16 @@ const schemaEventDocumentSchema = <String, Object?>{
     'eventFormat': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'required': <Object?>['version', 'activityKind', 'interactionModel'],
+      'required': <Object?>[
+        'version',
+        'activityKind',
+        'interactionModel',
+      ],
       'properties': <String, Object?>{
-        'version': <String, Object?>{'type': 'integer', 'const': 1},
+        'version': <String, Object?>{
+          'type': 'integer',
+          'const': 1,
+        },
         'activityKind': <String, Object?>{
           'type': 'string',
           'enum': <Object?>[
@@ -380,8 +447,7 @@ const schemaEventDocumentSchema = <String, Object?>{
         'eventSuccessPrimitives': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
-          'description':
-              'Optional event-success behavior primitives for custom or unsupported activity formats. These fields translate a saved event format into the small set of primitives event success can reason about.',
+          'description': 'Optional event-success behavior primitives for custom or unsupported activity formats. These fields translate a saved event format into the small set of primitives event success can reason about.',
           'properties': <String, Object?>{
             'phoneAvailability': <String, Object?>{
               'type': 'string',
@@ -395,7 +461,11 @@ const schemaEventDocumentSchema = <String, Object?>{
             },
             'rotationSuitability': <String, Object?>{
               'type': 'string',
-              'enum': <Object?>['none', 'plannedBreaks', 'continuousRounds'],
+              'enum': <Object?>[
+                'none',
+                'plannedBreaks',
+                'continuousRounds',
+              ],
             },
             'assignmentAlgorithm': <String, Object?>{
               'type': 'string',
@@ -428,7 +498,12 @@ const schemaEventDocumentSchema = <String, Object?>{
     },
     'pace': <String, Object?>{
       'type': 'string',
-      'enum': <Object?>['easy', 'moderate', 'fast', 'competitive'],
+      'enum': <Object?>[
+        'easy',
+        'moderate',
+        'fast',
+        'competitive',
+      ],
       'x-catch-ownership': 'callable-owned',
     },
     'capacityLimit': <String, Object?>{
@@ -470,7 +545,10 @@ const schemaEventDocumentSchema = <String, Object?>{
     },
     'status': <String, Object?>{
       'type': 'string',
-      'enum': <Object?>['active', 'cancelled'],
+      'enum': <Object?>[
+        'active',
+        'cancelled',
+      ],
       'x-catch-ownership': 'callable-owned',
     },
     'cancelledAt': <String, Object?>{
@@ -480,9 +558,14 @@ const schemaEventDocumentSchema = <String, Object?>{
           'description': 'Serialized Firestore Timestamp fixture shape.',
           'x-firestore-type': 'timestamp',
           'additionalProperties': false,
-          'required': <Object?>['_seconds', '_nanoseconds'],
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
           'properties': <String, Object?>{
-            '_seconds': <String, Object?>{'type': 'integer'},
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
             '_nanoseconds': <String, Object?>{
               'type': 'integer',
               'minimum': 0,
@@ -490,19 +573,29 @@ const schemaEventDocumentSchema = <String, Object?>{
             },
           },
         },
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
       'x-catch-ownership': 'callable-owned',
     },
     'cancellationReason': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 500,
       'x-catch-ownership': 'callable-owned',
     },
     'constraints': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'required': <Object?>['minAge', 'maxAge', 'maxMen', 'maxWomen'],
+      'required': <Object?>[
+        'minAge',
+        'maxAge',
+        'maxMen',
+        'maxWomen',
+      ],
       'properties': <String, Object?>{
         'minAge': <String, Object?>{
           'type': 'integer',
@@ -515,11 +608,17 @@ const schemaEventDocumentSchema = <String, Object?>{
           'maximum': 120,
         },
         'maxMen': <String, Object?>{
-          'type': <Object?>['integer', 'null'],
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
           'minimum': 0,
         },
         'maxWomen': <String, Object?>{
-          'type': <Object?>['integer', 'null'],
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
           'minimum': 0,
         },
       },
@@ -536,7 +635,10 @@ const schemaEventDocumentSchema = <String, Object?>{
         'settlement',
       ],
       'properties': <String, Object?>{
-        'version': <String, Object?>{'type': 'integer', 'const': 1},
+        'version': <String, Object?>{
+          'type': 'integer',
+          'const': 1,
+        },
         'admission': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
@@ -571,7 +673,10 @@ const schemaEventDocumentSchema = <String, Object?>{
             'waitlistPolicy': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
-              'required': <Object?>['mode', 'offerWindowMinutes'],
+              'required': <Object?>[
+                'mode',
+                'offerWindowMinutes',
+              ],
               'properties': <String, Object?>{
                 'mode': <String, Object?>{
                   'type': 'string',
@@ -589,9 +694,15 @@ const schemaEventDocumentSchema = <String, Object?>{
                 },
               },
             },
-            'inviteRequired': <String, Object?>{'type': 'boolean'},
-            'membershipRequired': <String, Object?>{'type': 'boolean'},
-            'manualApprovalRequired': <String, Object?>{'type': 'boolean'},
+            'inviteRequired': <String, Object?>{
+              'type': 'boolean',
+            },
+            'membershipRequired': <String, Object?>{
+              'type': 'boolean',
+            },
+            'manualApprovalRequired': <String, Object?>{
+              'type': 'boolean',
+            },
             'privateAccessPolicy': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
@@ -603,13 +714,21 @@ const schemaEventDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'mode': <String, Object?>{
                   'type': 'string',
-                  'enum': <Object?>['none', 'inviteCode'],
+                  'enum': <Object?>[
+                    'none',
+                    'inviteCode',
+                  ],
                 },
                 'inviteCodeHint': <String, Object?>{
-                  'type': <Object?>['string', 'null'],
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
                   'maxLength': 64,
                 },
-                'privateLinkEnabled': <String, Object?>{'type': 'boolean'},
+                'privateLinkEnabled': <String, Object?>{
+                  'type': 'boolean',
+                },
               },
             },
             'cohortCapacityLimits': <String, Object?>{
@@ -620,7 +739,10 @@ const schemaEventDocumentSchema = <String, Object?>{
               },
             },
             'balancedRatioPolicy': <String, Object?>{
-              'type': <Object?>['object', 'null'],
+              'type': <Object?>[
+                'object',
+                'null',
+              ],
               'additionalProperties': false,
               'required': <Object?>[
                 'leftCohortId',
@@ -738,22 +860,32 @@ const schemaEventDocumentSchema = <String, Object?>{
         'cancellation': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
-          'required': <Object?>['policyId'],
+          'required': <Object?>[
+            'policyId',
+          ],
           'properties': <String, Object?>{
             'policyId': <String, Object?>{
               'type': 'string',
-              'enum': <Object?>['flexible', 'standard', 'strict'],
+              'enum': <Object?>[
+                'flexible',
+                'standard',
+                'strict',
+              ],
             },
           },
         },
         'settlement': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
-          'required': <Object?>['hostPayoutTiming'],
+          'required': <Object?>[
+            'hostPayoutTiming',
+          ],
           'properties': <String, Object?>{
             'hostPayoutTiming': <String, Object?>{
               'type': 'string',
-              'enum': <Object?>['afterEventCompletion'],
+              'enum': <Object?>[
+                'afterEventCompletion',
+              ],
             },
           },
         },
@@ -821,7 +953,10 @@ const schemaEventDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'callable-owned',
     },
     'discoveryGeoCell': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'pattern': '^-?\\d+:-?\\d+\$',
       'x-catch-ownership': 'callable-owned',
     },
@@ -831,7 +966,13 @@ const schemaEventDocumentSchema = <String, Object?>{
     },
     'discoveryAvailability': <String, Object?>{
       'type': 'string',
-      'enum': <Object?>['open', 'waitlist', 'gated', 'full', 'cancelled'],
+      'enum': <Object?>[
+        'open',
+        'waitlist',
+        'gated',
+        'full',
+        'cancelled',
+      ],
       'x-catch-ownership': 'callable-owned',
     },
     'discoveryOpenCohorts': <String, Object?>{
@@ -891,8 +1032,7 @@ const schemaEventDocumentSchema = <String, Object?>{
     'adminSearch': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'description':
-          'Server-owned deterministic search projection used by admin event publishing. Rebuildable from canonical event and organizer fields; not consumed by the app.',
+      'description': 'Server-owned deterministic search projection used by admin event publishing. Rebuildable from canonical event and organizer fields; not consumed by the app.',
       'required': <Object?>[
         'tokens',
         'sortKey',
@@ -922,9 +1062,14 @@ const schemaEventDocumentSchema = <String, Object?>{
           'description': 'Serialized Firestore Timestamp fixture shape.',
           'x-firestore-type': 'timestamp',
           'additionalProperties': false,
-          'required': <Object?>['_seconds', '_nanoseconds'],
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
           'properties': <String, Object?>{
-            '_seconds': <String, Object?>{'type': 'integer'},
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
             '_nanoseconds': <String, Object?>{
               'type': 'integer',
               'minimum': 0,
@@ -944,41 +1089,35 @@ const schemaEventDocumentSchema = <String, Object?>{
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
-      'description':
-          'Internal demo seed marker used for cleanup and diagnostics.',
+      'description': 'Internal demo seed marker used for cleanup and diagnostics.',
     },
     'seedPrefix': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
-      'description':
-          'Internal demo seed prefix used for cleanup and diagnostics.',
+      'description': 'Internal demo seed prefix used for cleanup and diagnostics.',
     },
     'scenario': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
-      'description':
-          'Internal demo seed scenario name used for cleanup and diagnostics.',
+      'description': 'Internal demo seed scenario name used for cleanup and diagnostics.',
     },
     'demoOps': <String, Object?>{
       'type': 'boolean',
-      'description':
-          'Internal demo-operations marker used for cleanup and diagnostics.',
+      'description': 'Internal demo-operations marker used for cleanup and diagnostics.',
     },
     'demoOpsId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
-      'description':
-          'Internal demo-operations id used for cleanup and diagnostics.',
+      'description': 'Internal demo-operations id used for cleanup and diagnostics.',
     },
     'demoOpsCommand': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 80,
-      'description':
-          'Internal demo-operations command name used for cleanup and diagnostics.',
+      'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
     },
   },
 };

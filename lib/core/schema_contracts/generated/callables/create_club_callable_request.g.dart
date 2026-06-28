@@ -3,6 +3,7 @@
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 
+
 // Typed callable request DTO emitted from callables/create_club_payload.schema.json.
 // Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
 

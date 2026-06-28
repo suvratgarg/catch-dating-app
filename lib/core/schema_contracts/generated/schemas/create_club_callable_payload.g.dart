@@ -6,13 +6,17 @@
 
 const schemaCreateClubCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id':
-      'https://catch.app/contracts/callables/create_club_payload.schema.json',
+  '\$id': 'https://catch.app/contracts/callables/create_club_payload.schema.json',
   'title': 'CreateClubCallablePayload',
   'description': 'Callable payload accepted by createClub.',
   'type': 'object',
   'additionalProperties': false,
-  'required': <Object?>['name', 'description', 'location', 'area'],
+  'required': <Object?>[
+    'name',
+    'description',
+    'location',
+    'area',
+  ],
   'properties': <String, Object?>{
     'clubId': <String, Object?>{
       'type': 'string',
@@ -41,11 +45,17 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
       'maxLength': 120,
     },
     'imageUrl': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 320,
     },
     'profileImageUrl': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 320,
     },
     'clubPhotos': <String, Object?>{
@@ -53,8 +63,7 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
       'maxItems': 12,
       'items': <String, Object?>{
         'title': 'UploadedPhoto',
-        'description':
-            'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
+        'description': 'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
         'type': 'object',
         'additionalProperties': false,
         'required': <Object?>[
@@ -92,7 +101,9 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                 'format': 'uri',
                 'maxLength': 2048,
               },
-              <String, Object?>{'type': 'null'},
+              <String, Object?>{
+                'type': 'null',
+              },
             ],
           },
           'thumbnailStoragePath': <String, Object?>{
@@ -103,7 +114,9 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                 'maxLength': 512,
                 'pattern': '^[^/\\u0000][^\\u0000]*\$',
               },
-              <String, Object?>{'type': 'null'},
+              <String, Object?>{
+                'type': 'null',
+              },
             ],
           },
           'position': <String, Object?>{
@@ -112,29 +125,45 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
             'maximum': 19,
           },
           'moderation': <String, Object?>{
-            'type': <Object?>['object', 'null'],
+            'type': <Object?>[
+              'object',
+              'null',
+            ],
             'additionalProperties': false,
-            'required': <Object?>['status'],
+            'required': <Object?>[
+              'status',
+            ],
             'properties': <String, Object?>{
               'status': <String, Object?>{
                 'type': 'string',
-                'enum': <Object?>['pending', 'approved', 'rejected'],
+                'enum': <Object?>[
+                  'pending',
+                  'approved',
+                  'rejected',
+                ],
               },
               'reason': <String, Object?>{
-                'type': <Object?>['string', 'null'],
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
                 'maxLength': 240,
               },
               'reviewedAt': <String, Object?>{
                 'anyOf': <Object?>[
                   <String, Object?>{
                     'type': 'object',
-                    'description':
-                        'Serialized Firestore Timestamp fixture shape.',
+                    'description': 'Serialized Firestore Timestamp fixture shape.',
                     'x-firestore-type': 'timestamp',
                     'additionalProperties': false,
-                    'required': <Object?>['_seconds', '_nanoseconds'],
+                    'required': <Object?>[
+                      '_seconds',
+                      '_nanoseconds',
+                    ],
                     'properties': <String, Object?>{
-                      '_seconds': <String, Object?>{'type': 'integer'},
+                      '_seconds': <String, Object?>{
+                        'type': 'integer',
+                      },
                       '_nanoseconds': <String, Object?>{
                         'type': 'integer',
                         'minimum': 0,
@@ -142,7 +171,9 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                       },
                     },
                   },
-                  <String, Object?>{'type': 'null'},
+                  <String, Object?>{
+                    'type': 'null',
+                  },
                 ],
               },
             },
@@ -152,9 +183,14 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
             'description': 'Serialized Firestore Timestamp fixture shape.',
             'x-firestore-type': 'timestamp',
             'additionalProperties': false,
-            'required': <Object?>['_seconds', '_nanoseconds'],
+            'required': <Object?>[
+              '_seconds',
+              '_nanoseconds',
+            ],
             'properties': <String, Object?>{
-              '_seconds': <String, Object?>{'type': 'integer'},
+              '_seconds': <String, Object?>{
+                'type': 'integer',
+              },
               '_nanoseconds': <String, Object?>{
                 'type': 'integer',
                 'minimum': 0,
@@ -167,9 +203,14 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
             'description': 'Serialized Firestore Timestamp fixture shape.',
             'x-firestore-type': 'timestamp',
             'additionalProperties': false,
-            'required': <Object?>['_seconds', '_nanoseconds'],
+            'required': <Object?>[
+              '_seconds',
+              '_nanoseconds',
+            ],
             'properties': <String, Object?>{
-              '_seconds': <String, Object?>{'type': 'integer'},
+              '_seconds': <String, Object?>{
+                'type': 'integer',
+              },
               '_nanoseconds': <String, Object?>{
                 'type': 'integer',
                 'minimum': 0,
@@ -192,8 +233,7 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{
           'title': 'UploadedPhoto',
-          'description':
-              'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
+          'description': 'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
           'type': 'object',
           'additionalProperties': false,
           'required': <Object?>[
@@ -231,7 +271,9 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                   'format': 'uri',
                   'maxLength': 2048,
                 },
-                <String, Object?>{'type': 'null'},
+                <String, Object?>{
+                  'type': 'null',
+                },
               ],
             },
             'thumbnailStoragePath': <String, Object?>{
@@ -242,7 +284,9 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                   'maxLength': 512,
                   'pattern': '^[^/\\u0000][^\\u0000]*\$',
                 },
-                <String, Object?>{'type': 'null'},
+                <String, Object?>{
+                  'type': 'null',
+                },
               ],
             },
             'position': <String, Object?>{
@@ -251,29 +295,45 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
               'maximum': 19,
             },
             'moderation': <String, Object?>{
-              'type': <Object?>['object', 'null'],
+              'type': <Object?>[
+                'object',
+                'null',
+              ],
               'additionalProperties': false,
-              'required': <Object?>['status'],
+              'required': <Object?>[
+                'status',
+              ],
               'properties': <String, Object?>{
                 'status': <String, Object?>{
                   'type': 'string',
-                  'enum': <Object?>['pending', 'approved', 'rejected'],
+                  'enum': <Object?>[
+                    'pending',
+                    'approved',
+                    'rejected',
+                  ],
                 },
                 'reason': <String, Object?>{
-                  'type': <Object?>['string', 'null'],
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
                   'maxLength': 240,
                 },
                 'reviewedAt': <String, Object?>{
                   'anyOf': <Object?>[
                     <String, Object?>{
                       'type': 'object',
-                      'description':
-                          'Serialized Firestore Timestamp fixture shape.',
+                      'description': 'Serialized Firestore Timestamp fixture shape.',
                       'x-firestore-type': 'timestamp',
                       'additionalProperties': false,
-                      'required': <Object?>['_seconds', '_nanoseconds'],
+                      'required': <Object?>[
+                        '_seconds',
+                        '_nanoseconds',
+                      ],
                       'properties': <String, Object?>{
-                        '_seconds': <String, Object?>{'type': 'integer'},
+                        '_seconds': <String, Object?>{
+                          'type': 'integer',
+                        },
                         '_nanoseconds': <String, Object?>{
                           'type': 'integer',
                           'minimum': 0,
@@ -281,7 +341,9 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                         },
                       },
                     },
-                    <String, Object?>{'type': 'null'},
+                    <String, Object?>{
+                      'type': 'null',
+                    },
                   ],
                 },
               },
@@ -291,9 +353,14 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
               'description': 'Serialized Firestore Timestamp fixture shape.',
               'x-firestore-type': 'timestamp',
               'additionalProperties': false,
-              'required': <Object?>['_seconds', '_nanoseconds'],
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
               'properties': <String, Object?>{
-                '_seconds': <String, Object?>{'type': 'integer'},
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
                 '_nanoseconds': <String, Object?>{
                   'type': 'integer',
                   'minimum': 0,
@@ -306,9 +373,14 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
               'description': 'Serialized Firestore Timestamp fixture shape.',
               'x-firestore-type': 'timestamp',
               'additionalProperties': false,
-              'required': <Object?>['_seconds', '_nanoseconds'],
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
               'properties': <String, Object?>{
-                '_seconds': <String, Object?>{'type': 'integer'},
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
                 '_nanoseconds': <String, Object?>{
                   'type': 'integer',
                   'minimum': 0,
@@ -326,19 +398,30 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
             },
           },
         },
-        <String, Object?>{'type': 'null'},
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
     },
     'instagramHandle': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 320,
     },
     'phoneNumber': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 320,
     },
     'email': <String, Object?>{
-      'type': <Object?>['string', 'null'],
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 320,
     },
     'hostDefaults': <String, Object?>{
@@ -416,27 +499,45 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
               'maximum': 120,
             },
             'maxMen': <String, Object?>{
-              'type': <Object?>['integer', 'null'],
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
               'minimum': 0,
             },
             'maxWomen': <String, Object?>{
-              'type': <Object?>['integer', 'null'],
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
               'minimum': 0,
             },
-            'dynamicPricingEnabled': <String, Object?>{'type': 'boolean'},
+            'dynamicPricingEnabled': <String, Object?>{
+              'type': 'boolean',
+            },
             'dynamicPricingStepInPaise': <String, Object?>{
-              'type': <Object?>['integer', 'null'],
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
               'minimum': 0,
               'maximum': 100000000,
             },
             'dynamicPricingMaxInPaise': <String, Object?>{
-              'type': <Object?>['integer', 'null'],
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
               'minimum': 0,
               'maximum': 100000000,
             },
             'cancellationPolicyId': <String, Object?>{
               'type': 'string',
-              'enum': <Object?>['flexible', 'standard', 'strict'],
+              'enum': <Object?>[
+                'flexible',
+                'standard',
+                'strict',
+              ],
             },
           },
         },
@@ -444,7 +545,9 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
           'properties': <String, Object?>{
-            'enabled': <String, Object?>{'type': 'boolean'},
+            'enabled': <String, Object?>{
+              'type': 'boolean',
+            },
             'playbookId': <String, Object?>{
               'type': 'string',
               'minLength': 1,
@@ -484,12 +587,18 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                   'maximum': 1000,
                 },
                 'unitCount': <String, Object?>{
-                  'type': <Object?>['integer', 'null'],
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
                   'minimum': 1,
                   'maximum': 200,
                 },
                 'rotationIntervalMinutes': <String, Object?>{
-                  'type': <Object?>['integer', 'null'],
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
                   'minimum': 5,
                   'maximum': 180,
                 },
@@ -500,7 +609,10 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                 },
                 'rotationRepeatStrategy': <String, Object?>{
                   'type': 'string',
-                  'enum': <Object?>['avoid', 'allowWhenExhausted'],
+                  'enum': <Object?>[
+                    'avoid',
+                    'allowWhenExhausted',
+                  ],
                 },
                 'maxPairMeetings': <String, Object?>{
                   'type': 'integer',
@@ -513,7 +625,11 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                   'uniqueItems': true,
                   'items': <String, Object?>{
                     'type': 'string',
-                    'enum': <Object?>['paceBand', 'skillBand', 'roleBand'],
+                    'enum': <Object?>[
+                      'paceBand',
+                      'skillBand',
+                      'roleBand',
+                    ],
                   },
                 },
                 'clusterActivityAttributes': <String, Object?>{
@@ -522,19 +638,34 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                   'uniqueItems': true,
                   'items': <String, Object?>{
                     'type': 'string',
-                    'enum': <Object?>['paceBand', 'skillBand', 'roleBand'],
+                    'enum': <Object?>[
+                      'paceBand',
+                      'skillBand',
+                      'roleBand',
+                    ],
                   },
                 },
               },
             },
-            'hostGoal': <String, Object?>{'type': 'string', 'maxLength': 300},
-            'wingmanRequestsEnabled': <String, Object?>{'type': 'boolean'},
-            'contextualOpenersEnabled': <String, Object?>{'type': 'boolean'},
-            'compatibilityAffectsRanking': <String, Object?>{'type': 'boolean'},
+            'hostGoal': <String, Object?>{
+              'type': 'string',
+              'maxLength': 300,
+            },
+            'wingmanRequestsEnabled': <String, Object?>{
+              'type': 'boolean',
+            },
+            'contextualOpenersEnabled': <String, Object?>{
+              'type': 'boolean',
+            },
+            'compatibilityAffectsRanking': <String, Object?>{
+              'type': 'boolean',
+            },
             'questionnaireConfig': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
-              'required': <Object?>['templateId'],
+              'required': <Object?>[
+                'templateId',
+              ],
               'properties': <String, Object?>{
                 'templateId': <String, Object?>{
                   'type': 'string',
@@ -542,7 +673,10 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                   'maxLength': 120,
                 },
                 'customTitle': <String, Object?>{
-                  'type': <Object?>['string', 'null'],
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
                   'maxLength': 80,
                 },
                 'customQuestions': <String, Object?>{
@@ -551,7 +685,11 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                   'items': <String, Object?>{
                     'type': 'object',
                     'additionalProperties': false,
-                    'required': <Object?>['id', 'prompt', 'options'],
+                    'required': <Object?>[
+                      'id',
+                      'prompt',
+                      'options',
+                    ],
                     'properties': <String, Object?>{
                       'id': <String, Object?>{
                         'type': 'string',
@@ -570,7 +708,10 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                         'items': <String, Object?>{
                           'type': 'object',
                           'additionalProperties': false,
-                          'required': <Object?>['id', 'label'],
+                          'required': <Object?>[
+                            'id',
+                            'label',
+                          ],
                           'properties': <String, Object?>{
                             'id': <String, Object?>{
                               'type': 'string',
@@ -591,7 +732,10 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
               },
             },
             'attendeePrompt': <String, Object?>{
-              'type': <Object?>['string', 'null'],
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
               'maxLength': 300,
             },
           },
@@ -603,7 +747,9 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
             'type': 'object',
             'additionalProperties': false,
             'properties': <String, Object?>{
-              'enabled': <String, Object?>{'type': 'boolean'},
+              'enabled': <String, Object?>{
+                'type': 'boolean',
+              },
               'playbookId': <String, Object?>{
                 'type': 'string',
                 'minLength': 1,
@@ -643,12 +789,18 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                     'maximum': 1000,
                   },
                   'unitCount': <String, Object?>{
-                    'type': <Object?>['integer', 'null'],
+                    'type': <Object?>[
+                      'integer',
+                      'null',
+                    ],
                     'minimum': 1,
                     'maximum': 200,
                   },
                   'rotationIntervalMinutes': <String, Object?>{
-                    'type': <Object?>['integer', 'null'],
+                    'type': <Object?>[
+                      'integer',
+                      'null',
+                    ],
                     'minimum': 5,
                     'maximum': 180,
                   },
@@ -659,7 +811,10 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                   },
                   'rotationRepeatStrategy': <String, Object?>{
                     'type': 'string',
-                    'enum': <Object?>['avoid', 'allowWhenExhausted'],
+                    'enum': <Object?>[
+                      'avoid',
+                      'allowWhenExhausted',
+                    ],
                   },
                   'maxPairMeetings': <String, Object?>{
                     'type': 'integer',
@@ -672,7 +827,11 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                     'uniqueItems': true,
                     'items': <String, Object?>{
                       'type': 'string',
-                      'enum': <Object?>['paceBand', 'skillBand', 'roleBand'],
+                      'enum': <Object?>[
+                        'paceBand',
+                        'skillBand',
+                        'roleBand',
+                      ],
                     },
                   },
                   'clusterActivityAttributes': <String, Object?>{
@@ -681,21 +840,34 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                     'uniqueItems': true,
                     'items': <String, Object?>{
                       'type': 'string',
-                      'enum': <Object?>['paceBand', 'skillBand', 'roleBand'],
+                      'enum': <Object?>[
+                        'paceBand',
+                        'skillBand',
+                        'roleBand',
+                      ],
                     },
                   },
                 },
               },
-              'hostGoal': <String, Object?>{'type': 'string', 'maxLength': 300},
-              'wingmanRequestsEnabled': <String, Object?>{'type': 'boolean'},
-              'contextualOpenersEnabled': <String, Object?>{'type': 'boolean'},
+              'hostGoal': <String, Object?>{
+                'type': 'string',
+                'maxLength': 300,
+              },
+              'wingmanRequestsEnabled': <String, Object?>{
+                'type': 'boolean',
+              },
+              'contextualOpenersEnabled': <String, Object?>{
+                'type': 'boolean',
+              },
               'compatibilityAffectsRanking': <String, Object?>{
                 'type': 'boolean',
               },
               'questionnaireConfig': <String, Object?>{
                 'type': 'object',
                 'additionalProperties': false,
-                'required': <Object?>['templateId'],
+                'required': <Object?>[
+                  'templateId',
+                ],
                 'properties': <String, Object?>{
                   'templateId': <String, Object?>{
                     'type': 'string',
@@ -703,7 +875,10 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                     'maxLength': 120,
                   },
                   'customTitle': <String, Object?>{
-                    'type': <Object?>['string', 'null'],
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
                     'maxLength': 80,
                   },
                   'customQuestions': <String, Object?>{
@@ -712,7 +887,11 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                     'items': <String, Object?>{
                       'type': 'object',
                       'additionalProperties': false,
-                      'required': <Object?>['id', 'prompt', 'options'],
+                      'required': <Object?>[
+                        'id',
+                        'prompt',
+                        'options',
+                      ],
                       'properties': <String, Object?>{
                         'id': <String, Object?>{
                           'type': 'string',
@@ -731,7 +910,10 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                           'items': <String, Object?>{
                             'type': 'object',
                             'additionalProperties': false,
-                            'required': <Object?>['id', 'label'],
+                            'required': <Object?>[
+                              'id',
+                              'label',
+                            ],
                             'properties': <String, Object?>{
                               'id': <String, Object?>{
                                 'type': 'string',
@@ -752,7 +934,10 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                 },
               },
               'attendeePrompt': <String, Object?>{
-                'type': <Object?>['string', 'null'],
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
                 'maxLength': 300,
               },
             },
