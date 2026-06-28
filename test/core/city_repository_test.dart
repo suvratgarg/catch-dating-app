@@ -20,15 +20,25 @@ void main() {
     const cities = [
       CityData(
         name: 'indore',
+        marketId: 'in-mp-indore',
+        cityId: 'in-mp-indore',
+        slug: 'indore',
         label: 'Indore',
         latitude: 22.7196,
         longitude: 75.8577,
+        profileSelectable: true,
+        exploreVisible: true,
       ),
       CityData(
         name: 'mumbai',
+        marketId: 'in-mh-mumbai',
+        cityId: 'in-mh-mumbai',
+        slug: 'mumbai',
         label: 'Mumbai',
         latitude: 19.0760,
         longitude: 72.8777,
+        profileSelectable: true,
+        exploreVisible: true,
       ),
     ];
     await firestore.doc('config/cities').set({
@@ -45,15 +55,25 @@ void main() {
   test('nearestCity chooses the closest configured city', () async {
     const indore = CityData(
       name: 'indore',
+      marketId: 'in-mp-indore',
+      cityId: 'in-mp-indore',
+      slug: 'indore',
       label: 'Indore',
       latitude: 22.7196,
       longitude: 75.8577,
+      profileSelectable: true,
+      exploreVisible: true,
     );
     const mumbai = CityData(
       name: 'mumbai',
+      marketId: 'in-mh-mumbai',
+      cityId: 'in-mh-mumbai',
+      slug: 'mumbai',
       label: 'Mumbai',
       latitude: 19.0760,
       longitude: 72.8777,
+      profileSelectable: true,
+      exploreVisible: true,
     );
     await firestore.doc('config/cities').set({
       'cities': [indore.toJson(), mumbai.toJson()],

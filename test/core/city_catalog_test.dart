@@ -29,7 +29,7 @@ void main() {
       expect(currencyCodeForCityName('sydney'), 'AUD');
       expect(dialCodeForCityName('kathmandu'), '+977');
       expect(marketForCityName('new-york').isoCode, 'US');
-      expect(defaultCityDataForMarket().name, 'mumbai');
+      expect(defaultCityDataForMarket().name, 'in-mh-mumbai');
     });
 
     test('unknown city labels fall back to title case', () {

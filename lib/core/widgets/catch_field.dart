@@ -379,6 +379,8 @@ class _CatchFieldState extends State<CatchField> {
       !_isEdit && !_hasControl && !_hasValue && !_open && !_titlePrimary;
 
   bool get _floated => !_isEdit || _hasValue || _active;
+  bool get _compactTextEntry =>
+      _isEdit && widget.size == CatchFieldSize.floating && !widget.showLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -437,21 +439,10 @@ class _CatchFieldState extends State<CatchField> {
 
   Widget _buildRow(CatchTokens t) {
     final clickable = _hasControl || (widget.onTap != null && !_isEdit);
-
-    return InkWell(
-      onTap: clickable
-          ? () {
-              if (_hasControl) setState(() => _open = !_open);
-              widget.onTap?.call();
-            }
-          : null,
+    final row = ConstrainedBox(
+      constraints: _rowConstraints,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s4,
-          CatchSpacing.micro14,
-          CatchSpacing.s4,
-          CatchSpacing.micro14,
-        ),
+        padding: _rowPadding,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -474,12 +465,22 @@ class _CatchFieldState extends State<CatchField> {
         ),
       ),
     );
+
+    return InkWell(
+      onTap: clickable
+          ? () {
+              if (_hasControl) setState(() => _open = !_open);
+              widget.onTap?.call();
+            }
+          : null,
+      child: row,
+    );
   }
 
   Widget _buildBody(CatchTokens t) {
     if (_usesCanonicalContent && !_isEdit) return _buildCanonicalBody(t);
 
-    final labelInPlace = _inline || _titlePrimary;
+    final labelInPlace = _inline || _titlePrimary || _compactTextEntry;
     return Padding(
       padding: EdgeInsets.only(top: labelInPlace ? 0 : CatchSpacing.s4),
       child: Stack(
@@ -1322,5 +1323,26 @@ class _CatchFieldState extends State<CatchField> {
       CatchFieldTone.danger => t.danger,
       _ => primaryFallback ?? (muted ? t.ink2 : t.ink),
     };
+  }
+
+  EdgeInsets get _rowPadding {
+    if (_compactTextEntry) {
+      return const EdgeInsets.symmetric(horizontal: CatchSpacing.s1);
+    }
+    return const EdgeInsets.fromLTRB(
+      CatchSpacing.s4,
+      CatchSpacing.micro14,
+      CatchSpacing.s4,
+      CatchSpacing.micro14,
+    );
+  }
+
+  BoxConstraints get _rowConstraints {
+    if (_compactTextEntry) {
+      return const BoxConstraints(
+        minHeight: CatchControlMetrics.floatingMinHeight,
+      );
+    }
+    return const BoxConstraints();
   }
 }
