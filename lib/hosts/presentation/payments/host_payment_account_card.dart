@@ -103,13 +103,13 @@ class _HostPaymentAccountCardState
                 ),
                 child: Column(
                   children: [
-                    CatchField(
+                    CatchField.nav(
                       title: 'Country',
                       valueText: _countryLabel(country),
                       icon: CatchIcons.locationOnOutlined,
                       showChevron: false,
                     ),
-                    CatchField(
+                    CatchField.nav(
                       title: 'Default currency',
                       valueText: currency.toUpperCase(),
                       icon: CatchIcons.paymentsOutlined,

@@ -237,7 +237,7 @@ class CustomQuestionnaireFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchField(
+        CatchField.input(
           key: const ValueKey('customQuestionnaireTitle'),
           title: 'Custom question set name',
           initialValue: value.customTitle ?? 'Custom question set',
@@ -354,7 +354,7 @@ class CustomQuestionFields extends StatelessWidget {
           ],
         ),
         gapH6,
-        CatchField(
+        CatchField.input(
           key: ValueKey('customQuestionPrompt-$index'),
           title: 'Prompt',
           initialValue: question.prompt,
@@ -369,7 +369,7 @@ class CustomQuestionFields extends StatelessWidget {
           optionIndex < question.options.length;
           optionIndex++
         ) ...[
-          CatchField(
+          CatchField.input(
             key: ValueKey('customQuestionOption-$index-$optionIndex'),
             title: 'Option ${optionIndex + 1}',
             initialValue: question.options[optionIndex].label,

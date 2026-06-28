@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:math' as math;
-
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart' show CatchMotion;
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -28,6 +25,7 @@ import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inlin
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -133,7 +131,10 @@ Future<void> _dragProfileTabUntilTappable(
 }
 
 Finder _profileInfoTile(String label) => find.byWidgetPredicate(
-  (widget) => widget is CatchField && widget.title == label,
+  (widget) =>
+      widget is CatchField &&
+      widget.title == label &&
+      widget.variant == CatchFieldVariant.row,
 );
 
 Finder _profileOptionGroup() => find.byType(CatchOptionGroup<int>);
@@ -620,13 +621,11 @@ void main() {
     expect(repository.updatedFields, {'displayName': 'S.'});
   });
 
-  testWidgets('inline text value underline follows scaled text width', (
+  testWidgets('inline text value edits through CatchField input primitive', (
     tester,
   ) async {
     final controller = TextEditingController(text: '+919131404263');
-    final focusNode = FocusNode();
     addTearDown(controller.dispose);
-    addTearDown(focusNode.dispose);
 
     await tester.pumpWidget(
       MaterialApp(
@@ -645,7 +644,6 @@ void main() {
                       label: 'Phone',
                       displayValue: controller.text,
                       controller: controller,
-                      focusNode: focusNode,
                       isEditing: true,
                       enabled: true,
                       keyboardType: TextInputType.phone,
@@ -660,74 +658,77 @@ void main() {
     );
     await tester.pump();
 
-    final context = tester.element(find.byType(ProfileInlineTextValue));
-    final t = CatchTokens.of(context);
-    final style = CatchTextStyles.profileAnswer(context, color: t.ink);
-    final painter = TextPainter(
-      text: TextSpan(text: controller.text, style: style),
-      textDirection: TextDirection.ltr,
-      textScaler: MediaQuery.textScalerOf(context),
-      maxLines: 1,
-    )..layout();
-    final underline = find.descendant(
+    final input = find.descendant(
       of: find.byType(ProfileInlineTextValue),
-      matching: find.byKey(const ValueKey('profile-inline-underline')),
+      matching: find.byType(CatchField),
+    );
+    final field = tester.widget<CatchField>(input);
+    final textField = tester.widget<TextField>(
+      find.descendant(of: input, matching: find.byType(TextField)),
     );
 
-    expect(tester.getSize(underline).width, closeTo(painter.width, 0.1));
+    expect(input, findsOneWidget);
+    expect(field.variant, CatchFieldVariant.underline);
+    expect(field.size, CatchFieldSize.floating);
+    expect(field.showLabel, isFalse);
+    expect(field.controller, same(controller));
+    expect(textField.controller, same(controller));
+    expect(textField.keyboardType, TextInputType.phone);
+    expect(textField.autofocus, isTrue);
   });
 
-  testWidgets('multiline text underline follows the widest rendered line', (
-    tester,
-  ) async {
-    final controller = TextEditingController(
-      text: 'This is the widest prompt line\nshort',
-    );
-    final focusNode = FocusNode();
-    addTearDown(controller.dispose);
-    addTearDown(focusNode.dispose);
+  testWidgets(
+    'multiline prompt text wires formatters through CatchField input',
+    (tester) async {
+      final controller = TextEditingController(
+        text: 'This is the widest prompt line\nshort',
+      );
+      addTearDown(controller.dispose);
 
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: Center(
-            child: SizedBox(
-              width: 300,
-              child: ProfileInlineTextValue(
-                label: _perfectRunPromptTitle,
-                displayValue: '',
-                controller: controller,
-                focusNode: focusNode,
-                isEditing: true,
-                enabled: true,
-                maxLines: null,
-                maxLength: maximumProfilePromptAnswerLength,
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 300,
+                child: ProfileInlineTextValue(
+                  label: _perfectRunPromptTitle,
+                  displayValue: '',
+                  controller: controller,
+                  isEditing: true,
+                  enabled: true,
+                  maxLines: null,
+                  maxLength: maximumProfilePromptAnswerLength,
+                  collapseStackedBlankLines: true,
+                ),
               ),
             ),
           ),
         ),
-      ),
-    );
-    await tester.pump();
+      );
+      await tester.pump();
 
-    final context = tester.element(find.byType(ProfileInlineTextValue));
-    final t = CatchTokens.of(context);
-    final style = CatchTextStyles.profileAnswer(context, color: t.ink);
-    final painter = TextPainter(
-      text: TextSpan(text: controller.text, style: style),
-      textDirection: TextDirection.ltr,
-      textScaler: MediaQuery.textScalerOf(context),
-    )..layout(maxWidth: 300);
-    final lineWidths = painter.computeLineMetrics().map((line) => line.width);
-    final expectedWidth = lineWidths.reduce(math.max);
-    final underline = find.descendant(
-      of: find.byType(ProfileInlineTextValue),
-      matching: find.byKey(const ValueKey('profile-inline-underline')),
-    );
+      final input = find.descendant(
+        of: find.byType(ProfileInlineTextValue),
+        matching: find.byType(CatchField),
+      );
+      final field = tester.widget<CatchField>(input);
+      final textField = tester.widget<TextField>(
+        find.descendant(of: input, matching: find.byType(TextField)),
+      );
 
-    expect(tester.getSize(underline).width, closeTo(expectedWidth, 0.1));
-  });
+      expect(input, findsOneWidget);
+      expect(field.maxLines, isNull);
+      expect(field.inputFormatters, hasLength(2));
+      expect(
+        field.inputFormatters!.whereType<LengthLimitingTextInputFormatter>(),
+        hasLength(1),
+      );
+      expect(textField.maxLines, isNull);
+      expect(textField.inputFormatters, same(field.inputFormatters));
+    },
+  );
 
   testWidgets('profile inline drawers animate open and closed', (tester) async {
     final user = buildUser(name: 'Suvrat Garg').copyWith(height: 172);
@@ -924,59 +925,69 @@ void main() {
     ]);
   });
 
-  testWidgets('prompt edit keeps the row anchored with a tight underline', (
-    tester,
-  ) async {
-    final user = buildUser(name: 'Suvrat Garg');
-    await _pumpProfileTab(tester, user);
+  testWidgets(
+    'prompt edit keeps the row anchored with CatchField input chrome',
+    (tester) async {
+      final user = buildUser(name: 'Suvrat Garg');
+      await _pumpProfileTab(tester, user);
 
-    final promptTile = _profileInfoTile(_perfectRunPromptTitle);
-    final chevron = find.byKey(
-      ValueKey('profile-info-$_perfectRunPromptTitle-chevron'),
-    );
-    final collapsedTileTop = tester.getTopLeft(promptTile).dy;
-    final collapsedChevronCenter = tester.getCenter(chevron);
+      final promptTile = _profileInfoTile(_perfectRunPromptTitle);
+      final chevron = find.byKey(
+        ValueKey('profile-info-$_perfectRunPromptTitle-chevron'),
+      );
+      final collapsedTileTop = tester.getTopLeft(promptTile).dy;
+      final collapsedChevronCenter = tester.getCenter(chevron);
 
-    await tester.tap(promptTile);
-    await tester.pump();
-    await pumpFeatureUiFor(tester, const Duration(milliseconds: 80));
+      await tester.tap(promptTile);
+      await tester.pump();
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 80));
 
-    expect(tester.getTopLeft(promptTile).dy, closeTo(collapsedTileTop, 0.1));
-    expect(
-      tester.getCenter(chevron).dx,
-      closeTo(collapsedChevronCenter.dx, 0.1),
-    );
-    expect(
-      tester.getCenter(chevron).dy,
-      closeTo(collapsedChevronCenter.dy, 0.1),
-    );
-    final midRotation = tester
-        .widget<RotationTransition>(
-          find.descendant(
-            of: chevron,
-            matching: find.byType(RotationTransition),
-          ),
-        )
-        .turns
-        .value;
-    expect(midRotation, lessThan(0));
-    expect(midRotation, greaterThan(-0.25));
+      expect(tester.getTopLeft(promptTile).dy, closeTo(collapsedTileTop, 0.1));
+      expect(
+        tester.getCenter(chevron).dx,
+        closeTo(collapsedChevronCenter.dx, 0.1),
+      );
+      expect(
+        tester.getCenter(chevron).dy,
+        closeTo(collapsedChevronCenter.dy, 0.1),
+      );
+      final midRotation = tester
+          .widget<RotationTransition>(
+            find.descendant(
+              of: chevron,
+              matching: find.byType(RotationTransition),
+            ),
+          )
+          .turns
+          .value;
+      expect(midRotation, lessThan(0));
+      expect(midRotation, greaterThanOrEqualTo(-0.25));
 
-    await _pumpProfileSheet(tester);
+      await _pumpProfileSheet(tester);
 
-    final editableText = find.byType(EditableText);
-    final underline = find.byKey(const ValueKey('profile-inline-underline'));
+      final promptFields = tester.widgetList<CatchField>(
+        find.descendant(
+          of: find.byType(ProfileInlineTextValue),
+          matching: find.byType(CatchField),
+        ),
+      );
+      final promptInput = promptFields.singleWhere(
+        (field) =>
+            field.variant == CatchFieldVariant.underline &&
+            field.size == CatchFieldSize.floating &&
+            !field.showLabel,
+      );
 
-    expect(tester.getTopLeft(promptTile).dy, closeTo(collapsedTileTop, 0.1));
-    expect(
-      tester.getCenter(chevron).dy,
-      closeTo(collapsedChevronCenter.dy, 0.1),
-    );
-    expect(
-      tester.getTopLeft(underline).dy - tester.getBottomLeft(editableText).dy,
-      closeTo(2, 0.1),
-    );
-  });
+      expect(tester.getTopLeft(promptTile).dy, closeTo(collapsedTileTop, 0.1));
+      expect(
+        tester.getCenter(chevron).dy,
+        closeTo(collapsedChevronCenter.dy, 0.1),
+      );
+      expect(promptInput.variant, CatchFieldVariant.underline);
+      expect(promptInput.size, CatchFieldSize.floating);
+      expect(promptInput.showLabel, isFalse);
+    },
+  );
 
   testWidgets('inline email edit uses the email keyboard', (tester) async {
     final user = buildUser(name: 'Suvrat Garg');

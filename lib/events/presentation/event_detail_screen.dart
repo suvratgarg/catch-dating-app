@@ -360,7 +360,7 @@ Widget _ticketStubCellSkeleton() {
 }
 
 Widget _eventDetailPlanSkeleton() {
-  return CatchSection(
+  return CatchSection.divided(
     title: 'The plan',
     first: true,
     child: Column(
@@ -375,7 +375,7 @@ Widget _eventDetailPlanSkeleton() {
 }
 
 Widget _eventDetailHintSkeleton() {
-  return CatchSection(
+  return CatchSection.divided(
     title: 'Why you might click',
     child: Column(
       children: [
@@ -403,7 +403,7 @@ Widget _eventDetailHintSkeleton() {
 }
 
 Widget _eventDetailItinerarySkeleton() {
-  return CatchSection(
+  return CatchSection.divided(
     title: 'Itinerary',
     child: Column(
       children: [
@@ -435,14 +435,14 @@ Widget _eventDetailItinerarySkeleton() {
 }
 
 Widget _eventDetailMapSkeleton() {
-  return CatchSection(
+  return CatchSection.divided(
     title: 'Where',
     child: CatchSkeleton.card(height: CatchLayout.eventDetailMapCardHeight),
   );
 }
 
 Widget _eventDetailMechanismSkeleton() {
-  return CatchSection(
+  return CatchSection.divided(
     title: 'How sign-ups work',
     child: Column(
       children: [
@@ -466,7 +466,7 @@ Widget _eventDetailMechanismSkeleton() {
 }
 
 Widget _eventDetailSocialSkeleton() {
-  return CatchSection(
+  return CatchSection.divided(
     title: "Who's going",
     child: Row(
       children: [

@@ -26,7 +26,6 @@ import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
@@ -434,7 +433,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               gapH24,
               const CatchFormFieldLabel(label: 'Where', large: true),
               gapH8,
-              CatchField(
+              CatchField.input(
                 key: CreateEventFormKeys.meetingPoint,
                 title: 'Location name',
                 controller: _meetingPointController,
@@ -458,7 +457,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 onTap: _pickLocation,
               ),
               gapH16,
-              CatchField(
+              CatchField.input(
                 key: CreateEventFormKeys.locationDetails,
                 title: 'Extra directions',
                 isOptional: true,
@@ -474,7 +473,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 gapH24,
                 const CatchFormFieldLabel(label: 'Event details', large: true),
                 gapH8,
-                CatchField(
+                CatchField.input(
                   key: CreateEventFormKeys.distance,
                   title: 'Distance (km)',
                   controller: _distanceController,
@@ -518,7 +517,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 ),
               ],
               gapH24,
-              CatchField(
+              CatchField.input(
                 key: CreateEventFormKeys.description,
                 title: 'Description',
                 isOptional: true,
@@ -986,7 +985,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CatchField(
+                child: CatchField.input(
                   title: 'Max attendees',
                   controller: capacityController,
                   keyboardType: TextInputType.number,
@@ -996,7 +995,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               ),
               gapW12,
               Expanded(
-                child: CatchField(
+                child: CatchField.input(
                   title: 'Base price ($currencyCode)',
                   controller: priceController,
                   keyboardType: const TextInputType.numberWithOptions(
@@ -1042,7 +1041,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             gapH8,
-            CatchField(
+            CatchField.input(
               title: 'Invite code',
               controller: inviteCodeController,
               placeholder: 'CATCH-DELHI',
@@ -1057,41 +1056,19 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           ],
           if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
             gapH12,
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Cohort caps',
-                        style: CatchTextStyles.labelL(context),
-                      ),
-                      gapH4,
-                      Text(
-                        'Optionally cap straight men and straight women without making this a separate admission format.',
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                gapW12,
-                CatchToggle(
-                  value: cohortCapsEnabled,
-                  onChanged: onCohortCapsEnabledChanged,
-                  semanticLabel: 'Cohort caps',
-                ),
-              ],
+            CatchField.toggle(
+              title: 'Cohort caps',
+              body:
+                  'Optionally cap straight men and straight women without making this a separate admission format.',
+              value: cohortCapsEnabled,
+              onChanged: onCohortCapsEnabledChanged,
             ),
             if (cohortCapsEnabled) ...[
               gapH12,
               Row(
                 children: [
                   Expanded(
-                    child: CatchField(
+                    child: CatchField.input(
                       title: 'Max straight men',
                       isOptional: true,
                       controller: maxMenController,
@@ -1102,7 +1079,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   ),
                   gapW12,
                   Expanded(
-                    child: CatchField(
+                    child: CatchField.input(
                       title: 'Max straight women',
                       isOptional: true,
                       controller: maxWomenController,
@@ -1124,41 +1101,19 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           ],
           if (admissionPreset == EventAdmissionPreset.balancedSingles) ...[
             gapH12,
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Demand pricing',
-                        style: CatchTextStyles.labelL(context),
-                      ),
-                      gapH4,
-                      Text(
-                        'Increase price for the over-demand cohort while preserving the event balance.',
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                gapW12,
-                CatchToggle(
-                  value: dynamicPricingEnabled,
-                  onChanged: onDynamicPricingChanged,
-                  semanticLabel: 'Demand pricing',
-                ),
-              ],
+            CatchField.toggle(
+              title: 'Demand pricing',
+              body:
+                  'Increase price for the over-demand cohort while preserving the event balance.',
+              value: dynamicPricingEnabled,
+              onChanged: onDynamicPricingChanged,
             ),
             if (dynamicPricingEnabled) ...[
               gapH12,
               Row(
                 children: [
                   Expanded(
-                    child: CatchField(
+                    child: CatchField.input(
                       title: 'Step ($currencyCode)',
                       controller: dynamicPricingStepController,
                       keyboardType: TextInputType.number,
@@ -1168,7 +1123,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   ),
                   gapW12,
                   Expanded(
-                    child: CatchField(
+                    child: CatchField.input(
                       title: 'Max ($currencyCode)',
                       controller: dynamicPricingMaxController,
                       keyboardType: TextInputType.number,
@@ -1186,7 +1141,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CatchField(
+                child: CatchField.input(
                   title: 'Min age',
                   isOptional: true,
                   controller: minAgeController,
@@ -1201,7 +1156,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               ),
               gapW12,
               Expanded(
-                child: CatchField(
+                child: CatchField.input(
                   title: 'Max age',
                   isOptional: true,
                   controller: maxAgeController,

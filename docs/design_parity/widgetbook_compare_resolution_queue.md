@@ -290,7 +290,7 @@ Reviewed decisions:
 | Surface vs Panel | merge | Use `CatchSurface.card(...)` for bounded card surfaces. |
 | Surface vs SoftBand | merge | Use `CatchSurface.tinted(...)` for quiet tinted inset surfaces. |
 | Surface vs Callout | merge | Use `CatchSurface.message(...)` for inline icon/title/message notes. |
-| Section card surface | merge | Use `CatchSection(variant: CatchSectionVariant.contained, ...)` for section-card content chrome. |
+| Section card surface | merge | Use `CatchSection.contained(...)` for section-card content chrome. |
 
 Implementation target:
 

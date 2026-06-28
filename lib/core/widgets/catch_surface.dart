@@ -142,6 +142,10 @@ class CatchSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final effectiveDuration =
+        MediaQuery.maybeOf(context)?.disableAnimations == true
+        ? Duration.zero
+        : duration;
     if (role == CatchSurfaceRole.message) {
       return _buildMessageSurface(context, t);
     }
@@ -158,7 +162,7 @@ class CatchSurface extends StatelessWidget {
             border: Border.all(color: borderColor!, width: borderWidth),
           );
     final decorated = AnimatedContainer(
-      duration: duration,
+      duration: effectiveDuration,
       curve: CatchMotion.standardCurve,
       width: width,
       height: height,

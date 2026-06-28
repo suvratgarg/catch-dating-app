@@ -227,7 +227,7 @@ Widget _promptField(
           },
         ),
         gapH10,
-        CatchField(
+        CatchField.input(
           title: definition.title,
           showLabel: false,
           controller: controller,

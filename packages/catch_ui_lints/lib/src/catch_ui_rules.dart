@@ -346,6 +346,18 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     severity: DiagnosticSeverity.INFO,
   );
 
+  static const useNamedCatchFieldConstructor = LintCode(
+    'catch_use_named_catch_field_constructor',
+    'Use a named CatchField constructor so field anatomy is selected by contract.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const useNamedCatchSectionConstructor = LintCode(
+    'catch_use_named_catch_section_constructor',
+    'Use a named CatchSection constructor so section anatomy is selected by contract.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
   @override
   bool get canUseParsedResult => true;
 
@@ -377,6 +389,8 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     iconButtonRequiresTooltip,
     noAllowDebt,
     noWidgetReturningMethod,
+    useNamedCatchFieldConstructor,
+    useNamedCatchSectionConstructor,
   ];
 
   @override
@@ -507,6 +521,18 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     final typeName = _constructorTypeName(node);
     final constructorName = _constructorMemberName(node);
 
+    if (typeName == 'CatchField' &&
+        constructorName == null &&
+        !_isCatchFieldImplementationPath) {
+      _reportAtNode(node, CatchUiLayoutRules.useNamedCatchFieldConstructor);
+    }
+
+    if (typeName == 'CatchSection' &&
+        constructorName == null &&
+        !_isCatchSectionImplementationPath) {
+      _reportAtNode(node, CatchUiLayoutRules.useNamedCatchSectionConstructor);
+    }
+
     if (typeName == 'SizedBox') {
       _checkSizedBoxSpacing(node);
     } else if (_isEdgeInsetsConstructor(typeName)) {
@@ -530,7 +556,8 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     }
 
     if (isUiSystemScannerPath &&
-        _rawButtonControlConstructors.contains(typeName)) {
+        _rawButtonControlConstructors.contains(typeName) &&
+        !_isAllowedPrimitiveRawButtonControl(typeName)) {
       _reportAtNode(node, CatchUiLayoutRules.noRawButtonControl);
     }
 
@@ -997,12 +1024,13 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     return true;
   }
 
+  bool _isAllowedPrimitiveRawButtonControl(String typeName) {
+    return _isCatchFieldImplementationPath &&
+        (typeName == 'TextField' || typeName == 'TextFormField');
+  }
+
   bool _isContainedCatchSection(InstanceCreationExpression node) {
-    return _namedArgumentSourceContains(
-      node,
-      'variant',
-      'CatchSectionVariant.contained',
-    );
+    return _constructorMemberName(node) == 'contained';
   }
 
   bool _isRoundedCatchField(InstanceCreationExpression node) {
@@ -1030,11 +1058,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       return false;
     }
 
-    return _namedArgumentSourceContains(
-      node,
-      'variant',
-      'CatchFieldVariant.box',
-    );
+    return false;
   }
 
   bool _hasRoundedRectangleDecoration(InstanceCreationExpression node) {
@@ -1401,6 +1425,14 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   bool _hasUiAllowComment(AstNode node) {
     final line = _lineForOffset(node.offset);
     return _lineContainsUiAllow(line) || _lineContainsUiAllow(line - 1);
+  }
+
+  bool get _isCatchFieldImplementationPath {
+    return path.endsWith('/lib/core/widgets/catch_field.dart');
+  }
+
+  bool get _isCatchSectionImplementationPath {
+    return path.endsWith('/lib/core/widgets/catch_section_layout.dart');
   }
 
   int _lineForOffset(int offset) {

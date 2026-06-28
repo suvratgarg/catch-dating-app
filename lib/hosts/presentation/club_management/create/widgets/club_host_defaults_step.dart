@@ -9,7 +9,6 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:flutter/material.dart';
@@ -286,40 +285,18 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
           if (selectedAdmissionPreset ==
               EventAdmissionDefaultPreset.openCapacity) ...[
             gapH12,
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Cohort caps',
-                        style: CatchTextStyles.labelL(context),
-                      ),
-                      gapH4,
-                      Text(
-                        'Optionally prefill straight men and straight women caps for open events.',
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink2,
-                        ),
-                      ),
-                    ],
-                  ),
+            CatchField.toggle(
+              title: 'Cohort caps',
+              body:
+                  'Optionally prefill straight men and straight women caps for open events.',
+              value: cohortCapsEnabled,
+              onChanged: (value) => _emit(
+                defaults.copyWith(
+                  admissionPreset: value
+                      ? EventAdmissionDefaultPreset.fixedCohortCaps
+                      : EventAdmissionDefaultPreset.openCapacity,
                 ),
-                gapW12,
-                CatchToggle(
-                  value: cohortCapsEnabled,
-                  onChanged: (value) => _emit(
-                    defaults.copyWith(
-                      admissionPreset: value
-                          ? EventAdmissionDefaultPreset.fixedCohortCaps
-                          : EventAdmissionDefaultPreset.openCapacity,
-                    ),
-                  ),
-                  semanticLabel: 'Cohort caps',
-                ),
-              ],
+              ),
             ),
           ],
           if (cohortCapsEnabled) ...[
@@ -327,7 +304,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             Row(
               children: [
                 Expanded(
-                  child: CatchField(
+                  child: CatchField.input(
                     title: 'Max straight men',
                     isOptional: true,
                     controller: _maxMenController,
@@ -339,7 +316,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                 ),
                 gapW12,
                 Expanded(
-                  child: CatchField(
+                  child: CatchField.input(
                     title: 'Max straight women',
                     isOptional: true,
                     controller: _maxWomenController,
@@ -355,51 +332,29 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
           if (selectedAdmissionPreset ==
               EventAdmissionDefaultPreset.balancedSingles) ...[
             gapH12,
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Demand pricing',
-                        style: CatchTextStyles.labelL(context),
-                      ),
-                      gapH4,
-                      Text(
-                        'Prefill dynamic pricing controls for balanced singles events.',
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink2,
-                        ),
-                      ),
-                    ],
-                  ),
+            CatchField.toggle(
+              title: 'Demand pricing',
+              body:
+                  'Prefill dynamic pricing controls for balanced singles events.',
+              value: defaults.dynamicPricingEnabled,
+              onChanged: (value) => _emit(
+                defaults.copyWith(
+                  dynamicPricingEnabled: value,
+                  dynamicPricingStepInPaise: value
+                      ? defaults.dynamicPricingStepInPaise ?? 25000
+                      : null,
+                  dynamicPricingMaxInPaise: value
+                      ? defaults.dynamicPricingMaxInPaise ?? 150000
+                      : null,
                 ),
-                gapW12,
-                CatchToggle(
-                  value: defaults.dynamicPricingEnabled,
-                  onChanged: (value) => _emit(
-                    defaults.copyWith(
-                      dynamicPricingEnabled: value,
-                      dynamicPricingStepInPaise: value
-                          ? defaults.dynamicPricingStepInPaise ?? 25000
-                          : null,
-                      dynamicPricingMaxInPaise: value
-                          ? defaults.dynamicPricingMaxInPaise ?? 150000
-                          : null,
-                    ),
-                  ),
-                  semanticLabel: 'Demand pricing',
-                ),
-              ],
+              ),
             ),
             if (defaults.dynamicPricingEnabled) ...[
               gapH12,
               Row(
                 children: [
                   Expanded(
-                    child: CatchField(
+                    child: CatchField.input(
                       title: 'Step',
                       controller: _pricingStepController,
                       keyboardType: TextInputType.number,
@@ -410,7 +365,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                   ),
                   gapW12,
                   Expanded(
-                    child: CatchField(
+                    child: CatchField.input(
                       title: 'Max',
                       controller: _pricingMaxController,
                       keyboardType: TextInputType.number,
@@ -429,7 +384,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
           Row(
             children: [
               Expanded(
-                child: CatchField(
+                child: CatchField.input(
                   title: 'Min age',
                   isOptional: true,
                   controller: _minAgeController,
@@ -445,7 +400,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
               ),
               gapW12,
               Expanded(
-                child: CatchField(
+                child: CatchField.input(
                   title: 'Max age',
                   isOptional: true,
                   controller: _maxAgeController,

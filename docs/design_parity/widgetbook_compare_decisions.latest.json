@@ -16,7 +16,7 @@
     "title": "CatchField: variant surface cleanup",
     "decision": "implemented",
     "status": "implemented",
-    "note": "Resolved the input/non-input split by removing CatchField.input, using one CatchField constructor, renaming text-entry states from input-* to edit-*, and moving grouped focus/error chrome to CatchSection contained surfaces.",
+    "note": "Resolved the input/non-input split by keeping one CatchField implementation behind explicit named constructors, renaming text-entry states from input-* to edit-*, and moving grouped focus/error chrome to CatchSection contained surfaces.",
     "recommended": "catch.field",
     "left": "CatchField",
     "right": "CatchField"
@@ -607,7 +607,7 @@
     "title": "CatchFieldGroup: catalog vs contract",
     "decision": "merge",
     "note": "",
-    "recommended": "catch.field_group",
+    "recommended": "catch.section",
     "left": "CatchFieldGroup",
     "right": "CatchFieldGroup"
   },
@@ -677,7 +677,7 @@
     "title": "FieldGroup variant consolidation",
     "decision": "merge",
     "note": "same, the only difference is whether we group multiple sections with delimiter horizontal hairlines or in rounded rectangle section widgets ",
-    "recommended": "catch.field_group",
+    "recommended": "catch.section",
     "left": "CatchFieldGroup",
     "right": "CatchFieldGroup"
   },

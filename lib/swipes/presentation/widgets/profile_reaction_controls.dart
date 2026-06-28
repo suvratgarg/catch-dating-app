@@ -167,7 +167,7 @@ class _ProfileReactionCommentSheetState
             ),
           ),
           gapH14,
-          CatchField(
+          CatchField.input(
             title: 'Comment',
             showLabel: false,
             controller: _controller,

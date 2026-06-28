@@ -199,14 +199,14 @@ class CatchSectionStack extends StatelessWidget {
   }
 }
 
-enum CatchSectionVariant { divided, contained, plain }
+enum _CatchSectionVariant { divided, contained, plain }
 
 /// Design-system `Section`: the canonical primitive for grouping information.
 ///
 /// Screens that adopt the handoff composition should place these inside
 /// [CatchSectionStack] or [CatchDetailSliverSectionList] with no ad-hoc gaps.
 class CatchSection extends StatelessWidget {
-  const CatchSection({
+  const CatchSection._({
     super.key,
     this.title,
     this.subtitle,
@@ -215,7 +215,7 @@ class CatchSection extends StatelessWidget {
     this.activityKind,
     this.lead = false,
     this.first = false,
-    this.variant = CatchSectionVariant.divided,
+    this._variant = _CatchSectionVariant.divided,
     this.dividerColor,
     this.titleColor,
     this.bodyGap = CatchSpacing.s3,
@@ -234,6 +234,93 @@ class CatchSection extends StatelessWidget {
          'CatchSection accepts either child or children, not both.',
        );
 
+  const CatchSection.divided({
+    Key? key,
+    String? title,
+    Object? count,
+    ActivityKind? activityKind,
+    bool lead = false,
+    bool first = false,
+    Color? dividerColor,
+    Color? titleColor,
+    double bodyGap = CatchSpacing.s3,
+    bool showInternalDividers = true,
+    List<Widget>? children,
+    Widget? child,
+  }) : this._(
+         key: key,
+         title: title,
+         count: count,
+         activityKind: activityKind,
+         lead: lead,
+         first: first,
+         variant: _CatchSectionVariant.divided,
+         dividerColor: dividerColor,
+         titleColor: titleColor,
+         bodyGap: bodyGap,
+         showInternalDividers: showInternalDividers,
+         children: children,
+         child: child,
+       );
+
+  const CatchSection.contained({
+    Key? key,
+    String? title,
+    String? subtitle,
+    Widget? trailing,
+    Object? count,
+    Color? titleColor,
+    double bodyGap = CatchSpacing.s3,
+    EdgeInsetsGeometry? padding,
+    bool showInternalDividers = true,
+    bool focused = false,
+    bool hasError = false,
+    List<Widget>? children,
+    Widget? child,
+  }) : this._(
+         key: key,
+         title: title,
+         subtitle: subtitle,
+         trailing: trailing,
+         count: count,
+         variant: _CatchSectionVariant.contained,
+         titleColor: titleColor,
+         bodyGap: bodyGap,
+         padding: padding,
+         showInternalDividers: showInternalDividers,
+         focused: focused,
+         hasError: hasError,
+         children: children,
+         child: child,
+       );
+
+  const CatchSection.plain({
+    Key? key,
+    String? title,
+    String? subtitle,
+    Widget? trailing,
+    Object? count,
+    Color? titleColor,
+    double bodyGap = CatchSpacing.s3,
+    EdgeInsetsGeometry? padding,
+    bool showInternalDividers = true,
+    List<Widget>? children,
+    Widget? child,
+  }) : this._(
+         key: key,
+         title: title,
+         subtitle: subtitle,
+         trailing: trailing,
+         count: count,
+         variant: _CatchSectionVariant.plain,
+         titleColor: titleColor,
+         bodyGap: bodyGap,
+         padding: padding,
+         showInternalDividers: showInternalDividers,
+         children: children,
+         child: child,
+       );
+
   final String? title;
   final String? subtitle;
   final Widget? trailing;
@@ -241,7 +328,7 @@ class CatchSection extends StatelessWidget {
   final ActivityKind? activityKind;
   final bool lead;
   final bool first;
-  final CatchSectionVariant variant;
+  final _CatchSectionVariant _variant;
   final Color? dividerColor;
   final Color? titleColor;
   final double bodyGap;
@@ -254,10 +341,10 @@ class CatchSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return switch (variant) {
-      CatchSectionVariant.divided => _buildDivided(context),
-      CatchSectionVariant.contained => _buildContained(context),
-      CatchSectionVariant.plain => _buildPlain(context),
+    return switch (_variant) {
+      _CatchSectionVariant.divided => _buildDivided(context),
+      _CatchSectionVariant.contained => _buildContained(context),
+      _CatchSectionVariant.plain => _buildPlain(context),
     };
   }
 

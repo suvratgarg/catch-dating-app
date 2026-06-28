@@ -1578,9 +1578,6 @@ abstract final class CatchLayout {
   static const double fieldRowVerticalPadding = 13.0;
   static const double fieldRowDividerIconInset =
       CatchIcon.control + CatchSpacing.s3;
-  static const double fieldGroupTopMargin = 8.0;
-  static const double fieldGroupTopPadding = 18.0;
-  static const double fieldGroupTitleGap = 10.0;
   static const double searchFieldIconSize = 15.0;
   static const double searchFieldIconGap = 10.0;
   static const double searchFieldClearSize = 32.0;

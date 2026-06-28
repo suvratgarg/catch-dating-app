@@ -62,6 +62,8 @@ void main() {
       of: find.widgetWithText(CatchField, 'Phone number'),
       matching: find.byType(TextField),
     );
+    await tester.tap(find.widgetWithText(CatchField, 'Phone number'));
+    await pumpFeatureUi(tester);
     await tester.enterText(phoneField, '98765 43210');
     await tester.tap(find.widgetWithText(CatchButton, 'Add host'));
     await pumpFeatureUi(tester);

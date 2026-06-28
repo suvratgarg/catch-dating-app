@@ -82,27 +82,15 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
                 onChanged: (value) => setState(() => _metPeople = value),
               ),
               gapH8,
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'I want Catch to review a safety or comfort concern',
-                      style: CatchTextStyles.supporting(context),
-                    ),
-                  ),
-                  gapW12,
-                  CatchToggle(
-                    value: _safetyConcern,
-                    semanticLabel:
-                        'I want Catch to review a safety or comfort concern',
-                    onChanged: (value) =>
-                        setState(() => _safetyConcern = value),
-                  ),
-                ],
+              CatchField.toggle(
+                title: 'I want Catch to review a safety or comfort concern',
+                titleMaxLines: 2,
+                value: _safetyConcern,
+                onChanged: (value) => setState(() => _safetyConcern = value),
               ),
               gapH8,
               StageSoftBand(
-                child: CatchField(
+                child: CatchField.input(
                   title: 'Private note to Catch',
                   controller: _noteController,
                   maxLines: 3,

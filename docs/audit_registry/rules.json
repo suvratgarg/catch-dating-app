@@ -86,7 +86,7 @@
         "lib/**/presentation/**",
         "lib/core/widgets/**"
       ],
-      "instruction": "Before creating local card, sheet, empty-state, rail, row, badge, skeleton, or section UI, check existing primitives such as CatchSurface, CatchBottomSheetScaffold, CatchEmptyState, CatchHorizontalRail, CatchVerticalSection, PersonRow, run tile variants, SettingsRow, CatchBadge, and CatchSkeleton.",
+      "instruction": "Before creating local card, sheet, empty-state, rail, row, badge, skeleton, or section UI, check existing primitives such as CatchSurface, CatchBottomSheetScaffold, CatchEmptyState, CatchHorizontalRail, CatchVerticalSection, CatchField, CatchSection, PersonRow, run tile variants, CatchBadge, and CatchSkeleton.",
       "sunset_when": [
         "Widget catalog shows no repeated local shells outside intentional feature-specific UI"
       ]

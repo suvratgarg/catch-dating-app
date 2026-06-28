@@ -232,8 +232,9 @@ screens after). New primitives, all analyze-clean:**
 - **`CatchField` + `CatchSection`** (`lib/core/widgets/catch_field.dart`) — the DS
   unified row primitive (edit·read·nav·toggle·control·add, floating label). Edit mode
   delegates to a new **`CatchFieldVariant.bare`** so all of CatchField's
-  validation/keyboard/autofill machinery is preserved. **Migration of all
-  CatchField/FieldRow/SettingsRow callers is the next (large) phase** — in progress.
+  validation/keyboard/autofill machinery is preserved. **Current status:** active app
+  field rows now compose `CatchField`/`CatchSection`; `CatchToggle` remains the low-level
+  switch leaf and standalone control for non-field surfaces.
 - **`CatchCrossPathsCard`** (`lib/explore/presentation/widgets/`) — DS person-in-feed
   postcard + photo variants (the Explore leaf; `crossPaths*` tokens). Built but **not
   wired** (owner: omit CrossPaths from the feed until a crossed-paths data source exists).
@@ -261,10 +262,10 @@ mono meta + signal badge + spec-driven action cell: button/decide/badge/text),
 mono/`t-name` type fixes. Analyze-clean. **Wiring into `host_event_attendance_panel.dart`
 (1800 lines, no widget test) is the unverifiable integration step — needs app QA.**
 
-**Settings convergence — deprioritized:** `CatchSettingsRow` is already the DS FieldRow-style
-row, so swapping its 53 sites to `CatchField` is invisible churn with regression risk on a
-live screen. `CatchField`/`CatchSection` stay available for new rows; convergence can be
-done later as pure cleanup.
+**Settings convergence — completed later:** row-shaped settings and policy switches now
+route through `CatchField.toggle`, and section/group chrome routes through `CatchSection`.
+`CatchToggle` remains available only as the low-level switch leaf or for standalone
+non-field controls.
 
 **Remaining (in progress; the unverifiable core-surface integrations the owner will QA):**
 (1) wire roster primitives into the host attendance panel + build/​wire `LiveConsole` +
@@ -329,8 +330,8 @@ data-threading into the hero); series kicker (no `Event` series/recurrence field
 ### Phase status (end of session)
 - **Wave 2 (missing primitives):** Callout · OptionCard · JourneySteps · ClubDock built
   (4 of the catalogue's missing primitives, all reusable + analyze-clean). Remaining as
-  larger separate efforts: Field/FieldGroup convergence, TicketStub `card` variant, and
-  extracting shared HostRow/ContactRow/PhotoStrip/Roster\* out of their screen files.
+  larger separate efforts: TicketStub `card` variant and extracting shared
+  HostRow/ContactRow/PhotoStrip/Roster\* out of their screen files.
 - **Wave 3 (drifted):** ~18 fixes shipped (mono+voice tracking, glyphs, grade,
   PersonAvatar paper-ink, ProfileHero scrim, ReviewRow, StrideCard, ActivityAvatar,
   RangeSlider, FieldRow/ChatListTile dividers + mono time, ContactRow/HostRow, form box
@@ -386,8 +387,8 @@ sold-out states; ContactRow's mono channel eyebrow + hairline-circled glyph (str
 half); remaining form drift (field-label voice, stepper value/ends, PhotoStripField
 add-first/cover). **EventTicket "Full"** is intentionally surfaced via `EventStatusPill`
 (not a danger-red capacity-line split) — documented, not a gap. **Wave 2** remaining:
-Callout, OptionCard, Field/FieldGroup, ClubDock, TicketStub card, shared HostRow/
-ContactRow/PhotoStrip/Roster\*. **Wave 4** (composite screens) not started.
+Callout, OptionCard, ClubDock, TicketStub card, shared HostRow/ContactRow/PhotoStrip/
+Roster\*. **Wave 4** (composite screens) not started.
 
 (The previously-noted pre-existing `app_shell_test_harness.dart:872` analyze error has been
 resolved — `flutter analyze` is now fully clean, 0 issues.)

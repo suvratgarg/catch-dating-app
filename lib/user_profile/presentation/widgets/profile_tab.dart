@@ -140,7 +140,7 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
 }
 
 Widget _profilePhotosSkeletonSection() {
-  return CatchSection(
+  return CatchSection.divided(
     title: 'Photos',
     count: 'loading',
     first: true,
@@ -164,7 +164,7 @@ Widget _profilePhotosSkeletonSection() {
 }
 
 Widget _profileAnalyticsSkeletonSection() {
-  return CatchSection(
+  return CatchSection.divided(
     title: 'Profile strength',
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,7 +178,7 @@ Widget _profileAnalyticsSkeletonSection() {
 }
 
 Widget _profileInfoSkeletonSection({required String title, required int rows}) {
-  return CatchSection(
+  return CatchSection.divided(
     title: title,
     bodyGap: CatchSpacing.micro10,
     child: Column(
@@ -898,7 +898,7 @@ Widget _profilePhotosSection({
   final completedCount = profilePhotos.length;
   final canDeletePhotos = completedCount > minimumProfilePhotoCount;
 
-  return CatchSection(
+  return CatchSection.divided(
     title: 'Photos',
     count: '$completedCount of $maximumProfilePhotoCount added',
     first: first,

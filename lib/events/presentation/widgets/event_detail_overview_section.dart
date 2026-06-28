@@ -33,7 +33,7 @@ class EventDetailOverviewSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchSection(
+        CatchSection.divided(
           title: 'The plan',
           activityKind: event.activityKind,
           lead: true,
@@ -47,7 +47,7 @@ class EventDetailOverviewSection extends StatelessWidget {
             surfaceStyle: style,
           ),
         ),
-        CatchSection(
+        CatchSection.divided(
           title: 'Why you might click',
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
@@ -70,7 +70,7 @@ class EventDetailOverviewSection extends StatelessWidget {
             ],
           ),
         ),
-        CatchSection(
+        CatchSection.divided(
           title: 'Itinerary',
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
@@ -82,13 +82,13 @@ class EventDetailOverviewSection extends StatelessWidget {
           ),
         ),
         if (event.eventPhotos.isNotEmpty)
-          CatchSection(
+          CatchSection.divided(
             title: 'Photos',
             dividerColor: style?.dividerColor,
             titleColor: style?.headingColor,
             child: EventDetailPhotoStrip(event: event),
           ),
-        CatchSection(
+        CatchSection.divided(
           title: 'Where',
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
@@ -98,7 +98,7 @@ class EventDetailOverviewSection extends StatelessWidget {
             borderColor: style?.borderColor,
           ),
         ),
-        CatchSection(
+        CatchSection.divided(
           title: 'How sign-ups work',
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
@@ -109,7 +109,7 @@ class EventDetailOverviewSection extends StatelessWidget {
             detailColor: style?.bodyColor,
           ),
         ),
-        CatchSection(
+        CatchSection.divided(
           title: 'Good to know',
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,

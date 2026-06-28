@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -284,80 +285,28 @@ class NotificationRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final visual = _NotificationVisual.from(type, t);
-    final titleColor = unread ? t.ink : t.ink2;
     final timeColor = unread ? t.primary : t.ink3;
-    final row = Padding(
-      padding: CatchInsets.contentVerticalMedium,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: CatchIcon.md,
-            child: Icon(visual.icon, color: visual.accent, size: CatchIcon.md),
-          ),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.fieldRowTitle(
-                          context,
-                          color: titleColor,
-                        ),
-                      ),
-                    ),
-                    gapW8,
-                    Text(
-                      time.toUpperCase(),
-                      style: CatchTextStyles.monoLabelS(
-                        context,
-                        color: timeColor,
-                      ),
-                    ),
-                  ],
-                ),
-                if (body.isNotEmpty) ...[
-                  gapH3,
-                  Text(
-                    body,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    final timeLabel = time.trim().toUpperCase();
 
     return Semantics(
       button: onTap != null,
       label: body.isEmpty ? title : '$title. $body',
-      child: Stack(
-        children: [
-          if (divider)
-            Positioned(
-              top: 0,
-              left: CatchIcon.md + CatchSpacing.s3,
-              right: 0,
-              child: Divider(
-                height: 1,
-                color: t.line.withValues(alpha: CatchOpacity.subtleBorder),
+      child: CatchField.nav(
+        icon: visual.icon,
+        iconColor: visual.accent,
+        title: title,
+        body: body,
+        titleMaxLines: 2,
+        emphasis: CatchFieldEmphasis.title,
+        showChevron: false,
+        divider: divider,
+        action: timeLabel.isEmpty
+            ? null
+            : Text(
+                timeLabel,
+                style: CatchTextStyles.monoLabelS(context, color: timeColor),
               ),
-            ),
-          if (onTap == null) row else InkWell(onTap: onTap, child: row),
-        ],
+        onTap: onTap,
       ),
     );
   }

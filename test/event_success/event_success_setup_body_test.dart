@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
@@ -68,8 +68,10 @@ void main() {
 
     expect(_selectChip('15 min', active: true), findsOneWidget);
     expect(_selectChip('10s', active: true), findsOneWidget);
-    expect(find.byType(CatchToggle), findsWidgets);
-    expect(_toggle(EventSuccessModuleCatalog.liveReveal.title), findsOneWidget);
+    expect(
+      _fieldToggle(EventSuccessModuleCatalog.liveReveal.title),
+      findsOneWidget,
+    );
     expect(find.byType(ExpansionTile), findsNothing);
 
     await _tapToggle(tester, EventSuccessModuleCatalog.liveReveal.title);
@@ -138,15 +140,15 @@ void _invokeSelectChip(WidgetTester tester, String label) {
 }
 
 Future<void> _tapToggle(WidgetTester tester, String label) async {
-  final finder = _toggle(label);
+  final finder = _fieldToggle(label);
   await tester.ensureVisible(finder);
   await tester.pump();
   await tester.tap(finder);
 }
 
-Finder _toggle(String label) {
+Finder _fieldToggle(String label) {
   return find.byWidgetPredicate(
-    (widget) => widget is CatchToggle && widget.semanticLabel == label,
+    (widget) => widget is CatchField && widget.title == label,
   );
 }
 

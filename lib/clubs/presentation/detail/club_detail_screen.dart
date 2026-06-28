@@ -395,20 +395,20 @@ class ClubDetailLoadingBody extends StatelessWidget {
                 CatchSectionStack(
                   padding: const EdgeInsets.only(top: CatchSpacing.screenPt),
                   children: [
-                    CatchSection(
+                    CatchSection.divided(
                       title: 'Your hosts',
                       first: true,
                       child: _buildClubHostLoadingSkeleton(),
                     ),
-                    CatchSection(
+                    CatchSection.divided(
                       title: 'About',
                       child: _buildClubTextLoadingSkeleton(lines: 3),
                     ),
-                    CatchSection(
+                    CatchSection.divided(
                       title: 'What we do',
                       child: _buildClubTagLoadingSkeleton(),
                     ),
-                    CatchSection(
+                    CatchSection.divided(
                       title: 'Upcoming',
                       child: _buildClubScheduleLoadingSkeleton(),
                     ),

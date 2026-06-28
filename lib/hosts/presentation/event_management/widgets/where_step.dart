@@ -65,7 +65,7 @@ class WhereStep extends StatelessWidget {
             ),
           ),
           gapH16,
-          CatchField(
+          CatchField.input(
             key: CreateEventFormKeys.meetingPoint,
             title: 'Location name',
             controller: meetingPointController,
@@ -85,7 +85,7 @@ class WhereStep extends StatelessWidget {
             },
           ),
           gapH20,
-          CatchField(
+          CatchField.input(
             key: CreateEventFormKeys.locationDetails,
             title: 'Extra directions',
             isOptional: true,

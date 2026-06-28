@@ -491,7 +491,7 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchField(
+          CatchField.input(
             key: ReviewKeys.ownerResponseField,
             title: 'Response',
             controller: _messageController,

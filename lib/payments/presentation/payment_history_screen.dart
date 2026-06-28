@@ -340,41 +340,19 @@ class PaymentReceiptSheet extends StatelessWidget {
               gapH20,
               Divider(color: t.line, height: 1),
               gapH20,
-              CatchField(
-                title: 'Payment ID',
-                body: payment.paymentId,
-                mode: CatchFieldMode.read,
-                variant: CatchFieldVariant.bare,
-              ),
+              CatchField.read(title: 'Payment ID', body: payment.paymentId),
               gapH12,
-              CatchField(
-                title: 'Order ID',
-                body: payment.orderId,
-                mode: CatchFieldMode.read,
-                variant: CatchFieldVariant.bare,
-              ),
+              CatchField.read(title: 'Order ID', body: payment.orderId),
               gapH12,
-              CatchField(
-                title: 'Event ID',
-                body: payment.eventId,
-                mode: CatchFieldMode.read,
-                variant: CatchFieldVariant.bare,
-              ),
+              CatchField.read(title: 'Event ID', body: payment.eventId),
               gapH12,
-              CatchField(
+              CatchField.read(
                 title: 'Date',
                 body: AppTimeFormatters.dateTime(payment.createdAt),
-                mode: CatchFieldMode.read,
-                variant: CatchFieldVariant.bare,
               ),
               if (statusPresentation.detail case final detail?) ...[
                 gapH12,
-                CatchField(
-                  title: 'Status',
-                  body: detail,
-                  mode: CatchFieldMode.read,
-                  variant: CatchFieldVariant.bare,
-                ),
+                CatchField.read(title: 'Status', body: detail),
               ],
               if (payment.signUpFailed) ...[
                 gapH20,

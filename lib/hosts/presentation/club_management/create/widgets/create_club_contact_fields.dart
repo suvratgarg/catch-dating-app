@@ -28,7 +28,7 @@ class CreateClubContactFields extends StatelessWidget {
           const CatchFormFieldLabel(label: 'Contact', isOptional: true),
           gapH12,
         ],
-        CatchField(
+        CatchField.input(
           title: 'Instagram handle',
           controller: instagramController,
           isOptional: true,
@@ -38,7 +38,7 @@ class CreateClubContactFields extends StatelessWidget {
           textInputAction: TextInputAction.next,
         ),
         gapH16,
-        CatchField(
+        CatchField.input(
           title: 'Phone number',
           controller: phoneController,
           isOptional: true,
@@ -52,7 +52,7 @@ class CreateClubContactFields extends StatelessWidget {
           ],
         ),
         gapH16,
-        CatchField(
+        CatchField.input(
           title: 'Email',
           controller: emailController,
           isOptional: true,

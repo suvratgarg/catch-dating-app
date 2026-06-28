@@ -28,7 +28,7 @@ class ClubDetailsStep extends StatelessWidget {
         padding: CatchInsets.formStepBody,
         child: Column(
           children: [
-            CatchField(
+            CatchField.input(
               title: 'Description',
               controller: descriptionController,
               prefixIcon: Icon(CatchIcons.editNoteOutlined),

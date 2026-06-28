@@ -1099,7 +1099,7 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CatchField(
+                CatchField.input(
                   title: 'Label',
                   controller: labelController,
                   placeholder: 'Instagram bio',
@@ -1107,7 +1107,7 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
                   onChanged: (_) => setState(() {}),
                 ),
                 gapH12,
-                CatchField(
+                CatchField.input(
                   title: 'Source',
                   isOptional: true,
                   controller: sourceController,

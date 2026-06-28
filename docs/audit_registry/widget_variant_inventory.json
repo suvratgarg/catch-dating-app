@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T15:23:34.940Z",
+  "generatedAt": "2026-06-28T19:08:20.058Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
@@ -7,7 +7,7 @@
   "summary": {
     "useCases": 599,
     "components": 583,
-    "stateCards": 1250,
+    "stateCards": 1252,
     "reviewCandidates": 31,
     "oversizedUseCases": 40,
     "multiUseCaseComponents": 16
@@ -6834,6 +6834,87 @@
       ]
     },
     {
+      "component": "CatchSection",
+      "useCaseCount": 1,
+      "stateCardCount": 10,
+      "paths": [
+        "[Core primitives]/Sections"
+      ],
+      "labels": [
+        "contained-error",
+        "contained-focused",
+        "contained-section",
+        "divided-section",
+        "field-list",
+        "lead-accent",
+        "long-copy",
+        "mixed-modes",
+        "plain-section",
+        "single-field"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [
+          "canonical-contract-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "catchSectionContractStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchSectionContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Sections",
+          "stateCardCount": 10,
+          "stateCards": [
+            {
+              "label": "contained-section",
+              "normalizedLabel": "contained section"
+            },
+            {
+              "label": "contained-focused",
+              "normalizedLabel": "contained focused"
+            },
+            {
+              "label": "contained-error",
+              "normalizedLabel": "contained error"
+            },
+            {
+              "label": "mixed-modes",
+              "normalizedLabel": "mixed modes"
+            },
+            {
+              "label": "single-field",
+              "normalizedLabel": "single field"
+            },
+            {
+              "label": "divided-section",
+              "normalizedLabel": "divided section"
+            },
+            {
+              "label": "field-list",
+              "normalizedLabel": "field list"
+            },
+            {
+              "label": "long-copy",
+              "normalizedLabel": "long copy"
+            },
+            {
+              "label": "lead-accent",
+              "normalizedLabel": "lead accent"
+            },
+            {
+              "label": "plain-section",
+              "normalizedLabel": "plain section"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchSkeleton",
       "useCaseCount": 1,
       "stateCardCount": 10,
@@ -7426,77 +7507,6 @@
             {
               "label": "expanding-expanded",
               "normalizedLabel": "expanding expanded"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchSection",
-      "useCaseCount": 1,
-      "stateCardCount": 8,
-      "paths": [
-        "[Core primitives]/Sections"
-      ],
-      "labels": [
-        "contained-error",
-        "contained-focused",
-        "contained-section",
-        "divided-section",
-        "long-copy",
-        "mixed-modes",
-        "plain-section",
-        "single-field"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [
-          "canonical-contract-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "catchSectionContractStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchSectionContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Sections",
-          "stateCardCount": 8,
-          "stateCards": [
-            {
-              "label": "contained-section",
-              "normalizedLabel": "contained section"
-            },
-            {
-              "label": "contained-focused",
-              "normalizedLabel": "contained focused"
-            },
-            {
-              "label": "contained-error",
-              "normalizedLabel": "contained error"
-            },
-            {
-              "label": "mixed-modes",
-              "normalizedLabel": "mixed modes"
-            },
-            {
-              "label": "single-field",
-              "normalizedLabel": "single field"
-            },
-            {
-              "label": "divided-section",
-              "normalizedLabel": "divided section"
-            },
-            {
-              "label": "long-copy",
-              "normalizedLabel": "long copy"
-            },
-            {
-              "label": "plain-section",
-              "normalizedLabel": "plain section"
             }
           ]
         }

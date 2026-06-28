@@ -135,9 +135,19 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   PickedClubProfileImage? _profileImage;
   bool _checkedDraft = false;
   bool _restoredDraft = false;
+  bool _editSubmitAttempted = false;
   ClubHostDefaults _hostDefaults = const ClubHostDefaults();
 
   bool get _isEditing => widget.initialClub != null;
+  bool get _shouldShowEditSectionErrors =>
+      _editSubmitAttempted ||
+      widget.formAutovalidateMode != AutovalidateMode.disabled;
+  bool get _editIdentityHasError =>
+      _shouldShowEditSectionErrors &&
+      (_nameController.text.trim().isEmpty ||
+          (_selectedCity == null || _selectedCity!.trim().isEmpty) ||
+          _areaController.text.trim().isEmpty ||
+          _descriptionController.text.trim().isEmpty);
 
   List<CatchFormStepSpec> get _activeSteps {
     final uid = ref.read(uidProvider).asData?.value;
@@ -333,16 +343,14 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
           child: ConstrainedBox(
             constraints: BoxConstraints(maxHeight: maxHeight),
             child: SingleChildScrollView(
-              child: CatchSection(
-                variant: CatchSectionVariant.contained,
+              child: CatchSection.contained(
                 children: [
                   for (final city in defaultCityOptions.where(
                     (city) => city.hostCreatable,
                   ))
-                    CatchField(
+                    CatchField.nav(
                       title: city.label,
                       body: city.countryIsoCode,
-                      mode: CatchFieldMode.nav,
                       icon: CatchIcons.locationCityOutlined,
                       valid: city.effectiveMarketId == _selectedCity,
                       showChevron: true,
@@ -384,6 +392,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   }
 
   void _submitEdit() {
+    setState(() => _editSubmitAttempted = true);
     final basicsValid = _basicsFormKey.currentState?.validate() ?? true;
     final defaultsValid = _defaultsFormKey.currentState?.validate() ?? true;
     final eventSuccessValid =
@@ -399,6 +408,10 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       duration: CatchMotion.pageStep,
       curve: CatchMotion.easeInOutCurve,
     );
+  }
+
+  void _handleEditIdentityChanged(String _) {
+    if (_shouldShowEditSectionErrors) setState(() {});
   }
 
   Future<void> _saveDraft() async {
@@ -644,19 +657,22 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                   ),
                   Form(
                     key: _basicsFormKey,
-                    autovalidateMode: widget.formAutovalidateMode,
+                    autovalidateMode: _editSubmitAttempted
+                        ? AutovalidateMode.always
+                        : widget.formAutovalidateMode,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         _buildEditClubSection(
                           context: context,
                           label: 'Identity',
-                          child: CatchSection(
-                            variant: CatchSectionVariant.contained,
+                          child: CatchSection.contained(
+                            hasError: _editIdentityHasError,
                             children: [
-                              CatchField(
+                              CatchField.input(
                                 title: 'Club name',
                                 controller: _nameController,
+                                onChanged: _handleEditIdentityChanged,
                                 icon: CatchIcons.groupOutlined,
                                 textCapitalization: TextCapitalization.words,
                                 textInputAction: TextInputAction.next,
@@ -673,9 +689,10 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                                 enabled: !isSubmitting,
                                 onPickCity: _pickCityForEdit,
                               ),
-                              CatchField(
+                              CatchField.input(
                                 title: 'Area / neighbourhood',
                                 controller: _areaController,
+                                onChanged: _handleEditIdentityChanged,
                                 icon: CatchIcons.locationOnOutlined,
                                 placeholder: 'e.g. Bandra, Koramangala',
                                 textCapitalization: TextCapitalization.words,
@@ -687,9 +704,10 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                                   return null;
                                 },
                               ),
-                              CatchField(
+                              CatchField.input(
                                 title: 'Description',
                                 controller: _descriptionController,
+                                onChanged: _handleEditIdentityChanged,
                                 icon: CatchIcons.editNoteOutlined,
                                 maxLines: 4,
                                 minLines: 2,
@@ -709,24 +727,23 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                         _buildEditClubSection(
                           context: context,
                           label: 'Contact',
-                          child: CatchSection(
-                            variant: CatchSectionVariant.contained,
+                          child: CatchSection.contained(
                             children: [
-                              CatchField(
+                              CatchField.input(
                                 title: 'Instagram',
                                 controller: _instagramController,
                                 icon: CatchIcons.alternateEmailOutlined,
                                 leadingUnit: '@',
                                 textInputAction: TextInputAction.next,
                               ),
-                              CatchField(
+                              CatchField.input(
                                 title: 'Phone',
                                 controller: _phoneController,
                                 icon: CatchIcons.phoneOutlined,
                                 keyboardType: TextInputType.phone,
                                 textInputAction: TextInputAction.next,
                               ),
-                              CatchField(
+                              CatchField.input(
                                 title: 'Email',
                                 controller: _emailController,
                                 icon: CatchIcons.emailOutlined,
@@ -872,11 +889,10 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       builder: (field) {
         final raw = rawCityName;
         final value = city?.label ?? (raw == null || raw.isEmpty ? '' : raw);
-        return CatchField(
+        return CatchField.nav(
           title: 'City',
           body: value,
           placeholder: 'Select city',
-          mode: CatchFieldMode.nav,
           icon: CatchIcons.locationCityOutlined,
           showChevron: enabled,
           error: field.errorText,

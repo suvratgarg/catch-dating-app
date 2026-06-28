@@ -187,7 +187,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
             keyBuilder: ReviewKeys.ratingStar,
           ),
           gapH16,
-          CatchField(
+          CatchField.input(
             key: ReviewKeys.commentField,
             title: 'Review',
             isOptional: true,

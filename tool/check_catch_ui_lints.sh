@@ -1,18 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-probe_path="lib/events/presentation/widgets/event_detail_lint_probe.dart"
+probe_root="tool/catch_ui_lints_probe"
+probe_path="$probe_root/lib/events/presentation/widgets/event_detail_lint_probe.dart"
 probe_output=""
 probe_status=0
 
 cleanup() {
-  rm -f "$probe_path"
+  rm -rf "$probe_root"
 }
 trap cleanup EXIT
+trap 'cleanup; exit 130' HUP INT TERM
 
 run_analyze_probe() {
   local name="$1"
 
+  cleanup
+  mkdir -p "$(dirname "$probe_path")"
   cat >"$probe_path"
 
   set +e
@@ -152,9 +156,9 @@ class CatchUiLintProbe extends StatelessWidget {
           ),
         ),
         const CatchSection(
-          variant: CatchSectionVariant.contained,
-          child: CatchField(title: 'Name'),
+          child: CatchField.read(title: 'Name'),
         ),
+        const CatchField(title: 'Legacy field'),
         _buildHeader(),
       ],
     );
@@ -212,6 +216,14 @@ expect_code_count \
   "catch_icon_button_requires_tooltip" \
   1
 expect_code_count "seeded violation corpus" "catch_no_allow_debt" 1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_use_named_catch_field_constructor" \
+  1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_use_named_catch_section_constructor" \
+  1
 
 run_analyze_probe "transparent and token-backed clean cases" <<'DART'
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';

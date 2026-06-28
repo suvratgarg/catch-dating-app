@@ -67,7 +67,7 @@ class ClubBasicsStep extends StatelessWidget {
               onReorderPhoto: onReorderClubPhoto,
             ),
             gapH20,
-            CatchField(
+            CatchField.input(
               title: 'Club name',
               controller: nameController,
               prefixIcon: Icon(CatchIcons.groupOutlined),
@@ -96,7 +96,7 @@ class ClubBasicsStep extends StatelessWidget {
                   selectedCity == null ? 'Please select a city' : null,
             ),
             gapH16,
-            CatchField(
+            CatchField.input(
               title: 'Area / neighbourhood',
               controller: areaController,
               prefixIcon: Icon(CatchIcons.locationOnOutlined),

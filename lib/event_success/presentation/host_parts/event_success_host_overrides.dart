@@ -478,7 +478,7 @@ class GroupOverrideUnitEditor extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: CatchField(
+                child: CatchField.input(
                   title: 'Group label',
                   initialValue: group.label,
                   textCapitalization: TextCapitalization.words,

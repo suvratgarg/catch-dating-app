@@ -84,7 +84,7 @@ Widget profileInfoSection({
   final tileList = Column(children: tiles);
   final Widget section;
   if (grouped && title != null) {
-    section = CatchSection(
+    section = CatchSection.divided(
       title: title,
       count: subtitle,
       first: first,

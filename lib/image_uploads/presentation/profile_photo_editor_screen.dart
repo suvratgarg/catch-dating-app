@@ -240,7 +240,6 @@ class _ProfilePhotoEditorScreenState
                     gapH16,
                     CatchField.select<_PhotoPromptChoice>(
                       title: 'Photo prompt',
-                      isOptional: true,
                       values: promptChoices,
                       value: selectedPromptChoice,
                       itemLabel: (choice) => choice.label,

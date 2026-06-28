@@ -5,8 +5,8 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
@@ -649,7 +649,10 @@ void main() {
       ),
       'Updated dawn loops.',
     );
-    await tester.tap(find.text('Done'));
+    final doneButton = find.text('Done');
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -96));
+    await pumpFeatureUi(tester);
+    await tester.tap(doneButton);
     await pumpFeatureUi(tester);
 
     expect(find.text('Edit owned-club'), findsNothing);

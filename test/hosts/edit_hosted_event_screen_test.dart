@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
@@ -147,7 +147,12 @@ void main() {
       find.byKey(CreateEventFormKeys.distance, skipOffstage: false),
     );
     expect(find.byType(CatchSelectChip, skipOffstage: false), findsWidgets);
-    expect(find.byType(CatchToggle, skipOffstage: false), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchField && widget.title == 'Cohort caps',
+      ),
+      findsOneWidget,
+    );
 
     await _enterText(tester, CreateEventFormKeys.distance, '7.5');
     await _enterText(
