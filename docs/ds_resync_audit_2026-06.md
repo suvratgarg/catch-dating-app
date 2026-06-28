@@ -16,9 +16,9 @@ the type system. `templates/feature-drop*` are marketing media, out of scope.
 
 > This tracker **supersedes the font/type language** in
 > [`ui_elevation_implementation.md`](ui_elevation_implementation.md) and
-> [`design_language.md`](design_language.md), both of which still say
-> "Newsreader + Inter". The shipped identity is **Archivo (voice/head) + the
-> platform system font (function) + IBM Plex Mono (data)**; Newsreader, Inter, and
+> [`design_language.md`](design_language.md), both of which still carried the
+> old serif/custom-sans direction. The shipped identity is **Archivo (voice/head) + the
+> platform system font (function) + IBM Plex Mono (data)**; the old type studies and
 > the "Sunset" cream+orange are retired in code. Those docs' font sections are
 > being reconciled in Wave 0.
 
@@ -57,7 +57,7 @@ are 2026-06-16 snapshots.
 | Photo grade differs (sat .84/contrast .94 vs DS .78/1.04 — opposite contrast direction) | Med | `catch_graded_image.dart:53` | Re-tune to DS `.catch-grade` (decision #2) |
 | Activity deep/soft HSL-derived vs DS explicit hex | Med | `activity_palette.dart:30` | Generate explicit `--act-*-deep/-soft` tokens; derive as fallback |
 | Dead `CatchIcons` activity getters (contradictory, 0 callers) | Low | `catch_icons.dart:382` | Delete |
-| Retired Inter/Newsreader TTFs on disk (not shipped) + `sunset*` aliases referenced in events/hero/console/status-bar | Low | assets/fonts/, events | Delete TTFs; rename `sunset*`→`dark`/`light` at call sites |
+| Retired type-study TTFs on disk (not shipped) + `sunset*` aliases referenced in events/hero/console/status-bar | Low | assets/fonts/, events | Delete retired TTFs; rename `sunset*`→`dark`/`light` at call sites |
 | Stale docs (ui_elevation_implementation.md, design_language.md, widget_catalog 2.5.160, "white-on-orange" celebration note) | Low/Med | docs/ | Reconcile to Archivo/system-font |
 
 ## Tier 2 — Missing primitives (no Flutter equivalent)
@@ -83,7 +83,7 @@ Med/Low: CompatibilityList/RunningRhythm hand-rolled (check-icon vs pigment dot,
 CatchBadge vs CatchChip, inverted stat order); ContactRow glyph pigmented (breaks ink
 rule); HostRow no seal/wrong name face; RangeSlider no SliderTheme (M3-seed colors);
 ActivityAvatar initials in sans vs mono; form drift (box radius 8 vs 12, field-label
-voice, stepper value/ends, PhotoStripField add-last vs add-first/cover); InfoRow &
+voice, stepper value/ends, PhotoStripField add-last vs add-first/cover); FieldRow &
 ChatListTile divider 0.62 vs 0.38; ChatListTile time sans vs mono; EventTicket missing
 "N going · M left · Full(red)" meta line.
 
@@ -110,7 +110,7 @@ side-by-side DoD (§6), in order:
    kicker, and the "Hosted by …✓seal" attribution; retire `sunsetDark` refs.
 3. **HostCard / "YOUR HOSTS" section** — build `CatchHostCard` (graded avatar on
    activity gradient, condensed name + verified seal in accent, mono meta, 3-cell
-   numeric stat strip, two hairline actions); insert a `CatchDesignSection`.
+   numeric stat strip, two hairline actions); insert a `CatchSection`.
 4. **BookingDock** — extend `CatchBottomCta` with an accent catch-line header + mono
    price block (`numericLarge` + `monoLabelS` note, warning color when ≤3 spots).
 
@@ -229,11 +229,11 @@ onboarding (38) + auth (10) green:**
 
 **2026-06-16 — batch 5 (the big-efforts pass; owner chose to go maximal + QA core
 screens after). New primitives, all analyze-clean:**
-- **`CatchField` + `CatchFieldGroup`** (`lib/core/widgets/catch_field.dart`) — the DS
+- **`CatchField` + `CatchSection`** (`lib/core/widgets/catch_field.dart`) — the DS
   unified row primitive (edit·read·nav·toggle·control·add, floating label). Edit mode
-  delegates to a new **`CatchTextFieldVariant.bare`** so all of CatchTextField's
+  delegates to a new **`CatchFieldVariant.bare`** so all of CatchField's
   validation/keyboard/autofill machinery is preserved. **Migration of all
-  CatchTextField/InfoRow/SettingsRow callers is the next (large) phase** — in progress.
+  CatchField/FieldRow/SettingsRow callers is the next (large) phase** — in progress.
 - **`CatchCrossPathsCard`** (`lib/explore/presentation/widgets/`) — DS person-in-feed
   postcard + photo variants (the Explore leaf; `crossPaths*` tokens). Built but **not
   wired** (owner: omit CrossPaths from the feed until a crossed-paths data source exists).
@@ -247,12 +247,12 @@ tools → rebuild onto DS RosterTable/Row/Tiles + LiveConsole + RotationCard (im
 the DS is weak). Field → build + migrate everything. Core-screen rewrites → land verified
 by analyze + widget tests; owner QAs visually after.
 
-**Field form convergence — DONE (owner-chosen path):** `CatchTextField` gained an opt-in
+**Field form convergence — DONE (owner-chosen path):** `CatchField` gained an opt-in
 `floatingLabel` (default ON, gated by `showLabel`, off for `isOptional` which keeps its
 "(optional)" badge, off for `bare`). Every required form field across the app now shows
 the DS Field floating caption with **zero call-site churn and no feature loss** (validators
 /keyboards/autofill/suffix/helper all intact) — verified across 250+ form tests + goldens.
-`CatchField`/`CatchFieldGroup` remain for read/nav/toggle rows + new fields.
+`CatchField`/`CatchSection` remain for read/nav/toggle rows + new fields.
 
 **Host roster primitives — built (`lib/hosts/presentation/widgets/catch_roster_board.dart`):**
 `CatchRosterTiles` (count-tile filter row), `CatchRosterRow` (avatar + condensed name +
@@ -261,9 +261,9 @@ mono meta + signal badge + spec-driven action cell: button/decide/badge/text),
 mono/`t-name` type fixes. Analyze-clean. **Wiring into `host_event_attendance_panel.dart`
 (1800 lines, no widget test) is the unverifiable integration step — needs app QA.**
 
-**Settings convergence — deprioritized:** `CatchSettingsRow` is already the DS InfoRow-style
+**Settings convergence — deprioritized:** `CatchSettingsRow` is already the DS FieldRow-style
 row, so swapping its 53 sites to `CatchField` is invisible churn with regression risk on a
-live screen. `CatchField`/`CatchFieldGroup` stay available for new rows; convergence can be
+live screen. `CatchField`/`CatchSection` stay available for new rows; convergence can be
 done later as pure cleanup.
 
 **Remaining (in progress; the unverifiable core-surface integrations the owner will QA):**
@@ -306,7 +306,7 @@ identity now lives in the new "Your hosts" HostCard section, avoiding duplicatio
 data-threading into the hero); series kicker (no `Event` series/recurrence field).
 
 **Wave 2 + 3 + 4 — batch 4 (analyze-clean, 0 issues; tests green):**
-- **`CatchCallout`** (Wave 2) — `lib/core/widgets/catch_callout.dart`: 5-tone note/tip
+- **`CatchSurface.message`** (Wave 2) — `lib/core/widgets/catch_surface.dart`: 5-tone note/tip
   banner (tinted wash or neutral hairline) + leading glyph + title/body (`calloutFill` token).
 - **`CatchOptionCard`** (Wave 2) — `lib/core/widgets/catch_option_card.dart`: descriptive
   selectable choice card (check/circle + ink-border selected + ink wash).
@@ -333,7 +333,7 @@ data-threading into the hero); series kicker (no `Event` series/recurrence field
   extracting shared HostRow/ContactRow/PhotoStrip/Roster\* out of their screen files.
 - **Wave 3 (drifted):** ~18 fixes shipped (mono+voice tracking, glyphs, grade,
   PersonAvatar paper-ink, ProfileHero scrim, ReviewRow, StrideCard, ActivityAvatar,
-  RangeSlider, InfoRow/ChatListTile dividers + mono time, ContactRow/HostRow, form box
+  RangeSlider, FieldRow/ChatListTile dividers + mono time, ContactRow/HostRow, form box
   radius, field-label, stepper value, DashboardEventCard tint). Remaining: DateTicket
   sold-out/note/tail states, ContactRow mono-eyebrow structural half, stepper bordered
   ± discs, PhotoStripField add-first/cover.
@@ -363,9 +363,9 @@ tests green, goldens regenerated):**
   surface knob lifted off the track) instead of M3-seed colors.
 
 **Wave 3 — batch 2 (analyze-clean, tests green, goldens regenerated):**
-- **InfoRow** inset divider opacity 0.62→0.38 (new `infoRowDivider` token); leading glyph
+- **FieldRow** inset divider opacity 0.62→0.38 (new `fieldRowDivider` token); leading glyph
   22→20 (`CatchIcon.control`) with the 32px divider inset.
-- **ChatListTile** inbox divider → `infoRowDivider` (0.38); inbox time now mono `t-meta`
+- **ChatListTile** inbox divider → `fieldRowDivider` (0.38); inbox time now mono `t-meta`
   (was the sans `statusLabel`).
 - **ContactRow** (club detail) glyph + value → ink (contact info never takes the
   action/activity color); value → `t-title-s`; trailing → `arrow-up-right`.

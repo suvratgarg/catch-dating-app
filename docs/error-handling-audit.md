@@ -36,7 +36,7 @@ delivery channels more explicitly:
   body resolution. Widgetbook reviews them together under one Error surfaces
   entry.
 - `CatchErrorBanner` remains the persistent inline mutation/form error channel
-  and shares the internal inline-message shell with `CatchCallout`.
+  and shares the internal inline-message shell with `CatchSurface.message`.
 - `CatchMutationErrorBanner` is the new persistent Riverpod mutation adapter.
 - `CatchMutationErrorListener` and `CatchMutationErrorListeners` are the
   transient snackbar boundaries for one or many mutations.
@@ -285,8 +285,8 @@ Recommended custom keys/logs for reportability:
 - Operation `service`, `feature`, `action`, and `resource` without document ids,
   phone numbers, names, chat text, profile bio, exact coordinates, or payment
   secrets.
-- Presentation context (`dashboard`, `profile`, `run`, `club`, `chat`,
-  `payments`, `auth`, `generic`) when available.
+- Presentation context (`dashboard`, `explore`, `profile`, `run`, `club`,
+  `chat`, `payments`, `auth`, `generic`) when available.
 - Hashed/opaque user identifier only if product/privacy policy accepts it.
 
 Crashlytics custom keys are limited, so do not set one key for every dynamic
@@ -785,8 +785,9 @@ pass.
   dumps in normal app UI. Debug details can appear in debug-mode logs or
   developer-only appended diagnostics.
 - Use `AppErrorContext` names that match user-facing feature domains:
-  `dashboard`, `profile`, `run`, `club`, `chat`, `swipes`, `payments`,
-  `auth`, or `generic`. Add contexts only when title/copy materially improves.
+  `dashboard`, `explore`, `profile`, `run`, `club`, `chat`, `swipes`,
+  `payments`, `auth`, or `generic`. Add contexts only when title/copy
+  materially improves.
 - If a subclass is added, add at least one mapper/rendering test that proves the
   user-facing copy and title remain stable.
 
