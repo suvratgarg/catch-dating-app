@@ -31,7 +31,7 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return _RevealTicker(
+    return RevealTicker(
       enabled: now == null && plan.isRevealCountdownRunning(DateTime.now()),
       builder: (context, tickNow) {
         final referenceNow = now ?? tickNow;
@@ -160,7 +160,7 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
               final compact =
                   constraints.maxWidth <
                   ComponentBreakpoints.eventSuccessRevealHostCompactBreakpoint;
-              final number = _CountdownNumber(
+              final number = CountdownNumber(
                 value: isCountingDown
                     ? '$remainingSeconds'
                     : allRevealed
@@ -172,7 +172,7 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
                     ? 'revealed'
                     : 'next round',
               );
-              final copy = _RevealHostCopy(
+              final copy = RevealHostCopy(
                 headline: headline,
                 body: _hostBody(
                   kind: revealSet.kind,
@@ -198,11 +198,11 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
             },
           ),
           gapH14,
-          _RevealProgressBar(progress: plan.revealProgress(referenceNow)),
+          RevealProgressBar(progress: plan.revealProgress(referenceNow)),
           if (roundCount > 0) ...[
             gapH14,
             if (revealSet.kind == EventSuccessRevealAssignmentKind.rotations)
-              _RevealRoundList(
+              RevealRoundList(
                 config: _rotationConfigLine(plan.structureConfig),
                 roundCount: roundCount,
                 revealedThrough: plan.revealedThroughRoundIndex(referenceNow),
@@ -213,7 +213,7 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
                 },
               )
             else
-              _RevealRoundRail(
+              RevealRoundRail(
                 roundCount: roundCount,
                 activeRoundIndex: targetRound,
                 revealedThrough: plan.revealedThroughRoundIndex(referenceNow),
@@ -230,7 +230,7 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
             ),
           ],
           gapH16,
-          _HostRevealActions(
+          HostRevealActions(
             eventId: event.id,
             roundCount: roundCount,
             nextRound: nextRound,

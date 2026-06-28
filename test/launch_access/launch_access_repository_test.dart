@@ -108,13 +108,13 @@ void main() {
       final providerRepository = container.read(launchAccessRepositoryProvider);
       await providerRepository.submitApplication(
         uid: 'runner-1',
-        draft: buildLaunchAccessDraft(city: 'delhi'),
+        draft: buildLaunchAccessDraft(city: 'in-dl-delhi-ncr'),
       );
 
       final application = await providerRepository.fetchApplication(
         uid: 'runner-1',
       );
-      expect(application!.city, 'delhi');
+      expect(application!.city, 'in-dl-delhi-ncr');
     });
   });
 }

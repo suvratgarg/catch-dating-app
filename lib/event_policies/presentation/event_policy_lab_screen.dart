@@ -27,7 +27,9 @@ abstract final class EventPolicyLabKeys {
 }
 
 class EventPolicyLabScreen extends StatefulWidget {
-  const EventPolicyLabScreen({super.key});
+  const EventPolicyLabScreen({super.key, this.initialScenario});
+
+  final EventPolicyPreviewScenario? initialScenario;
 
   @override
   State<EventPolicyLabScreen> createState() => _EventPolicyLabScreenState();
@@ -35,8 +37,24 @@ class EventPolicyLabScreen extends StatefulWidget {
 
 class _EventPolicyLabScreenState extends State<EventPolicyLabScreen> {
   static const _harness = EventPolicyPreviewHarness();
-  EventPolicyPreviewScenario _scenario =
-      EventPolicyPreviewCatalog.defaultScenarios.first;
+  late EventPolicyPreviewScenario _scenario;
+
+  @override
+  void initState() {
+    super.initState();
+    _scenario =
+        widget.initialScenario ??
+        EventPolicyPreviewCatalog.defaultScenarios.first;
+  }
+
+  @override
+  void didUpdateWidget(covariant EventPolicyLabScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialScenario?.id == widget.initialScenario?.id) return;
+    _scenario =
+        widget.initialScenario ??
+        EventPolicyPreviewCatalog.defaultScenarios.first;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,20 +69,20 @@ class _EventPolicyLabScreenState extends State<EventPolicyLabScreen> {
         child: ListView(
           padding: CatchInsets.pageBodyRelaxed,
           children: [
-            _LabHeader(scenario: _scenario),
+            EventPolicyLabHeader(scenario: _scenario),
             gapH16,
-            _ScenarioPicker(
+            EventPolicyScenarioPicker(
               selectedScenario: _scenario,
               onSelected: (scenario) => setState(() => _scenario = scenario),
             ),
             gapH20,
-            _PolicySummary(scenario: _scenario),
+            EventPolicySummary(scenario: _scenario),
             gapH20,
-            _ResultRows(result: result),
+            EventPolicyResultRows(result: result),
             gapH20,
-            _CancellationRows(result: result),
+            EventPolicyCancellationRows(result: result),
             gapH20,
-            _DebugOutput(result: result),
+            EventPolicyDebugOutput(result: result),
           ],
         ),
       ),
@@ -72,8 +90,8 @@ class _EventPolicyLabScreenState extends State<EventPolicyLabScreen> {
   }
 }
 
-class _LabHeader extends StatelessWidget {
-  const _LabHeader({required this.scenario});
+class EventPolicyLabHeader extends StatelessWidget {
+  const EventPolicyLabHeader({super.key, required this.scenario});
 
   final EventPolicyPreviewScenario scenario;
 
@@ -119,25 +137,34 @@ class _LabHeader extends StatelessWidget {
                 constraints.maxWidth <
                 ComponentBreakpoints.eventPolicyLabMetricsBreakpoint;
             final children = [
-              _MetricTile(
+              CatchStatColumn(
                 icon: CatchIcons.groupOutlined,
                 label: 'Capacity',
                 value: '${policy.capacityLimit}',
+                center: true,
+                surface: true,
               ),
-              _MetricTile(
+              CatchStatColumn(
                 icon: CatchIcons.confirmationNumberOutlined,
                 label: 'Base',
                 value: _formatPaise(pricing.basePrice.inPaise),
+                center: true,
+                monoValue: true,
+                surface: true,
               ),
-              _MetricTile(
+              CatchStatColumn(
                 icon: CatchIcons.eventSeatOutlined,
                 label: 'Booked',
                 value: '${scenario.roster.totalBooked}',
+                center: true,
+                surface: true,
               ),
-              _MetricTile(
+              CatchStatColumn(
                 icon: CatchIcons.scheduleOutlined,
                 label: 'Waitlist',
                 value: '${scenario.roster.totalWaitlisted}',
+                center: true,
+                surface: true,
               ),
             ];
 
@@ -178,37 +205,9 @@ class _LabHeader extends StatelessWidget {
   }
 }
 
-class _MetricTile extends StatelessWidget {
-  const _MetricTile({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      padding: CatchInsets.contentDense,
-      borderColor: t.line,
-      child: CatchStatColumn(
-        icon: icon,
-        value: value,
-        label: label,
-        center: true,
-        monoValue: label == 'Base',
-      ),
-    );
-  }
-}
-
-class _ScenarioPicker extends StatelessWidget {
-  const _ScenarioPicker({
+class EventPolicyScenarioPicker extends StatelessWidget {
+  const EventPolicyScenarioPicker({
+    super.key,
     required this.selectedScenario,
     required this.onSelected,
   });
@@ -221,7 +220,7 @@ class _ScenarioPicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _PolicyLabSectionTitle(
+        EventPolicyLabSectionTitle(
           icon: CatchIcons.tuneRounded,
           title: 'Host configuration',
           trailing: Text(
@@ -240,7 +239,7 @@ class _ScenarioPicker extends StatelessWidget {
             children: [
               for (final scenario
                   in EventPolicyPreviewCatalog.defaultScenarios) ...[
-                _ScenarioCard(
+                EventPolicyScenarioCard(
                   scenario: scenario,
                   selected: scenario.id == selectedScenario.id,
                   onTap: () => onSelected(scenario),
@@ -255,8 +254,9 @@ class _ScenarioPicker extends StatelessWidget {
   }
 }
 
-class _ScenarioCard extends StatelessWidget {
-  const _ScenarioCard({
+class EventPolicyScenarioCard extends StatelessWidget {
+  const EventPolicyScenarioCard({
+    super.key,
     required this.scenario,
     required this.selected,
     required this.onTap,
@@ -307,8 +307,8 @@ class _ScenarioCard extends StatelessWidget {
   }
 }
 
-class _PolicySummary extends StatelessWidget {
-  const _PolicySummary({required this.scenario});
+class EventPolicySummary extends StatelessWidget {
+  const EventPolicySummary({super.key, required this.scenario});
 
   final EventPolicyPreviewScenario scenario;
 
@@ -324,7 +324,7 @@ class _PolicySummary extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _PolicyLabSectionTitle(
+        EventPolicyLabSectionTitle(
           icon: CatchIcons.ruleRounded,
           title: 'Policy shape',
         ),
@@ -334,67 +334,67 @@ class _PolicySummary extends StatelessWidget {
           borderColor: t.line,
           child: Column(
             children: [
-              _PolicySummaryLine(
+              EventPolicySummaryLine(
                 icon: CatchIcons.eventAvailableOutlined,
                 label: 'Admission',
                 value: _formatAdmissionFormat(admission.format),
               ),
-              _DividerLine(color: t.line),
-              _PolicySummaryLine(
+              EventPolicyDividerLine(color: t.line),
+              EventPolicySummaryLine(
                 icon: CatchIcons.queueOutlined,
                 label: 'Waitlist',
                 value: _formatWaitlist(admission.waitlistPolicy.mode),
               ),
               if (admission.inviteRequired) ...[
-                _DividerLine(color: t.line),
-                _PolicySummaryLine(
+                EventPolicyDividerLine(color: t.line),
+                EventPolicySummaryLine(
                   icon: CatchIcons.keyOutlined,
                   label: 'Invite',
                   value: 'Required',
                 ),
               ],
               if (admission.membershipRequired) ...[
-                _DividerLine(color: t.line),
-                _PolicySummaryLine(
+                EventPolicyDividerLine(color: t.line),
+                EventPolicySummaryLine(
                   icon: CatchIcons.cardMembershipOutlined,
                   label: 'Membership',
                   value: 'Required',
                 ),
               ],
               if (admission.manualApprovalRequired) ...[
-                _DividerLine(color: t.line),
-                _PolicySummaryLine(
+                EventPolicyDividerLine(color: t.line),
+                EventPolicySummaryLine(
                   icon: CatchIcons.factCheckOutlined,
                   label: 'Host review',
                   value: 'Required',
                 ),
               ],
               if (admission.cohortCapacityLimits.isNotEmpty) ...[
-                _DividerLine(color: t.line),
-                _PolicySummaryLine(
+                EventPolicyDividerLine(color: t.line),
+                EventPolicySummaryLine(
                   icon: CatchIcons.groups2Outlined,
                   label: 'Cohort caps',
                   value: _formatCohortCaps(admission.cohortCapacityLimits),
                 ),
               ],
               if (ratio != null) ...[
-                _DividerLine(color: t.line),
-                _PolicySummaryLine(
+                EventPolicyDividerLine(color: t.line),
+                EventPolicySummaryLine(
                   icon: CatchIcons.balanceOutlined,
                   label: 'Ratio',
                   value:
                       '${_formatCohortId(ratio.leftCohortId)} / ${_formatCohortId(ratio.rightCohortId)} · ±${ratio.maxSkew}',
                 ),
-                _DividerLine(color: t.line),
-                _PolicySummaryLine(
+                EventPolicyDividerLine(color: t.line),
+                EventPolicySummaryLine(
                   icon: CatchIcons.diversity3Outlined,
                   label: 'Out-of-ratio',
                   value: _formatOutOfRatio(ratio.outOfRatioCohortPolicy),
                 ),
               ],
               if (pricing.cohortAdjustments.isNotEmpty) ...[
-                _DividerLine(color: t.line),
-                _PolicySummaryLine(
+                EventPolicyDividerLine(color: t.line),
+                EventPolicySummaryLine(
                   icon: CatchIcons.discountOutlined,
                   label: 'Cohort pricing',
                   value: pricing.cohortAdjustments.entries
@@ -406,8 +406,8 @@ class _PolicySummary extends StatelessWidget {
                 ),
               ],
               if (pricing.demandPricingRules.isNotEmpty) ...[
-                _DividerLine(color: t.line),
-                _PolicySummaryLine(
+                EventPolicyDividerLine(color: t.line),
+                EventPolicySummaryLine(
                   icon: CatchIcons.trendingUpRounded,
                   label: 'Demand pricing',
                   value: pricing.demandPricingRules
@@ -418,20 +418,20 @@ class _PolicySummary extends StatelessWidget {
                       .join(' · '),
                 ),
               ],
-              _DividerLine(color: t.line),
-              _PolicySummaryLine(
+              EventPolicyDividerLine(color: t.line),
+              EventPolicySummaryLine(
                 icon: CatchIcons.eventBusyOutlined,
                 label: 'Cancellation',
                 value: cancellation.title,
               ),
-              _DividerLine(color: t.line),
-              _PolicySummaryLine(
+              EventPolicyDividerLine(color: t.line),
+              EventPolicySummaryLine(
                 icon: CatchIcons.assignmentReturnOutlined,
                 label: 'Attendee terms',
                 value: cancellation.attendeeSummary,
               ),
-              _DividerLine(color: t.line),
-              _PolicySummaryLine(
+              EventPolicyDividerLine(color: t.line),
+              EventPolicySummaryLine(
                 icon: CatchIcons.paymentsOutlined,
                 label: 'Host payout',
                 value: settlement.title,
@@ -444,8 +444,8 @@ class _PolicySummary extends StatelessWidget {
   }
 }
 
-class _ResultRows extends StatelessWidget {
-  const _ResultRows({required this.result});
+class EventPolicyResultRows extends StatelessWidget {
+  const EventPolicyResultRows({super.key, required this.result});
 
   final EventPolicyPreviewResult result;
 
@@ -455,7 +455,7 @@ class _ResultRows extends StatelessWidget {
       key: EventPolicyLabKeys.resultList,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _PolicyLabSectionTitle(
+        EventPolicyLabSectionTitle(
           icon: CatchIcons.tableRowsOutlined,
           title: 'Preview outcomes',
           trailing: Text(
@@ -468,7 +468,7 @@ class _ResultRows extends StatelessWidget {
         ),
         gapH10,
         for (var index = 0; index < result.rows.length; index++) ...[
-          _ResultRow(row: result.rows[index]),
+          EventPolicyResultRow(row: result.rows[index]),
           if (index != result.rows.length - 1) gapH10,
         ],
       ],
@@ -476,8 +476,8 @@ class _ResultRows extends StatelessWidget {
   }
 }
 
-class _ResultRow extends StatelessWidget {
-  const _ResultRow({required this.row});
+class EventPolicyResultRow extends StatelessWidget {
+  const EventPolicyResultRow({super.key, required this.row});
 
   final EventPolicyPreviewRow row;
 
@@ -552,8 +552,8 @@ class _ResultRow extends StatelessWidget {
   }
 }
 
-class _CancellationRows extends StatelessWidget {
-  const _CancellationRows({required this.result});
+class EventPolicyCancellationRows extends StatelessWidget {
+  const EventPolicyCancellationRows({super.key, required this.result});
 
   final EventPolicyPreviewResult result;
 
@@ -564,7 +564,7 @@ class _CancellationRows extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _PolicyLabSectionTitle(
+        EventPolicyLabSectionTitle(
           icon: CatchIcons.assignmentReturnOutlined,
           title: 'Cancellation outcomes',
           trailing: Text(
@@ -578,7 +578,7 @@ class _CancellationRows extends StatelessWidget {
           index < result.cancellationRows.length;
           index++
         ) ...[
-          _CancellationRow(row: result.cancellationRows[index]),
+          EventPolicyCancellationRow(row: result.cancellationRows[index]),
           if (index != result.cancellationRows.length - 1) gapH10,
         ],
       ],
@@ -586,8 +586,8 @@ class _CancellationRows extends StatelessWidget {
   }
 }
 
-class _CancellationRow extends StatelessWidget {
-  const _CancellationRow({required this.row});
+class EventPolicyCancellationRow extends StatelessWidget {
+  const EventPolicyCancellationRow({super.key, required this.row});
 
   final EventPolicyCancellationPreviewRow row;
 
@@ -666,8 +666,8 @@ class _CancellationRow extends StatelessWidget {
   }
 }
 
-class _DebugOutput extends StatelessWidget {
-  const _DebugOutput({required this.result});
+class EventPolicyDebugOutput extends StatelessWidget {
+  const EventPolicyDebugOutput({super.key, required this.result});
 
   final EventPolicyPreviewResult result;
 
@@ -679,7 +679,7 @@ class _DebugOutput extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _PolicyLabSectionTitle(
+        EventPolicyLabSectionTitle(
           icon: CatchIcons.dataObjectRounded,
           title: 'Debug map',
         ),
@@ -702,8 +702,9 @@ class _DebugOutput extends StatelessWidget {
   }
 }
 
-class _PolicyLabSectionTitle extends StatelessWidget {
-  const _PolicyLabSectionTitle({
+class EventPolicyLabSectionTitle extends StatelessWidget {
+  const EventPolicyLabSectionTitle({
+    super.key,
     required this.icon,
     required this.title,
     this.trailing,
@@ -733,8 +734,9 @@ class _PolicyLabSectionTitle extends StatelessWidget {
   }
 }
 
-class _PolicySummaryLine extends StatelessWidget {
-  const _PolicySummaryLine({
+class EventPolicySummaryLine extends StatelessWidget {
+  const EventPolicySummaryLine({
+    super.key,
     required this.icon,
     required this.label,
     required this.value,
@@ -773,8 +775,8 @@ class _PolicySummaryLine extends StatelessWidget {
   }
 }
 
-class _DividerLine extends StatelessWidget {
-  const _DividerLine({required this.color});
+class EventPolicyDividerLine extends StatelessWidget {
+  const EventPolicyDividerLine({super.key, required this.color});
 
   final Color color;
 

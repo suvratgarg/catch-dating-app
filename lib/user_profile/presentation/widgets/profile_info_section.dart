@@ -28,79 +28,70 @@ class ProfileInfoEntry {
   final bool isAddAffordance;
 }
 
-class ProfileInfoSection extends StatelessWidget {
-  const ProfileInfoSection({
-    super.key,
-    required this.entries,
-    this.title,
-    this.subtitle,
-    this.grouped = false,
-    this.first = false,
-  });
+Widget profileInfoSection({
+  Key? key,
+  required BuildContext context,
+  required List<ProfileInfoEntry> entries,
+  String? title,
+  String? subtitle,
+  bool grouped = false,
+  bool first = false,
+}) {
+  if (entries.isEmpty) {
+    return const SizedBox.shrink();
+  }
 
-  final List<ProfileInfoEntry> entries;
-  final String? title;
-  final String? subtitle;
-  final bool grouped;
-  final bool first;
-
-  @override
-  Widget build(BuildContext context) {
-    if (entries.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    final tiles = <Widget>[];
-    for (var i = 0; i < entries.length; i++) {
-      final entry = entries[i];
-      final builder = entry.builder;
-      if (builder != null) {
-        tiles.add(builder(context));
-      } else {
+  final tiles = <Widget>[];
+  for (var i = 0; i < entries.length; i++) {
+    final entry = entries[i];
+    final builder = entry.builder;
+    if (builder != null) {
+      tiles.add(builder(context));
+    } else {
+      tiles.add(
+        profileInfoTile(
+          icon: entry.icon,
+          label: entry.label,
+          value: entry.value,
+          onTap: entry.onTap,
+          isAddAffordance: entry.isAddAffordance,
+          isExpanded: entry.isExpanded,
+        ),
+      );
+      final editor = entry.editor;
+      if (editor != null) {
         tiles.add(
-          ProfileInfoTile(
-            icon: entry.icon,
-            label: entry.label,
-            value: entry.value,
-            onTap: entry.onTap,
-            isAddAffordance: entry.isAddAffordance,
+          profileInlineAnimatedBody(
             isExpanded: entry.isExpanded,
-          ),
-        );
-        final editor = entry.editor;
-        if (editor != null) {
-          tiles.add(
-            ProfileInlineAnimatedBody(
-              isExpanded: entry.isExpanded,
-              child: editor,
-            ),
-          );
-        }
-      }
-      if (grouped && i < entries.length - 1) {
-        tiles.add(
-          Divider(
-            height: 1,
-            indent: CatchSpacing.s8,
-            color: CatchTokens.of(
-              context,
-            ).line.withValues(alpha: CatchOpacity.profileInfoDivider),
+            child: editor,
           ),
         );
       }
     }
-
-    final tileList = Column(children: tiles);
-    if (grouped && title != null) {
-      return CatchDesignSection(
-        kicker: title!,
-        count: subtitle,
-        first: first,
-        bodyGap: CatchSpacing.micro10,
-        child: tileList,
+    if (grouped && i < entries.length - 1) {
+      tiles.add(
+        Divider(
+          height: 1,
+          indent: CatchSpacing.s8,
+          color: CatchTokens.of(
+            context,
+          ).line.withValues(alpha: CatchOpacity.profileInfoDivider),
+        ),
       );
     }
+  }
 
+  final tileList = Column(children: tiles);
+  final Widget section;
+  if (grouped && title != null) {
+    section = CatchSection(
+      title: title,
+      count: subtitle,
+      first: first,
+      bodyGap: CatchSpacing.micro10,
+      child: tileList,
+    );
+  } else {
     final body = grouped
         ? CatchSurface(
             borderColor: CatchTokens.of(context).line,
@@ -109,7 +100,7 @@ class ProfileInfoSection extends StatelessWidget {
           )
         : tileList;
 
-    return Column(
+    section = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (title != null) ...[
@@ -119,7 +110,7 @@ class ProfileInfoSection extends StatelessWidget {
               left: grouped ? CatchSpacing.s1 : 0,
               bottom: CatchSpacing.micro2,
             ),
-            child: Text(title!, style: CatchTextStyles.labelL(context)),
+            child: Text(title, style: CatchTextStyles.labelL(context)),
           ),
           gapH8,
         ],
@@ -127,4 +118,7 @@ class ProfileInfoSection extends StatelessWidget {
       ],
     );
   }
+
+  if (key == null) return section;
+  return KeyedSubtree(key: key, child: section);
 }

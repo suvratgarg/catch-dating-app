@@ -53,11 +53,9 @@ class EventSuccessLabScreen extends StatelessWidget {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
+            SliverToBoxAdapter(child: LabHero(playbookCount: playbooks.length)),
             SliverToBoxAdapter(
-              child: _LabHero(playbookCount: playbooks.length),
-            ),
-            SliverToBoxAdapter(
-              child: _Section(
+              child: Section(
                 title: 'Actual WIP feature blocks',
                 child: Column(
                   children: [
@@ -73,18 +71,18 @@ class EventSuccessLabScreen extends StatelessWidget {
               ),
             ),
             SliverToBoxAdapter(
-              child: _Section(
+              child: Section(
                 title: 'Product promise',
-                child: _PromiseGrid(playbook: featured),
+                child: PromiseGrid(playbook: featured),
               ),
             ),
             SliverToBoxAdapter(
-              child: _Section(
+              child: Section(
                 title: 'Playbooks',
                 child: Column(
                   children: [
                     for (final playbook in playbooks) ...[
-                      _PlaybookCard(playbook: playbook),
+                      PlaybookCard(playbook: playbook),
                       const SizedBox(height: CatchSpacing.s4),
                     ],
                   ],
@@ -92,17 +90,17 @@ class EventSuccessLabScreen extends StatelessWidget {
               ),
             ),
             SliverToBoxAdapter(
-              child: _Section(
+              child: Section(
                 title: 'Architecture layers',
-                child: _ModuleGrid(
+                child: ModuleGrid(
                   moduleGroups: EventSuccessModuleCatalog.allByProductLayer,
                 ),
               ),
             ),
             SliverToBoxAdapter(
-              child: _Section(
+              child: Section(
                 title: 'Host coach sample',
-                child: _CoachPanel(brief: resolvedBrief),
+                child: CoachPanel(brief: resolvedBrief),
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s8)),
@@ -113,8 +111,8 @@ class EventSuccessLabScreen extends StatelessWidget {
   }
 }
 
-class _LabHero extends StatelessWidget {
-  const _LabHero({required this.playbookCount});
+class LabHero extends StatelessWidget {
+  const LabHero({required this.playbookCount});
 
   final int playbookCount;
 
@@ -191,8 +189,8 @@ class _LabHero extends StatelessWidget {
   }
 }
 
-class _PromiseGrid extends StatelessWidget {
-  const _PromiseGrid({required this.playbook});
+class PromiseGrid extends StatelessWidget {
+  const PromiseGrid({required this.playbook});
 
   final EventSuccessPlaybook playbook;
 
@@ -214,7 +212,7 @@ class _PromiseGrid extends StatelessWidget {
           children: [
             SizedBox(
               width: width,
-              child: _PromiseCard(
+              child: PromiseCard(
                 icon: CatchIcons.favoriteBorderRounded,
                 title: 'Attendees',
                 body: playbook.attendeePromise,
@@ -222,7 +220,7 @@ class _PromiseGrid extends StatelessWidget {
             ),
             SizedBox(
               width: width,
-              child: _PromiseCard(
+              child: PromiseCard(
                 icon: CatchIcons.groups2Outlined,
                 title: 'Hosts',
                 body: playbook.hostPromise,
@@ -230,7 +228,7 @@ class _PromiseGrid extends StatelessWidget {
             ),
             SizedBox(
               width: width,
-              child: _PromiseCard(
+              child: PromiseCard(
                 icon: CatchIcons.scienceOutlined,
                 title: 'Catch',
                 body:
@@ -244,8 +242,8 @@ class _PromiseGrid extends StatelessWidget {
   }
 }
 
-class _PromiseCard extends StatelessWidget {
-  const _PromiseCard({
+class PromiseCard extends StatelessWidget {
+  const PromiseCard({
     required this.icon,
     required this.title,
     required this.body,
@@ -275,8 +273,8 @@ class _PromiseCard extends StatelessWidget {
   }
 }
 
-class _PlaybookCard extends StatelessWidget {
-  const _PlaybookCard({required this.playbook});
+class PlaybookCard extends StatelessWidget {
+  const PlaybookCard({required this.playbook});
 
   final EventSuccessPlaybook playbook;
 
@@ -312,9 +310,9 @@ class _PlaybookCard extends StatelessWidget {
           const SizedBox(height: CatchSpacing.s2),
           Text(playbook.summary, style: CatchTextStyles.proseM(context)),
           const SizedBox(height: CatchSpacing.s4),
-          _CapacityRow(capacity: playbook.capacity),
+          CapacityRow(capacity: playbook.capacity),
           const SizedBox(height: CatchSpacing.s4),
-          _RunOfShow(playbook: playbook),
+          RunOfShow(playbook: playbook),
           const SizedBox(height: CatchSpacing.s4),
           Wrap(
             spacing: CatchSpacing.s2,
@@ -327,20 +325,20 @@ class _PlaybookCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: CatchSpacing.s4),
-          _NotesList(
+          NotesList(
             title: 'Iteration questions',
             items: playbook.iterationQuestions,
           ),
           const SizedBox(height: CatchSpacing.s3),
-          _NotesList(title: 'Anti-patterns', items: playbook.antiPatterns),
+          NotesList(title: 'Anti-patterns', items: playbook.antiPatterns),
         ],
       ),
     );
   }
 }
 
-class _CapacityRow extends StatelessWidget {
-  const _CapacityRow({required this.capacity});
+class CapacityRow extends StatelessWidget {
+  const CapacityRow({required this.capacity});
 
   final EventCapacityGuidance capacity;
 
@@ -379,8 +377,8 @@ class _CapacityRow extends StatelessWidget {
   }
 }
 
-class _RunOfShow extends StatelessWidget {
-  const _RunOfShow({required this.playbook});
+class RunOfShow extends StatelessWidget {
+  const RunOfShow({required this.playbook});
 
   final EventSuccessPlaybook playbook;
 
@@ -450,8 +448,8 @@ class _RunOfShow extends StatelessWidget {
   }
 }
 
-class _ModuleGrid extends StatelessWidget {
-  const _ModuleGrid({required this.moduleGroups});
+class ModuleGrid extends StatelessWidget {
+  const ModuleGrid({required this.moduleGroups});
 
   final Map<EventSuccessProductLayer, List<EventSuccessModule>> moduleGroups;
 
@@ -474,12 +472,12 @@ class _ModuleGrid extends StatelessWidget {
             for (final entry in moduleGroups.entries) ...[
               SizedBox(
                 width: constraints.maxWidth,
-                child: _LayerHeader(layer: entry.key),
+                child: LayerHeader(layer: entry.key),
               ),
               for (final module in entry.value)
                 SizedBox(
                   width: width,
-                  child: _ModuleCard(module: module),
+                  child: ModuleCard(module: module),
                 ),
             ],
           ],
@@ -489,8 +487,8 @@ class _ModuleGrid extends StatelessWidget {
   }
 }
 
-class _LayerHeader extends StatelessWidget {
-  const _LayerHeader({required this.layer});
+class LayerHeader extends StatelessWidget {
+  const LayerHeader({required this.layer});
 
   final EventSuccessProductLayer layer;
 
@@ -514,8 +512,8 @@ class _LayerHeader extends StatelessWidget {
   }
 }
 
-class _ModuleCard extends StatelessWidget {
-  const _ModuleCard({required this.module});
+class ModuleCard extends StatelessWidget {
+  const ModuleCard({required this.module});
 
   final EventSuccessModule module;
 
@@ -568,8 +566,8 @@ class _ModuleCard extends StatelessWidget {
   }
 }
 
-class _CoachPanel extends StatelessWidget {
-  const _CoachPanel({required this.brief});
+class CoachPanel extends StatelessWidget {
+  const CoachPanel({required this.brief});
 
   final EventSuccessBrief brief;
 
@@ -636,7 +634,7 @@ class _CoachPanel extends StatelessWidget {
           ],
           if (brief.strengths.isNotEmpty) ...[
             const SizedBox(height: CatchSpacing.s4),
-            _NotesList(title: 'Strengths', items: brief.strengths),
+            NotesList(title: 'Strengths', items: brief.strengths),
           ],
         ],
       ),
@@ -644,8 +642,8 @@ class _CoachPanel extends StatelessWidget {
   }
 }
 
-class _NotesList extends StatelessWidget {
-  const _NotesList({required this.title, required this.items});
+class NotesList extends StatelessWidget {
+  const NotesList({required this.title, required this.items});
 
   final String title;
   final List<String> items;
@@ -680,8 +678,8 @@ class _NotesList extends StatelessWidget {
   }
 }
 
-class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.child});
+class Section extends StatelessWidget {
+  const Section({required this.title, required this.child});
 
   final String title;
   final Widget child;

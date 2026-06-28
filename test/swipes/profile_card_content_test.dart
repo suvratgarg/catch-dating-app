@@ -146,7 +146,7 @@ void main() {
 
     test('keeps city and relationship goal out of detail chips', () {
       final profile = buildPublicProfile().copyWith(
-        city: 'indore',
+        city: 'in-mp-indore',
         relationshipGoal: RelationshipGoal.casual,
       );
 

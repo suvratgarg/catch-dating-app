@@ -8,10 +8,8 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
@@ -37,30 +35,30 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
         child: Padding(
           padding: CatchInsets.contentHorizontal,
           child: !config.gateEnabled
-              ? const _LaunchAccessDisabledView()
+              ? _launchAccessDisabledView()
               : uidAsync.when(
-                  loading: () => const _LaunchAccessLoadingBody(),
+                  loading: _launchAccessLoadingBody,
                   error: (error, _) =>
                       Center(child: CatchErrorBanner.fromError(error)),
                   data: (uid) {
                     if (uid == null || uid.isEmpty) {
-                      return const _LaunchAccessSignedOutView();
+                      return _launchAccessSignedOutView();
                     }
                     final applicationAsync = ref.watch(
                       watchLaunchAccessApplicationProvider(uid),
                     );
                     return applicationAsync.when(
-                      loading: () => const _LaunchAccessLoadingBody(),
+                      loading: _launchAccessLoadingBody,
                       error: (error, _) =>
                           Center(child: CatchErrorBanner.fromError(error)),
                       data: (application) {
                         if (application != null &&
                             !application.status.canEditApplication) {
-                          return _LaunchAccessStatusView(
+                          return _launchAccessStatusView(
                             application: application,
                           );
                         }
-                        return _LaunchAccessApplicationForm(
+                        return LaunchAccessApplicationForm(
                           application: application,
                         );
                       },
@@ -73,100 +71,88 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
   }
 }
 
-class _LaunchAccessLoadingBody extends StatelessWidget {
-  const _LaunchAccessLoadingBody();
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(top: CatchSpacing.s4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-          gapH8,
-          CatchSkeleton.textBlock(lines: 2),
-          gapH24,
+Widget _launchAccessLoadingBody() {
+  return SingleChildScrollView(
+    padding: const EdgeInsets.only(top: CatchSpacing.s4),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+        gapH8,
+        CatchSkeleton.textBlock(lines: 2),
+        gapH24,
+        CatchSkeleton.card(height: CatchLayout.controlMdMinHeight),
+        gapH24,
+        _launchAccessChoiceSkeleton(rows: 1),
+        gapH24,
+        _launchAccessChoiceSkeleton(rows: 2),
+        gapH24,
+        _launchAccessChoiceSkeleton(rows: 2),
+        gapH24,
+        Row(
+          children: [
+            Expanded(child: CatchSkeleton.textBlock(lines: 2)),
+            gapW12,
+            CatchSkeleton.box(
+              width: CatchSpacing.s12,
+              height: CatchSpacing.s8,
+              radius: CatchRadius.pill,
+            ),
+          ],
+        ),
+        gapH24,
+        for (var index = 0; index < 3; index++) ...[
           CatchSkeleton.card(height: CatchLayout.controlMdMinHeight),
-          gapH24,
-          const _LaunchAccessChoiceSkeleton(rows: 1),
-          gapH24,
-          const _LaunchAccessChoiceSkeleton(rows: 2),
-          gapH24,
-          const _LaunchAccessChoiceSkeleton(rows: 2),
-          gapH24,
-          Row(
-            children: [
-              Expanded(child: CatchSkeleton.textBlock(lines: 2)),
-              gapW12,
+          gapH16,
+        ],
+        CatchSkeleton.card(height: CatchSpacing.s16),
+        gapH32,
+        CatchSkeleton.card(height: CatchLayout.buttonLgHeight),
+        gapH32,
+      ],
+    ),
+  );
+}
+
+Widget _launchAccessChoiceSkeleton({required int rows}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+      gapH10,
+      for (var row = 0; row < rows; row++) ...[
+        Wrap(
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
+          children: [
+            for (var index = 0; index < 3; index++)
               CatchSkeleton.box(
-                width: CatchSpacing.s12,
+                width: index == 1
+                    ? CatchLayout.skeletonTextTitleWidth
+                    : CatchLayout.skeletonTextShortWidth,
                 height: CatchSpacing.s8,
                 radius: CatchRadius.pill,
               ),
-            ],
-          ),
-          gapH24,
-          for (var index = 0; index < 3; index++) ...[
-            CatchSkeleton.card(height: CatchLayout.controlMdMinHeight),
-            gapH16,
           ],
-          CatchSkeleton.card(height: CatchSpacing.s16),
-          gapH32,
-          CatchSkeleton.card(height: CatchLayout.buttonLgHeight),
-          gapH32,
-        ],
-      ),
-    );
-  }
-}
-
-class _LaunchAccessChoiceSkeleton extends StatelessWidget {
-  const _LaunchAccessChoiceSkeleton({required this.rows});
-
-  final int rows;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-        gapH10,
-        for (var row = 0; row < rows; row++) ...[
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (var index = 0; index < 3; index++)
-                CatchSkeleton.box(
-                  width: index == 1
-                      ? CatchLayout.skeletonTextTitleWidth
-                      : CatchLayout.skeletonTextShortWidth,
-                  height: CatchSpacing.s8,
-                  radius: CatchRadius.pill,
-                ),
-            ],
-          ),
-          if (row < rows - 1) gapH8,
-        ],
+        ),
+        if (row < rows - 1) gapH8,
       ],
-    );
-  }
+    ],
+  );
 }
 
-class _LaunchAccessApplicationForm extends ConsumerStatefulWidget {
-  const _LaunchAccessApplicationForm({this.application});
+class LaunchAccessApplicationForm extends ConsumerStatefulWidget {
+  const LaunchAccessApplicationForm({super.key, this.application});
 
   final LaunchAccessApplication? application;
 
   @override
-  ConsumerState<_LaunchAccessApplicationForm> createState() =>
+  ConsumerState<LaunchAccessApplicationForm> createState() =>
       _LaunchAccessApplicationFormState();
 }
 
 class _LaunchAccessApplicationFormState
-    extends ConsumerState<_LaunchAccessApplicationForm> {
+    extends ConsumerState<LaunchAccessApplicationForm> {
   final _formKey = GlobalKey<FormState>();
   final _inviteCodeController = TextEditingController();
   final _instagramController = TextEditingController();
@@ -181,7 +167,7 @@ class _LaunchAccessApplicationFormState
   }
 
   @override
-  void didUpdateWidget(covariant _LaunchAccessApplicationForm oldWidget) {
+  void didUpdateWidget(covariant LaunchAccessApplicationForm oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.application?.uid != widget.application?.uid) {
       _seededFromApplication = false;
@@ -223,8 +209,11 @@ class _LaunchAccessApplicationFormState
     final draft = ref.watch(launchAccessControllerProvider);
     final mutation = ref.watch(LaunchAccessController.submitMutation);
     final t = CatchTokens.of(context);
-    final selectedCity = defaultCityOptions
-        .where((city) => city.name == draft.city)
+    final selectableCities = defaultCityOptions
+        .where((city) => city.profileSelectable)
+        .toList(growable: false);
+    final selectedCity = selectableCities
+        .where((city) => city.effectiveMarketId == draft.city)
         .firstOrNull;
 
     return SingleChildScrollView(
@@ -244,44 +233,20 @@ class _LaunchAccessApplicationFormState
               style: CatchTextStyles.bodyLead(context, color: t.ink2),
             ),
             gapH24,
-            FormField<CityOption>(
-              initialValue: selectedCity,
+            CatchField.select<CityOption>(
+              title: 'City',
+              values: selectableCities,
+              value: selectedCity,
+              itemLabel: (city) => city.label,
+              hintText: 'Select city',
+              prefixIcon: Icon(CatchIcons.locationCityOutlined),
               validator: (_) =>
                   draft.city.trim().isEmpty ? 'Please choose your city' : null,
-              builder: (field) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CatchFormFieldLabel(label: 'City', hasError: field.hasError),
-                  gapH8,
-                  CatchSelectMenu<CityOption>(
-                    values: defaultCityOptions,
-                    value: selectedCity,
-                    itemLabel: (city) => city.label,
-                    hintText: 'Select city',
-                    semanticLabel: 'City',
-                    hasError: field.hasError,
-                    prefixIcon: Icon(CatchIcons.locationCityOutlined),
-                    onChanged: (city) {
-                      final next = city?.name ?? '';
-                      field.didChange(city);
-                      LaunchAccessController.submitMutation.reset(ref);
-                      ref
-                          .read(launchAccessControllerProvider.notifier)
-                          .setCity(next);
-                    },
-                  ),
-                  if (field.hasError) ...[
-                    gapH8,
-                    Text(
-                      field.errorText!,
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: t.danger,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+              onChanged: (city) {
+                final next = city?.effectiveMarketId ?? '';
+                LaunchAccessController.submitMutation.reset(ref);
+                ref.read(launchAccessControllerProvider.notifier).setCity(next);
+              },
             ),
             gapH24,
             CatchChipField<LaunchAccessRole>(
@@ -367,8 +332,8 @@ class _LaunchAccessApplicationFormState
               ],
             ),
             gapH24,
-            CatchTextField(
-              label: 'Invite code',
+            CatchField(
+              title: 'Invite code',
               isOptional: true,
               controller: _inviteCodeController,
               textCapitalization: TextCapitalization.characters,
@@ -381,8 +346,8 @@ class _LaunchAccessApplicationFormState
               },
             ),
             gapH16,
-            CatchTextField(
-              label: 'Instagram',
+            CatchField(
+              title: 'Instagram',
               isOptional: true,
               controller: _instagramController,
               prefixText: '@',
@@ -395,8 +360,8 @@ class _LaunchAccessApplicationFormState
               },
             ),
             gapH16,
-            CatchTextField(
-              label: 'Who referred you?',
+            CatchField(
+              title: 'Who referred you?',
               isOptional: true,
               controller: _referralController,
               textCapitalization: TextCapitalization.words,
@@ -408,8 +373,8 @@ class _LaunchAccessApplicationFormState
               },
             ),
             gapH16,
-            CatchTextField(
-              label: 'Why do you want to join?',
+            CatchField(
+              title: 'Why do you want to join?',
               controller: _whyController,
               maxLines: 4,
               minLines: 3,
@@ -450,53 +415,36 @@ class _LaunchAccessApplicationFormState
   }
 }
 
-class _LaunchAccessStatusView extends StatelessWidget {
-  const _LaunchAccessStatusView({required this.application});
-
-  final LaunchAccessApplication application;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CatchEmptyState(
-        icon: application.status.unlocksProfileCreation
-            ? CatchIcons.checkCircleOutlineRounded
-            : CatchIcons.hourglassTopRounded,
-        title: application.status.label,
-        message: application.status.unlocksProfileCreation
-            ? 'Access is approved. Profile creation can be unlocked once the router uses this gate.'
-            : 'Your application is saved for the next launch cohort.',
-      ),
-    );
-  }
+Widget _launchAccessStatusView({required LaunchAccessApplication application}) {
+  return Center(
+    child: CatchEmptyState(
+      icon: application.status.unlocksProfileCreation
+          ? CatchIcons.checkCircleOutlineRounded
+          : CatchIcons.hourglassTopRounded,
+      title: application.status.label,
+      message: application.status.unlocksProfileCreation
+          ? 'Access is approved. Profile creation can be unlocked once the router uses this gate.'
+          : 'Your application is saved for the next launch cohort.',
+    ),
+  );
 }
 
-class _LaunchAccessDisabledView extends StatelessWidget {
-  const _LaunchAccessDisabledView();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CatchEmptyState(
-        icon: CatchIcons.lockOpenRounded,
-        title: 'Access gate is off',
-        message: 'Remote Config has not enabled launch access for this build.',
-      ),
-    );
-  }
+Widget _launchAccessDisabledView() {
+  return Center(
+    child: CatchEmptyState(
+      icon: CatchIcons.lockOpenRounded,
+      title: 'Access gate is off',
+      message: 'Remote Config has not enabled launch access for this build.',
+    ),
+  );
 }
 
-class _LaunchAccessSignedOutView extends StatelessWidget {
-  const _LaunchAccessSignedOutView();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CatchEmptyState(
-        icon: CatchIcons.phoneAndroidRounded,
-        title: 'Verify your phone',
-        message: 'Phone verification is required before applying for access.',
-      ),
-    );
-  }
+Widget _launchAccessSignedOutView() {
+  return Center(
+    child: CatchEmptyState(
+      icon: CatchIcons.phoneAndroidRounded,
+      title: 'Verify your phone',
+      message: 'Phone verification is required before applying for access.',
+    ),
+  );
 }

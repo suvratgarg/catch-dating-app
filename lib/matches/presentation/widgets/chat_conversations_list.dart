@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/matches/presentation/chat_list_tile.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
 import 'package:flutter/material.dart';
 
@@ -22,9 +24,25 @@ class ChatConversationsList extends StatelessWidget {
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
           final preview = matches[index];
-          return ChatListTile(
-            preview: preview,
+          final unreadCount = preview.unreadCount;
+          final isNew = !preview.hasConversation;
+          return CatchPersonRow(
+            data: CatchPersonRowData(
+              name: preview.displayName,
+              imageUrl: preview.photoUrl,
+              lastMessage: preview.previewText,
+              timestamp: AppTimeFormatters.chatTimestamp(preview.timestamp),
+              unreadCount: unreadCount,
+              isFresh: unreadCount > 0 || isNew,
+              showFreshDot: unreadCount == 0 && isNew,
+              avatarShape: preview.match.isClubHostInquiry
+                  ? CatchPersonAvatarShape.square
+                  : CatchPersonAvatarShape.circle,
+            ),
+            avatarSize: CatchLayout.chatListAvatarExtent,
+            padding: CatchInsets.chatListTileVertical,
             divider: index > 0,
+            showFreshBackground: false,
             onTap: () => onThreadSelected(preview),
           );
         }, childCount: matches.length),

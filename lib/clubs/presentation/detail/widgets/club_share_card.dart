@@ -66,7 +66,7 @@ class ClubShareCard extends StatelessWidget {
               flex: 4,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(CatchRadius.md),
-                child: _ClubShareArtwork(club: club),
+                child: _buildClubShareArtwork(club: club),
               ),
             ),
             gapH14,
@@ -95,12 +95,14 @@ class ClubShareCard extends StatelessWidget {
                     ),
                   ),
                   gapH8,
-                  _ClubShareInfoRow(
+                  _buildClubShareMetaRow(
+                    context,
                     icon: CatchIcons.locationOnOutlined,
                     label: '${club.area}, ${cityLabel(club.location)}',
                   ),
                   gapH8,
-                  _ClubShareInfoRow(
+                  _buildClubShareMetaRow(
+                    context,
                     icon: CatchIcons.group,
                     label: clubMemberCountLabel(club),
                   ),
@@ -131,47 +133,36 @@ class ClubShareCard extends StatelessWidget {
   }
 }
 
-class _ClubShareArtwork extends StatelessWidget {
-  const _ClubShareArtwork({required this.club});
-
-  final Club club;
-
-  @override
-  Widget build(BuildContext context) {
-    final photoUrl = club.primaryClubPhotoUrl;
-    if (photoUrl != null && photoUrl.trim().isNotEmpty) {
-      return CatchDetailHeroBackdrop(
-        imageUrl: photoUrl,
-        semanticLabel: '${club.name} cover photo',
-        showScrim: false,
-      );
-    }
-    return ClubPolaroidArtwork(club: club);
-  }
-}
-
-class _ClubShareInfoRow extends StatelessWidget {
-  const _ClubShareInfoRow({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      children: [
-        Icon(icon, size: CatchIcon.md, color: t.primary),
-        gapW8,
-        Expanded(
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.labelM(context, color: t.ink2),
-          ),
-        ),
-      ],
+Widget _buildClubShareArtwork({required Club club}) {
+  final photoUrl = club.primaryClubPhotoUrl;
+  if (photoUrl != null && photoUrl.trim().isNotEmpty) {
+    return CatchDetailHeroBackdrop(
+      imageUrl: photoUrl,
+      semanticLabel: '${club.name} cover photo',
+      showScrim: false,
     );
   }
+  return ClubPolaroidArtwork(club: club);
+}
+
+Widget _buildClubShareMetaRow(
+  BuildContext context, {
+  required IconData icon,
+  required String label,
+}) {
+  final t = CatchTokens.of(context);
+  return Row(
+    children: [
+      Icon(icon, size: CatchIcon.md, color: t.primary),
+      gapW8,
+      Expanded(
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.labelM(context, color: t.ink2),
+        ),
+      ),
+    ],
+  );
 }

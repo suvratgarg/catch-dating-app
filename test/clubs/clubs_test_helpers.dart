@@ -17,7 +17,9 @@ Club buildClub({
   String id = 'club-1',
   String name = 'Stride Social',
   String description = 'Morning runners who like easy city loops.',
-  String location = 'mumbai',
+  String location = 'in-mh-mumbai',
+  String? locationCityId,
+  String? locationMarketId,
   String area = 'Bandra',
   String? hostUserId = 'host-1',
   String? hostName = 'Host',
@@ -44,6 +46,8 @@ Club buildClub({
     name: name,
     description: description,
     location: location,
+    locationCityId: locationCityId ?? _cityIdForMarket(location),
+    locationMarketId: locationMarketId ?? location,
     area: area,
     hostUserId: hostUserId,
     hostName: hostName,
@@ -66,6 +70,11 @@ Club buildClub({
     appVisibility: appVisibility,
   );
 }
+
+String _cityIdForMarket(String marketId) => switch (marketId) {
+  'in-dl-delhi-ncr' => 'in-dl-delhi',
+  _ => marketId,
+};
 
 UserProfile buildUser({
   required String uid,

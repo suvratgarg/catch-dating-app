@@ -1,7 +1,7 @@
 part of '../event_success_host_screen.dart';
 
-class _LiveTab extends ConsumerWidget {
-  const _LiveTab({
+class LiveTab extends ConsumerWidget {
+  const LiveTab({
     required this.event,
     required this.plan,
     required this.planIsPersisted,
@@ -61,7 +61,7 @@ class _LiveTab extends ConsumerWidget {
         physics: physics,
         padding: padding,
         children: [
-          _NoticeCard(
+          NoticeCard(
             icon: isPreEvent
                 ? CatchIcons.cloudUploadOutlined
                 : CatchIcons.lockClockRounded,
@@ -74,7 +74,7 @@ class _LiveTab extends ConsumerWidget {
           ),
           if (liveRoster != null) ...[
             gapH16,
-            const _LiveSectionHeader(
+            const LiveSectionHeader(
               title: 'Editable roster',
               subtitle:
                   'Tap a booked attendee if their check-in state is wrong.',
@@ -106,7 +106,7 @@ class _LiveTab extends ConsumerWidget {
         physics: physics,
         padding: padding,
         children: [
-          _NoticeCard(
+          NoticeCard(
             icon: CatchIcons.ruleFolderOutlined,
             title: 'No live steps selected',
             body:
@@ -114,7 +114,7 @@ class _LiveTab extends ConsumerWidget {
           ),
           if (liveRoster != null) ...[
             gapH16,
-            const _LiveSectionHeader(
+            const LiveSectionHeader(
               title: 'Editable roster',
               subtitle:
                   'Tap a booked attendee if their check-in state is wrong.',
@@ -138,18 +138,18 @@ class _LiveTab extends ConsumerWidget {
         activeStepHas(EventSuccessModuleCatalog.socialMissions.id) ||
         activeStepHas(EventSuccessModuleCatalog.contextualOpeners.id);
 
-    Widget attendanceCard() => _LiveAttendanceSummaryCard(
+    Widget attendanceCard() => LiveAttendanceSummaryCard(
       event: event,
       bookedCount: livePlan.bookedCount,
       checkedInCount: livePlan.checkedInCount,
       waitlistCount: roster.waitlistedCount,
     );
 
-    Widget attendanceQrCard() => _LiveCheckInQrCard(event: event);
+    Widget attendanceQrCard() => LiveCheckInQrCard(event: event);
 
     final hasEmbeddedRoster = liveRoster != null;
 
-    Widget wingmanCard() => _WingmanRequestsHostCard(
+    Widget wingmanCard() => WingmanRequestsHostCard(
       requests: wingmanRequests,
       profiles: wingmanProfiles,
       rotationsEnabled: runtime.guidedRotationsEnabled,
@@ -169,7 +169,7 @@ class _LiveTab extends ConsumerWidget {
           : EventSuccessConversationCueLibrary.postEventOpenersFor(event),
     );
 
-    Widget microPodsCard() => _MicroPodsHostCard(
+    Widget microPodsCard() => MicroPodsHostCard(
       event: event,
       eventId: event.id,
       assignments: assignments,
@@ -179,7 +179,7 @@ class _LiveTab extends ConsumerWidget {
       onOverride: fixtureActions?.onOverrideGroupAssignments,
     );
 
-    Widget rotationsCard() => _RotationsHostCard(
+    Widget rotationsCard() => RotationsHostCard(
       event: event,
       rotationIntervalMinutes:
           plan.structureConfig.rotationIntervalMinutes ?? 15,
@@ -236,7 +236,7 @@ class _LiveTab extends ConsumerWidget {
                 !activeStepHas(EventSuccessModuleCatalog.checkIn.id))
               hasEmbeddedRoster ? attendanceQrCard() : attendanceCard(),
             if (runtime.compatibilityQuestionnaireEnabled)
-              _CompatibilitySignalHostCard(plan: plan),
+              CompatibilitySignalHostCard(plan: plan),
             if (runtime.wingmanRequestsEnabled &&
                 !activeStepHas(EventSuccessModuleCatalog.wingmanRequests.id))
               wingmanCard(),
@@ -280,7 +280,7 @@ class _LiveTab extends ConsumerWidget {
           ),
           gapH16,
         ],
-        _LiveNowConsole(
+        LiveNowConsole(
           plan: livePlan,
           event: event,
           liveRoster: liveRoster,
@@ -308,7 +308,7 @@ class _LiveTab extends ConsumerWidget {
         ),
         if (supportingCards.isNotEmpty) ...[
           gapH20,
-          const _LiveSectionHeader(
+          const LiveSectionHeader(
             title: 'Supporting controls',
             subtitle:
                 'Controls that stay available without competing with the current live step.',
@@ -396,8 +396,8 @@ MutationState<void>? _firstMutationError(
   return null;
 }
 
-class _LiveNowConsole extends StatelessWidget {
-  const _LiveNowConsole({
+class LiveNowConsole extends StatelessWidget {
+  const LiveNowConsole({
     required this.plan,
     required this.event,
     required this.liveRoster,
@@ -455,7 +455,7 @@ class _LiveNowConsole extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  _LiveNowPill(foreground: fg, accent: t.gold),
+                  LiveNowPill(foreground: fg, accent: t.gold),
                   gapW8,
                   Expanded(
                     child: Text(
@@ -534,15 +534,15 @@ class _LiveNowConsole extends StatelessWidget {
           ),
         ),
         gapH14,
-        _LiveStepNavigation(plan: plan, onPrevious: onPrevious, onNext: onNext),
+        LiveStepNavigation(plan: plan, onPrevious: onPrevious, onNext: onNext),
         gapH12,
-        _LiveCheckInSummaryStrip(
+        LiveCheckInSummaryStrip(
           bookedCount: bookedCount,
           checkedInCount: checkedInCount,
         ),
         if (liveRoster != null) ...[
           gapH14,
-          const _LiveSectionHeader(
+          const LiveSectionHeader(
             title: 'Editable roster',
             subtitle: 'Tap a booked attendee if their check-in state is wrong.',
           ),
@@ -551,7 +551,7 @@ class _LiveNowConsole extends StatelessWidget {
         ],
         if (currentStepControls.isNotEmpty) ...[
           gapH14,
-          const _LiveSectionHeader(
+          const LiveSectionHeader(
             title: 'Controls for this step',
             subtitle: 'Handle these before moving the room forward.',
           ),
@@ -602,8 +602,8 @@ class _CompactLiveConsolePresenter {
   }
 }
 
-class _LiveCheckInSummaryStrip extends StatelessWidget {
-  const _LiveCheckInSummaryStrip({
+class LiveCheckInSummaryStrip extends StatelessWidget {
+  const LiveCheckInSummaryStrip({
     required this.bookedCount,
     required this.checkedInCount,
   });
@@ -661,8 +661,8 @@ class _LiveCheckInSummaryStrip extends StatelessWidget {
   }
 }
 
-class _LiveCheckInQrCard extends StatelessWidget {
-  const _LiveCheckInQrCard({required this.event});
+class LiveCheckInQrCard extends StatelessWidget {
+  const LiveCheckInQrCard({required this.event});
 
   final Event event;
 
@@ -693,7 +693,7 @@ class _LiveCheckInQrCard extends StatelessWidget {
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
-          _HostCheckInQrPanel(event: event),
+          HostCheckInQrPanel(event: event),
         ],
       ),
     );
@@ -702,8 +702,8 @@ class _LiveCheckInQrCard extends StatelessWidget {
 
 /// The "LIVE NOW" status pill of the live console — a gold dot on a dim-fill
 /// pill, per the design-system `LiveConsole` header.
-class _LiveNowPill extends StatelessWidget {
-  const _LiveNowPill({required this.foreground, required this.accent});
+class LiveNowPill extends StatelessWidget {
+  const LiveNowPill({required this.foreground, required this.accent});
 
   final Color foreground;
   final Color accent;
@@ -739,8 +739,8 @@ class _LiveNowPill extends StatelessWidget {
   }
 }
 
-class _LiveStepNavigation extends StatelessWidget {
-  const _LiveStepNavigation({
+class LiveStepNavigation extends StatelessWidget {
+  const LiveStepNavigation({
     required this.plan,
     required this.onPrevious,
     required this.onNext,
@@ -784,8 +784,8 @@ class _LiveStepNavigation extends StatelessWidget {
   }
 }
 
-class _LiveSectionHeader extends StatelessWidget {
-  const _LiveSectionHeader({required this.title, required this.subtitle});
+class LiveSectionHeader extends StatelessWidget {
+  const LiveSectionHeader({required this.title, required this.subtitle});
 
   final String title;
   final String subtitle;

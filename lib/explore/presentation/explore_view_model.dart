@@ -396,7 +396,9 @@ class ExploreFilters extends _$ExploreFilters {
 @riverpod
 AsyncValue<List<Club>> exploreSourceClubs(Ref ref) {
   final city = ref.watch(selectedExploreCityProvider);
-  final locationClubsAsync = ref.watch(watchClubsByLocationProvider(city.name));
+  final locationClubsAsync = ref.watch(
+    watchClubsByLocationProvider(city.effectiveMarketId),
+  );
 
   if (locationClubsAsync.isLoading) {
     return const AsyncLoading();
@@ -443,7 +445,10 @@ AsyncValue<List<Club>> filteredExploreClubs(Ref ref) {
     return AsyncData(localFallback);
   }
   final searchAsync = ref.watch(
-    exploreServerSearchProvider(query: debouncedQuery, cityName: city.name),
+    exploreServerSearchProvider(
+      query: debouncedQuery,
+      cityName: city.effectiveMarketId,
+    ),
   );
 
   if (searchAsync.isLoading) {

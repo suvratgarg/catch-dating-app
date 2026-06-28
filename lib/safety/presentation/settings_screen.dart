@@ -11,11 +11,11 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_settings_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -188,53 +188,53 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _SettingsSection(
+                        _settingsSection(
                           first: true,
                           title: 'Account',
-                          footer: _AccountProfileStatus(
+                          footer: _accountProfileStatus(
                             profile: state.profile,
                             onRetry: () =>
                                 ref.invalidate(watchUserProfileProvider),
                           ),
                           children: [
-                            CatchSettingsRow(
-                              label: 'Phone number',
-                              value: state.profile.phoneNumber,
+                            CatchField(
+                              title: 'Phone number',
+                              valueText: state.profile.phoneNumber,
                               icon: CatchIcons.phoneOutlined,
                             ),
-                            CatchSettingsRow(
-                              label: 'Email',
-                              value: state.profile.email,
+                            CatchField(
+                              title: 'Email',
+                              valueText: state.profile.email,
                               icon: CatchIcons.emailOutlined,
                             ),
-                            CatchSettingsRow(
-                              label: 'Edit profile',
+                            CatchField(
+                              title: 'Edit profile',
                               icon: CatchIcons.personOutlined,
                               onTap: () =>
                                   context.pushNamed(Routes.profileScreen.name),
                             ),
-                            CatchSettingsRow(
+                            CatchField(
                               key: SettingsKeys.reviewHistoryRow,
-                              label: 'Review history',
-                              value: 'Events you reviewed',
+                              title: 'Review history',
+                              valueText: 'Events you reviewed',
                               icon: CatchIcons.rateReviewOutlined,
                               onTap: () => context.pushNamed(
                                 Routes.reviewsHistoryScreen.name,
                               ),
                             ),
-                            CatchSettingsRow(
+                            CatchField(
                               key: SettingsKeys.paymentHistoryRow,
-                              label: 'Payment history',
-                              value: 'Bookings and receipts',
+                              title: 'Payment history',
+                              valueText: 'Bookings and receipts',
                               icon: CatchIcons.receiptLongOutlined,
                               onTap: () => context.pushNamed(
                                 Routes.paymentHistoryScreen.name,
                               ),
                             ),
-                            CatchSettingsRow(
+                            CatchField(
                               key: SettingsKeys.hostAppRow,
-                              label: 'Catch Host',
-                              value: 'Manage events and clubs',
+                              title: 'Catch Host',
+                              valueText: 'Manage events and clubs',
                               icon: CatchIcons.workOutlineRounded,
                               onTap: _openHostApp,
                             ),
@@ -242,34 +242,35 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                         if (AppConfig.enableEventPolicyLab ||
                             AppConfig.enableEventSuccessPreview) ...[
-                          _SettingsSection(
+                          _settingsSection(
                             title: 'Development',
                             children: [
                               if (AppConfig.enableEventPolicyLab)
-                                CatchSettingsRow(
+                                CatchField(
                                   key: SettingsKeys.eventPolicyLabRow,
-                                  label: 'Event policy lab',
-                                  value: 'Static booking policy previews',
+                                  title: 'Event policy lab',
+                                  valueText: 'Static booking policy previews',
                                   icon: CatchIcons.scienceOutlined,
                                   onTap: () => context.pushNamed(
                                     Routes.eventPolicyLabScreen.name,
                                   ),
                                 ),
                               if (AppConfig.enableEventSuccessPreview)
-                                CatchSettingsRow(
+                                CatchField(
                                   key: SettingsKeys.eventSuccessLabRow,
-                                  label: 'Event success lab',
-                                  value: 'Host, attendee, and report previews',
+                                  title: 'Event success lab',
+                                  valueText:
+                                      'Host, attendee, and report previews',
                                   icon: CatchIcons.autoGraphRounded,
                                   onTap: () => context.pushNamed(
                                     Routes.eventSuccessLabScreen.name,
                                   ),
                                 ),
                               if (AppConfig.enableEventSuccessPreview)
-                                CatchSettingsRow(
+                                CatchField(
                                   key: SettingsKeys.eventSuccessManualQaRow,
-                                  label: 'Event success manual QA',
-                                  value: 'Host and attendee side by side',
+                                  title: 'Event success manual QA',
+                                  valueText: 'Host and attendee side by side',
                                   icon: CatchIcons.splitscreenRounded,
                                   onTap: () => context.pushNamed(
                                     Routes.eventSuccessManualQaScreen.name,
@@ -278,13 +279,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ],
                           ),
                         ],
-                        _SettingsSection(
+                        _settingsSection(
                           title: 'Notifications',
                           children: [
-                            CatchSettingsRow(
-                              label: 'Push notifications',
+                            CatchField(
+                              title: 'Push notifications',
                               icon: CatchIcons.favoriteOutline,
-                              trailing: CatchToggle(
+                              action: CatchToggle(
                                 key: SettingsKeys.newCatchesSwitch,
                                 value: state.preferences.newCatches,
                                 semanticLabel: 'Push notifications',
@@ -297,10 +298,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       ),
                               ),
                             ),
-                            CatchSettingsRow(
-                              label: 'Messages',
+                            CatchField(
+                              title: 'Messages',
                               icon: CatchIcons.chatBubbleOutlineRounded,
-                              trailing: CatchToggle(
+                              action: CatchToggle(
                                 key: SettingsKeys.messagesSwitch,
                                 value: state.preferences.messages,
                                 semanticLabel: 'Messages',
@@ -312,10 +313,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       ),
                               ),
                             ),
-                            CatchSettingsRow(
-                              label: 'Event reminders',
+                            CatchField(
+                              title: 'Event reminders',
                               icon: CatchIcons.directionsRunOutlined,
-                              trailing: CatchToggle(
+                              action: CatchToggle(
                                 key: SettingsKeys.eventRemindersSwitch,
                                 value: state.preferences.eventReminders,
                                 semanticLabel: 'Event reminders',
@@ -328,10 +329,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       ),
                               ),
                             ),
-                            CatchSettingsRow(
-                              label: 'Event changes and cancellations',
+                            CatchField(
+                              title: 'Event changes and cancellations',
                               icon: CatchIcons.eventRepeatOutlined,
-                              trailing: CatchToggle(
+                              action: CatchToggle(
                                 key: SettingsKeys.eventStatusUpdatesSwitch,
                                 value: state.preferences.eventStatusUpdates,
                                 semanticLabel:
@@ -345,10 +346,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       ),
                               ),
                             ),
-                            CatchSettingsRow(
-                              label: 'Club announcements',
+                            CatchField(
+                              title: 'Club announcements',
                               icon: CatchIcons.notificationsActiveOutlined,
-                              trailing: CatchToggle(
+                              action: CatchToggle(
                                 key: SettingsKeys.clubUpdatesSwitch,
                                 value: state.preferences.clubUpdates,
                                 semanticLabel: 'Club announcements',
@@ -361,10 +362,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       ),
                               ),
                             ),
-                            CatchSettingsRow(
-                              label: 'Email updates',
+                            CatchField(
+                              title: 'Email updates',
                               icon: CatchIcons.markEmailReadOutlined,
-                              trailing: CatchToggle(
+                              action: CatchToggle(
                                 key: SettingsKeys.weeklyDigestSwitch,
                                 value: state.preferences.weeklyDigest,
                                 semanticLabel: 'Email updates',
@@ -379,9 +380,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                           ],
                         ),
-                        _SettingsSection(
+                        _settingsSection(
                           title: 'Privacy & safety',
-                          footer: _BlockedAccountsSection(
+                          footer: _blockedAccountsSection(
                             state: state.blockedAccounts,
                             unblocking: state.mutations.unblocking,
                             onRetry: () =>
@@ -389,20 +390,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             onUnblock: _unblockUser,
                           ),
                           children: [
-                            CatchSettingsRow(
-                              label: 'Blocked users',
-                              value: state.blockedAccounts.count?.toString(),
+                            CatchField(
+                              title: 'Blocked users',
+                              valueText: state.blockedAccounts.count
+                                  ?.toString(),
                               icon: CatchIcons.shieldOutlined,
                             ),
-                            CatchSettingsRow(
-                              label: 'Who can see you',
-                              value: 'Runners on my events',
+                            CatchField(
+                              title: 'Who can see you',
+                              valueText: 'Runners on my events',
                               icon: CatchIcons.visibilityOutlined,
                             ),
-                            CatchSettingsRow(
-                              label: 'Show me on map',
+                            CatchField(
+                              title: 'Show me on map',
                               icon: CatchIcons.mapOutlined,
-                              trailing: CatchToggle(
+                              action: CatchToggle(
                                 key: SettingsKeys.showOnMapSwitch,
                                 value: state.preferences.showOnMap,
                                 semanticLabel: 'Show me on map',
@@ -415,19 +417,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       ),
                               ),
                             ),
-                            CatchSettingsRow(
-                              label: 'Privacy policy',
+                            CatchField(
+                              title: 'Privacy policy',
                               icon: CatchIcons.lockOutline,
                               onTap: () => _openExternal(
                                 Uri.parse('https://catchdates.com/privacy'),
                               ),
                             ),
-                            CatchSettingsRow(
+                            CatchField(
                               key: SettingsKeys.deleteAccountRow,
-                              label: 'Delete account',
+                              title: 'Delete account',
                               icon: CatchIcons.deleteOutline,
-                              danger: true,
-                              trailing: state.mutations.deletingAccount
+                              tone: CatchFieldTone.danger,
+                              action: state.mutations.deletingAccount
                                   ? const SizedBox.square(
                                       dimension: CatchIcon.control,
                                       child: CatchLoadingIndicator(
@@ -441,42 +443,42 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                           ],
                         ),
-                        _SettingsSection(
+                        _settingsSection(
                           title: 'About',
                           children: [
-                            CatchSettingsRow(
-                              label: 'Help & support',
-                              value: 'Contact us',
+                            CatchField(
+                              title: 'Help & support',
+                              valueText: 'Contact us',
                               icon: CatchIcons.helpOutline,
                               onTap: () => _openExternal(
                                 Uri.parse('https://catchdates.com/help'),
                               ),
                             ),
-                            CatchSettingsRow(
-                              label: 'Terms',
-                              value: 'Legal',
+                            CatchField(
+                              title: 'Terms',
+                              valueText: 'Legal',
                               icon: CatchIcons.descriptionOutlined,
                               onTap: () => _openExternal(
                                 Uri.parse('https://catchdates.com/terms'),
                               ),
                             ),
-                            CatchSettingsRow(
-                              label: 'Version',
-                              value: '1.0',
+                            CatchField(
+                              title: 'Version',
+                              valueText: '1.0',
                               icon: CatchIcons.infoOutline,
                             ),
                           ],
                         ),
-                        _SettingsSection(
+                        _settingsSection(
                           title: '',
                           hideTitle: true,
                           children: [
-                            CatchSettingsRow(
+                            CatchField(
                               key: SettingsKeys.signOutRow,
-                              label: 'Log out',
+                              title: 'Log out',
                               icon: CatchIcons.logoutRounded,
-                              danger: true,
-                              trailing: state.mutations.signingOut
+                              tone: CatchFieldTone.danger,
+                              action: state.mutations.signingOut
                                   ? const SizedBox.square(
                                       dimension: CatchIcon.control,
                                       child: CatchLoadingIndicator(
@@ -513,234 +515,223 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 }
 
-class _SettingsSection extends StatelessWidget {
-  const _SettingsSection({
-    required this.title,
-    required this.children,
-    this.first = false,
-    this.hideTitle = false,
-    this.footer,
-  });
+Widget _settingsSection({
+  required String title,
+  required List<Widget> children,
+  bool first = false,
+  bool hideTitle = false,
+  Widget? footer,
+}) {
+  return Builder(
+    builder: (context) {
+      final t = CatchTokens.of(context);
+      final topPadding = hideTitle ? CatchSpacing.s3 : 18.0;
 
-  final String title;
-  final List<CatchSettingsRow> children;
-  final bool first;
-  final bool hideTitle;
-  final Widget? footer;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!first) ...[
+            gapH8,
+            ColoredBox(
+              color: t.line,
+              child: const SizedBox(height: CatchStroke.hairline),
+            ),
+            SizedBox(height: topPadding),
+          ],
+          if (!hideTitle) ...[
+            Text(
+              title.toUpperCase(),
+              style: CatchTextStyles.kicker(context, color: t.ink2),
+            ),
+            gapH10,
+          ],
+          for (var i = 0; i < children.length; i++) ...[
+            if (i > 0)
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: CatchLayout.settingsRowDividerIconInset,
+                ),
+                child: ColoredBox(
+                  color: t.line.withValues(
+                    alpha: CatchOpacity.profileInfoDivider,
+                  ),
+                  child: const SizedBox(height: CatchStroke.hairline),
+                ),
+              ),
+            children[i],
+          ],
+          ?footer,
+        ],
+      );
+    },
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final topPadding = hideTitle ? CatchSpacing.s3 : 18.0;
+Widget _accountProfileStatus({
+  required SettingsProfileState profile,
+  required VoidCallback onRetry,
+}) {
+  return Builder(
+    builder: (context) {
+      if (profile.isError) {
+        return Padding(
+          padding: CatchInsets.content,
+          child: CatchInlineErrorState.fromError(
+            profile.error!,
+            compact: true,
+            onRetry: onRetry,
+          ),
+        );
+      }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (!first) ...[
-          gapH8,
+      if (profile.isMissing) {
+        return const Padding(
+          padding: CatchInsets.content,
+          child: CatchInlineErrorState(
+            title: 'Account unavailable',
+            message: 'Sign out and sign back in if this keeps happening.',
+            compact: true,
+          ),
+        );
+      }
+
+      return const SizedBox.shrink();
+    },
+  );
+}
+
+Widget _blockedAccountsSection({
+  required SettingsBlockedAccountsState state,
+  required bool unblocking,
+  required VoidCallback onRetry,
+  required ValueChanged<String> onUnblock,
+}) {
+  return Builder(
+    builder: (context) {
+      final t = CatchTokens.of(context);
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
           ColoredBox(
-            color: t.line,
+            color: t.line.withValues(alpha: CatchOpacity.profileInfoDivider),
             child: const SizedBox(height: CatchStroke.hairline),
           ),
-          SizedBox(height: topPadding),
-        ],
-        if (!hideTitle) ...[
-          Text(
-            title.toUpperCase(),
-            style: CatchTextStyles.kicker(context, color: t.ink2),
-          ),
-          gapH10,
-        ],
-        for (var i = 0; i < children.length; i++)
-          children[i].copyWith(divider: i > 0),
-        ?footer,
-      ],
-    );
-  }
-}
-
-class _AccountProfileStatus extends StatelessWidget {
-  const _AccountProfileStatus({required this.profile, required this.onRetry});
-
-  final SettingsProfileState profile;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    if (profile.isError) {
-      return Padding(
-        padding: CatchInsets.content,
-        child: CatchInlineErrorState.fromError(
-          profile.error!,
-          compact: true,
-          onRetry: onRetry,
-        ),
-      );
-    }
-
-    if (profile.isMissing) {
-      return const Padding(
-        padding: CatchInsets.content,
-        child: CatchInlineErrorState(
-          title: 'Account unavailable',
-          message: 'Sign out and sign back in if this keeps happening.',
-          compact: true,
-        ),
-      );
-    }
-
-    return const SizedBox.shrink();
-  }
-}
-
-class _BlockedAccountsSection extends StatelessWidget {
-  const _BlockedAccountsSection({
-    required this.state,
-    required this.unblocking,
-    required this.onRetry,
-    required this.onUnblock,
-  });
-
-  final SettingsBlockedAccountsState state;
-  final bool unblocking;
-  final VoidCallback onRetry;
-  final ValueChanged<String> onUnblock;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ColoredBox(
-          color: t.line.withValues(alpha: CatchOpacity.profileInfoDivider),
-          child: const SizedBox(height: CatchStroke.hairline),
-        ),
-        switch (state.status) {
-          SettingsBlockedAccountsStatus.loading =>
-            const _BlockedAccountsSkeleton(),
-          SettingsBlockedAccountsStatus.error => Padding(
-            padding: CatchInsets.content,
-            child: CatchInlineErrorState.fromError(
-              state.error!,
-              compact: true,
-              onRetry: onRetry,
+          switch (state.status) {
+            SettingsBlockedAccountsStatus.loading => _blockedAccountsSkeleton(
+              context,
             ),
-          ),
-          SettingsBlockedAccountsStatus.empty => Padding(
-            padding: CatchInsets.content,
-            child: CatchEmptyState(
-              icon: CatchIcons.verifiedUserOutlined,
-              title: 'No blocked accounts',
-              message: 'People you block will appear here.',
-              iconSize: CatchIcon.tile,
-              titleStyle: CatchTextStyles.sectionTitle(context),
-              messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-          ),
-          SettingsBlockedAccountsStatus.content => Column(
-            children: [
-              for (var i = 0; i < state.rows.length; i++) ...[
-                _BlockedAccountTile(
-                  row: state.rows[i],
-                  unblocking: unblocking,
-                  onUnblock: onUnblock,
-                ),
-                if (i < state.rows.length - 1)
-                  Divider(color: t.line, height: 1),
-              ],
-            ],
-          ),
-        },
-      ],
-    );
-  }
-}
-
-class _BlockedAccountsSkeleton extends StatelessWidget {
-  const _BlockedAccountsSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: CatchInsets.content,
-      child: Column(
-        children: [
-          for (var index = 0; index < 3; index++) ...[
-            Row(
-              children: [
-                CatchSkeleton.circle(size: CatchIcon.avatarLg),
-                gapW12,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CatchSkeleton.text(
-                        width: index == 1
-                            ? CatchLayout.skeletonTextTitleWidth
-                            : CatchLayout.skeletonTextShortWidth,
-                      ),
-                      gapH8,
-                      CatchSkeleton.text(
-                        width: index == 2
-                            ? CatchLayout.skeletonTextShortWidth
-                            : CatchLayout.skeletonTextShortWidth,
-                      ),
-                    ],
-                  ),
-                ),
-                gapW12,
-                CatchSkeleton.box(
-                  width: CatchLayout.skeletonTextShortWidth,
-                  height: CatchSpacing.s8,
-                  radius: CatchRadius.pill,
-                ),
-              ],
-            ),
-            if (index < 2) ...[
-              gapH12,
-              ColoredBox(
-                color: CatchTokens.of(context).line,
-                child: const SizedBox(height: CatchStroke.hairline),
+            SettingsBlockedAccountsStatus.error => Padding(
+              padding: CatchInsets.content,
+              child: CatchInlineErrorState.fromError(
+                state.error!,
+                compact: true,
+                onRetry: onRetry,
               ),
-              gapH12,
+            ),
+            SettingsBlockedAccountsStatus.empty => Padding(
+              padding: CatchInsets.content,
+              child: CatchEmptyState(
+                icon: CatchIcons.verifiedUserOutlined,
+                title: 'No blocked accounts',
+                message: 'People you block will appear here.',
+                iconSize: CatchIcon.tile,
+                titleStyle: CatchTextStyles.sectionTitle(context),
+                messageStyle: CatchTextStyles.supporting(
+                  context,
+                  color: t.ink2,
+                ),
+              ),
+            ),
+            SettingsBlockedAccountsStatus.content => Column(
+              children: [
+                for (var i = 0; i < state.rows.length; i++) ...[
+                  _blockedAccountTile(
+                    row: state.rows[i],
+                    unblocking: unblocking,
+                    onUnblock: onUnblock,
+                  ),
+                  if (i < state.rows.length - 1)
+                    Divider(color: t.line, height: 1),
+                ],
+              ],
+            ),
+          },
+        ],
+      );
+    },
+  );
+}
+
+Widget _blockedAccountsSkeleton(BuildContext context) {
+  return Padding(
+    padding: CatchInsets.content,
+    child: Column(
+      children: [
+        for (var index = 0; index < 3; index++) ...[
+          Row(
+            children: [
+              CatchSkeleton.circle(size: CatchIcon.avatarLg),
+              gapW12,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CatchSkeleton.text(
+                      width: index == 1
+                          ? CatchLayout.skeletonTextTitleWidth
+                          : CatchLayout.skeletonTextShortWidth,
+                    ),
+                    gapH8,
+                    CatchSkeleton.text(
+                      width: index == 2
+                          ? CatchLayout.skeletonTextShortWidth
+                          : CatchLayout.skeletonTextShortWidth,
+                    ),
+                  ],
+                ),
+              ),
+              gapW12,
+              CatchSkeleton.box(
+                width: CatchLayout.skeletonTextShortWidth,
+                height: CatchSpacing.s8,
+                radius: CatchRadius.pill,
+              ),
             ],
+          ),
+          if (index < 2) ...[
+            gapH12,
+            ColoredBox(
+              color: CatchTokens.of(context).line,
+              child: const SizedBox(height: CatchStroke.hairline),
+            ),
+            gapH12,
           ],
         ],
-      ),
-    );
-  }
+      ],
+    ),
+  );
 }
 
-class _BlockedAccountTile extends StatelessWidget {
-  const _BlockedAccountTile({
-    required this.row,
-    required this.unblocking,
-    required this.onUnblock,
-  });
-
-  final SettingsBlockedAccountRow row;
-  final bool unblocking;
-  final ValueChanged<String> onUnblock;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchPersonRow(
-      data: CatchPersonRowData(
-        name: row.name,
-        imageUrl: row.imageUrl,
-        metaLine: row.metaLine,
-        seed: row.seed,
-      ),
-      trailing: CatchButton(
-        key: SettingsKeys.unblockButton(row.uid),
-        label: 'Unblock',
-        isLoading: unblocking,
-        onPressed: unblocking ? null : () => onUnblock(row.uid),
-        variant: CatchButtonVariant.ghost,
-        size: CatchButtonSize.sm,
-      ),
-    );
-  }
+Widget _blockedAccountTile({
+  required SettingsBlockedAccountRow row,
+  required bool unblocking,
+  required ValueChanged<String> onUnblock,
+}) {
+  return CatchPersonRow(
+    data: CatchPersonRowData(
+      name: row.name,
+      imageUrl: row.imageUrl,
+      metaLine: row.metaLine,
+      seed: row.seed,
+    ),
+    trailing: CatchButton(
+      key: SettingsKeys.unblockButton(row.uid),
+      label: 'Unblock',
+      isLoading: unblocking,
+      onPressed: unblocking ? null : () => onUnblock(row.uid),
+      variant: CatchButtonVariant.ghost,
+      size: CatchButtonSize.sm,
+    ),
+  );
 }

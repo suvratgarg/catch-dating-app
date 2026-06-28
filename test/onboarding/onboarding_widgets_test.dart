@@ -2,8 +2,7 @@ import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
@@ -210,7 +209,7 @@ void main() {
         tester
             .widget<EditableText>(
               find.descendant(
-                of: find.widgetWithText(CatchTextField, 'PHONE'),
+                of: find.widgetWithText(CatchField, 'PHONE'),
                 matching: find.byType(EditableText),
               ),
             )
@@ -357,10 +356,7 @@ void main() {
       // The mode-specific copy now lives in the flow header (see
       // onboarding_step_test `headerCopy`); the page renders its prompt
       // selectors and Continue affordance in completion mode.
-      expect(
-        find.byType(CatchSelectMenu<String>),
-        findsNWidgets(maxProfilePromptAnswers),
-      );
+      expect(find.byType(MenuAnchor), findsNWidgets(maxProfilePromptAnswers));
       expect(find.text('Continue'), findsOneWidget);
     });
 
@@ -380,7 +376,7 @@ void main() {
         child: const ProfilePromptsPage(),
       );
 
-      final menus = find.byType(CatchSelectMenu<String>);
+      final menus = find.byType(MenuAnchor);
       expect(menus, findsNWidgets(maxProfilePromptAnswers));
 
       await tester.tap(menus.at(1));

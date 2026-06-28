@@ -8,8 +8,8 @@ const EdgeInsets _revealAssignmentRowGap = EdgeInsets.only(
   bottom: CatchSpacing.s2,
 );
 
-class _CountdownNumber extends StatelessWidget {
-  const _CountdownNumber({required this.value, required this.caption});
+class CountdownNumber extends StatelessWidget {
+  const CountdownNumber({required this.value, required this.caption});
 
   final String value;
   final String caption;
@@ -59,8 +59,8 @@ class _CountdownNumber extends StatelessWidget {
   }
 }
 
-class _RevealHostCopy extends StatelessWidget {
-  const _RevealHostCopy({required this.headline, required this.body});
+class RevealHostCopy extends StatelessWidget {
+  const RevealHostCopy({required this.headline, required this.body});
 
   final String headline;
   final String body;
@@ -90,8 +90,8 @@ class _RevealHostCopy extends StatelessWidget {
   }
 }
 
-class _RevealProgressBar extends StatelessWidget {
-  const _RevealProgressBar({required this.progress});
+class RevealProgressBar extends StatelessWidget {
+  const RevealProgressBar({required this.progress});
 
   final double progress;
 
@@ -110,8 +110,8 @@ class _RevealProgressBar extends StatelessWidget {
   }
 }
 
-class _AttendeeCountdown extends StatelessWidget {
-  const _AttendeeCountdown({
+class AttendeeCountdown extends StatelessWidget {
+  const AttendeeCountdown({
     required this.plan,
     required this.now,
     required this.kind,
@@ -213,7 +213,7 @@ class _AttendeeCountdown extends StatelessWidget {
                     ],
                   ),
                   gapH18,
-                  _CountdownStageDial(
+                  CountdownStageDial(
                     seconds: seconds,
                     progress: progress,
                     intensity: urgency,
@@ -239,9 +239,9 @@ class _AttendeeCountdown extends StatelessWidget {
                     ),
                   ),
                   gapH18,
-                  _CountdownBeatRail(progress: progress),
+                  CountdownBeatRail(progress: progress),
                   gapH14,
-                  _CountdownCueStack(clue: clue),
+                  CountdownCueStack(clue: clue),
                 ],
               ),
             ),
@@ -252,8 +252,8 @@ class _AttendeeCountdown extends StatelessWidget {
   }
 }
 
-class _CountdownStageDial extends StatelessWidget {
-  const _CountdownStageDial({
+class CountdownStageDial extends StatelessWidget {
+  const CountdownStageDial({
     required this.seconds,
     required this.progress,
     required this.intensity,
@@ -366,8 +366,8 @@ class _CountdownStageDial extends StatelessWidget {
   }
 }
 
-class _CountdownBeatRail extends StatelessWidget {
-  const _CountdownBeatRail({required this.progress});
+class CountdownBeatRail extends StatelessWidget {
+  const CountdownBeatRail({required this.progress});
 
   final double progress;
 
@@ -386,7 +386,7 @@ class _CountdownBeatRail extends StatelessWidget {
           (label: 'Move', icon: CatchIcons.boltRounded),
         ].indexed) ...[
           Expanded(
-            child: _CountdownBeatPill(
+            child: CountdownBeatPill(
               label: entry.$2.label,
               icon: entry.$2.icon,
               active: entry.$1 == activeIndex,
@@ -400,8 +400,8 @@ class _CountdownBeatRail extends StatelessWidget {
   }
 }
 
-class _CountdownBeatPill extends StatelessWidget {
-  const _CountdownBeatPill({
+class CountdownBeatPill extends StatelessWidget {
+  const CountdownBeatPill({
     required this.label,
     required this.icon,
     required this.active,
@@ -450,8 +450,8 @@ class _CountdownBeatPill extends StatelessWidget {
   }
 }
 
-class _CountdownCueStack extends StatelessWidget {
-  const _CountdownCueStack({required this.clue});
+class CountdownCueStack extends StatelessWidget {
+  const CountdownCueStack({required this.clue});
 
   final String clue;
 
@@ -459,13 +459,13 @@ class _CountdownCueStack extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _CountdownCuePill(
+        CountdownCuePill(
           icon: CatchIcons.visibilityOffOutlined,
           title: 'No names shown yet',
           body: 'Partner details stay locked until the shared release.',
         ),
         gapH8,
-        _CountdownCuePill(
+        CountdownCuePill(
           icon: CatchIcons.tipsAndUpdatesOutlined,
           title: 'Clue is live',
           body: clue,
@@ -475,8 +475,8 @@ class _CountdownCueStack extends StatelessWidget {
   }
 }
 
-class _CountdownCuePill extends StatelessWidget {
-  const _CountdownCuePill({
+class CountdownCuePill extends StatelessWidget {
+  const CountdownCuePill({
     required this.icon,
     required this.title,
     required this.body,
@@ -707,8 +707,8 @@ String _countdownStageHeadline(int seconds) {
   return 'The room is holding together.';
 }
 
-class _WaitingRevealCue extends StatelessWidget {
-  const _WaitingRevealCue({required this.kind});
+class WaitingRevealCue extends StatelessWidget {
+  const WaitingRevealCue({required this.kind});
 
   final EventSuccessRevealAssignmentKind kind;
 
@@ -748,8 +748,8 @@ class _WaitingRevealCue extends StatelessWidget {
   }
 }
 
-class _VisiblePodAssignment extends StatelessWidget {
-  const _VisiblePodAssignment({
+class VisiblePodAssignment extends StatelessWidget {
+  const VisiblePodAssignment({
     required this.assignment,
     required this.peerProfiles,
     required this.peersLoading,
@@ -761,7 +761,7 @@ class _VisiblePodAssignment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _AssignmentUnlockedShell(
+    return AssignmentUnlockedShell(
       title: 'Unlocked together',
       child: Wrap(
         spacing: CatchSpacing.s2,
@@ -788,8 +788,8 @@ class _VisiblePodAssignment extends StatelessWidget {
   }
 }
 
-class _VisibleRotationSlots extends StatelessWidget {
-  const _VisibleRotationSlots({
+class VisibleRotationSlots extends StatelessWidget {
+  const VisibleRotationSlots({
     required this.slots,
     required this.profilesByUid,
     required this.peersLoading,
@@ -807,12 +807,12 @@ class _VisibleRotationSlots extends StatelessWidget {
         icon: CatchIcons.hourglassEmptyRounded,
       );
     }
-    return _AssignmentUnlockedShell(
+    return AssignmentUnlockedShell(
       title: 'Unlocked together',
       child: Column(
         children: [
           for (final slot in slots)
-            _RevealSlotRow(
+            RevealSlotRow(
               slot: slot,
               peerName: profilesByUid[slot.peerUid]?.name ?? 'Partner',
             ),
@@ -822,8 +822,8 @@ class _VisibleRotationSlots extends StatelessWidget {
   }
 }
 
-class _VisibleGroupRotationSlots extends StatelessWidget {
-  const _VisibleGroupRotationSlots({
+class VisibleGroupRotationSlots extends StatelessWidget {
+  const VisibleGroupRotationSlots({
     required this.slots,
     required this.profilesByUid,
     required this.peersLoading,
@@ -841,20 +841,20 @@ class _VisibleGroupRotationSlots extends StatelessWidget {
         icon: CatchIcons.hourglassEmptyRounded,
       );
     }
-    return _AssignmentUnlockedShell(
+    return AssignmentUnlockedShell(
       title: 'Unlocked together',
       child: Column(
         children: [
           for (final slot in slots)
-            _RevealGroupSlotRow(slot: slot, profilesByUid: profilesByUid),
+            RevealGroupSlotRow(slot: slot, profilesByUid: profilesByUid),
         ],
       ),
     );
   }
 }
 
-class _AssignmentUnlockedShell extends StatelessWidget {
-  const _AssignmentUnlockedShell({required this.title, required this.child});
+class AssignmentUnlockedShell extends StatelessWidget {
+  const AssignmentUnlockedShell({required this.title, required this.child});
 
   final String title;
   final Widget child;
@@ -885,8 +885,8 @@ class _AssignmentUnlockedShell extends StatelessWidget {
   }
 }
 
-class _RevealGroupSlotRow extends StatelessWidget {
-  const _RevealGroupSlotRow({required this.slot, required this.profilesByUid});
+class RevealGroupSlotRow extends StatelessWidget {
+  const RevealGroupSlotRow({required this.slot, required this.profilesByUid});
 
   final EventSuccessGroupRotationSlot slot;
   final Map<String, PublicProfile> profilesByUid;
@@ -962,8 +962,8 @@ class _RevealGroupSlotRow extends StatelessWidget {
   }
 }
 
-class _RevealSlotRow extends StatelessWidget {
-  const _RevealSlotRow({required this.slot, required this.peerName});
+class RevealSlotRow extends StatelessWidget {
+  const RevealSlotRow({required this.slot, required this.peerName});
 
   final EventSuccessRotationSlot slot;
   final String peerName;
@@ -1018,8 +1018,8 @@ enum _RevealRoundState { done, now, hidden }
 /// a config mono line over one row per round — `R{n}`, the pairings (or
 /// "Hidden until reveal" while masked), and a Done / Now / Hidden state badge.
 /// Pairings only render for rounds the host has already released.
-class _RevealRoundList extends StatelessWidget {
-  const _RevealRoundList({
+class RevealRoundList extends StatelessWidget {
+  const RevealRoundList({
     required this.config,
     required this.roundCount,
     required this.revealedThrough,
@@ -1050,7 +1050,7 @@ class _RevealRoundList extends StatelessWidget {
           gapH8,
         ],
         for (var index = 0; index < roundCount; index++)
-          _RevealRoundRow(
+          RevealRoundRow(
             index: index,
             state: index < revealedThrough
                 ? _RevealRoundState.done
@@ -1068,8 +1068,8 @@ class _RevealRoundList extends StatelessWidget {
   }
 }
 
-class _RevealRoundRow extends StatelessWidget {
-  const _RevealRoundRow({
+class RevealRoundRow extends StatelessWidget {
+  const RevealRoundRow({
     required this.index,
     required this.state,
     required this.pairs,
@@ -1153,8 +1153,8 @@ class _RevealRoundRow extends StatelessWidget {
   }
 }
 
-class _RevealRoundRail extends StatelessWidget {
-  const _RevealRoundRail({
+class RevealRoundRail extends StatelessWidget {
+  const RevealRoundRail({
     required this.roundCount,
     required this.activeRoundIndex,
     required this.revealedThrough,
@@ -1199,17 +1199,17 @@ class _RevealRoundRail extends StatelessWidget {
   }
 }
 
-class _RevealTicker extends StatefulWidget {
-  const _RevealTicker({required this.enabled, required this.builder});
+class RevealTicker extends StatefulWidget {
+  const RevealTicker({required this.enabled, required this.builder});
 
   final bool enabled;
   final Widget Function(BuildContext context, DateTime now) builder;
 
   @override
-  State<_RevealTicker> createState() => _RevealTickerState();
+  State<RevealTicker> createState() => _RevealTickerState();
 }
 
-class _RevealTickerState extends State<_RevealTicker> {
+class _RevealTickerState extends State<RevealTicker> {
   Timer? _timer;
   DateTime _now = DateTime.now();
 
@@ -1220,7 +1220,7 @@ class _RevealTickerState extends State<_RevealTicker> {
   }
 
   @override
-  void didUpdateWidget(covariant _RevealTicker oldWidget) {
+  void didUpdateWidget(covariant RevealTicker oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.enabled != widget.enabled) _syncTimer();
   }

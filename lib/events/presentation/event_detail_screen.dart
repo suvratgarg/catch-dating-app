@@ -100,7 +100,8 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     }
 
     if (vmAsync.isLoading) {
-      return _EventDetailLoadingScreen(
+      return _eventDetailLoadingScreen(
+        context,
         presentationMode: widget.presentationMode,
       );
     }
@@ -188,109 +189,104 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
   }
 }
 
-class _EventDetailLoadingScreen extends StatelessWidget {
-  const _EventDetailLoadingScreen({required this.presentationMode});
+Widget _eventDetailLoadingScreen(
+  BuildContext context, {
+  required EventDetailPresentationMode presentationMode,
+}) {
+  final t = CatchTokens.of(context);
+  final isSpotlight =
+      presentationMode == EventDetailPresentationMode.spotlightDark;
 
-  final EventDetailPresentationMode presentationMode;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final isSpotlight =
-        presentationMode == EventDetailPresentationMode.spotlightDark;
-
-    return Scaffold(
-      backgroundColor: isSpotlight ? t.ink : t.bg,
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: _EventDetailHeroSkeleton(presentationMode: presentationMode),
+  return Scaffold(
+    backgroundColor: isSpotlight ? t.ink : t.bg,
+    body: CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: _eventDetailHeroSkeleton(
+            context,
+            presentationMode: presentationMode,
           ),
-          const SliverToBoxAdapter(child: _EventDetailTicketStubSkeleton()),
-          const CatchDetailSliverSectionList(
-            topPadding: CatchSpacing.screenPt,
-            bottomPadding: CatchSpacing.screenPb,
-            sections: [
-              _EventDetailPlanSkeleton(),
-              _EventDetailHintSkeleton(),
-              _EventDetailItinerarySkeleton(),
-              _EventDetailMapSkeleton(),
-              _EventDetailMechanismSkeleton(),
-              _EventDetailSocialSkeleton(),
-            ],
-          ),
-        ],
-      ),
-      bottomNavigationBar: AppConfig.appRole.isHost
-          ? null
-          : const _EventDetailLoadingCta(),
-    );
-  }
+        ),
+        SliverToBoxAdapter(child: _eventDetailTicketStubSkeleton(context)),
+        CatchDetailSliverSectionList(
+          topPadding: CatchSpacing.screenPt,
+          bottomPadding: CatchSpacing.screenPb,
+          sections: [
+            _eventDetailPlanSkeleton(),
+            _eventDetailHintSkeleton(),
+            _eventDetailItinerarySkeleton(),
+            _eventDetailMapSkeleton(),
+            _eventDetailMechanismSkeleton(),
+            _eventDetailSocialSkeleton(),
+          ],
+        ),
+      ],
+    ),
+    bottomNavigationBar: AppConfig.appRole.isHost
+        ? null
+        : _eventDetailLoadingCta(context),
+  );
 }
 
-class _EventDetailHeroSkeleton extends StatelessWidget {
-  const _EventDetailHeroSkeleton({required this.presentationMode});
+Widget _eventDetailHeroSkeleton(
+  BuildContext context, {
+  required EventDetailPresentationMode presentationMode,
+}) {
+  final width = MediaQuery.sizeOf(context).width;
+  final height = _eventDetailLoadingHeroHeight(
+    width: width,
+    isTicketPresentation:
+        presentationMode != EventDetailPresentationMode.standard,
+  );
 
-  final EventDetailPresentationMode presentationMode;
-
-  @override
-  Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    final height = _eventDetailLoadingHeroHeight(
-      width: width,
-      isTicketPresentation:
-          presentationMode != EventDetailPresentationMode.standard,
-    );
-
-    return SizedBox(
-      height: height,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: CatchSkeleton.box(
-              width: double.infinity,
-              height: height,
-              borderRadius: BorderRadius.zero,
-            ),
+  return SizedBox(
+    height: height,
+    child: Stack(
+      children: [
+        Positioned.fill(
+          child: CatchSkeleton.box(
+            width: double.infinity,
+            height: height,
+            borderRadius: BorderRadius.zero,
           ),
-          Positioned(
-            top: MediaQuery.paddingOf(context).top + CatchSpacing.s2,
-            left: CatchSpacing.s2,
-            right: CatchSpacing.s2,
-            child: Row(
-              children: [
-                CatchSkeleton.circle(size: CatchIconButton.navSize),
-                const Spacer(),
-                CatchSkeleton.circle(size: CatchIconButton.navSize),
-                gapW8,
-                CatchSkeleton.circle(size: CatchIconButton.navSize),
-              ],
-            ),
+        ),
+        Positioned(
+          top: MediaQuery.paddingOf(context).top + CatchSpacing.s2,
+          left: CatchSpacing.s2,
+          right: CatchSpacing.s2,
+          child: Row(
+            children: [
+              CatchSkeleton.circle(size: CatchIconButton.navSize),
+              const Spacer(),
+              CatchSkeleton.circle(size: CatchIconButton.navSize),
+              gapW8,
+              CatchSkeleton.circle(size: CatchIconButton.navSize),
+            ],
           ),
-          Positioned(
-            left: CatchSpacing.s5,
-            right: CatchSpacing.s5,
-            bottom: CatchLayout.eventDetailHeroTitleBottomInset,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CatchSkeleton.box(
-                  width: CatchLayout.skeletonTextShortWidth,
-                  height: CatchIcon.sm,
-                  radius: CatchRadius.pill,
-                ),
-                gapH12,
-                CatchSkeleton.text(),
-                gapH8,
-                CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-              ],
-            ),
+        ),
+        Positioned(
+          left: CatchSpacing.s5,
+          right: CatchSpacing.s5,
+          bottom: CatchLayout.eventDetailHeroTitleBottomInset,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CatchSkeleton.box(
+                width: CatchLayout.skeletonTextShortWidth,
+                height: CatchIcon.sm,
+                radius: CatchRadius.pill,
+              ),
+              gapH12,
+              CatchSkeleton.text(),
+              gapH8,
+              CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+            ],
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }
 
 double _eventDetailLoadingHeroHeight({
@@ -315,243 +311,194 @@ double _eventDetailLoadingHeroHeight({
       .toDouble();
 }
 
-class _EventDetailTicketStubSkeleton extends StatelessWidget {
-  const _EventDetailTicketStubSkeleton();
+Widget _eventDetailTicketStubSkeleton(BuildContext context) {
+  final t = CatchTokens.of(context);
 
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return ColoredBox(
-      color: t.surface,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minHeight: CatchLayout.eventDetailTicketStubBandHeight,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  for (var index = 0; index < 3; index++) ...[
-                    if (index > 0) VerticalDivider(color: t.line, width: 1),
-                    const Expanded(child: _TicketStubCellSkeleton()),
-                  ],
+  return ColoredBox(
+    color: t.surface,
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(
+        minHeight: CatchLayout.eventDetailTicketStubBandHeight,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var index = 0; index < 3; index++) ...[
+                  if (index > 0) VerticalDivider(color: t.line, width: 1),
+                  Expanded(child: _ticketStubCellSkeleton()),
                 ],
-              ),
+              ],
             ),
-            Divider(color: t.line, height: 1, thickness: 1),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TicketStubCellSkeleton extends StatelessWidget {
-  const _TicketStubCellSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: CatchInsets.tileContentCompact,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-          gapH8,
-          CatchSkeleton.box(
-            width: CatchLayout.skeletonTextTitleWidth,
-            height: CatchIcon.sm,
-            radius: CatchRadius.pill,
           ),
+          Divider(color: t.line, height: 1, thickness: 1),
         ],
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _EventDetailPlanSkeleton extends StatelessWidget {
-  const _EventDetailPlanSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchDesignSection(
-      kicker: 'The plan',
-      first: true,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-          gapH12,
-          CatchSkeleton.textBlock(),
-        ],
-      ),
-    );
-  }
-}
-
-class _EventDetailHintSkeleton extends StatelessWidget {
-  const _EventDetailHintSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchDesignSection(
-      kicker: 'Why you might click',
-      child: Column(
-        children: [
-          for (var index = 0; index < 3; index++) ...[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: CatchSpacing.s1),
-                  child: CatchSkeleton.circle(
-                    size: CatchLayout.eventDetailHintDotExtent,
-                  ),
-                ),
-                gapW12,
-                Expanded(child: CatchSkeleton.text()),
-              ],
-            ),
-            if (index < 2) gapH12,
-          ],
-          gapH12,
-          CatchSkeleton.text(),
-        ],
-      ),
-    );
-  }
-}
-
-class _EventDetailItinerarySkeleton extends StatelessWidget {
-  const _EventDetailItinerarySkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchDesignSection(
-      kicker: 'Itinerary',
-      child: Column(
-        children: [
-          for (var index = 0; index < 3; index++) ...[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CatchSkeleton.text(
-                  width: CatchLayout.eventDetailItineraryTimeColumnWidth,
-                ),
-                gapW12,
-                CatchSkeleton.circle(
-                  size: CatchLayout.eventDetailItineraryDotExtent,
-                ),
-                gapW12,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CatchSkeleton.text(),
-                      gapH8,
-                      CatchSkeleton.text(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            if (index < 2) gapH16,
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _EventDetailMapSkeleton extends StatelessWidget {
-  const _EventDetailMapSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchDesignSection(
-      kicker: 'Where',
-      child: CatchSkeleton.card(height: CatchLayout.eventDetailMapCardHeight),
-    );
-  }
-}
-
-class _EventDetailMechanismSkeleton extends StatelessWidget {
-  const _EventDetailMechanismSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchDesignSection(
-      kicker: 'How sign-ups work',
-      child: Column(
-        children: [
-          for (var index = 0; index < 3; index++) ...[
-            Row(
-              children: [
-                CatchSkeleton.box(
-                  width: CatchIcon.control,
-                  height: CatchIcon.control,
-                  radius: CatchRadius.pill,
-                ),
-                gapW12,
-                Expanded(child: CatchSkeleton.text()),
-              ],
-            ),
-            if (index < 2) gapH16,
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _EventDetailSocialSkeleton extends StatelessWidget {
-  const _EventDetailSocialSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchDesignSection(
-      kicker: "Who's going",
-      child: Row(
-        children: [
-          for (var index = 0; index < 4; index++) ...[
-            CatchSkeleton.circle(size: CatchIcon.avatarLg),
-            if (index < 3) gapW8,
-          ],
-          gapW16,
-          Expanded(child: CatchSkeleton.text()),
-        ],
-      ),
-    );
-  }
-}
-
-class _EventDetailLoadingCta extends StatelessWidget {
-  const _EventDetailLoadingCta();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return ColoredBox(
-      color: t.surface,
-      child: SafeArea(
-        top: false,
-        minimum: const EdgeInsets.fromLTRB(
-          CatchLayout.detailScreenHorizontalPadding,
-          CatchSpacing.s3,
-          CatchLayout.detailScreenHorizontalPadding,
-          CatchSpacing.s3,
-        ),
-        child: CatchSkeleton.box(
-          width: double.infinity,
-          height: CatchLayout.buttonLgHeight,
+Widget _ticketStubCellSkeleton() {
+  return Padding(
+    padding: CatchInsets.tileContentCompact,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+        gapH8,
+        CatchSkeleton.box(
+          width: CatchLayout.skeletonTextTitleWidth,
+          height: CatchIcon.sm,
           radius: CatchRadius.pill,
         ),
+      ],
+    ),
+  );
+}
+
+Widget _eventDetailPlanSkeleton() {
+  return CatchSection(
+    title: 'The plan',
+    first: true,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+        gapH12,
+        CatchSkeleton.textBlock(),
+      ],
+    ),
+  );
+}
+
+Widget _eventDetailHintSkeleton() {
+  return CatchSection(
+    title: 'Why you might click',
+    child: Column(
+      children: [
+        for (var index = 0; index < 3; index++) ...[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: CatchSpacing.s1),
+                child: CatchSkeleton.circle(
+                  size: CatchLayout.eventDetailHintDotExtent,
+                ),
+              ),
+              gapW12,
+              Expanded(child: CatchSkeleton.text()),
+            ],
+          ),
+          if (index < 2) gapH12,
+        ],
+        gapH12,
+        CatchSkeleton.text(),
+      ],
+    ),
+  );
+}
+
+Widget _eventDetailItinerarySkeleton() {
+  return CatchSection(
+    title: 'Itinerary',
+    child: Column(
+      children: [
+        for (var index = 0; index < 3; index++) ...[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CatchSkeleton.text(
+                width: CatchLayout.eventDetailItineraryTimeColumnWidth,
+              ),
+              gapW12,
+              CatchSkeleton.circle(
+                size: CatchLayout.eventDetailItineraryDotExtent,
+              ),
+              gapW12,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [CatchSkeleton.text(), gapH8, CatchSkeleton.text()],
+                ),
+              ),
+            ],
+          ),
+          if (index < 2) gapH16,
+        ],
+      ],
+    ),
+  );
+}
+
+Widget _eventDetailMapSkeleton() {
+  return CatchSection(
+    title: 'Where',
+    child: CatchSkeleton.card(height: CatchLayout.eventDetailMapCardHeight),
+  );
+}
+
+Widget _eventDetailMechanismSkeleton() {
+  return CatchSection(
+    title: 'How sign-ups work',
+    child: Column(
+      children: [
+        for (var index = 0; index < 3; index++) ...[
+          Row(
+            children: [
+              CatchSkeleton.box(
+                width: CatchIcon.control,
+                height: CatchIcon.control,
+                radius: CatchRadius.pill,
+              ),
+              gapW12,
+              Expanded(child: CatchSkeleton.text()),
+            ],
+          ),
+          if (index < 2) gapH16,
+        ],
+      ],
+    ),
+  );
+}
+
+Widget _eventDetailSocialSkeleton() {
+  return CatchSection(
+    title: "Who's going",
+    child: Row(
+      children: [
+        for (var index = 0; index < 4; index++) ...[
+          CatchSkeleton.circle(size: CatchIcon.avatarLg),
+          if (index < 3) gapW8,
+        ],
+        gapW16,
+        Expanded(child: CatchSkeleton.text()),
+      ],
+    ),
+  );
+}
+
+Widget _eventDetailLoadingCta(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return ColoredBox(
+    color: t.surface,
+    child: SafeArea(
+      top: false,
+      minimum: const EdgeInsets.fromLTRB(
+        CatchLayout.detailScreenHorizontalPadding,
+        CatchSpacing.s3,
+        CatchLayout.detailScreenHorizontalPadding,
+        CatchSpacing.s3,
       ),
-    );
-  }
+      child: CatchSkeleton.box(
+        width: double.infinity,
+        height: CatchLayout.buttonLgHeight,
+        radius: CatchRadius.pill,
+      ),
+    ),
+  );
 }

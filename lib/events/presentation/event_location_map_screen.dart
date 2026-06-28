@@ -40,8 +40,8 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
     return CatchAsyncValueView<EventDetailViewModel?>(
       value: vmAsync,
       loadingBuilder: (_) =>
-          const _ChromelessMapScaffold(child: EventLocationMapLoadingBody()),
-      errorBuilder: (_, error, _) => _ChromelessMapScaffold(
+          _chromelessMapScaffold(child: const EventLocationMapLoadingBody()),
+      errorBuilder: (_, error, _) => _chromelessMapScaffold(
         child: CatchErrorState.fromError(
           error,
           context: AppErrorContext.event,
@@ -51,8 +51,8 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
       builder: (context, vm) {
         final event = vm?.event;
         if (event == null) {
-          return const _ChromelessMapScaffold(
-            child: CatchErrorState(
+          return _chromelessMapScaffold(
+            child: const CatchErrorState(
               title: 'Event not found',
               message: 'This event is no longer available.',
             ),
@@ -147,8 +147,8 @@ class EventLocationMapScreen extends ConsumerWidget {
     final t = CatchTokens.of(context);
 
     if (!event.hasExactStartingPoint) {
-      return const _ChromelessMapScaffold(
-        child: CatchErrorState(
+      return _chromelessMapScaffold(
+        child: const CatchErrorState(
           title: 'Location unavailable',
           message:
               'This event does not have an exact pinned starting point yet.',
@@ -255,14 +255,9 @@ class EventLocationMapScreen extends ConsumerWidget {
   }
 }
 
-class _ChromelessMapScaffold extends StatelessWidget {
-  const _ChromelessMapScaffold({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+Widget _chromelessMapScaffold({required Widget child}) {
+  return Builder(
+    builder: (context) => Scaffold(
       backgroundColor: CatchTokens.of(context).bg,
       body: Stack(
         children: [
@@ -270,6 +265,6 @@ class _ChromelessMapScaffold extends StatelessWidget {
           const MapOverlayControls(),
         ],
       ),
-    );
-  }
+    ),
+  );
 }

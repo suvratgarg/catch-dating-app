@@ -16,8 +16,8 @@ const EdgeInsets _companionStageCueGap = EdgeInsets.only(
   bottom: CatchSpacing.s3,
 );
 
-class _MicroPodCard extends ConsumerWidget {
-  const _MicroPodCard({
+class MicroPodCard extends ConsumerWidget {
+  const MicroPodCard({
     required this.event,
     required this.assignment,
     required this.peerProfiles,
@@ -41,11 +41,11 @@ class _MicroPodCard extends ConsumerWidget {
     final profilesByUid = {
       for (final profile in peerProfiles) profile.uid: profile,
     };
-    return _StagePanel(
+    return StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _StageSectionLabel(
+          StageSectionLabel(
             icon: CatchIcons.groups2Outlined,
             label: 'Starter group',
             color: t.primary,
@@ -77,14 +77,14 @@ class _MicroPodCard extends ConsumerWidget {
                 Column(
                   children: [
                     for (final slot in groupSlots)
-                      _GroupRotationSlotRow(
+                      GroupRotationSlotRow(
                         slot: slot,
                         profilesByUid: profilesByUid,
                       ),
                   ],
                 )
             else
-              _PeopleTokenRow(
+              PeopleTokenRow(
                 countLabel: '${assigned.peerUids.length + 1} people',
                 loading: peersLoading,
                 loadingLabel: 'Loading group members',
@@ -92,8 +92,8 @@ class _MicroPodCard extends ConsumerWidget {
               ),
           ],
           gapH14,
-          _StageActionDock(
-            child: _IncludeMeToggle(
+          StageActionDock(
+            child: IncludeMeToggle(
               label: 'Include me in starter groups',
               included: !microPodsOptedOut,
               busy: mutation.isPending,
@@ -112,11 +112,8 @@ class _MicroPodCard extends ConsumerWidget {
   }
 }
 
-class _GroupRotationSlotRow extends StatelessWidget {
-  const _GroupRotationSlotRow({
-    required this.slot,
-    required this.profilesByUid,
-  });
+class GroupRotationSlotRow extends StatelessWidget {
+  const GroupRotationSlotRow({required this.slot, required this.profilesByUid});
 
   final EventSuccessGroupRotationSlot slot;
   final Map<String, PublicProfile> profilesByUid;
@@ -183,8 +180,8 @@ class _GroupRotationSlotRow extends StatelessWidget {
   }
 }
 
-class _RotationScheduleCard extends ConsumerWidget {
-  const _RotationScheduleCard({
+class RotationScheduleCard extends ConsumerWidget {
+  const RotationScheduleCard({
     required this.event,
     required this.assignment,
     required this.peerProfiles,
@@ -208,11 +205,11 @@ class _RotationScheduleCard extends ConsumerWidget {
     final profilesByUid = {
       for (final profile in peerProfiles) profile.uid: profile,
     };
-    return _StagePanel(
+    return StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _StageSectionLabel(
+          StageSectionLabel(
             icon: CatchIcons.syncAltRounded,
             label: 'Timed rotations',
             color: t.primary,
@@ -243,7 +240,7 @@ class _RotationScheduleCard extends ConsumerWidget {
               Column(
                 children: [
                   for (final slot in assigned.rotationSlots)
-                    _RotationSlotRow(
+                    RotationSlotRow(
                       slot: slot,
                       peerName: profilesByUid[slot.peerUid]?.name ?? 'Partner',
                     ),
@@ -251,8 +248,8 @@ class _RotationScheduleCard extends ConsumerWidget {
               ),
           ],
           gapH14,
-          _StageActionDock(
-            child: _IncludeMeToggle(
+          StageActionDock(
+            child: IncludeMeToggle(
               label: 'Include me in timed rotations',
               included: !guidedRotationsOptedOut,
               busy: mutation.isPending,
@@ -274,8 +271,8 @@ class _RotationScheduleCard extends ConsumerWidget {
   }
 }
 
-class _RotationSlotRow extends StatelessWidget {
-  const _RotationSlotRow({required this.slot, required this.peerName});
+class RotationSlotRow extends StatelessWidget {
+  const RotationSlotRow({required this.slot, required this.peerName});
 
   final EventSuccessRotationSlot slot;
   final String peerName;
@@ -315,8 +312,8 @@ class _RotationSlotRow extends StatelessWidget {
   }
 }
 
-class _LiveStepContextCard extends StatelessWidget {
-  const _LiveStepContextCard({required this.step});
+class LiveStepContextCard extends StatelessWidget {
+  const LiveStepContextCard({required this.step});
 
   final EventRunOfShowStep? step;
 
@@ -324,11 +321,11 @@ class _LiveStepContextCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final activeStep = step;
-    return _StagePanel(
+    return StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _StageSectionLabel(
+          StageSectionLabel(
             icon: CatchIcons.locationOnOutlined,
             label: activeStep?.stage.label ?? 'Live cue',
             color: t.primary,
@@ -352,8 +349,8 @@ class _LiveStepContextCard extends StatelessWidget {
 
 /// Informational preview of what the host will guide the attendee through
 /// once check-in opens. Opt-out controls live on the at-event cards instead.
-class _PreCheckInPlanningCard extends StatelessWidget {
-  const _PreCheckInPlanningCard({
+class PreCheckInPlanningCard extends StatelessWidget {
+  const PreCheckInPlanningCard({
     required this.microPodsEnabled,
     required this.guidedRotationsEnabled,
     required this.liveRevealEnabled,
@@ -370,38 +367,38 @@ class _PreCheckInPlanningCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final entries = <_PreviewLine>[
+    final entries = <PreviewLine>[
       if (microPodsEnabled)
-        _PreviewLine(
+        PreviewLine(
           icon: CatchIcons.groups2Outlined,
           text: 'Small starter group when you check in.',
         ),
       if (guidedRotationsEnabled)
-        _PreviewLine(
+        PreviewLine(
           icon: CatchIcons.syncAltRounded,
           text: 'Timed partner rotations during the event.',
         ),
       if (liveRevealEnabled)
-        _PreviewLine(
+        PreviewLine(
           icon: CatchIcons.boltRounded,
           text: 'Synchronized partner reveals as the event unfolds.',
         ),
       if (socialMissionsEnabled)
-        _PreviewLine(
+        PreviewLine(
           icon: CatchIcons.chatBubbleOutlineRounded,
           text: 'Live conversation prompts from the host.',
         ),
       if (wingmanRequestsEnabled)
-        _PreviewLine(
+        PreviewLine(
           icon: CatchIcons.volunteerActivismOutlined,
           text: 'You can ask the host for an intro to someone specific.',
         ),
     ];
-    return _StagePanel(
+    return StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _StageSectionLabel(
+          StageSectionLabel(
             icon: CatchIcons.eventAvailableOutlined,
             label: 'Preview',
             color: t.primary,
@@ -424,8 +421,8 @@ class _PreCheckInPlanningCard extends StatelessWidget {
   }
 }
 
-class _PreviewLine extends StatelessWidget {
-  const _PreviewLine({required this.icon, required this.text});
+class PreviewLine extends StatelessWidget {
+  const PreviewLine({required this.icon, required this.text});
 
   final IconData icon;
   final String text;
@@ -447,8 +444,8 @@ class _PreviewLine extends StatelessWidget {
   }
 }
 
-class _IncludeMeToggle extends StatelessWidget {
-  const _IncludeMeToggle({
+class IncludeMeToggle extends StatelessWidget {
+  const IncludeMeToggle({
     required this.label,
     required this.included,
     required this.busy,
@@ -481,8 +478,8 @@ class _IncludeMeToggle extends StatelessWidget {
   }
 }
 
-class _SelfCheckInCard extends ConsumerWidget {
-  const _SelfCheckInCard({required this.event});
+class SelfCheckInCard extends ConsumerWidget {
+  const SelfCheckInCard({required this.event});
 
   final Event event;
 
@@ -490,11 +487,11 @@ class _SelfCheckInCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mutation = ref.watch(EventBookingController.selfCheckInMutation);
     final t = CatchTokens.of(context);
-    return _StagePanel(
+    return StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _StageSectionLabel(
+          StageSectionLabel(
             icon: CatchIcons.qrCode2Rounded,
             label: 'Arrival',
             color: t.primary,
@@ -507,7 +504,7 @@ class _SelfCheckInCard extends ConsumerWidget {
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH14,
-          _StageActionDock(
+          StageActionDock(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -541,7 +538,7 @@ class _SelfCheckInCard extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      builder: (context) => _EventCheckInQrScannerSheet(eventId: event.id),
+      builder: (context) => EventCheckInQrScannerSheet(eventId: event.id),
     );
     if (matched == true && context.mounted) {
       _checkIn(ref);
@@ -563,18 +560,18 @@ class _SelfCheckInCard extends ConsumerWidget {
   }
 }
 
-class _EventCheckInQrScannerSheet extends StatefulWidget {
-  const _EventCheckInQrScannerSheet({required this.eventId});
+class EventCheckInQrScannerSheet extends StatefulWidget {
+  const EventCheckInQrScannerSheet({required this.eventId});
 
   final String eventId;
 
   @override
-  State<_EventCheckInQrScannerSheet> createState() =>
+  State<EventCheckInQrScannerSheet> createState() =>
       _EventCheckInQrScannerSheetState();
 }
 
 class _EventCheckInQrScannerSheetState
-    extends State<_EventCheckInQrScannerSheet> {
+    extends State<EventCheckInQrScannerSheet> {
   late final MobileScannerController _controller = MobileScannerController(
     formats: const [BarcodeFormat.qrCode],
   );
@@ -696,8 +693,8 @@ class _EventCheckInQrScannerSheetState
   }
 }
 
-class _StagePromptCard extends StatelessWidget {
-  const _StagePromptCard({required this.prompt, this.title = 'Social mission'});
+class StagePromptCard extends StatelessWidget {
+  const StagePromptCard({required this.prompt, this.title = 'Social mission'});
 
   final String prompt;
   final String title;
@@ -705,11 +702,11 @@ class _StagePromptCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return _StagePanel(
+    return StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _StageSectionLabel(
+          StageSectionLabel(
             icon: CatchIcons.chatBubbleOutlineRounded,
             label: title,
             color: t.primary,
@@ -722,8 +719,8 @@ class _StagePromptCard extends StatelessWidget {
   }
 }
 
-class _StageConversationCueCard extends StatelessWidget {
-  const _StageConversationCueCard({
+class StageConversationCueCard extends StatelessWidget {
+  const StageConversationCueCard({
     required this.title,
     required this.cues,
     this.subtitle,
@@ -743,11 +740,11 @@ class _StageConversationCueCard extends StatelessWidget {
       EventSuccessConversationCueMoment.live => CatchIcons.forumOutlined,
       EventSuccessConversationCueMoment.postEvent => CatchIcons.chatOutlined,
     };
-    return _StagePanel(
+    return StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _StageSectionLabel(icon: icon, label: title, color: t.primary),
+          StageSectionLabel(icon: icon, label: title, color: t.primary),
           if (subtitle != null) ...[
             gapH8,
             Text(
@@ -756,15 +753,15 @@ class _StageConversationCueCard extends StatelessWidget {
             ),
           ],
           gapH14,
-          for (final cue in cues.take(3)) _StageCueLine(cue: cue),
+          for (final cue in cues.take(3)) StageCueLine(cue: cue),
         ],
       ),
     );
   }
 }
 
-class _StageCueLine extends StatelessWidget {
-  const _StageCueLine({required this.cue});
+class StageCueLine extends StatelessWidget {
+  const StageCueLine({required this.cue});
 
   final EventSuccessConversationCue cue;
 
@@ -832,8 +829,8 @@ class _StageCueLine extends StatelessWidget {
   }
 }
 
-class _StageSectionLabel extends StatelessWidget {
-  const _StageSectionLabel({
+class StageSectionLabel extends StatelessWidget {
+  const StageSectionLabel({
     required this.icon,
     required this.label,
     required this.color,
@@ -862,8 +859,8 @@ class _StageSectionLabel extends StatelessWidget {
   }
 }
 
-class _PeopleTokenRow extends StatelessWidget {
-  const _PeopleTokenRow({
+class PeopleTokenRow extends StatelessWidget {
+  const PeopleTokenRow({
     required this.countLabel,
     required this.loading,
     required this.loadingLabel,

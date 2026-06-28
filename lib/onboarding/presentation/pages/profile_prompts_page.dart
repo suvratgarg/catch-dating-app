@@ -4,12 +4,11 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
@@ -108,7 +107,7 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
     final answeredCount = answers.length;
     final mutation = ref.watch(OnboardingController.completeMutation);
 
-    return OnboardingStepFrame(
+    return onboardingStepLayout(
       footer: Row(
         children: [
           Expanded(
@@ -127,7 +126,8 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
       ),
       children: [
         for (var index = 0; index < maxProfilePromptAnswers; index += 1) ...[
-          _PromptField(
+          _promptField(
+            context,
             definition: profilePromptDefinition(_selectedPromptIds[index]),
             controller: _controllers[index],
             availablePromptIds: _availablePromptIds(index),
@@ -196,65 +196,54 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
   }
 }
 
-class _PromptField extends StatelessWidget {
-  const _PromptField({
-    required this.definition,
-    required this.controller,
-    required this.availablePromptIds,
-    required this.selectedPromptId,
-    required this.onPromptChanged,
-  });
+Widget _promptField(
+  BuildContext context, {
+  required ProfilePromptDefinition definition,
+  required TextEditingController controller,
+  required List<String> availablePromptIds,
+  required String selectedPromptId,
+  required ValueChanged<String> onPromptChanged,
+}) {
+  final t = CatchTokens.of(context);
 
-  final ProfilePromptDefinition definition;
-  final TextEditingController controller;
-  final List<String> availablePromptIds;
-  final String selectedPromptId;
-  final ValueChanged<String> onPromptChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      radius: CatchRadius.md,
-      borderColor: t.line,
-      backgroundColor: t.surface,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CatchSelectMenu<String>(
-            values: availablePromptIds,
-            value: selectedPromptId,
-            itemLabel: (promptId) => profilePromptDefinition(promptId).title,
-            semanticLabel: 'Profile prompt',
-            prefixIcon: Icon(CatchIcons.formatQuoteRounded),
-            onChanged: (promptId) {
-              if (promptId == null) return;
-              onPromptChanged(promptId);
-            },
-          ),
-          gapH10,
-          CatchTextField(
-            label: definition.title,
-            showLabel: false,
-            controller: controller,
-            hintText: definition.placeholder,
-            helperText:
-                '${controller.text.length} / $maximumProfilePromptAnswerLength',
-            keyboardType: TextInputType.multiline,
-            textInputAction: TextInputAction.newline,
-            textCapitalization: TextCapitalization.sentences,
-            maxLines: 4,
-            minLines: 3,
-            inputFormatters: [
-              LengthLimitingTextInputFormatter(
-                maximumProfilePromptAnswerLength,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  return CatchSurface(
+    radius: CatchRadius.md,
+    borderColor: t.line,
+    backgroundColor: t.surface,
+    padding: const EdgeInsets.all(CatchSpacing.s3),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CatchField.select<String>(
+          title: 'Profile prompt',
+          values: availablePromptIds,
+          value: selectedPromptId,
+          itemLabel: (promptId) => profilePromptDefinition(promptId).title,
+          prefixIcon: Icon(CatchIcons.formatQuoteRounded),
+          showLabel: false,
+          onChanged: (promptId) {
+            if (promptId == null) return;
+            onPromptChanged(promptId);
+          },
+        ),
+        gapH10,
+        CatchField(
+          title: definition.title,
+          showLabel: false,
+          controller: controller,
+          placeholder: definition.placeholder,
+          helperText:
+              '${controller.text.length} / $maximumProfilePromptAnswerLength',
+          keyboardType: TextInputType.multiline,
+          textInputAction: TextInputAction.newline,
+          textCapitalization: TextCapitalization.sentences,
+          maxLines: 4,
+          minLines: 3,
+          inputFormatters: [
+            LengthLimitingTextInputFormatter(maximumProfilePromptAnswerLength),
+          ],
+        ),
+      ],
+    ),
+  );
 }

@@ -1,7 +1,7 @@
 part of '../event_success_host_screen.dart';
 
-class _EventSuccessTabPicker extends StatelessWidget {
-  const _EventSuccessTabPicker({
+class EventSuccessTabPicker extends StatelessWidget {
+  const EventSuccessTabPicker({
     required this.selectedTab,
     required this.onChanged,
   });
@@ -32,8 +32,8 @@ extension on EventSuccessHostTab {
   }
 }
 
-class _PlanSummary extends StatelessWidget {
-  const _PlanSummary({
+class PlanSummary extends StatelessWidget {
+  const PlanSummary({
     required this.plan,
     required this.draft,
     required this.planIsPersisted,
@@ -76,8 +76,8 @@ extension on EventSuccessPlanStatus {
   }
 }
 
-class _HostActivitySummary extends StatelessWidget {
-  const _HostActivitySummary({required this.profile, required this.draft});
+class HostActivitySummary extends StatelessWidget {
+  const HostActivitySummary({required this.profile, required this.draft});
 
   final EventSuccessActivityProfile profile;
   final EventSuccessHostDraft draft;
@@ -117,8 +117,8 @@ class _HostActivitySummary extends StatelessWidget {
   }
 }
 
-class _CompatibilitySignalHostCard extends StatelessWidget {
-  const _CompatibilitySignalHostCard({required this.plan});
+class CompatibilitySignalHostCard extends StatelessWidget {
+  const CompatibilitySignalHostCard({required this.plan});
 
   final EventSuccessPlan plan;
 
@@ -181,8 +181,8 @@ class _CompatibilitySignalHostCard extends StatelessWidget {
   }
 }
 
-class _LiveAttendanceSummaryCard extends StatelessWidget {
-  const _LiveAttendanceSummaryCard({
+class LiveAttendanceSummaryCard extends StatelessWidget {
+  const LiveAttendanceSummaryCard({
     required this.event,
     required this.bookedCount,
     required this.checkedInCount,
@@ -253,15 +253,15 @@ class _LiveAttendanceSummaryCard extends StatelessWidget {
             ],
           ),
           gapH14,
-          _HostCheckInQrPanel(event: event),
+          HostCheckInQrPanel(event: event),
         ],
       ),
     );
   }
 }
 
-class _HostCheckInQrPanel extends StatelessWidget {
-  const _HostCheckInQrPanel({required this.event});
+class HostCheckInQrPanel extends StatelessWidget {
+  const HostCheckInQrPanel({required this.event});
 
   final Event event;
 
@@ -308,8 +308,8 @@ class _HostCheckInQrPanel extends StatelessWidget {
   }
 }
 
-class _WingmanRequestsHostCard extends StatelessWidget {
-  const _WingmanRequestsHostCard({
+class WingmanRequestsHostCard extends StatelessWidget {
+  const WingmanRequestsHostCard({
     required this.requests,
     required this.profiles,
     required this.rotationsEnabled,
@@ -368,7 +368,7 @@ class _WingmanRequestsHostCard extends StatelessWidget {
             for (final request in activeRequests)
               Padding(
                 padding: _hostWingmanRequestGap,
-                child: _WingmanRequestHostRow(
+                child: WingmanRequestHostRow(
                   request: request,
                   requester: profileByUid[request.requesterUid],
                   target: profileByUid[request.targetUid],
@@ -380,8 +380,8 @@ class _WingmanRequestsHostCard extends StatelessWidget {
   }
 }
 
-class _WingmanRequestHostRow extends StatelessWidget {
-  const _WingmanRequestHostRow({
+class WingmanRequestHostRow extends StatelessWidget {
+  const WingmanRequestHostRow({
     required this.request,
     required this.requester,
     required this.target,

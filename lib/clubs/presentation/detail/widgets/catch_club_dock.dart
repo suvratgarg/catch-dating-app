@@ -86,7 +86,11 @@ class CatchClubDock extends StatelessWidget {
               Row(
                 children: [
                   if (showCount) ...[
-                    _DockCount(members: members!, label: membersLabel),
+                    _buildDockCount(
+                      context,
+                      members: members!,
+                      label: membersLabel,
+                    ),
                     const SizedBox(width: CatchSpacing.s3),
                   ],
                   ..._controls(t, activity),
@@ -139,7 +143,7 @@ class CatchClubDock extends StatelessWidget {
         ];
       case CatchClubDockState.member:
         return [
-          _DockBell(
+          _buildDockBell(
             active: notificationsEnabled,
             accent: activity.accent,
             isLoading: isBellLoading,
@@ -185,82 +189,75 @@ class CatchClubDock extends StatelessWidget {
   }
 }
 
-class _DockCount extends StatelessWidget {
-  const _DockCount({required this.members, required this.label});
-
-  final int members;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '$members',
-          style: CatchTextStyles.numericLarge(
-            context,
-          ).copyWith(fontSize: 17, height: 1),
-        ),
-        const SizedBox(height: CatchSpacing.micro6),
-        Text(
-          label,
-          style: CatchTextStyles.monoLabel(
-            context,
-            color: t.ink2,
-          ).copyWith(fontSize: 9, fontWeight: FontWeight.w700),
-        ),
-      ],
-    );
-  }
+Widget _buildDockCount(
+  BuildContext context, {
+  required int members,
+  required String label,
+}) {
+  final t = CatchTokens.of(context);
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        '$members',
+        style: CatchTextStyles.numericLarge(
+          context,
+        ).copyWith(fontSize: 17, height: 1),
+      ),
+      const SizedBox(height: CatchSpacing.micro6),
+      Text(
+        label,
+        style: CatchTextStyles.monoLabel(
+          context,
+          color: t.ink2,
+        ).copyWith(fontSize: 9, fontWeight: FontWeight.w700),
+      ),
+    ],
+  );
 }
 
 /// Member notifications bell — the active state fills with the club's activity
 /// accent (not the raw Material color scheme).
-class _DockBell extends StatelessWidget {
-  const _DockBell({
-    required this.active,
-    required this.accent,
-    required this.isLoading,
-    required this.onPressed,
-  });
+Widget _buildDockBell({
+  required bool active,
+  required Color accent,
+  required bool isLoading,
+  required VoidCallback? onPressed,
+}) {
+  return Builder(
+    builder: (context) {
+      final t = CatchTokens.of(context);
+      final foreground = active ? CatchTokens.editorialLight : t.ink2;
 
-  final bool active;
-  final Color accent;
-  final bool isLoading;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final foreground = active ? CatchTokens.editorialLight : t.ink2;
-
-    return Semantics(
-      button: true,
-      toggled: active,
-      label: active
-          ? 'Disable club push notifications'
-          : 'Enable club push notifications',
-      child: CatchIconButton(
-        size: CatchSpacing.s12,
-        background: active ? accent : t.raised,
-        onTap: isLoading ? null : onPressed,
-        child: isLoading
-            ? SizedBox.square(
-                dimension: CatchIcon.md,
-                child: CatchLoadingIndicator(strokeWidth: 2, color: foreground),
-              )
-            : Icon(
-                active
-                    ? CatchIcons.notificationsActiveRounded
-                    : CatchIcons.notificationsNoneRounded,
-                color: foreground,
-              ),
-      ),
-    );
-  }
+      return Semantics(
+        button: true,
+        toggled: active,
+        label: active
+            ? 'Disable club push notifications'
+            : 'Enable club push notifications',
+        child: CatchIconButton(
+          size: CatchSpacing.s12,
+          background: active ? accent : t.raised,
+          onTap: isLoading ? null : onPressed,
+          child: isLoading
+              ? SizedBox.square(
+                  dimension: CatchIcon.md,
+                  child: CatchLoadingIndicator(
+                    strokeWidth: 2,
+                    color: foreground,
+                  ),
+                )
+              : Icon(
+                  active
+                      ? CatchIcons.notificationsActiveRounded
+                      : CatchIcons.notificationsNoneRounded,
+                  color: foreground,
+                ),
+        ),
+      );
+    },
+  );
 }
 
 /// Provider-backed [CatchClubDock] for the consumer club-detail screen. Computes

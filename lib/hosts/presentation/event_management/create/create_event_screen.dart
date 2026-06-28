@@ -6,11 +6,14 @@ import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
@@ -33,7 +36,6 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/eve
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_success_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -1073,7 +1075,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
               ),
             ),
             if (mutationError != null) CatchErrorBanner(message: mutationError),
-            StepperFooter(
+            _buildStepperFooter(
               isLastStep: _currentStep == _stepSpecs.length - 1,
               isLoading:
                   submitMutation.isPending || saveDraftMutation.isPending,
@@ -1082,6 +1084,55 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildStepperFooter({
+    required bool isLastStep,
+    required bool isLoading,
+    required VoidCallback onNext,
+    required VoidCallback? onSaveDraft,
+  }) {
+    final t = CatchTokens.of(context);
+    return CatchBottomDock(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s4,
+        CatchSpacing.s3,
+        CatchSpacing.s4,
+        CatchSpacing.s3,
+      ),
+      child: Row(
+        children: [
+          if (onSaveDraft != null) ...[
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: CatchButton(
+                  label: 'Save Draft',
+                  onPressed: isLoading ? null : onSaveDraft,
+                  variant: CatchButtonVariant.ghost,
+                  size: CatchButtonSize.lg,
+                  icon: Icon(CatchIcons.saveOutlined),
+                  foregroundColor: t.primary,
+                ),
+              ),
+            ),
+            const SizedBox(width: CatchSpacing.s3),
+          ],
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: CatchButton(
+                label: isLastStep ? 'Schedule event' : 'Next',
+                onPressed: onNext,
+                isLoading: isLoading,
+                fullWidth: true,
+                icon: isLastStep ? null : Icon(CatchIcons.arrowForwardRounded),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -7,9 +7,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -229,7 +228,8 @@ class _ProfilePhotoEditorScreenState
                       clipBehavior: Clip.antiAlias,
                       child: AspectRatio(
                         aspectRatio: profilePhotoAspectRatio,
-                        child: _PhotoEditorPreview(
+                        child: _photoEditorPreview(
+                          context: context,
                           cropKey: _cropKey,
                           bytes: _imageBytes,
                           url: widget.photo?.url,
@@ -238,16 +238,12 @@ class _ProfilePhotoEditorScreenState
                       ),
                     ),
                     gapH16,
-                    const CatchFormFieldLabel(
-                      label: 'Photo prompt',
+                    CatchField.select<_PhotoPromptChoice>(
+                      title: 'Photo prompt',
                       isOptional: true,
-                    ),
-                    gapH8,
-                    CatchSelectMenu<_PhotoPromptChoice>(
                       values: promptChoices,
                       value: selectedPromptChoice,
                       itemLabel: (choice) => choice.label,
-                      semanticLabel: 'Photo prompt',
                       prefixIcon: Icon(CatchIcons.autoAwesomeOutlined),
                       onChanged: _saving || _deleting
                           ? null
@@ -311,60 +307,51 @@ class _ProfilePhotoEditorScreenState
   }
 }
 
-class _PhotoEditorPreview extends StatelessWidget {
-  const _PhotoEditorPreview({
-    required this.cropKey,
-    required this.bytes,
-    required this.url,
-    required this.loading,
-  });
+Widget _photoEditorPreview({
+  required BuildContext context,
+  required GlobalKey cropKey,
+  required Uint8List? bytes,
+  required String? url,
+  required bool loading,
+}) {
+  final t = CatchTokens.of(context);
+  final imageBytes = bytes;
+  final existingUrl = url;
 
-  final GlobalKey cropKey;
-  final Uint8List? bytes;
-  final String? url;
-  final bool loading;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final imageBytes = bytes;
-    final existingUrl = url;
-
-    if (loading) {
-      return CatchSkeleton.custom(
-        child: const ColoredBox(
-          color: CatchTokens.editorialLight,
-          child: SizedBox.expand(),
-        ),
-      );
-    }
-    if (imageBytes != null) {
-      return RepaintBoundary(
-        key: cropKey,
-        child: ClipRect(
-          child: InteractiveViewer(
-            minScale: 1,
-            maxScale: 4,
-            boundaryMargin: const EdgeInsets.all(
-              CatchLayout.profilePhotoEditorBoundaryMargin,
-            ),
-            child: SizedBox.expand(
-              child: Image.memory(imageBytes, fit: BoxFit.cover),
-            ),
-          ),
-        ),
-      );
-    }
-    if (existingUrl != null) {
-      return CatchNetworkImage(existingUrl);
-    }
-    return ColoredBox(
-      color: t.primarySoft,
-      child: Center(
-        child: Icon(CatchIcons.addPhotoAlternateOutlined, color: t.primary),
+  if (loading) {
+    return CatchSkeleton.custom(
+      child: const ColoredBox(
+        color: CatchTokens.editorialLight,
+        child: SizedBox.expand(),
       ),
     );
   }
+  if (imageBytes != null) {
+    return RepaintBoundary(
+      key: cropKey,
+      child: ClipRect(
+        child: InteractiveViewer(
+          minScale: 1,
+          maxScale: 4,
+          boundaryMargin: const EdgeInsets.all(
+            CatchLayout.profilePhotoEditorBoundaryMargin,
+          ),
+          child: SizedBox.expand(
+            child: Image.memory(imageBytes, fit: BoxFit.cover),
+          ),
+        ),
+      ),
+    );
+  }
+  if (existingUrl != null) {
+    return CatchNetworkImage(existingUrl);
+  }
+  return ColoredBox(
+    color: t.primarySoft,
+    child: Center(
+      child: Icon(CatchIcons.addPhotoAlternateOutlined, color: t.primary),
+    ),
+  );
 }
 
 final class _PhotoPromptChoice {

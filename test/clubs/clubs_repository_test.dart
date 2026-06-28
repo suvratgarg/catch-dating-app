@@ -148,11 +148,11 @@ void main() {
         await _seedClub(firestore, newer);
         await _seedClub(
           firestore,
-          buildClub(id: 'delhi-club', location: 'delhi'),
+          buildClub(id: 'delhi-club', location: 'in-dl-delhi-ncr'),
         );
 
         await expectLater(
-          repository.watchClubsByLocation('mumbai'),
+          repository.watchClubsByLocation('in-mh-mumbai'),
           emits([newer, older]),
         );
       },
@@ -169,7 +169,7 @@ void main() {
       await _seedClub(firestore, hidden);
 
       await expectLater(
-        repository.watchClubsByLocation('mumbai'),
+        repository.watchClubsByLocation('in-mh-mumbai'),
         emits([visible]),
       );
     });
@@ -186,7 +186,7 @@ void main() {
       }
 
       await expectLater(
-        repository.watchClubsByLocation('mumbai'),
+        repository.watchClubsByLocation('in-mh-mumbai'),
         emits(
           allOf(
             hasLength(ClubsRepository.discoveryLimit),
@@ -199,15 +199,19 @@ void main() {
     test('watchClubsByLocationSortedByRating orders by rating', () async {
       final lowerRated = buildClub(
         id: 'club-low',
-        location: 'delhi',
+        location: 'in-dl-delhi-ncr',
         rating: 3.8,
       );
-      final topClub = buildClub(id: 'club-top', location: 'delhi', rating: 4.9);
+      final topClub = buildClub(
+        id: 'club-top',
+        location: 'in-dl-delhi-ncr',
+        rating: 4.9,
+      );
       await _seedClub(firestore, lowerRated);
       await _seedClub(firestore, topClub);
 
       await expectLater(
-        repository.watchClubsByLocationSortedByRating('delhi'),
+        repository.watchClubsByLocationSortedByRating('in-dl-delhi-ncr'),
         emits([topClub, lowerRated]),
       );
     });
@@ -272,7 +276,7 @@ void main() {
         clubId: 'club-42',
         name: 'Sunset Striders',
         description: 'Easy city loops',
-        location: 'mumbai',
+        location: 'in-mh-mumbai',
         area: 'Bandra',
         imageUrl: 'https://example.com/cover.jpg',
       );
@@ -283,7 +287,7 @@ void main() {
           'clubId': 'club-42',
           'name': 'Sunset Striders',
           'description': 'Easy city loops',
-          'location': 'mumbai',
+          'location': 'in-mh-mumbai',
           'area': 'Bandra',
           'imageUrl': 'https://example.com/cover.jpg',
         },
@@ -299,7 +303,7 @@ void main() {
         clubId: 'club-42',
         name: 'Contact Club',
         description: 'A club with contact info.',
-        location: 'mumbai',
+        location: 'in-mh-mumbai',
         area: 'Bandra',
         instagramHandle: '@contactclub',
         phoneNumber: '+91 99999 99999',
@@ -391,7 +395,7 @@ void main() {
       final topClub = buildClub(id: 'club-top', rating: 4.9);
       fakeRepository.clubsById[club.id] = club;
       fakeRepository.clubsById[topClub.id] = topClub;
-      fakeRepository.clubsByLocation['mumbai'] = [club, topClub];
+      fakeRepository.clubsByLocation['in-mh-mumbai'] = [club, topClub];
 
       final container = ProviderContainer(
         overrides: [
@@ -406,12 +410,12 @@ void main() {
         fireImmediately: true,
       );
       final locationSubscription = container.listen(
-        watchClubsByLocationProvider('mumbai'),
+        watchClubsByLocationProvider('in-mh-mumbai'),
         (_, _) {},
         fireImmediately: true,
       );
       final ratingSubscription = container.listen(
-        watchClubsByLocationSortedByRatingProvider('mumbai'),
+        watchClubsByLocationSortedByRatingProvider('in-mh-mumbai'),
         (_, _) {},
         fireImmediately: true,
       );
@@ -451,7 +455,7 @@ void main() {
         );
         addTearDown(container.dispose);
 
-        final provider = watchClubsByLocationProvider('mumbai');
+        final provider = watchClubsByLocationProvider('in-mh-mumbai');
         final subscription = container.listen(provider, (_, _) {});
         addTearDown(subscription.close);
 

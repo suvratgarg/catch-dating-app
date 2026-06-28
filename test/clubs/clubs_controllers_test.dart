@@ -683,7 +683,7 @@ void main() {
           .read(createClubControllerProvider.notifier)
           .submit(
             name: 'New Name',
-            location: 'indore',
+            location: 'in-mp-indore',
             area: 'Vijay Nagar',
             description: 'Updated description',
             existingClub: existingClub,
@@ -693,7 +693,7 @@ void main() {
       final fields = fakeRepository.lastUpdatedFields;
       expect(fields, isNotNull);
       expect(fields!['name'], 'New Name');
-      expect(fields['location'], 'indore');
+      expect(fields['location'], 'in-mp-indore');
       expect(fields['area'], 'Vijay Nagar');
       expect(fields['description'], 'Updated description');
       // When no new club photo is uploaded, imageUrl stays as the existing one.
@@ -786,7 +786,7 @@ void main() {
             .read(createClubControllerProvider.notifier)
             .submit(
               name: 'Ignored Name',
-              location: 'indore',
+              location: 'in-mp-indore',
               area: 'Ignored Area',
               description: 'Ignored description',
               existingClub: existingClub,
@@ -825,7 +825,7 @@ void main() {
             .read(createClubControllerProvider.notifier)
             .submit(
               name: 'New Name',
-              location: 'mumbai',
+              location: 'in-mh-mumbai',
               area: 'Bandra',
               description: 'Updated description',
               existingClub: buildClub(),

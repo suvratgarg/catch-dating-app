@@ -141,19 +141,19 @@ class CatchesProfileReviewSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Stack(
+    return Stack(
       children: [
-        Positioned.fill(
+        const Positioned.fill(
           child: ProfileSurfaceSkeleton(
             bottomPadding: CatchLayout.catchesProfileBottomPadding,
           ),
         ),
-        _CatchesTopOverlaySkeleton(),
-        CatchesBottomScrim(),
+        _catchesTopOverlaySkeleton(context),
+        const CatchesBottomScrim(),
         Positioned(
           left: CatchSpacing.s5,
           bottom: CatchSpacing.s4,
-          child: _CatchesPassButtonSkeleton(),
+          child: _catchesPassButtonSkeleton(),
         ),
       ],
     );
@@ -226,68 +226,53 @@ class CatchesProfileReview extends StatelessWidget {
   }
 }
 
-class _CatchesTopOverlaySkeleton extends StatelessWidget {
-  const _CatchesTopOverlaySkeleton();
+Widget _catchesTopOverlaySkeleton(BuildContext context) {
+  final t = CatchTokens.of(context);
 
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s4,
-            CatchSpacing.s3,
-            CatchSpacing.s4,
-            0,
-          ),
-          child: Row(
-            children: [
-              const _OverlayIconSkeleton(),
-              gapW10,
-              Expanded(
-                child: Center(
-                  child: CatchSkeleton.box(
-                    width: CatchSpacing.s16 * 3,
-                    height: CatchSpacing.s9,
-                    radius: CatchRadius.pill,
-                    borderColor: t.line.withValues(
-                      alpha: CatchOpacity.floatingChromeBorder,
-                    ),
+  return Positioned(
+    top: 0,
+    left: 0,
+    right: 0,
+    child: SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          CatchSpacing.s4,
+          CatchSpacing.s3,
+          CatchSpacing.s4,
+          0,
+        ),
+        child: Row(
+          children: [
+            _overlayIconSkeleton(),
+            gapW10,
+            Expanded(
+              child: Center(
+                child: CatchSkeleton.box(
+                  width: CatchSpacing.s16 * 3,
+                  height: CatchSpacing.s9,
+                  radius: CatchRadius.pill,
+                  borderColor: t.line.withValues(
+                    alpha: CatchOpacity.floatingChromeBorder,
                   ),
                 ),
               ),
-              gapW10,
-              const _OverlayIconSkeleton(),
-            ],
-          ),
+            ),
+            gapW10,
+            _overlayIconSkeleton(),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _OverlayIconSkeleton extends StatelessWidget {
-  const _OverlayIconSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSkeleton.circle();
-  }
+Widget _overlayIconSkeleton() {
+  return CatchSkeleton.circle();
 }
 
-class _CatchesPassButtonSkeleton extends StatelessWidget {
-  const _CatchesPassButtonSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSkeleton.circle(size: CatchLayout.passButtonExtent);
-  }
+Widget _catchesPassButtonSkeleton() {
+  return CatchSkeleton.circle(size: CatchLayout.passButtonExtent);
 }
 
 class CatchesTopOverlay extends StatelessWidget {
@@ -321,7 +306,8 @@ class CatchesTopOverlay extends StatelessWidget {
           ),
           child: Row(
             children: [
-              _OverlayIconAction(
+              _overlayIconAction(
+                context,
                 tooltip: 'Back to Catches',
                 icon: CatchIcons.arrowBackIosNewRounded,
                 onPressed: onBack,
@@ -352,7 +338,8 @@ class CatchesTopOverlay extends StatelessWidget {
                 ),
               ),
               gapW10,
-              _OverlayIconAction(
+              _overlayIconAction(
+                context,
                 tooltip: 'Filters',
                 icon: CatchIcons.tuneRounded,
                 onPressed: onFilters,
@@ -365,33 +352,23 @@ class CatchesTopOverlay extends StatelessWidget {
   }
 }
 
-class _OverlayIconAction extends StatelessWidget {
-  const _OverlayIconAction({
-    required this.tooltip,
-    required this.icon,
-    required this.onPressed,
-  });
+Widget _overlayIconAction(
+  BuildContext context, {
+  required String tooltip,
+  required IconData icon,
+  required VoidCallback onPressed,
+}) {
+  final t = CatchTokens.of(context);
 
-  final String tooltip;
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Tooltip(
-      message: tooltip,
-      child: CatchIconButton(
-        size: CatchLayout.floatingControlExtent,
-        background: t.surface.withValues(
-          alpha: CatchOpacity.floatingControlFill,
-        ),
-        onTap: onPressed,
-        child: Icon(icon, color: t.ink, size: CatchIcon.row),
-      ),
-    );
-  }
+  return Tooltip(
+    message: tooltip,
+    child: CatchIconButton(
+      size: CatchLayout.floatingControlExtent,
+      background: t.surface.withValues(alpha: CatchOpacity.floatingControlFill),
+      onTap: onPressed,
+      child: Icon(icon, color: t.ink, size: CatchIcon.row),
+    ),
+  );
 }
 
 class CatchesBottomScrim extends StatelessWidget {

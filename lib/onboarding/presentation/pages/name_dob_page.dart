@@ -2,10 +2,10 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -114,7 +114,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
 
     return Form(
       key: _formKey,
-      child: OnboardingStepFrame(
+      child: onboardingStepLayout(
         footer: CatchButton(
           label: 'Continue',
           onPressed: _submit,
@@ -122,8 +122,8 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
           size: CatchButtonSize.lg,
         ),
         children: [
-          CatchTextField(
-            label: 'FIRST NAME',
+          CatchField(
+            title: 'FIRST NAME',
             controller: _firstNameController,
             autofocus: shouldAutofocus,
             textCapitalization: TextCapitalization.words,
@@ -134,8 +134,8 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
                 validateRequiredProfileName(v, label: 'First name'),
           ),
           gapH16,
-          CatchTextField(
-            label: 'LAST NAME',
+          CatchField(
+            title: 'LAST NAME',
             controller: _lastNameController,
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
@@ -145,8 +145,8 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
                 validateRequiredProfileName(v, label: 'Last name'),
           ),
           gapH16,
-          CatchTextField(
-            label: 'DATE OF BIRTH',
+          CatchField(
+            title: 'DATE OF BIRTH',
             controller: _dateController,
             readOnly: true,
             onTap: _pickDate,
@@ -156,8 +156,8 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
             validator: (_) => validateRequiredDateOfBirth(_selectedDate),
           ),
           gapH16,
-          CatchTextField(
-            label: 'PHONE',
+          CatchField(
+            title: 'PHONE',
             controller: _phoneController,
             readOnly: true,
             keyboardType: TextInputType.phone,
@@ -167,7 +167,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
             prefixText: '${data.countryCode} ',
             suffixIcon: Icon(CatchIcons.verifiedRounded),
             helperText: 'Verified via OTP.',
-            helperTone: CatchTextFieldSupportTone.success,
+            helperTone: CatchFieldSupportTone.success,
             validator: validateRequiredPhoneNumber,
           ),
         ],

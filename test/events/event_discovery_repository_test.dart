@@ -11,24 +11,27 @@ import 'events_test_helpers.dart';
 
 void main() {
   group('EventDiscoveryQuery', () {
-    test('normalizes city and sorts activity filters for stable families', () {
-      final now = DateTime(2026, 5, 26, 10);
-      final left = EventDiscoveryQuery.forCity(
-        cityName: ' Mumbai ',
-        startAt: now,
-        activityKinds: const [ActivityKind.yoga, ActivityKind.running],
-      );
-      final right = EventDiscoveryQuery.forCity(
-        cityName: 'mumbai',
-        startAt: now,
-        activityKinds: const [ActivityKind.running, ActivityKind.yoga],
-      );
+    test(
+      'normalizes market and sorts activity filters for stable families',
+      () {
+        final now = DateTime(2026, 5, 26, 10);
+        final left = EventDiscoveryQuery.forCity(
+          marketId: ' IN-MH-MUMBAI ',
+          startAt: now,
+          activityKinds: const [ActivityKind.yoga, ActivityKind.running],
+        );
+        final right = EventDiscoveryQuery.forCity(
+          marketId: 'in-mh-mumbai',
+          startAt: now,
+          activityKinds: const [ActivityKind.running, ActivityKind.yoga],
+        );
 
-      expect(left, right);
-      expect(left.hashCode, right.hashCode);
-      expect(left.cityName, 'mumbai');
-      expect(left.activityKinds, [ActivityKind.running, ActivityKind.yoga]);
-    });
+        expect(left, right);
+        expect(left.hashCode, right.hashCode);
+        expect(left.marketId, 'in-mh-mumbai');
+        expect(left.activityKinds, [ActivityKind.running, ActivityKind.yoga]);
+      },
+    );
   });
 
   group('EventDiscoveryRepository', () {
@@ -86,7 +89,7 @@ void main() {
         await _seedDiscoverableEvent(
           firestore,
           otherCityEvent,
-          cityName: 'delhi',
+          marketId: 'in-dl-delhi-ncr',
         );
         await _seedDiscoverableEvent(firestore, wrongActivityEvent);
         await _seedDiscoverableEvent(
@@ -98,7 +101,7 @@ void main() {
 
         final events = await repository.fetchDiscoverableEvents(
           EventDiscoveryQuery.forCity(
-            cityName: 'mumbai',
+            marketId: 'in-mh-mumbai',
             startAt: now,
             endBefore: now.add(const Duration(days: 7)),
             activityKinds: const [ActivityKind.yoga],
@@ -130,7 +133,7 @@ void main() {
       final results = await container.read(
         discoverableEventsProvider(
           EventDiscoveryQuery.forCity(
-            cityName: 'mumbai',
+            marketId: 'in-mh-mumbai',
             startAt: DateTime(2026, 5, 26),
             endBefore: DateTime(2026, 6),
           ),
@@ -167,7 +170,7 @@ void main() {
 
       final events = await repository.fetchDiscoverableEvents(
         EventDiscoveryQuery.forCity(
-          cityName: 'mumbai',
+          marketId: 'in-mh-mumbai',
           startAt: now,
           availabilityFilter: EventDiscoveryAvailabilityFilter.open,
           viewerCohortId: 'menInterestedInWomen',
@@ -194,7 +197,7 @@ void main() {
 
       final events = await repository.fetchDiscoverableEvents(
         EventDiscoveryQuery.forCity(
-          cityName: 'mumbai',
+          marketId: 'in-mh-mumbai',
           startAt: now,
           viewerCohortId: 'menInterestedInWomen',
         ),
@@ -211,6 +214,7 @@ Future<void> _seedDiscoverableEvent(
   FakeFirebaseFirestore firestore,
   Event event, {
   String cityName = 'mumbai',
+  String marketId = 'in-mh-mumbai',
   String availability = 'open',
   bool hasOpenSpots = true,
   List<String> openCohorts = const [
@@ -226,6 +230,7 @@ Future<void> _seedDiscoverableEvent(
   return firestore.collection('events').doc(event.id).set({
     ...event.toJson(),
     'discoveryCityName': cityName,
+    'discoveryMarketId': marketId,
     'discoveryActivityKind': event.activityKind.name,
     'discoveryGeoCell': latitude == null || longitude == null
         ? null

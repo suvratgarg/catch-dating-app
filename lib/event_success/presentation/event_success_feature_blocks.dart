@@ -71,7 +71,7 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _BlockHeader(
+          BlockHeader(
             icon: CatchIcons.tuneRounded,
             title: 'Host setup flow',
             subtitle:
@@ -98,7 +98,7 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
             ],
           ),
           const SizedBox(height: CatchSpacing.s4),
-          _PlaybookSummaryCard(draft: _draft),
+          PlaybookSummaryCard(draft: _draft),
           const SizedBox(height: CatchSpacing.s4),
           Text('Event structure', style: CatchTextStyles.sectionTitle(context)),
           const SizedBox(height: CatchSpacing.s2),
@@ -117,7 +117,7 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
           ),
           const SizedBox(height: CatchSpacing.s2),
           for (final module in _draft.playbook.modules)
-            _ModuleToggleRow(
+            ModuleToggleRow(
               module: module,
               selected: _draft.isModuleSelected(module.id),
               onChanged: (_) {
@@ -126,7 +126,7 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
             ),
           if (_draft.readinessIssues.isNotEmpty) ...[
             const SizedBox(height: CatchSpacing.s4),
-            _IssueList(issues: _draft.readinessIssues),
+            IssueList(issues: _draft.readinessIssues),
           ],
         ],
       ),
@@ -155,7 +155,7 @@ class EventSuccessLiveHostMode extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _BlockHeader(
+          BlockHeader(
             icon: CatchIcons.playCircleOutlineRounded,
             title: 'Live host mode',
             subtitle:
@@ -166,14 +166,14 @@ class EventSuccessLiveHostMode extends StatelessWidget {
             ),
           ),
           const SizedBox(height: CatchSpacing.s4),
-          _ProgressRow(
+          ProgressRow(
             label: 'Checked in',
             value: resolvedPlan.checkInProgress,
             detail:
                 '${resolvedPlan.checkedInCount}/${resolvedPlan.bookedCount}',
           ),
           const SizedBox(height: CatchSpacing.s3),
-          _ProgressRow(
+          ProgressRow(
             label: 'Run of show',
             value: resolvedPlan.runOfShowProgress,
             detail:
@@ -213,7 +213,7 @@ class EventSuccessLiveHostMode extends StatelessWidget {
           if (showStepList) ...[
             const SizedBox(height: CatchSpacing.s4),
             for (var i = 0; i < resolvedPlan.steps.length; i++)
-              _LiveStepRow(
+              LiveStepRow(
                 step: resolvedPlan.steps[i],
                 index: i,
                 activeIndex: resolvedPlan.activeStepIndex,
@@ -241,7 +241,7 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _BlockHeader(
+          BlockHeader(
             icon: CatchIcons.phoneIphoneRounded,
             title: 'Attendee companion',
             subtitle:
@@ -288,7 +288,7 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
           ),
           const SizedBox(height: CatchSpacing.s2),
           for (final candidate in resolvedState.wingmanRequestCandidates)
-            _WingmanCandidateRow(candidate: candidate),
+            WingmanCandidateRow(candidate: candidate),
         ],
       ),
     );
@@ -311,7 +311,7 @@ class EventSuccessPostEventReport extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _BlockHeader(
+          BlockHeader(
             icon: CatchIcons.insightsOutlined,
             title: 'Post-event host report',
             subtitle:
@@ -375,8 +375,8 @@ class EventSuccessPostEventReport extends StatelessWidget {
   }
 }
 
-class _BlockHeader extends StatelessWidget {
-  const _BlockHeader({
+class BlockHeader extends StatelessWidget {
+  const BlockHeader({
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -414,8 +414,8 @@ class _BlockHeader extends StatelessWidget {
   }
 }
 
-class _PlaybookSummaryCard extends StatelessWidget {
-  const _PlaybookSummaryCard({required this.draft});
+class PlaybookSummaryCard extends StatelessWidget {
+  const PlaybookSummaryCard({required this.draft});
 
   final EventSuccessHostDraft draft;
 
@@ -467,8 +467,8 @@ class _PlaybookSummaryCard extends StatelessWidget {
   }
 }
 
-class _ModuleToggleRow extends StatelessWidget {
-  const _ModuleToggleRow({
+class ModuleToggleRow extends StatelessWidget {
+  const ModuleToggleRow({
     required this.module,
     required this.selected,
     required this.onChanged,
@@ -524,8 +524,8 @@ class _ModuleToggleRow extends StatelessWidget {
   }
 }
 
-class _IssueList extends StatelessWidget {
-  const _IssueList({required this.issues});
+class IssueList extends StatelessWidget {
+  const IssueList({required this.issues});
 
   final List<String> issues;
 
@@ -559,8 +559,8 @@ class _IssueList extends StatelessWidget {
   }
 }
 
-class _ProgressRow extends StatelessWidget {
-  const _ProgressRow({
+class ProgressRow extends StatelessWidget {
+  const ProgressRow({
     required this.label,
     required this.value,
     required this.detail,
@@ -600,8 +600,8 @@ class _ProgressRow extends StatelessWidget {
   }
 }
 
-class _LiveStepRow extends StatelessWidget {
-  const _LiveStepRow({
+class LiveStepRow extends StatelessWidget {
+  const LiveStepRow({
     required this.step,
     required this.index,
     required this.activeIndex,
@@ -768,15 +768,15 @@ class EventSuccessConversationCueCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: CatchSpacing.s3),
-          for (final cue in cues.take(3)) _ConversationCueRow(cue: cue),
+          for (final cue in cues.take(3)) ConversationCueRow(cue: cue),
         ],
       ),
     );
   }
 }
 
-class _ConversationCueRow extends StatelessWidget {
-  const _ConversationCueRow({required this.cue});
+class ConversationCueRow extends StatelessWidget {
+  const ConversationCueRow({required this.cue});
 
   final EventSuccessConversationCue cue;
 
@@ -824,8 +824,8 @@ class _ConversationCueRow extends StatelessWidget {
   }
 }
 
-class _WingmanCandidateRow extends StatelessWidget {
-  const _WingmanCandidateRow({required this.candidate});
+class WingmanCandidateRow extends StatelessWidget {
+  const WingmanCandidateRow({required this.candidate});
 
   final WingmanRequestCandidate candidate;
 

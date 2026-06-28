@@ -128,7 +128,8 @@ class EventAgendaSliverList extends StatelessWidget {
       for (var groupIndex = 0; groupIndex < entries.length; groupIndex++) ...[
         KeyedSubtree(
           key: dayKeyBuilder?.call(entries[groupIndex].key),
-          child: _AgendaDayGroup(
+          child: _agendaDayGroup(
+            context,
             date: entries[groupIndex].key,
             events: entries[groupIndex].value,
             today: effectiveToday,
@@ -188,7 +189,7 @@ class EventAgendaSliverSkeleton extends StatelessWidget {
           CatchSkeleton.text(width: CatchLayout.skeletonTextEyebrowWidth),
           SizedBox(height: dayLabelBottomGap),
           for (var i = 0; i < count; i++) ...[
-            const _EventAgendaTileSkeleton(),
+            _eventAgendaTileSkeleton(context),
             if (i < count - 1) SizedBox(height: itemGap),
           ],
         ],
@@ -197,170 +198,146 @@ class EventAgendaSliverSkeleton extends StatelessWidget {
   }
 }
 
-class _EventAgendaTileSkeleton extends StatelessWidget {
-  const _EventAgendaTileSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      borderColor: t.line2,
-      radius: CatchRadius.md,
-      padding: EdgeInsets.zero,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            CatchSkeleton.custom(
-              child: Container(
-                width: CatchLayout.eventDateRailWidth,
-                decoration: const BoxDecoration(
-                  color: CatchTokens.editorialLight,
-                  borderRadius: BorderRadius.horizontal(
-                    left: Radius.circular(CatchRadius.md),
-                  ),
-                ),
-                child: Padding(
-                  padding: CatchInsets.contentDense,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CatchSkeleton.text(
-                        width: CatchLayout.skeletonTextDateWidth,
-                      ),
-                      gapH6,
-                      CatchSkeleton.text(
-                        width: CatchLayout.skeletonTextMicroWidth,
-                      ),
-                    ],
-                  ),
+Widget _eventAgendaTileSkeleton(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return CatchSurface(
+    borderColor: t.line2,
+    radius: CatchRadius.md,
+    padding: EdgeInsets.zero,
+    child: IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchSkeleton.custom(
+            child: Container(
+              width: CatchLayout.eventDateRailWidth,
+              decoration: const BoxDecoration(
+                color: CatchTokens.editorialLight,
+                borderRadius: BorderRadius.horizontal(
+                  left: Radius.circular(CatchRadius.md),
                 ),
               ),
-            ),
-            Expanded(
               child: Padding(
-                padding: CatchInsets.listBody,
+                padding: CatchInsets.contentDense,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      children: [
-                        CatchSkeleton.circle(
-                          size: CatchLayout.eventTypeDisplaySize,
-                        ),
-                        gapW8,
-                        Expanded(child: CatchSkeleton.text()),
-                        gapW8,
-                        CatchSkeleton.box(
-                          width: CatchLayout.skeletonTextChipWidth,
-                          height: CatchSpacing.s5,
-                          radius: CatchRadius.pill,
-                        ),
-                      ],
-                    ),
-                    gapH8,
-                    CatchSkeleton.text(),
-                    gapH6,
-                    FractionallySizedBox(
-                      widthFactor: 0.72,
-                      child: CatchSkeleton.text(),
-                    ),
-                    gapH10,
-                    Row(
-                      children: [
-                        CatchSkeleton.circle(size: CatchIcon.profileRunStat),
-                        gapW8,
-                        CatchSkeleton.text(
-                          width: CatchLayout.skeletonTextRowWidth,
-                        ),
-                      ],
-                    ),
-                    gapH8,
                     CatchSkeleton.text(
-                      width: CatchLayout.skeletonTextBodyWidth,
+                      width: CatchLayout.skeletonTextDateWidth,
+                    ),
+                    gapH6,
+                    CatchSkeleton.text(
+                      width: CatchLayout.skeletonTextMicroWidth,
                     ),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: CatchInsets.listBody,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      CatchSkeleton.circle(
+                        size: CatchLayout.eventTypeDisplaySize,
+                      ),
+                      gapW8,
+                      Expanded(child: CatchSkeleton.text()),
+                      gapW8,
+                      CatchSkeleton.box(
+                        width: CatchLayout.skeletonTextChipWidth,
+                        height: CatchSpacing.s5,
+                        radius: CatchRadius.pill,
+                      ),
+                    ],
+                  ),
+                  gapH8,
+                  CatchSkeleton.text(),
+                  gapH6,
+                  FractionallySizedBox(
+                    widthFactor: 0.72,
+                    child: CatchSkeleton.text(),
+                  ),
+                  gapH10,
+                  Row(
+                    children: [
+                      CatchSkeleton.circle(size: CatchIcon.profileRunStat),
+                      gapW8,
+                      CatchSkeleton.text(
+                        width: CatchLayout.skeletonTextRowWidth,
+                      ),
+                    ],
+                  ),
+                  gapH8,
+                  CatchSkeleton.text(width: CatchLayout.skeletonTextBodyWidth),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _AgendaDayGroup extends StatelessWidget {
-  const _AgendaDayGroup({
-    required this.date,
-    required this.events,
-    required this.today,
-    required this.onEventSelected,
-    required this.badgeLabel,
-    required this.badgeLabelBuilder,
-    required this.clubNameBuilder,
-    required this.statusBuilder,
-    required this.showClubName,
-    required this.dayLabelBottomGap,
-    required this.itemGap,
-  });
+Widget _agendaDayGroup(
+  BuildContext context, {
+  required DateTime date,
+  required List<Event> events,
+  required DateTime today,
+  required ValueChanged<Event>? onEventSelected,
+  required String? badgeLabel,
+  required EventBadgeLabelBuilder? badgeLabelBuilder,
+  required ClubNameBuilder? clubNameBuilder,
+  required EventTileStatusBuilder? statusBuilder,
+  required bool showClubName,
+  required double dayLabelBottomGap,
+  required double itemGap,
+}) {
+  final t = CatchTokens.of(context);
 
-  final DateTime date;
-  final List<Event> events;
-  final DateTime today;
-  final ValueChanged<Event>? onEventSelected;
-  final String? badgeLabel;
-  final EventBadgeLabelBuilder? badgeLabelBuilder;
-  final ClubNameBuilder? clubNameBuilder;
-  final EventTileStatusBuilder? statusBuilder;
-  final bool showClubName;
-  final double dayLabelBottomGap;
-  final double itemGap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          _dayLabel(date, today).toUpperCase(),
-          style: CatchTextStyles.labelM(
-            context,
-            color: DateUtils.isSameDay(date, today) ? t.primary : t.ink3,
-          ),
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text(
+        _dayLabel(date, today).toUpperCase(),
+        style: CatchTextStyles.labelM(
+          context,
+          color: DateUtils.isSameDay(date, today) ? t.primary : t.ink3,
         ),
-        SizedBox(height: dayLabelBottomGap),
-        for (var eventIndex = 0; eventIndex < events.length; eventIndex++) ...[
-          Builder(
-            builder: (context) {
-              final event = events[eventIndex];
-              final effectiveBadge =
-                  badgeLabelBuilder?.call(event) ?? badgeLabel;
-              final clubName = clubNameBuilder?.call(event);
-              final status =
-                  statusBuilder?.call(event) ?? _statusForBadge(effectiveBadge);
-              return EventAgendaTile(
-                data: EventTileData.fromEvent(
-                  event: event,
-                  status: status,
-                  clubName: clubName,
-                ),
-                showClubName: showClubName,
-                badgeLabel: effectiveBadge,
-                onTap: onEventSelected == null
-                    ? null
-                    : () => onEventSelected!.call(event),
-              );
-            },
-          ),
-          if (eventIndex < events.length - 1) SizedBox(height: itemGap),
-        ],
+      ),
+      SizedBox(height: dayLabelBottomGap),
+      for (var eventIndex = 0; eventIndex < events.length; eventIndex++) ...[
+        Builder(
+          builder: (context) {
+            final event = events[eventIndex];
+            final effectiveBadge = badgeLabelBuilder?.call(event) ?? badgeLabel;
+            final clubName = clubNameBuilder?.call(event);
+            final status =
+                statusBuilder?.call(event) ?? _statusForBadge(effectiveBadge);
+            return EventAgendaTile(
+              data: EventTileData.fromEvent(
+                event: event,
+                status: status,
+                clubName: clubName,
+              ),
+              showClubName: showClubName,
+              badgeLabel: effectiveBadge,
+              onTap: onEventSelected == null
+                  ? null
+                  : () => onEventSelected.call(event),
+            );
+          },
+        ),
+        if (eventIndex < events.length - 1) SizedBox(height: itemGap),
       ],
-    );
-  }
+    ],
+  );
 }
 
 Map<DateTime, List<Event>> _groupEvents(

@@ -26,8 +26,8 @@ class DashboardEmptySliverBody extends StatelessWidget {
                   CatchSpacing.screenPb,
                 ),
                 children: [
-                  CatchDesignSection(
-                    kicker: 'How Catch works',
+                  CatchSection(
+                    title: 'How Catch works',
                     first: true,
                     bodyGap: CatchSpacing.s4,
                     child: CatchJourneySteps(steps: _howCatchWorksSteps),

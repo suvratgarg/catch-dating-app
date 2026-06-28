@@ -69,7 +69,7 @@ class ClubsRepository {
   Stream<List<Club>> watchClubsByLocation(String location) =>
       withBackendErrorStream(
         () => _clubsRef
-            .where('location', isEqualTo: location)
+            .where('locationMarketId', isEqualTo: location)
             .orderBy('createdAt', descending: true)
             .limit(discoveryLimit)
             .snapshots()
@@ -86,7 +86,7 @@ class ClubsRepository {
   Stream<List<Club>> watchClubsByLocationSortedByRating(String location) =>
       withBackendErrorStream(
         () => _clubsRef
-            .where('location', isEqualTo: location)
+            .where('locationMarketId', isEqualTo: location)
             .orderBy('rating', descending: true)
             .limit(discoveryLimit)
             .snapshots()

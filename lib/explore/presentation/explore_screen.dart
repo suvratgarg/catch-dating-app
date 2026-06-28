@@ -53,18 +53,18 @@ class ExploreScreen extends ConsumerWidget {
         (ref.watch(exploreSourceClubsProvider).asData?.value.length ?? 0) > 0;
 
     final bodySlivers = switch (viewModelAsync) {
-      AsyncLoading() => const <Widget>[
+      AsyncLoading() => <Widget>[
         SliverToBoxAdapter(
           child: Padding(
             padding: CatchInsets.pageBody,
-            child: _ExploreSkeletonList(),
+            child: _buildExploreSkeletonList(),
           ),
         ),
       ],
       AsyncError(:final error) => [
         CatchSliverErrorState.fromError(
           error,
-          context: AppErrorContext.club,
+          context: AppErrorContext.explore,
           onRetry: () {
             ref.invalidate(exploreViewModelProvider);
             ref.invalidate(exploreSourceClubsProvider);
@@ -97,20 +97,13 @@ class ExploreScreen extends ConsumerWidget {
       backgroundColor: t.bg,
       body: Stack(
         children: [
-          SafeArea(
-            bottom: false,
-            child: Column(
-              children: [
-                const _ExploreChrome(),
-                Expanded(
-                  child: CatchMutationErrorListener(
-                    mutation: ClubMembershipController.joinMutation,
-                    child: CustomScrollView(
-                      key: const ValueKey('explore-list-scroll-view'),
-                      slivers: bodySlivers,
-                    ),
-                  ),
-                ),
+          CatchMutationErrorListener(
+            mutation: ClubMembershipController.joinMutation,
+            child: CustomScrollView(
+              key: const ValueKey('explore-list-scroll-view'),
+              slivers: [
+                SliverToBoxAdapter(child: _buildExploreChrome()),
+                ...bodySlivers,
               ],
             ),
           ),
@@ -136,16 +129,11 @@ class ExploreScreen extends ConsumerWidget {
   }
 }
 
-class _ExploreChrome extends StatelessWidget {
-  const _ExploreChrome();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [ExploreDiscoveryCoverHeader(), ExploreFilterRail()],
-    );
-  }
+Widget _buildExploreChrome() {
+  return const Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [ExploreDiscoveryCoverHeader(), ExploreFilterRail()],
+  );
 }
 
 Widget _buildExploreEmptyState(
@@ -204,19 +192,14 @@ Widget _clearAction(
   );
 }
 
-class _ExploreSkeletonList extends StatelessWidget {
-  const _ExploreSkeletonList();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        CatchSkeleton.card(height: CatchLayout.exploreEventsSkeletonHeight),
-        gapH16,
-        CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
-        gapH12,
-        CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
-      ],
-    );
-  }
+Widget _buildExploreSkeletonList() {
+  return Column(
+    children: [
+      CatchSkeleton.card(height: CatchLayout.exploreEventsSkeletonHeight),
+      gapH16,
+      CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
+      gapH12,
+      CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
+    ],
+  );
 }

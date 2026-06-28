@@ -18,9 +18,9 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart'
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
@@ -82,109 +82,84 @@ mixin _InlineSaveState<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   }
 }
 
-class _InlineEditorPanel extends StatelessWidget {
-  const _InlineEditorPanel({
-    required this.isSaving,
-    required this.onCancel,
-    required this.onSubmit,
-    this.saveError,
-    this.actionLeading,
-    this.contentActionGap = CatchSpacing.s3,
-    this.children = const [],
-  });
-
-  final bool isSaving;
-  final VoidCallback onCancel;
-  final VoidCallback onSubmit;
-  final Widget? saveError;
-  final Widget? actionLeading;
-  final double contentActionGap;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    final hasEditorContent = children.isNotEmpty || saveError != null;
-    return _InlineEditorPadding(
-      compact: !hasEditorContent,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (saveError != null) ...[saveError!, gapH12],
-          ...children,
-          if (children.isNotEmpty) SizedBox(height: contentActionGap),
-          _InlineEditorActions(
-            isSaving: isSaving,
-            onCancel: onCancel,
-            onSubmit: onSubmit,
-            leading: actionLeading,
-          ),
-        ],
-      ),
-    );
-  }
+Widget _inlineEditorPanel(
+  BuildContext context, {
+  required bool isSaving,
+  required VoidCallback onCancel,
+  required VoidCallback onSubmit,
+  Widget? saveError,
+  Widget? actionLeading,
+  double contentActionGap = CatchSpacing.s3,
+  List<Widget> children = const [],
+}) {
+  final hasEditorContent = children.isNotEmpty || saveError != null;
+  return _inlineEditorPadding(
+    compact: !hasEditorContent,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (saveError != null) ...[saveError, gapH12],
+        ...children,
+        if (children.isNotEmpty) SizedBox(height: contentActionGap),
+        _inlineEditorActions(
+          isSaving: isSaving,
+          onCancel: onCancel,
+          onSubmit: onSubmit,
+          leading: actionLeading,
+        ),
+      ],
+    ),
+  );
 }
 
-class ProfileInlineFieldScaffold extends StatelessWidget {
-  const ProfileInlineFieldScaffold({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.isExpanded,
-    required this.onTap,
-    required this.isSaving,
-    required this.onCancel,
-    required this.onSubmit,
-    this.valueContent,
-    this.animateValueContent = true,
-    this.isAddAffordance = false,
-    this.saveError,
-    this.actionLeading,
-    this.contentActionGap = CatchSpacing.s3,
-    this.editorChildren = const [],
-  });
+Widget profileInlineFieldScaffold(
+  BuildContext context, {
+  Key? key,
+  required IconData icon,
+  required String label,
+  required String value,
+  required bool isExpanded,
+  required VoidCallback onTap,
+  required bool isSaving,
+  required VoidCallback onCancel,
+  required VoidCallback onSubmit,
+  Widget? valueContent,
+  bool isAddAffordance = false,
+  Widget? saveError,
+  Widget? actionLeading,
+  double contentActionGap = CatchSpacing.s3,
+  List<Widget> editorChildren = const [],
+}) {
+  final inlineEditorChildren = [
+    ?valueContent,
+    if (valueContent != null && editorChildren.isNotEmpty) gapH12,
+    ...editorChildren,
+  ];
 
-  final IconData icon;
-  final String label;
-  final String value;
-  final bool isExpanded;
-  final VoidCallback onTap;
-  final bool isSaving;
-  final VoidCallback onCancel;
-  final VoidCallback onSubmit;
-  final Widget? valueContent;
-  final bool animateValueContent;
-  final bool isAddAffordance;
-  final Widget? saveError;
-  final Widget? actionLeading;
-  final double contentActionGap;
-  final List<Widget> editorChildren;
-
-  @override
-  Widget build(BuildContext context) {
-    return ProfileInlineDisclosure(
+  return KeyedSubtree(
+    key: key,
+    child: profileInlineDisclosure(
       isExpanded: isExpanded,
-      header: ProfileInfoTile(
+      header: profileInfoTile(
         icon: icon,
         label: label,
         value: value,
         onTap: isSaving ? null : onTap,
         isExpanded: isExpanded,
         isAddAffordance: isAddAffordance,
-        animateValueContent: animateValueContent,
-        valueContent: valueContent,
       ),
-      body: _InlineEditorPanel(
+      body: _inlineEditorPanel(
+        context,
         saveError: saveError,
         actionLeading: actionLeading,
         contentActionGap: contentActionGap,
         isSaving: isSaving,
         onCancel: onCancel,
         onSubmit: onSubmit,
-        children: editorChildren,
+        children: inlineEditorChildren,
       ),
-    );
-  }
+    ),
+  );
 }
 
 class ProfileInlineTextValue extends StatelessWidget {
@@ -569,7 +544,8 @@ class _ProfileInlineTextEntryEditorState
 
   @override
   Widget build(BuildContext context) {
-    return ProfileInlineFieldScaffold(
+    return profileInlineFieldScaffold(
+      context,
       icon: widget.icon,
       label: widget.label,
       value: widget.value,
@@ -577,7 +553,6 @@ class _ProfileInlineTextEntryEditorState
       onTap: widget.onTap,
       isSaving: isSaving,
       isAddAffordance: widget.isAddAffordance,
-      animateValueContent: false,
       valueContent: ProfileInlineTextValue(
         label: widget.label,
         displayValue: widget.value,
@@ -764,7 +739,8 @@ class _ProfileInlinePromptEntryEditorState
   Widget build(BuildContext context) {
     final selectedDefinition = profilePromptDefinition(_selectedPromptId);
 
-    return ProfileInlineFieldScaffold(
+    return profileInlineFieldScaffold(
+      context,
       icon: widget.icon,
       label: widget.label,
       value: widget.value,
@@ -772,7 +748,6 @@ class _ProfileInlinePromptEntryEditorState
       onTap: widget.onTap,
       isSaving: isSaving,
       isAddAffordance: widget.isAddAffordance,
-      animateValueContent: false,
       valueContent: ProfileInlineTextValue(
         label: selectedDefinition.title,
         displayValue: widget.value,
@@ -805,12 +780,13 @@ class _ProfileInlinePromptEntryEditorState
       editorChildren: [
         const CatchFormFieldLabel(label: 'Prompt'),
         gapH8,
-        CatchSelectMenu<String>(
+        CatchField.select<String>(
+          title: 'Prompt',
           values: widget.availablePromptIds,
           value: _selectedPromptId,
           itemLabel: (promptId) => profilePromptDefinition(promptId).title,
-          semanticLabel: 'Profile prompt',
           prefixIcon: Icon(CatchIcons.formatQuoteRounded),
+          showLabel: false,
           onChanged: isSaving
               ? null
               : (promptId) {
@@ -911,7 +887,8 @@ class _ProfileInlineHeightEditorState
   @override
   Widget build(BuildContext context) {
     final displayValue = widget.isExpanded ? '$_heightCm cm' : widget.value;
-    return ProfileInlineFieldScaffold(
+    return profileInlineFieldScaffold(
+      context,
       icon: widget.icon,
       label: widget.label,
       value: displayValue,
@@ -919,9 +896,9 @@ class _ProfileInlineHeightEditorState
       onTap: widget.onTap,
       isSaving: isSaving,
       isAddAffordance: widget.isAddAffordance,
-      animateValueContent: false,
       saveError: buildSaveError(),
-      actionLeading: _ProfileHeightStepperControls(
+      actionLeading: _profileHeightStepperControls(
+        context,
         value: _heightCm,
         enabled: !isSaving,
         onChanged: (value) => setState(() => _heightCm = value),
@@ -932,81 +909,66 @@ class _ProfileInlineHeightEditorState
   }
 }
 
-class _ProfileHeightStepperControls extends StatelessWidget {
-  const _ProfileHeightStepperControls({
-    required this.value,
-    required this.enabled,
-    required this.onChanged,
-  });
-
-  final int value;
-  final bool enabled;
-  final ValueChanged<int> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final canDecrease = enabled && value > minimumHeightCm;
-    final canIncrease = enabled && value < maximumHeightCm;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _ProfileHeightStepButton(
-          tooltip: 'Decrease height',
-          icon: CatchIcons.removeRounded,
-          enabled: canDecrease,
-          onPressed: () => onChanged(value - 1),
-        ),
-        gapW4,
-        _ProfileHeightStepButton(
-          tooltip: 'Increase height',
-          icon: CatchIcons.addRounded,
-          enabled: canIncrease,
-          onPressed: () => onChanged(value + 1),
-        ),
-      ],
-    );
-  }
+Widget _profileHeightStepperControls(
+  BuildContext context, {
+  required int value,
+  required bool enabled,
+  required ValueChanged<int> onChanged,
+}) {
+  final canDecrease = enabled && value > minimumHeightCm;
+  final canIncrease = enabled && value < maximumHeightCm;
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      _profileHeightStepButton(
+        context,
+        tooltip: 'Decrease height',
+        icon: CatchIcons.removeRounded,
+        enabled: canDecrease,
+        onPressed: () => onChanged(value - 1),
+      ),
+      gapW4,
+      _profileHeightStepButton(
+        context,
+        tooltip: 'Increase height',
+        icon: CatchIcons.addRounded,
+        enabled: canIncrease,
+        onPressed: () => onChanged(value + 1),
+      ),
+    ],
+  );
 }
 
-class _ProfileHeightStepButton extends StatelessWidget {
-  const _ProfileHeightStepButton({
-    required this.tooltip,
-    required this.icon,
-    required this.enabled,
-    required this.onPressed,
-  });
-
-  final String tooltip;
-  final IconData icon;
-  final bool enabled;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        color: t.raised,
-        shape: const CircleBorder(),
-        child: InkResponse(
-          onTap: enabled ? onPressed : null,
-          radius: CatchSpacing.micro18,
-          customBorder: const CircleBorder(),
-          child: SizedBox.square(
-            dimension: CatchLayout.profileHeightStepButtonExtent,
-            child: Icon(
-              icon,
-              size: CatchIcon.profileHeightStep,
-              color: enabled
-                  ? t.ink
-                  : t.ink3.withValues(alpha: CatchOpacity.profileDisabledIcon),
-            ),
+Widget _profileHeightStepButton(
+  BuildContext context, {
+  required String tooltip,
+  required IconData icon,
+  required bool enabled,
+  required VoidCallback onPressed,
+}) {
+  final t = CatchTokens.of(context);
+  return Tooltip(
+    message: tooltip,
+    child: Material(
+      color: t.raised,
+      shape: const CircleBorder(),
+      child: InkResponse(
+        onTap: enabled ? onPressed : null,
+        radius: CatchSpacing.micro18,
+        customBorder: const CircleBorder(),
+        child: SizedBox.square(
+          dimension: CatchLayout.profileHeightStepButtonExtent,
+          child: Icon(
+            icon,
+            size: CatchIcon.profileHeightStep,
+            color: enabled
+                ? t.ink
+                : t.ink3.withValues(alpha: CatchOpacity.profileDisabledIcon),
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
 class ProfileInlineSingleChoiceEntryEditor<T extends Labelled>
@@ -1092,17 +1054,20 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
     final availableValues = widget.values
         .where((value) => value != _selected)
         .toList(growable: false);
+    final headerValue = _selected?.label ?? widget.label;
+    final headerIsAddAffordance = widget.isAddAffordance || _selected == null;
 
-    return ProfileInlineFieldScaffold(
+    return profileInlineFieldScaffold(
+      context,
       icon: widget.icon,
       label: widget.label,
-      value: widget.value,
+      value: headerValue,
       isExpanded: widget.isExpanded,
       onTap: widget.onTap,
       isSaving: isSaving,
-      isAddAffordance: widget.isAddAffordance,
-      animateValueContent: false,
-      valueContent: _ProfileSingleChipValueEditor<T>(
+      isAddAffordance: headerIsAddAffordance,
+      valueContent: _profileSingleChipValueEditor<T>(
+        context,
         emptyValue: widget.label,
         displayValue: widget.value,
         isEditing: widget.isExpanded,
@@ -1117,7 +1082,7 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
       onSubmit: _submit,
       editorChildren: [
         if (availableValues.isNotEmpty)
-          _ProfileChipOptions<T>(
+          _profileChipOptions<T>(
             values: availableValues,
             enabled: !isSaving,
             selected: const {},
@@ -1214,17 +1179,22 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
     final availableValues = widget.values
         .where((value) => !_selected.contains(value))
         .toList(growable: false);
+    final headerValue = _selected.isEmpty
+        ? widget.label
+        : _selected.map((value) => value.label).join(', ');
+    final headerIsAddAffordance = widget.isAddAffordance || _selected.isEmpty;
 
-    return ProfileInlineFieldScaffold(
+    return profileInlineFieldScaffold(
+      context,
       icon: widget.icon,
       label: widget.label,
-      value: widget.value,
+      value: headerValue,
       isExpanded: widget.isExpanded,
       onTap: widget.onTap,
       isSaving: isSaving,
-      isAddAffordance: widget.isAddAffordance,
-      animateValueContent: false,
-      valueContent: _ProfileMultiChipValueEditor<T>(
+      isAddAffordance: headerIsAddAffordance,
+      valueContent: _profileMultiChipValueEditor<T>(
+        context,
         emptyValue: widget.label,
         displayValue: widget.value,
         isEditing: widget.isExpanded,
@@ -1238,7 +1208,7 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
       onSubmit: _submit,
       editorChildren: [
         if (availableValues.isNotEmpty)
-          _ProfileChipOptions<T>(
+          _profileChipOptions<T>(
             values: availableValues,
             enabled: !isSaving,
             selected: const {},
@@ -1249,154 +1219,120 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
   }
 }
 
-class _ProfileSingleChipValueEditor<T extends Labelled>
-    extends StatelessWidget {
-  const _ProfileSingleChipValueEditor({
-    required this.emptyValue,
-    required this.displayValue,
-    required this.isEditing,
-    required this.selected,
-    required this.enabled,
-    required this.isAddAffordance,
-    required this.allowEmptySelection,
-    required this.onSelectedTap,
-  });
-
-  final String emptyValue;
-  final String displayValue;
-  final bool isEditing;
-  final T? selected;
-  final bool enabled;
-  final bool isAddAffordance;
-  final bool allowEmptySelection;
-  final ValueChanged<T> onSelectedTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final selected = this.selected;
-    if (!isEditing) {
-      return _ProfileChipPlaceholder(
-        value: displayValue,
-        isAddAffordance: isAddAffordance,
-      );
-    }
-
-    if (selected == null) {
-      return _ProfileChipPlaceholder(value: emptyValue, isAddAffordance: true);
-    }
-
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: CatchChip(
-        label: selected.label,
-        active: true,
-        enabled: enabled,
-        onTap: allowEmptySelection ? () => onSelectedTap(selected) : null,
-      ),
+Widget _profileSingleChipValueEditor<T extends Labelled>(
+  BuildContext context, {
+  required String emptyValue,
+  required String displayValue,
+  required bool isEditing,
+  required T? selected,
+  required bool enabled,
+  required bool isAddAffordance,
+  required bool allowEmptySelection,
+  required ValueChanged<T> onSelectedTap,
+}) {
+  if (!isEditing) {
+    return _profileChipPlaceholder(
+      context,
+      value: displayValue,
+      isAddAffordance: isAddAffordance,
     );
   }
+
+  if (selected == null) {
+    return _profileChipPlaceholder(
+      context,
+      value: emptyValue,
+      isAddAffordance: true,
+    );
+  }
+
+  return Align(
+    alignment: Alignment.centerLeft,
+    child: CatchChip(
+      label: selected.label,
+      active: true,
+      enabled: enabled,
+      onTap: allowEmptySelection ? () => onSelectedTap(selected) : null,
+    ),
+  );
 }
 
-class _ProfileMultiChipValueEditor<T extends Labelled> extends StatelessWidget {
-  const _ProfileMultiChipValueEditor({
-    required this.emptyValue,
-    required this.displayValue,
-    required this.isEditing,
-    required this.selected,
-    required this.enabled,
-    required this.isAddAffordance,
-    required this.onSelectedTap,
-  });
-
-  final String emptyValue;
-  final String displayValue;
-  final bool isEditing;
-  final Set<T> selected;
-  final bool enabled;
-  final bool isAddAffordance;
-  final ValueChanged<T> onSelectedTap;
-
-  @override
-  Widget build(BuildContext context) {
-    if (!isEditing) {
-      return _ProfileChipPlaceholder(
-        value: displayValue,
-        isAddAffordance: isAddAffordance,
-      );
-    }
-
-    if (selected.isEmpty) {
-      return _ProfileChipPlaceholder(value: emptyValue, isAddAffordance: true);
-    }
-
-    return Wrap(
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
-      children: [
-        for (final value in selected)
-          CatchChip(
-            label: value.label,
-            active: true,
-            icon: Icon(CatchIcons.checkRounded),
-            enabled: enabled,
-            onTap: () => onSelectedTap(value),
-          ),
-      ],
+Widget _profileMultiChipValueEditor<T extends Labelled>(
+  BuildContext context, {
+  required String emptyValue,
+  required String displayValue,
+  required bool isEditing,
+  required Set<T> selected,
+  required bool enabled,
+  required bool isAddAffordance,
+  required ValueChanged<T> onSelectedTap,
+}) {
+  if (!isEditing) {
+    return _profileChipPlaceholder(
+      context,
+      value: displayValue,
+      isAddAffordance: isAddAffordance,
     );
   }
+
+  if (selected.isEmpty) {
+    return _profileChipPlaceholder(
+      context,
+      value: emptyValue,
+      isAddAffordance: true,
+    );
+  }
+
+  return Wrap(
+    spacing: CatchSpacing.s2,
+    runSpacing: CatchSpacing.s2,
+    children: [
+      for (final value in selected)
+        CatchChip(
+          label: value.label,
+          active: true,
+          icon: Icon(CatchIcons.checkRounded),
+          enabled: enabled,
+          onTap: () => onSelectedTap(value),
+        ),
+    ],
+  );
 }
 
-class _ProfileChipPlaceholder extends StatelessWidget {
-  const _ProfileChipPlaceholder({
-    required this.value,
-    required this.isAddAffordance,
-  });
-
-  final String value;
-  final bool isAddAffordance;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Text(
-      isAddAffordance ? '+ $value' : value,
-      style: CatchTextStyles.profileAnswer(
-        context,
-        color: isAddAffordance ? t.ink3 : null,
-      ),
-    );
-  }
+Widget _profileChipPlaceholder(
+  BuildContext context, {
+  required String value,
+  required bool isAddAffordance,
+}) {
+  final t = CatchTokens.of(context);
+  return Text(
+    isAddAffordance ? '+ $value' : value,
+    style: CatchTextStyles.profileAnswer(
+      context,
+      color: isAddAffordance ? t.ink3 : null,
+    ),
+  );
 }
 
-class _ProfileChipOptions<T extends Labelled> extends StatelessWidget {
-  const _ProfileChipOptions({
-    required this.values,
-    required this.selected,
-    required this.enabled,
-    required this.onTap,
-  });
-
-  final List<T> values;
-  final Set<T> selected;
-  final bool enabled;
-  final ValueChanged<T> onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: CatchSpacing.s3,
-      runSpacing: CatchSpacing.s3,
-      children: [
-        for (final value in values)
-          CatchChip(
-            label: value.label,
-            active: selected.contains(value),
-            enabled: enabled,
-            onTap: () => onTap(value),
-          ),
-      ],
-    );
-  }
+Widget _profileChipOptions<T extends Labelled>({
+  required List<T> values,
+  required Set<T> selected,
+  required bool enabled,
+  required ValueChanged<T> onTap,
+}) {
+  return Wrap(
+    spacing: CatchSpacing.s3,
+    runSpacing: CatchSpacing.s3,
+    children: [
+      for (final value in values)
+        CatchChip(
+          label: value.label,
+          active: selected.contains(value),
+          enabled: enabled,
+          onTap: () => onTap(value),
+        ),
+    ],
+  );
 }
 
 class ProfileInlineRangeEditor extends ConsumerStatefulWidget {
@@ -1496,14 +1432,14 @@ class _ProfileInlineRangeEditorState
     final displayValue = widget.isExpanded
         ? '${widget.labelText(_range.start)} - ${widget.labelText(_range.end)}'
         : widget.value;
-    return ProfileInlineFieldScaffold(
+    return profileInlineFieldScaffold(
+      context,
       icon: widget.icon,
       label: widget.title,
       value: displayValue,
       isExpanded: widget.isExpanded,
       onTap: widget.onTap,
       isSaving: isSaving,
-      animateValueContent: false,
       saveError: buildSaveError(),
       contentActionGap: CatchSpacing.micro2,
       onCancel: _cancel,
@@ -1523,62 +1459,44 @@ class _ProfileInlineRangeEditorState
   }
 }
 
-class _InlineEditorActions extends StatelessWidget {
-  const _InlineEditorActions({
-    required this.isSaving,
-    required this.onCancel,
-    required this.onSubmit,
-    this.leading,
-  });
-
-  final bool isSaving;
-  final VoidCallback onCancel;
-  final VoidCallback onSubmit;
-  final Widget? leading;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        if (leading != null)
-          Expanded(
-            child: Align(alignment: Alignment.centerLeft, child: leading),
-          )
-        else
-          const Spacer(),
-        CatchTextButton(
-          label: 'Cancel',
-          onPressed: isSaving ? null : onCancel,
-          tone: CatchTextButtonTone.neutral,
-        ),
-        gapW12,
-        CatchButton(
-          label: 'Done',
-          onPressed: isSaving ? null : onSubmit,
-          isLoading: isSaving,
-          size: CatchButtonSize.sm,
-        ),
-      ],
-    );
-  }
+Widget _inlineEditorActions({
+  required bool isSaving,
+  required VoidCallback onCancel,
+  required VoidCallback onSubmit,
+  Widget? leading,
+}) {
+  return Row(
+    children: [
+      if (leading != null)
+        Expanded(
+          child: Align(alignment: Alignment.centerLeft, child: leading),
+        )
+      else
+        const Spacer(),
+      CatchTextButton(
+        label: 'Cancel',
+        onPressed: isSaving ? null : onCancel,
+        tone: CatchTextButtonTone.neutral,
+      ),
+      gapW12,
+      CatchButton(
+        label: 'Done',
+        onPressed: isSaving ? null : onSubmit,
+        isLoading: isSaving,
+        size: CatchButtonSize.sm,
+      ),
+    ],
+  );
 }
 
-class _InlineEditorPadding extends StatelessWidget {
-  const _InlineEditorPadding({required this.child, required this.compact});
-
-  final Widget child;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        top: compact ? 0 : CatchSpacing.s2,
-        left: CatchSpacing.s10,
-        right: CatchSpacing.s2,
-        bottom: compact ? CatchSpacing.s3 : CatchSpacing.s5,
-      ),
-      child: child,
-    );
-  }
+Widget _inlineEditorPadding({required Widget child, required bool compact}) {
+  return Padding(
+    padding: EdgeInsets.only(
+      top: compact ? 0 : CatchSpacing.s2,
+      left: CatchSpacing.s10,
+      right: CatchSpacing.s2,
+      bottom: compact ? CatchSpacing.s3 : CatchSpacing.s5,
+    ),
+    child: child,
+  );
 }

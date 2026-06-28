@@ -4,8 +4,8 @@ const EdgeInsets _wingmanCandidateRowGap = EdgeInsets.only(
   bottom: CatchSpacing.s2,
 );
 
-class _WingmanRequestSection extends ConsumerStatefulWidget {
-  const _WingmanRequestSection({
+class WingmanRequestSection extends ConsumerStatefulWidget {
+  const WingmanRequestSection({
     required this.event,
     required this.candidates,
     this.existingRequest,
@@ -16,12 +16,11 @@ class _WingmanRequestSection extends ConsumerStatefulWidget {
   final EventSuccessWingmanRequest? existingRequest;
 
   @override
-  ConsumerState<_WingmanRequestSection> createState() =>
+  ConsumerState<WingmanRequestSection> createState() =>
       _WingmanRequestSectionState();
 }
 
-class _WingmanRequestSectionState
-    extends ConsumerState<_WingmanRequestSection> {
+class _WingmanRequestSectionState extends ConsumerState<WingmanRequestSection> {
   late final TextEditingController _noteController = TextEditingController(
     text: widget.existingRequest?.isActive == true
         ? widget.existingRequest?.note ?? ''
@@ -47,7 +46,7 @@ class _WingmanRequestSectionState
         : _profileNameForUid(widget.candidates, requestedTargetUid);
 
     final t = CatchTokens.of(context);
-    return _StagePanel(
+    return StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -59,7 +58,7 @@ class _WingmanRequestSectionState
                   style: CatchTextStyles.titleL(context),
                 ),
               ),
-              const _PrivacyBadge(_PrivacyAudience.hostCanSee),
+              const PrivacyBadge(_PrivacyAudience.hostCanSee),
             ],
           ),
           gapH4,
@@ -69,7 +68,7 @@ class _WingmanRequestSectionState
           ),
           if (requestedTargetUid != null) ...[
             gapH12,
-            _StageSoftBand(
+            StageSoftBand(
               child: Row(
                 children: [
                   Expanded(
@@ -104,9 +103,9 @@ class _WingmanRequestSectionState
             ),
           ],
           gapH12,
-          _StageSoftBand(
-            child: CatchTextField(
-              label: 'Private note to host',
+          StageSoftBand(
+            child: CatchField(
+              title: 'Private note to host',
               controller: _noteController,
               maxLines: 2,
               inputFormatters: [LengthLimitingTextInputFormatter(240)],

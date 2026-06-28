@@ -2,9 +2,9 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
@@ -14,11 +14,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Explore scope + filter rail.
 ///
 /// Mirrors the handoff `OptionGroup`: the primary time scope stays visible as
-/// underline tabs while secondary filters move behind the trailing CountPill.
+/// underline tabs while secondary filters move behind a right-aligned glyph.
 class ExploreFilterRail extends ConsumerWidget {
   const ExploreFilterRail({super.key, this.backgroundColor});
 
   final Color? backgroundColor;
+
+  static const double _optionGap = CatchSpacing.s3;
 
   static const List<CatchOption<ExploreTimeFilter>> _timeOptions = [
     CatchOption(value: ExploreTimeFilter.tonight, label: 'Tonight'),
@@ -38,23 +40,132 @@ class ExploreFilterRail extends ConsumerWidget {
       color: backgroundColor ?? t.bg,
       child: Padding(
         padding: CatchInsets.screenControlRail,
-        child: CatchOptionGroup<ExploreTimeFilter>(
-          options: _timeOptions,
-          selected: filters.timeFilter,
-          onChanged: filterController.setTimeFilter,
-          trailing: CatchCountPill(
-            key: const ValueKey('explore-filter-pill'),
-            icon: CatchIcons.tune,
-            badge: activeCount == 0 ? null : '$activeCount',
-            onPressed: () => _showExploreFilterSheet(context),
-            semanticLabel: activeCount == 0
-                ? 'Open explore filters'
-                : 'Open explore filters, $activeCount active',
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: t.line)),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (final option in _timeOptions) ...[
+                        if (option != _timeOptions.first)
+                          const SizedBox(width: _optionGap),
+                        _buildExploreRailLabel(
+                          context,
+                          label: option.label,
+                          selected: option.value == filters.timeFilter,
+                          onTap: () =>
+                              filterController.setTimeFilter(option.value),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              gapW12,
+              _buildExploreFilterGlyphButton(
+                key: const ValueKey('explore-filter-button'),
+                context: context,
+                activeCount: activeCount,
+                onTap: () => _showExploreFilterSheet(context),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
+}
+
+Widget _buildExploreRailLabel(
+  BuildContext context, {
+  required String label,
+  required bool selected,
+  required VoidCallback onTap,
+}) {
+  final t = CatchTokens.of(context);
+  final foreground = selected ? t.ink : t.ink3;
+
+  return Semantics(
+    button: true,
+    selected: selected,
+    child: InkWell(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: CatchMotion.fast,
+        curve: CatchMotion.standardCurve,
+        padding: EdgeInsets.only(
+          bottom: selected ? CatchSpacing.micro10 : CatchSpacing.s3,
+        ),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: selected ? t.ink : Colors.transparent,
+              width: CatchSpacing.micro3,
+            ),
+          ),
+        ),
+        child: Text(
+          label,
+          maxLines: 1,
+          softWrap: false,
+          style: CatchTextStyles.labelL(context, color: foreground),
+          textAlign: TextAlign.start,
+        ),
+      ),
+    ),
+  );
+}
+
+Widget _buildExploreFilterGlyphButton({
+  required Key key,
+  required BuildContext context,
+  required int activeCount,
+  required VoidCallback onTap,
+}) {
+  final t = CatchTokens.of(context);
+  final semanticLabel = activeCount == 0
+      ? 'Open explore filters'
+      : 'Open explore filters, $activeCount active';
+
+  return Tooltip(
+    message: semanticLabel,
+    child: Semantics(
+      button: true,
+      label: semanticLabel,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(CatchRadius.pill),
+        child: SizedBox(
+          key: key,
+          width: CatchLayout.iconButtonSize,
+          height: CatchLayout.browseHeaderSearchExtent,
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              CatchIconBadge(
+                label: '$activeCount',
+                isLabelVisible: activeCount > 0,
+                backgroundColor: t.ink,
+                foregroundColor: t.surface,
+                child: Icon(
+                  CatchIcons.tuneRounded,
+                  color: t.ink,
+                  size: CatchIcon.md,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 class ExploreFilterSheet extends ConsumerWidget {

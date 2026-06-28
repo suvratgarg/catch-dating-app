@@ -29,9 +29,10 @@ Future<EventDraft?> showDraftPickerSheet({
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(CatchRadius.lg)),
     ),
-    builder: (sheetContext) => _DraftPickerSheet(
+    builder: (sheetContext) => DraftPickerSheet(
       drafts: drafts,
-      completer: completer,
+      onSelectDraft: (draft) => completer.complete(draft),
+      onStartFresh: () => completer.complete(null),
       onDeleteDraft: onDeleteDraft,
     ),
   ).then((_) {
@@ -40,22 +41,25 @@ Future<EventDraft?> showDraftPickerSheet({
   return completer.future;
 }
 
-class _DraftPickerSheet extends StatefulWidget {
-  const _DraftPickerSheet({
+class DraftPickerSheet extends StatefulWidget {
+  const DraftPickerSheet({
+    super.key,
     required this.drafts,
-    required this.completer,
+    required this.onSelectDraft,
+    required this.onStartFresh,
     required this.onDeleteDraft,
   });
 
   final List<EventDraft> drafts;
-  final Completer<EventDraft?> completer;
+  final ValueChanged<EventDraft> onSelectDraft;
+  final VoidCallback onStartFresh;
   final Future<void> Function(EventDraft draft) onDeleteDraft;
 
   @override
-  State<_DraftPickerSheet> createState() => _DraftPickerSheetState();
+  State<DraftPickerSheet> createState() => _DraftPickerSheetState();
 }
 
-class _DraftPickerSheetState extends State<_DraftPickerSheet> {
+class _DraftPickerSheetState extends State<DraftPickerSheet> {
   late List<EventDraft> _drafts;
   String? _deletingDraftId;
 
@@ -66,12 +70,12 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
   }
 
   void _onSelect(EventDraft draft) {
-    widget.completer.complete(draft);
+    widget.onSelectDraft(draft);
     Navigator.of(context).pop();
   }
 
   void _onStartFresh() {
-    widget.completer.complete(null);
+    widget.onStartFresh();
     Navigator.of(context).pop();
   }
 
@@ -142,12 +146,7 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
                             height: 1,
                             thickness: 1,
                           ),
-                        _DraftCard(
-                          draft: _drafts[index],
-                          isDeleting: _deletingDraftId == _drafts[index].id,
-                          onTap: () => _onSelect(_drafts[index]),
-                          onDelete: () => _onDelete(_drafts[index]),
-                        ),
+                        _buildDraftCard(_drafts[index]),
                       ],
                     ],
                   ),
@@ -158,27 +157,13 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
       ),
     );
   }
-}
 
-class _DraftCard extends StatelessWidget {
-  const _DraftCard({
-    required this.draft,
-    required this.isDeleting,
-    required this.onTap,
-    required this.onDelete,
-  });
-
-  final EventDraft draft;
-  final bool isDeleting;
-  final VoidCallback onTap;
-  final VoidCallback onDelete;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildDraftCard(EventDraft draft) {
     final t = CatchTokens.of(context);
+    final isDeleting = _deletingDraftId == draft.id;
 
     return CatchSurface(
-      onTap: isDeleting ? null : onTap,
+      onTap: isDeleting ? null : () => _onSelect(draft),
       tone: CatchSurfaceTone.transparent,
       borderWidth: 0,
       radius: CatchRadius.none,
@@ -210,7 +195,7 @@ class _DraftCard extends StatelessWidget {
             message: 'Delete draft',
             child: CatchIconButton(
               key: CreateEventFormKeys.deleteDraft(draft.id),
-              onTap: isDeleting ? null : onDelete,
+              onTap: isDeleting ? null : () => _onDelete(draft),
               size: 36,
               background: Colors.transparent,
               child: isDeleting
@@ -228,15 +213,15 @@ class _DraftCard extends StatelessWidget {
       ),
     );
   }
+}
 
-  static String _formatRelative(DateTime dt) {
-    final now = DateTime.now();
-    final diff = now.difference(dt);
-    if (diff.inMinutes < 1) return 'Just now';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
-    if (diff.inDays == 1) return 'Yesterday';
-    if (diff.inDays < 7) return '${diff.inDays}d ago';
-    return '${dt.day}/${dt.month}/${dt.year}';
-  }
+String _formatRelative(DateTime dt) {
+  final now = DateTime.now();
+  final diff = now.difference(dt);
+  if (diff.inMinutes < 1) return 'Just now';
+  if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+  if (diff.inHours < 24) return '${diff.inHours}h ago';
+  if (diff.inDays == 1) return 'Yesterday';
+  if (diff.inDays < 7) return '${diff.inDays}d ago';
+  return '${dt.day}/${dt.month}/${dt.year}';
 }

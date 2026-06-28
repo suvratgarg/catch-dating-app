@@ -83,13 +83,15 @@ class MessageBubble extends StatelessWidget {
                   ),
                 ),
                 child: imageUrl == null && text.isNotEmpty
-                    ? _TimestampedMessageText(
+                    ? _buildTimestampedMessageText(
+                        context,
                         text: text,
                         timestamp: timeStr,
                         textStyle: messageStyle,
                         timestampStyle: timestampStyle,
                       )
-                    : _MediaMessageBody(
+                    : _buildMediaMessageBody(
+                        context,
                         text: text,
                         timestamp: timeStr,
                         imageUrl: imageUrl,
@@ -106,161 +108,142 @@ class MessageBubble extends StatelessWidget {
   }
 }
 
-class _TimestampedMessageText extends StatelessWidget {
-  const _TimestampedMessageText({
-    required this.text,
-    required this.timestamp,
-    required this.textStyle,
-    required this.timestampStyle,
-  });
+Widget _buildTimestampedMessageText(
+  BuildContext context, {
+  required String text,
+  required String timestamp,
+  required TextStyle textStyle,
+  required TextStyle timestampStyle,
+}) {
+  const inlineGap = CatchSpacing.s2;
+  const stackedGap = CatchSpacing.micro3;
 
-  static const double _inlineGap = CatchSpacing.s2;
-  static const double _stackedGap = CatchSpacing.micro3;
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      final maxWidth = constraints.maxWidth.isFinite
+          ? constraints.maxWidth
+          : MediaQuery.sizeOf(context).width * 0.72;
+      final direction = Directionality.of(context);
+      final textScaler = MediaQuery.textScalerOf(context);
+      final messagePainter = TextPainter(
+        text: TextSpan(text: text, style: textStyle),
+        textDirection: direction,
+        textScaler: textScaler,
+      )..layout(maxWidth: maxWidth);
+      final timestampPainter = TextPainter(
+        text: TextSpan(text: timestamp, style: timestampStyle),
+        textDirection: direction,
+        textScaler: textScaler,
+      )..layout(maxWidth: maxWidth);
+      final messageLines = messagePainter.computeLineMetrics();
+      final timestampLines = timestampPainter.computeLineMetrics();
 
-  final String text;
-  final String timestamp;
-  final TextStyle textStyle;
-  final TextStyle timestampStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final maxWidth = constraints.maxWidth.isFinite
-            ? constraints.maxWidth
-            : MediaQuery.sizeOf(context).width * 0.72;
-        final direction = Directionality.of(context);
-        final textScaler = MediaQuery.textScalerOf(context);
-        final messagePainter = TextPainter(
-          text: TextSpan(text: text, style: textStyle),
-          textDirection: direction,
-          textScaler: textScaler,
-        )..layout(maxWidth: maxWidth);
-        final timestampPainter = TextPainter(
-          text: TextSpan(text: timestamp, style: timestampStyle),
-          textDirection: direction,
-          textScaler: textScaler,
-        )..layout(maxWidth: maxWidth);
-        final messageLines = messagePainter.computeLineMetrics();
-        final timestampLines = timestampPainter.computeLineMetrics();
-
-        if (messageLines.isEmpty) {
-          return Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: Text(timestamp, style: timestampStyle),
-          );
-        }
-
-        final longestLineWidth = messageLines.fold<double>(
-          0,
-          (width, line) => math.max(width, line.width),
+      if (messageLines.isEmpty) {
+        return Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: Text(timestamp, style: timestampStyle),
         );
-        final lastLine = messageLines.last;
-        final timestampWidth = timestampPainter.width;
-        final timestampHeight = timestampPainter.height;
-        final fitsInline =
-            lastLine.width + _inlineGap + timestampWidth <= maxWidth;
-        final desiredWidth = fitsInline
-            ? math.max(
-                longestLineWidth,
-                lastLine.width + _inlineGap + timestampWidth,
-              )
-            : math.max(longestLineWidth, timestampWidth);
-        final width = math.min(maxWidth, desiredWidth);
-        final timestampBaseline = timestampLines.isEmpty
-            ? timestampHeight
-            : timestampLines.first.baseline;
-        final inlineTop = (lastLine.baseline - timestampBaseline)
-            .clamp(0.0, math.max(0.0, messagePainter.height - timestampHeight))
-            .toDouble();
-        final timestampTop = fitsInline
-            ? inlineTop
-            : messagePainter.height + _stackedGap;
-        final height = fitsInline
-            ? math.max(messagePainter.height, timestampTop + timestampHeight)
-            : messagePainter.height + _stackedGap + timestampHeight;
+      }
 
-        return SizedBox(
-          width: width,
-          height: height,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              PositionedDirectional(
-                start: 0,
-                top: 0,
-                width: width,
-                child: Text(text, style: textStyle),
-              ),
-              PositionedDirectional(
-                end: 0,
-                top: timestampTop,
-                child: Text(timestamp, style: timestampStyle),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+      final longestLineWidth = messageLines.fold<double>(
+        0,
+        (width, line) => math.max(width, line.width),
+      );
+      final lastLine = messageLines.last;
+      final timestampWidth = timestampPainter.width;
+      final timestampHeight = timestampPainter.height;
+      final fitsInline =
+          lastLine.width + inlineGap + timestampWidth <= maxWidth;
+      final desiredWidth = fitsInline
+          ? math.max(
+              longestLineWidth,
+              lastLine.width + inlineGap + timestampWidth,
+            )
+          : math.max(longestLineWidth, timestampWidth);
+      final width = math.min(maxWidth, desiredWidth);
+      final timestampBaseline = timestampLines.isEmpty
+          ? timestampHeight
+          : timestampLines.first.baseline;
+      final inlineTop = (lastLine.baseline - timestampBaseline)
+          .clamp(0.0, math.max(0.0, messagePainter.height - timestampHeight))
+          .toDouble();
+      final timestampTop = fitsInline
+          ? inlineTop
+          : messagePainter.height + stackedGap;
+      final height = fitsInline
+          ? math.max(messagePainter.height, timestampTop + timestampHeight)
+          : messagePainter.height + stackedGap + timestampHeight;
+
+      return SizedBox(
+        width: width,
+        height: height,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            PositionedDirectional(
+              start: 0,
+              top: 0,
+              width: width,
+              child: Text(text, style: textStyle),
+            ),
+            PositionedDirectional(
+              end: 0,
+              top: timestampTop,
+              child: Text(timestamp, style: timestampStyle),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
 
-class _MediaMessageBody extends StatelessWidget {
-  const _MediaMessageBody({
-    required this.text,
-    required this.timestamp,
-    required this.imageUrl,
-    required this.textStyle,
-    required this.timestampStyle,
-  });
-
-  final String text;
-  final String timestamp;
-  final String? imageUrl;
-  final TextStyle textStyle;
-  final TextStyle timestampStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        if (imageUrl != null)
-          Padding(
-            padding: CatchInsets.chatMediaAttachmentBottom,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(CatchRadius.md),
-              child: AspectRatio(
-                aspectRatio: CatchAspectRatio.standardPhoto,
-                child: CatchNetworkImage(
-                  imageUrl!,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, _, _) => const SizedBox.shrink(),
-                  loadingBuilder: (_, child, progress) {
-                    if (progress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: progress.expectedTotalBytes != null
-                            ? progress.cumulativeBytesLoaded /
-                                  progress.expectedTotalBytes!
-                            : null,
-                        strokeWidth: 2,
-                      ),
-                    );
-                  },
-                ),
+Widget _buildMediaMessageBody(
+  BuildContext context, {
+  required String text,
+  required String timestamp,
+  required String? imageUrl,
+  required TextStyle textStyle,
+  required TextStyle timestampStyle,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.end,
+    children: [
+      if (imageUrl != null)
+        Padding(
+          padding: CatchInsets.chatMediaAttachmentBottom,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(CatchRadius.md),
+            child: AspectRatio(
+              aspectRatio: CatchAspectRatio.standardPhoto,
+              child: CatchNetworkImage(
+                imageUrl,
+                fit: BoxFit.contain,
+                errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                loadingBuilder: (_, child, progress) {
+                  if (progress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: progress.expectedTotalBytes != null
+                          ? progress.cumulativeBytesLoaded /
+                                progress.expectedTotalBytes!
+                          : null,
+                      strokeWidth: 2,
+                    ),
+                  );
+                },
               ),
             ),
           ),
-        if (text.isNotEmpty) ...[
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: Text(text, style: textStyle),
-          ),
-          gapH2,
-        ],
-        Text(timestamp, style: timestampStyle),
+        ),
+      if (text.isNotEmpty) ...[
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Text(text, style: textStyle),
+        ),
+        gapH2,
       ],
-    );
-  }
+      Text(timestamp, style: timestampStyle),
+    ],
+  );
 }

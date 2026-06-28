@@ -1,7 +1,7 @@
 part of '../event_success_companion_screen.dart';
 
-class _PrivateAfterglowRecapCard extends StatelessWidget {
-  const _PrivateAfterglowRecapCard({
+class PrivateAfterglowRecapCard extends StatelessWidget {
+  const PrivateAfterglowRecapCard({
     required this.event,
     required this.openersEnabled,
     required this.feedbackEnabled,
@@ -17,7 +17,7 @@ class _PrivateAfterglowRecapCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final feedback = this.feedback;
-    return _StagePanel(
+    return StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -26,12 +26,12 @@ class _PrivateAfterglowRecapCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              _StageSectionLabel(
+              StageSectionLabel(
                 icon: CatchIcons.autoAwesomeRounded,
                 label: 'Private afterglow',
                 color: t.primary,
               ),
-              const _PrivacyBadge(_PrivacyAudience.privateToYou),
+              const PrivacyBadge(_PrivacyAudience.privateToYou),
             ],
           ),
           gapH10,
@@ -45,7 +45,7 @@ class _PrivateAfterglowRecapCard extends StatelessWidget {
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH14,
-          _AfterglowBeatGrid(
+          AfterglowBeatGrid(
             beats: [
               _AfterglowBeat(
                 icon: CatchIcons.eventAvailableOutlined,
@@ -75,7 +75,7 @@ class _PrivateAfterglowRecapCard extends StatelessWidget {
             ],
           ),
           gapH14,
-          _StageSoftBand(
+          StageSoftBand(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -123,16 +123,16 @@ class _AfterglowBeat {
 /// fade. Counter values animate from 0 to their final number over 600ms once
 /// the row has finished entering. Gives the afterglow recap a Spotify-Wrapped
 /// style paced reveal instead of dumping all three rows at once.
-class _AfterglowBeatGrid extends StatefulWidget {
-  const _AfterglowBeatGrid({required this.beats});
+class AfterglowBeatGrid extends StatefulWidget {
+  const AfterglowBeatGrid({required this.beats});
 
   final List<_AfterglowBeat> beats;
 
   @override
-  State<_AfterglowBeatGrid> createState() => _AfterglowBeatGridState();
+  State<AfterglowBeatGrid> createState() => _AfterglowBeatGridState();
 }
 
-class _AfterglowBeatGridState extends State<_AfterglowBeatGrid> {
+class _AfterglowBeatGridState extends State<AfterglowBeatGrid> {
   @override
   Widget build(BuildContext context) {
     final beats = widget.beats;
@@ -140,7 +140,7 @@ class _AfterglowBeatGridState extends State<_AfterglowBeatGrid> {
       children: [
         for (var index = 0; index < beats.length; index++) ...[
           if (index > 0) gapH8,
-          _AfterglowBeatRow(
+          AfterglowBeatRow(
             beat: beats[index],
             // Stagger entry by 1.4s per beat. Tests skip the animation gate
             // so the rows just render in their final state.
@@ -154,17 +154,17 @@ class _AfterglowBeatGridState extends State<_AfterglowBeatGrid> {
   }
 }
 
-class _AfterglowBeatRow extends StatefulWidget {
-  const _AfterglowBeatRow({required this.beat, required this.entryDelay});
+class AfterglowBeatRow extends StatefulWidget {
+  const AfterglowBeatRow({required this.beat, required this.entryDelay});
 
   final _AfterglowBeat beat;
   final Duration entryDelay;
 
   @override
-  State<_AfterglowBeatRow> createState() => _AfterglowBeatRowState();
+  State<AfterglowBeatRow> createState() => _AfterglowBeatRowState();
 }
 
-class _AfterglowBeatRowState extends State<_AfterglowBeatRow>
+class _AfterglowBeatRowState extends State<AfterglowBeatRow>
     with TickerProviderStateMixin {
   late final AnimationController _entry = AnimationController(
     duration: CatchMotion.afterglowBeatEntry,

@@ -30,7 +30,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     final clubAsync = ref.watch(fetchClubProvider(clubId));
     return CatchAsyncValueView<Club?>(
       value: clubAsync,
-      loadingBuilder: (_) => const _HostCreateEventRouteLoadingScreen(),
+      loadingBuilder: _buildHostCreateEventRouteLoadingScreen,
       errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
         error,
         context: AppErrorContext.club,
@@ -46,131 +46,109 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
   }
 }
 
-class _HostCreateEventRouteLoadingScreen extends StatelessWidget {
-  const _HostCreateEventRouteLoadingScreen();
+Widget _buildHostCreateEventRouteLoadingScreen(BuildContext context) {
+  final t = CatchTokens.of(context);
 
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        child: Column(
-          children: [
-            CreateEventStepHeader(
-              title: 'Event basics',
-              clubName: 'Loading club',
-              currentStep: 0,
-              totalSteps: 5,
-              onBack: () => Navigator.of(context).maybePop(),
-            ),
-            gapH4,
-            const Expanded(child: _CreateEventLoadingBody()),
-            const _CreateEventLoadingFooter(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CreateEventLoadingBody extends StatelessWidget {
-  const _CreateEventLoadingBody();
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s4,
-        CatchSpacing.s4,
-        CatchSpacing.s4,
-        CatchSpacing.s6,
-      ),
+  return Scaffold(
+    backgroundColor: t.bg,
+    body: SafeArea(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextInlineTitleWidth),
-          gapH12,
-          CatchSkeleton.card(
-            height: CatchLayout.hostCreateEventRouteFormSkeletonHeight,
+          CreateEventStepHeader(
+            title: 'Event basics',
+            clubName: 'Loading club',
+            currentStep: 0,
+            totalSteps: 5,
+            onBack: () => Navigator.of(context).maybePop(),
           ),
-          gapH24,
-          CatchSkeleton.text(width: CatchLayout.skeletonTextPageTitleWidth),
-          gapH12,
-          const _LoadingChipRow(widths: [168, 108]),
-          gapH10,
-          const _LoadingChipRow(widths: [212]),
-          gapH18,
-          CatchSkeleton.text(width: CatchLayout.skeletonTextBodyWidth),
-          gapH12,
-          CatchSkeleton.textBlock(),
+          gapH4,
+          Expanded(child: _buildCreateEventLoadingBody(context)),
+          _buildCreateEventLoadingFooter(context),
         ],
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _LoadingChipRow extends StatelessWidget {
-  const _LoadingChipRow({required this.widths});
-
-  final List<double> widths;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
+Widget _buildCreateEventLoadingBody(BuildContext context) {
+  return SingleChildScrollView(
+    padding: const EdgeInsets.fromLTRB(
+      CatchSpacing.s4,
+      CatchSpacing.s4,
+      CatchSpacing.s4,
+      CatchSpacing.s6,
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (final width in widths)
+        CatchSkeleton.text(width: CatchLayout.skeletonTextInlineTitleWidth),
+        gapH12,
+        CatchSkeleton.card(
+          height: CatchLayout.hostCreateEventRouteFormSkeletonHeight,
+        ),
+        gapH24,
+        CatchSkeleton.text(width: CatchLayout.skeletonTextPageTitleWidth),
+        gapH12,
+        _buildLoadingChipRow(widths: const [168, 108]),
+        gapH10,
+        _buildLoadingChipRow(widths: const [212]),
+        gapH18,
+        CatchSkeleton.text(width: CatchLayout.skeletonTextBodyWidth),
+        gapH12,
+        CatchSkeleton.textBlock(),
+      ],
+    ),
+  );
+}
+
+Widget _buildLoadingChipRow({required List<double> widths}) {
+  return Wrap(
+    spacing: CatchSpacing.s2,
+    runSpacing: CatchSpacing.s2,
+    children: [
+      for (final width in widths)
+        CatchSkeleton.box(
+          width: width,
+          height: CatchLayout.controlMdMinHeight,
+          radius: CatchRadius.pill,
+        ),
+    ],
+  );
+}
+
+Widget _buildCreateEventLoadingFooter(BuildContext context) {
+  final t = CatchTokens.of(context);
+  final bottomPadding = MediaQuery.paddingOf(context).bottom;
+
+  return ColoredBox(
+    color: t.bg,
+    child: Padding(
+      padding: EdgeInsets.fromLTRB(
+        CatchSpacing.s4,
+        CatchSpacing.s3,
+        CatchSpacing.s4,
+        CatchSpacing.s3 + bottomPadding,
+      ),
+      child: Row(
+        children: [
           CatchSkeleton.box(
-            width: width,
-            height: CatchLayout.controlMdMinHeight,
+            width: CatchLayout.skeletonTextBodyWidth,
+            height: CatchLayout.buttonLgHeight,
             radius: CatchRadius.pill,
           ),
-      ],
-    );
-  }
-}
-
-class _CreateEventLoadingFooter extends StatelessWidget {
-  const _CreateEventLoadingFooter();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final bottomPadding = MediaQuery.paddingOf(context).bottom;
-
-    return ColoredBox(
-      color: t.bg,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          CatchSpacing.s4,
-          CatchSpacing.s3,
-          CatchSpacing.s4,
-          CatchSpacing.s3 + bottomPadding,
-        ),
-        child: Row(
-          children: [
-            CatchSkeleton.box(
-              width: CatchLayout.skeletonTextBodyWidth,
-              height: CatchLayout.buttonLgHeight,
-              radius: CatchRadius.pill,
-            ),
-            gapW12,
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: CatchSkeleton.box(
-                  width: CatchLayout.skeletonTextInlineTitleWidth,
-                  height: CatchLayout.buttonLgHeight,
-                  radius: CatchRadius.pill,
-                ),
+          gapW12,
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: CatchSkeleton.box(
+                width: CatchLayout.skeletonTextInlineTitleWidth,
+                height: CatchLayout.buttonLgHeight,
+                radius: CatchRadius.pill,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }

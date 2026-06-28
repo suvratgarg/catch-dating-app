@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_section_state_card.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:flutter/material.dart';
 
@@ -50,7 +51,7 @@ class DashboardStrideSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (section.isLoading) {
-      return _StrideSectionStateCard(
+      return DashboardSectionStateCard(
         message: section.message ?? 'Loading your weekly running activity...',
         isLoading: true,
       );
@@ -170,7 +171,7 @@ class StrideCard extends StatelessWidget {
               runSpacing: CatchSpacing.s2,
               children: [
                 if (onConnect != null)
-                  _StrideActionButton(
+                  _buildStrideActionButton(
                     icon: CatchIcons.favoriteOutlineRounded,
                     label: isConnecting
                         ? 'Connecting...'
@@ -179,7 +180,7 @@ class StrideCard extends StatelessWidget {
                     isBusy: isConnecting,
                   ),
                 if (onInstallHealthConnect != null)
-                  _StrideActionButton(
+                  _buildStrideActionButton(
                     icon: CatchIcons.downloadRounded,
                     label: isInstallingHealthConnect
                         ? 'Opening...'
@@ -215,6 +216,23 @@ class StrideCard extends StatelessWidget {
       WeeklyActivitySource.none =>
         snapshot.message ?? 'No activity this week yet.',
     };
+  }
+
+  Widget _buildStrideActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback? onPressed,
+    required bool isBusy,
+  }) {
+    return CatchButton(
+      label: label,
+      onPressed: onPressed,
+      icon: isBusy
+          ? CatchSkeleton.box(width: CatchIcon.xs, height: CatchIcon.xs)
+          : Icon(icon, size: CatchIcon.xs),
+      variant: CatchButtonVariant.ghost,
+      size: CatchButtonSize.sm,
+    );
   }
 }
 
@@ -264,76 +282,6 @@ class StrideBarColumn extends StatelessWidget {
           style: CatchTextStyles.statusLabel(context, color: t.ink3),
         ),
       ],
-    );
-  }
-}
-
-class _StrideActionButton extends StatelessWidget {
-  const _StrideActionButton({
-    required this.icon,
-    required this.label,
-    required this.onPressed,
-    required this.isBusy,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback? onPressed;
-  final bool isBusy;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchButton(
-      label: label,
-      onPressed: onPressed,
-      icon: isBusy
-          ? CatchSkeleton.box(width: CatchIcon.xs, height: CatchIcon.xs)
-          : Icon(icon, size: CatchIcon.xs),
-      variant: CatchButtonVariant.ghost,
-      size: CatchButtonSize.sm,
-    );
-  }
-}
-
-class _StrideSectionStateCard extends StatelessWidget {
-  const _StrideSectionStateCard({
-    required this.message,
-    this.isLoading = false,
-  });
-
-  final String message;
-  final bool isLoading;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      padding: CatchInsets.content,
-      borderColor: t.line,
-      child: Row(
-        children: [
-          if (isLoading)
-            CatchSkeleton.box(
-              width: CatchIcon.md,
-              height: CatchIcon.md,
-              radius: CatchRadius.sm,
-            )
-          else
-            Icon(
-              CatchIcons.errorOutlineRounded,
-              color: t.primary,
-              size: CatchIcon.md,
-            ),
-          gapW10,
-          Expanded(
-            child: Text(
-              message,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

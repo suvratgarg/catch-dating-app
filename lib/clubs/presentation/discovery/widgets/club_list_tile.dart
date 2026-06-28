@@ -54,12 +54,14 @@ class ClubListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (variant) {
-      ClubListTileVariant.directory => _DirectoryCard(
+      ClubListTileVariant.directory => _buildDirectoryCard(
+        context,
         club: club,
         isJoined: isJoined,
         onTap: () => _openDetail(context),
       ),
-      ClubListTileVariant.avatarChip => _AvatarChip(
+      ClubListTileVariant.avatarChip => _buildAvatarChip(
+        context,
         club: club,
         showLiveBadge: showLiveBadge,
         onTap: () => _openDetail(context),

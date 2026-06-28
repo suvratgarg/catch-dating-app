@@ -20,6 +20,8 @@ abstract class Club with _$Club {
     required String name,
     required String description,
     required String location,
+    @Default('') String locationCityId,
+    @Default('') String locationMarketId,
     required String area,
     String? hostUserId,
     String? hostName,

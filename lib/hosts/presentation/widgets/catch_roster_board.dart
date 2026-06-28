@@ -56,7 +56,7 @@ class CatchRosterTiles extends StatelessWidget {
         for (var i = 0; i < items.length; i++) ...[
           if (i > 0) const SizedBox(width: CatchSpacing.micro6),
           Expanded(
-            child: _Tile(
+            child: CatchRosterTileCell(
               tile: items[i],
               selected: items[i].id == selected,
               onTap: onSelect == null ? null : () => onSelect!(items[i].id),
@@ -69,8 +69,9 @@ class CatchRosterTiles extends StatelessWidget {
   }
 }
 
-class _Tile extends StatelessWidget {
-  const _Tile({
+class CatchRosterTileCell extends StatelessWidget {
+  const CatchRosterTileCell({
+    super.key,
     required this.tile,
     required this.selected,
     required this.onTap,
@@ -282,7 +283,7 @@ class CatchRosterRow extends StatelessWidget {
               flex: 3,
               child: Align(
                 alignment: Alignment.centerRight,
-                child: _ActionCell(action: action),
+                child: CatchRosterActionCell(action: action),
               ),
             ),
           ],
@@ -292,8 +293,8 @@ class CatchRosterRow extends StatelessWidget {
   }
 }
 
-class _ActionCell extends StatelessWidget {
-  const _ActionCell({required this.action});
+class CatchRosterActionCell extends StatelessWidget {
+  const CatchRosterActionCell({super.key, required this.action});
 
   final CatchRosterAction? action;
 
@@ -322,7 +323,7 @@ class _ActionCell extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (onProfile != null) ...[
-              _DecideTarget(
+              CatchRosterDecideTarget(
                 icon: CatchIcons.eye,
                 color: t.ink2,
                 onTap: onProfile,
@@ -330,14 +331,14 @@ class _ActionCell extends StatelessWidget {
               ),
               const SizedBox(width: CatchSpacing.micro6),
             ],
-            _DecideTarget(
+            CatchRosterDecideTarget(
               icon: CatchIcons.check,
               color: t.success,
               onTap: onApprove,
               label: 'Approve request',
             ),
             const SizedBox(width: CatchSpacing.micro6),
-            _DecideTarget(
+            CatchRosterDecideTarget(
               icon: CatchIcons.close,
               color: t.danger,
               onTap: onDecline,
@@ -367,8 +368,9 @@ class _ActionCell extends StatelessWidget {
   }
 }
 
-class _DecideTarget extends StatelessWidget {
-  const _DecideTarget({
+class CatchRosterDecideTarget extends StatelessWidget {
+  const CatchRosterDecideTarget({
+    super.key,
     required this.icon,
     required this.color,
     required this.onTap,

@@ -9,9 +9,9 @@ import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_detail_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -34,174 +34,152 @@ class PaymentHistoryScreen extends ConsumerWidget {
       appBar: const CatchTopBar(title: 'Payment history'),
       body: CatchAsyncValueView<String?>(
         value: uidAsync,
-        loadingBuilder: (_) => const _PaymentHistorySkeleton(),
+        loadingBuilder: (_) => paymentHistorySkeleton(),
         errorContext: AppErrorContext.payments,
         onRetry: () => ref.invalidate(uidProvider),
         builder: (context, uid) {
           if (uid == null) {
-            return _PaymentHistoryEmpty(
+            return paymentHistoryEmpty(
               icon: CatchIcons.lockOutlineRounded,
               title: 'Sign in required',
               message: 'Sign in again to view payment history.',
             );
           }
-          return _PaymentList(userId: uid);
+          return paymentHistoryList(userId: uid);
         },
       ),
     );
   }
 }
 
-class _PaymentList extends ConsumerWidget {
-  const _PaymentList({required this.userId});
+Widget paymentHistoryList({required String userId}) {
+  return Consumer(
+    builder: (context, ref, _) {
+      final paymentHistoryAsync = ref.watch(
+        paymentHistoryViewModelProvider(userId),
+      );
 
-  final String userId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final paymentHistoryAsync = ref.watch(
-      paymentHistoryViewModelProvider(userId),
-    );
-
-    return CatchAsyncValueView<PaymentHistoryViewModel>(
-      value: paymentHistoryAsync,
-      loadingBuilder: (_) => const _PaymentHistorySkeleton(),
-      errorContext: AppErrorContext.payments,
-      onRetry: () => ref.invalidate(watchPaymentsForUserProvider(userId)),
-      builder: (context, paymentHistory) {
-        if (paymentHistory.isEmpty) {
-          return _PaymentHistoryEmpty(
-            icon: CatchIcons.receiptLongOutlined,
-            title: 'No payments yet',
-            message: 'Event bookings and refunds will appear here.',
-          );
-        }
-        return ListView.separated(
-          padding: CatchInsets.listBody,
-          itemCount: paymentHistory.rows.length,
-          separatorBuilder: (context, _) => Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: CatchLayout.maxContentWidth,
-              ),
-              child: Divider(color: CatchTokens.of(context).line, height: 1),
-            ),
-          ),
-          itemBuilder: (context, index) => Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: CatchLayout.maxContentWidth,
-              ),
-              child: _PaymentTile(row: paymentHistory.rows[index]),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _PaymentHistorySkeleton extends StatelessWidget {
-  const _PaymentHistorySkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: CatchInsets.listBody,
-      itemCount: 5,
-      separatorBuilder: (context, _) => Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: CatchLayout.maxContentWidth,
-          ),
-          child: Divider(color: CatchTokens.of(context).line, height: 1),
-        ),
-      ),
-      itemBuilder: (context, _) => Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: CatchLayout.maxContentWidth,
-          ),
-          child: const _PaymentHistoryTileSkeleton(),
-        ),
-      ),
-    );
-  }
-}
-
-class _PaymentHistoryTileSkeleton extends StatelessWidget {
-  const _PaymentHistoryTileSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: CatchInsets.contentVertical,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s1,
-          vertical: CatchSpacing.s2,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CatchSkeleton.text(width: CatchLayout.skeletonTextLongWidth),
-                  gapH8,
-                  CatchSkeleton.text(
-                    width: CatchLayout.skeletonTextSecondaryWidth,
-                  ),
-                  gapH6,
-                  CatchSkeleton.text(width: CatchLayout.skeletonTextWideWidth),
-                ],
-              ),
-            ),
-            gapW16,
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                CatchSkeleton.text(width: CatchLayout.skeletonTextStatusWidth),
-                gapH8,
-                CatchSkeleton.box(
-                  width: CatchLayout.skeletonTextActionWidth,
-                  height: CatchSpacing.s5,
-                  radius: CatchRadius.pill,
+      return CatchAsyncValueView<PaymentHistoryViewModel>(
+        value: paymentHistoryAsync,
+        loadingBuilder: (_) => paymentHistorySkeleton(),
+        errorContext: AppErrorContext.payments,
+        onRetry: () => ref.invalidate(watchPaymentsForUserProvider(userId)),
+        builder: (context, paymentHistory) {
+          if (paymentHistory.isEmpty) {
+            return paymentHistoryEmpty(
+              icon: CatchIcons.receiptLongOutlined,
+              title: 'No payments yet',
+              message: 'Event bookings and refunds will appear here.',
+            );
+          }
+          return ListView.separated(
+            padding: CatchInsets.listBody,
+            itemCount: paymentHistory.rows.length,
+            separatorBuilder: (context, _) => Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: CatchLayout.maxContentWidth,
                 ),
+                child: Divider(color: CatchTokens.of(context).line, height: 1),
+              ),
+            ),
+            itemBuilder: (context, index) => Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: CatchLayout.maxContentWidth,
+                ),
+                child: PaymentHistoryTile(row: paymentHistory.rows[index]),
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+Widget paymentHistorySkeleton() {
+  return ListView.separated(
+    padding: CatchInsets.listBody,
+    itemCount: 5,
+    separatorBuilder: (context, _) => Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxWidth: CatchLayout.maxContentWidth,
+        ),
+        child: Divider(color: CatchTokens.of(context).line, height: 1),
+      ),
+    ),
+    itemBuilder: (context, _) => Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxWidth: CatchLayout.maxContentWidth,
+        ),
+        child: paymentHistoryTileSkeleton(),
+      ),
+    ),
+  );
+}
+
+Widget paymentHistoryTileSkeleton() {
+  return Padding(
+    padding: CatchInsets.contentVertical,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s1,
+        vertical: CatchSpacing.s2,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CatchSkeleton.text(width: CatchLayout.skeletonTextLongWidth),
+                gapH8,
+                CatchSkeleton.text(
+                  width: CatchLayout.skeletonTextSecondaryWidth,
+                ),
+                gapH6,
+                CatchSkeleton.text(width: CatchLayout.skeletonTextWideWidth),
               ],
             ),
-          ],
-        ),
+          ),
+          gapW16,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              CatchSkeleton.text(width: CatchLayout.skeletonTextStatusWidth),
+              gapH8,
+              CatchSkeleton.box(
+                width: CatchLayout.skeletonTextActionWidth,
+                height: CatchSpacing.s5,
+                radius: CatchRadius.pill,
+              ),
+            ],
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _PaymentHistoryEmpty extends StatelessWidget {
-  const _PaymentHistoryEmpty({
-    required this.icon,
-    required this.title,
-    required this.message,
-  });
-
-  final IconData icon;
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchScreenBody(
-      scrollable: false,
-      child: Center(
-        child: CatchEmptyState(icon: icon, title: title, message: message),
-      ),
-    );
-  }
+Widget paymentHistoryEmpty({
+  required IconData icon,
+  required String title,
+  required String message,
+}) {
+  return CatchScreenBody(
+    scrollable: false,
+    child: Center(
+      child: CatchEmptyState(icon: icon, title: title, message: message),
+    ),
+  );
 }
 
-class _PaymentTile extends StatelessWidget {
-  const _PaymentTile({required this.row});
+class PaymentHistoryTile extends StatelessWidget {
+  const PaymentHistoryTile({super.key, required this.row});
 
   final PaymentHistoryRow row;
 
@@ -362,19 +340,41 @@ class PaymentReceiptSheet extends StatelessWidget {
               gapH20,
               Divider(color: t.line, height: 1),
               gapH20,
-              CatchDetailRow(label: 'Payment ID', value: payment.paymentId),
+              CatchField(
+                title: 'Payment ID',
+                body: payment.paymentId,
+                mode: CatchFieldMode.read,
+                variant: CatchFieldVariant.bare,
+              ),
               gapH12,
-              CatchDetailRow(label: 'Order ID', value: payment.orderId),
+              CatchField(
+                title: 'Order ID',
+                body: payment.orderId,
+                mode: CatchFieldMode.read,
+                variant: CatchFieldVariant.bare,
+              ),
               gapH12,
-              CatchDetailRow(label: 'Event ID', value: payment.eventId),
+              CatchField(
+                title: 'Event ID',
+                body: payment.eventId,
+                mode: CatchFieldMode.read,
+                variant: CatchFieldVariant.bare,
+              ),
               gapH12,
-              CatchDetailRow(
-                label: 'Date',
-                value: AppTimeFormatters.dateTime(payment.createdAt),
+              CatchField(
+                title: 'Date',
+                body: AppTimeFormatters.dateTime(payment.createdAt),
+                mode: CatchFieldMode.read,
+                variant: CatchFieldVariant.bare,
               ),
               if (statusPresentation.detail case final detail?) ...[
                 gapH12,
-                CatchDetailRow(label: 'Status', value: detail),
+                CatchField(
+                  title: 'Status',
+                  body: detail,
+                  mode: CatchFieldMode.read,
+                  variant: CatchFieldVariant.bare,
+                ),
               ],
               if (payment.signUpFailed) ...[
                 gapH20,

@@ -122,14 +122,14 @@ class _EventSuccessManualQaScreenState
             return ListView(
               padding: CatchInsets.contentRelaxed,
               children: [
-                _ManualQaHero(data: data),
+                ManualQaHero(data: data),
                 gapH16,
-                _ManualQaControls(
+                ManualQaControls(
                   scenario: store.scenario,
                   onScenarioChanged: store.setScenario,
                 ),
                 gapH16,
-                _ManualQaSideBySide(
+                ManualQaSideBySide(
                   hostSection: store.hostSection,
                   data: data,
                   firstHelloEnabled: store.firstHelloEnabled,
@@ -483,8 +483,8 @@ class _ManualQaStore {
   void _notify() => onChanged();
 }
 
-class _ManualQaHero extends StatelessWidget {
-  const _ManualQaHero({required this.data});
+class ManualQaHero extends StatelessWidget {
+  const ManualQaHero({required this.data});
 
   final _ManualQaFixtures data;
 
@@ -538,13 +538,13 @@ class _ManualQaHero extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              _DarkPill(label: '${data.roster.bookedCount} booked'),
-              _DarkPill(label: '${data.roster.checkedInCount} checked in'),
-              _DarkPill(
+              DarkPill(label: '${data.roster.bookedCount} booked'),
+              DarkPill(label: '${data.roster.checkedInCount} checked in'),
+              DarkPill(
                 label:
                     '${data.plan.structureConfig.revealCountdownSeconds}s reveal',
               ),
-              _DarkPill(
+              DarkPill(
                 label:
                     !data.plan.hasModule(
                       EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
@@ -562,8 +562,8 @@ class _ManualQaHero extends StatelessWidget {
   }
 }
 
-class _ManualQaControls extends StatelessWidget {
-  const _ManualQaControls({
+class ManualQaControls extends StatelessWidget {
+  const ManualQaControls({
     required this.scenario,
     required this.onScenarioChanged,
   });
@@ -585,7 +585,7 @@ class _ManualQaControls extends StatelessWidget {
             style: CatchTextStyles.sectionTitle(context),
           ),
           gapH12,
-          const _ControlLabel('Event format'),
+          const ControlLabel('Event format'),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -605,8 +605,8 @@ class _ManualQaControls extends StatelessWidget {
   }
 }
 
-class _ManualQaSideBySide extends StatelessWidget {
-  const _ManualQaSideBySide({
+class ManualQaSideBySide extends StatelessWidget {
+  const ManualQaSideBySide({
     required this.hostSection,
     required this.data,
     required this.firstHelloEnabled,
@@ -663,7 +663,7 @@ class _ManualQaSideBySide extends StatelessWidget {
             children: [
               SizedBox(
                 width: paneWidth,
-                child: _QaDeviceFrame(
+                child: QaDeviceFrame(
                   title: 'Host Manage',
                   subtitle:
                       'Production host workspace · ${data.activeStepLabel}',
@@ -675,7 +675,7 @@ class _ManualQaSideBySide extends StatelessWidget {
                     '${data.assignments.length} pod cards',
                     '${data.rotationAssignments.length} rotation cards',
                   ],
-                  child: _ManualQaHostManagePane(
+                  child: ManualQaHostManagePane(
                     data: data,
                     selectedSection: hostSection,
                     fixtureActions: fixtureActions,
@@ -687,7 +687,7 @@ class _ManualQaSideBySide extends StatelessWidget {
               gapW16,
               SizedBox(
                 width: paneWidth,
-                child: _QaDeviceFrame(
+                child: QaDeviceFrame(
                   title: 'Attendee experience',
                   subtitle:
                       '${data.viewer.publicDisplayName} · ${data.participation.status.name} · ${data.activeStepLabel}',
@@ -698,7 +698,7 @@ class _ManualQaSideBySide extends StatelessWidget {
                     if (microPodsOptedOut) 'pods opted out',
                     if (guidedRotationsOptedOut) 'rotations opted out',
                   ],
-                  controls: _AttendeeQaControls(
+                  controls: AttendeeQaControls(
                     microPodsOptedOut: microPodsOptedOut,
                     guidedRotationsOptedOut: guidedRotationsOptedOut,
                     firstHelloEnabled: firstHelloEnabled,
@@ -748,8 +748,8 @@ class _ManualQaSideBySide extends StatelessWidget {
   }
 }
 
-class _QaDeviceFrame extends StatelessWidget {
-  const _QaDeviceFrame({
+class QaDeviceFrame extends StatelessWidget {
+  const QaDeviceFrame({
     required this.title,
     required this.subtitle,
     required this.badges,
@@ -816,8 +816,8 @@ class _QaDeviceFrame extends StatelessWidget {
   }
 }
 
-class _ManualQaHostManagePane extends StatelessWidget {
-  const _ManualQaHostManagePane({
+class ManualQaHostManagePane extends StatelessWidget {
+  const ManualQaHostManagePane({
     required this.data,
     required this.selectedSection,
     required this.fixtureActions,
@@ -850,8 +850,8 @@ class _ManualQaHostManagePane extends StatelessWidget {
   }
 }
 
-class _AttendeeQaControls extends StatelessWidget {
-  const _AttendeeQaControls({
+class AttendeeQaControls extends StatelessWidget {
+  const AttendeeQaControls({
     required this.microPodsOptedOut,
     required this.guidedRotationsOptedOut,
     required this.firstHelloEnabled,
@@ -874,18 +874,18 @@ class _AttendeeQaControls extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _ControlLabel('Attendee choices'),
+        const ControlLabel('Attendee choices'),
         gapH8,
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ManualQaToggleRow(
+            ManualQaToggleRow(
               label: 'Micro-pods opt-out',
               value: microPodsOptedOut,
               onChanged: onMicroPodsOptOutChanged,
             ),
             gapH8,
-            _ManualQaToggleRow(
+            ManualQaToggleRow(
               label: 'Rotations opt-out',
               value: guidedRotationsOptedOut,
               onChanged: onGuidedRotationsOptOutChanged,
@@ -909,8 +909,8 @@ class _AttendeeQaControls extends StatelessWidget {
   }
 }
 
-class _ControlLabel extends StatelessWidget {
-  const _ControlLabel(this.label);
+class ControlLabel extends StatelessWidget {
+  const ControlLabel(this.label);
 
   final String label;
 
@@ -920,8 +920,8 @@ class _ControlLabel extends StatelessWidget {
   }
 }
 
-class _DarkPill extends StatelessWidget {
-  const _DarkPill({required this.label});
+class DarkPill extends StatelessWidget {
+  const DarkPill({required this.label});
 
   final String label;
 
@@ -945,8 +945,8 @@ class _DarkPill extends StatelessWidget {
   }
 }
 
-class _ManualQaToggleRow extends StatelessWidget {
-  const _ManualQaToggleRow({
+class ManualQaToggleRow extends StatelessWidget {
+  const ManualQaToggleRow({
     required this.label,
     required this.value,
     required this.onChanged,

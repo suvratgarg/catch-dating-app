@@ -71,7 +71,7 @@ class PhotoSlot extends StatelessWidget {
         ),
       );
     } else if (isPendingPhoto) {
-      content = _StripedPhotoPlaceholder(index: index);
+      content = _stripedPhotoPlaceholder(context: context, index: index);
     } else if (isActive) {
       content = Center(
         child: Icon(CatchIcons.addRounded, size: CatchIcon.hero, color: t.ink3),
@@ -126,7 +126,10 @@ class PhotoSlot extends StatelessWidget {
                   top: CatchSpacing.s2,
                   left: CatchSpacing.s2,
                   child: ExcludeSemantics(
-                    child: _PhotoSlotMainBadge(label: mainBadgeLabel),
+                    child: _photoSlotMainBadge(
+                      context: context,
+                      label: mainBadgeLabel,
+                    ),
                   ),
                 ),
               if (!isLoading && url != null)
@@ -232,56 +235,48 @@ class PhotoSlot extends StatelessWidget {
   }
 }
 
-class _StripedPhotoPlaceholder extends StatelessWidget {
-  const _StripedPhotoPlaceholder({required this.index});
-
-  final int index;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CustomPaint(
-      painter: _PhotoSlotStripePainter(
-        background: t.raised,
-        stripe: t.ink.withValues(alpha: 0.05),
-      ),
-      child: Center(
-        child: ExcludeSemantics(
-          child: Text(
-            'PHOTO ${(index + 1).toString().padLeft(2, '0')}',
-            style: CatchTextStyles.monoLabelS(context, color: t.ink3),
-            textAlign: TextAlign.center,
-          ),
+Widget _stripedPhotoPlaceholder({
+  required BuildContext context,
+  required int index,
+}) {
+  final t = CatchTokens.of(context);
+  return CustomPaint(
+    painter: _PhotoSlotStripePainter(
+      background: t.raised,
+      stripe: t.ink.withValues(alpha: 0.05),
+    ),
+    child: Center(
+      child: ExcludeSemantics(
+        child: Text(
+          'PHOTO ${(index + 1).toString().padLeft(2, '0')}',
+          style: CatchTextStyles.monoLabelS(context, color: t.ink3),
+          textAlign: TextAlign.center,
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _PhotoSlotMainBadge extends StatelessWidget {
-  const _PhotoSlotMainBadge({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      backgroundColor: t.ink,
-      radius: CatchRadius.pill,
-      borderWidth: 0,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.micro10,
-        vertical: CatchSpacing.s1,
-      ),
-      child: Text(
-        label.toUpperCase(),
-        style: CatchTextStyles.badge(context, color: t.bg),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
+Widget _photoSlotMainBadge({
+  required BuildContext context,
+  required String label,
+}) {
+  final t = CatchTokens.of(context);
+  return CatchSurface(
+    backgroundColor: t.ink,
+    radius: CatchRadius.pill,
+    borderWidth: 0,
+    padding: const EdgeInsets.symmetric(
+      horizontal: CatchSpacing.micro10,
+      vertical: CatchSpacing.s1,
+    ),
+    child: Text(
+      label.toUpperCase(),
+      style: CatchTextStyles.badge(context, color: t.bg),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    ),
+  );
 }
 
 class _PhotoSlotStripePainter extends CustomPainter {

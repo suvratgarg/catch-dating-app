@@ -49,7 +49,8 @@ class EventDetailTicketStubBand extends StatelessWidget {
                     children: [
                       for (var index = 0; index < cells.length; index++)
                         Expanded(
-                          child: _TicketStubCell(
+                          child: _ticketStubCell(
+                            context,
                             cell: cells[index],
                             showDivider: index > 0,
                           ),
@@ -94,7 +95,7 @@ class EventDetailHintList extends StatelessWidget {
     final t = CatchTokens.of(context);
     final activity = ActivityPalette.resolve(context, event.activityKind);
 
-    return _HairlineList(
+    return _hairlineList(
       itemCount: hints.length,
       dividerColor: dividerColor,
       itemBuilder: (context, index) => Row(
@@ -147,7 +148,8 @@ class EventDetailItinerary extends StatelessWidget {
     return Column(
       children: [
         for (var index = 0; index < steps.length; index++)
-          _ItineraryRow(
+          _itineraryRow(
+            context,
             step: steps[index],
             isLast: index == steps.length - 1,
             accent: activity.accent,
@@ -222,10 +224,14 @@ class EventDetailMapCard extends StatelessWidget {
                   child: Row(
                     children: [
                       Expanded(
-                        child: _MapPill(text: event.locationName, color: t.ink),
+                        child: _mapPill(
+                          context,
+                          text: event.locationName,
+                          color: t.ink,
+                        ),
                       ),
                       gapW8,
-                      _MapPill(text: note, color: t.ink2),
+                      _mapPill(context, text: note, color: t.ink2),
                       if (canOpen) ...[
                         gapW8,
                         Icon(
@@ -265,7 +271,7 @@ class EventDetailMechanismList extends StatelessWidget {
     final rows = _mechanismsFor(event);
     final activity = ActivityPalette.resolve(context, event.activityKind);
 
-    return _HairlineList(
+    return _hairlineList(
       itemCount: rows.length,
       dividerColor: dividerColor,
       itemBuilder: (context, index) {
@@ -281,7 +287,7 @@ class EventDetailMechanismList extends StatelessWidget {
                 children: [
                   Text(
                     row.title,
-                    style: CatchTextStyles.infoRowTitle(
+                    style: CatchTextStyles.fieldRowTitle(
                       context,
                       color: titleColor,
                     ),
@@ -326,7 +332,7 @@ class EventDetailPhotoStrip extends StatelessWidget {
           children: [
             for (var index = 0; index < _photoStripTileCount; index++) ...[
               Expanded(
-                child: _EventDetailPhotoStripTile(
+                child: _eventDetailPhotoStripTile(
                   index: index,
                   photo: index < photos.length ? photos[index] : null,
                   backgroundColor: activity.soft,
@@ -357,46 +363,35 @@ class EventDetailPhotoStrip extends StatelessWidget {
   }
 }
 
-class _EventDetailPhotoStripTile extends StatelessWidget {
-  const _EventDetailPhotoStripTile({
-    required this.index,
-    required this.photo,
-    required this.backgroundColor,
-    required this.iconColor,
-    required this.icon,
-  });
-
-  final int index;
-  final UploadedPhoto? photo;
-  final Color backgroundColor;
-  final Color iconColor;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      key: ValueKey('event-photo-strip-tile-$index'),
-      height: CatchLayout.eventDetailPhotoStripTileHeight,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(CatchRadius.infoTile),
-        child: photo == null
-            ? ColoredBox(
-                key: ValueKey('event-photo-strip-placeholder-$index'),
-                color: backgroundColor,
-                child: Icon(icon, color: iconColor, size: CatchIcon.lg),
-              )
-            : ColoredBox(
-                color: backgroundColor,
-                child: CatchNetworkImage(
-                  photo!.thumbnailOrUrl,
-                  key: ValueKey('event-photo-strip-image-$index'),
-                  errorBuilder: (_, _, _) =>
-                      Icon(icon, color: iconColor, size: CatchIcon.lg),
-                ),
+Widget _eventDetailPhotoStripTile({
+  required int index,
+  required UploadedPhoto? photo,
+  required Color backgroundColor,
+  required Color iconColor,
+  required IconData icon,
+}) {
+  return SizedBox(
+    key: ValueKey('event-photo-strip-tile-$index'),
+    height: CatchLayout.eventDetailPhotoStripTileHeight,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(CatchRadius.infoTile),
+      child: photo == null
+          ? ColoredBox(
+              key: ValueKey('event-photo-strip-placeholder-$index'),
+              color: backgroundColor,
+              child: Icon(icon, color: iconColor, size: CatchIcon.lg),
+            )
+          : ColoredBox(
+              color: backgroundColor,
+              child: CatchNetworkImage(
+                photo.thumbnailOrUrl,
+                key: ValueKey('event-photo-strip-image-$index'),
+                errorBuilder: (_, _, _) =>
+                    Icon(icon, color: iconColor, size: CatchIcon.lg),
               ),
-      ),
-    );
-  }
+            ),
+    ),
+  );
 }
 
 class _TicketStubCellData {
@@ -413,104 +408,92 @@ class _TicketStubCellData {
   final IconData? icon;
 }
 
-class _TicketStubCell extends StatelessWidget {
-  const _TicketStubCell({required this.cell, required this.showDivider});
-
-  final _TicketStubCellData cell;
-  final bool showDivider;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Stack(
-      children: [
-        if (showDivider)
-          Positioned.fill(
-            child: CustomPaint(painter: _VerticalDashedPainter(color: t.line2)),
-          ),
-        Padding(
-          padding: EdgeInsets.fromLTRB(
-            showDivider ? CatchSpacing.s3 : CatchSpacing.s5,
-            CatchSpacing.s2,
-            CatchSpacing.s3,
-            CatchSpacing.s2,
-          ),
-          child: Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
+Widget _ticketStubCell(
+  BuildContext context, {
+  required _TicketStubCellData cell,
+  required bool showDivider,
+}) {
+  final t = CatchTokens.of(context);
+  return Stack(
+    children: [
+      if (showDivider)
+        Positioned.fill(
+          child: CustomPaint(painter: _VerticalDashedPainter(color: t.line2)),
+        ),
+      Padding(
+        padding: EdgeInsets.fromLTRB(
+          showDivider ? CatchSpacing.s3 : CatchSpacing.s5,
+          CatchSpacing.s2,
+          CatchSpacing.s3,
+          CatchSpacing.s2,
+        ),
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  cell.label.toUpperCase(),
+                  style: CatchTextStyles.monoLabelS(context),
+                ),
+                gapH6,
+                Text(
+                  cell.value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.mono(
+                    context,
+                    color: t.ink,
+                  ).copyWith(fontWeight: FontWeight.w700, height: 1.25),
+                ),
+                if (cell.detail != null) ...[
+                  const SizedBox(height: CatchSpacing.micro2),
                   Text(
-                    cell.label.toUpperCase(),
-                    style: CatchTextStyles.monoLabelS(context),
-                  ),
-                  gapH6,
-                  Text(
-                    cell.value,
+                    cell.detail!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.mono(
-                      context,
-                      color: t.ink,
-                    ).copyWith(fontWeight: FontWeight.w700, height: 1.25),
+                    style: CatchTextStyles.numericMeta(context, color: t.ink2),
                   ),
-                  if (cell.detail != null) ...[
-                    const SizedBox(height: CatchSpacing.micro2),
-                    Text(
-                      cell.detail!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.numericMeta(
-                        context,
-                        color: t.ink2,
-                      ),
-                    ),
-                  ],
                 ],
+              ],
+            ),
+            if (cell.icon != null)
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Icon(cell.icon, size: 15, color: t.ink3),
               ),
-              if (cell.icon != null)
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: Icon(cell.icon, size: 15, color: t.ink3),
-                ),
-            ],
-          ),
+          ],
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
 }
 
-class _HairlineList extends StatelessWidget {
-  const _HairlineList({
-    required this.itemCount,
-    required this.itemBuilder,
-    this.dividerColor,
-  });
-
-  final int itemCount;
-  final IndexedWidgetBuilder itemBuilder;
-  final Color? dividerColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      children: [
-        for (var index = 0; index < itemCount; index++) ...[
-          if (index > 0)
-            Divider(
-              color: dividerColor ?? t.line,
-              height: CatchLayout.eventDetailHairlineDividerHeight,
-              thickness: 1,
-            ),
-          itemBuilder(context, index),
+Widget _hairlineList({
+  required int itemCount,
+  required IndexedWidgetBuilder itemBuilder,
+  Color? dividerColor,
+}) {
+  return Builder(
+    builder: (context) {
+      final t = CatchTokens.of(context);
+      return Column(
+        children: [
+          for (var index = 0; index < itemCount; index++) ...[
+            if (index > 0)
+              Divider(
+                color: dividerColor ?? t.line,
+                height: CatchLayout.eventDetailHairlineDividerHeight,
+                thickness: 1,
+              ),
+            itemBuilder(context, index),
+          ],
         ],
-      ],
-    );
-  }
+      );
+    },
+  );
 }
 
 class _ItineraryStep {
@@ -525,127 +508,111 @@ class _ItineraryStep {
   final String detail;
 }
 
-class _ItineraryRow extends StatelessWidget {
-  const _ItineraryRow({
-    required this.step,
-    required this.isLast,
-    required this.accent,
-    required this.railColor,
-    this.titleColor,
-    this.detailColor,
-    this.dotBackgroundColor,
-  });
-
-  final _ItineraryStep step;
-  final bool isLast;
-  final Color accent;
-  final Color railColor;
-  final Color? titleColor;
-  final Color? detailColor;
-  final Color? dotBackgroundColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: CatchLayout.eventDetailItineraryTimeColumnWidth,
-            child: Text(
-              step.time,
-              style: CatchTextStyles.mono(
-                context,
-                color: t.ink,
-              ).copyWith(fontSize: 12, fontWeight: FontWeight.w700),
-            ),
+Widget _itineraryRow(
+  BuildContext context, {
+  required _ItineraryStep step,
+  required bool isLast,
+  required Color accent,
+  required Color railColor,
+  Color? titleColor,
+  Color? detailColor,
+  Color? dotBackgroundColor,
+}) {
+  final t = CatchTokens.of(context);
+  return IntrinsicHeight(
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: CatchLayout.eventDetailItineraryTimeColumnWidth,
+          child: Text(
+            step.time,
+            style: CatchTextStyles.mono(
+              context,
+              color: t.ink,
+            ).copyWith(fontSize: 12, fontWeight: FontWeight.w700),
           ),
-          SizedBox(
-            width: CatchLayout.eventDetailItineraryRailColumnWidth,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 3),
-                  child: CatchSurface(
-                    width: CatchLayout.eventDetailItineraryDotExtent,
-                    height: CatchLayout.eventDetailItineraryDotExtent,
-                    radius: CatchRadius.pill,
-                    backgroundColor: dotBackgroundColor ?? t.surface,
-                    borderColor: accent,
-                    borderWidth: 2,
-                    child: const SizedBox.shrink(),
-                  ),
+        ),
+        SizedBox(
+          width: CatchLayout.eventDetailItineraryRailColumnWidth,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 3),
+                child: CatchSurface(
+                  width: CatchLayout.eventDetailItineraryDotExtent,
+                  height: CatchLayout.eventDetailItineraryDotExtent,
+                  radius: CatchRadius.pill,
+                  backgroundColor: dotBackgroundColor ?? t.surface,
+                  borderColor: accent,
+                  borderWidth: 2,
+                  child: const SizedBox.shrink(),
                 ),
-                if (!isLast)
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: SizedBox(
-                        width: 1.5,
-                        child: ColoredBox(color: railColor),
-                      ),
+              ),
+              if (!isLast)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: SizedBox(
+                      width: 1.5,
+                      child: ColoredBox(color: railColor),
                     ),
                   ),
+                ),
+            ],
+          ),
+        ),
+        gapW8,
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: isLast ? 0 : CatchSpacing.s3),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  step.title,
+                  style: CatchTextStyles.fieldRowTitle(
+                    context,
+                    color: titleColor,
+                  ),
+                ),
+                const SizedBox(height: CatchSpacing.micro2),
+                Text(
+                  step.detail,
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: detailColor,
+                  ),
+                ),
               ],
             ),
           ),
-          gapW8,
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(bottom: isLast ? 0 : CatchSpacing.s3),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    step.title,
-                    style: CatchTextStyles.infoRowTitle(
-                      context,
-                      color: titleColor,
-                    ),
-                  ),
-                  const SizedBox(height: CatchSpacing.micro2),
-                  Text(
-                    step.detail,
-                    style: CatchTextStyles.supporting(
-                      context,
-                      color: detailColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }
 
-class _MapPill extends StatelessWidget {
-  const _MapPill({required this.text, required this.color});
-
-  final String text;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSurface(
-      radius: CatchRadius.pill,
-      backgroundColor: CatchTokens.editorialLight.withValues(alpha: 0.93),
-      borderWidth: 0,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.s2,
-      ),
-      child: Text(
-        text,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: CatchTextStyles.monoLabelS(context, color: color),
-      ),
-    );
-  }
+Widget _mapPill(
+  BuildContext context, {
+  required String text,
+  required Color color,
+}) {
+  return CatchSurface(
+    radius: CatchRadius.pill,
+    backgroundColor: CatchTokens.editorialLight.withValues(alpha: 0.93),
+    borderWidth: 0,
+    padding: const EdgeInsets.symmetric(
+      horizontal: CatchSpacing.s3,
+      vertical: CatchSpacing.s2,
+    ),
+    child: Text(
+      text,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: CatchTextStyles.monoLabelS(context, color: color),
+    ),
+  );
 }
 
 class _MechanismRow {
@@ -1009,7 +976,7 @@ class EventDetailHostCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              _HostAvatar(activity: activity, photoUrl: photoUrl),
+              _hostAvatar(activity: activity, photoUrl: photoUrl),
               const SizedBox(width: CatchSpacing.s3),
               Expanded(
                 child: Column(
@@ -1145,31 +1112,23 @@ class EventDetailHostCard extends StatelessWidget {
 
 /// The 46px host avatar — a graded photo over the activity-pigment gradient,
 /// or the bare gradient when no photo is supplied.
-class _HostAvatar extends StatelessWidget {
-  const _HostAvatar({required this.activity, this.photoUrl});
-
-  final CatchActivity activity;
-  final String? photoUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    final url = photoUrl;
-    return SizedBox.square(
-      dimension: CatchLayout.eventDetailHostAvatarExtent,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            transform: const GradientRotation(150 * math.pi / 180),
-            colors: [activity.accent, activity.deep],
-          ),
+Widget _hostAvatar({required CatchActivity activity, String? photoUrl}) {
+  final url = photoUrl;
+  return SizedBox.square(
+    dimension: CatchLayout.eventDetailHostAvatarExtent,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          transform: const GradientRotation(150 * math.pi / 180),
+          colors: [activity.accent, activity.deep],
         ),
-        child: url == null || url.isEmpty
-            ? null
-            : ClipOval(child: CatchGradedImage(child: CatchNetworkImage(url))),
       ),
-    );
-  }
+      child: url == null || url.isEmpty
+          ? null
+          : ClipOval(child: CatchGradedImage(child: CatchNetworkImage(url))),
+    ),
+  );
 }

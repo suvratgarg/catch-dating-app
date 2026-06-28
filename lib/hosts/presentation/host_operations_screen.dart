@@ -22,16 +22,15 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_info_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_settings_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -80,8 +79,8 @@ class HostOperationsHomeScreen extends ConsumerWidget {
     );
 
     return switch (routeState.status) {
-      HostHomeRouteStatus.authRequired => const _HostAuthRequiredScreen(),
-      HostHomeRouteStatus.loading => const _HostLoadingScreen(
+      HostHomeRouteStatus.authRequired => const HostAuthRequiredScreen(),
+      HostHomeRouteStatus.loading => const HostLoadingScreen(
         title: 'Host events',
       ),
       HostHomeRouteStatus.error => CatchErrorScaffold.fromError(
@@ -89,13 +88,13 @@ class HostOperationsHomeScreen extends ConsumerWidget {
         context: routeState.errorContext,
         onRetry: () => _retryHostHomeRoute(ref, routeState),
       ),
-      HostHomeRouteStatus.empty => _HostEventsScaffold(
+      HostHomeRouteStatus.empty => HostEventsScaffold(
         clubs: routeState.clubs,
         currentUid: routeState.uid!,
         initialClubId: initialClubId,
         initialTab: initialTab,
       ),
-      HostHomeRouteStatus.loaded => _HostEventsScaffold(
+      HostHomeRouteStatus.loaded => HostEventsScaffold(
         clubs: routeState.clubs,
         currentUid: routeState.uid!,
         initialClubId: initialClubId,
@@ -120,19 +119,19 @@ class HostClubsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uid = ref.watch(uidProvider).asData?.value;
-    if (uid == null) return const _HostAuthRequiredScreen();
+    if (uid == null) return const HostAuthRequiredScreen();
 
     final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));
     return CatchAsyncValueView<List<Club>>(
       value: clubsAsync,
       loadingBuilder: (_) =>
-          const _HostLoadingScreen(title: 'Clubs', showTabRail: true),
+          const HostLoadingScreen(title: 'Clubs', showTabRail: true),
       errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
         error,
         context: AppErrorContext.club,
         onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
       ),
-      builder: (context, clubs) => _HostClubsScaffold(
+      builder: (context, clubs) => HostClubsScaffold(
         clubs: clubs,
         currentUid: uid,
         initialClubId: initialClubId,
@@ -944,13 +943,13 @@ class HostSettingsProfileSection extends StatelessWidget {
         label: 'Profile',
         first: true,
         children: [
-          CatchSettingsRow(
-            label: 'Display name',
-            value: creatingProfile
+          CatchField(
+            title: 'Display name',
+            valueText: creatingProfile
                 ? 'Creating profile...'
                 : 'Create host profile',
             icon: CatchIcons.businessOutlined,
-            trailing: creatingProfile
+            action: creatingProfile
                 ? const SizedBox.square(
                     dimension: CatchIcon.md,
                     child: CatchLoadingIndicator(
@@ -963,7 +962,7 @@ class HostSettingsProfileSection extends StatelessWidget {
           ),
         ],
       ),
-      HostSettingsProfileContent(:final profile) => _HostSettingsProfileRows(
+      HostSettingsProfileContent(:final profile) => HostSettingsProfileRows(
         profile: profile,
         editMode: editMode,
         onEditProfile: onEditProfile,
@@ -972,8 +971,9 @@ class HostSettingsProfileSection extends StatelessWidget {
   }
 }
 
-class _HostSettingsProfileRows extends StatelessWidget {
-  const _HostSettingsProfileRows({
+class HostSettingsProfileRows extends StatelessWidget {
+  const HostSettingsProfileRows({
+    super.key,
     required this.profile,
     required this.editMode,
     required this.onEditProfile,
@@ -993,16 +993,16 @@ class _HostSettingsProfileRows extends StatelessWidget {
           label: 'Profile',
           first: true,
           children: [
-            CatchSettingsRow(
-              label: 'Display name',
-              value: profile.displayName,
+            CatchField(
+              title: 'Display name',
+              valueText: profile.displayName,
               icon: CatchIcons.personOutlineRounded,
               onTap: canEdit ? onEditProfile : null,
               showChevron: canEdit,
             ),
-            CatchSettingsRow(
-              label: 'Role title',
-              value: profile.roleTitle?.trim().isNotEmpty == true
+            CatchField(
+              title: 'Role title',
+              valueText: profile.roleTitle?.trim().isNotEmpty == true
                   ? profile.roleTitle!.trim()
                   : 'Add role title',
               icon: CatchIcons.cardMembershipOutlined,
@@ -1010,9 +1010,9 @@ class _HostSettingsProfileRows extends StatelessWidget {
               onTap: canEdit ? onEditProfile : null,
               showChevron: canEdit,
             ),
-            CatchSettingsRow(
-              label: 'Status',
-              value: hostProfileStatusLabel(profile.status),
+            CatchField(
+              title: 'Status',
+              valueText: hostProfileStatusLabel(profile.status),
               icon: CatchIcons.checkCircleOutlineRounded,
               divider: true,
               showChevron: false,
@@ -1022,9 +1022,9 @@ class _HostSettingsProfileRows extends StatelessWidget {
         HostSettingsSection(
           label: 'Bio',
           children: [
-            CatchSettingsRow(
-              label: 'About you as a host',
-              value: profile.bio?.trim().isNotEmpty == true
+            CatchField(
+              title: 'About you as a host',
+              valueText: profile.bio?.trim().isNotEmpty == true
                   ? profile.bio!.trim()
                   : 'Add a host bio',
               icon: CatchIcons.chatBubbleOutlineRounded,
@@ -1069,8 +1069,8 @@ class HostSettingsClubsSection extends StatelessWidget {
             context: AppErrorContext.club,
             onRetry: onRetry,
           ),
-          HostSettingsClubsEmpty() => const _HostSettingsClubsEmptyState(),
-          HostSettingsClubsContent(:final clubs) => _HostSettingsClubRows(
+          HostSettingsClubsEmpty() => const HostSettingsClubsEmptyState(),
+          HostSettingsClubsContent(:final clubs) => HostSettingsClubRows(
             uid: uid,
             clubs: clubs,
             onOpenClub: onOpenClub,
@@ -1081,8 +1081,8 @@ class HostSettingsClubsSection extends StatelessWidget {
   }
 }
 
-class _HostSettingsClubsEmptyState extends StatelessWidget {
-  const _HostSettingsClubsEmptyState();
+class HostSettingsClubsEmptyState extends StatelessWidget {
+  const HostSettingsClubsEmptyState({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -1094,8 +1094,9 @@ class _HostSettingsClubsEmptyState extends StatelessWidget {
   }
 }
 
-class _HostSettingsClubRows extends StatelessWidget {
-  const _HostSettingsClubRows({
+class HostSettingsClubRows extends StatelessWidget {
+  const HostSettingsClubRows({
+    super.key,
     required this.uid,
     required this.clubs,
     required this.onOpenClub,
@@ -1110,9 +1111,9 @@ class _HostSettingsClubRows extends StatelessWidget {
     return Column(
       children: [
         for (final club in clubs)
-          CatchSettingsRow(
-            label: club.isOwnedBy(uid) ? 'Owner' : 'Host team',
-            value: club.name,
+          CatchField(
+            title: club.isOwnedBy(uid) ? 'Owner' : 'Host team',
+            valueText: club.name,
             icon: CatchIcons.groupOutlined,
             divider: club != clubs.first,
             onTap: () => onOpenClub(club),
@@ -1249,7 +1250,7 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
     );
     final saveMutation = ref.watch(HostProfileController.saveProfileMutation);
     if (state is HostProfileEditAuthRequired || uid == null) {
-      return const _HostAuthRequiredScreen();
+      return const HostAuthRequiredScreen();
     }
 
     return CatchMutationErrorListeners(
@@ -1475,24 +1476,24 @@ class HostProfileFields extends StatelessWidget {
           ),
           gapH14,
         ],
-        CatchTextField(
-          label: 'Display name',
+        CatchField(
+          title: 'Display name',
           controller: displayNameController,
           textInputAction: TextInputAction.next,
           textCapitalization: TextCapitalization.words,
           validator: _requiredDisplayName,
         ),
         gapH14,
-        CatchTextField(
-          label: 'Role title',
+        CatchField(
+          title: 'Role title',
           isOptional: true,
           controller: roleTitleController,
           textInputAction: TextInputAction.next,
           textCapitalization: TextCapitalization.words,
         ),
         gapH14,
-        CatchTextField(
-          label: 'Bio',
+        CatchField(
+          title: 'Bio',
           isOptional: true,
           controller: bioController,
           minLines: 4,
@@ -1565,8 +1566,9 @@ String hostProfileStatusLabel(HostProfileStatus status) {
   };
 }
 
-class _HostEventsScaffold extends StatefulWidget {
-  const _HostEventsScaffold({
+class HostEventsScaffold extends StatefulWidget {
+  const HostEventsScaffold({
+    super.key,
     required this.clubs,
     required this.currentUid,
     this.initialClubId,
@@ -1579,10 +1581,10 @@ class _HostEventsScaffold extends StatefulWidget {
   final HostHomeTab initialTab;
 
   @override
-  State<_HostEventsScaffold> createState() => _HostEventsScaffoldState();
+  State<HostEventsScaffold> createState() => _HostEventsScaffoldState();
 }
 
-class _HostEventsScaffoldState extends State<_HostEventsScaffold> {
+class _HostEventsScaffoldState extends State<HostEventsScaffold> {
   late HostHomeScreenState _state;
 
   @override
@@ -1597,7 +1599,7 @@ class _HostEventsScaffoldState extends State<_HostEventsScaffold> {
   }
 
   @override
-  void didUpdateWidget(_HostEventsScaffold oldWidget) {
+  void didUpdateWidget(HostEventsScaffold oldWidget) {
     super.didUpdateWidget(oldWidget);
     _state = HostHomeScreenState.resolve(
       clubs: widget.clubs,
@@ -1627,7 +1629,7 @@ class _HostEventsScaffoldState extends State<_HostEventsScaffold> {
             ),
             children: [
               if (selectedClub == null)
-                const _HostEmptyState(
+                const HostEmptyState(
                   title: 'Create your first club',
                   body:
                       'Create a club to publish events, manage attendees, and run Event Success.',
@@ -1680,7 +1682,7 @@ class _HostEventsScaffoldState extends State<_HostEventsScaffold> {
         padding: CatchInsets.pageBodyUnderHeader,
         children: [
           if (selectedClub == null)
-            const _HostEmptyState(
+            const HostEmptyState(
               title: 'Create your first club',
               body:
                   'Create a club to publish events, manage attendees, and run Event Success.',
@@ -1714,8 +1716,9 @@ class _HostEventsScaffoldState extends State<_HostEventsScaffold> {
   }
 }
 
-class _HostClubsScaffold extends StatefulWidget {
-  const _HostClubsScaffold({
+class HostClubsScaffold extends StatefulWidget {
+  const HostClubsScaffold({
+    super.key,
     required this.clubs,
     required this.currentUid,
     required this.initialTab,
@@ -1730,10 +1733,10 @@ class _HostClubsScaffold extends StatefulWidget {
   final String? initialExpandedEditField;
 
   @override
-  State<_HostClubsScaffold> createState() => _HostClubsScaffoldState();
+  State<HostClubsScaffold> createState() => _HostClubsScaffoldState();
 }
 
-class _HostClubsScaffoldState extends State<_HostClubsScaffold> {
+class _HostClubsScaffoldState extends State<HostClubsScaffold> {
   late HostClubsScreenState _state;
 
   @override
@@ -1748,7 +1751,7 @@ class _HostClubsScaffoldState extends State<_HostClubsScaffold> {
   }
 
   @override
-  void didUpdateWidget(_HostClubsScaffold oldWidget) {
+  void didUpdateWidget(HostClubsScaffold oldWidget) {
     super.didUpdateWidget(oldWidget);
     _state = HostClubsScreenState.resolve(
       clubs: widget.clubs,
@@ -1775,7 +1778,7 @@ class _HostClubsScaffoldState extends State<_HostClubsScaffold> {
               title: _state.title,
               bottom: selectedClub == null
                   ? null
-                  : _HostClubTabRail(
+                  : HostClubTabRail(
                       selected: _state.selectedTab,
                       onChanged: _selectTab,
                     ),
@@ -1803,21 +1806,21 @@ class _HostClubsScaffoldState extends State<_HostClubsScaffold> {
               : CatchInsets.pageBodyUnderHeader,
           children: [
             if (selectedClub == null)
-              const _HostEmptyState(
+              const HostEmptyState(
                 title: 'No host clubs yet',
                 body:
                     'Create a club or accept a host invite to start managing events.',
               )
             else
               switch (_state.selectedTab) {
-                HostClubTab.edit => _HostClubProfileCard(
+                HostClubTab.edit => HostClubProfileCard(
                   club: selectedClub,
                   currentUid: _state.currentUid,
                   isOwner: _state.selectedClubIsOwner,
                   initialExpandedField: widget.initialExpandedEditField,
                   onPreviewClub: _openClubPreview,
                 ),
-                HostClubTab.organizer => _HostClubOrganizerOverview(
+                HostClubTab.organizer => HostClubOrganizerOverview(
                   club: selectedClub,
                   currentUid: _state.currentUid,
                   isOwner: _state.selectedClubIsOwner,
@@ -1828,10 +1831,10 @@ class _HostClubsScaffoldState extends State<_HostClubsScaffold> {
                   onPreviewClub: _openClubPreview,
                   onOpenSettings: _openHostSettings,
                 ),
-                HostClubTab.insights => _HostClubInsightsPane(
+                HostClubTab.insights => HostClubInsightsPane(
                   club: selectedClub,
                 ),
-                HostClubTab.preview => _HostClubPreviewPane(
+                HostClubTab.preview => HostClubPreviewPane(
                   club: selectedClub,
                   onPreviewClub: _openClubPreview,
                 ),
@@ -1868,8 +1871,12 @@ class _HostClubsScaffoldState extends State<_HostClubsScaffold> {
   }
 }
 
-class _HostClubTabRail extends StatelessWidget implements PreferredSizeWidget {
-  const _HostClubTabRail({required this.selected, required this.onChanged});
+class HostClubTabRail extends StatelessWidget implements PreferredSizeWidget {
+  const HostClubTabRail({
+    super.key,
+    required this.selected,
+    required this.onChanged,
+  });
 
   final HostClubTab selected;
   final ValueChanged<HostClubTab> onChanged;
@@ -1975,8 +1982,8 @@ class HostOperationsTopBar extends StatelessWidget
   }
 }
 
-class _HostSectionLabel extends StatelessWidget {
-  const _HostSectionLabel({required this.label});
+class HostSectionLabel extends StatelessWidget {
+  const HostSectionLabel({super.key, required this.label});
 
   final String label;
 
@@ -2060,7 +2067,7 @@ class HostTodayDashboardSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _HostTodayHeader(
+        HostTodayHeader(
           club: club,
           currentUid: currentUid,
           clubs: clubs,
@@ -2069,31 +2076,49 @@ class HostTodayDashboardSection extends StatelessWidget {
         ),
         gapH18,
         switch (state.status) {
-          HostHomeTodayStatus.loading => const _HostTodayLoadingBody(),
+          HostHomeTodayStatus.loading => const HostTodayLoadingBody(),
           HostHomeTodayStatus.error => CatchInlineErrorState.fromError(
             state.error!,
             context: AppErrorContext.event,
             onRetry: onRetryEvents,
           ),
-          HostHomeTodayStatus.empty => _HostTodayEmptyEvents(
+          HostHomeTodayStatus.empty => HostTodayEmptyEvents(
             club: club,
             onCreateEvent: onCreateEvent,
             onViewEvents: onViewEvents,
           ),
-          HostHomeTodayStatus.content => _HostTodayContent(
-            club: club,
-            event: state.event!,
-            tasks: state.tasks,
-            onManageEvent: onManageEvent,
-          ),
+          HostHomeTodayStatus.content => _buildContent(),
         },
+      ],
+    );
+  }
+
+  Widget _buildContent() {
+    final event = state.event!;
+    final tasks = state.tasks;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        HostTodayEventHero(
+          event: event,
+          onPressed: () => onManageEvent(club, event),
+        ),
+        gapH24,
+        HostSectionLabel(label: 'NEEDS YOU · ${tasks.length}'),
+        gapH12,
+        for (final task in tasks) ...[
+          HostTodayTaskCard(task: task, onPrimary: () {}),
+          gapH12,
+        ],
       ],
     );
   }
 }
 
-class _HostTodayHeader extends StatelessWidget {
-  const _HostTodayHeader({
+class HostTodayHeader extends StatelessWidget {
+  const HostTodayHeader({
+    super.key,
     required this.club,
     required this.currentUid,
     required this.clubs,
@@ -2132,7 +2157,7 @@ class _HostTodayHeader extends StatelessWidget {
           ),
         ),
         gapW12,
-        _HostTodayClubPill(
+        HostTodayClubPill(
           club: club,
           currentUid: currentUid,
           clubs: clubs,
@@ -2144,8 +2169,9 @@ class _HostTodayHeader extends StatelessWidget {
   }
 }
 
-class _HostTodayClubPill extends StatelessWidget {
-  const _HostTodayClubPill({
+class HostTodayClubPill extends StatelessWidget {
+  const HostTodayClubPill({
+    super.key,
     required this.club,
     required this.currentUid,
     required this.clubs,
@@ -2221,8 +2247,8 @@ class _HostTodayClubPill extends StatelessWidget {
   }
 }
 
-class _HostTodayLoadingBody extends StatelessWidget {
-  const _HostTodayLoadingBody();
+class HostTodayLoadingBody extends StatelessWidget {
+  const HostTodayLoadingBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -2236,8 +2262,9 @@ class _HostTodayLoadingBody extends StatelessWidget {
   }
 }
 
-class _HostTodayEmptyEvents extends StatelessWidget {
-  const _HostTodayEmptyEvents({
+class HostTodayEmptyEvents extends StatelessWidget {
+  const HostTodayEmptyEvents({
+    super.key,
     required this.club,
     required this.onCreateEvent,
     required this.onViewEvents,
@@ -2291,42 +2318,12 @@ class _HostTodayEmptyEvents extends StatelessWidget {
   }
 }
 
-class _HostTodayContent extends StatelessWidget {
-  const _HostTodayContent({
-    required this.club,
+class HostTodayEventHero extends StatelessWidget {
+  const HostTodayEventHero({
+    super.key,
     required this.event,
-    required this.tasks,
-    required this.onManageEvent,
+    required this.onPressed,
   });
-
-  final Club club;
-  final Event event;
-  final List<HostHomeTodayTaskData> tasks;
-  final HostHomeManageEventCallback onManageEvent;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _HostTodayEventHero(
-          event: event,
-          onPressed: () => onManageEvent(club, event),
-        ),
-        gapH24,
-        _HostSectionLabel(label: 'NEEDS YOU · ${tasks.length}'),
-        gapH12,
-        for (final task in tasks) ...[
-          _HostTodayTaskCard(task: task, onPrimary: () {}),
-          gapH12,
-        ],
-      ],
-    );
-  }
-}
-
-class _HostTodayEventHero extends StatelessWidget {
-  const _HostTodayEventHero({required this.event, required this.onPressed});
 
   final Event event;
   final VoidCallback onPressed;
@@ -2334,22 +2331,20 @@ class _HostTodayEventHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final activity = ActivityPalette.resolve(context, event.activityKind);
-    const heroStart = Color(0xFF303663);
-    const heroEnd = Color(0xFF16140F);
 
     return CatchSurface(
       borderRadius: BorderRadius.circular(CatchRadius.lg),
       clipBehavior: Clip.antiAlias,
-      gradient: const LinearGradient(
+      gradient: LinearGradient(
         begin: Alignment.topRight,
         end: Alignment.bottomLeft,
-        colors: [heroStart, heroEnd],
+        colors: [activity.accent, activity.deep],
       ),
       padding: CatchInsets.contentRelaxed,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _HostTodayCountdownPill(event: event),
+          HostTodayCountdownPill(event: event),
           gapH16,
           Text(
             _todayEventHeroTitle(event),
@@ -2396,29 +2391,31 @@ class _HostTodayEventHero extends StatelessWidget {
           gapH16,
           Divider(
             height: CatchStroke.hairline,
-            color: CatchTokens.editorialLight.withValues(alpha: 0.18),
+            color: CatchTokens.editorialLight.withValues(
+              alpha: CatchOpacity.darkHeroDivider,
+            ),
           ),
           gapH14,
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _HostTodayHeroMetric(
+              HostTodayHeroMetric(
                 value: '${event.signedUpCount}',
                 label: 'Going',
               ),
               gapW20,
-              _HostTodayHeroMetric(
+              HostTodayHeroMetric(
                 value: '${event.waitlistCount}',
                 label: 'Waiting',
               ),
               gapW20,
-              _HostTodayHeroMetric(
+              HostTodayHeroMetric(
                 value: '${_reviewCount(event)}',
                 label: 'To review',
                 valueColor: activity.accent,
               ),
               const Spacer(),
-              const _HostTodayAvatarStack(),
+              HostTodayAvatarStack(activity: activity),
             ],
           ),
           gapH20,
@@ -2436,8 +2433,8 @@ class _HostTodayEventHero extends StatelessWidget {
   }
 }
 
-class _HostTodayCountdownPill extends StatelessWidget {
-  const _HostTodayCountdownPill({required this.event});
+class HostTodayCountdownPill extends StatelessWidget {
+  const HostTodayCountdownPill({super.key, required this.event});
 
   final Event event;
 
@@ -2445,7 +2442,9 @@ class _HostTodayCountdownPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSurface(
       radius: CatchRadius.pill,
-      backgroundColor: CatchTokens.editorialLight.withValues(alpha: 0.16),
+      backgroundColor: CatchTokens.editorialLight.withValues(
+        alpha: CatchOpacity.darkHeroPillFill,
+      ),
       borderWidth: 0,
       padding: const EdgeInsets.symmetric(
         horizontal: CatchSpacing.s3,
@@ -2462,8 +2461,9 @@ class _HostTodayCountdownPill extends StatelessWidget {
   }
 }
 
-class _HostTodayHeroMetric extends StatelessWidget {
-  const _HostTodayHeroMetric({
+class HostTodayHeroMetric extends StatelessWidget {
+  const HostTodayHeroMetric({
+    super.key,
     required this.value,
     required this.label,
     this.valueColor,
@@ -2500,8 +2500,10 @@ class _HostTodayHeroMetric extends StatelessWidget {
   }
 }
 
-class _HostTodayAvatarStack extends StatelessWidget {
-  const _HostTodayAvatarStack();
+class HostTodayAvatarStack extends StatelessWidget {
+  const HostTodayAvatarStack({super.key, required this.activity});
+
+  final CatchActivity activity;
 
   @override
   Widget build(BuildContext context) {
@@ -2512,19 +2514,19 @@ class _HostTodayAvatarStack extends StatelessWidget {
       child: Stack(
         alignment: Alignment.centerRight,
         children: [
-          const _HostTodayAvatarDot(
+          HostTodayAvatarDot(
             left: CatchSpacing.s0,
-            fill: Color(0xFF2E271F),
+            fill: activity.deep,
             label: '',
           ),
-          _HostTodayAvatarDot(
+          HostTodayAvatarDot(
             left: CatchSpacing.s5,
             fill: t.surface,
             label: 'D',
           ),
-          const _HostTodayAvatarDot(
+          HostTodayAvatarDot(
             left: CatchSpacing.s10,
-            fill: Color(0xFFD8E7D2),
+            fill: activity.soft,
             label: 'M',
           ),
         ],
@@ -2533,8 +2535,9 @@ class _HostTodayAvatarStack extends StatelessWidget {
   }
 }
 
-class _HostTodayAvatarDot extends StatelessWidget {
-  const _HostTodayAvatarDot({
+class HostTodayAvatarDot extends StatelessWidget {
+  const HostTodayAvatarDot({
+    super.key,
     required this.left,
     required this.fill,
     required this.label,
@@ -2551,7 +2554,9 @@ class _HostTodayAvatarDot extends StatelessWidget {
       left: left,
       child: CircleAvatar(
         radius: CatchSpacing.s3,
-        backgroundColor: CatchTokens.editorialDark.withValues(alpha: 0.28),
+        backgroundColor: CatchTokens.editorialDark.withValues(
+          alpha: CatchOpacity.avatarStackRing,
+        ),
         child: CircleAvatar(
           radius: CatchSpacing.micro10,
           backgroundColor: fill,
@@ -2567,8 +2572,12 @@ class _HostTodayAvatarDot extends StatelessWidget {
   }
 }
 
-class _HostTodayTaskCard extends StatelessWidget {
-  const _HostTodayTaskCard({required this.task, required this.onPrimary});
+class HostTodayTaskCard extends StatelessWidget {
+  const HostTodayTaskCard({
+    super.key,
+    required this.task,
+    required this.onPrimary,
+  });
 
   final HostHomeTodayTaskData task;
   final VoidCallback onPrimary;
@@ -2754,7 +2763,7 @@ class HostEventsClubSection extends StatelessWidget {
       children: [
         HostMetaRow(club: club, roleLabel: roleLabel, owner: owner),
         gapH24,
-        const _HostSectionLabel(label: 'Upcoming'),
+        const HostSectionLabel(label: 'Upcoming'),
         gapH8,
         switch (eventsState.status) {
           HostHomeEventsStatus.loading => const HostEventRowsSkeleton(),
@@ -2763,14 +2772,14 @@ class HostEventsClubSection extends StatelessWidget {
             context: AppErrorContext.event,
             onRetry: onRetryEvents,
           ),
-          HostHomeEventsStatus.empty => _HostEventRows(
+          HostHomeEventsStatus.empty => HostEventRows(
             club: club,
             rows: eventsState.rows,
             emptyTextColor: t.ink2,
             onCreateEvent: onCreateEvent,
             onManageEvent: onManageEvent,
           ),
-          HostHomeEventsStatus.populated => _HostEventRows(
+          HostHomeEventsStatus.populated => HostEventRows(
             club: club,
             rows: eventsState.rows,
             emptyTextColor: t.ink2,
@@ -2783,8 +2792,9 @@ class HostEventsClubSection extends StatelessWidget {
   }
 }
 
-class _HostEventRows extends StatelessWidget {
-  const _HostEventRows({
+class HostEventRows extends StatelessWidget {
+  const HostEventRows({
+    super.key,
     required this.club,
     required this.rows,
     required this.emptyTextColor,
@@ -2805,8 +2815,8 @@ class _HostEventRows extends StatelessWidget {
       children: [
         for (final row in rows.rows)
           HostEventRow(row: row, onTap: () => onManageEvent(club, row.event)),
-        CatchSettingsRow(
-          label: 'Add event',
+        CatchField(
+          title: 'Add event',
           icon: CatchIcons.addRounded,
           divider: !rows.isEmpty,
           onTap: () => onCreateEvent(club),
@@ -2868,8 +2878,9 @@ class HostMetaRow extends StatelessWidget {
   }
 }
 
-class _HostClubOrganizerOverview extends ConsumerWidget {
-  const _HostClubOrganizerOverview({
+class HostClubOrganizerOverview extends ConsumerWidget {
+  const HostClubOrganizerOverview({
+    super.key,
     required this.club,
     required this.currentUid,
     required this.isOwner,
@@ -2901,7 +2912,7 @@ class _HostClubOrganizerOverview extends ConsumerWidget {
       key: const ValueKey('host-club-organizer-overview'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _HostOrganizerHeader(
+        HostOrganizerHeader(
           club: club,
           trailing: showClubPicker
               ? CatchTopBarMenuAction<int>(
@@ -2922,97 +2933,89 @@ class _HostClubOrganizerOverview extends ConsumerWidget {
         ),
         if (isOwner) ...[
           gapH14,
-          _HostOrganizerPayoutPrompt(
+          HostOrganizerPayoutPrompt(
             uid: currentUid,
             onManagePayouts: () => onSelectTab(HostClubTab.edit),
           ),
         ],
         gapH16,
-        _HostOrganizerMetricGrid(
+        HostOrganizerMetricGrid(
           club: club,
           eventsLoaded: eventsAsync.hasValue,
           eventCount: events.length,
           activeEventCount: activeEvents.length,
         ),
         gapH12,
-        CatchSurface(
-          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
-          borderColor: CatchTokens.of(context).line,
-          child: CatchInfoRow(
-            icon: CatchIcons.visibilityOutlined,
-            label: 'How guests see you',
-            value: 'Public page',
-            trailing: CatchInfoRowTrailing.chevron,
-            onTap: () => onPreviewClub(club),
-          ),
+        CatchSection(
+          variant: CatchSectionVariant.contained,
+          children: [
+            CatchField(
+              icon: CatchIcons.visibilityOutlined,
+              title: 'How guests see you',
+              body: 'Public page',
+              mode: CatchFieldMode.nav,
+              onTap: () => onPreviewClub(club),
+            ),
+          ],
         ),
         gapH24,
-        _HostOrganizerSectionHeader(
+        HostOrganizerSectionHeader(
           label: 'Team · ${club.displayHostProfiles.length}',
           actionLabel: isOwner ? 'Manage' : null,
           onAction: isOwner ? () => onSelectTab(HostClubTab.edit) : null,
         ),
         gapH10,
-        _HostOrganizerTeamCard(
+        HostOrganizerTeamCard(
           profiles: club.displayHostProfiles,
           currentUid: currentUid,
         ),
         gapH24,
-        _HostOrganizerSectionHeader(
+        HostOrganizerSectionHeader(
           label: 'Trends · last 12 weeks',
           actionLabel: 'See insights',
           onAction: () => onSelectTab(HostClubTab.insights),
         ),
         gapH10,
-        _HostOrganizerTrendStrip(
+        HostOrganizerTrendStrip(
           memberCount: club.memberCount,
           activeEventCount: activeEvents.length,
           onTap: () => onSelectTab(HostClubTab.insights),
         ),
         gapH24,
-        const _HostOrganizerSectionHeader(label: 'Manage'),
+        const HostOrganizerSectionHeader(label: 'Manage'),
         gapH10,
-        CatchSurface(
-          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
-          borderColor: CatchTokens.of(context).line,
-          child: Column(
-            children: [
-              CatchInfoRow(
-                icon: CatchIcons.paymentsOutlined,
-                label: 'Payouts',
-                value: isOwner ? 'Manage' : 'Owner only',
-                trailing: isOwner
-                    ? CatchInfoRowTrailing.chevron
-                    : CatchInfoRowTrailing.none,
-                onTap: isOwner ? () => onSelectTab(HostClubTab.edit) : null,
-              ),
-              CatchInfoRow(
-                icon: CatchIcons.tuneRounded,
-                label: 'Event defaults',
-                value: 'Prefill new events',
-                trailing: isOwner
-                    ? CatchInfoRowTrailing.chevron
-                    : CatchInfoRowTrailing.none,
-                divider: true,
-                onTap: isOwner ? () => onSelectTab(HostClubTab.edit) : null,
-              ),
-              CatchInfoRow(
-                icon: CatchIcons.settingsOutlined,
-                label: 'Settings',
-                trailing: CatchInfoRowTrailing.chevron,
-                divider: true,
-                onTap: onOpenSettings,
-              ),
-            ],
-          ),
+        CatchSection(
+          variant: CatchSectionVariant.contained,
+          children: [
+            CatchField(
+              icon: CatchIcons.paymentsOutlined,
+              title: 'Payouts',
+              body: isOwner ? 'Manage' : 'Owner only',
+              mode: isOwner ? CatchFieldMode.nav : CatchFieldMode.read,
+              onTap: isOwner ? () => onSelectTab(HostClubTab.edit) : null,
+            ),
+            CatchField(
+              icon: CatchIcons.tuneRounded,
+              title: 'Event defaults',
+              body: 'Prefill new events',
+              mode: isOwner ? CatchFieldMode.nav : CatchFieldMode.read,
+              onTap: isOwner ? () => onSelectTab(HostClubTab.edit) : null,
+            ),
+            CatchField(
+              icon: CatchIcons.settingsOutlined,
+              title: 'Settings',
+              mode: CatchFieldMode.nav,
+              onTap: onOpenSettings,
+            ),
+          ],
         ),
       ],
     );
   }
 }
 
-class _HostOrganizerHeader extends StatelessWidget {
-  const _HostOrganizerHeader({required this.club, this.trailing});
+class HostOrganizerHeader extends StatelessWidget {
+  const HostOrganizerHeader({super.key, required this.club, this.trailing});
 
   final Club club;
   final Widget? trailing;
@@ -3062,8 +3065,9 @@ class _HostOrganizerHeader extends StatelessWidget {
   }
 }
 
-class _HostOrganizerPayoutPrompt extends ConsumerWidget {
-  const _HostOrganizerPayoutPrompt({
+class HostOrganizerPayoutPrompt extends ConsumerWidget {
+  const HostOrganizerPayoutPrompt({
+    super.key,
     required this.uid,
     required this.onManagePayouts,
   });
@@ -3149,8 +3153,9 @@ class _HostOrganizerPayoutPrompt extends ConsumerWidget {
   }
 }
 
-class _HostOrganizerMetricGrid extends StatelessWidget {
-  const _HostOrganizerMetricGrid({
+class HostOrganizerMetricGrid extends StatelessWidget {
+  const HostOrganizerMetricGrid({
+    super.key,
     required this.club,
     required this.eventsLoaded,
     required this.eventCount,
@@ -3165,21 +3170,21 @@ class _HostOrganizerMetricGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      _HostOrganizerMetricItem(
+      HostOrganizerMetricItem(
         value: _compactCount(club.memberCount),
         label: 'Members',
       ),
-      _HostOrganizerMetricItem(
+      HostOrganizerMetricItem(
         value: _ratingValue(club),
         label: club.reviewCount > 0
             ? 'Rating · ${club.reviewCount} reviews'
             : 'Rating',
       ),
-      _HostOrganizerMetricItem(
+      HostOrganizerMetricItem(
         value: eventsLoaded ? _compactCount(eventCount) : '-',
         label: 'Events hosted',
       ),
-      _HostOrganizerMetricItem(
+      HostOrganizerMetricItem(
         value: eventsLoaded ? _compactCount(activeEventCount) : '-',
         label: 'Upcoming',
       ),
@@ -3187,25 +3192,25 @@ class _HostOrganizerMetricGrid extends StatelessWidget {
 
     return Column(
       children: [
-        _HostOrganizerMetricRow(items: [items[0], items[1]]),
+        HostOrganizerMetricRow(items: [items[0], items[1]]),
         gapH12,
-        _HostOrganizerMetricRow(items: [items[2], items[3]]),
+        HostOrganizerMetricRow(items: [items[2], items[3]]),
       ],
     );
   }
 }
 
-class _HostOrganizerMetricItem {
-  const _HostOrganizerMetricItem({required this.value, required this.label});
+class HostOrganizerMetricItem {
+  const HostOrganizerMetricItem({required this.value, required this.label});
 
   final String value;
   final String label;
 }
 
-class _HostOrganizerMetricRow extends StatelessWidget {
-  const _HostOrganizerMetricRow({required this.items});
+class HostOrganizerMetricRow extends StatelessWidget {
+  const HostOrganizerMetricRow({super.key, required this.items});
 
-  final List<_HostOrganizerMetricItem> items;
+  final List<HostOrganizerMetricItem> items;
 
   @override
   Widget build(BuildContext context) {
@@ -3217,12 +3222,12 @@ class _HostOrganizerMetricRow extends StatelessWidget {
         height: CatchLayout.hostOrganizerMetricRowHeight,
         child: Row(
           children: [
-            Expanded(child: _HostOrganizerMetricTile(item: items[0])),
+            Expanded(child: HostOrganizerMetricTile(item: items[0])),
             ColoredBox(
               color: t.line,
               child: const SizedBox(width: CatchStroke.hairline),
             ),
-            Expanded(child: _HostOrganizerMetricTile(item: items[1])),
+            Expanded(child: HostOrganizerMetricTile(item: items[1])),
           ],
         ),
       ),
@@ -3230,10 +3235,10 @@ class _HostOrganizerMetricRow extends StatelessWidget {
   }
 }
 
-class _HostOrganizerMetricTile extends StatelessWidget {
-  const _HostOrganizerMetricTile({required this.item});
+class HostOrganizerMetricTile extends StatelessWidget {
+  const HostOrganizerMetricTile({super.key, required this.item});
 
-  final _HostOrganizerMetricItem item;
+  final HostOrganizerMetricItem item;
 
   @override
   Widget build(BuildContext context) {
@@ -3263,8 +3268,9 @@ class _HostOrganizerMetricTile extends StatelessWidget {
   }
 }
 
-class _HostOrganizerSectionHeader extends StatelessWidget {
-  const _HostOrganizerSectionHeader({
+class HostOrganizerSectionHeader extends StatelessWidget {
+  const HostOrganizerSectionHeader({
+    super.key,
     required this.label,
     this.actionLabel,
     this.onAction,
@@ -3297,8 +3303,9 @@ class _HostOrganizerSectionHeader extends StatelessWidget {
   }
 }
 
-class _HostOrganizerTeamCard extends StatelessWidget {
-  const _HostOrganizerTeamCard({
+class HostOrganizerTeamCard extends StatelessWidget {
+  const HostOrganizerTeamCard({
+    super.key,
     required this.profiles,
     required this.currentUid,
   });
@@ -3323,7 +3330,7 @@ class _HostOrganizerTeamCard extends StatelessWidget {
       child: Column(
         children: [
           for (var index = 0; index < visibleProfiles.length; index++)
-            _HostOrganizerTeamRow(
+            HostOrganizerTeamRow(
               profile: visibleProfiles[index],
               currentUid: currentUid,
               divider: index > 0,
@@ -3334,8 +3341,9 @@ class _HostOrganizerTeamCard extends StatelessWidget {
   }
 }
 
-class _HostOrganizerTeamRow extends StatelessWidget {
-  const _HostOrganizerTeamRow({
+class HostOrganizerTeamRow extends StatelessWidget {
+  const HostOrganizerTeamRow({
+    super.key,
     required this.profile,
     required this.currentUid,
     required this.divider,
@@ -3358,7 +3366,7 @@ class _HostOrganizerTeamRow extends StatelessWidget {
             left: CatchLayout.hostOrganizerTeamDividerInset,
             right: 0,
             child: ColoredBox(
-              color: t.line.withValues(alpha: CatchOpacity.infoRowDivider),
+              color: t.line.withValues(alpha: CatchOpacity.fieldRowDivider),
               child: const SizedBox(height: CatchStroke.hairline),
             ),
           ),
@@ -3412,8 +3420,9 @@ class _HostOrganizerTeamRow extends StatelessWidget {
   }
 }
 
-class _HostOrganizerTrendStrip extends StatelessWidget {
-  const _HostOrganizerTrendStrip({
+class HostOrganizerTrendStrip extends StatelessWidget {
+  const HostOrganizerTrendStrip({
+    super.key,
     required this.memberCount,
     required this.activeEventCount,
     required this.onTap,
@@ -3437,12 +3446,9 @@ class _HostOrganizerTrendStrip extends StatelessWidget {
         children: [
           Row(
             children: [
-              _HostTrendKpi(
-                value: _compactCount(memberCount),
-                label: 'Members',
-              ),
+              HostTrendKpi(value: _compactCount(memberCount), label: 'Members'),
               gapW16,
-              _HostTrendKpi(
+              HostTrendKpi(
                 value: _compactCount(activeEventCount),
                 label: 'Active events',
               ),
@@ -3485,8 +3491,8 @@ class _HostOrganizerTrendStrip extends StatelessWidget {
   }
 }
 
-class _HostTrendKpi extends StatelessWidget {
-  const _HostTrendKpi({required this.value, required this.label});
+class HostTrendKpi extends StatelessWidget {
+  const HostTrendKpi({super.key, required this.value, required this.label});
 
   final String value;
   final String label;
@@ -3556,8 +3562,9 @@ List<double> _trendBars({required int memberCount, required int events}) {
   ];
 }
 
-class _HostClubProfileCard extends ConsumerStatefulWidget {
-  const _HostClubProfileCard({
+class HostClubProfileCard extends ConsumerStatefulWidget {
+  const HostClubProfileCard({
+    super.key,
     required this.club,
     required this.currentUid,
     required this.isOwner,
@@ -3572,11 +3579,11 @@ class _HostClubProfileCard extends ConsumerStatefulWidget {
   final String? initialExpandedField;
 
   @override
-  ConsumerState<_HostClubProfileCard> createState() =>
+  ConsumerState<HostClubProfileCard> createState() =>
       _HostClubProfileCardState();
 }
 
-class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
+class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
   String? _expandedField;
 
   @override
@@ -3599,7 +3606,7 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
   }
 
   @override
-  void didUpdateWidget(covariant _HostClubProfileCard oldWidget) {
+  void didUpdateWidget(covariant HostClubProfileCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.club.id != widget.club.id) {
       _expandedField = widget.initialExpandedField;
@@ -3739,9 +3746,9 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
         HostSettingsSection(
           label: 'Public profile',
           children: [
-            CatchSettingsRow(
-              label: 'Preview club page',
-              value: 'Preview',
+            CatchField(
+              title: 'Preview club page',
+              valueText: 'Preview',
               icon: CatchIcons.visibilityOutlined,
               onTap: () => widget.onPreviewClub(club),
             ),
@@ -3787,10 +3794,10 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
     Object? Function(String value)? toFieldValue,
   }) {
     if (!widget.isOwner) {
-      return CatchSettingsRow(label: label, value: value, icon: icon);
+      return CatchField(title: label, valueText: value, icon: icon);
     }
 
-    return _HostInlineTextEntryEditor(
+    return HostInlineTextEntryEditor(
       key: ValueKey('host-inline-$fieldName'),
       clubId: club.id,
       icon: icon,
@@ -3821,14 +3828,14 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
     const fieldName = 'primaryActivityKind';
     final selected = club.hostDefaults.primaryActivityKind;
     if (!widget.isOwner) {
-      return CatchSettingsRow(
-        label: 'Default activity',
-        value: selected.label,
+      return CatchField(
+        title: 'Default activity',
+        valueText: selected.label,
         icon: CatchIcons.eventOutlined,
       );
     }
 
-    return _HostInlineOptionEditor<ActivityKind>(
+    return HostInlineOptionEditor<ActivityKind>(
       key: const ValueKey('host-inline-primaryActivityKind'),
       clubId: club.id,
       icon: CatchIcons.eventOutlined,
@@ -3839,7 +3846,7 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
       isExpanded: _isExpanded(fieldName),
       options: [
         for (final activityKind in ActivityKind.eventCreationDefaults)
-          _HostInlineOption(
+          HostInlineOption(
             value: activityKind,
             label: activityKind.label,
             accentColor: ActivityPalette.resolve(context, activityKind).accent,
@@ -3861,14 +3868,14 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
     const fieldName = 'admissionPreset';
     final selected = club.hostDefaults.eventPolicy.admissionPreset;
     if (!widget.isOwner) {
-      return CatchSettingsRow(
-        label: 'Admission',
-        value: _admissionDefaultLabel(selected),
+      return CatchField(
+        title: 'Admission',
+        valueText: _admissionDefaultLabel(selected),
         icon: CatchIcons.eventSeatOutlined,
       );
     }
 
-    return _HostInlineOptionEditor<EventAdmissionDefaultPreset>(
+    return HostInlineOptionEditor<EventAdmissionDefaultPreset>(
       key: const ValueKey('host-inline-admissionPreset'),
       clubId: club.id,
       icon: CatchIcons.eventSeatOutlined,
@@ -3880,7 +3887,7 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
       helperText: _admissionDefaultDescription(selected),
       options: [
         for (final preset in EventAdmissionDefaultPreset.values)
-          _HostInlineOption(
+          HostInlineOption(
             value: preset,
             label: _admissionDefaultLabel(preset),
           ),
@@ -3910,14 +3917,14 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
     final policy = club.hostDefaults.eventPolicy;
     final value = '${policy.minAge}–${policy.maxAge}';
     if (!widget.isOwner) {
-      return CatchSettingsRow(
-        label: 'Age range',
-        value: value,
+      return CatchField(
+        title: 'Age range',
+        valueText: value,
         icon: CatchIcons.cakeOutlined,
       );
     }
 
-    return _HostInlineAgeRangeEditor(
+    return HostInlineAgeRangeEditor(
       key: const ValueKey('host-inline-ageRange'),
       clubId: club.id,
       icon: CatchIcons.cakeOutlined,
@@ -3937,14 +3944,14 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
     final selected = club.hostDefaults.eventPolicy.cancellationPolicyId;
     final selectedPolicy = club.hostDefaults.eventPolicy.cancellationPolicy;
     if (!widget.isOwner) {
-      return CatchSettingsRow(
-        label: 'Cancellation policy',
-        value: selectedPolicy.title,
+      return CatchField(
+        title: 'Cancellation policy',
+        valueText: selectedPolicy.title,
         icon: CatchIcons.eventBusyOutlined,
       );
     }
 
-    return _HostInlineOptionEditor<EventCancellationPolicyId>(
+    return HostInlineOptionEditor<EventCancellationPolicyId>(
       key: const ValueKey('host-inline-cancellationPolicyId'),
       clubId: club.id,
       icon: CatchIcons.eventBusyOutlined,
@@ -3956,7 +3963,7 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
       helperText: selectedPolicy.attendeeSummary,
       options: [
         for (final policyId in EventCancellationPolicyId.values)
-          _HostInlineOption(
+          HostInlineOption(
             value: policyId,
             label: _cancellationPolicyFor(policyId).title,
           ),
@@ -3976,17 +3983,17 @@ class _HostClubProfileCardState extends ConsumerState<_HostClubProfileCard> {
   }
 }
 
-class _HostClubInsightsPane extends ConsumerStatefulWidget {
-  const _HostClubInsightsPane({required this.club});
+class HostClubInsightsPane extends ConsumerStatefulWidget {
+  const HostClubInsightsPane({super.key, required this.club});
 
   final Club club;
 
   @override
-  ConsumerState<_HostClubInsightsPane> createState() =>
+  ConsumerState<HostClubInsightsPane> createState() =>
       _HostClubInsightsPaneState();
 }
 
-class _HostClubInsightsPaneState extends ConsumerState<_HostClubInsightsPane> {
+class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
   late HostClubInsightsState _state;
 
   @override
@@ -3996,7 +4003,7 @@ class _HostClubInsightsPaneState extends ConsumerState<_HostClubInsightsPane> {
   }
 
   @override
-  void didUpdateWidget(covariant _HostClubInsightsPane oldWidget) {
+  void didUpdateWidget(covariant HostClubInsightsPane oldWidget) {
     super.didUpdateWidget(oldWidget);
     _state = _state.selectClub(widget.club.id);
   }
@@ -4011,7 +4018,7 @@ class _HostClubInsightsPaneState extends ConsumerState<_HostClubInsightsPane> {
       children: [
         HostMetaRow(club: widget.club, roleLabel: 'Insights', owner: true),
         gapH24,
-        _HostAnalyticsControls(
+        HostAnalyticsControls(
           rangePreset: _state.rangePreset,
           granularity: _state.granularity,
           customStartDate: _state.customStartDate,
@@ -4034,7 +4041,7 @@ class _HostClubInsightsPaneState extends ConsumerState<_HostClubInsightsPane> {
             context: AppErrorContext.club,
             onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
           ),
-          builder: (context, report) => _HostAnalyticsReportView(
+          builder: (context, report) => HostAnalyticsReportView(
             report: report,
             selectedEventId: _state.selectedEventId,
             onEventSelected: _selectEventScope,
@@ -4078,8 +4085,9 @@ class _HostClubInsightsPaneState extends ConsumerState<_HostClubInsightsPane> {
   }
 }
 
-class _HostAnalyticsControls extends StatelessWidget {
-  const _HostAnalyticsControls({
+class HostAnalyticsControls extends StatelessWidget {
+  const HostAnalyticsControls({
+    super.key,
     required this.rangePreset,
     required this.granularity,
     required this.customStartDate,
@@ -4146,7 +4154,7 @@ class _HostAnalyticsControls extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _HostAnalyticsDateButton(
+                child: HostAnalyticsDateButton(
                   label: 'Start',
                   value: _formatAnalyticsDate(customStartDate),
                   onTap: onPickStartDate,
@@ -4154,7 +4162,7 @@ class _HostAnalyticsControls extends StatelessWidget {
               ),
               const SizedBox(width: CatchSpacing.s3),
               Expanded(
-                child: _HostAnalyticsDateButton(
+                child: HostAnalyticsDateButton(
                   label: 'End',
                   value: _formatAnalyticsDate(customEndDate),
                   onTap: onPickEndDate,
@@ -4191,8 +4199,9 @@ class _HostAnalyticsControls extends StatelessWidget {
   }
 }
 
-class _HostAnalyticsDateButton extends StatelessWidget {
-  const _HostAnalyticsDateButton({
+class HostAnalyticsDateButton extends StatelessWidget {
+  const HostAnalyticsDateButton({
+    super.key,
     required this.label,
     required this.value,
     required this.onTap,
@@ -4237,8 +4246,9 @@ class _HostAnalyticsDateButton extends StatelessWidget {
   }
 }
 
-class _HostAnalyticsReportView extends StatelessWidget {
-  const _HostAnalyticsReportView({
+class HostAnalyticsReportView extends StatelessWidget {
+  const HostAnalyticsReportView({
+    super.key,
     required this.report,
     required this.selectedEventId,
     required this.onEventSelected,
@@ -4255,27 +4265,27 @@ class _HostAnalyticsReportView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _HostAnalyticsMetricGrid(metrics: report.summaryCards),
+        HostAnalyticsMetricGrid(metrics: report.summaryCards),
         gapH24,
-        _HostAnalyticsTrendPanel(points: report.trend),
+        HostAnalyticsTrendPanel(points: report.trend),
         gapH24,
-        _HostAnalyticsEventList(
+        HostAnalyticsEventList(
           events: report.topEvents,
           selectedEventId: selectedEventId,
           onEventSelected: onEventSelected,
           onClearEvent: onClearEvent,
         ),
         gapH24,
-        _HostAnalyticsReviewDiscoveryPanel(report: report),
+        HostAnalyticsReviewDiscoveryPanel(report: report),
         gapH24,
-        _HostAnalyticsDataQualityPanel(rows: report.dataQuality),
+        HostAnalyticsDataQualityPanel(rows: report.dataQuality),
       ],
     );
   }
 }
 
-class _HostAnalyticsMetricGrid extends StatelessWidget {
-  const _HostAnalyticsMetricGrid({required this.metrics});
+class HostAnalyticsMetricGrid extends StatelessWidget {
+  const HostAnalyticsMetricGrid({super.key, required this.metrics});
 
   final List<HostAnalyticsMetricCard> metrics;
 
@@ -4291,7 +4301,7 @@ class _HostAnalyticsMetricGrid extends StatelessWidget {
             for (final metric in metrics)
               SizedBox(
                 width: itemWidth,
-                child: _HostAnalyticsMetricTile(metric: metric),
+                child: HostAnalyticsMetricTile(metric: metric),
               ),
           ],
         );
@@ -4300,8 +4310,8 @@ class _HostAnalyticsMetricGrid extends StatelessWidget {
   }
 }
 
-class _HostAnalyticsMetricTile extends StatelessWidget {
-  const _HostAnalyticsMetricTile({required this.metric});
+class HostAnalyticsMetricTile extends StatelessWidget {
+  const HostAnalyticsMetricTile({super.key, required this.metric});
 
   final HostAnalyticsMetricCard metric;
 
@@ -4368,8 +4378,8 @@ class _HostAnalyticsMetricTile extends StatelessWidget {
   }
 }
 
-class _HostAnalyticsTrendPanel extends StatelessWidget {
-  const _HostAnalyticsTrendPanel({required this.points});
+class HostAnalyticsTrendPanel extends StatelessWidget {
+  const HostAnalyticsTrendPanel({super.key, required this.points});
 
   final List<HostAnalyticsTrendPoint> points;
 
@@ -4388,7 +4398,7 @@ class _HostAnalyticsTrendPanel extends StatelessWidget {
       return value > max ? value : max;
     });
 
-    return _HostAnalyticsSection(
+    return HostAnalyticsSection(
       label: 'Funnel',
       child: CatchSurface(
         padding: CatchInsets.content,
@@ -4399,13 +4409,13 @@ class _HostAnalyticsTrendPanel extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _HostAnalyticsInlineStat(
+                  child: HostAnalyticsInlineStat(
                     label: 'Demand',
                     value: _formatCount(totalDemand),
                   ),
                 ),
                 Expanded(
-                  child: _HostAnalyticsInlineStat(
+                  child: HostAnalyticsInlineStat(
                     label: 'Bookings',
                     value: _formatCount(totalBookings),
                   ),
@@ -4422,7 +4432,7 @@ class _HostAnalyticsTrendPanel extends StatelessWidget {
                     if (point != points.first)
                       const SizedBox(width: CatchSpacing.micro6),
                     Expanded(
-                      child: _HostAnalyticsBar(
+                      child: HostAnalyticsBar(
                         value: point.metrics['bookings'] ?? 0,
                         maxValue: maxBookings,
                       ),
@@ -4438,8 +4448,12 @@ class _HostAnalyticsTrendPanel extends StatelessWidget {
   }
 }
 
-class _HostAnalyticsBar extends StatelessWidget {
-  const _HostAnalyticsBar({required this.value, required this.maxValue});
+class HostAnalyticsBar extends StatelessWidget {
+  const HostAnalyticsBar({
+    super.key,
+    required this.value,
+    required this.maxValue,
+  });
 
   final num value;
   final num maxValue;
@@ -4463,8 +4477,9 @@ class _HostAnalyticsBar extends StatelessWidget {
   }
 }
 
-class _HostAnalyticsEventList extends StatelessWidget {
-  const _HostAnalyticsEventList({
+class HostAnalyticsEventList extends StatelessWidget {
+  const HostAnalyticsEventList({
+    super.key,
     required this.events,
     required this.selectedEventId,
     required this.onEventSelected,
@@ -4478,7 +4493,7 @@ class _HostAnalyticsEventList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _HostAnalyticsSection(
+    return HostAnalyticsSection(
       label: selectedEventId == null ? 'Top events' : 'Selected event',
       child: Column(
         children: [
@@ -4508,7 +4523,7 @@ class _HostAnalyticsEventList extends StatelessWidget {
             )
           else
             for (final event in events.take(5))
-              _HostAnalyticsEventTile(
+              HostAnalyticsEventTile(
                 event: event,
                 divider: event != events.first,
                 selected: event.eventId == selectedEventId,
@@ -4520,8 +4535,9 @@ class _HostAnalyticsEventList extends StatelessWidget {
   }
 }
 
-class _HostAnalyticsEventTile extends StatelessWidget {
-  const _HostAnalyticsEventTile({
+class HostAnalyticsEventTile extends StatelessWidget {
+  const HostAnalyticsEventTile({
+    super.key,
     required this.event,
     required this.divider,
     required this.selected,
@@ -4659,14 +4675,14 @@ DateTime _analyticsDateDaysAgo(int days) {
   return DateTime(today.year, today.month, today.day - days);
 }
 
-class _HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {
-  const _HostAnalyticsReviewDiscoveryPanel({required this.report});
+class HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {
+  const HostAnalyticsReviewDiscoveryPanel({super.key, required this.report});
 
   final HostAnalyticsReport report;
 
   @override
   Widget build(BuildContext context) {
-    return _HostAnalyticsSection(
+    return HostAnalyticsSection(
       label: 'Reviews and saves',
       child: CatchSurface(
         padding: CatchInsets.content,
@@ -4676,13 +4692,13 @@ class _HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _HostAnalyticsInlineStat(
+                  child: HostAnalyticsInlineStat(
                     label: 'New reviews',
                     value: '${report.reviewSummary.newReviews}',
                   ),
                 ),
                 Expanded(
-                  child: _HostAnalyticsInlineStat(
+                  child: HostAnalyticsInlineStat(
                     label: 'Average rating',
                     value: report.reviewSummary.averageRating <= 0
                         ? '—'
@@ -4695,13 +4711,13 @@ class _HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _HostAnalyticsInlineStat(
+                  child: HostAnalyticsInlineStat(
                     label: 'Event saves',
                     value: '${report.discoverySummary.eventSaves}',
                   ),
                 ),
                 Expanded(
-                  child: _HostAnalyticsInlineStat(
+                  child: HostAnalyticsInlineStat(
                     label: 'Responses',
                     value: '${report.reviewSummary.ownerResponseCount}',
                   ),
@@ -4715,15 +4731,15 @@ class _HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {
   }
 }
 
-class _HostAnalyticsDataQualityPanel extends StatelessWidget {
-  const _HostAnalyticsDataQualityPanel({required this.rows});
+class HostAnalyticsDataQualityPanel extends StatelessWidget {
+  const HostAnalyticsDataQualityPanel({super.key, required this.rows});
 
   final List<HostAnalyticsDataQuality> rows;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return _HostAnalyticsSection(
+    return HostAnalyticsSection(
       label: 'Data quality',
       child: Column(
         children: [
@@ -4766,8 +4782,12 @@ class _HostAnalyticsDataQualityPanel extends StatelessWidget {
   }
 }
 
-class _HostAnalyticsInlineStat extends StatelessWidget {
-  const _HostAnalyticsInlineStat({required this.label, required this.value});
+class HostAnalyticsInlineStat extends StatelessWidget {
+  const HostAnalyticsInlineStat({
+    super.key,
+    required this.label,
+    required this.value,
+  });
 
   final String label;
   final String value;
@@ -4791,8 +4811,12 @@ class _HostAnalyticsInlineStat extends StatelessWidget {
   }
 }
 
-class _HostAnalyticsSection extends StatelessWidget {
-  const _HostAnalyticsSection({required this.label, required this.child});
+class HostAnalyticsSection extends StatelessWidget {
+  const HostAnalyticsSection({
+    super.key,
+    required this.label,
+    required this.child,
+  });
 
   final String label;
   final Widget child;
@@ -4802,7 +4826,7 @@ class _HostAnalyticsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _HostSectionLabel(label: label),
+        HostSectionLabel(label: label),
         gapH8,
         child,
       ],
@@ -4899,8 +4923,8 @@ mixin _HostInlineClubSaveState<T extends ConsumerStatefulWidget>
   }
 }
 
-class _HostInlineTextEntryEditor extends ConsumerStatefulWidget {
-  const _HostInlineTextEntryEditor({
+class HostInlineTextEntryEditor extends ConsumerStatefulWidget {
+  const HostInlineTextEntryEditor({
     super.key,
     required this.clubId,
     required this.icon,
@@ -4950,13 +4974,13 @@ class _HostInlineTextEntryEditor extends ConsumerStatefulWidget {
   final Object? Function(String value)? toFieldValue;
 
   @override
-  ConsumerState<_HostInlineTextEntryEditor> createState() =>
+  ConsumerState<HostInlineTextEntryEditor> createState() =>
       _HostInlineTextEntryEditorState();
 }
 
 class _HostInlineTextEntryEditorState
-    extends ConsumerState<_HostInlineTextEntryEditor>
-    with _HostInlineClubSaveState<_HostInlineTextEntryEditor> {
+    extends ConsumerState<HostInlineTextEntryEditor>
+    with _HostInlineClubSaveState<HostInlineTextEntryEditor> {
   late final TextEditingController _controller;
   late final FocusNode _focusNode;
   String? _validationError;
@@ -4973,7 +4997,7 @@ class _HostInlineTextEntryEditorState
   }
 
   @override
-  void didUpdateWidget(covariant _HostInlineTextEntryEditor oldWidget) {
+  void didUpdateWidget(covariant HostInlineTextEntryEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.fieldName != widget.fieldName ||
         oldWidget.currentValue != widget.currentValue) {
@@ -5052,14 +5076,14 @@ class _HostInlineTextEntryEditorState
   Widget build(BuildContext context) {
     final saveMutation = ref.watch(HostClubEditController.updateClubMutation);
     final saving = saveMutation.isPending;
-    return ProfileInlineFieldScaffold(
+    return profileInlineFieldScaffold(
+      context,
       icon: widget.icon,
       label: widget.label,
       value: widget.value,
       isExpanded: widget.isExpanded,
       onTap: widget.onTap,
       isSaving: saving,
-      animateValueContent: false,
       valueContent: ProfileInlineTextValue(
         label: widget.label,
         displayValue: widget.value,
@@ -5095,8 +5119,8 @@ class _HostInlineTextEntryEditorState
   }
 }
 
-class _HostInlineOption<T> {
-  const _HostInlineOption({
+class HostInlineOption<T> {
+  const HostInlineOption({
     required this.value,
     required this.label,
     this.accentColor,
@@ -5107,8 +5131,8 @@ class _HostInlineOption<T> {
   final Color? accentColor;
 }
 
-class _HostInlineOptionEditor<T> extends ConsumerStatefulWidget {
-  const _HostInlineOptionEditor({
+class HostInlineOptionEditor<T> extends ConsumerStatefulWidget {
+  const HostInlineOptionEditor({
     super.key,
     required this.clubId,
     required this.icon,
@@ -5132,7 +5156,7 @@ class _HostInlineOptionEditor<T> extends ConsumerStatefulWidget {
   final T currentValue;
   final String fieldName;
   final bool isExpanded;
-  final List<_HostInlineOption<T>> options;
+  final List<HostInlineOption<T>> options;
   final UpdateClubPatch Function(T value) patchForValue;
   final VoidCallback onTap;
   final VoidCallback onSaved;
@@ -5140,17 +5164,17 @@ class _HostInlineOptionEditor<T> extends ConsumerStatefulWidget {
   final String? helperText;
 
   @override
-  ConsumerState<_HostInlineOptionEditor<T>> createState() =>
-      _HostInlineOptionEditorState<T>();
+  ConsumerState<HostInlineOptionEditor<T>> createState() =>
+      HostInlineOptionEditorState<T>();
 }
 
-class _HostInlineOptionEditorState<T>
-    extends ConsumerState<_HostInlineOptionEditor<T>>
-    with _HostInlineClubSaveState<_HostInlineOptionEditor<T>> {
+class HostInlineOptionEditorState<T>
+    extends ConsumerState<HostInlineOptionEditor<T>>
+    with _HostInlineClubSaveState<HostInlineOptionEditor<T>> {
   late T _selected = widget.currentValue;
 
   @override
-  void didUpdateWidget(covariant _HostInlineOptionEditor<T> oldWidget) {
+  void didUpdateWidget(covariant HostInlineOptionEditor<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.fieldName != widget.fieldName ||
         oldWidget.currentValue != widget.currentValue) {
@@ -5185,14 +5209,14 @@ class _HostInlineOptionEditorState<T>
     final displayValue = widget.isExpanded
         ? _labelFor(_selected)
         : widget.value;
-    return ProfileInlineFieldScaffold(
+    return profileInlineFieldScaffold(
+      context,
       icon: widget.icon,
       label: widget.label,
       value: displayValue,
       isExpanded: widget.isExpanded,
       onTap: widget.onTap,
       isSaving: saving,
-      animateValueContent: false,
       saveError: buildSaveError(saveMutation),
       editorChildren: [
         if (widget.helperText != null) ...[
@@ -5230,8 +5254,8 @@ class _HostInlineOptionEditorState<T>
   }
 }
 
-class _HostInlineAgeRangeEditor extends ConsumerStatefulWidget {
-  const _HostInlineAgeRangeEditor({
+class HostInlineAgeRangeEditor extends ConsumerStatefulWidget {
+  const HostInlineAgeRangeEditor({
     super.key,
     required this.clubId,
     required this.icon,
@@ -5257,13 +5281,13 @@ class _HostInlineAgeRangeEditor extends ConsumerStatefulWidget {
   final VoidCallback onCancel;
 
   @override
-  ConsumerState<_HostInlineAgeRangeEditor> createState() =>
+  ConsumerState<HostInlineAgeRangeEditor> createState() =>
       _HostInlineAgeRangeEditorState();
 }
 
 class _HostInlineAgeRangeEditorState
-    extends ConsumerState<_HostInlineAgeRangeEditor>
-    with _HostInlineClubSaveState<_HostInlineAgeRangeEditor> {
+    extends ConsumerState<HostInlineAgeRangeEditor>
+    with _HostInlineClubSaveState<HostInlineAgeRangeEditor> {
   late final TextEditingController _minAgeController;
   late final TextEditingController _maxAgeController;
   String? _validationError;
@@ -5284,7 +5308,7 @@ class _HostInlineAgeRangeEditorState
   }
 
   @override
-  void didUpdateWidget(covariant _HostInlineAgeRangeEditor oldWidget) {
+  void didUpdateWidget(covariant HostInlineAgeRangeEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.fieldName != widget.fieldName ||
         oldWidget.hostDefaults.eventPolicy.minAge != _policy.minAge ||
@@ -5348,14 +5372,14 @@ class _HostInlineAgeRangeEditorState
     final saveMutation = ref.watch(HostClubEditController.updateClubMutation);
     final saving = saveMutation.isPending;
     final displayValue = widget.isExpanded ? _draftValue : widget.value;
-    return ProfileInlineFieldScaffold(
+    return profileInlineFieldScaffold(
+      context,
       icon: widget.icon,
       label: widget.label,
       value: displayValue,
       isExpanded: widget.isExpanded,
       onTap: widget.onTap,
       isSaving: saving,
-      animateValueContent: false,
       saveError: _validationError == null
           ? buildSaveError(saveMutation)
           : CatchErrorBanner(message: _validationError!),
@@ -5363,8 +5387,8 @@ class _HostInlineAgeRangeEditorState
         Row(
           children: [
             Expanded(
-              child: CatchTextField(
-                label: 'Min age',
+              child: CatchField(
+                title: 'Min age',
                 isOptional: true,
                 controller: _minAgeController,
                 keyboardType: TextInputType.number,
@@ -5374,8 +5398,8 @@ class _HostInlineAgeRangeEditorState
             ),
             gapW12,
             Expanded(
-              child: CatchTextField(
-                label: 'Max age',
+              child: CatchField(
+                title: 'Max age',
                 isOptional: true,
                 controller: _maxAgeController,
                 keyboardType: TextInputType.number,
@@ -5398,8 +5422,12 @@ class _HostInlineAgeRangeEditorState
   }
 }
 
-class _HostClubPreviewPane extends StatelessWidget {
-  const _HostClubPreviewPane({required this.club, required this.onPreviewClub});
+class HostClubPreviewPane extends StatelessWidget {
+  const HostClubPreviewPane({
+    super.key,
+    required this.club,
+    required this.onPreviewClub,
+  });
 
   final Club club;
   final HostClubPreviewCallback onPreviewClub;
@@ -5416,9 +5444,9 @@ class _HostClubPreviewPane extends StatelessWidget {
           style: CatchTextStyles.bodyLead(context, color: t.ink),
         ),
         gapH18,
-        CatchSettingsRow(
-          label: 'Open public preview',
-          value: 'Preview',
+        CatchField(
+          title: 'Open public preview',
+          valueText: 'Preview',
           icon: CatchIcons.visibilityOutlined,
           onTap: () => onPreviewClub(club),
         ),
@@ -5556,9 +5584,9 @@ class HostEventRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSettingsRow(
-      label: row.title,
-      value: row.timeRangeLabel,
+    return CatchField(
+      title: row.title,
+      valueText: row.timeRangeLabel,
       icon: CatchIcons.calendarTodayOutlined,
       divider: row.divider,
       onTap: onTap,
@@ -5566,8 +5594,8 @@ class HostEventRow extends StatelessWidget {
   }
 }
 
-class _HostEmptyState extends StatelessWidget {
-  const _HostEmptyState({required this.title, required this.body});
+class HostEmptyState extends StatelessWidget {
+  const HostEmptyState({super.key, required this.title, required this.body});
 
   final String title;
   final String body;
@@ -5598,8 +5626,8 @@ class _HostEmptyState extends StatelessWidget {
   }
 }
 
-class _HostAuthRequiredScreen extends StatelessWidget {
-  const _HostAuthRequiredScreen();
+class HostAuthRequiredScreen extends StatelessWidget {
+  const HostAuthRequiredScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -5612,8 +5640,12 @@ class _HostAuthRequiredScreen extends StatelessWidget {
   }
 }
 
-class _HostLoadingScreen extends StatelessWidget {
-  const _HostLoadingScreen({required this.title, this.showTabRail = false});
+class HostLoadingScreen extends StatelessWidget {
+  const HostLoadingScreen({
+    super.key,
+    required this.title,
+    this.showTabRail = false,
+  });
 
   final String title;
   final bool showTabRail;

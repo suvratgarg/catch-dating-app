@@ -15,7 +15,8 @@ class EmptyHeroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final content = _EmptyHeroContent(
+    final content = _buildEmptyHeroContent(
+      context,
       onFindEvent: () => context.go(Routes.exploreScreen.path),
       showWelcomeEyebrow: fullBleed,
     );
@@ -54,64 +55,57 @@ class EmptyHeroCard extends StatelessWidget {
   }
 }
 
-class _EmptyHeroContent extends StatelessWidget {
-  const _EmptyHeroContent({
-    required this.onFindEvent,
-    this.showWelcomeEyebrow = false,
-  });
-
-  final VoidCallback onFindEvent;
-  final bool showWelcomeEyebrow;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (showWelcomeEyebrow) ...[
-          Text(
-            'WELCOME TO CATCH',
-            style: CatchTextStyles.kicker(
-              context,
-              color: CatchTokens.editorialLight,
-            ),
-          ),
-          gapH28,
-        ],
+Widget _buildEmptyHeroContent(
+  BuildContext context, {
+  required VoidCallback onFindEvent,
+  bool showWelcomeEyebrow = false,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      if (showWelcomeEyebrow) ...[
         Text(
-          '● NO EVENTS BOOKED',
+          'WELCOME TO CATCH',
           style: CatchTextStyles.kicker(
             context,
             color: CatchTokens.editorialLight,
           ),
         ),
-        gapH10,
-        Text(
-          'Your catches unlock\nafter your first event.',
-          style: CatchTextStyles.headline(
-            context,
-            color: CatchTokens.editorialLight,
-          ),
-        ),
-        gapH8,
-        Text(
-          "The dating app where you've already met. No cold swiping — just people you actually crossed paths with.",
-          style: CatchTextStyles.supporting(
-            context,
-            color: CatchTokens.editorialLight,
-          ),
-        ),
-        gapH16,
-        CatchButton(
-          label: 'Find an event near me',
-          onPressed: onFindEvent,
-          variant: CatchButtonVariant.light,
-          size: CatchButtonSize.lg,
-          fullWidth: true,
-        ),
+        gapH28,
       ],
-    );
-  }
+      Text(
+        '● NO EVENTS BOOKED',
+        style: CatchTextStyles.kicker(
+          context,
+          color: CatchTokens.editorialLight,
+        ),
+      ),
+      gapH10,
+      Text(
+        'Your catches unlock\nafter your first event.',
+        style: CatchTextStyles.headline(
+          context,
+          color: CatchTokens.editorialLight,
+        ),
+      ),
+      gapH8,
+      Text(
+        "The dating app where you've already met. No cold swiping — just people you actually crossed paths with.",
+        style: CatchTextStyles.supporting(
+          context,
+          color: CatchTokens.editorialLight,
+        ),
+      ),
+      gapH16,
+      CatchButton(
+        label: 'Find an event near me',
+        onPressed: onFindEvent,
+        variant: CatchButtonVariant.light,
+        size: CatchButtonSize.lg,
+        fullWidth: true,
+      ),
+    ],
+  );
 }
 
 class _HeroLineWash extends CustomPainter {

@@ -5,13 +5,13 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -36,14 +36,15 @@ class ClubHostDefaultsStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final children = [
-      _PolicyDefaultsCard(
+      ClubPolicyDefaultsCard(
         defaults: defaults.eventPolicy,
         currencyCode: currencyCode,
         onChanged: (eventPolicy) =>
             onChanged(defaults.copyWith(eventPolicy: eventPolicy)),
       ),
       gapH20,
-      _DefaultActivityCard(
+      _buildDefaultActivityCard(
+        context: context,
         selectedActivityKind: defaults.primaryActivityKind,
         onChanged: (activityKind) => onChanged(
           defaults.copyWith(
@@ -73,19 +74,12 @@ class ClubHostDefaultsStep extends StatelessWidget {
             ),
     );
   }
-}
 
-class _DefaultActivityCard extends StatelessWidget {
-  const _DefaultActivityCard({
-    required this.selectedActivityKind,
-    required this.onChanged,
-  });
-
-  final ActivityKind selectedActivityKind;
-  final ValueChanged<ActivityKind> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildDefaultActivityCard({
+    required BuildContext context,
+    required ActivityKind selectedActivityKind,
+    required ValueChanged<ActivityKind> onChanged,
+  }) {
     final t = CatchTokens.of(context);
     return CatchSurface(
       padding: CatchInsets.content,
@@ -126,8 +120,9 @@ class _DefaultActivityCard extends StatelessWidget {
   }
 }
 
-class _PolicyDefaultsCard extends StatefulWidget {
-  const _PolicyDefaultsCard({
+class ClubPolicyDefaultsCard extends StatefulWidget {
+  const ClubPolicyDefaultsCard({
+    super.key,
     required this.defaults,
     required this.currencyCode,
     required this.onChanged,
@@ -138,10 +133,10 @@ class _PolicyDefaultsCard extends StatefulWidget {
   final ValueChanged<EventPolicyDefaults> onChanged;
 
   @override
-  State<_PolicyDefaultsCard> createState() => _PolicyDefaultsCardState();
+  State<ClubPolicyDefaultsCard> createState() => _PolicyDefaultsCardState();
 }
 
-class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
+class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
   late final TextEditingController _minAgeController = TextEditingController(
     text: _optionalIntText(
       widget.defaults.minAge == 0 ? null : widget.defaults.minAge,
@@ -174,7 +169,7 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
       );
 
   @override
-  void didUpdateWidget(covariant _PolicyDefaultsCard oldWidget) {
+  void didUpdateWidget(covariant ClubPolicyDefaultsCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     final defaults = widget.defaults;
     if (oldWidget.defaults.minAge != defaults.minAge) {
@@ -256,7 +251,7 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH18,
-          const FieldLabel('Admission format'),
+          const CatchFormFieldLabel(label: 'Admission format', large: true),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -332,8 +327,8 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
             Row(
               children: [
                 Expanded(
-                  child: CatchTextField(
-                    label: 'Max straight men',
+                  child: CatchField(
+                    title: 'Max straight men',
                     isOptional: true,
                     controller: _maxMenController,
                     keyboardType: TextInputType.number,
@@ -344,8 +339,8 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
                 ),
                 gapW12,
                 Expanded(
-                  child: CatchTextField(
-                    label: 'Max straight women',
+                  child: CatchField(
+                    title: 'Max straight women',
                     isOptional: true,
                     controller: _maxWomenController,
                     keyboardType: TextInputType.number,
@@ -404,8 +399,8 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
               Row(
                 children: [
                   Expanded(
-                    child: CatchTextField(
-                      label: 'Step',
+                    child: CatchField(
+                      title: 'Step',
                       controller: _pricingStepController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -415,8 +410,8 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
                   ),
                   gapW12,
                   Expanded(
-                    child: CatchTextField(
-                      label: 'Max',
+                    child: CatchField(
+                      title: 'Max',
                       controller: _pricingMaxController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -429,13 +424,13 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
             ],
           ],
           gapH18,
-          const FieldLabel('Age range'),
+          const CatchFormFieldLabel(label: 'Age range', large: true),
           gapH8,
           Row(
             children: [
               Expanded(
-                child: CatchTextField(
-                  label: 'Min age',
+                child: CatchField(
+                  title: 'Min age',
                   isOptional: true,
                   controller: _minAgeController,
                   keyboardType: TextInputType.number,
@@ -450,8 +445,8 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
               ),
               gapW12,
               Expanded(
-                child: CatchTextField(
-                  label: 'Max age',
+                child: CatchField(
+                  title: 'Max age',
                   isOptional: true,
                   controller: _maxAgeController,
                   keyboardType: TextInputType.number,
@@ -467,7 +462,7 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
             ],
           ),
           gapH18,
-          const FieldLabel('Cancellation policy'),
+          const CatchFormFieldLabel(label: 'Cancellation policy', large: true),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,

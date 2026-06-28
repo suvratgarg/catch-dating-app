@@ -486,7 +486,7 @@ void main() {
     test('ranks recommendations by preferences, proximity, and event time', () {
       final now = DateTime(2026, 4, 23, 9);
       final viewer = buildUser().copyWith(
-        city: 'mumbai',
+        city: 'in-mh-mumbai',
         latitude: 19.076,
         longitude: 72.8777,
         activityPreferences: const ActivityPreferences(

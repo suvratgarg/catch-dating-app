@@ -6,11 +6,11 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/review_keys.dart';
@@ -347,7 +347,7 @@ class ReviewCard extends StatelessWidget {
           ],
           if (review.ownerResponse case final response?) ...[
             gapH12,
-            _ReviewOwnerResponseBlock(response: response),
+            ReviewOwnerResponseBlock(response: response),
           ],
         ],
       ),
@@ -355,8 +355,8 @@ class ReviewCard extends StatelessWidget {
   }
 }
 
-class _ReviewOwnerResponseBlock extends StatelessWidget {
-  const _ReviewOwnerResponseBlock({required this.response});
+class ReviewOwnerResponseBlock extends StatelessWidget {
+  const ReviewOwnerResponseBlock({super.key, required this.response});
 
   final ReviewOwnerResponse response;
 
@@ -410,21 +410,21 @@ Future<void> showReviewResponseSheet({
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (_) => _ReviewResponseSheet(review: review),
+    builder: (_) => ReviewResponseSheet(review: review),
   );
 }
 
-class _ReviewResponseSheet extends ConsumerStatefulWidget {
-  const _ReviewResponseSheet({required this.review});
+class ReviewResponseSheet extends ConsumerStatefulWidget {
+  const ReviewResponseSheet({super.key, required this.review});
 
   final Review review;
 
   @override
-  ConsumerState<_ReviewResponseSheet> createState() =>
+  ConsumerState<ReviewResponseSheet> createState() =>
       _ReviewResponseSheetState();
 }
 
-class _ReviewResponseSheetState extends ConsumerState<_ReviewResponseSheet> {
+class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
   late final TextEditingController _messageController;
   bool _didResetMutation = false;
 
@@ -491,12 +491,12 @@ class _ReviewResponseSheetState extends ConsumerState<_ReviewResponseSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchTextField(
+          CatchField(
             key: ReviewKeys.ownerResponseField,
-            label: 'Response',
+            title: 'Response',
             controller: _messageController,
             maxLines: 4,
-            hintText: 'Thank the attendee or clarify what happened',
+            placeholder: 'Thank the attendee or clarify what happened',
             textCapitalization: TextCapitalization.sentences,
             inputFormatters: [LengthLimitingTextInputFormatter(1000)],
             onChanged: (_) => setState(() {}),

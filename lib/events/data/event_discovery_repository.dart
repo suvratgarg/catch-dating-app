@@ -17,7 +17,7 @@ enum EventDiscoveryAvailabilityFilter { any, open, openOrWaitlist }
 
 class EventDiscoveryQuery {
   EventDiscoveryQuery._({
-    required this.cityName,
+    required this.marketId,
     required this.startAt,
     required this.endBefore,
     required Iterable<ActivityKind> activityKinds,
@@ -32,7 +32,7 @@ class EventDiscoveryQuery {
        );
 
   factory EventDiscoveryQuery.forCity({
-    required String cityName,
+    required String marketId,
     required DateTime startAt,
     DateTime? endBefore,
     Iterable<ActivityKind> activityKinds = const [],
@@ -43,12 +43,12 @@ class EventDiscoveryQuery {
     String? viewerCohortId,
     int limit = 80,
   }) {
-    final normalizedCity = cityName.trim().toLowerCase();
+    final normalizedMarketId = marketId.trim().toLowerCase();
     final normalizedMaxDistance = maxDistanceKm == null || maxDistanceKm <= 0
         ? null
         : maxDistanceKm;
     return EventDiscoveryQuery._(
-      cityName: normalizedCity,
+      marketId: normalizedMarketId,
       startAt: startAt,
       endBefore: endBefore,
       activityKinds: activityKinds,
@@ -64,7 +64,7 @@ class EventDiscoveryQuery {
 
   static const _activityEquality = ListEquality<ActivityKind>();
 
-  final String cityName;
+  final String marketId;
   final DateTime startAt;
   final DateTime? endBefore;
   final List<ActivityKind> activityKinds;
@@ -79,7 +79,7 @@ class EventDiscoveryQuery {
   @override
   bool operator ==(Object other) {
     return other is EventDiscoveryQuery &&
-        other.cityName == cityName &&
+        other.marketId == marketId &&
         other.startAt == startAt &&
         other.endBefore == endBefore &&
         _activityEquality.equals(other.activityKinds, activityKinds) &&
@@ -92,7 +92,7 @@ class EventDiscoveryQuery {
 
   @override
   int get hashCode => Object.hash(
-    cityName,
+    marketId,
     startAt,
     endBefore,
     _activityEquality.hash(activityKinds),
@@ -122,10 +122,10 @@ class EventDiscoveryRepository {
   Future<List<Event>> fetchDiscoverableEvents(EventDiscoveryQuery query) {
     return withBackendErrorContext(
       () async {
-        if (query.cityName.isEmpty) return const [];
+        if (query.marketId.isEmpty) return const [];
 
         Query<Event> firestoreQuery = _eventsRef
-            .where('discoveryCityName', isEqualTo: query.cityName)
+            .where('discoveryMarketId', isEqualTo: query.marketId)
             .where('status', isEqualTo: EventLifecycleStatus.active.name)
             .where(
               'startTime',

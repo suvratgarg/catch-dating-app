@@ -9,7 +9,7 @@ import 'package:go_router/go_router.dart';
 
 /// Dashboard recommendation card.
 ///
-/// Wraps [CatchEventTicketCard] so the dashboard rail uses the same activity
+/// Wraps [CatchEventCard.ticket] so the dashboard rail uses the same activity
 /// artwork and ticket shape as the Explore event feed. Recommendation reason
 /// stays visible in the media label while distance, pace, and capacity are
 /// folded into the ticket's bottom mono line.
@@ -58,7 +58,7 @@ class RecommendCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardWidth = width;
-    final card = CatchEventTicketCard(
+    final card = CatchEventCard.ticket(
       title: event.title,
       subtitle: _buildSubtitle(),
       timeLabel: EventFormatters.time(event.startTime),

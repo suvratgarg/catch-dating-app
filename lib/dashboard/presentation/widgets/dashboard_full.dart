@@ -1,21 +1,20 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
+import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_stride_actions.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_clubs_rail.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_section_state_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
@@ -172,8 +171,7 @@ class _DashboardFullSliverBodyState
                 ),
               ),
               QuickActions(actions: _buildQuickActions(context)),
-              if (widget.followedClubIds.isNotEmpty)
-                DashboardClubsRail(clubIds: widget.followedClubIds),
+              if (widget.followedClubIds.isNotEmpty) _buildFollowedClubsRail(),
               ..._buildRecommendedEventsSection(
                 ref: ref,
                 recommendationsSection: widget.viewModel.recommendationsSection,
@@ -183,6 +181,32 @@ class _DashboardFullSliverBodyState
         ),
       ),
     );
+  }
+
+  Widget _buildFollowedClubsRail() {
+    final uniqueIds = widget.followedClubIds
+        .toSet()
+        .take(12)
+        .toList(growable: false);
+    if (uniqueIds.isEmpty) return const SizedBox.shrink();
+
+    final clubsAsync = ref.watch(
+      watchClubsByIdsProvider(ClubsByIdQuery(uniqueIds)),
+    );
+    final clubs = clubsAsync.asData?.value ?? const [];
+
+    if (clubs.isNotEmpty) {
+      return ClubAvatarRail(
+        clubs: clubs,
+        showDivider: false,
+        headerPadding: EdgeInsets.zero,
+        listPadding: EdgeInsets.zero,
+      );
+    }
+
+    return clubsAsync.isLoading
+        ? _buildFollowedClubsRailSkeleton(context)
+        : const SizedBox.shrink();
   }
 
   EventFocusActions _buildEventFocusActions(
@@ -324,7 +348,7 @@ class _DashboardFullSliverBodyState
   }) {
     if (recommendationsSection.isLoading) {
       return const [
-        _DashboardSectionStateCard(
+        DashboardSectionStateCard(
           message: 'Loading recommended events...',
           isLoading: true,
         ),
@@ -351,46 +375,27 @@ class _DashboardFullSliverBodyState
   }
 }
 
-class _DashboardSectionStateCard extends StatelessWidget {
-  const _DashboardSectionStateCard({
-    required this.message,
-    this.isLoading = false,
-  });
-
-  final String message;
-  final bool isLoading;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      padding: CatchInsets.content,
-      borderColor: t.line,
-      child: Row(
+Widget _buildFollowedClubsRailSkeleton(BuildContext context) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text('Your clubs', style: CatchTextStyles.titleL(context)),
+      const SizedBox(height: CatchSpacing.s3),
+      Row(
         children: [
-          if (isLoading) ...[
-            CatchSkeleton.box(
-              width: CatchIcon.md,
-              height: CatchIcon.md,
-              radius: CatchRadius.sm,
-            ),
-          ] else ...[
-            Icon(
-              CatchIcons.errorOutlineRounded,
-              color: t.primary,
-              size: CatchIcon.md,
+          for (var index = 0; index < 3; index += 1) ...[
+            if (index > 0) const SizedBox(width: CatchSpacing.micro14),
+            Column(
+              children: [
+                CatchSkeleton.circle(size: 64),
+                const SizedBox(height: CatchSpacing.micro6),
+                CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+              ],
             ),
           ],
-          gapW10,
-          Expanded(
-            child: Text(
-              message,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-          ),
         ],
       ),
-    );
-  }
+    ],
+  );
 }

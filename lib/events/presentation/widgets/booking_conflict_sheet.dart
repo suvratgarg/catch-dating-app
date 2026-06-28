@@ -105,13 +105,15 @@ class BookingConflictSheet extends StatelessWidget {
                 style: CatchTextStyles.proseM(context, color: t.ink2),
               ),
               gapH18,
-              _BookingConflictEventRow(
+              _bookingConflictEventRow(
+                context,
                 tag: 'Already booked',
                 tagColor: t.ink3,
                 event: existing,
               ),
               gapH10,
-              _BookingConflictEventRow(
+              _bookingConflictEventRow(
+                context,
                 tag: 'New',
                 tagColor: t.warning,
                 event: incoming,
@@ -148,85 +150,77 @@ class BookingConflictSheet extends StatelessWidget {
   }
 }
 
-class _BookingConflictEventRow extends StatelessWidget {
-  const _BookingConflictEventRow({
-    required this.tag,
-    required this.tagColor,
-    required this.event,
-  });
+Widget _bookingConflictEventRow(
+  BuildContext context, {
+  required String tag,
+  required Color tagColor,
+  required BookingConflictEvent event,
+}) {
+  final t = CatchTokens.of(context);
+  final visual = event.activityKind == null
+      ? null
+      : eventActivityVisual(event.activityKind!, context: context);
 
-  final String tag;
-  final Color tagColor;
-  final BookingConflictEvent event;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final visual = event.activityKind == null
-        ? null
-        : eventActivityVisual(event.activityKind!, context: context);
-
-    return CatchSurface(
-      backgroundColor: t.bg,
-      borderColor: t.line,
-      radius: CatchRadius.md,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.micro14,
-        vertical: CatchSpacing.s3,
-      ),
-      child: Row(
-        children: [
-          CatchSurface(
-            width: CatchLayout.eventDetailConflictEventGlyphExtent,
-            height: CatchLayout.eventDetailConflictEventGlyphExtent,
-            radius: CatchRadius.sm,
-            borderWidth: 0,
-            gradient: visual == null
-                ? null
-                : LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [visual.accent, visual.deep],
-                  ),
-            backgroundColor: visual == null ? t.primarySoft : null,
-            child: Icon(
-              visual?.icon ?? CatchIcons.calendarTodayOutlined,
-              color: visual == null ? t.ink2 : t.primaryInk,
-              size: 18,
-            ),
+  return CatchSurface(
+    backgroundColor: t.bg,
+    borderColor: t.line,
+    radius: CatchRadius.md,
+    padding: const EdgeInsets.symmetric(
+      horizontal: CatchSpacing.micro14,
+      vertical: CatchSpacing.s3,
+    ),
+    child: Row(
+      children: [
+        CatchSurface(
+          width: CatchLayout.eventDetailConflictEventGlyphExtent,
+          height: CatchLayout.eventDetailConflictEventGlyphExtent,
+          radius: CatchRadius.sm,
+          borderWidth: 0,
+          gradient: visual == null
+              ? null
+              : LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [visual.accent, visual.deep],
+                ),
+          backgroundColor: visual == null ? t.primarySoft : null,
+          child: Icon(
+            visual?.icon ?? CatchIcons.calendarTodayOutlined,
+            color: visual == null ? t.ink2 : t.primaryInk,
+            size: 18,
           ),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  tag.toUpperCase(),
-                  style: CatchTextStyles.badge(context, color: tagColor),
-                ),
-                gapH2,
-                Text(
-                  event.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.infoRowTitle(context, color: t.ink),
-                ),
-                gapH2,
-                Text(
-                  event.when,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.mono(
-                    context,
-                    color: t.ink2,
-                  ).copyWith(fontSize: 11.5, fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
+        ),
+        gapW12,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                tag.toUpperCase(),
+                style: CatchTextStyles.badge(context, color: tagColor),
+              ),
+              gapH2,
+              Text(
+                event.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.fieldRowTitle(context, color: t.ink),
+              ),
+              gapH2,
+              Text(
+                event.when,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.mono(
+                  context,
+                  color: t.ink2,
+                ).copyWith(fontSize: 11.5, fontWeight: FontWeight.w600),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }

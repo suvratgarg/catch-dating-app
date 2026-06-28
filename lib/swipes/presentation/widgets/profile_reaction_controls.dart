@@ -6,9 +6,9 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_card_style.dart';
 import 'package:flutter/material.dart';
@@ -36,13 +36,15 @@ class ProfileReactionControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final children = [
-      _ReactionControlButton(
+      _reactionControlButton(
+        context,
         tooltip: 'Like ${target.label}',
         icon: CatchIcons.favoriteBorderRounded,
         onPressed: () => unawaited(Future.sync(() => onReact(target, null))),
         style: style,
       ),
-      _ReactionControlButton(
+      _reactionControlButton(
+        context,
         tooltip: 'Comment on ${target.label}',
         icon: CatchIcons.chatBubbleOutlineRounded,
         onPressed: () => unawaited(_commentThenReact(context)),
@@ -82,22 +84,22 @@ Future<String?> showProfileReactionCommentSheet({
     context: context,
     useSafeArea: true,
     isScrollControlled: true,
-    builder: (_) => _ProfileReactionCommentSheet(target: target),
+    builder: (_) => ProfileReactionCommentSheet(target: target),
   );
 }
 
-class _ProfileReactionCommentSheet extends StatefulWidget {
-  const _ProfileReactionCommentSheet({required this.target});
+class ProfileReactionCommentSheet extends StatefulWidget {
+  const ProfileReactionCommentSheet({super.key, required this.target});
 
   final ProfileReactionTarget target;
 
   @override
-  State<_ProfileReactionCommentSheet> createState() =>
+  State<ProfileReactionCommentSheet> createState() =>
       _ProfileReactionCommentSheetState();
 }
 
 class _ProfileReactionCommentSheetState
-    extends State<_ProfileReactionCommentSheet> {
+    extends State<ProfileReactionCommentSheet> {
   late final TextEditingController _controller;
 
   String get _comment => _controller.text.trim();
@@ -165,11 +167,11 @@ class _ProfileReactionCommentSheetState
             ),
           ),
           gapH14,
-          CatchTextField(
-            label: 'Comment',
+          CatchField(
+            title: 'Comment',
             showLabel: false,
             controller: _controller,
-            hintText: 'Write something specific...',
+            placeholder: 'Write something specific...',
             helperText:
                 '${_comment.length} / $maxSwipeReactionCommentLength characters',
             maxLines: 4,
@@ -187,53 +189,44 @@ class _ProfileReactionCommentSheetState
   }
 }
 
-class _ReactionControlButton extends StatelessWidget {
-  const _ReactionControlButton({
-    required this.tooltip,
-    required this.icon,
-    required this.onPressed,
-    required this.style,
-  });
+Widget _reactionControlButton(
+  BuildContext context, {
+  required String tooltip,
+  required IconData icon,
+  required VoidCallback onPressed,
+  required ProfileReactionControlsStyle style,
+}) {
+  final palette = ProfileCardPalette.of(context);
+  final isOverlay = style == ProfileReactionControlsStyle.overlay;
+  final background = isOverlay
+      ? CatchTokens.editorialLight.withValues(
+          alpha: CatchOpacity.reactionOverlayFill,
+        )
+      : palette.chipFill;
+  final foreground = isOverlay ? palette.accent : palette.textSecondary;
+  final border = isOverlay
+      ? CatchTokens.editorialLight.withValues(
+          alpha: CatchOpacity.reactionOverlayBorder,
+        )
+      : palette.chipBorder;
 
-  final String tooltip;
-  final IconData icon;
-  final VoidCallback onPressed;
-  final ProfileReactionControlsStyle style;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = ProfileCardPalette.of(context);
-    final isOverlay = style == ProfileReactionControlsStyle.overlay;
-    final background = isOverlay
-        ? CatchTokens.editorialLight.withValues(
-            alpha: CatchOpacity.reactionOverlayFill,
-          )
-        : palette.chipFill;
-    final foreground = isOverlay ? palette.accent : palette.textSecondary;
-    final border = isOverlay
-        ? CatchTokens.editorialLight.withValues(
-            alpha: CatchOpacity.reactionOverlayBorder,
-          )
-        : palette.chipBorder;
-
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        color: background,
-        shape: CircleBorder(side: BorderSide(color: border)),
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: onPressed,
-          child: SizedBox.square(
-            dimension: CatchLayout.reactionControlExtent,
-            child: Icon(
-              icon,
-              color: foreground,
-              size: CatchLayout.reactionControlIconSize,
-            ),
+  return Tooltip(
+    message: tooltip,
+    child: Material(
+      color: background,
+      shape: CircleBorder(side: BorderSide(color: border)),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onPressed,
+        child: SizedBox.square(
+          dimension: CatchLayout.reactionControlExtent,
+          child: Icon(
+            icon,
+            color: foreground,
+            size: CatchLayout.reactionControlIconSize,
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }

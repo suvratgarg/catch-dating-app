@@ -48,11 +48,11 @@ class EventDetailSocialSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchDesignSection(
-          kicker: "Who's going",
+        CatchSection(
+          title: "Who's going",
           count: event.signedUpCount,
           dividerColor: surfaceStyle?.dividerColor,
-          kickerColor: surfaceStyle?.headingColor,
+          titleColor: surfaceStyle?.headingColor,
           child: canShowMemberContext
               ? WhoIsGoing(
                   event: event,
@@ -60,13 +60,17 @@ class EventDetailSocialSection extends StatelessWidget {
                   surfaceStyle: surfaceStyle,
                   showHeader: false,
                 )
-              : _GuestWhoIsGoing(surfaceStyle: surfaceStyle, showHeader: false),
+              : _guestWhoIsGoing(
+                  context,
+                  surfaceStyle: surfaceStyle,
+                  showHeader: false,
+                ),
         ),
         if (canShowMemberContext) ...[
-          CatchDesignSection(
-            kicker: 'Reviews',
+          CatchSection(
+            title: 'Reviews',
             dividerColor: surfaceStyle?.dividerColor,
-            kickerColor: surfaceStyle?.headingColor,
+            titleColor: surfaceStyle?.headingColor,
             child: EventReviewsSection(
               clubId: clubId,
               eventId: event.id,
@@ -83,52 +87,48 @@ class EventDetailSocialSection extends StatelessWidget {
   }
 }
 
-class _GuestWhoIsGoing extends StatelessWidget {
-  const _GuestWhoIsGoing({this.surfaceStyle, this.showHeader = true});
+Widget _guestWhoIsGoing(
+  BuildContext context, {
+  EventDetailSurfaceStyle? surfaceStyle,
+  bool showHeader = true,
+}) {
+  final t = CatchTokens.of(context);
 
-  final EventDetailSurfaceStyle? surfaceStyle;
-  final bool showHeader;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      backgroundColor: surfaceStyle?.surfaceBackground,
-      borderColor: surfaceStyle?.borderColor ?? t.line,
-      padding: CatchInsets.tileContentCompact,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (showHeader) ...[
-            Row(
-              children: [
-                Icon(
-                  CatchIcons.lockOutlineRounded,
-                  size: CatchIcon.xs,
-                  color: surfaceStyle?.mutedColor ?? t.ink3,
+  return CatchSurface(
+    backgroundColor: surfaceStyle?.surfaceBackground,
+    borderColor: surfaceStyle?.borderColor ?? t.line,
+    padding: CatchInsets.tileContentCompact,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (showHeader) ...[
+          Row(
+            children: [
+              Icon(
+                CatchIcons.lockOutlineRounded,
+                size: CatchIcon.xs,
+                color: surfaceStyle?.mutedColor ?? t.ink3,
+              ),
+              const SizedBox(width: CatchSpacing.s2),
+              Text(
+                "Who's going",
+                style: CatchTextStyles.titleL(
+                  context,
+                  color: surfaceStyle?.headingColor,
                 ),
-                const SizedBox(width: CatchSpacing.s2),
-                Text(
-                  "Who's going",
-                  style: CatchTextStyles.titleL(
-                    context,
-                    color: surfaceStyle?.headingColor,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: CatchLayout.detailScreenSupportingGap),
-          ],
-          Text(
-            'Sign in to see who has booked this event.',
-            style: CatchTextStyles.supporting(
-              context,
-              color: surfaceStyle?.bodyColor ?? t.ink2,
-            ),
+              ),
+            ],
           ),
+          const SizedBox(height: CatchLayout.detailScreenSupportingGap),
         ],
-      ),
-    );
-  }
+        Text(
+          'Sign in to see who has booked this event.',
+          style: CatchTextStyles.supporting(
+            context,
+            color: surfaceStyle?.bodyColor ?? t.ink2,
+          ),
+        ),
+      ],
+    ),
+  );
 }

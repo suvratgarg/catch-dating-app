@@ -13,15 +13,16 @@ import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_h
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_top_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -30,16 +31,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key, required this.matchId, this.otherProfile});
 
   final String matchId;
   final PublicProfile? otherProfile;
 
   @override
-  Widget build(BuildContext context) {
-    return _ChatContent(matchId: matchId, initialProfile: otherProfile);
-  }
+  ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
 void _retryHostChat(WidgetRef ref, String matchId, HostChatRetryIntent intent) {
@@ -53,17 +52,7 @@ void _retryHostChat(WidgetRef ref, String matchId, HostChatRetryIntent intent) {
   }
 }
 
-class _ChatContent extends ConsumerStatefulWidget {
-  const _ChatContent({required this.matchId, required this.initialProfile});
-
-  final String matchId;
-  final PublicProfile? initialProfile;
-
-  @override
-  ConsumerState<_ChatContent> createState() => _ChatContentState();
-}
-
-class _ChatContentState extends ConsumerState<_ChatContent> {
+class _ChatScreenState extends ConsumerState<ChatScreen> {
   final _textController = TextEditingController();
   final _scrollController = ScrollController();
   late final ConversationReadMarker _readMarker;
@@ -305,15 +294,15 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
     );
   }
 
-  void _handleTopBarAction({
-    required ChatTopBarAction action,
+  void _handleThreadAction({
+    required ChatThreadAction action,
     required HostChatScreenState chatState,
     required List<ChatMessage> messages,
     required String? uid,
     required Event? event,
     required ExternalShareController share,
   }) {
-    final intent = chatState.intentForTopBarAction(action);
+    final intent = chatState.intentForThreadAction(action);
     if (intent == null) return;
 
     switch (intent.type) {
@@ -342,6 +331,35 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
         );
         return;
     }
+  }
+
+  CatchActionMenuItem<ChatThreadAction> _threadActionMenuItem(
+    BuildContext context,
+    HostChatScreenState chatState,
+    ChatThreadAction action,
+  ) {
+    final enabled = !chatState.disabledThreadActions.contains(action);
+    return switch (action) {
+      ChatThreadAction.shareCard => CatchActionMenuItem(
+        value: ChatThreadAction.shareCard,
+        label: 'Share card',
+        icon: CatchIcons.platformShare(platform: Theme.of(context).platform),
+        enabled: enabled,
+      ),
+      ChatThreadAction.report => CatchActionMenuItem(
+        value: ChatThreadAction.report,
+        label: 'Report',
+        icon: CatchIcons.flagOutlined,
+        enabled: enabled,
+      ),
+      ChatThreadAction.block => CatchActionMenuItem(
+        value: ChatThreadAction.block,
+        label: 'Block',
+        icon: CatchIcons.blockRounded,
+        enabled: enabled,
+        isDestructive: true,
+      ),
+    };
   }
 
   @override
@@ -381,7 +399,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
       chatRouteStateProvider(
         ChatRouteStateArgs(
           matchId: widget.matchId,
-          initialProfile: widget.initialProfile,
+          initialProfile: widget.otherProfile,
         ),
       ),
     );
@@ -393,24 +411,44 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
       _syncScrollWithMessages(messages: routeState.initialMessages!);
     }
 
-    return _ChatMutationListeners(
+    return CatchMutationErrorListeners(
+      errorContext: AppErrorContext.chat,
+      mutations: [
+        ChatController.sendMessageMutation,
+        ChatController.sendImageMutation,
+        ChatController.reportUserMutation,
+        ChatController.blockUserMutation,
+        SuvbotController.requestMutation,
+      ],
       child: Scaffold(
-        appBar: ChatTopBar(
-          name: chatState.name,
-          photoUrl: chatState.photoUrl,
-          onProfileTap: chatState.profileNavigationEnabled
+        appBar: CatchTopBar.identity(
+          identityName: chatState.name,
+          identityPhotoUrl: chatState.photoUrl,
+          onIdentityTap: chatState.profileNavigationEnabled
               ? () => _openOtherProfile(chatState)
               : null,
-          actions: chatState.topBarActions,
-          disabledActions: chatState.disabledTopBarActions,
-          onActionSelected: (action) => _handleTopBarAction(
-            action: action,
-            chatState: chatState,
-            messages: routeState.messages,
-            uid: routeState.uid,
-            event: routeState.event,
-            share: routeState.share,
-          ),
+          surface: true,
+          border: true,
+          actions: [
+            if (chatState.threadActions.isNotEmpty)
+              CatchTopBarMenuAction<ChatThreadAction>(
+                tooltip: 'Chat actions',
+                onSelected: (action) => _handleThreadAction(
+                  action: action,
+                  chatState: chatState,
+                  messages: routeState.messages,
+                  uid: routeState.uid,
+                  event: routeState.event,
+                  share: routeState.share,
+                ),
+                items: chatState.threadActions
+                    .map(
+                      (action) =>
+                          _threadActionMenuItem(context, chatState, action),
+                    )
+                    .toList(),
+              ),
+          ],
         ),
         body: Column(
           children: [
@@ -469,27 +507,6 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _ChatMutationListeners extends StatelessWidget {
-  const _ChatMutationListeners({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchMutationErrorListeners(
-      errorContext: AppErrorContext.chat,
-      mutations: [
-        ChatController.sendMessageMutation,
-        ChatController.sendImageMutation,
-        ChatController.reportUserMutation,
-        ChatController.blockUserMutation,
-        SuvbotController.requestMutation,
-      ],
-      child: child,
     );
   }
 }

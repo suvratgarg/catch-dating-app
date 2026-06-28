@@ -8,15 +8,21 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 class QuickActions extends StatelessWidget {
-  const QuickActions({super.key, required this.actions});
+  const QuickActions({super.key, required this.actions, this.columns});
 
   final List<DashboardQuickAction> actions;
+  final int? columns;
 
   static const double _iconBoxSize = CatchSpacing.s9;
   static const double _tileSpacing = CatchSpacing.s3;
 
   @override
   Widget build(BuildContext context) {
+    final fixedColumns = columns;
+    if (fixedColumns != null) {
+      return _buildFixedColumns(fixedColumns);
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final columns =
@@ -36,7 +42,8 @@ class QuickActions extends StatelessWidget {
                 width: tileWidth,
                 child: Opacity(
                   opacity: action.isEnabled ? 1 : 0.7,
-                  child: _QuickActionTile(
+                  child: DashboardQuickActionTile(
+                    key: action.key,
                     action: action,
                     onTap: action.onPressed,
                   ),
@@ -47,10 +54,58 @@ class QuickActions extends StatelessWidget {
       },
     );
   }
+
+  Widget _buildFixedColumns(int columns) {
+    if (actions.isEmpty) return const SizedBox.shrink();
+    final safeColumns = columns.clamp(1, actions.length);
+    final rows = <Widget>[];
+
+    for (var start = 0; start < actions.length; start += safeColumns) {
+      final rowActions = actions
+          .skip(start)
+          .take(safeColumns)
+          .toList(growable: false);
+      rows.add(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var index = 0; index < rowActions.length; index++) ...[
+              Expanded(
+                child: Opacity(
+                  opacity: rowActions[index].isEnabled ? 1 : 0.7,
+                  child: DashboardQuickActionTile(
+                    key: rowActions[index].key,
+                    action: rowActions[index],
+                    onTap: rowActions[index].onPressed,
+                  ),
+                ),
+              ),
+              if (index < rowActions.length - 1)
+                const SizedBox(width: _tileSpacing),
+            ],
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var index = 0; index < rows.length; index++) ...[
+          rows[index],
+          if (index < rows.length - 1) const SizedBox(height: _tileSpacing),
+        ],
+      ],
+    );
+  }
 }
 
-class _QuickActionTile extends StatelessWidget {
-  const _QuickActionTile({required this.action, required this.onTap});
+class DashboardQuickActionTile extends StatelessWidget {
+  const DashboardQuickActionTile({
+    super.key,
+    required this.action,
+    required this.onTap,
+  });
 
   final DashboardQuickAction action;
   final VoidCallback? onTap;
@@ -92,11 +147,13 @@ class _QuickActionTile extends StatelessWidget {
 
 class DashboardQuickAction {
   const DashboardQuickAction({
+    this.key,
     required this.icon,
     required this.label,
     this.onPressed,
   });
 
+  final Key? key;
   final IconData icon;
   final String label;
   final VoidCallback? onPressed;

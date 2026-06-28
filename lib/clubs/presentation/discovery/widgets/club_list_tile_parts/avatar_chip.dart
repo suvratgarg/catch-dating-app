@@ -1,76 +1,63 @@
 part of '../club_list_tile.dart';
 
-class _AvatarChip extends StatelessWidget {
-  const _AvatarChip({
-    required this.club,
-    this.showLiveBadge = false,
-    this.onTap,
-  });
+const double _avatarChipTileSize = CatchSpacing.s16;
+const double _avatarChipColumnWidth = CatchLayout.clubAvatarRailColumnWidth;
 
-  final Club club;
+Widget _buildAvatarChip(
+  BuildContext context, {
+  required Club club,
+  bool showLiveBadge = false,
+  VoidCallback? onTap,
+}) {
+  final t = CatchTokens.of(context);
 
-  /// Whether the club has an event coming up. Rendered as a discreet brand
-  /// status dot + caption strip — never the loud "LIVE" pill the prior
-  /// implementation used, which read as "streaming video".
-  final bool showLiveBadge;
-
-  final VoidCallback? onTap;
-
-  static const double _tileSize = CatchSpacing.s16;
-  static const double _columnWidth = CatchLayout.clubAvatarRailColumnWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Semantics(
-      button: onTap != null,
-      label: 'Open ${club.name} club',
-      child: GestureDetector(
-        onTap: onTap,
-        child: SizedBox(
-          width: _columnWidth,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: _tileSize,
-                height: _tileSize,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(CatchRadius.pill),
-                  border: Border.all(
-                    color: showLiveBadge ? t.primary : t.line2,
-                    width: showLiveBadge ? 2 : 1,
-                  ),
-                ),
-                padding: CatchInsets.iconChipContentTight,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(CatchRadius.pill),
-                  child: _ClubImage(club: club, preferProfileImage: true),
+  return Semantics(
+    button: onTap != null,
+    label: 'Open ${club.name} club',
+    child: GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: _avatarChipColumnWidth,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: _avatarChipTileSize,
+              height: _avatarChipTileSize,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(CatchRadius.pill),
+                border: Border.all(
+                  color: showLiveBadge ? t.primary : t.line2,
+                  width: showLiveBadge ? 2 : 1,
                 ),
               ),
-              gapH6,
+              padding: CatchInsets.iconChipContentTight,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(CatchRadius.pill),
+                child: _buildClubImage(club: club, preferProfileImage: true),
+              ),
+            ),
+            gapH6,
+            Text(
+              club.name,
+              style: CatchTextStyles.labelM(context, color: t.ink),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            if (showLiveBadge) ...[
+              gapH2,
               Text(
-                club.name,
-                style: CatchTextStyles.labelM(context, color: t.ink),
+                'Event soon',
+                style: CatchTextStyles.labelS(context, color: t.primary),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              if (showLiveBadge) ...[
-                gapH2,
-                Text(
-                  'Event soon',
-                  style: CatchTextStyles.labelS(context, color: t.primary),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
             ],
-          ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }

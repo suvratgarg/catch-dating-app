@@ -4,7 +4,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,11 +55,11 @@ void main() {
       find.text('Enter the phone number on their Catch profile.'),
       findsOneWidget,
     );
-    expect(find.widgetWithText(CatchTextField, 'Phone number'), findsOneWidget);
+    expect(find.widgetWithText(CatchField, 'Phone number'), findsOneWidget);
     expect(find.widgetWithText(CatchButton, 'Add host'), findsOneWidget);
 
     final phoneField = find.descendant(
-      of: find.widgetWithText(CatchTextField, 'Phone number'),
+      of: find.widgetWithText(CatchField, 'Phone number'),
       matching: find.byType(TextField),
     );
     await tester.enterText(phoneField, '98765 43210');

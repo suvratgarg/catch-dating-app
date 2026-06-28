@@ -975,7 +975,7 @@ final _captureViewer =
       email: 'rohan@example.com',
       phoneNumber: '+919870000001',
     ).copyWith(
-      city: 'mumbai',
+      city: 'in-mh-mumbai',
       relationshipGoal: RelationshipGoal.relationship,
       activityPreferences: const ActivityPreferences(
         running: RunningPreferences(
@@ -3808,7 +3808,9 @@ final _hostClubDetailReferenceClub = HostOperationsFixtures.primaryClub.copyWith
   name: 'Sunday sea-face crew',
   description:
       'The standing Saturday run - an easy 5K along the Bandra seafront as the light goes gold, coffee and bun maska after. No medals, no Strava pressure. Just show up, move, linger.',
-  location: 'mumbai',
+  location: 'in-mh-mumbai',
+  locationCityId: 'in-mh-mumbai',
+  locationMarketId: 'in-mh-mumbai',
   area: 'Bandra',
   imageUrl: _clubHeroPortraitAssetPath,
   profileImageUrl: _clubHeroPortraitAssetPath,

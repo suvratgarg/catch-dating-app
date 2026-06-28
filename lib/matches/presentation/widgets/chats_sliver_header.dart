@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_browse_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
@@ -22,7 +22,7 @@ class ChatsSliverHeader extends CatchSliverHeader {
          bottomHeight:
              _chatsBrowseHeaderHeight +
              (hostFilter == null ? 0 : _hostInboxFilterHeight),
-         bottom: _ChatsBrowseHeader(
+         bottom: ChatsBrowseHeader(
            showSearchAction: showSearchAction,
            hostFilter: hostFilter,
            hostUnreadCount: hostUnreadCount,
@@ -31,8 +31,9 @@ class ChatsSliverHeader extends CatchSliverHeader {
        );
 }
 
-class _ChatsBrowseHeader extends ConsumerStatefulWidget {
-  const _ChatsBrowseHeader({
+class ChatsBrowseHeader extends ConsumerStatefulWidget {
+  const ChatsBrowseHeader({
+    super.key,
     required this.showSearchAction,
     required this.hostFilter,
     required this.hostUnreadCount,
@@ -45,10 +46,10 @@ class _ChatsBrowseHeader extends ConsumerStatefulWidget {
   final ValueChanged<HostInboxFilter>? onHostFilterChanged;
 
   @override
-  ConsumerState<_ChatsBrowseHeader> createState() => _ChatsBrowseHeaderState();
+  ConsumerState<ChatsBrowseHeader> createState() => _ChatsBrowseHeaderState();
 }
 
-class _ChatsBrowseHeaderState extends ConsumerState<_ChatsBrowseHeader> {
+class _ChatsBrowseHeaderState extends ConsumerState<ChatsBrowseHeader> {
   bool _searchOpen = false;
 
   @override
@@ -60,11 +61,13 @@ class _ChatsBrowseHeaderState extends ConsumerState<_ChatsBrowseHeader> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchBrowseHeader(
+        _buildChatsTopBar(
+          context,
           title: isHostApp ? 'Inbox' : 'Chats',
           subtitle: isHostApp
               ? 'Attendee queries'
               : 'Messages from your matches',
+          searchEnabled: widget.showSearchAction || searchActive,
           searchActive: searchActive,
           searchValue: query,
           onSearchChanged: (value) =>
@@ -73,9 +76,8 @@ class _ChatsBrowseHeaderState extends ConsumerState<_ChatsBrowseHeader> {
           searchAutofocus: true,
           onSearchSubmitted: _closeEmptySearch,
           onSearchFocusChanged: _handleSearchFocusChanged,
-          onOpenSearch: () => setState(() => _searchOpen = true),
-          onCloseSearch: () => setState(() => _searchOpen = false),
-          searchActionVisible: widget.showSearchAction,
+          onSearchExpandedChanged: (expanded) =>
+              setState(() => _searchOpen = expanded),
           searchTooltip: isHostApp ? 'Search attendees' : 'Search chats',
           searchSemanticLabel: isHostApp ? 'Search attendees' : 'Search chats',
         ),
@@ -100,6 +102,81 @@ class _ChatsBrowseHeaderState extends ConsumerState<_ChatsBrowseHeader> {
               ),
             ),
           ),
+      ],
+    );
+  }
+
+  Widget _buildChatsTopBar(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required bool searchEnabled,
+    required bool searchActive,
+    required String searchValue,
+    required ValueChanged<String> onSearchChanged,
+    required String searchPlaceholder,
+    required bool searchAutofocus,
+    required ValueChanged<String> onSearchSubmitted,
+    required ValueChanged<bool> onSearchFocusChanged,
+    required ValueChanged<bool> onSearchExpandedChanged,
+    required String searchTooltip,
+    required String searchSemanticLabel,
+  }) {
+    final ambientScaler = MediaQuery.textScalerOf(context);
+    final clampedFactor = ambientScaler.scale(1.0).clamp(0.85, 1.0);
+    final clampedScaler = TextScaler.linear(clampedFactor);
+
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaler: clampedScaler),
+      child: CatchTopBar(
+        titleWidget: _buildChatsTopBarTitle(
+          context,
+          title: title,
+          subtitle: subtitle,
+        ),
+        leadingType: CatchTopBarLeading.none,
+        applySafeArea: false,
+        gutter: false,
+        height: _chatsBrowseHeaderHeight,
+        contentPadding: CatchInsets.screenTitleBlock,
+        searchEnabled: searchEnabled,
+        searchExpanded: searchActive,
+        onSearchExpandedChanged: onSearchExpandedChanged,
+        searchValue: searchValue,
+        onSearch: onSearchChanged,
+        searchPlaceholder: searchPlaceholder,
+        searchAutofocus: searchAutofocus,
+        onSearchSubmitted: onSearchSubmitted,
+        onSearchFocusChanged: onSearchFocusChanged,
+        searchTooltip: searchTooltip,
+        searchSemanticLabel: searchSemanticLabel,
+        searchCollapsedExtent: CatchLayout.browseHeaderSearchExtent,
+      ),
+    );
+  }
+
+  Widget _buildChatsTopBarTitle(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.headline(context),
+        ),
+        const SizedBox(height: CatchGaps.headerTitleToSubtitle),
+        Text(
+          subtitle,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.supporting(context),
+        ),
       ],
     );
   }

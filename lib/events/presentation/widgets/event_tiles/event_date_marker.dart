@@ -34,14 +34,16 @@ class EventDateMarker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (layout) {
-      EventDateMarkerLayout.weekStrip => _WeekMarker(
+      EventDateMarkerLayout.weekStrip => _weekMarker(
+        context,
         date: date,
         active: active,
         hasEvent: hasEvent,
         onTap: onTap,
         label: label,
       ),
-      EventDateMarkerLayout.monthGrid => _MonthMarker(
+      EventDateMarkerLayout.monthGrid => _monthMarker(
+        context,
         date: date,
         active: active,
         today: today,
@@ -53,143 +55,122 @@ class EventDateMarker extends StatelessWidget {
   }
 }
 
-class _WeekMarker extends StatelessWidget {
-  const _WeekMarker({
-    required this.date,
-    required this.active,
-    required this.hasEvent,
-    required this.onTap,
-    this.label,
-  });
+Widget _weekMarker(
+  BuildContext context, {
+  required DateTime date,
+  required bool active,
+  required bool hasEvent,
+  required VoidCallback onTap,
+  String? label,
+}) {
+  final t = CatchTokens.of(context);
+  final day =
+      label ?? const ['M', 'T', 'W', 'T', 'F', 'S', 'S'][date.weekday - 1];
 
-  final DateTime date;
-  final bool active;
-  final bool hasEvent;
-  final VoidCallback onTap;
-  final String? label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final day =
-        label ?? const ['M', 'T', 'W', 'T', 'F', 'S', 'S'][date.weekday - 1];
-
-    return Semantics(
-      button: true,
-      selected: active,
-      label: '$day ${date.day}',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(_dateMarkerRadius),
-          child: Ink(
-            padding: CatchInsets.contentVerticalCompact,
-            decoration: BoxDecoration(
-              color: active ? t.ink : Colors.transparent,
-              borderRadius: BorderRadius.circular(_dateMarkerRadius),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  day,
-                  style: CatchTextStyles.statusLabel(
-                    context,
-                    color: active
-                        ? t.surface.withValues(alpha: CatchOpacity.scrimFill)
-                        : t.ink3,
-                  ),
+  return Semantics(
+    button: true,
+    selected: active,
+    label: '$day ${date.day}',
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(_dateMarkerRadius),
+        child: Ink(
+          padding: CatchInsets.contentVerticalCompact,
+          decoration: BoxDecoration(
+            color: active ? t.ink : Colors.transparent,
+            borderRadius: BorderRadius.circular(_dateMarkerRadius),
+          ),
+          child: Column(
+            children: [
+              Text(
+                day,
+                style: CatchTextStyles.statusLabel(
+                  context,
+                  color: active
+                      ? t.surface.withValues(alpha: CatchOpacity.scrimFill)
+                      : t.ink3,
                 ),
-                gapH2,
-                Text(
-                  '${date.day}',
-                  style: CatchTextStyles.statCompact(
-                    context,
-                    color: active ? t.surface : t.ink,
-                  ),
+              ),
+              gapH2,
+              Text(
+                '${date.day}',
+                style: CatchTextStyles.statCompact(
+                  context,
+                  color: active ? t.surface : t.ink,
                 ),
-                gapH4,
-                CatchStatusDot(
-                  color: hasEvent ? t.primary : Colors.transparent,
-                  size: 4,
-                ),
-              ],
-            ),
+              ),
+              gapH4,
+              CatchStatusDot(
+                color: hasEvent ? t.primary : Colors.transparent,
+                size: 4,
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _MonthMarker extends StatelessWidget {
-  const _MonthMarker({
-    required this.date,
-    required this.active,
-    required this.today,
-    required this.hasEvent,
-    required this.enabled,
-    required this.onTap,
-  });
+Widget _monthMarker(
+  BuildContext context, {
+  required DateTime date,
+  required bool active,
+  required bool today,
+  required bool hasEvent,
+  required bool enabled,
+  required VoidCallback onTap,
+}) {
+  final t = CatchTokens.of(context);
+  final textColor = active
+      ? t.surface
+      : enabled
+      ? t.ink
+      : t.ink3.withValues(alpha: CatchOpacity.mutedContent);
+  final dayText = Text(
+    '${date.day}',
+    style: CatchTextStyles.labelL(context, color: textColor),
+  );
 
-  final DateTime date;
-  final bool active;
-  final bool today;
-  final bool hasEvent;
-  final bool enabled;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final textColor = active
-        ? t.surface
-        : enabled
-        ? t.ink
-        : t.ink3.withValues(alpha: CatchOpacity.mutedContent);
-    final dayText = Text(
-      '${date.day}',
-      style: CatchTextStyles.labelL(context, color: textColor),
-    );
-
-    return Semantics(
-      button: enabled,
-      selected: active,
-      label: '${date.day}',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: enabled ? onTap : null,
-          borderRadius: BorderRadius.circular(_dateMarkerRadius),
-          child: Ink(
-            height: _monthMarkerHeight,
-            decoration: BoxDecoration(
-              color: active ? t.ink : Colors.transparent,
-              borderRadius: BorderRadius.circular(_dateMarkerRadius),
-              border: today && !active ? Border.all(color: t.line2) : null,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                enabled
-                    ? dayText
-                    : Visibility(
-                        visible: false,
-                        maintainState: true,
-                        maintainAnimation: true,
-                        maintainSize: true,
-                        child: dayText,
-                      ),
-                gapH4,
-                CatchStatusDot(
-                  color: hasEvent && enabled ? t.primary : Colors.transparent,
-                  size: 4,
-                ),
-              ],
-            ),
+  return Semantics(
+    button: enabled,
+    selected: active,
+    label: '${date.day}',
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: enabled ? onTap : null,
+        borderRadius: BorderRadius.circular(_dateMarkerRadius),
+        child: Ink(
+          height: _monthMarkerHeight,
+          decoration: BoxDecoration(
+            color: active ? t.ink : Colors.transparent,
+            borderRadius: BorderRadius.circular(_dateMarkerRadius),
+            border: today && !active ? Border.all(color: t.line2) : null,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              enabled
+                  ? dayText
+                  : Visibility(
+                      visible: false,
+                      maintainState: true,
+                      maintainAnimation: true,
+                      maintainSize: true,
+                      child: dayText,
+                    ),
+              gapH4,
+              CatchStatusDot(
+                color: hasEvent && enabled ? t.primary : Colors.transparent,
+                size: 4,
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }

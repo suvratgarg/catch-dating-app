@@ -2,10 +2,10 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/picker_tile.dart';
 import 'package:flutter/material.dart';
 
 class WhenStep extends StatelessWidget {
@@ -45,10 +45,11 @@ class WhenStep extends StatelessWidget {
       child: ListView(
         padding: CatchInsets.formStepBody,
         children: [
-          const FieldLabel('Date'),
+          const CatchFormFieldLabel(label: 'Date', large: true),
           gapH8,
-          PickerTile(
+          _buildPickerTile(
             key: CreateEventFormKeys.datePicker,
+            context: context,
             icon: CatchIcons.calendarTodayOutlined,
             value: dateController.text.isEmpty ? null : dateController.text,
             placeholder: 'Select a date',
@@ -74,10 +75,11 @@ class WhenStep extends StatelessWidget {
                 : const SizedBox.shrink(),
           ),
           gapH20,
-          const FieldLabel('Start time'),
+          const CatchFormFieldLabel(label: 'Start time', large: true),
           gapH8,
-          PickerTile(
+          _buildPickerTile(
             key: CreateEventFormKeys.timePicker,
+            context: context,
             icon: CatchIcons.scheduleOutlined,
             value: startTimeController.text.isEmpty
                 ? null
@@ -116,7 +118,7 @@ class WhenStep extends StatelessWidget {
               ),
             ),
           gapH20,
-          const FieldLabel('Duration'),
+          const CatchFormFieldLabel(label: 'Duration', large: true),
           gapH8,
           CatchNumberStepper(
             value: durationMinutes,
@@ -125,6 +127,43 @@ class WhenStep extends StatelessWidget {
             decreaseTooltip: 'Decrease duration',
             increaseTooltip: 'Increase duration',
             formatValue: (value) => formatDuration(value.round()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPickerTile({
+    required Key key,
+    required BuildContext context,
+    required IconData icon,
+    required String? value,
+    required String placeholder,
+    required VoidCallback onTap,
+  }) {
+    final t = CatchTokens.of(context);
+    return CatchControlShell(
+      key: key,
+      onTap: onTap,
+      tone: CatchControlTone.raised,
+      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
+      semanticButton: true,
+      child: Row(
+        children: [
+          Icon(icon, size: CatchIcon.control, color: t.ink2),
+          gapW12,
+          Expanded(
+            child: Text(
+              value ?? placeholder,
+              style: value != null
+                  ? CatchTextStyles.bodyLead(context)
+                  : CatchTextStyles.bodyLead(context, color: t.ink3),
+            ),
+          ),
+          Icon(
+            CatchIcons.chevronRightRounded,
+            size: CatchIcon.md,
+            color: t.ink3,
           ),
         ],
       ),

@@ -33,23 +33,24 @@ class EventDetailOverviewSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchDesignSection(
-          kicker: 'The plan',
+        CatchSection(
+          title: 'The plan',
           activityKind: event.activityKind,
           lead: true,
           first: true,
           dividerColor: style?.dividerColor,
-          child: _EventDescription(
+          child: _eventDescription(
+            context,
             description: description.isEmpty
                 ? _fallbackPlan(event)
                 : description,
             surfaceStyle: style,
           ),
         ),
-        CatchDesignSection(
-          kicker: 'Why you might click',
+        CatchSection(
+          title: 'Why you might click',
           dividerColor: style?.dividerColor,
-          kickerColor: style?.headingColor,
+          titleColor: style?.headingColor,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -69,10 +70,10 @@ class EventDetailOverviewSection extends StatelessWidget {
             ],
           ),
         ),
-        CatchDesignSection(
-          kicker: 'Itinerary',
+        CatchSection(
+          title: 'Itinerary',
           dividerColor: style?.dividerColor,
-          kickerColor: style?.headingColor,
+          titleColor: style?.headingColor,
           child: EventDetailItinerary(
             event: event,
             titleColor: style?.headingColor,
@@ -81,26 +82,26 @@ class EventDetailOverviewSection extends StatelessWidget {
           ),
         ),
         if (event.eventPhotos.isNotEmpty)
-          CatchDesignSection(
-            kicker: 'Photos',
+          CatchSection(
+            title: 'Photos',
             dividerColor: style?.dividerColor,
-            kickerColor: style?.headingColor,
+            titleColor: style?.headingColor,
             child: EventDetailPhotoStrip(event: event),
           ),
-        CatchDesignSection(
-          kicker: 'Where',
+        CatchSection(
+          title: 'Where',
           dividerColor: style?.dividerColor,
-          kickerColor: style?.headingColor,
+          titleColor: style?.headingColor,
           child: EventDetailMapCard(
             event: event,
             onTap: onLocationTap,
             borderColor: style?.borderColor,
           ),
         ),
-        CatchDesignSection(
-          kicker: 'How sign-ups work',
+        CatchSection(
+          title: 'How sign-ups work',
           dividerColor: style?.dividerColor,
-          kickerColor: style?.headingColor,
+          titleColor: style?.headingColor,
           child: EventDetailMechanismList(
             event: event,
             dividerColor: style?.dividerColor,
@@ -108,18 +109,18 @@ class EventDetailOverviewSection extends StatelessWidget {
             detailColor: style?.bodyColor,
           ),
         ),
-        CatchDesignSection(
-          kicker: 'Good to know',
+        CatchSection(
+          title: 'Good to know',
           dividerColor: style?.dividerColor,
-          kickerColor: style?.headingColor,
+          titleColor: style?.headingColor,
           child: CatchSectionList(
             gap: CatchLayout.detailScreenContentGap,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (event.hasRequirements)
                 RequirementsRow(event: event, surfaceStyle: style),
-              _WhatToExpectSection(event: event, surfaceStyle: style),
-              _EventPolicySummary(event: event, surfaceStyle: style),
+              _whatToExpectSection(context, event: event, surfaceStyle: style),
+              EventDetailPolicySummary(event: event, surfaceStyle: style),
             ],
           ),
         ),
@@ -128,37 +129,33 @@ class EventDetailOverviewSection extends StatelessWidget {
   }
 }
 
-class _EventDescription extends StatelessWidget {
-  const _EventDescription({required this.description, this.surfaceStyle});
+Widget _eventDescription(
+  BuildContext context, {
+  required String description,
+  EventDetailSurfaceStyle? surfaceStyle,
+}) {
+  final t = CatchTokens.of(context);
 
-  final String description;
-  final EventDetailSurfaceStyle? surfaceStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'About this event',
-          style: CatchTextStyles.sectionTitle(
-            context,
-            color: surfaceStyle?.headingColor,
-          ),
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        'About this event',
+        style: CatchTextStyles.sectionTitle(
+          context,
+          color: surfaceStyle?.headingColor,
         ),
-        const SizedBox(height: CatchLayout.detailScreenSupportingGap),
-        Text(
-          description,
-          style: CatchTextStyles.bodyLead(
-            context,
-            color: surfaceStyle?.bodyColor ?? t.ink2,
-          ),
+      ),
+      const SizedBox(height: CatchLayout.detailScreenSupportingGap),
+      Text(
+        description,
+        style: CatchTextStyles.bodyLead(
+          context,
+          color: surfaceStyle?.bodyColor ?? t.ink2,
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
 }
 
 String _fallbackPlan(Event event) {
@@ -168,51 +165,51 @@ String _fallbackPlan(Event event) {
   return 'A hosted ${event.eventFormat.label.toLowerCase()} built around a clear arrival, shared activity, and low-pressure follow-up.';
 }
 
-class _WhatToExpectSection extends StatelessWidget {
-  const _WhatToExpectSection({required this.event, this.surfaceStyle});
+Widget _whatToExpectSection(
+  BuildContext context, {
+  required Event event,
+  EventDetailSurfaceStyle? surfaceStyle,
+}) {
+  final t = CatchTokens.of(context);
+  final items = _expectationItems(event);
 
-  final Event event;
-  final EventDetailSurfaceStyle? surfaceStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final items = _expectationItems(event);
-
-    return CatchSurface(
-      padding: CatchInsets.tileContentCompact,
-      radius: CatchRadius.md,
-      backgroundColor: surfaceStyle?.surfaceBackground,
-      borderColor: surfaceStyle?.borderColor ?? t.line,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'What to expect',
-            style: CatchTextStyles.sectionTitle(
-              context,
-              color: surfaceStyle?.headingColor,
-            ),
+  return CatchSurface(
+    padding: CatchInsets.tileContentCompact,
+    radius: CatchRadius.md,
+    backgroundColor: surfaceStyle?.surfaceBackground,
+    borderColor: surfaceStyle?.borderColor ?? t.line,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'What to expect',
+          style: CatchTextStyles.sectionTitle(
+            context,
+            color: surfaceStyle?.headingColor,
           ),
-          const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-          for (final item in items) ...[
-            _EventPolicySummaryLine(
-              icon: item.icon,
-              title: item.title,
-              body: item.body,
-              surfaceStyle: surfaceStyle,
-            ),
-            if (item != items.last)
-              const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-          ],
+        ),
+        const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
+        for (final item in items) ...[
+          EventDetailPolicySummaryLine(
+            icon: item.icon,
+            title: item.title,
+            body: item.body,
+            surfaceStyle: surfaceStyle,
+          ),
+          if (item != items.last)
+            const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
         ],
-      ),
-    );
-  }
+      ],
+    ),
+  );
 }
 
-class _EventPolicySummary extends StatelessWidget {
-  const _EventPolicySummary({required this.event, this.surfaceStyle});
+class EventDetailPolicySummary extends StatelessWidget {
+  const EventDetailPolicySummary({
+    super.key,
+    required this.event,
+    this.surfaceStyle,
+  });
 
   final Event event;
   final EventDetailSurfaceStyle? surfaceStyle;
@@ -239,7 +236,7 @@ class _EventPolicySummary extends StatelessWidget {
             ),
           ),
           const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-          _EventPolicySummaryLine(
+          EventDetailPolicySummaryLine(
             icon: CatchIcons.groupOutlined,
             title: _admissionTitle(policy.admissionPolicy),
             body: _admissionSummary(policy.admissionPolicy),
@@ -247,7 +244,7 @@ class _EventPolicySummary extends StatelessWidget {
           ),
           if (policy.usesDemandPricing) ...[
             const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-            _EventPolicySummaryLine(
+            EventDetailPolicySummaryLine(
               icon: CatchIcons.trendingUpRounded,
               title: 'Demand pricing',
               body: _dynamicPricingSummary(
@@ -258,14 +255,14 @@ class _EventPolicySummary extends StatelessWidget {
             ),
           ],
           const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-          _EventPolicySummaryLine(
+          EventDetailPolicySummaryLine(
             icon: CatchIcons.receiptLongOutlined,
             title: '${cancellation.title} cancellation',
             body: cancellation.attendeeSummary,
             surfaceStyle: surfaceStyle,
           ),
           const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-          _EventPolicySummaryLine(
+          EventDetailPolicySummaryLine(
             icon: CatchIcons.verifiedUserOutlined,
             title: policy.settlementPolicy.title,
             body: policy.settlementPolicy.summary,
@@ -277,8 +274,9 @@ class _EventPolicySummary extends StatelessWidget {
   }
 }
 
-class _EventPolicySummaryLine extends StatelessWidget {
-  const _EventPolicySummaryLine({
+class EventDetailPolicySummaryLine extends StatelessWidget {
+  const EventDetailPolicySummaryLine({
+    super.key,
     required this.icon,
     required this.title,
     required this.body,

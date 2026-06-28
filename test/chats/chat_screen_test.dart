@@ -9,7 +9,6 @@ import 'package:catch_dating_app/chats/presentation/chat_route_state.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_thread_lookup_state.dart';
 import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_top_bar.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -466,11 +465,11 @@ void main() {
       expect(state.profileNavigationEnabled, isFalse);
       expect(state.shareCardEnabled, isFalse);
       expect(state.safetyActionsEnabled, isTrue);
-      expect(state.topBarActions, [
-        ChatTopBarAction.report,
-        ChatTopBarAction.block,
+      expect(state.threadActions, [
+        ChatThreadAction.report,
+        ChatThreadAction.block,
       ]);
-      expect(state.disabledTopBarActions, isEmpty);
+      expect(state.disabledThreadActions, isEmpty);
       expect(state.safetyTargetName, 'Aarav');
       expect(state.messageOtherName, 'Aarav');
       expect(state.messagesRetryIntent, isNull);
@@ -542,9 +541,9 @@ void main() {
         blockUserPending: true,
       );
 
-      expect(state.disabledTopBarActions, {
-        ChatTopBarAction.report,
-        ChatTopBarAction.block,
+      expect(state.disabledThreadActions, {
+        ChatThreadAction.report,
+        ChatThreadAction.block,
       });
     });
 
@@ -573,23 +572,23 @@ void main() {
       );
 
       expect(
-        state.intentForTopBarAction(ChatTopBarAction.shareCard)?.type,
+        state.intentForThreadAction(ChatThreadAction.shareCard)?.type,
         HostChatActionIntentType.shareCard,
       );
-      final reportIntent = state.intentForTopBarAction(ChatTopBarAction.report);
+      final reportIntent = state.intentForThreadAction(ChatThreadAction.report);
       expect(reportIntent?.type, HostChatActionIntentType.reportUser);
       expect(reportIntent?.targetUserId, 'runner-2');
       expect(reportIntent?.targetName, 'Taylor');
-      final blockIntent = state.intentForTopBarAction(ChatTopBarAction.block);
+      final blockIntent = state.intentForThreadAction(ChatThreadAction.block);
       expect(blockIntent?.type, HostChatActionIntentType.blockUser);
       expect(blockIntent?.targetUserId, 'runner-2');
       expect(blockIntent?.targetName, 'Taylor');
       expect(
-        disabledReport.intentForTopBarAction(ChatTopBarAction.report),
+        disabledReport.intentForThreadAction(ChatThreadAction.report),
         isNull,
       );
       expect(
-        disabledReport.intentForTopBarAction(ChatTopBarAction.block)?.type,
+        disabledReport.intentForThreadAction(ChatThreadAction.block)?.type,
         HostChatActionIntentType.blockUser,
       );
     });
@@ -630,27 +629,27 @@ void main() {
         );
 
         expect(
-          hostState.intentForTopBarAction(ChatTopBarAction.shareCard),
+          hostState.intentForThreadAction(ChatThreadAction.shareCard),
           isNull,
         );
         expect(
-          hostState.intentForTopBarAction(ChatTopBarAction.report)?.type,
+          hostState.intentForThreadAction(ChatThreadAction.report)?.type,
           HostChatActionIntentType.reportUser,
         );
         expect(
-          hostState.intentForTopBarAction(ChatTopBarAction.block)?.type,
+          hostState.intentForThreadAction(ChatThreadAction.block)?.type,
           HostChatActionIntentType.blockUser,
         );
         expect(
-          suvbotState.intentForTopBarAction(ChatTopBarAction.shareCard),
+          suvbotState.intentForThreadAction(ChatThreadAction.shareCard),
           isNull,
         );
         expect(
-          suvbotState.intentForTopBarAction(ChatTopBarAction.report),
+          suvbotState.intentForThreadAction(ChatThreadAction.report),
           isNull,
         );
         expect(
-          suvbotState.intentForTopBarAction(ChatTopBarAction.block),
+          suvbotState.intentForThreadAction(ChatThreadAction.block),
           isNull,
         );
       },

@@ -19,11 +19,11 @@ class CreateEventStepHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchStepFlowHeader(
+    return CatchStepHeader(
       title: title,
       subtitle: clubName,
-      currentStep: currentStep,
-      totalSteps: totalSteps,
+      step: currentStep + 1,
+      total: totalSteps,
       onBack: onBack,
     );
   }

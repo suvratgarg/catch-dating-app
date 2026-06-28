@@ -7,7 +7,7 @@ void main() {
       expect(const LaunchAccessApplicationDraft().canSubmit, isFalse);
 
       final draft = const LaunchAccessApplicationDraft().copyWith(
-        city: 'mumbai',
+        city: 'in-mh-mumbai',
         eventTypes: {LaunchAccessEventType.runClub},
         availabilityWindows: {LaunchAccessAvailabilityWindow.saturdayMornings},
         whyCatch: 'I want to meet people through hosted events.',

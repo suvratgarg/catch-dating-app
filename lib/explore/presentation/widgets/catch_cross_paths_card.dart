@@ -57,7 +57,8 @@ class CatchCrossPathsCard extends StatelessWidget {
     final activity = ActivityPalette.resolve(context, activityKind);
 
     if (variant == CatchCrossPathsVariant.photo) {
-      return _Surface(
+      return _buildCrossPathsSurface(
+        context,
         borderColor: t.line,
         radius: CatchRadius.md,
         clip: true,
@@ -67,7 +68,10 @@ class CatchCrossPathsCard extends StatelessWidget {
             children: [
               SizedBox(
                 width: CatchLayout.crossPathsPhotoVariantWidth,
-                child: _Portrait(activity: activity, photoUrl: photoUrl),
+                child: _buildCrossPathsPortrait(
+                  activity: activity,
+                  photoUrl: photoUrl,
+                ),
               ),
               Expanded(
                 child: Padding(
@@ -105,7 +109,12 @@ class CatchCrossPathsCard extends StatelessWidget {
                         ),
                       ],
                       const SizedBox(height: CatchSpacing.s3),
-                      _CtaRow(cta: cta, onJoin: onJoin, onLike: onLike),
+                      _buildCrossPathsCtaRow(
+                        context,
+                        cta: cta,
+                        onJoin: onJoin,
+                        onLike: onLike,
+                      ),
                     ],
                   ),
                 ),
@@ -117,7 +126,8 @@ class CatchCrossPathsCard extends StatelessWidget {
     }
 
     // Postcard variant.
-    return _Surface(
+    return _buildCrossPathsSurface(
+      context,
       borderColor: t.line2,
       radius: CatchSpacing.micro6,
       elevation: CatchSurfaceShadow.raised,
@@ -146,12 +156,20 @@ class CatchCrossPathsCard extends StatelessWidget {
                       const SizedBox(height: CatchSpacing.micro10),
                       Text(
                         _attribution!.toUpperCase(),
-                        style: CatchTextStyles.monoLabel(context, color: t.ink3),
+                        style: CatchTextStyles.monoLabel(
+                          context,
+                          color: t.ink3,
+                        ),
                       ),
                     ],
                     const Spacer(),
                     const SizedBox(height: CatchSpacing.micro14),
-                    _CtaRow(cta: cta, onJoin: onJoin, onLike: onLike),
+                    _buildCrossPathsCtaRow(
+                      context,
+                      cta: cta,
+                      onJoin: onJoin,
+                      onLike: onLike,
+                    ),
                   ],
                 ),
               ),
@@ -163,7 +181,11 @@ class CatchCrossPathsCard extends StatelessWidget {
               const SizedBox(width: CatchSpacing.micro14),
               SizedBox(
                 width: CatchLayout.crossPathsRailColumnWidth,
-                child: _PolaroidRail(activity: activity, photoUrl: photoUrl),
+                child: _buildCrossPathsPolaroidRail(
+                  context,
+                  activity: activity,
+                  photoUrl: photoUrl,
+                ),
               ),
             ],
           ),
@@ -175,170 +197,148 @@ class CatchCrossPathsCard extends StatelessWidget {
 
 enum CatchSurfaceShadow { card, raised }
 
-class _Surface extends StatelessWidget {
-  const _Surface({
-    required this.child,
-    required this.borderColor,
-    required this.radius,
-    this.elevation = CatchSurfaceShadow.card,
-    this.clip = false,
-  });
-
-  final Widget child;
-  final Color borderColor;
-  final double radius;
-  final CatchSurfaceShadow elevation;
-  final bool clip;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final borderRadius = BorderRadius.circular(radius);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.surface,
-        borderRadius: borderRadius,
-        border: Border.all(color: borderColor),
-        boxShadow: elevation == CatchSurfaceShadow.raised
-            ? CatchElevation.raised
-            : CatchElevation.card,
-      ),
-      child: clip
-          ? ClipRRect(borderRadius: borderRadius, child: child)
-          : child,
-    );
-  }
+Widget _buildCrossPathsSurface(
+  BuildContext context, {
+  required Widget child,
+  required Color borderColor,
+  required double radius,
+  CatchSurfaceShadow elevation = CatchSurfaceShadow.card,
+  bool clip = false,
+}) {
+  final t = CatchTokens.of(context);
+  final borderRadius = BorderRadius.circular(radius);
+  return DecoratedBox(
+    decoration: BoxDecoration(
+      color: t.surface,
+      borderRadius: borderRadius,
+      border: Border.all(color: borderColor),
+      boxShadow: elevation == CatchSurfaceShadow.raised
+          ? CatchElevation.raised
+          : CatchElevation.card,
+    ),
+    child: clip ? ClipRRect(borderRadius: borderRadius, child: child) : child,
+  );
 }
 
 /// Graded portrait (photo variant left panel / fallback) — graded photo over the
 /// activity gradient.
-class _Portrait extends StatelessWidget {
-  const _Portrait({required this.activity, this.photoUrl});
-
-  final CatchActivity activity;
-  final String? photoUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    final url = photoUrl;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [activity.accent, activity.deep],
-        ),
+Widget _buildCrossPathsPortrait({
+  required CatchActivity activity,
+  String? photoUrl,
+}) {
+  final url = photoUrl;
+  return DecoratedBox(
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [activity.accent, activity.deep],
       ),
-      child: url == null || url.isEmpty
-          ? const SizedBox.expand()
-          : CatchGradedImage(child: CatchNetworkImage(url)),
-    );
-  }
+    ),
+    child: url == null || url.isEmpty
+        ? const SizedBox.expand()
+        : CatchGradedImage(child: CatchNetworkImage(url)),
+  );
 }
 
 /// The tilted white polaroid + "TO: YOU" postal lines (postcard variant).
-class _PolaroidRail extends StatelessWidget {
-  const _PolaroidRail({required this.activity, this.photoUrl});
-
-  final CatchActivity activity;
-  final String? photoUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Align(
-          alignment: Alignment.centerRight,
-          child: Transform.rotate(
-            angle: CatchLayout.crossPathsPolaroidTilt,
-            child: Container(
-              width: CatchLayout.crossPathsPolaroidWidth,
-              height: CatchLayout.crossPathsPolaroidHeight,
-              padding: const EdgeInsets.all(CatchSpacing.s1),
-              decoration: BoxDecoration(
-                color: t.surface,
-                border: Border.all(color: t.line2),
-                boxShadow: CatchElevation.card,
-              ),
-              child: _Portrait(activity: activity, photoUrl: photoUrl),
+Widget _buildCrossPathsPolaroidRail(
+  BuildContext context, {
+  required CatchActivity activity,
+  String? photoUrl,
+}) {
+  final t = CatchTokens.of(context);
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Align(
+        alignment: Alignment.centerRight,
+        child: Transform.rotate(
+          angle: CatchLayout.crossPathsPolaroidTilt,
+          child: Container(
+            width: CatchLayout.crossPathsPolaroidWidth,
+            height: CatchLayout.crossPathsPolaroidHeight,
+            padding: const EdgeInsets.all(CatchSpacing.s1),
+            decoration: BoxDecoration(
+              color: t.surface,
+              border: Border.all(color: t.line2),
+              boxShadow: CatchElevation.card,
+            ),
+            child: _buildCrossPathsPortrait(
+              activity: activity,
+              photoUrl: photoUrl,
             ),
           ),
         ),
-        const SizedBox(height: CatchSpacing.micro14),
-        Text(
-          'TO: YOU',
-          textAlign: TextAlign.right,
-          style: CatchTextStyles.monoLabel(
-            context,
-            color: t.ink3,
-          ).copyWith(fontSize: 8.5),
+      ),
+      const SizedBox(height: CatchSpacing.micro14),
+      Text(
+        'TO: YOU',
+        textAlign: TextAlign.right,
+        style: CatchTextStyles.monoLabel(
+          context,
+          color: t.ink3,
+        ).copyWith(fontSize: 8.5),
+      ),
+      const SizedBox(height: CatchSpacing.micro6),
+      ColoredBox(
+        color: t.line,
+        child: const SizedBox(
+          width: double.infinity,
+          height: CatchStroke.hairline,
         ),
-        const SizedBox(height: CatchSpacing.micro6),
-        ColoredBox(
-          color: t.line,
-          child: const SizedBox(
-            width: double.infinity,
-            height: CatchStroke.hairline,
-          ),
-        ),
-        const SizedBox(height: CatchSpacing.micro6),
-        Align(
-          alignment: Alignment.centerRight,
-          child: FractionallySizedBox(
-            widthFactor: 0.7,
-            child: ColoredBox(
-              color: t.line,
-              child: const SizedBox(
-                width: double.infinity,
-                height: CatchStroke.hairline,
-              ),
+      ),
+      const SizedBox(height: CatchSpacing.micro6),
+      Align(
+        alignment: Alignment.centerRight,
+        child: FractionallySizedBox(
+          widthFactor: 0.7,
+          child: ColoredBox(
+            color: t.line,
+            child: const SizedBox(
+              width: double.infinity,
+              height: CatchStroke.hairline,
             ),
           ),
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
 }
 
-class _CtaRow extends StatelessWidget {
-  const _CtaRow({required this.cta, this.onJoin, this.onLike});
-
-  final String cta;
-  final VoidCallback? onJoin;
-  final VoidCallback? onLike;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CatchButton(label: cta, onPressed: onJoin, size: CatchButtonSize.sm),
-        const SizedBox(width: CatchSpacing.s2),
-        Semantics(
-          button: true,
-          label: 'Like',
-          child: GestureDetector(
-            onTap: onLike,
-            child: Container(
-              width: CatchLayout.crossPathsHeartExtent,
-              height: CatchLayout.crossPathsHeartExtent,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: t.line2),
-              ),
-              child: Icon(
-                CatchIcons.favoriteOutlineRounded,
-                size: CatchIcon.sm,
-                color: t.ink,
-              ),
+Widget _buildCrossPathsCtaRow(
+  BuildContext context, {
+  required String cta,
+  VoidCallback? onJoin,
+  VoidCallback? onLike,
+}) {
+  final t = CatchTokens.of(context);
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      CatchButton(label: cta, onPressed: onJoin, size: CatchButtonSize.sm),
+      const SizedBox(width: CatchSpacing.s2),
+      Semantics(
+        button: true,
+        label: 'Like',
+        child: GestureDetector(
+          onTap: onLike,
+          child: Container(
+            width: CatchLayout.crossPathsHeartExtent,
+            height: CatchLayout.crossPathsHeartExtent,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: t.line2),
+            ),
+            child: Icon(
+              CatchIcons.favoriteOutlineRounded,
+              size: CatchIcon.sm,
+              color: t.ink,
             ),
           ),
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
 }

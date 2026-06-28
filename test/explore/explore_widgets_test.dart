@@ -9,11 +9,10 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/catch_club_dock.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/membership_button.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/stats_strip.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_transition_tags.dart';
@@ -28,20 +27,19 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_stat_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
-import 'package:catch_dating_app/core/widgets/catch_viewport_curve_frame.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
@@ -51,6 +49,7 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart'
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type_browse_grid.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_list.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_peek_rail.dart';
@@ -338,12 +337,24 @@ void main() {
         name: 'Pace Social',
         area: 'Necklace Road',
       );
-      final event = event_test.buildEvent(
-        id: 'event-upcoming',
+      final featuredEvent = event_test.buildEvent(
+        id: 'event-featured',
         clubId: club.id,
         meetingPoint: 'People Plaza',
         bookedCount: 8,
         capacityLimit: 12,
+      );
+      final bodyEvent = event_test.buildEvent(
+        id: 'event-body',
+        clubId: club.id,
+        startTime: DateTime.now().add(const Duration(hours: 4)),
+        meetingPoint: 'Library steps',
+        bookedCount: 8,
+        capacityLimit: 12,
+        eventFormat: EventFormatSnapshot.custom(
+          label: 'board games',
+          interactionModel: EventInteractionModel.openFormat,
+        ),
       );
 
       await tester.pumpWidget(
@@ -354,10 +365,19 @@ void main() {
                 ExploreFeedViewModel(
                   items: [
                     ExploreEventItem(
-                      event: event,
+                      event: featuredEvent,
                       club: club,
                       availability: resolveViewerEventAvailability(
-                        event: event,
+                        event: featuredEvent,
+                        userProfile: null,
+                      ),
+                      status: EventTileStatus.open,
+                    ),
+                    ExploreEventItem(
+                      event: bodyEvent,
+                      club: club,
+                      availability: resolveViewerEventAvailability(
+                        event: bodyEvent,
                         userProfile: null,
                       ),
                       status: EventTileStatus.open,
@@ -382,15 +402,13 @@ void main() {
       expect(find.text('This week'), findsNothing);
       expect(find.textContaining('COMING UP'), findsNothing);
       expect(find.textContaining('1 PLAN'), findsOneWidget);
-      // The single featured event leads the feed as the DS dark CoverStory.
-      expect(find.byType(CatchCoverStory), findsOneWidget);
-      expect(find.textContaining(event.title), findsWidgets);
-      expect(find.textContaining('Pace Social'), findsWidgets);
+      expect(find.byType(CatchCoverStory), findsNothing);
+      expect(find.textContaining(featuredEvent.title), findsNothing);
+      expect(find.textContaining(bodyEvent.title), findsWidgets);
       expect(find.text('8 going · 4 spots left'), findsOneWidget);
-      expect(find.textContaining('5km'), findsOneWidget);
     });
 
-    testWidgets('ExploreEventsSection cover CTA opens the event spotlight-dark', (
+    testWidgets('ExploreDiscoveryCoverHeader CTA opens spotlight-dark', (
       tester,
     ) async {
       final club = buildClub(id: 'club-cover', name: 'Pace Social');
@@ -405,9 +423,8 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => const Scaffold(
-              body: CustomScrollView(slivers: [ExploreEventsSection()]),
-            ),
+            builder: (_, _) =>
+                const Scaffold(body: ExploreDiscoveryCoverHeader()),
           ),
           GoRoute(
             path: '/events/:clubId/:eventId',
@@ -456,12 +473,85 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.byType(CatchCoverStory), findsOneWidget);
+      expect(find.text(event.title), findsOneWidget);
 
-      await tester.tap(find.text('View event'));
+      await tester.tap(find.text('Claim a seat'));
       await tester.pumpAndSettle();
 
       expect(find.text('Detail event-cover spotlightDark'), findsOneWidget);
+    });
+
+    testWidgets('ExploreDiscoveryCoverHeader paints through the top inset', (
+      tester,
+    ) async {
+      const topInset = 47.0;
+      final club = buildClub(id: 'club-cover-safe', name: 'Pace Social');
+      final event = event_test.buildEvent(
+        id: 'event-cover-safe',
+        clubId: club.id,
+        meetingPoint: 'People Plaza',
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            exploreFeedViewModelProvider.overrideWithValue(
+              AsyncData(
+                ExploreFeedViewModel(
+                  items: [
+                    ExploreEventItem(
+                      event: event,
+                      club: club,
+                      availability: resolveViewerEventAvailability(
+                        event: event,
+                        userProfile: null,
+                      ),
+                      status: EventTileStatus.open,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const MediaQuery(
+              data: MediaQueryData(padding: EdgeInsets.only(top: topInset)),
+              child: Scaffold(body: ExploreDiscoveryCoverHeader()),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(tester.getTopLeft(find.byType(ExploreDiscoveryCoverHeader)).dy, 0);
+      expect(
+        tester.getSize(find.byType(ExploreDiscoveryCoverHeader)).height,
+        CatchLayout.exploreDiscoveryCoverHeight + topInset,
+      );
+    });
+
+    testWidgets('ExploreDiscoveryCoverHeader uses compact row without hero', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            _emptyExploreFeedOverride,
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const Scaffold(body: ExploreDiscoveryCoverHeader()),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('EXPLORE · MUMBAI'), findsOneWidget);
+      expect(find.byIcon(CatchIcons.search), findsOneWidget);
+      expect(find.text('Find an event worth showing up for.'), findsNothing);
+      expect(find.byType(CatchCoverStory), findsNothing);
     });
 
     testWidgets('CatchCoverStory data block stays within narrow widths', (
@@ -566,10 +656,10 @@ void main() {
         find.byKey(const ValueKey('club-detail-hero-padding')),
       );
       expect(detailPadding.padding, cardPadding.padding);
-      final curveFrame = tester.widget<CatchViewportCurveFrame>(
+      expect(
         find.byKey(const ValueKey('club-detail-viewport-curve-frame')),
+        findsOneWidget,
       );
-      expect(curveFrame.padding, clubInteractionMediaPadding);
     });
 
     testWidgets(
@@ -625,6 +715,15 @@ void main() {
             ActivityKind.pickleball,
           ),
         );
+        final quiz = event_test.buildEvent(
+          id: 'event-week-quiz',
+          clubId: club.id,
+          startTime: today.add(const Duration(days: 6, hours: 20)),
+          meetingPoint: 'Trivia room',
+          eventFormat: EventFormatSnapshot.fromActivityKind(
+            ActivityKind.pubQuiz,
+          ),
+        );
 
         await tester.pumpWidget(
           ProviderScope(
@@ -639,6 +738,7 @@ void main() {
                         art,
                         brunch,
                         pickleball,
+                        quiz,
                       ])
                         ExploreEventItem(
                           event: event,
@@ -666,13 +766,21 @@ void main() {
 
         expect(find.text('This week'), findsOneWidget);
         expect(find.text('COMING UP · 5'), findsOneWidget);
-        expect(find.textContaining('Long Table'), findsOneWidget);
+        expect(find.textContaining('Long Table'), findsNothing);
         expect(find.textContaining('Run'), findsOneWidget);
         expect(find.textContaining('Sketching Strangers'), findsOneWidget);
         expect(find.textContaining('Dinner'), findsWidgets);
         expect(find.textContaining('Pickleball'), findsWidgets);
+        expect(find.textContaining('Pub Quiz'), findsWidgets);
         expect(find.byType(EventDateRailCard), findsNWidgets(5));
-        expect(find.byType(CatchEventSpotlightCard), findsNothing);
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is CatchEventCard &&
+                widget.variant == CatchEventCardVariant.spotlight,
+          ),
+          findsNothing,
+        );
         expect(find.byType(CatchCoverStory), findsNothing);
       },
     );
@@ -744,7 +852,7 @@ void main() {
       expect(find.text('FULL'), findsNothing);
     });
 
-    testWidgets('Explore event type browse grid updates the activity filter', (
+    testWidgets('Explore event type browse index updates the activity filter', (
       tester,
     ) async {
       final club = buildClub(
@@ -752,22 +860,38 @@ void main() {
         name: 'Pace Social',
         area: 'Necklace Road',
       );
-      final event = event_test.buildEvent(
-        id: 'event-dinner',
-        clubId: club.id,
-        eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.dinner),
-      );
+      final activityKinds = [
+        ActivityKind.socialRun,
+        ActivityKind.dinner,
+        ActivityKind.pubQuiz,
+        ActivityKind.pickleball,
+        ActivityKind.walking,
+        ActivityKind.padel,
+        ActivityKind.tennis,
+        ActivityKind.yoga,
+        ActivityKind.barCrawl,
+        ActivityKind.dinner,
+        ActivityKind.socialRun,
+        ActivityKind.socialRun,
+      ];
       final container = ProviderContainer(
         overrides: [
           exploreFeedViewModelProvider.overrideWithValue(
             AsyncData(
               ExploreFeedViewModel(
                 items: [
-                  ExploreEventItem(
-                    event: event,
-                    club: club,
-                    status: EventTileStatus.open,
-                  ),
+                  for (var index = 0; index < activityKinds.length; index += 1)
+                    ExploreEventItem(
+                      event: event_test.buildEvent(
+                        id: 'event-type-$index',
+                        clubId: club.id,
+                        eventFormat: EventFormatSnapshot.fromActivityKind(
+                          activityKinds[index],
+                        ),
+                      ),
+                      club: club,
+                      status: EventTileStatus.open,
+                    ),
                 ],
               ),
             ),
@@ -789,9 +913,16 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Browse by event type'), findsOneWidget);
+      expect(find.text('BY ACTIVITY'), findsOneWidget);
+      expect(find.text('Social run'), findsOneWidget);
       expect(find.text('Dinner'), findsOneWidget);
-      expect(find.text('1 EVENT'), findsOneWidget);
+      expect(find.text('Pub quiz'), findsOneWidget);
+      expect(find.text('Pickleball'), findsOneWidget);
+      expect(find.text('Walking'), findsOneWidget);
+      expect(find.text('3'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
+      expect(find.text('+ 4 MORE TYPES'), findsOneWidget);
+      expect(find.text('Padel'), findsNothing);
 
       await tester.tap(find.text('Dinner'));
       await tester.pump();
@@ -800,10 +931,15 @@ void main() {
         container.read(exploreFiltersProvider).activityTag,
         ActivityKind.dinner.name,
       );
-      expect(find.text('Filtered'), findsOneWidget);
+
+      await tester.tap(find.text('+ 4 MORE TYPES'));
+      await tester.pump();
+
+      expect(find.text('Padel'), findsOneWidget);
+      expect(find.text('+ 4 MORE TYPES'), findsNothing);
     });
 
-    testWidgets('Explore event type browse grid fits iPhone width', (
+    testWidgets('Explore event type browse index fits iPhone width', (
       tester,
     ) async {
       tester.view.physicalSize = const Size(402, 874);
@@ -848,7 +984,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Browse by event type'), findsOneWidget);
+      expect(find.text('BY ACTIVITY'), findsOneWidget);
       expect(find.text('Social run'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
@@ -1154,7 +1290,7 @@ void main() {
     ) async {
       final club = buildClub(
         name: 'Night Pacers',
-        location: 'indore',
+        location: 'in-mp-indore',
         tags: const ['social', 'Indore'],
         imageUrl: 'https://example.com/club-cover.jpg',
         profileImageUrl: 'https://example.com/club-logo.jpg',
@@ -1222,22 +1358,24 @@ void main() {
     });
 
     testWidgets(
-      'MembershipButton renders the correct action and pending state',
+      'ClubMembershipDock renders the correct action and pending state',
       (tester) async {
         await pumpTestApp(
           tester,
-          const Column(
+          Column(
             children: [
-              MembershipButton(
-                clubId: 'club-1',
+              ClubMembershipDock(
+                club: buildClub(),
                 isMember: false,
+                isAuthenticated: true,
                 isMutating: false,
                 pushNotificationsEnabled: false,
                 isPushMutating: false,
               ),
-              MembershipButton(
-                clubId: 'club-1',
+              ClubMembershipDock(
+                club: buildClub(),
                 isMember: true,
+                isAuthenticated: true,
                 isMutating: true,
                 pushNotificationsEnabled: false,
                 isPushMutating: false,
@@ -1251,8 +1389,7 @@ void main() {
           tester
               .widget<CatchButton>(
                 find.byWidgetPredicate(
-                  (widget) =>
-                      widget is CatchButton && widget.label == 'Leave club',
+                  (widget) => widget is CatchButton && widget.label == 'Joined',
                 ),
               )
               .isLoading,
@@ -1261,112 +1398,115 @@ void main() {
       },
     );
 
-    testWidgets('MembershipButton join and leave actions hit the repository', (
-      tester,
-    ) async {
-      final fakeRepository = FakeClubsRepository();
-      final container = ProviderContainer(
-        retry: (_, _) => null,
-        overrides: [
-          cityListProvider.overrideWith((ref) async => _testCities),
-          deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
-          clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
-          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-        ],
-      );
-      addTearDown(container.dispose);
-      final uidSubscription = container.listen(
-        uidProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(uidSubscription.close);
-      await container.pump();
+    testWidgets(
+      'ClubMembershipDock join and leave actions hit the repository',
+      (tester) async {
+        final fakeRepository = FakeClubsRepository();
+        final container = ProviderContainer(
+          retry: (_, _) => null,
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          ],
+        );
+        addTearDown(container.dispose);
+        final uidSubscription = container.listen(
+          uidProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(uidSubscription.close);
+        await container.pump();
 
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: const Scaffold(
-              body: Column(
-                children: [
-                  MembershipButton(
-                    clubId: 'club-join',
-                    isMember: false,
-                    isMutating: false,
-                    pushNotificationsEnabled: false,
-                    isPushMutating: false,
-                  ),
-                  MembershipButton(
-                    clubId: 'club-leave',
-                    isMember: true,
-                    isMutating: false,
-                    pushNotificationsEnabled: false,
-                    isPushMutating: false,
-                  ),
-                ],
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: Scaffold(
+                body: Column(
+                  children: [
+                    ClubMembershipDock(
+                      club: buildClub(id: 'club-join'),
+                      isMember: false,
+                      isAuthenticated: true,
+                      isMutating: false,
+                      pushNotificationsEnabled: false,
+                      isPushMutating: false,
+                    ),
+                    ClubMembershipDock(
+                      club: buildClub(id: 'club-leave'),
+                      isMember: true,
+                      isAuthenticated: true,
+                      isMutating: false,
+                      pushNotificationsEnabled: false,
+                      isPushMutating: false,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
-      await _pumpClubUi(tester);
+        );
+        await _pumpClubUi(tester);
 
-      await tester.tap(find.text('Join club'));
-      await _pumpClubUi(tester);
-      await tester.tap(find.text('Leave club'));
-      await _pumpClubUi(tester);
+        await tester.tap(find.text('Join club'));
+        await _pumpClubUi(tester);
+        await tester.tap(find.text('Joined'));
+        await _pumpClubUi(tester);
 
-      expect(fakeRepository.joinedClubId, 'club-join');
-      expect(fakeRepository.leftClubId, 'club-leave');
-    });
+        expect(fakeRepository.joinedClubId, 'club-join');
+        expect(fakeRepository.leftClubId, 'club-leave');
+      },
+    );
 
-    testWidgets('HostClubManagementPanel and StatsStrip show computed values', (
-      tester,
-    ) async {
-      await pumpTestApp(
-        tester,
-        Column(
-          children: [
-            HostClubManagementPanel(
-              club: buildClub(name: 'Host Club'),
-              events: [
-                buildEvent(
-                  priceInPaise: 1500,
-                  bookedCount: 2,
-                  waitlistedCount: 1,
-                ),
-                buildEvent(bookedCount: 1),
-              ],
-              onEditClub: () {},
-              onCreateEvent: () {},
-            ),
-            StatsStrip(
-              club: buildClub(
-                memberCount: 24,
-                rating: 4.7,
-                reviewCount: 12,
-                createdAt: DateTime(2025, 1, 12),
+    testWidgets(
+      'HostClubManagementPanel and metric strip show computed values',
+      (tester) async {
+        await pumpTestApp(
+          tester,
+          Column(
+            children: [
+              HostClubManagementPanel(
+                club: buildClub(name: 'Host Club'),
+                events: [
+                  buildEvent(
+                    priceInPaise: 1500,
+                    bookedCount: 2,
+                    waitlistedCount: 1,
+                  ),
+                  buildEvent(bookedCount: 1),
+                ],
+                onEditClub: () {},
+                onCreateEvent: () {},
               ),
-              upcomingCount: 3,
-            ),
-          ],
-        ),
-      );
+              const CatchMetricStrip(
+                items: [
+                  CatchMetricStripItem(value: '24', label: 'members'),
+                  CatchMetricStripItem(value: '4.7', label: 'rating'),
+                  CatchMetricStripItem(value: '12', label: 'reviews'),
+                  CatchMetricStripItem(value: "JAN '25", label: 'est.'),
+                ],
+              ),
+            ],
+          ),
+        );
 
-      expect(find.text('Booked'), findsOneWidget);
-      expect(find.text('3'), findsOneWidget);
-      expect(find.text('1'), findsOneWidget);
-      expect(find.text('₹30'), findsOneWidget);
-      expect(find.byType(CatchStatStrip), findsOneWidget);
-      expect(find.text('MEMBERS'), findsOneWidget);
-      expect(find.text('REVIEWS'), findsOneWidget);
-      expect(find.text('EST.'), findsOneWidget);
-      expect(find.text('12'), findsOneWidget);
-      expect(find.text("JAN '25"), findsOneWidget);
-      expect(find.text('4.7'), findsOneWidget);
-    });
+        expect(find.text('Booked'), findsOneWidget);
+        expect(find.text('3'), findsOneWidget);
+        expect(find.text('1'), findsOneWidget);
+        expect(find.text('₹30'), findsOneWidget);
+        expect(find.byType(CatchMetricStrip), findsOneWidget);
+        expect(find.text('members'), findsOneWidget);
+        expect(find.text('reviews'), findsOneWidget);
+        expect(find.text('est.'), findsOneWidget);
+        expect(find.text('12'), findsOneWidget);
+        expect(find.text("JAN '25"), findsOneWidget);
+        expect(find.text('4.7'), findsOneWidget);
+      },
+    );
 
     testWidgets('ClubHeroAppBar share button invokes share handler', (
       tester,
@@ -1474,7 +1614,7 @@ void main() {
         final club = buildClub(
           name: 'Vijay Nagar Event Collective',
           area: 'Vijay Nagar',
-          location: 'indore',
+          location: 'in-mp-indore',
           imageUrl: 'https://example.com/club.jpg',
         );
 
@@ -1576,7 +1716,7 @@ void main() {
       await _pumpClubUi(tester);
 
       final gap =
-          tester.getTopLeft(find.byType(StatsStrip)).dy -
+          tester.getTopLeft(find.byType(CatchMetricStrip)).dy -
           tester.getBottomLeft(find.text('Bandra, Mumbai')).dy;
       expect(gap, greaterThan(0));
       expect(gap, lessThanOrEqualTo(CatchSpacing.s8));
@@ -2310,24 +2450,29 @@ void main() {
       await _pumpClubUi(tester);
 
       // Handoff chrome: scope tabs stay visible, secondary filters move behind
-      // the trailing CountPill.
-      expect(find.byType(CatchOptionGroup<ExploreTimeFilter>), findsOneWidget);
+      // the right-aligned filter glyph.
       expect(find.text('Tonight'), findsOneWidget);
       expect(find.text('Tomorrow'), findsNothing);
       expect(find.text('Weekend'), findsOneWidget);
       expect(find.text('This week'), findsOneWidget);
       expect(find.text('Anytime'), findsOneWidget);
-      expect(find.byKey(const ValueKey('explore-filter-pill')), findsOneWidget);
-      expect(find.byType(CatchCountPill), findsWidgets);
+      expect(
+        find.byKey(const ValueKey('explore-filter-button')),
+        findsOneWidget,
+      );
+      expect(find.byIcon(CatchIcons.tuneRounded), findsOneWidget);
+      expect(find.text('Filters'), findsNothing);
+      expect(find.byType(CatchCountPill), findsOneWidget);
       expect(find.text('3 km'), findsNothing);
       expect(find.text('Joined clubs'), findsNothing);
       expect(find.text('Rated 4.5+'), findsNothing);
-      expect(find.text('Tempo Queens'), findsOneWidget);
 
       await tester.tap(find.text('Tonight'));
       await _pumpClubUi(tester);
 
-      await tester.tap(find.byKey(const ValueKey('explore-filter-pill')));
+      expect(find.text('1'), findsOneWidget);
+
+      await tester.tap(find.byKey(const ValueKey('explore-filter-button')));
       await _pumpClubUi(tester);
 
       expect(find.text('Explore filters'), findsOneWidget);
@@ -2336,6 +2481,39 @@ void main() {
       expect(_selectChip('3 km'), findsOneWidget);
       expect(_selectChip('Joined clubs'), findsOneWidget);
       expect(find.text('Clear'), findsOneWidget);
+    });
+
+    testWidgets('ExploreFilterRail keeps labels whole at phone width', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      container.read(exploreFiltersProvider.notifier).toggleHighRatedOnly();
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const Scaffold(body: ExploreFilterRail()),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Tonight'), findsOneWidget);
+      expect(find.text('Weekend'), findsOneWidget);
+      expect(find.text('This week'), findsOneWidget);
+      expect(find.text('Anytime'), findsOneWidget);
+      expect(find.byIcon(CatchIcons.tuneRounded), findsOneWidget);
+      expect(find.text('Filters'), findsNothing);
+      expect(find.text('1'), findsOneWidget);
     });
 
     testWidgets('ExploreScreen map pill opens the map route', (tester) async {
@@ -2453,8 +2631,22 @@ void main() {
         find.byKey(ValueKey('explore-selected-${spotlight.id}')),
         findsOneWidget,
       );
-      expect(find.byType(CatchEventSpotlightCard), findsOneWidget);
-      expect(find.byType(CatchEventTicketCard), findsNothing);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchEventCard &&
+              widget.variant == CatchEventCardVariant.spotlight,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchEventCard &&
+              widget.variant == CatchEventCardVariant.ticket,
+        ),
+        findsNothing,
+      );
       expect(
         find.byWidgetPredicate(
           (widget) =>
@@ -2634,7 +2826,9 @@ void main() {
       },
     );
 
-    testWidgets('ExploreScreen shows a readable error message', (tester) async {
+    testWidgets('ExploreScreen shows Explore-specific error copy', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -2644,7 +2838,22 @@ void main() {
               'mumbai',
             ).overrideWith((ref) => Stream.value(const [])),
             exploreViewModelProvider.overrideWithValue(
-              AsyncError(StateError('boom'), StackTrace.empty),
+              const AsyncError(
+                BackendOperationException(
+                  code: 'failed-precondition',
+                  message:
+                      'This list is still getting set up. Please try again in a moment.',
+                  debugMessage:
+                      'Firestore query requires a composite required index.',
+                  context: BackendErrorContext(
+                    service: BackendService.firestore,
+                    action: 'watch clubs by location',
+                    resource: 'clubs',
+                  ),
+                  retryable: true,
+                ),
+                StackTrace.empty,
+              ),
             ),
             _emptyExploreFeedOverride,
           ],
@@ -2656,7 +2865,16 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.textContaining('boom'), findsOneWidget);
+      expect(find.text('Explore unavailable'), findsOneWidget);
+      expect(
+        find.text(
+          'Explore is still getting set up. Please try again in a moment.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Reload Explore'), findsOneWidget);
+      expect(find.text('Club unavailable'), findsNothing);
+      expect(find.text('Reload club'), findsNothing);
     });
 
     testWidgets('ExploreScreen listens for follow mutation errors', (
@@ -2956,7 +3174,7 @@ void main() {
       final club = buildClub(
         name: 'Morning Miles',
         area: 'Palasia',
-        location: 'indore',
+        location: 'in-mp-indore',
         description: 'Indore morning loops.',
       );
 
@@ -3107,11 +3325,11 @@ void main() {
         expect(find.text('Please enter an area'), findsOneWidget);
 
         await tester.enterText(
-          find.widgetWithText(CatchTextField, 'Club name'),
+          find.widgetWithText(CatchField, 'Club name'),
           'Sunset Striders',
         );
         await tester.enterText(
-          find.widgetWithText(CatchTextField, 'Area / neighbourhood'),
+          find.widgetWithText(CatchField, 'Area / neighbourhood'),
           'Bandra',
         );
 
@@ -3133,7 +3351,7 @@ void main() {
         expect(find.text('Please add a description'), findsOneWidget);
 
         await tester.enterText(
-          find.widgetWithText(CatchTextField, 'Description'),
+          find.widgetWithText(CatchField, 'Description'),
           'Easy social club',
         );
         tester.testTextInput.hide();
@@ -3184,7 +3402,7 @@ Future<void> _enterCreateClubText(
   String value,
 ) async {
   final field = find.byWidgetPredicate(
-    (widget) => widget is CatchTextField && widget.label == label,
+    (widget) => widget is CatchField && widget.title == label,
   );
   await tester.ensureVisible(field);
   await tester.pump();

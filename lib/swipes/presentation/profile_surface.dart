@@ -113,7 +113,7 @@ class ProfileSurfaceSkeleton extends StatelessWidget {
           controller: scrollController,
           physics: scrollPhysics,
           slivers: [
-            const SliverToBoxAdapter(child: _ProfileSurfaceHeroSkeleton()),
+            SliverToBoxAdapter(child: _profileSurfaceHeroSkeleton()),
             SliverPadding(
               padding: EdgeInsets.fromLTRB(
                 CatchSpacing.s5,
@@ -122,56 +122,14 @@ class ProfileSurfaceSkeleton extends StatelessWidget {
                 bottomPadding,
               ),
               sliver: SliverList.list(
-                children: const [
-                  _ProfileSurfaceSectionSkeleton(lines: 3),
-                  _ProfileSurfaceRule(),
-                  _ProfileSurfaceRunningSkeleton(),
-                  _ProfileSurfaceRule(),
-                  _ProfileSurfacePhotoSkeleton(),
-                  _ProfileSurfaceRule(),
-                  _ProfileSurfaceFactsSkeleton(),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ProfileSurfaceHeroSkeleton extends StatelessWidget {
-  const _ProfileSurfaceHeroSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(
-        bottom: Radius.circular(CatchRadius.profileHeroBottom),
-      ),
-      child: AspectRatio(
-        aspectRatio: CatchAspectRatio.portrait4x5,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            CatchSkeleton.box(
-              width: double.infinity,
-              height: double.infinity,
-              borderRadius: BorderRadius.zero,
-            ),
-            Positioned(
-              left: CatchSpacing.s5,
-              right: CatchSpacing.s5,
-              bottom: CatchSpacing.s6,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-                  gapH10,
-                  CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-                  gapH8,
-                  CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+                  _profileSurfaceSectionSkeleton(lines: 3),
+                  _profileSurfaceRule(context),
+                  _profileSurfaceRunningSkeleton(),
+                  _profileSurfaceRule(context),
+                  _profileSurfacePhotoSkeleton(),
+                  _profileSurfaceRule(context),
+                  _profileSurfaceFactsSkeleton(),
                 ],
               ),
             ),
@@ -182,143 +140,153 @@ class _ProfileSurfaceHeroSkeleton extends StatelessWidget {
   }
 }
 
-class _ProfileSurfaceSectionSkeleton extends StatelessWidget {
-  const _ProfileSurfaceSectionSkeleton({required this.lines});
-
-  final int lines;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: CatchInsets.contentVertical,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+Widget _profileSurfaceHeroSkeleton() {
+  return ClipRRect(
+    borderRadius: const BorderRadius.vertical(
+      bottom: Radius.circular(CatchRadius.profileHeroBottom),
+    ),
+    child: AspectRatio(
+      aspectRatio: CatchAspectRatio.portrait4x5,
+      child: Stack(
+        fit: StackFit.expand,
         children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-          gapH10,
-          CatchSkeleton.textBlock(lines: lines),
-          gapH10,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (var index = 0; index < 3; index++)
-                CatchSkeleton.box(
-                  width: CatchLayout.skeletonTextShortWidth,
-                  height: CatchLayout.countPillIconSize,
-                  radius: CatchRadius.pill,
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProfileSurfaceRunningSkeleton extends StatelessWidget {
-  const _ProfileSurfaceRunningSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: CatchInsets.contentVertical,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-          gapH10,
-          Row(
-            children: [
-              Expanded(
-                child: CatchSkeleton.card(
-                  height: CatchLayout.skeletonCardCompactHeight,
-                ),
-              ),
-              gapW12,
-              Expanded(
-                child: CatchSkeleton.card(
-                  height: CatchLayout.skeletonCardCompactHeight,
-                ),
-              ),
-            ],
-          ),
-          gapH10,
-          CatchSkeleton.text(),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProfileSurfacePhotoSkeleton extends StatelessWidget {
-  const _ProfileSurfacePhotoSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: CatchInsets.contentVertical,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(CatchRadius.lg),
-        child: AspectRatio(
-          aspectRatio: CatchAspectRatio.portrait4x5,
-          child: CatchSkeleton.box(
+          CatchSkeleton.box(
             width: double.infinity,
             height: double.infinity,
             borderRadius: BorderRadius.zero,
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ProfileSurfaceFactsSkeleton extends StatelessWidget {
-  const _ProfileSurfaceFactsSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: CatchInsets.contentVertical,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-          gapH10,
-          for (var index = 0; index < 4; index++) ...[
-            Row(
+          Positioned(
+            left: CatchSpacing.s5,
+            right: CatchSpacing.s5,
+            bottom: CatchSpacing.s6,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                CatchSkeleton.box(
-                  width: CatchIcon.control,
-                  height: CatchIcon.control,
-                  radius: CatchRadius.pill,
-                ),
-                gapW12,
-                Expanded(child: CatchSkeleton.text()),
+                CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+                gapH10,
+                CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+                gapH8,
+                CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
               ],
             ),
-            if (index < 3) gapH12,
-          ],
+          ),
         ],
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _ProfileSurfaceRule extends StatelessWidget {
-  const _ProfileSurfaceRule();
+Widget _profileSurfaceSectionSkeleton({required int lines}) {
+  return Padding(
+    padding: CatchInsets.contentVertical,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+        gapH10,
+        CatchSkeleton.textBlock(lines: lines),
+        gapH10,
+        Wrap(
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
+          children: [
+            for (var index = 0; index < 3; index++)
+              CatchSkeleton.box(
+                width: CatchLayout.skeletonTextShortWidth,
+                height: CatchLayout.countPillIconSize,
+                radius: CatchRadius.pill,
+              ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Padding(
-      padding: CatchInsets.contentVertical,
-      child: ColoredBox(
-        color: t.line,
-        child: const SizedBox(height: CatchStroke.hairline),
+Widget _profileSurfaceRunningSkeleton() {
+  return Padding(
+    padding: CatchInsets.contentVertical,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+        gapH10,
+        Row(
+          children: [
+            Expanded(
+              child: CatchSkeleton.card(
+                height: CatchLayout.skeletonCardCompactHeight,
+              ),
+            ),
+            gapW12,
+            Expanded(
+              child: CatchSkeleton.card(
+                height: CatchLayout.skeletonCardCompactHeight,
+              ),
+            ),
+          ],
+        ),
+        gapH10,
+        CatchSkeleton.text(),
+      ],
+    ),
+  );
+}
+
+Widget _profileSurfacePhotoSkeleton() {
+  return Padding(
+    padding: CatchInsets.contentVertical,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(CatchRadius.lg),
+      child: AspectRatio(
+        aspectRatio: CatchAspectRatio.portrait4x5,
+        child: CatchSkeleton.box(
+          width: double.infinity,
+          height: double.infinity,
+          borderRadius: BorderRadius.zero,
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+Widget _profileSurfaceFactsSkeleton() {
+  return Padding(
+    padding: CatchInsets.contentVertical,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+        gapH10,
+        for (var index = 0; index < 4; index++) ...[
+          Row(
+            children: [
+              CatchSkeleton.box(
+                width: CatchIcon.control,
+                height: CatchIcon.control,
+                radius: CatchRadius.pill,
+              ),
+              gapW12,
+              Expanded(child: CatchSkeleton.text()),
+            ],
+          ),
+          if (index < 3) gapH12,
+        ],
+      ],
+    ),
+  );
+}
+
+Widget _profileSurfaceRule(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return Padding(
+    padding: CatchInsets.contentVertical,
+    child: ColoredBox(
+      color: t.line,
+      child: const SizedBox(height: CatchStroke.hairline),
+    ),
+  );
 }
 
 String? _kicker(String? sharedRunTitle) {

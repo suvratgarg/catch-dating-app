@@ -1,10 +1,14 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
@@ -16,17 +20,14 @@ import 'package:catch_dating_app/events/presentation/event_detail_view_model.dar
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_stats_grid.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/events/presentation/widgets/requirements_row.dart';
-import 'package:catch_dating_app/events/presentation/widgets/when_where_card.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/picker_tile.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:flutter/material.dart';
@@ -51,14 +52,14 @@ void main() {
         Scaffold(
           body: Column(
             children: [
-              const FieldLabel('Distance'),
-              PickerTile(
+              const CatchFormFieldLabel(label: 'Distance', large: true),
+              _TestPickerTile(
                 icon: CatchIcons.calendarTodayOutlined,
                 value: null,
                 placeholder: 'Select a date',
                 onTap: () => pickerTapped = true,
               ),
-              PickerTile(
+              _TestPickerTile(
                 icon: CatchIcons.scheduleOutlined,
                 value: '23/04/2026',
                 placeholder: 'Unused',
@@ -90,7 +91,9 @@ void main() {
       expect(find.text('Bandra Fort'), findsOneWidget);
       expect(find.text('75 min'), findsOneWidget);
       expect(
-        tester.getSize(find.widgetWithText(PickerTile, 'Select a date')).height,
+        tester
+            .getSize(find.widgetWithText(CatchControlShell, 'Select a date'))
+            .height,
         CatchControlMetrics.mdMinHeight,
       );
       expect(
@@ -147,7 +150,9 @@ void main() {
                 const SizedBox(height: 16),
                 EventStatsGrid(event: event),
                 const SizedBox(height: 16),
-                WhenWhereCard(event: event),
+                EventDetailItinerary(event: event),
+                const SizedBox(height: 16),
+                EventDetailMapCard(event: event),
                 const SizedBox(height: 16),
                 SizedBox(height: 320, child: EventPhotoHeader(event: event)),
               ],
@@ -164,10 +169,12 @@ void main() {
         expect(find.text('5.5'), findsOneWidget);
         expect(find.text('Pace level'), findsOneWidget);
         expect(find.text('3/20'), findsOneWidget);
-        expect(find.text('6:30 AM – 7:45 AM'), findsOneWidget);
-        expect(find.text('Wednesday, 23 Apr'), findsOneWidget);
+        expect(find.text('6:30 AM'), findsOneWidget);
+        expect(find.text('6:45 AM'), findsOneWidget);
+        expect(find.text('7:45 AM'), findsOneWidget);
+        expect(find.text('Gather at Bandra Fort'), findsOneWidget);
         expect(find.text('Bandra Fort'), findsOneWidget);
-        expect(find.text('Meet by the parking lot'), findsOneWidget);
+        expect(find.text('PIN DROPS MORNING-OF'), findsOneWidget);
         expect(find.text('Wednesday Morning Run'), findsNothing);
         expect(find.text('3/20 spots'), findsNothing);
         expect(find.text('5.5km'), findsNothing);
@@ -211,9 +218,9 @@ void main() {
       await pumpEventsTestApp(
         tester,
         Scaffold(
-          body: WhenWhereCard(
+          body: EventDetailMapCard(
             event: mappedRun,
-            onLocationTap: () => tapped = true,
+            onTap: () => tapped = true,
           ),
         ),
       );
@@ -234,9 +241,9 @@ void main() {
       await pumpEventsTestApp(
         tester,
         Scaffold(
-          body: WhenWhereCard(
+          body: EventDetailMapCard(
             event: buildEvent(meetingPoint: 'Race Course Road main gate'),
-            onLocationTap: () => tapped = true,
+            onTap: () => tapped = true,
           ),
         ),
       );
@@ -445,15 +452,21 @@ void main() {
           body: ListView(
             children: [
               const CatchStepProgress(currentStep: 1, totalSteps: 4),
-              StepperFooter(
-                isLastStep: false,
-                isLoading: false,
-                onNext: () => footerTapped = true,
+              CatchBottomDock(
+                child: CatchButton(
+                  label: 'Next',
+                  onPressed: () => footerTapped = true,
+                  fullWidth: true,
+                  icon: Icon(CatchIcons.arrowForwardRounded),
+                ),
               ),
-              const StepperFooter(
-                isLastStep: true,
-                isLoading: true,
-                onNext: _noop,
+              const CatchBottomDock(
+                child: CatchButton(
+                  label: 'Schedule event',
+                  onPressed: _noop,
+                  isLoading: true,
+                  fullWidth: true,
+                ),
               ),
               SizedBox(
                 height: 240,
@@ -504,11 +517,25 @@ void main() {
           tester,
           const Scaffold(
             body: SizedBox.expand(),
-            bottomNavigationBar: StepperFooter(
-              isLastStep: true,
-              isLoading: false,
-              onNext: _noop,
-              onSaveDraft: _noop,
+            bottomNavigationBar: CatchBottomDock(
+              child: Row(
+                children: [
+                  CatchButton(
+                    label: 'Save Draft',
+                    onPressed: _noop,
+                    variant: CatchButtonVariant.ghost,
+                    size: CatchButtonSize.lg,
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: CatchButton(
+                      label: 'Schedule event',
+                      onPressed: _noop,
+                      fullWidth: true,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -518,22 +545,12 @@ void main() {
         expect(find.text('Schedule event'), findsOneWidget);
         expect(
           find.descendant(
-            of: find.byType(StepperFooter),
+            of: find.byType(CatchBottomDock),
             matching: find.byType(Divider),
           ),
           findsNothing,
         );
-        expect(
-          find.descendant(
-            of: find.byType(StepperFooter),
-            matching: find.byWidgetPredicate(
-              (widget) =>
-                  widget is ColoredBox &&
-                  widget.color == CatchTokens.sunsetLight.bg,
-            ),
-          ),
-          findsOneWidget,
-        );
+        expect(find.byType(CatchBottomDock), findsOneWidget);
       },
     );
 
@@ -853,3 +870,47 @@ void main() {
 }
 
 void _noop() {}
+
+class _TestPickerTile extends StatelessWidget {
+  const _TestPickerTile({
+    required this.icon,
+    required this.value,
+    required this.placeholder,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String? value;
+  final String placeholder;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchControlShell(
+      onTap: onTap,
+      tone: CatchControlTone.raised,
+      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
+      semanticButton: true,
+      child: Row(
+        children: [
+          Icon(icon, size: CatchIcon.control, color: t.ink2),
+          gapW12,
+          Expanded(
+            child: Text(
+              value ?? placeholder,
+              style: value != null
+                  ? CatchTextStyles.bodyLead(context)
+                  : CatchTextStyles.bodyLead(context, color: t.ink3),
+            ),
+          ),
+          Icon(
+            CatchIcons.chevronRightRounded,
+            size: CatchIcon.md,
+            color: t.ink3,
+          ),
+        ],
+      ),
+    );
+  }
+}

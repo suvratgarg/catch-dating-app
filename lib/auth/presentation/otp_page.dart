@@ -11,7 +11,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -128,7 +129,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         !verifyMutation.isPending &&
         !sendMutation.isPending;
 
-    return OnboardingStepFrame(
+    return onboardingStepLayout(
       footer: CatchButton(
         label: 'Verify',
         icon: Icon(CatchIcons.checkRounded),
@@ -138,9 +139,11 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         size: CatchButtonSize.lg,
       ),
       children: [
-        OnboardingStepHeader(
+        CatchStepHeader(
           title: 'Enter the code',
           subtitle: 'Sent to $displayPhoneNumber',
+          showBack: false,
+          gutter: false,
         ),
         gapH28,
         CatchOtpCodeField(

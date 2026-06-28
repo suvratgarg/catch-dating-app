@@ -3,8 +3,7 @@ import 'dart:typed_data';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
@@ -68,8 +67,8 @@ class ClubBasicsStep extends StatelessWidget {
               onReorderPhoto: onReorderClubPhoto,
             ),
             gapH20,
-            CatchTextField(
-              label: 'Club name',
+            CatchField(
+              title: 'Club name',
               controller: nameController,
               prefixIcon: Icon(CatchIcons.groupOutlined),
               enabled: detailsEnabled,
@@ -83,9 +82,12 @@ class ClubBasicsStep extends StatelessWidget {
               },
             ),
             gapH16,
-            CatchDropdownField<CityOption>(
-              values: defaultCityOptions,
-              label: 'City',
+            CatchField.select<CityOption>(
+              title: 'City',
+              values: defaultCityOptions
+                  .where((city) => city.hostCreatable)
+                  .toList(growable: false),
+              itemLabel: (city) => city.label,
               prefixIcon: Icon(CatchIcons.locationCityOutlined),
               value: selectedCity,
               enabled: detailsEnabled,
@@ -94,12 +96,12 @@ class ClubBasicsStep extends StatelessWidget {
                   selectedCity == null ? 'Please select a city' : null,
             ),
             gapH16,
-            CatchTextField(
-              label: 'Area / neighbourhood',
+            CatchField(
+              title: 'Area / neighbourhood',
               controller: areaController,
               prefixIcon: Icon(CatchIcons.locationOnOutlined),
               enabled: detailsEnabled,
-              hintText: 'e.g. Bandra, Koramangala',
+              placeholder: 'e.g. Bandra, Koramangala',
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.next,
               validator: (value) {

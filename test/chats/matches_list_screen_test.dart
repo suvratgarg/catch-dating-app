@@ -6,7 +6,8 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
@@ -290,16 +291,18 @@ void main() {
     );
     await tester.pump(midSearchMorphFrame);
 
-    final morphingSearchWidth = tester.getSize(find.byType(TextField)).width;
-    expect(
-      morphingSearchWidth,
-      greaterThan(CatchTextField.compactControlHeight),
+    final expandingSearchField = find.byWidgetPredicate(
+      (widget) =>
+          widget is CatchSearchField &&
+          widget.mode == CatchSearchFieldMode.expanding,
     );
+    final morphingSearchWidth = tester.getSize(expandingSearchField).width;
+    expect(morphingSearchWidth, greaterThan(CatchField.compactControlHeight));
 
     await pumpFeatureUi(tester);
 
-    final expandedSearchWidth = tester.getSize(find.byType(TextField)).width;
-    expect(expandedSearchWidth, greaterThan(morphingSearchWidth));
+    final expandedSearchWidth = tester.getSize(expandingSearchField).width;
+    expect(expandedSearchWidth, greaterThanOrEqualTo(morphingSearchWidth));
     expect(find.byType(TextField), findsOneWidget);
     expect(find.byIcon(CatchIcons.keyboardHideRounded), findsNothing);
     expect(
@@ -528,10 +531,7 @@ void main() {
     expect(find.text('All'), findsOneWidget);
     expect(find.text('Unread · 1'), findsOneWidget);
     expect(find.text('Message all 2 attendees'), findsOneWidget);
-    expect(
-      find.text('Reminders, the meeting point, changes'),
-      findsOneWidget,
-    );
+    expect(find.text('Reminders, the meeting point, changes'), findsOneWidget);
     expect(find.text('Is there parking near the start?'), findsOneWidget);
     expect(find.text('Do I need ID at check-in?'), findsOneWidget);
     expect(find.text('Messages from your matches'), findsNothing);

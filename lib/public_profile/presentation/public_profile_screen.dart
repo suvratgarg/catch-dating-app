@@ -6,9 +6,9 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
-import 'package:catch_dating_app/core/widgets/catch_settings_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -243,22 +243,22 @@ class PublicProfileReportSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _ReportReasonTile(
+          PublicProfileReportReasonTile(
             label: 'Harassment or abuse',
             value: 'harassment_or_abuse',
             onSelected: onReasonSelected,
           ),
-          _ReportReasonTile(
+          PublicProfileReportReasonTile(
             label: 'Fake or misleading profile',
             value: 'fake_or_misleading_profile',
             onSelected: onReasonSelected,
           ),
-          _ReportReasonTile(
+          PublicProfileReportReasonTile(
             label: 'Inappropriate content',
             value: 'inappropriate_content',
             onSelected: onReasonSelected,
           ),
-          _ReportReasonTile(
+          PublicProfileReportReasonTile(
             label: 'Other safety concern',
             value: 'other',
             onSelected: onReasonSelected,
@@ -269,8 +269,9 @@ class PublicProfileReportSheet extends StatelessWidget {
   }
 }
 
-class _ReportReasonTile extends StatelessWidget {
-  const _ReportReasonTile({
+class PublicProfileReportReasonTile extends StatelessWidget {
+  const PublicProfileReportReasonTile({
+    super.key,
     required this.label,
     required this.value,
     required this.onSelected,
@@ -282,8 +283,8 @@ class _ReportReasonTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSettingsRow(
-      label: label,
+    return CatchField(
+      title: label,
       icon: CatchIcons.flagOutlined,
       onTap: () => onSelected(value),
     );

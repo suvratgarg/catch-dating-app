@@ -108,17 +108,17 @@ class EventSuccessEventPreviewLoadingBody extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _EventPreviewHeroSkeleton(),
+                    EventPreviewHeroSkeleton(),
                     gapH16,
-                    _EventPreviewNotesSkeleton(),
+                    EventPreviewNotesSkeleton(),
                     gapH16,
-                    _EventPreviewSetupSkeleton(),
+                    EventPreviewSetupSkeleton(),
                     gapH16,
-                    _EventPreviewLiveSkeleton(),
+                    EventPreviewLiveSkeleton(),
                     gapH16,
-                    _EventPreviewCompanionSkeleton(),
+                    EventPreviewCompanionSkeleton(),
                     gapH16,
-                    _EventPreviewReportSkeleton(),
+                    EventPreviewReportSkeleton(),
                   ],
                 ),
               ),
@@ -130,8 +130,8 @@ class EventSuccessEventPreviewLoadingBody extends StatelessWidget {
   }
 }
 
-class _EventPreviewHeroSkeleton extends StatelessWidget {
-  const _EventPreviewHeroSkeleton();
+class EventPreviewHeroSkeleton extends StatelessWidget {
+  const EventPreviewHeroSkeleton();
 
   @override
   Widget build(BuildContext context) {
@@ -189,12 +189,12 @@ class _EventPreviewHeroSkeleton extends StatelessWidget {
   }
 }
 
-class _EventPreviewNotesSkeleton extends StatelessWidget {
-  const _EventPreviewNotesSkeleton();
+class EventPreviewNotesSkeleton extends StatelessWidget {
+  const EventPreviewNotesSkeleton();
 
   @override
   Widget build(BuildContext context) {
-    return const _EventPreviewSectionSkeleton(
+    return const EventPreviewSectionSkeleton(
       titleWidth: 210,
       textLines: 3,
       actionCount: 0,
@@ -202,12 +202,12 @@ class _EventPreviewNotesSkeleton extends StatelessWidget {
   }
 }
 
-class _EventPreviewSetupSkeleton extends StatelessWidget {
-  const _EventPreviewSetupSkeleton();
+class EventPreviewSetupSkeleton extends StatelessWidget {
+  const EventPreviewSetupSkeleton();
 
   @override
   Widget build(BuildContext context) {
-    return const _EventPreviewSectionSkeleton(
+    return const EventPreviewSectionSkeleton(
       titleWidth: 150,
       textLines: 3,
       actionCount: 3,
@@ -215,12 +215,12 @@ class _EventPreviewSetupSkeleton extends StatelessWidget {
   }
 }
 
-class _EventPreviewLiveSkeleton extends StatelessWidget {
-  const _EventPreviewLiveSkeleton();
+class EventPreviewLiveSkeleton extends StatelessWidget {
+  const EventPreviewLiveSkeleton();
 
   @override
   Widget build(BuildContext context) {
-    return const _EventPreviewSectionSkeleton(
+    return const EventPreviewSectionSkeleton(
       titleWidth: 132,
       textLines: 2,
       actionCount: 2,
@@ -228,12 +228,12 @@ class _EventPreviewLiveSkeleton extends StatelessWidget {
   }
 }
 
-class _EventPreviewCompanionSkeleton extends StatelessWidget {
-  const _EventPreviewCompanionSkeleton();
+class EventPreviewCompanionSkeleton extends StatelessWidget {
+  const EventPreviewCompanionSkeleton();
 
   @override
   Widget build(BuildContext context) {
-    return const _EventPreviewSectionSkeleton(
+    return const EventPreviewSectionSkeleton(
       titleWidth: 170,
       textLines: 3,
       actionCount: 1,
@@ -241,12 +241,12 @@ class _EventPreviewCompanionSkeleton extends StatelessWidget {
   }
 }
 
-class _EventPreviewReportSkeleton extends StatelessWidget {
-  const _EventPreviewReportSkeleton();
+class EventPreviewReportSkeleton extends StatelessWidget {
+  const EventPreviewReportSkeleton();
 
   @override
   Widget build(BuildContext context) {
-    return const _EventPreviewSectionSkeleton(
+    return const EventPreviewSectionSkeleton(
       titleWidth: 188,
       textLines: 2,
       actionCount: 3,
@@ -254,8 +254,8 @@ class _EventPreviewReportSkeleton extends StatelessWidget {
   }
 }
 
-class _EventPreviewSectionSkeleton extends StatelessWidget {
-  const _EventPreviewSectionSkeleton({
+class EventPreviewSectionSkeleton extends StatelessWidget {
+  const EventPreviewSectionSkeleton({
     required this.titleWidth,
     required this.textLines,
     required this.actionCount,
@@ -343,9 +343,9 @@ class EventSuccessEventPreviewScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _EventPreviewHero(preview: preview),
+                        EventPreviewHero(preview: preview),
                         gapH16,
-                        _IntegrationNotesCard(notes: preview.integrationNotes),
+                        IntegrationNotesCard(notes: preview.integrationNotes),
                         gapH16,
                         EventSuccessHostSetupFlow(
                           initialDraft: preview.hostDraft,
@@ -371,8 +371,8 @@ class EventSuccessEventPreviewScreen extends StatelessWidget {
   }
 }
 
-class _EventPreviewHero extends StatelessWidget {
-  const _EventPreviewHero({required this.preview});
+class EventPreviewHero extends StatelessWidget {
+  const EventPreviewHero({required this.preview});
 
   final EventSuccessEventPreview preview;
 
@@ -453,8 +453,8 @@ class _EventPreviewHero extends StatelessWidget {
   }
 }
 
-class _IntegrationNotesCard extends StatelessWidget {
-  const _IntegrationNotesCard({required this.notes});
+class IntegrationNotesCard extends StatelessWidget {
+  const IntegrationNotesCard({required this.notes});
 
   final List<String> notes;
 

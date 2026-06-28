@@ -1,7 +1,7 @@
 part of '../event_success_host_screen.dart';
 
-class _SetupTab extends StatefulWidget {
-  const _SetupTab({
+class SetupTab extends StatefulWidget {
+  const SetupTab({
     required this.event,
     required this.plan,
     required this.planIsPersisted,
@@ -20,10 +20,10 @@ class _SetupTab extends StatefulWidget {
   final EdgeInsetsGeometry padding;
 
   @override
-  State<_SetupTab> createState() => _SetupTabState();
+  State<SetupTab> createState() => _SetupTabState();
 }
 
-class _SetupTabState extends State<_SetupTab> {
+class _SetupTabState extends State<SetupTab> {
   late EventSuccessHostDraft _draft = widget.plan.hostDraft.normalizeForFormat(
     widget.event.eventFormat,
   );
@@ -31,7 +31,7 @@ class _SetupTabState extends State<_SetupTab> {
   late String _attendeePromptText = widget.plan.attendeePrompt ?? '';
 
   @override
-  void didUpdateWidget(covariant _SetupTab oldWidget) {
+  void didUpdateWidget(covariant SetupTab oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.plan != widget.plan) {
       _draft = widget.plan.hostDraft.normalizeForFormat(
@@ -115,7 +115,7 @@ class _SetupTabState extends State<_SetupTab> {
           padding: widget.padding,
           children: [
             if (unsavedFrozen) ...[
-              _NoticeCard(
+              NoticeCard(
                 icon: CatchIcons.lockClockRounded,
                 title: eventHasStarted
                     ? 'Event started without a saved guide'
@@ -126,7 +126,7 @@ class _SetupTabState extends State<_SetupTab> {
               ),
               gapH16,
             ] else if (!widget.planIsPersisted) ...[
-              _NoticeCard(
+              NoticeCard(
                 icon: CatchIcons.cloudUploadOutlined,
                 title: 'Setup not saved yet',
                 body:
@@ -135,7 +135,7 @@ class _SetupTabState extends State<_SetupTab> {
               gapH16,
             ],
             if (setupFrozen && widget.planIsPersisted) ...[
-              _NoticeCard(
+              NoticeCard(
                 icon: CatchIcons.lockClockRounded,
                 title: 'Settings are locked',
                 body: hasParticipantActivity
@@ -157,25 +157,25 @@ class _SetupTabState extends State<_SetupTab> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const _SetupSectionTitle(
+                  const SetupSectionTitle(
                     title: 'Recommended setup',
                     subtitle:
                         'Review the essentials first. Format controls and advanced timing stay available below.',
                   ),
                   gapH12,
-                  _HostActivitySummary(profile: profile, draft: presentedDraft),
+                  HostActivitySummary(profile: profile, draft: presentedDraft),
                   gapH16,
-                  _PlanSummary(
+                  PlanSummary(
                     plan: widget.plan,
                     draft: presentedDraft,
                     planIsPersisted: widget.planIsPersisted,
                   ),
                   if (presentedDraft.readinessIssues.isNotEmpty) ...[
                     gapH12,
-                    _ReadinessIssues(issues: presentedDraft.readinessIssues),
+                    ReadinessIssues(issues: presentedDraft.readinessIssues),
                   ],
                   gapH16,
-                  _TargetAttendeeControl(
+                  TargetAttendeeControl(
                     value: _targetAttendeeCount,
                     recommendedMin: _draft.playbook.capacity.min,
                     recommendedMax: _draft.playbook.capacity.max,
@@ -202,7 +202,7 @@ class _SetupTabState extends State<_SetupTab> {
             ),
             gapH16,
             if (_isDirty && !setupFrozen) ...[
-              const _UnsavedChangesPill(),
+              const UnsavedChangesPill(),
               gapH8,
             ],
             CatchButton(
@@ -248,8 +248,8 @@ class _SetupTabState extends State<_SetupTab> {
   }
 }
 
-class _TargetAttendeeControl extends StatelessWidget {
-  const _TargetAttendeeControl({
+class TargetAttendeeControl extends StatelessWidget {
+  const TargetAttendeeControl({
     required this.value,
     required this.recommendedMin,
     required this.recommendedMax,
@@ -325,8 +325,8 @@ class _TargetAttendeeControl extends StatelessWidget {
   }
 }
 
-class _ReadinessIssues extends StatelessWidget {
-  const _ReadinessIssues({required this.issues});
+class ReadinessIssues extends StatelessWidget {
+  const ReadinessIssues({required this.issues});
 
   final List<String> issues;
 
@@ -380,8 +380,8 @@ EventRunOfShowStep? _activeRunOfShowStep(EventSuccessRuntime runtime) {
   return steps[index];
 }
 
-class _SetupSectionTitle extends StatelessWidget {
-  const _SetupSectionTitle({required this.title, required this.subtitle});
+class SetupSectionTitle extends StatelessWidget {
+  const SetupSectionTitle({required this.title, required this.subtitle});
 
   final String title;
   final String subtitle;
@@ -403,8 +403,8 @@ class _SetupSectionTitle extends StatelessWidget {
   }
 }
 
-class _UnsavedChangesPill extends StatelessWidget {
-  const _UnsavedChangesPill();
+class UnsavedChangesPill extends StatelessWidget {
+  const UnsavedChangesPill();
 
   @override
   Widget build(BuildContext context) {
@@ -427,8 +427,8 @@ class _UnsavedChangesPill extends StatelessWidget {
   }
 }
 
-class _NoticeCard extends StatelessWidget {
-  const _NoticeCard({
+class NoticeCard extends StatelessWidget {
+  const NoticeCard({
     required this.icon,
     required this.title,
     required this.body,

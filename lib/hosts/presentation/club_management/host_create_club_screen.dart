@@ -29,7 +29,7 @@ class HostEditClubRouteScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (initialClub != null) {
-      return _HostClubEditor(club: initialClub!);
+      return _buildHostClubEditor(ref, initialClub!);
     }
 
     final clubAsync = ref.watch(fetchClubProvider(clubId));
@@ -46,8 +46,25 @@ class HostEditClubRouteScreen extends ConsumerWidget {
               title: 'Club not found',
               message: 'This club is no longer available.',
             )
-          : _HostClubEditor(club: club),
+          : _buildHostClubEditor(ref, club),
     );
+  }
+
+  Widget _buildHostClubEditor(WidgetRef ref, Club club) {
+    final state = HostClubEditState.resolve(
+      club: club,
+      uid: ref.watch(uidProvider),
+    );
+
+    return switch (state.mode) {
+      HostClubEditMode.loadingIdentity => const CatchStartupLoadingScreen(),
+      HostClubEditMode.forbidden => const CatchErrorScaffold(
+        title: 'Host access required',
+        message: "Only this club's host team can edit this club.",
+      ),
+      HostClubEditMode.ownerFull || HostClubEditMode.cohostMediaOnly =>
+        CreateClubScreen(initialClub: state.club),
+    };
   }
 }
 
@@ -103,29 +120,5 @@ class HostClubEditState {
       club: club,
       uid: value,
     );
-  }
-}
-
-class _HostClubEditor extends ConsumerWidget {
-  const _HostClubEditor({required this.club});
-
-  final Club club;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = HostClubEditState.resolve(
-      club: club,
-      uid: ref.watch(uidProvider),
-    );
-
-    return switch (state.mode) {
-      HostClubEditMode.loadingIdentity => const CatchStartupLoadingScreen(),
-      HostClubEditMode.forbidden => const CatchErrorScaffold(
-        title: 'Host access required',
-        message: "Only this club's host team can edit this club.",
-      ),
-      HostClubEditMode.ownerFull || HostClubEditMode.cohostMediaOnly =>
-        CreateClubScreen(initialClub: state.club),
-    };
   }
 }

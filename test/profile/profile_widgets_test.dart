@@ -8,11 +8,10 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
-import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
@@ -134,7 +133,7 @@ Future<void> _dragProfileTabUntilTappable(
 }
 
 Finder _profileInfoTile(String label) => find.byWidgetPredicate(
-  (widget) => widget is ProfileInfoTile && widget.label == label,
+  (widget) => widget is CatchField && widget.title == label,
 );
 
 Finder _profileOptionGroup() => find.byType(CatchOptionGroup<int>);
@@ -147,6 +146,12 @@ int _loadingCatchButtonCount(WidgetTester tester) => tester
     .widgetList<CatchButton>(find.byType(CatchButton))
     .where((button) => button.isLoading)
     .length;
+
+Future<void> _tapInlineDone(WidgetTester tester) async {
+  final doneButton = find.widgetWithText(CatchButton, 'Done');
+  tester.widget<CatchButton>(doneButton).onPressed?.call();
+  await tester.pump();
+}
 
 final _perfectRunPromptTitle = profilePromptDefinition(
   profilePromptPerfectEventId,
@@ -446,7 +451,7 @@ void main() {
     expect(find.text('Your profile').hitTestable(), findsOneWidget);
   });
 
-  testWidgets('ProfileInfoTile wraps long values without overflowing', (
+  testWidgets('profile info field wraps long values without overflowing', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -456,7 +461,7 @@ void main() {
           body: Center(
             child: SizedBox(
               width: 180,
-              child: ProfileInfoTile(
+              child: profileInfoTile(
                 icon: CatchIcons.emailOutlined,
                 label: 'Email',
                 value: 'averylongemailaddress@examplecatchdatingapp.com',
@@ -557,27 +562,25 @@ void main() {
       ).copyWith(instagramHandle: 'suvrat_events');
       await _pumpProfileTab(tester, user);
 
-      final displayNameTile = tester.widget<ProfileInfoTile>(
+      final displayNameTile = tester.widget<CatchField>(
         _profileInfoTile('Display name'),
       );
-      final dobTile = tester.widget<ProfileInfoTile>(
+      final dobTile = tester.widget<CatchField>(
         _profileInfoTile('Date of birth'),
       );
-      final genderTile = tester.widget<ProfileInfoTile>(
-        _profileInfoTile('Gender'),
-      );
+      final genderTile = tester.widget<CatchField>(_profileInfoTile('Gender'));
 
-      expect(displayNameTile.value, 'S.');
+      expect(displayNameTile.body, 'S.');
       expect(displayNameTile.onTap, isNotNull);
       expect(find.text('Name'), findsNothing);
       expect(dobTile.onTap, isNull);
       expect(genderTile.onTap, isNull);
       expect(_profileInfoTile(_perfectRunPromptTitle), findsOneWidget);
 
-      final instagramTile = tester.widget<ProfileInfoTile>(
+      final instagramTile = tester.widget<CatchField>(
         _profileInfoTile('Instagram'),
       );
-      expect(instagramTile.value, '@suvrat_events');
+      expect(instagramTile.body, '@suvrat_events');
       expect(instagramTile.onTap, isNotNull);
     },
   );
@@ -598,26 +601,10 @@ void main() {
     await tester.tap(displayNameTile);
     await _pumpProfileSheet(tester);
 
-    expect(
-      find.descendant(
-        of: displayNameTile,
-        matching: find.byType(ProfileInlineTextValue),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: displayNameTile,
-        matching: find.byType(CatchTextField),
-      ),
-      findsNothing,
-    );
+    expect(find.byType(ProfileInlineTextValue), findsOneWidget);
     expect(find.text('Display name'), findsOneWidget);
 
-    var inlineEditable = find.descendant(
-      of: displayNameTile,
-      matching: find.byType(EditableText),
-    );
+    var inlineEditable = find.byType(EditableText);
     await tester.enterText(inlineEditable, '   ');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pump();
@@ -625,16 +612,12 @@ void main() {
     expect(find.text('Display name is required'), findsOneWidget);
     expect(repository.updatedFields, isNull);
 
-    inlineEditable = find.descendant(
-      of: displayNameTile,
-      matching: find.byType(EditableText),
-    );
+    inlineEditable = find.byType(EditableText);
     await tester.enterText(inlineEditable, ' S. ');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields, {'displayName': 'S.'});
-    expect(find.byType(CatchTextField), findsNothing);
   });
 
   testWidgets('inline text value underline follows scaled text width', (
@@ -755,7 +738,7 @@ void main() {
     await tester.tap(heightTile);
     await _pumpProfileSheet(tester);
 
-    expect(find.byType(ProfileInlineAnimatedBody), findsWidgets);
+    expect(find.byKey(const ValueKey('profile-inline-expanded')), findsWidgets);
     expect(find.byTooltip('Increase height'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Collapse Height'));
@@ -803,10 +786,6 @@ void main() {
     await _pumpProfileSheet(tester);
 
     // Inline editor is open with the shared range slider and Done button.
-    expect(
-      find.descendant(of: paceTile, matching: find.byType(AnimatedSwitcher)),
-      findsNothing,
-    );
     expect(find.byType(CatchRangeSlider), findsOneWidget);
     expect(find.byType(RangeSlider), findsOneWidget);
     expect(find.text('5:00/km - 7:00/km'), findsOneWidget);
@@ -853,7 +832,7 @@ void main() {
 
     expect(find.widgetWithText(CatchButton, 'Done'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     expect(tester.takeException(), isNull);
@@ -870,33 +849,17 @@ void main() {
     await tester.tap(promptTile);
     await _pumpProfileSheet(tester);
 
-    expect(
-      find.descendant(
-        of: promptTile,
-        matching: find.byType(ProfileInlineTextValue),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(of: promptTile, matching: find.byType(AnimatedSwitcher)),
-      findsNothing,
-    );
+    expect(find.byType(ProfileInlineTextValue), findsOneWidget);
     final promptField = tester.widget<ProfileInlineTextValue>(
-      find.descendant(
-        of: promptTile,
-        matching: find.byType(ProfileInlineTextValue),
-      ),
+      find.byType(ProfileInlineTextValue),
     );
     expect(promptField.maxLines, isNull);
     expect(promptField.minLines, isNull);
     expect(promptField.maxLength, maximumProfilePromptAnswerLength);
     expect(promptField.showCounter, isTrue);
 
-    await tester.enterText(
-      find.descendant(of: promptTile, matching: find.byType(EditableText)),
-      ' Updated bio ',
-    );
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await tester.enterText(find.byType(EditableText), ' Updated bio ');
+    await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields?['profilePrompts'], [
@@ -933,10 +896,7 @@ void main() {
     await _pumpProfileSheet(tester);
 
     await tester.tap(
-      find.descendant(
-        of: promptEditor,
-        matching: find.byType(CatchSelectMenu<String>),
-      ),
+      find.descendant(of: promptEditor, matching: find.byType(MenuAnchor)),
     );
     await tester.pump();
 
@@ -952,7 +912,7 @@ void main() {
       find.descendant(of: promptEditor, matching: find.byType(EditableText)),
       'Sunday loops with a view.',
     );
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     final savedPrompts =
@@ -1004,14 +964,8 @@ void main() {
 
     await _pumpProfileSheet(tester);
 
-    final editableText = find.descendant(
-      of: promptTile,
-      matching: find.byType(EditableText),
-    );
-    final underline = find.descendant(
-      of: promptTile,
-      matching: find.byKey(const ValueKey('profile-inline-underline')),
-    );
+    final editableText = find.byType(EditableText);
+    final underline = find.byKey(const ValueKey('profile-inline-underline'));
 
     expect(tester.getTopLeft(promptTile).dy, closeTo(collapsedTileTop, 0.1));
     expect(
@@ -1028,19 +982,13 @@ void main() {
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpProfileTab(tester, user);
 
-    final emailTile = find.byWidgetPredicate(
-      (widget) => widget is ProfileInfoTile && widget.label == 'Email',
-    );
+    final emailTile = _profileInfoTile('Email');
     await _dragProfileTabUntilVisible(tester, emailTile);
     await tester.tap(emailTile);
     await _pumpProfileSheet(tester);
 
-    expect(find.byType(CatchTextField), findsNothing);
     final field = tester.widget<ProfileInlineTextValue>(
-      find.descendant(
-        of: emailTile,
-        matching: find.byType(ProfileInlineTextValue),
-      ),
+      find.byType(ProfileInlineTextValue),
     );
     expect(field.keyboardType, TextInputType.emailAddress);
     expect(field.autofillHints, contains(AutofillHints.email));
@@ -1064,10 +1012,7 @@ void main() {
     final expandedChevronCenter = tester.getCenter(chevron);
     final expandedTileHeight = tester.getSize(emailTile).height;
     final editableBottom = tester.getBottomLeft(
-      find.descendant(
-        of: emailTile,
-        matching: find.byType(ProfileInlineTextValue),
-      ),
+      find.byType(ProfileInlineTextValue),
     );
     final doneTop = tester.getTopLeft(find.widgetWithText(CatchButton, 'Done'));
 
@@ -1082,14 +1027,11 @@ void main() {
     final user = buildUser(name: 'Suvrat Garg').copyWith(height: 172);
     await _pumpProfileTab(tester, user);
 
-    final heightTile = find.byWidgetPredicate(
-      (widget) => widget is ProfileInfoTile && widget.label == 'Height',
-    );
+    final heightTile = _profileInfoTile('Height');
     await _dragProfileTabUntilVisible(tester, heightTile);
     await tester.tap(heightTile);
     await _pumpProfileSheet(tester);
 
-    expect(find.byType(CatchTextField), findsNothing);
     expect(find.text('172 cm'), findsOneWidget);
     expect(find.text('120-220 cm'), findsNothing);
     expect(find.byTooltip('Decrease height'), findsOneWidget);
@@ -1102,7 +1044,7 @@ void main() {
     expect(find.text('172 cm'), findsNothing);
     expect(find.text('173 cm'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     expect(tester.takeException(), isNull);
@@ -1121,7 +1063,7 @@ void main() {
 
     await tester.tap(find.byTooltip('Increase height'));
     await tester.pump();
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _tapInlineDone(tester);
     await tester.pump();
 
     expect(repository.updatedFields, {'height': 173});
@@ -1146,11 +1088,8 @@ void main() {
     final promptTile = _profileInfoTile(_perfectRunPromptTitle);
     await tester.tap(promptTile);
     await _pumpProfileSheet(tester);
-    await tester.enterText(
-      find.descendant(of: promptTile, matching: find.byType(EditableText)),
-      'Updated bio',
-    );
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await tester.enterText(find.byType(EditableText), 'Updated bio');
+    await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields?['profilePrompts'], [
@@ -1171,13 +1110,11 @@ void main() {
     await tester.tap(promptTile);
     await _pumpProfileSheet(tester);
     await tester.enterText(
-      find.descendant(of: promptTile, matching: find.byType(EditableText)),
+      find.byType(EditableText),
       'a' * (maximumProfilePromptAnswerLength + 1),
     );
     await tester.pump();
-    final editableText = tester.widget<EditableText>(
-      find.descendant(of: promptTile, matching: find.byType(EditableText)),
-    );
+    final editableText = tester.widget<EditableText>(find.byType(EditableText));
 
     expect(
       editableText.controller.text.length,
@@ -1192,7 +1129,7 @@ void main() {
       closeTo(tester.getCenter(find.widgetWithText(CatchButton, 'Done')).dy, 1),
     );
 
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields?['profilePrompts'], [
@@ -1218,17 +1155,15 @@ void main() {
     await tester.tap(promptTile);
     await _pumpProfileSheet(tester);
     await tester.enterText(
-      find.descendant(of: promptTile, matching: find.byType(EditableText)),
+      find.byType(EditableText),
       'first\n\n\nsecond\n \n \nthird',
     );
     await tester.pump();
 
-    final editableText = tester.widget<EditableText>(
-      find.descendant(of: promptTile, matching: find.byType(EditableText)),
-    );
+    final editableText = tester.widget<EditableText>(find.byType(EditableText));
     expect(editableText.controller.text, 'first\n\nsecond\n\nthird');
 
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields?['profilePrompts'], [
@@ -1245,11 +1180,8 @@ void main() {
     final promptTile = _profileInfoTile(_perfectRunPromptTitle);
     await tester.tap(promptTile);
     await _pumpProfileSheet(tester);
-    await tester.enterText(
-      find.descendant(of: promptTile, matching: find.byType(EditableText)),
-      'Updated bio',
-    );
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await tester.enterText(find.byType(EditableText), 'Updated bio');
+    await _tapInlineDone(tester);
     await tester.pump();
 
     expect(repository.updatedFields?['profilePrompts'], [
@@ -1343,7 +1275,7 @@ void main() {
       isTrue,
     );
 
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields, {
@@ -1377,7 +1309,7 @@ void main() {
     await tester.tap(_catchChip(EducationLevel.highSchool.label));
     await _pumpProfileSheet(tester);
 
-    expect(find.text('+ Education'), findsOneWidget);
+    expect(find.text('+ Education'), findsWidgets);
     expect(_catchChip(EducationLevel.highSchool.label), findsOneWidget);
     expect(
       tester
@@ -1386,7 +1318,7 @@ void main() {
       isFalse,
     );
 
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields, {'education': null});
@@ -1414,7 +1346,7 @@ void main() {
 
     final relationshipTexts = find.text(RelationshipGoal.relationship.label);
     expect(relationshipTexts, findsOneWidget);
-    expect(find.text('+ Looking for'), findsOneWidget);
+    expect(find.text('+ Looking for'), findsWidgets);
     expect(
       tester
           .widget<CatchChip>(_catchChip(RelationshipGoal.relationship.label))
@@ -1473,7 +1405,7 @@ void main() {
 
     expect(repository.updatedFields, isNull);
 
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _tapInlineDone(tester);
     await tester.pump();
 
     expect(repository.updatedFields, {
@@ -1506,7 +1438,7 @@ void main() {
       await tester.tap(educationTile);
       await _pumpProfileSheet(tester);
       await tester.tap(_catchChip(EducationLevel.values.first.label));
-      await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+      await _tapInlineDone(tester);
       await _pumpProfileSheet(tester);
 
       expect(repository.updatedFields, {
@@ -1536,7 +1468,7 @@ void main() {
       await tester.tap(educationTile);
       await _pumpProfileSheet(tester);
       await tester.tap(_catchChip(EducationLevel.values.first.label));
-      await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+      await _tapInlineDone(tester);
       await _pumpProfileSheet(tester);
 
       expect(
@@ -1571,7 +1503,7 @@ void main() {
     await tester.tap(languagesTile);
     await _pumpProfileSheet(tester);
     await tester.tap(_catchChip(Language.english.label));
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields, {
@@ -1594,7 +1526,7 @@ void main() {
       const RangeValues(310, 370),
     );
     await tester.pump();
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields, {

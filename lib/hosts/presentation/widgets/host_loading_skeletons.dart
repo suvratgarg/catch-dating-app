@@ -197,14 +197,14 @@ class HostAnalyticsReportSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CatchSectionStack(
+    return CatchSectionStack(
       padding: EdgeInsets.zero,
       gap: CatchSpacing.s4,
       children: [
-        _HostAnalyticsMetricGridSkeleton(),
-        HostChartSkeleton(),
-        HostEventRowsSkeleton(count: 3),
-        HostSettingsRowsSkeleton(),
+        _buildHostAnalyticsMetricGridSkeleton(),
+        const HostChartSkeleton(),
+        const HostEventRowsSkeleton(count: 3),
+        const HostSettingsRowsSkeleton(),
       ],
     );
   }
@@ -298,22 +298,17 @@ class HostInlineSkeletonIcon extends StatelessWidget {
   }
 }
 
-class _HostAnalyticsMetricGridSkeleton extends StatelessWidget {
-  const _HostAnalyticsMetricGridSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 0; i < 2; i++) ...[
-          Expanded(
-            child: CatchSkeleton.card(
-              height: CatchLayout.skeletonCardCompactHeight,
-            ),
+Widget _buildHostAnalyticsMetricGridSkeleton() {
+  return Row(
+    children: [
+      for (var i = 0; i < 2; i++) ...[
+        Expanded(
+          child: CatchSkeleton.card(
+            height: CatchLayout.skeletonCardCompactHeight,
           ),
-          if (i == 0) gapW12,
-        ],
+        ),
+        if (i == 0) gapW12,
       ],
-    );
-  }
+    ],
+  );
 }

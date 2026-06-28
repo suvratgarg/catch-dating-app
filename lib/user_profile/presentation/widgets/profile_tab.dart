@@ -39,7 +39,7 @@ class ProfileTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return _ProfileTabContent(
+    return ProfileTabContent(
       user: user,
       uploadState: uploadState,
       builder: (context, children) => ListView(
@@ -76,7 +76,7 @@ class ProfileTabSliverBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return _ProfileTabContent(
+    return ProfileTabContent(
       user: user,
       uploadState: uploadState,
       builder: (context, children) => SliverPadding(
@@ -112,21 +112,21 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
             constraints: const BoxConstraints(
               maxWidth: CatchLayout.maxContentWidth,
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 CatchSectionList(
                   gap: 0,
                   children: [
-                    _ProfilePhotosSkeletonSection(),
-                    _ProfileAnalyticsSkeletonSection(),
-                    _ProfileInfoSkeletonSection(
+                    _profilePhotosSkeletonSection(),
+                    _profileAnalyticsSkeletonSection(),
+                    _profileInfoSkeletonSection(
                       title: 'Prompts',
                       rows: maxProfilePromptAnswers,
                     ),
-                    _ProfileInfoSkeletonSection(title: 'About you', rows: 5),
-                    _ProfileInfoSkeletonSection(title: 'Running', rows: 4),
-                    _ProfileInfoSkeletonSection(title: 'Lifestyle', rows: 4),
+                    _profileInfoSkeletonSection(title: 'About you', rows: 5),
+                    _profileInfoSkeletonSection(title: 'Running', rows: 4),
+                    _profileInfoSkeletonSection(title: 'Lifestyle', rows: 4),
                   ],
                 ),
                 gapH32,
@@ -139,132 +139,105 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
   }
 }
 
-class _ProfilePhotosSkeletonSection extends StatelessWidget {
-  const _ProfilePhotosSkeletonSection();
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchDesignSection(
-      kicker: 'Photos',
-      count: 'loading',
-      first: true,
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          mainAxisSpacing: CatchSpacing.s2,
-          crossAxisSpacing: CatchSpacing.s2,
-          childAspectRatio: CatchAspectRatio.portrait3x4,
-        ),
-        itemCount: maximumProfilePhotoCount,
-        itemBuilder: (context, index) => CatchSkeleton.box(
-          width: double.infinity,
-          height: double.infinity,
-          radius: CatchRadius.lg,
-        ),
+Widget _profilePhotosSkeletonSection() {
+  return CatchSection(
+    title: 'Photos',
+    count: 'loading',
+    first: true,
+    child: GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: CatchSpacing.s2,
+        crossAxisSpacing: CatchSpacing.s2,
+        childAspectRatio: CatchAspectRatio.portrait3x4,
       ),
-    );
-  }
+      itemCount: maximumProfilePhotoCount,
+      itemBuilder: (context, index) => CatchSkeleton.box(
+        width: double.infinity,
+        height: double.infinity,
+        radius: CatchRadius.lg,
+      ),
+    ),
+  );
 }
 
-class _ProfileAnalyticsSkeletonSection extends StatelessWidget {
-  const _ProfileAnalyticsSkeletonSection();
+Widget _profileAnalyticsSkeletonSection() {
+  return CatchSection(
+    title: 'Profile strength',
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+        gapH12,
+        CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
+      ],
+    ),
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return CatchDesignSection(
-      kicker: 'Profile strength',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-          gapH12,
-          CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
+Widget _profileInfoSkeletonSection({required String title, required int rows}) {
+  return CatchSection(
+    title: title,
+    bodyGap: CatchSpacing.micro10,
+    child: Column(
+      children: [
+        for (var index = 0; index < rows; index++) ...[
+          _profileInfoSkeletonTile(),
+          if (index < rows - 1)
+            const Builder(builder: _profileInfoSkeletonDivider),
         ],
-      ),
-    );
-  }
+      ],
+    ),
+  );
 }
 
-class _ProfileInfoSkeletonSection extends StatelessWidget {
-  const _ProfileInfoSkeletonSection({required this.title, required this.rows});
-
-  final String title;
-  final int rows;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchDesignSection(
-      kicker: title,
-      bodyGap: CatchSpacing.micro10,
-      child: Column(
-        children: [
-          for (var index = 0; index < rows; index++) ...[
-            const _ProfileInfoTileSkeleton(),
-            if (index < rows - 1) const _ProfileInfoSkeletonDivider(),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _ProfileInfoTileSkeleton extends StatelessWidget {
-  const _ProfileInfoTileSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: CatchSpacing.micro14),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: CatchStroke.hairline),
-            child: CatchSkeleton.box(
-              width: CatchIcon.control,
-              height: CatchIcon.control,
-              radius: CatchRadius.pill,
-            ),
-          ),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-                gapH4,
-                CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-              ],
-            ),
-          ),
-          CatchSkeleton.box(
-            width: CatchSpacing.s10,
-            height: CatchSpacing.s10,
+Widget _profileInfoSkeletonTile() {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: CatchSpacing.micro14),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: CatchStroke.hairline),
+          child: CatchSkeleton.box(
+            width: CatchIcon.control,
+            height: CatchIcon.control,
             radius: CatchRadius.pill,
           ),
-        ],
-      ),
-    );
-  }
+        ),
+        gapW12,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+              gapH4,
+              CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+            ],
+          ),
+        ),
+        CatchSkeleton.box(
+          width: CatchSpacing.s10,
+          height: CatchSpacing.s10,
+          radius: CatchRadius.pill,
+        ),
+      ],
+    ),
+  );
 }
 
-class _ProfileInfoSkeletonDivider extends StatelessWidget {
-  const _ProfileInfoSkeletonDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Divider(
-      height: 1,
-      indent: CatchSpacing.s8,
-      color: t.line.withValues(alpha: CatchOpacity.profileInfoDivider),
-    );
-  }
+Widget _profileInfoSkeletonDivider(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return Divider(
+    height: 1,
+    indent: CatchSpacing.s8,
+    color: t.line.withValues(alpha: CatchOpacity.profileInfoDivider),
+  );
 }
 
-typedef _ProfileTabContentBuilder =
+typedef ProfileTabContentBuilder =
     Widget Function(BuildContext context, List<Widget> children);
 
 const profileTabBodyPadding = EdgeInsets.fromLTRB(
@@ -274,8 +247,9 @@ const profileTabBodyPadding = EdgeInsets.fromLTRB(
   CatchSpacing.s7,
 );
 
-class _ProfileTabContent extends ConsumerStatefulWidget {
-  const _ProfileTabContent({
+class ProfileTabContent extends ConsumerStatefulWidget {
+  const ProfileTabContent({
+    super.key,
     required this.user,
     required this.uploadState,
     required this.builder,
@@ -283,13 +257,13 @@ class _ProfileTabContent extends ConsumerStatefulWidget {
 
   final UserProfile user;
   final PhotoUploadState uploadState;
-  final _ProfileTabContentBuilder builder;
+  final ProfileTabContentBuilder builder;
 
   @override
-  ConsumerState<_ProfileTabContent> createState() => _ProfileTabContentState();
+  ConsumerState<ProfileTabContent> createState() => _ProfileTabContentState();
 }
 
-class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
+class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
   String? _expandedField;
 
   bool _isExpanded(String fieldName) => _expandedField == fieldName;
@@ -411,10 +385,13 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         context: context,
         icon: CatchIcons.locationOnOutlined,
         label: 'City',
-        values: defaultCityOptions,
+        values: defaultCityOptions
+            .where((city) => city.profileSelectable)
+            .toList(growable: false),
         value: cityOptionByName(user.city),
         fieldName: 'city',
-        patchForValue: (value) => UpdateUserProfilePatch(city: value?.name),
+        patchForValue: (value) =>
+            UpdateUserProfilePatch(city: value?.effectiveMarketId),
       ),
       _textEntry(
         context: context,
@@ -637,7 +614,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       CatchSectionList(
         gap: 0,
         children: [
-          _ProfilePhotosSection(
+          _profilePhotosSection(
             first: true,
             profilePhotos: profilePhotos,
             uploadState: uploadState,
@@ -668,16 +645,28 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
             ),
           ),
           const UserAnalyticsPanel(),
-          ProfileInfoSection(
+          profileInfoSection(
+            context: context,
             title: 'Prompts',
             subtitle:
                 '$completedPromptCount of $maxProfilePromptAnswers answered',
             entries: prompts,
             grouped: true,
           ),
-          ProfileInfoSection(title: 'About you', entries: about, grouped: true),
-          ProfileInfoSection(title: 'Running', entries: running, grouped: true),
-          ProfileInfoSection(
+          profileInfoSection(
+            context: context,
+            title: 'About you',
+            entries: about,
+            grouped: true,
+          ),
+          profileInfoSection(
+            context: context,
+            title: 'Running',
+            entries: running,
+            grouped: true,
+          ),
+          profileInfoSection(
+            context: context,
             title: 'Lifestyle',
             entries: lifestyle,
             grouped: true,
@@ -898,40 +887,28 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
   }
 }
 
-class _ProfilePhotosSection extends StatelessWidget {
-  const _ProfilePhotosSection({
-    required this.first,
-    required this.profilePhotos,
-    required this.uploadState,
-    required this.onSlotTapped,
-    required this.onDeletePhoto,
-    required this.onReorderPhoto,
-  });
+Widget _profilePhotosSection({
+  required bool first,
+  required List<ProfilePhoto> profilePhotos,
+  required PhotoUploadState uploadState,
+  required void Function(int index) onSlotTapped,
+  required void Function(int index) onDeletePhoto,
+  required void Function(int fromIndex, int toIndex) onReorderPhoto,
+}) {
+  final completedCount = profilePhotos.length;
+  final canDeletePhotos = completedCount > minimumProfilePhotoCount;
 
-  final bool first;
-  final List<ProfilePhoto> profilePhotos;
-  final PhotoUploadState uploadState;
-  final void Function(int index) onSlotTapped;
-  final void Function(int index) onDeletePhoto;
-  final void Function(int fromIndex, int toIndex) onReorderPhoto;
-
-  @override
-  Widget build(BuildContext context) {
-    final completedCount = profilePhotos.length;
-    final canDeletePhotos = completedCount > minimumProfilePhotoCount;
-
-    return CatchDesignSection(
-      kicker: 'Photos',
-      count: '$completedCount of $maximumProfilePhotoCount added',
-      first: first,
-      child: PhotoGrid(
-        profilePhotos: profilePhotos,
-        loadingIndices: uploadState.loadingIndices,
-        onSlotTapped: onSlotTapped,
-        canDeletePhotos: canDeletePhotos,
-        onDeletePhoto: canDeletePhotos ? onDeletePhoto : null,
-        onReorderPhoto: onReorderPhoto,
-      ),
-    );
-  }
+  return CatchSection(
+    title: 'Photos',
+    count: '$completedCount of $maximumProfilePhotoCount added',
+    first: first,
+    child: PhotoGrid(
+      profilePhotos: profilePhotos,
+      loadingIndices: uploadState.loadingIndices,
+      onSlotTapped: onSlotTapped,
+      canDeletePhotos: canDeletePhotos,
+      onDeletePhoto: canDeletePhotos ? onDeletePhoto : null,
+      onReorderPhoto: onReorderPhoto,
+    ),
+  );
 }

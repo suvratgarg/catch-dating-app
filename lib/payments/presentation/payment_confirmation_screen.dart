@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
@@ -41,7 +42,7 @@ class PaymentConfirmationScreen extends ConsumerWidget {
 
     return CatchAsyncValueView<Event?>(
       value: eventAsync,
-      loadingBuilder: (_) => const _PaymentConfirmationLoadingScreen(),
+      loadingBuilder: (_) => paymentConfirmationLoadingScreen(),
       errorBuilder: (_, e, _) => Scaffold(
         body: CatchErrorState.fromError(
           e,
@@ -59,218 +60,221 @@ class PaymentConfirmationScreen extends ConsumerWidget {
           );
         }
         if (data.isPendingExternalCheckout) {
-          return _PendingCheckoutBody(data: data, event: event);
+          return pendingCheckoutBody(data: data, event: event);
         }
-        return _ConfirmationBody(data: data, event: event);
+        return confirmationBody(data: data, event: event);
       },
     );
   }
 }
 
-class _PaymentConfirmationLoadingScreen extends StatelessWidget {
-  const _PaymentConfirmationLoadingScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: CatchInsets.pageBody,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(child: CatchSkeleton.circle(size: CatchIcon.forceUpdate)),
-              gapH24,
-              Center(
-                child: CatchSkeleton.text(
-                  width: CatchLayout.skeletonTextTitleWidth,
+Widget paymentConfirmationLoadingScreen() {
+  return Builder(
+    builder: (context) {
+      final t = CatchTokens.of(context);
+      return Scaffold(
+        backgroundColor: t.bg,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: CatchInsets.pageBody,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: CatchSkeleton.circle(size: CatchIcon.forceUpdate),
                 ),
-              ),
-              gapH12,
-              CatchSkeleton.textBlock(lines: 2),
-              gapH24,
-              CatchSurface(
-                padding: CatchInsets.content,
-                borderColor: t.line,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CatchSkeleton.text(
-                      width: CatchLayout.skeletonTextTitleWidth,
-                    ),
-                    gapH8,
-                    CatchSkeleton.text(
-                      width: CatchLayout.skeletonTextShortWidth,
-                    ),
-                    gapH16,
-                    CatchSkeleton.card(
-                      height: CatchLayout.skeletonCardCompactHeight,
-                    ),
-                  ],
+                gapH24,
+                Center(
+                  child: CatchSkeleton.text(
+                    width: CatchLayout.skeletonTextTitleWidth,
+                  ),
                 ),
-              ),
-              gapH20,
-              Row(
-                children: [
-                  for (var index = 0; index < 3; index++) ...[
-                    Expanded(
-                      child: CatchSkeleton.card(
+                gapH12,
+                CatchSkeleton.textBlock(lines: 2),
+                gapH24,
+                CatchSurface(
+                  padding: CatchInsets.content,
+                  borderColor: t.line,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CatchSkeleton.text(
+                        width: CatchLayout.skeletonTextTitleWidth,
+                      ),
+                      gapH8,
+                      CatchSkeleton.text(
+                        width: CatchLayout.skeletonTextShortWidth,
+                      ),
+                      gapH16,
+                      CatchSkeleton.card(
                         height: CatchLayout.skeletonCardCompactHeight,
                       ),
-                    ),
-                    if (index < 2) gapW8,
+                    ],
+                  ),
+                ),
+                gapH20,
+                Row(
+                  children: [
+                    for (var index = 0; index < 3; index++) ...[
+                      Expanded(
+                        child: CatchSkeleton.card(
+                          height: CatchLayout.skeletonCardCompactHeight,
+                        ),
+                      ),
+                      if (index < 2) gapW8,
+                    ],
                   ],
-                ],
-              ),
-              gapH20,
-              CatchSkeleton.card(height: CatchLayout.buttonLgHeight),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _PendingCheckoutBody extends ConsumerWidget {
-  const _PendingCheckoutBody({required this.data, required this.event});
-
-  final PaymentConfirmationData data;
-  final Event event;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final paymentAsync = ref.watch(watchPaymentProvider(data.paymentId));
-    final payment = paymentAsync.asData?.value;
-    if (payment != null &&
-        payment.status == PaymentStatus.completed &&
-        !payment.signUpFailed) {
-      return _ConfirmationBody(
-        data: PaymentConfirmationData(
-          paymentId: payment.paymentId,
-          orderId: payment.orderId,
-          amountInPaise: payment.amount,
-          currency: payment.currency,
-          eventId: payment.eventId,
-          provider: data.provider,
-          checkoutUrl: data.checkoutUrl,
-        ),
-        event: event,
-      );
-    }
-
-    final failed =
-        payment?.status == PaymentStatus.failed ||
-        payment?.signUpFailed == true;
-    final t = CatchTokens.of(context);
-    final controller = ref.watch(paymentConfirmationControllerProvider);
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: Stack(
-        children: [
-          Positioned.fill(child: _CheckoutEventBackdrop(event: event)),
-          Positioned.fill(
-            child: ColoredBox(
-              color: t.ink.withValues(alpha: CatchOpacity.paymentCheckoutScrim),
+                ),
+                gapH20,
+                CatchSkeleton.card(height: CatchLayout.buttonLgHeight),
+              ],
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SafeArea(
-              top: false,
-              child: SingleChildScrollView(
-                reverse: true,
-                child: _CheckoutSheet(
-                  data: data,
-                  event: event,
-                  failed: failed,
-                  providerLabel: _providerLabel(data.provider),
-                  onOpenCheckout: data.checkoutUrl == null
-                      ? null
-                      : () => unawaited(
-                          controller.openCheckout(data.checkoutUrl!),
-                        ),
-                  onViewPaymentHistory: () =>
-                      context.goNamed(Routes.paymentHistoryScreen.name),
-                  onBackToEvent: () => context.goNamed(
-                    Routes.eventDetailScreen.name,
-                    pathParameters: {
-                      'clubId': event.clubId,
-                      'eventId': event.id,
-                    },
-                    extra: event,
+        ),
+      );
+    },
+  );
+}
+
+Widget pendingCheckoutBody({
+  required PaymentConfirmationData data,
+  required Event event,
+}) {
+  return Consumer(
+    builder: (context, ref, _) {
+      final paymentAsync = ref.watch(watchPaymentProvider(data.paymentId));
+      final payment = paymentAsync.asData?.value;
+      if (payment != null &&
+          payment.status == PaymentStatus.completed &&
+          !payment.signUpFailed) {
+        return confirmationBody(
+          data: PaymentConfirmationData(
+            paymentId: payment.paymentId,
+            orderId: payment.orderId,
+            amountInPaise: payment.amount,
+            currency: payment.currency,
+            eventId: payment.eventId,
+            provider: data.provider,
+            checkoutUrl: data.checkoutUrl,
+          ),
+          event: event,
+        );
+      }
+
+      final failed =
+          payment?.status == PaymentStatus.failed ||
+          payment?.signUpFailed == true;
+      final t = CatchTokens.of(context);
+      final controller = ref.watch(paymentConfirmationControllerProvider);
+      return Scaffold(
+        backgroundColor: t.bg,
+        body: Stack(
+          children: [
+            Positioned.fill(child: paymentCheckoutEventBackdrop(event: event)),
+            Positioned.fill(
+              child: ColoredBox(
+                color: t.ink.withValues(
+                  alpha: CatchOpacity.paymentCheckoutScrim,
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SafeArea(
+                top: false,
+                child: SingleChildScrollView(
+                  reverse: true,
+                  child: PaymentCheckoutSheet(
+                    data: data,
+                    event: event,
+                    failed: failed,
+                    providerLabel: _providerLabel(data.provider),
+                    onOpenCheckout: data.checkoutUrl == null
+                        ? null
+                        : () => unawaited(
+                            controller.openCheckout(data.checkoutUrl!),
+                          ),
+                    onViewPaymentHistory: () =>
+                        context.goNamed(Routes.paymentHistoryScreen.name),
+                    onBackToEvent: () => context.goNamed(
+                      Routes.eventDetailScreen.name,
+                      pathParameters: {
+                        'clubId': event.clubId,
+                        'eventId': event.id,
+                      },
+                      extra: event,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+Widget paymentCheckoutEventBackdrop({required Event event}) {
+  return Builder(
+    builder: (context) {
+      final t = CatchTokens.of(context);
+      final visual = eventActivityVisual(event.activityKind, context: context);
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            height: CatchLayout.paymentCheckoutBackdropHeight,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [visual.accent, visual.deep],
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(CatchSpacing.s5),
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    event.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.headline(
+                      context,
+                      color: t.primaryInk,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.s5,
+              CatchSpacing.s4,
+              CatchSpacing.s5,
+              0,
+            ),
+            child: Text(
+              '${event.longDateLabel} · ${event.timeRangeLabel} · '
+              '${event.locationName}. '
+              '${EventFormatters.priceInPaise(event.priceInPaise, currencyCode: event.currency)} · '
+              '${event.capacityLimit} spots.',
+              style: CatchTextStyles.proseM(context, color: t.ink2),
+            ),
+          ),
+          const Spacer(),
         ],
-      ),
-    );
-  }
+      );
+    },
+  );
 }
 
-class _CheckoutEventBackdrop extends StatelessWidget {
-  const _CheckoutEventBackdrop({required this.event});
-
-  final Event event;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final visual = eventActivityVisual(event.activityKind, context: context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SizedBox(
-          height: CatchLayout.paymentCheckoutBackdropHeight,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [visual.accent, visual.deep],
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(CatchSpacing.s5),
-              child: Align(
-                alignment: Alignment.bottomLeft,
-                child: Text(
-                  event.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.headline(context, color: t.primaryInk),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s4,
-            CatchSpacing.s5,
-            0,
-          ),
-          child: Text(
-            '${event.longDateLabel} · ${event.timeRangeLabel} · '
-            '${event.locationName}. '
-            '${EventFormatters.priceInPaise(event.priceInPaise, currencyCode: event.currency)} · '
-            '${event.capacityLimit} spots.',
-            style: CatchTextStyles.proseM(context, color: t.ink2),
-          ),
-        ),
-        const Spacer(),
-      ],
-    );
-  }
-}
-
-class _CheckoutSheet extends StatelessWidget {
-  const _CheckoutSheet({
+class PaymentCheckoutSheet extends StatelessWidget {
+  const PaymentCheckoutSheet({
+    super.key,
     required this.data,
     required this.event,
     required this.failed,
@@ -435,121 +439,66 @@ String _providerLabel(String provider) {
   return provider[0].toUpperCase() + provider.substring(1);
 }
 
-class _ConfirmationBody extends ConsumerWidget {
-  const _ConfirmationBody({required this.data, required this.event});
+Widget confirmationBody({
+  required PaymentConfirmationData data,
+  required Event event,
+}) {
+  return Consumer(
+    builder: (context, ref, _) {
+      final clubAsync = ref.watch(watchClubProvider(event.clubId));
+      final clubName = clubAsync.asData?.value?.name;
+      final controller = ref.watch(paymentConfirmationControllerProvider);
+      final share = ref.watch(externalShareControllerProvider);
 
-  final PaymentConfirmationData data;
-  final Event event;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final clubAsync = ref.watch(watchClubProvider(event.clubId));
-    final clubName = clubAsync.asData?.value?.name;
-
-    return EventJoinedCelebrationScreen(
-      event: event,
-      clubName: clubName,
-      paymentData: data,
-      supplementalChildren: [
-        _QuickActions(event: event),
-        const _HeadsUp(),
-        _ReferralBanner(event: event),
-      ],
-      backHomeKey: PaymentConfirmationKeys.backHome,
-      onViewEvent: () => context.goNamed(
-        Routes.eventDetailScreen.name,
-        pathParameters: {'clubId': event.clubId, 'eventId': event.id},
-        extra: event,
-      ),
-      onBackHome: () => context.goNamed(Routes.dashboardScreen.name),
-    );
-  }
-}
-
-class _QuickActions extends ConsumerWidget {
-  const _QuickActions({required this.event});
-
-  final Event event;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.watch(paymentConfirmationControllerProvider);
-    final share = ref.watch(externalShareControllerProvider);
-
-    return Row(
-      children: [
-        Expanded(
-          child: _ActionTile(
-            key: PaymentConfirmationKeys.addToCalendar,
-            icon: CatchIcons.calendarMonthOutlined,
-            label: 'Add to calendar',
-            onTap: () => unawaited(controller.addToCalendar(event)),
+      return EventJoinedCelebrationScreen(
+        event: event,
+        clubName: clubName,
+        paymentData: data,
+        supplementalChildren: [
+          QuickActions(
+            columns: 3,
+            actions: [
+              DashboardQuickAction(
+                key: PaymentConfirmationKeys.addToCalendar,
+                icon: CatchIcons.calendarMonthOutlined,
+                label: 'Add to calendar',
+                onPressed: () => unawaited(controller.addToCalendar(event)),
+              ),
+              DashboardQuickAction(
+                key: PaymentConfirmationKeys.directions,
+                icon: CatchIcons.directionsOutlined,
+                label: 'Get directions',
+                onPressed: () => unawaited(controller.openDirections(event)),
+              ),
+              DashboardQuickAction(
+                key: PaymentConfirmationKeys.inviteFriend,
+                icon: CatchIcons.platformShare(
+                  platform: Theme.of(context).platform,
+                ),
+                label: 'Invite friend',
+                onPressed: () => unawaited(
+                  showEventShareCardSheet(context, event: event, share: share),
+                ),
+              ),
+            ],
           ),
-        ),
-        gapW8,
-        Expanded(
-          child: _ActionTile(
-            key: PaymentConfirmationKeys.directions,
-            icon: CatchIcons.directionsOutlined,
-            label: 'Get directions',
-            onTap: () => unawaited(controller.openDirections(event)),
-          ),
-        ),
-        gapW8,
-        Expanded(
-          child: _ActionTile(
-            key: PaymentConfirmationKeys.inviteFriend,
-            icon: CatchIcons.platformShare(
-              platform: Theme.of(context).platform,
-            ),
-            label: 'Invite friend',
-            onTap: () => unawaited(
-              showEventShareCardSheet(context, event: event, share: share),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ActionTile extends StatelessWidget {
-  const _ActionTile({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      onTap: onTap,
-      padding: CatchInsets.statChipContent,
-      radius: CatchRadius.interactiveTile,
-      borderColor: t.line,
-      child: Column(
-        children: [
-          Icon(icon, size: CatchIcon.control, color: t.primary),
-          gapH6,
-          Text(
-            label,
-            style: CatchTextStyles.labelS(context, color: t.ink),
-            textAlign: TextAlign.center,
-          ),
+          const PaymentConfirmationHeadsUp(),
+          PaymentReferralBanner(event: event),
         ],
-      ),
-    );
-  }
+        backHomeKey: PaymentConfirmationKeys.backHome,
+        onViewEvent: () => context.goNamed(
+          Routes.eventDetailScreen.name,
+          pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+          extra: event,
+        ),
+        onBackHome: () => context.goNamed(Routes.dashboardScreen.name),
+      );
+    },
+  );
 }
 
-class _HeadsUp extends StatelessWidget {
-  const _HeadsUp();
+class PaymentConfirmationHeadsUp extends StatelessWidget {
+  const PaymentConfirmationHeadsUp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -579,8 +528,8 @@ class _HeadsUp extends StatelessWidget {
   }
 }
 
-class _ReferralBanner extends ConsumerWidget {
-  const _ReferralBanner({required this.event});
+class PaymentReferralBanner extends ConsumerWidget {
+  const PaymentReferralBanner({super.key, required this.event});
 
   final Event event;
 

@@ -10,8 +10,9 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -105,7 +106,7 @@ class HostEventParticipantsPanel extends ConsumerWidget {
             ),
           );
         }
-        return _ParticipantsList(
+        return HostEventParticipantsList(
           viewModel: viewModel,
           mode: mode,
           scrollable: scrollable,
@@ -117,8 +118,9 @@ class HostEventParticipantsPanel extends ConsumerWidget {
   }
 }
 
-class _ParticipantsList extends ConsumerStatefulWidget {
-  const _ParticipantsList({
+class HostEventParticipantsList extends ConsumerStatefulWidget {
+  const HostEventParticipantsList({
+    super.key,
     required this.viewModel,
     required this.mode,
     required this.scrollable,
@@ -133,10 +135,11 @@ class _ParticipantsList extends ConsumerStatefulWidget {
   final String initialSearchQuery;
 
   @override
-  ConsumerState<_ParticipantsList> createState() => _ParticipantsListState();
+  ConsumerState<HostEventParticipantsList> createState() =>
+      _HostEventParticipantsListState();
 }
 
-enum _RosterFilter {
+enum HostRosterFilter {
   all,
   booked,
   waitlist,
@@ -148,29 +151,30 @@ enum _RosterFilter {
   noShow,
 }
 
-class _RosterFilterSpec {
-  const _RosterFilterSpec({
+class HostRosterFilterSpec {
+  const HostRosterFilterSpec({
     required this.filter,
     required this.label,
     required this.value,
     required this.tone,
   });
 
-  final _RosterFilter filter;
+  final HostRosterFilter filter;
   final String label;
   final int value;
   final CatchBadgeTone tone;
 }
 
-class _ParticipantsListState extends ConsumerState<_ParticipantsList> {
+class _HostEventParticipantsListState
+    extends ConsumerState<HostEventParticipantsList> {
   late var _searchQuery = widget.initialSearchQuery;
-  var _selectedFilter = _RosterFilter.all;
+  var _selectedFilter = HostRosterFilter.all;
 
   @override
-  void didUpdateWidget(covariant _ParticipantsList oldWidget) {
+  void didUpdateWidget(covariant HostEventParticipantsList oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.mode != widget.mode) {
-      _selectedFilter = _RosterFilter.all;
+      _selectedFilter = HostRosterFilter.all;
     }
     if (oldWidget.initialSearchQuery != widget.initialSearchQuery) {
       _searchQuery = widget.initialSearchQuery;
@@ -213,7 +217,7 @@ class _ParticipantsListState extends ConsumerState<_ParticipantsList> {
         ? null
         : ref.watch(attendeeProfilesProvider(profileIds));
     Widget buildBoard(Map<String, (String, String?)> profiles) {
-      return _ParticipationLifecycleBoard(
+      return HostParticipationLifecycleBoard(
         viewModel: widget.viewModel,
         mode: widget.mode,
         profiles: profiles,
@@ -255,8 +259,9 @@ class _ParticipantsListState extends ConsumerState<_ParticipantsList> {
   }
 }
 
-class _ParticipationLifecycleBoard extends ConsumerWidget {
-  const _ParticipationLifecycleBoard({
+class HostParticipationLifecycleBoard extends ConsumerWidget {
+  const HostParticipationLifecycleBoard({
+    super.key,
     required this.viewModel,
     required this.mode,
     required this.profiles,
@@ -276,9 +281,9 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
   final bool showHeader;
   final bool usesRequestApproval;
   final String searchQuery;
-  final _RosterFilter selectedFilter;
+  final HostRosterFilter selectedFilter;
   final ValueChanged<String> onSearchChanged;
-  final ValueChanged<_RosterFilter> onFilterChanged;
+  final ValueChanged<HostRosterFilter> onFilterChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -326,30 +331,30 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
       remainingSlots,
     );
     final filters = [
-      _RosterFilterSpec(
-        filter: _RosterFilter.all,
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.all,
         label: 'All',
         value: allIds.length,
         tone: CatchBadgeTone.solid,
       ),
-      _RosterFilterSpec(
-        filter: _RosterFilter.booked,
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.booked,
         label: 'Booked',
         value: bookedIds.length,
         tone: CatchBadgeTone.success,
       ),
-      _RosterFilterSpec(
+      HostRosterFilterSpec(
         filter: usesRequestApproval
-            ? _RosterFilter.requests
-            : _RosterFilter.waitlist,
+            ? HostRosterFilter.requests
+            : HostRosterFilter.waitlist,
         label: usesRequestApproval ? 'Requests' : 'Waitlist',
         value: viewModel.waitlistCount,
         tone: usesRequestApproval
             ? CatchBadgeTone.brand
             : CatchBadgeTone.warning,
       ),
-      _RosterFilterSpec(
-        filter: _RosterFilter.slots,
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.slots,
         label: 'Slots',
         value: remainingSlots,
         tone: CatchBadgeTone.neutral,
@@ -357,10 +362,10 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
     ];
     final activeFilter = _effectiveFilter(selectedFilter, filters);
     final visibleIds = switch (activeFilter) {
-      _RosterFilter.booked => bookedIds,
-      _RosterFilter.waitlist => waitlistedIds,
-      _RosterFilter.requests => requestIds,
-      _RosterFilter.slots => const <String>[],
+      HostRosterFilter.booked => bookedIds,
+      HostRosterFilter.waitlist => waitlistedIds,
+      HostRosterFilter.requests => requestIds,
+      HostRosterFilter.slots => const <String>[],
       _ => allIds,
     };
     final rowIds = _matchingIds(visibleIds);
@@ -368,7 +373,7 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
 
     return [
       if (showHeader) ...[
-        _RosterFilterHeader(
+        HostRosterFilterHeader(
           title: 'Participation',
           subtitle: usesRequestApproval
               ? 'Review profiles and approve requests before launch.'
@@ -380,7 +385,7 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
         gapH12,
       ],
       if (bulkOfferCount > 0) ...[
-        _WaitlistBulkOfferAction(
+        HostWaitlistBulkOfferAction(
           count: bulkOfferCount,
           candidateCount: offerableWaitlistIds.length,
           isPending: offerActionPending,
@@ -391,7 +396,7 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
         ),
         gapH12,
       ],
-      _RosterSearchBar(
+      HostRosterSearchBar(
         value: searchQuery,
         label: 'Search people',
         onChanged: onSearchChanged,
@@ -402,12 +407,12 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
         showEmpty: rowIds.isEmpty,
         emptyTitle: hasSearch
             ? 'No matches'
-            : activeFilter == _RosterFilter.slots
+            : activeFilter == HostRosterFilter.slots
             ? 'Open slots are not people'
             : mode.emptyTitle,
         emptyMessage: hasSearch
             ? 'No people match this search.'
-            : activeFilter == _RosterFilter.slots
+            : activeFilter == HostRosterFilter.slots
             ? 'Slots show capacity left after booked people. New people appear here once they book or request access.'
             : mode.emptyMessage,
         rows: [
@@ -451,28 +456,28 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
       ...waitlistedBaseIds,
     ];
     final filters = [
-      _RosterFilterSpec(
-        filter: _RosterFilter.all,
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.all,
         label: 'All',
         value: allBaseIds.length,
         tone: CatchBadgeTone.solid,
       ),
-      _RosterFilterSpec(
-        filter: _RosterFilter.due,
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.due,
         label: 'Due',
         value: needsCheckInBaseIds.length,
         tone: CatchBadgeTone.brand,
       ),
-      _RosterFilterSpec(
-        filter: _RosterFilter.checkedIn,
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.checkedIn,
         label: 'In',
         value: checkedInBaseIds.length,
         tone: CatchBadgeTone.success,
       ),
-      _RosterFilterSpec(
+      HostRosterFilterSpec(
         filter: usesRequestApproval
-            ? _RosterFilter.requests
-            : _RosterFilter.waitlist,
+            ? HostRosterFilter.requests
+            : HostRosterFilter.waitlist,
         label: usesRequestApproval ? 'Requests' : 'Waitlist',
         value: waitlistedBaseIds.length,
         tone: CatchBadgeTone.warning,
@@ -480,9 +485,10 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
     ];
     final activeFilter = _effectiveFilter(selectedFilter, filters);
     final visibleIds = switch (activeFilter) {
-      _RosterFilter.due => needsCheckInBaseIds,
-      _RosterFilter.checkedIn => checkedInBaseIds,
-      _RosterFilter.waitlist || _RosterFilter.requests => waitlistedBaseIds,
+      HostRosterFilter.due => needsCheckInBaseIds,
+      HostRosterFilter.checkedIn => checkedInBaseIds,
+      HostRosterFilter.waitlist ||
+      HostRosterFilter.requests => waitlistedBaseIds,
       _ => allBaseIds,
     };
     final rowIds = _matchingIds(visibleIds);
@@ -490,7 +496,7 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
     final hasSearch = searchQuery.trim().isNotEmpty;
 
     return [
-      _RosterFilterHeader(
+      HostRosterFilterHeader(
         title: showHeader ? 'Check-in board' : null,
         subtitle: showHeader
             ? 'Use the status tiles to focus the roster as people arrive.'
@@ -501,7 +507,7 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
       ),
       gapH12,
       if (bulkOfferCount > 0) ...[
-        _WaitlistBulkOfferAction(
+        HostWaitlistBulkOfferAction(
           count: bulkOfferCount,
           candidateCount: offerableWaitlistIds.length,
           isPending: offerActionPending,
@@ -512,7 +518,7 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
         ),
         gapH12,
       ],
-      _RosterSearchBar(
+      HostRosterSearchBar(
         value: searchQuery,
         label: 'Search roster',
         onChanged: onSearchChanged,
@@ -570,26 +576,26 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
       ...waitlistedBaseIds,
     ];
     final filters = [
-      _RosterFilterSpec(
-        filter: _RosterFilter.all,
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.all,
         label: 'All',
         value: allBaseIds.length,
         tone: CatchBadgeTone.solid,
       ),
-      _RosterFilterSpec(
-        filter: _RosterFilter.attended,
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.attended,
         label: 'Attended',
         value: checkedInCount,
         tone: CatchBadgeTone.success,
       ),
-      _RosterFilterSpec(
-        filter: _RosterFilter.noShow,
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.noShow,
         label: 'No-show',
         value: noShowCount,
         tone: CatchBadgeTone.neutral,
       ),
-      _RosterFilterSpec(
-        filter: _RosterFilter.waitlist,
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.waitlist,
         label: 'Waitlist',
         value: viewModel.waitlistCount,
         tone: CatchBadgeTone.warning,
@@ -597,9 +603,9 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
     ];
     final activeFilter = _effectiveFilter(selectedFilter, filters);
     final visibleIds = switch (activeFilter) {
-      _RosterFilter.attended => attendedBaseIds,
-      _RosterFilter.noShow => noShowBaseIds,
-      _RosterFilter.waitlist => waitlistedBaseIds,
+      HostRosterFilter.attended => attendedBaseIds,
+      HostRosterFilter.noShow => noShowBaseIds,
+      HostRosterFilter.waitlist => waitlistedBaseIds,
       _ => allBaseIds,
     };
     final rowIds = _matchingIds(visibleIds);
@@ -607,7 +613,7 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
 
     return [
       if (showHeader) ...[
-        _RosterFilterHeader(
+        HostRosterFilterHeader(
           title: 'Event report',
           subtitle: 'Attendance, payout, and export-ready roster history.',
           filters: filters,
@@ -616,7 +622,7 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
         ),
         gapH12,
       ],
-      _RosterSearchBar(
+      HostRosterSearchBar(
         value: searchQuery,
         label: 'Search roster',
         onChanged: onSearchChanged,
@@ -653,7 +659,7 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
       Row(
         children: [
           Expanded(
-            child: _ExportReportButton(
+            child: HostExportReportButton(
               label: 'Ops CSV',
               isExporting: opsExportMutation.isPending,
               onExport: () => _shareOpsReport(context, ref),
@@ -661,7 +667,7 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
           ),
           gapW10,
           Expanded(
-            child: _ExportReportButton(
+            child: HostExportReportButton(
               label: 'Revenue CSV',
               primary: true,
               isExporting: revenueExportMutation.isPending,
@@ -940,61 +946,63 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
   }
 }
 
-_RosterFilter _effectiveFilter(
-  _RosterFilter selected,
-  List<_RosterFilterSpec> filters,
+HostRosterFilter _effectiveFilter(
+  HostRosterFilter selected,
+  List<HostRosterFilterSpec> filters,
 ) {
   for (final filter in filters) {
     if (filter.filter == selected) return selected;
   }
-  return _RosterFilter.all;
+  return HostRosterFilter.all;
 }
 
-String _liveEmptyTitle(_RosterFilter filter, bool hasRoster) {
+String _liveEmptyTitle(HostRosterFilter filter, bool hasRoster) {
   return switch (filter) {
-    _RosterFilter.due when hasRoster => 'Everyone visible is checked in',
-    _RosterFilter.checkedIn => 'No checked-in people yet',
-    _RosterFilter.waitlist || _RosterFilter.requests => 'No waitlisted people',
+    HostRosterFilter.due when hasRoster => 'Everyone visible is checked in',
+    HostRosterFilter.checkedIn => 'No checked-in people yet',
+    HostRosterFilter.waitlist ||
+    HostRosterFilter.requests => 'No waitlisted people',
     _ => 'Roster is empty',
   };
 }
 
-String _liveEmptyMessage(_RosterFilter filter, bool hasRoster) {
+String _liveEmptyMessage(HostRosterFilter filter, bool hasRoster) {
   return switch (filter) {
-    _RosterFilter.due when hasRoster =>
+    HostRosterFilter.due when hasRoster =>
       'Switch to In to review arrivals or All to see the full roster.',
-    _RosterFilter.checkedIn =>
+    HostRosterFilter.checkedIn =>
       'Checked-in people will appear here during the event.',
-    _RosterFilter.waitlist ||
-    _RosterFilter.requests => 'Waitlisted people will appear here for context.',
+    HostRosterFilter.waitlist || HostRosterFilter.requests =>
+      'Waitlisted people will appear here for context.',
     _ => 'Signed-up participants will appear here when they book.',
   };
 }
 
-String _reportEmptyTitle(_RosterFilter filter) {
+String _reportEmptyTitle(HostRosterFilter filter) {
   return switch (filter) {
-    _RosterFilter.attended => 'No attended people yet',
-    _RosterFilter.noShow => 'No no-shows yet',
-    _RosterFilter.waitlist => 'No waitlisted people',
+    HostRosterFilter.attended => 'No attended people yet',
+    HostRosterFilter.noShow => 'No no-shows yet',
+    HostRosterFilter.waitlist => 'No waitlisted people',
     _ => 'No participants yet',
   };
 }
 
-String _reportEmptyMessage(_RosterFilter filter) {
+String _reportEmptyMessage(HostRosterFilter filter) {
   return switch (filter) {
-    _RosterFilter.attended =>
+    HostRosterFilter.attended =>
       'Checked-in people will appear here after the event.',
-    _RosterFilter.noShow =>
+    HostRosterFilter.noShow =>
       'Booked people who did not check in will appear here.',
-    _RosterFilter.waitlist =>
+    HostRosterFilter.waitlist =>
       'Waitlist history will appear here when people queue for this event.',
     _ =>
       'Attendance and waitlist history will appear here once people sign up.',
   };
 }
 
-class _RosterSearchBar extends StatelessWidget {
-  const _RosterSearchBar({
+class HostRosterSearchBar extends StatelessWidget {
+  const HostRosterSearchBar({
+    super.key,
     required this.value,
     required this.label,
     required this.onChanged,
@@ -1006,24 +1014,28 @@ class _RosterSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchTextField(
-      key: ValueKey('hostRosterSearch-$label'),
-      label: label,
-      showLabel: false,
-      initialValue: value,
-      hintText: label,
-      size: CatchTextFieldSize.compact,
-      shape: CatchTextFieldShape.pill,
-      textInputAction: TextInputAction.search,
-      prefixIcon: Icon(CatchIcons.searchRounded),
-      showClearButton: true,
-      onChanged: onChanged,
+    return CatchSection(
+      variant: CatchSectionVariant.contained,
+      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
+      child: CatchField(
+        key: ValueKey('hostRosterSearch-$label'),
+        title: label,
+        showLabel: false,
+        initialValue: value,
+        placeholder: label,
+        size: CatchFieldSize.compact,
+        textInputAction: TextInputAction.search,
+        prefixIcon: Icon(CatchIcons.searchRounded),
+        showClearButton: true,
+        onChanged: onChanged,
+      ),
     );
   }
 }
 
-class _RosterFilterHeader extends StatelessWidget {
-  const _RosterFilterHeader({
+class HostRosterFilterHeader extends StatelessWidget {
+  const HostRosterFilterHeader({
+    super.key,
     required this.title,
     required this.subtitle,
     required this.filters,
@@ -1033,9 +1045,9 @@ class _RosterFilterHeader extends StatelessWidget {
 
   final String? title;
   final String? subtitle;
-  final List<_RosterFilterSpec> filters;
-  final _RosterFilter selectedFilter;
-  final ValueChanged<_RosterFilter> onFilterChanged;
+  final List<HostRosterFilterSpec> filters;
+  final HostRosterFilter selectedFilter;
+  final ValueChanged<HostRosterFilter> onFilterChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -1065,15 +1077,16 @@ class _RosterFilterHeader extends StatelessWidget {
               ),
           ],
           selected: selectedFilter.name,
-          onSelect: (id) => onFilterChanged(_RosterFilter.values.byName(id)),
+          onSelect: (id) => onFilterChanged(HostRosterFilter.values.byName(id)),
         ),
       ],
     );
   }
 }
 
-class _WaitlistBulkOfferAction extends StatelessWidget {
-  const _WaitlistBulkOfferAction({
+class HostWaitlistBulkOfferAction extends StatelessWidget {
+  const HostWaitlistBulkOfferAction({
+    super.key,
     required this.count,
     required this.candidateCount,
     required this.isPending,
@@ -1310,8 +1323,9 @@ String _reportMeta(EventParticipation? participation) {
   };
 }
 
-class _ExportReportButton extends StatelessWidget {
-  const _ExportReportButton({
+class HostExportReportButton extends StatelessWidget {
+  const HostExportReportButton({
+    super.key,
     required this.label,
     required this.onExport,
     required this.isExporting,

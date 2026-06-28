@@ -95,7 +95,8 @@ class _EventPinsMapState extends State<EventPinsMap> {
     final markerGroups = _markerGroups(pinnedItems);
 
     if (!widget.enableNetworkTiles) {
-      return _EventPinsMapPlaceholder(
+      return _eventPinsMapPlaceholder(
+        context,
         items: pinnedItems,
         selectedEventId: widget.selectedEventId,
         markerIcon: widget.markerIcon ?? CatchIcons.running,
@@ -326,89 +327,79 @@ class _MapMarkerGroup {
   final bool isCluster;
 }
 
-class _EventPinsMapPlaceholder extends StatelessWidget {
-  const _EventPinsMapPlaceholder({
-    required this.items,
-    required this.selectedEventId,
-    required this.markerIcon,
-    required this.onEventSelected,
-  });
+Widget _eventPinsMapPlaceholder(
+  BuildContext context, {
+  required List<EventMapItem> items,
+  required String? selectedEventId,
+  required IconData markerIcon,
+  required ValueChanged<Event>? onEventSelected,
+}) {
+  final t = CatchTokens.of(context);
+  return DecoratedBox(
+    decoration: BoxDecoration(color: t.primarySoft),
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final markerTop = constraints.maxHeight * 0.32;
+        final markerWidth = constraints.maxWidth / (items.length + 1);
 
-  final List<EventMapItem> items;
-  final String? selectedEventId;
-  final IconData markerIcon;
-  final ValueChanged<Event>? onEventSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(color: t.primarySoft),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final markerTop = constraints.maxHeight * 0.32;
-          final markerWidth = constraints.maxWidth / (items.length + 1);
-
-          return Stack(
-            children: [
-              Positioned.fill(
-                child: CustomPaint(
-                  painter: _EventPinsMapPlaceholderPainter(
-                    backgroundColor: t.primarySoft,
-                    waterColor: t.primary.withValues(
-                      alpha: CatchOpacity.mapDistanceRingFill,
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _EventPinsMapPlaceholderPainter(
+                  backgroundColor: t.primarySoft,
+                  waterColor: t.primary.withValues(
+                    alpha: CatchOpacity.mapDistanceRingFill,
+                  ),
+                  parkColor: t.success.withValues(
+                    alpha: CatchOpacity.photoScrimLight,
+                  ),
+                  roadColor: t.ink.withValues(
+                    alpha: CatchOpacity.photoScrimMedium,
+                  ),
+                  minorRoadColor: t.ink.withValues(
+                    alpha: CatchOpacity.photoScrimLight,
+                  ),
+                  routeColor: t.primary.withValues(
+                    alpha: CatchOpacity.mapDistanceRingStroke,
+                  ),
+                  dotColor: t.ink.withValues(alpha: CatchOpacity.warningFill),
+                ),
+              ),
+            ),
+            for (final indexed in items.indexed)
+              Positioned(
+                left:
+                    (markerWidth * (indexed.$1 + 1)) - _placeholderPinSize / 2,
+                top:
+                    markerTop +
+                    (indexed.$1.isEven ? 0 : CatchSpacing.s6) -
+                    _placeholderPinSize / 2,
+                child: Semantics(
+                  button: onEventSelected != null,
+                  selected: selectedEventId == indexed.$2.event.id,
+                  label: onEventSelected == null
+                      ? '${indexed.$2.event.locationName} location'
+                      : 'Select ${indexed.$2.event.locationName}',
+                  child: GestureDetector(
+                    onTap: onEventSelected == null
+                        ? null
+                        : () => onEventSelected(indexed.$2.event),
+                    child: Icon(
+                      markerIcon,
+                      color: selectedEventId == indexed.$2.event.id
+                          ? t.primary
+                          : t.ink,
+                      size: _placeholderPinSize,
                     ),
-                    parkColor: t.success.withValues(
-                      alpha: CatchOpacity.photoScrimLight,
-                    ),
-                    roadColor: t.ink.withValues(
-                      alpha: CatchOpacity.photoScrimMedium,
-                    ),
-                    minorRoadColor: t.ink.withValues(
-                      alpha: CatchOpacity.photoScrimLight,
-                    ),
-                    routeColor: t.primary.withValues(
-                      alpha: CatchOpacity.mapDistanceRingStroke,
-                    ),
-                    dotColor: t.ink.withValues(alpha: CatchOpacity.warningFill),
                   ),
                 ),
               ),
-              for (final indexed in items.indexed)
-                Positioned(
-                  left:
-                      (markerWidth * (indexed.$1 + 1)) -
-                      _placeholderPinSize / 2,
-                  top:
-                      markerTop +
-                      (indexed.$1.isEven ? 0 : CatchSpacing.s6) -
-                      _placeholderPinSize / 2,
-                  child: Semantics(
-                    button: onEventSelected != null,
-                    selected: selectedEventId == indexed.$2.event.id,
-                    label: onEventSelected == null
-                        ? '${indexed.$2.event.locationName} location'
-                        : 'Select ${indexed.$2.event.locationName}',
-                    child: GestureDetector(
-                      onTap: onEventSelected == null
-                          ? null
-                          : () => onEventSelected!(indexed.$2.event),
-                      child: Icon(
-                        markerIcon,
-                        color: selectedEventId == indexed.$2.event.id
-                            ? t.primary
-                            : t.ink,
-                        size: _placeholderPinSize,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          );
-        },
-      ),
-    );
-  }
+          ],
+        );
+      },
+    ),
+  );
 }
 
 class _EventPinsMapPlaceholderPainter extends CustomPainter {

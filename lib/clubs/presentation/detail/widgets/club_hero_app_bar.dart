@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
@@ -13,7 +14,6 @@ import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/catch_viewport_curve_frame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -131,7 +131,8 @@ class ClubHeroAppBar extends StatelessWidget {
                 transitionOnUserGestures: true,
                 child: Material(
                   color: Colors.transparent,
-                  child: _ClubHeroModule(
+                  child: _buildClubHeroModule(
+                    context,
                     club: club,
                     mediaHeight: mediaHeight,
                     kickerLabel: kickerLabel,
@@ -227,109 +228,116 @@ double _heroCaptionExtentFor(
       CatchLayout.clubDetailHeroCaptionSlack;
 }
 
-class _ClubHeroModule extends StatelessWidget {
-  const _ClubHeroModule({
-    required this.club,
-    required this.mediaHeight,
-    required this.kickerLabel,
-    required this.locationLabel,
-  });
+Widget _buildClubHeroModule(
+  BuildContext context, {
+  required Club club,
+  required double mediaHeight,
+  required String kickerLabel,
+  required String locationLabel,
+}) {
+  final t = CatchTokens.of(context);
+  final resolvedMediaPadding = clubInteractionMediaPadding.resolve(
+    Directionality.of(context),
+  );
+  final viewportTopRadius = _clubHeroViewportTopCornerRadius(
+    MediaQuery.of(context),
+  );
 
-  final Club club;
-  final double mediaHeight;
-  final String kickerLabel;
-  final String locationLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return ColoredBox(
-      key: const ValueKey('club-detail-hero-module'),
-      color: t.surface,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CatchViewportCurveFrame(
-            key: const ValueKey('club-detail-viewport-curve-frame'),
-            backgroundColor: t.surface,
-            padding: clubInteractionMediaPadding,
-            paddingKey: const ValueKey('club-detail-hero-padding'),
-            child: CatchSurface(
-              key: const ValueKey('club-detail-hero-frame'),
-              backgroundColor: t.surface,
-              borderColor: t.surface,
-              borderWidth: 2,
-              clipBehavior: Clip.hardEdge,
-              child: SizedBox(
-                height: mediaHeight,
-                child: CatchDetailHeroBackdrop(
-                  imageUrl: club.imageUrl,
-                  semanticLabel: '${club.name} cover photo',
-                  showScrim: false,
+  return ColoredBox(
+    key: const ValueKey('club-detail-hero-module'),
+    color: t.surface,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ClipRSuperellipse(
+          key: const ValueKey('club-detail-viewport-curve-frame'),
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          clipper: _ClubHeroViewportCurveClipper(
+            padding: resolvedMediaPadding,
+            viewportTopRadius: viewportTopRadius,
+            cornerRadius: CatchRadius.lg,
+          ),
+          child: ColoredBox(
+            color: t.surface,
+            child: Padding(
+              key: const ValueKey('club-detail-hero-padding'),
+              padding: clubInteractionMediaPadding,
+              child: CatchSurface(
+                key: const ValueKey('club-detail-hero-frame'),
+                backgroundColor: t.surface,
+                borderColor: t.surface,
+                borderWidth: 2,
+                clipBehavior: Clip.hardEdge,
+                child: SizedBox(
+                  height: mediaHeight,
+                  child: CatchDetailHeroBackdrop(
+                    imageUrl: club.imageUrl,
+                    semanticLabel: '${club.name} cover photo',
+                    showScrim: false,
+                  ),
                 ),
               ),
             ),
           ),
-          Padding(
-            key: const ValueKey('club-detail-hero-caption'),
-            padding: const EdgeInsets.fromLTRB(
-              CatchLayout.detailScreenHorizontalPadding,
-              CatchLayout.clubDetailHeroTitleTopPadding,
-              CatchLayout.detailScreenHorizontalPadding,
-              CatchLayout.clubDetailHeroTitleBottomPadding,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  kickerLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.monoLabelS(context, color: t.ink),
-                ),
-                gapH8,
-                Text(
-                  club.name,
-                  key: const ValueKey('club-detail-expanded-title'),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.clubDisplay(
-                    context,
-                    size: CatchLayout.clubDetailHeroExpandedTitleSize,
-                    height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
-                    color: t.ink,
-                  ),
-                ),
-                const SizedBox(
-                  height: CatchLayout.clubDetailHeroTitleLocationGap,
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      CatchIcons.locationOnOutlined,
-                      size: CatchIcon.md,
-                      color: t.ink2,
-                    ),
-                    gapW6,
-                    Expanded(
-                      child: Text(
-                        locationLabel,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.bodyLead(context, color: t.ink2),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+        ),
+        Padding(
+          key: const ValueKey('club-detail-hero-caption'),
+          padding: const EdgeInsets.fromLTRB(
+            CatchLayout.detailScreenHorizontalPadding,
+            CatchLayout.clubDetailHeroTitleTopPadding,
+            CatchLayout.detailScreenHorizontalPadding,
+            CatchLayout.clubDetailHeroTitleBottomPadding,
           ),
-        ],
-      ),
-    );
-  }
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                kickerLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.monoLabelS(context, color: t.ink),
+              ),
+              gapH8,
+              Text(
+                club.name,
+                key: const ValueKey('club-detail-expanded-title'),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.clubDisplay(
+                  context,
+                  size: CatchLayout.clubDetailHeroExpandedTitleSize,
+                  height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
+                  color: t.ink,
+                ),
+              ),
+              const SizedBox(
+                height: CatchLayout.clubDetailHeroTitleLocationGap,
+              ),
+              Row(
+                children: [
+                  Icon(
+                    CatchIcons.locationOnOutlined,
+                    size: CatchIcon.md,
+                    color: t.ink2,
+                  ),
+                  gapW6,
+                  Expanded(
+                    child: Text(
+                      locationLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.bodyLead(context, color: t.ink2),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 String _clubHeroKicker(Club club) {
@@ -343,6 +351,60 @@ String _clubHeroKicker(Club club) {
 
 String _clubLocationLabel(Club club) =>
     '${club.area}, ${cityLabel(club.location)}';
+
+double _clubHeroViewportTopCornerRadius(MediaQueryData mediaQuery) {
+  const fallbackRadius = CatchRadius.lg;
+  final shortestSide = mediaQuery.size.shortestSide;
+  final topInset = mediaQuery.padding.top;
+  if (shortestSide <= 0 || topInset <= 0) return fallbackRadius;
+
+  final maxRadius = math.max(fallbackRadius, shortestSide * 0.18);
+  final derivedRadius = topInset * 1.08;
+  return derivedRadius.clamp(fallbackRadius, maxRadius).toDouble();
+}
+
+class _ClubHeroViewportCurveClipper extends CustomClipper<RSuperellipse> {
+  const _ClubHeroViewportCurveClipper({
+    required this.padding,
+    required this.viewportTopRadius,
+    required this.cornerRadius,
+  });
+
+  final EdgeInsets padding;
+  final double viewportTopRadius;
+  final double cornerRadius;
+
+  @override
+  RSuperellipse getClip(Size size) {
+    final left = padding.left.clamp(0.0, size.width / 2).toDouble();
+    final top = padding.top.clamp(0.0, size.height / 2).toDouble();
+    final right = math.max(left, size.width - padding.right);
+    final bottom = math.max(top, size.height - padding.bottom);
+    final rect = Rect.fromLTRB(left, top, right, bottom);
+    if (rect.isEmpty) {
+      return RSuperellipse.fromRectAndCorners(Offset.zero & size);
+    }
+
+    final topDeflate = math.min(left, top);
+    final topRadius = math.max(cornerRadius, viewportTopRadius - topDeflate);
+    final maxCorner = rect.shortestSide / 2;
+
+    return RSuperellipse.fromRectAndCorners(
+      rect,
+      topLeft: Radius.circular(math.min(topRadius, maxCorner)),
+      topRight: Radius.circular(math.min(topRadius, maxCorner)),
+      bottomLeft: Radius.circular(math.min(cornerRadius, maxCorner)),
+      bottomRight: Radius.circular(math.min(cornerRadius, maxCorner)),
+    );
+  }
+
+  @override
+  bool shouldReclip(_ClubHeroViewportCurveClipper oldClipper) {
+    return padding != oldClipper.padding ||
+        viewportTopRadius != oldClipper.viewportTopRadius ||
+        cornerRadius != oldClipper.cornerRadius;
+  }
+}
 
 Future<void> shareClub(
   BuildContext context,
