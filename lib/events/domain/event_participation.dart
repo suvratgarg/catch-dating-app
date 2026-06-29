@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -54,26 +55,21 @@ abstract class EventParticipation with _$EventParticipation {
   factory EventParticipation.fromJson(Map<String, dynamic> json) =>
       _$EventParticipationFromJson(json);
 
+  @Deprecated('Use EventService.participationStatus instead')
   bool get hasHostApproval =>
-      hostApprovalStatus == EventJoinRequestStatus.approved ||
-      isWaitlistOfferAcceptedAt(DateTime.now());
+      EventService.participationStatus(this).hasHostApproval;
 
+  @Deprecated('Use EventService.participationStatus instead')
   bool isWaitlistOfferActiveAt(DateTime now) =>
-      status == EventParticipationStatus.waitlisted &&
-      waitlistOfferStatus == EventWaitlistOfferStatus.active &&
-      _offerExpiresAfter(now);
+      EventService.participationStatus(this, now: now).isWaitlistOfferActive;
 
+  @Deprecated('Use EventService.participationStatus instead')
   bool isWaitlistOfferAcceptedAt(DateTime now) =>
-      status == EventParticipationStatus.waitlisted &&
-      waitlistOfferStatus == EventWaitlistOfferStatus.accepted &&
-      _offerExpiresAfter(now);
+      EventService.participationStatus(this, now: now).isWaitlistOfferAccepted;
 
+  @Deprecated('Use EventService.participationStatus instead')
   bool get hasOpenWaitlistOffer =>
-      waitlistOfferStatus == EventWaitlistOfferStatus.active ||
-      waitlistOfferStatus == EventWaitlistOfferStatus.accepted;
-
-  bool _offerExpiresAfter(DateTime now) =>
-      waitlistOfferExpiresAt != null && waitlistOfferExpiresAt!.isAfter(now);
+      EventService.participationStatus(this).hasOpenWaitlistOffer;
 }
 
 String eventParticipationId({required String eventId, required String uid}) =>

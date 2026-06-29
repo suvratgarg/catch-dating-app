@@ -36,15 +36,13 @@ class ProfileReactionControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final children = [
-      _reactionControlButton(
-        context,
+      ReactionControlButton(
         tooltip: 'Like ${target.label}',
         icon: CatchIcons.favoriteBorderRounded,
         onPressed: () => unawaited(Future.sync(() => onReact(target, null))),
         style: style,
       ),
-      _reactionControlButton(
-        context,
+      ReactionControlButton(
         tooltip: 'Comment on ${target.label}',
         icon: CatchIcons.chatBubbleOutlineRounded,
         onPressed: () => unawaited(_commentThenReact(context)),
@@ -189,44 +187,58 @@ class _ProfileReactionCommentSheetState
   }
 }
 
-Widget _reactionControlButton(
-  BuildContext context, {
-  required String tooltip,
-  required IconData icon,
-  required VoidCallback onPressed,
-  required ProfileReactionControlsStyle style,
-}) {
-  final palette = ProfileCardPalette.of(context);
-  final isOverlay = style == ProfileReactionControlsStyle.overlay;
-  final background = isOverlay
-      ? CatchTokens.editorialLight.withValues(
-          alpha: CatchOpacity.reactionOverlayFill,
-        )
-      : palette.chipFill;
-  final foreground = isOverlay ? palette.accent : palette.textSecondary;
-  final border = isOverlay
-      ? CatchTokens.editorialLight.withValues(
-          alpha: CatchOpacity.reactionOverlayBorder,
-        )
-      : palette.chipBorder;
+class ReactionControlButton extends StatelessWidget {
+  const ReactionControlButton({
+    super.key,
+    required this.tooltip,
+    required this.icon,
+    required this.onPressed,
+    required this.style,
+  });
 
-  return Tooltip(
-    message: tooltip,
-    child: Material(
-      color: background,
-      shape: CircleBorder(side: BorderSide(color: border)),
-      child: InkWell(
-        customBorder: const CircleBorder(),
-        onTap: onPressed,
-        child: SizedBox.square(
-          dimension: CatchLayout.reactionControlExtent,
-          child: Icon(
-            icon,
-            color: foreground,
-            size: CatchLayout.reactionControlIconSize,
+  final String tooltip;
+  final IconData icon;
+  final VoidCallback onPressed;
+  final ProfileReactionControlsStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = ProfileCardPalette.of(context);
+    final isOverlay = style == ProfileReactionControlsStyle.overlay;
+    final background = isOverlay
+        ? CatchTokens.editorialLight.withValues(
+            alpha: CatchOpacity.reactionOverlayFill,
+          )
+        : palette.chipFill;
+    final foreground = isOverlay ? palette.accent : palette.textSecondary;
+    final border = isOverlay
+        ? CatchTokens.editorialLight.withValues(
+            alpha: CatchOpacity.reactionOverlayBorder,
+          )
+        : palette.chipBorder;
+
+    return Semantics(
+      label: tooltip,
+      button: true,
+      child: Tooltip(
+        message: tooltip,
+        child: Material(
+          color: background,
+          shape: CircleBorder(side: BorderSide(color: border)),
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: onPressed,
+            child: SizedBox.square(
+              dimension: CatchLayout.reactionControlExtent,
+              child: Icon(
+                icon,
+                color: foreground,
+                size: CatchLayout.reactionControlIconSize,
+              ),
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

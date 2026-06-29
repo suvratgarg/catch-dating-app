@@ -1,6 +1,8 @@
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
@@ -8,6 +10,7 @@ import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'swipe_candidate_repository.g.dart';
@@ -31,54 +34,65 @@ class SwipeCandidateRepository {
     required String eventId,
     required UserProfile currentUser,
   }) async {
-    // 1. Get the event to find attendees.
-    final event = await _eventRepository.fetchEvent(eventId);
-    if (event == null) return [];
-    if (!hasOpenSwipeWindow(event)) return [];
+    return withBackendErrorContext(
+      () async {
+        // 1. Get the event to find attendees.
+        final event = await _eventRepository.fetchEvent(eventId);
+        if (event == null) return [];
+        if (!hasOpenSwipeWindow(event)) return [];
 
-    final attendedParticipantIds = await _fetchAttendedParticipantIds(
-      eventId: event.id,
+        final attendedParticipantIds = await _fetchAttendedParticipantIds(
+          eventId: event.id,
+        );
+        if (!attendedParticipantIds.contains(currentUser.uid)) return [];
+        attendedParticipantIds.remove(currentUser.uid);
+
+        if (attendedParticipantIds.isEmpty) return [];
+
+        // 2. Exclude already-swiped users.
+        final swipedIds = await _swipeRepository.fetchSwipedUserIds(
+          uid: currentUser.uid,
+        );
+        final blockedIds =
+            await _safetyRepository?.fetchBlockedUserIds(
+              uid: currentUser.uid,
+            ) ??
+            const <String>{};
+        final candidateIds = attendedParticipantIds
+            .where((id) => !swipedIds.contains(id))
+            .where((id) => !blockedIds.contains(id))
+            .toList();
+
+        if (candidateIds.isEmpty) return [];
+
+        // 3. Batch-fetch public profiles (Firestore 'whereIn' limit is 30).
+        final profiles = await _publicProfileRepository.fetchPublicProfiles(
+          candidateIds,
+        );
+        final orderedProfiles = _orderProfilesByCandidateIds(
+          profiles: profiles,
+          candidateIds: candidateIds,
+        );
+
+        // 4. Filter by current user's age and gender preferences.
+        final ageRange = normalizeAgePreferenceRange(
+          minAgePreference: currentUser.minAgePreference,
+          maxAgePreference: currentUser.maxAgePreference,
+        );
+        return orderedProfiles.where((p) {
+          final ageOk = p.age >= ageRange.minAge && p.age <= ageRange.maxAge;
+          final genderOk =
+              currentUser.interestedInGenders.isEmpty ||
+              currentUser.interestedInGenders.contains(p.gender);
+          return ageOk && genderOk;
+        }).toList();
+      },
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'fetch swipe candidates',
+        resource: 'swipe_candidates',
+      ),
     );
-    if (!attendedParticipantIds.contains(currentUser.uid)) return [];
-    attendedParticipantIds.remove(currentUser.uid);
-
-    if (attendedParticipantIds.isEmpty) return [];
-
-    // 2. Exclude already-swiped users.
-    final swipedIds = await _swipeRepository.fetchSwipedUserIds(
-      uid: currentUser.uid,
-    );
-    final blockedIds =
-        await _safetyRepository?.fetchBlockedUserIds(uid: currentUser.uid) ??
-        const <String>{};
-    final candidateIds = attendedParticipantIds
-        .where((id) => !swipedIds.contains(id))
-        .where((id) => !blockedIds.contains(id))
-        .toList();
-
-    if (candidateIds.isEmpty) return [];
-
-    // 3. Batch-fetch public profiles (Firestore 'whereIn' limit is 30).
-    final profiles = await _publicProfileRepository.fetchPublicProfiles(
-      candidateIds,
-    );
-    final orderedProfiles = _orderProfilesByCandidateIds(
-      profiles: profiles,
-      candidateIds: candidateIds,
-    );
-
-    // 4. Filter by current user's age and gender preferences.
-    final ageRange = normalizeAgePreferenceRange(
-      minAgePreference: currentUser.minAgePreference,
-      maxAgePreference: currentUser.maxAgePreference,
-    );
-    return orderedProfiles.where((p) {
-      final ageOk = p.age >= ageRange.minAge && p.age <= ageRange.maxAge;
-      final genderOk =
-          currentUser.interestedInGenders.isEmpty ||
-          currentUser.interestedInGenders.contains(p.gender);
-      return ageOk && genderOk;
-    }).toList();
   }
 
   Future<List<String>> _fetchAttendedParticipantIds({

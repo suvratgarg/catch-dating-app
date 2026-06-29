@@ -146,7 +146,12 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
                             height: 1,
                             thickness: 1,
                           ),
-                        _buildDraftCard(_drafts[index]),
+                        DraftCard(
+                          draft: _drafts[index],
+                          isDeleting: _deletingDraftId == _drafts[index].id,
+                          onSelect: () => _onSelect(_drafts[index]),
+                          onDelete: () => _onDelete(_drafts[index]),
+                        ),
                       ],
                     ],
                   ),
@@ -158,12 +163,28 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
     );
   }
 
-  Widget _buildDraftCard(EventDraft draft) {
+}
+
+class DraftCard extends StatelessWidget {
+  const DraftCard({
+    super.key,
+    required this.draft,
+    required this.isDeleting,
+    required this.onSelect,
+    required this.onDelete,
+  });
+
+  final EventDraft draft;
+  final bool isDeleting;
+  final VoidCallback onSelect;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final isDeleting = _deletingDraftId == draft.id;
 
     return CatchSurface(
-      onTap: isDeleting ? null : () => _onSelect(draft),
+      onTap: isDeleting ? null : onSelect,
       tone: CatchSurfaceTone.transparent,
       borderWidth: 0,
       radius: CatchRadius.none,
@@ -195,7 +216,7 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
             message: 'Delete draft',
             child: CatchIconButton(
               key: CreateEventFormKeys.deleteDraft(draft.id),
-              onTap: isDeleting ? null : () => _onDelete(draft),
+              onTap: isDeleting ? null : onDelete,
               size: 36,
               background: Colors.transparent,
               child: isDeleting

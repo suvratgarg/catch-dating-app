@@ -166,9 +166,11 @@ class StrideCard extends StatelessWidget {
           ),
           if (onConnect != null || onInstallHealthConnect != null) ...[
             gapH12,
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
+            Semantics(
+              label: 'Activity tracking actions',
+              child: Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
               children: [
                 if (onConnect != null)
                   _buildStrideActionButton(
@@ -191,6 +193,7 @@ class StrideCard extends StatelessWidget {
                     isBusy: isInstallingHealthConnect,
                   ),
               ],
+            ),
             ),
           ],
         ],

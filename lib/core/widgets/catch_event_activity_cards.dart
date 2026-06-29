@@ -239,7 +239,7 @@ class CatchEventCard extends StatelessWidget {
     );
     return heroTag == null
         ? card
-        : eventHeroSurface(tag: heroTag!, child: card);
+        : EventHeroSurface(tag: heroTag!, child: card);
   }
 
   Widget _buildSpotlight(BuildContext context) {
@@ -364,7 +364,7 @@ class CatchEventCard extends StatelessWidget {
     );
     return heroTag == null
         ? card
-        : eventHeroSurface(tag: heroTag!, child: card);
+        : EventHeroSurface(tag: heroTag!, child: card);
   }
 
   Widget _buildCompact(BuildContext context) {
@@ -448,7 +448,7 @@ class CatchEventCard extends StatelessWidget {
     );
     return heroTag == null
         ? card
-        : eventHeroSurface(tag: heroTag!, child: card);
+        : EventHeroSurface(tag: heroTag!, child: card);
   }
 }
 

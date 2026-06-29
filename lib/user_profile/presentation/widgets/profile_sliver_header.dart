@@ -14,17 +14,21 @@ class ProfileSliverHeader {
 
   List<Widget> buildSlivers(BuildContext context) {
     final header = CatchSliverHeader(
-      title: _profileTitle(context),
+      title: const ProfileTitle(),
       bottomHeight: 48,
-      bottom: _profileTabBar(context, controller: controller),
+      bottom: ProfileTabBar(controller: controller),
     );
 
     return header.buildSlivers(context);
   }
 }
 
-Widget _profileTitle(BuildContext context) {
-  final t = CatchTokens.of(context);
+class ProfileTitle extends StatelessWidget {
+  const ProfileTitle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
 
   return Material(
     color: t.bg,
@@ -39,18 +43,25 @@ Widget _profileTitle(BuildContext context) {
             ),
           ),
           const SizedBox(width: CatchSpacing.s2),
-          _settingsButton(context),
+          const ProfileSettingsButton(),
         ],
       ),
     ),
   );
+  }
 }
 
-Widget _profileTabBar(
-  BuildContext context, {
-  required TabController controller,
-}) {
-  final t = CatchTokens.of(context);
+class ProfileTabBar extends StatelessWidget {
+  const ProfileTabBar({
+    super.key,
+    required this.controller,
+  });
+
+  final TabController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
 
   return Material(
     color: t.bg,
@@ -61,7 +72,7 @@ Widget _profileTabBar(
       child: Padding(
         padding: CatchInsets.screenControlRow,
         child: AnimatedBuilder(
-          animation: controller,
+          animation: controller.animation!,
           builder: (context, _) {
             return CatchOptionGroup<int>(
               selected: controller.index,
@@ -69,6 +80,7 @@ Widget _profileTabBar(
               options: const [
                 CatchOption(value: 0, label: 'Edit'),
                 CatchOption(value: 1, label: 'Preview'),
+                CatchOption(value: 2, label: 'Insights'),
               ],
             );
           },
@@ -76,12 +88,18 @@ Widget _profileTabBar(
       ),
     ),
   );
+  }
 }
 
-Widget _settingsButton(BuildContext context) {
-  return CatchTopBarIconAction(
-    icon: CatchIcons.settingsOutlined,
-    tooltip: 'Settings',
-    onPressed: () => context.pushNamed(Routes.settingsScreen.name),
-  );
+class ProfileSettingsButton extends StatelessWidget {
+  const ProfileSettingsButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchTopBarIconAction(
+      icon: CatchIcons.settingsOutlined,
+      tooltip: 'Settings',
+      onPressed: () => context.pushNamed(Routes.settingsScreen.name),
+    );
+  }
 }

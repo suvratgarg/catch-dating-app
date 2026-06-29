@@ -52,6 +52,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _preferences = _preferences.copyWithPreference(preference, value);
     });
 
+    // Track error locally to avoid reading mutation state that could have
+    // been overwritten by a concurrent call (matching _savePref is guarded
+    // by the toggle disabled state, but capturing the result is safer).
+    bool hadError = false;
     try {
       await SettingsController.savePreferenceMutation.run(
         ref,
@@ -60,11 +64,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             .savePreference(preference: preference, value: value),
       );
     } catch (_) {
+      hadError = true;
       // CatchMutationErrorListener owns user-facing error display.
     }
 
     if (!mounted) return;
-    if (ref.read(SettingsController.savePreferenceMutation).hasError) {
+    if (hadError) {
       setState(() => _preferences = previousPreferences);
     }
   }
@@ -92,16 +97,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  void _signOut() {
+  Future<void> _signOut() async {
     final signOutMutation = ref.read(AuthSessionController.signOutMutation);
     if (signOutMutation.isPending) return;
 
-    unawaited(
-      AuthSessionController.signOutMutation.run(
+    try {
+      await AuthSessionController.signOutMutation.run(
         ref,
         (tx) async => tx.get(authSessionControllerProvider.notifier).signOut(),
-      ),
-    );
+      );
+    } catch (_) {
+      // CatchMutationErrorListener owns user-facing error display.
+    }
   }
 
   void _openExternal(Uri uri) {
@@ -166,31 +173,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
     });
 
-    return CatchMutationErrorListener(
-      mutation: AuthSessionController.signOutMutation,
-      child: CatchMutationErrorListener(
-        mutation: SettingsController.savePreferenceMutation,
-        child: CatchMutationErrorListener(
-          mutation: SettingsController.requestAccountDeletionMutation,
-          child: CatchMutationErrorListener(
-            mutation: SettingsController.unblockUserMutation,
-            child: Scaffold(
-              appBar: const CatchTopBar(title: 'Settings'),
-              body: CatchScreenBody(
-                pt: CatchSpacing.s2,
-                pb: CatchSpacing.s7,
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: CatchLayout.maxContentWidth,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _settingsSection(
+    return CatchMutationErrorListeners(
+      mutations: [
+        AuthSessionController.signOutMutation,
+        SettingsController.savePreferenceMutation,
+        SettingsController.requestAccountDeletionMutation,
+        SettingsController.unblockUserMutation,
+      ],
+      child: Scaffold(
+        appBar: const CatchTopBar(title: 'Settings'),
+        body: CatchScreenBody(
+          pt: CatchSpacing.s2,
+          pb: CatchSpacing.s7,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: CatchLayout.maxContentWidth,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                        SettingsSection(
                           first: true,
                           title: 'Account',
-                          footer: _accountProfileStatus(
+                          footer: AccountProfileStatus(
                             profile: state.profile,
                             onRetry: () =>
                                 ref.invalidate(watchUserProfileProvider),
@@ -241,7 +247,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                         if (AppConfig.enableEventPolicyLab ||
                             AppConfig.enableEventSuccessPreview) ...[
-                          _settingsSection(
+                          SettingsSection(
                             title: 'Development',
                             children: [
                               if (AppConfig.enableEventPolicyLab)
@@ -278,7 +284,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ],
                           ),
                         ],
-                        _settingsSection(
+                        SettingsSection(
                           title: 'Notifications',
                           children: [
                             CatchField.toggle(
@@ -359,9 +365,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                           ],
                         ),
-                        _settingsSection(
+                        SettingsSection(
                           title: 'Privacy & safety',
-                          footer: _blockedAccountsSection(
+                          footer: BlockedAccountsSection(
                             state: state.blockedAccounts,
                             unblocking: state.mutations.unblocking,
                             onRetry: () =>
@@ -418,7 +424,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                           ],
                         ),
-                        _settingsSection(
+                        SettingsSection(
                           title: 'About',
                           children: [
                             CatchField.nav(
@@ -444,7 +450,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                           ],
                         ),
-                        _settingsSection(
+                        SettingsSection(
                           title: '',
                           hideTitle: true,
                           children: [
@@ -483,230 +489,262 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
               ),
             ),
+    );
+  }
+}
+
+class SettingsSection extends StatelessWidget {
+  const SettingsSection({
+    super.key,
+    required this.title,
+    required this.children,
+    this.first = false,
+    this.hideTitle = false,
+    this.footer,
+  });
+
+  final String title;
+  final List<Widget> children;
+  final bool first;
+  final bool hideTitle;
+  final Widget? footer;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final topPadding = hideTitle ? CatchSpacing.s3 : 18.0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (!first) ...[
+          gapH8,
+          ColoredBox(
+            color: t.line,
+            child: const SizedBox(height: CatchStroke.hairline),
           ),
+          SizedBox(height: topPadding),
+        ],
+        if (!hideTitle) ...[
+          Text(
+            title.toUpperCase(),
+            style: CatchTextStyles.kicker(context, color: t.ink2),
+          ),
+          gapH10,
+        ],
+        for (var i = 0; i < children.length; i++) ...[
+          if (i > 0)
+            Padding(
+              padding: const EdgeInsets.only(
+                left: CatchLayout.settingsRowDividerIconInset,
+              ),
+              child: ColoredBox(
+                color: t.line.withValues(
+                  alpha: CatchOpacity.profileInfoDivider,
+                ),
+                child: const SizedBox(height: CatchStroke.hairline),
+              ),
+            ),
+          children[i],
+        ],
+        ?footer,
+      ],
+    );
+  }
+}
+
+class AccountProfileStatus extends StatelessWidget {
+  const AccountProfileStatus({
+    super.key,
+    required this.profile,
+    required this.onRetry,
+  });
+
+  final SettingsProfileState profile;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    if (profile.isError) {
+      return Padding(
+        padding: CatchInsets.content,
+        child: CatchInlineErrorState.fromError(
+          profile.error!,
+          compact: true,
+          onRetry: onRetry,
         ),
+      );
+    }
+
+    if (profile.isMissing) {
+      return const Padding(
+        padding: CatchInsets.content,
+        child: CatchInlineErrorState(
+          title: 'Account unavailable',
+          message: 'Sign out and sign back in if this keeps happening.',
+          compact: true,
+        ),
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+}
+
+class BlockedAccountsSection extends StatelessWidget {
+  const BlockedAccountsSection({
+    super.key,
+    required this.state,
+    required this.unblocking,
+    required this.onRetry,
+    required this.onUnblock,
+  });
+
+  final SettingsBlockedAccountsState state;
+  final bool unblocking;
+  final VoidCallback onRetry;
+  final ValueChanged<String> onUnblock;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ColoredBox(
+          color: t.line.withValues(alpha: CatchOpacity.profileInfoDivider),
+          child: const SizedBox(height: CatchStroke.hairline),
+        ),
+        switch (state.status) {
+          SettingsBlockedAccountsStatus.loading => const BlockedAccountsSkeleton(),
+          SettingsBlockedAccountsStatus.error => Padding(
+            padding: CatchInsets.content,
+            child: CatchInlineErrorState.fromError(
+              state.error!,
+              compact: true,
+              onRetry: onRetry,
+            ),
+          ),
+          SettingsBlockedAccountsStatus.empty => Padding(
+            padding: CatchInsets.content,
+            child: CatchEmptyState(
+              icon: CatchIcons.verifiedUserOutlined,
+              title: 'No blocked accounts',
+              message: 'People you block will appear here.',
+              iconSize: CatchIcon.tile,
+              titleStyle: CatchTextStyles.sectionTitle(context),
+              messageStyle: CatchTextStyles.supporting(
+                context,
+                color: t.ink2,
+              ),
+            ),
+          ),
+          SettingsBlockedAccountsStatus.content => Column(
+            children: [
+              for (var i = 0; i < state.rows.length; i++) ...[
+                BlockedAccountTile(
+                  row: state.rows[i],
+                  unblocking: unblocking,
+                  onUnblock: onUnblock,
+                ),
+                if (i < state.rows.length - 1)
+                  Divider(color: t.line, height: 1),
+              ],
+            ],
+          ),
+        },
+      ],
+    );
+  }
+}
+
+class BlockedAccountsSkeleton extends StatelessWidget {
+  const BlockedAccountsSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: CatchInsets.content,
+      child: Column(
+        children: [
+          for (var index = 0; index < 3; index++) ...[
+            Row(
+              children: [
+                CatchSkeleton.circle(size: CatchIcon.avatarLg),
+                gapW12,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CatchSkeleton.text(
+                        width: index == 1
+                            ? CatchLayout.skeletonTextTitleWidth
+                            : CatchLayout.skeletonTextShortWidth,
+                      ),
+                      gapH8,
+                      CatchSkeleton.text(
+                        width: index == 0
+                            ? CatchLayout.skeletonTextBodyWidth
+                            : index == 1
+                                ? CatchLayout.skeletonTextCompactWidth
+                                : CatchLayout.skeletonTextShortWidth,
+                      ),
+                    ],
+                  ),
+                ),
+                gapW12,
+                CatchSkeleton.box(
+                  width: CatchLayout.skeletonTextShortWidth,
+                  height: CatchSpacing.s8,
+                  radius: CatchRadius.pill,
+                ),
+              ],
+            ),
+            if (index < 2) ...[
+              gapH12,
+              ColoredBox(
+                color: CatchTokens.of(context).line,
+                child: const SizedBox(height: CatchStroke.hairline),
+              ),
+              gapH12,
+            ],
+          ],
+        ],
       ),
     );
   }
 }
 
-Widget _settingsSection({
-  required String title,
-  required List<Widget> children,
-  bool first = false,
-  bool hideTitle = false,
-  Widget? footer,
-}) {
-  return Builder(
-    builder: (context) {
-      final t = CatchTokens.of(context);
-      final topPadding = hideTitle ? CatchSpacing.s3 : 18.0;
+class BlockedAccountTile extends StatelessWidget {
+  const BlockedAccountTile({
+    super.key,
+    required this.row,
+    required this.unblocking,
+    required this.onUnblock,
+  });
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!first) ...[
-            gapH8,
-            ColoredBox(
-              color: t.line,
-              child: const SizedBox(height: CatchStroke.hairline),
-            ),
-            SizedBox(height: topPadding),
-          ],
-          if (!hideTitle) ...[
-            Text(
-              title.toUpperCase(),
-              style: CatchTextStyles.kicker(context, color: t.ink2),
-            ),
-            gapH10,
-          ],
-          for (var i = 0; i < children.length; i++) ...[
-            if (i > 0)
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: CatchLayout.settingsRowDividerIconInset,
-                ),
-                child: ColoredBox(
-                  color: t.line.withValues(
-                    alpha: CatchOpacity.profileInfoDivider,
-                  ),
-                  child: const SizedBox(height: CatchStroke.hairline),
-                ),
-              ),
-            children[i],
-          ],
-          ?footer,
-        ],
-      );
-    },
-  );
-}
+  final SettingsBlockedAccountRow row;
+  final bool unblocking;
+  final ValueChanged<String> onUnblock;
 
-Widget _accountProfileStatus({
-  required SettingsProfileState profile,
-  required VoidCallback onRetry,
-}) {
-  return Builder(
-    builder: (context) {
-      if (profile.isError) {
-        return Padding(
-          padding: CatchInsets.content,
-          child: CatchInlineErrorState.fromError(
-            profile.error!,
-            compact: true,
-            onRetry: onRetry,
-          ),
-        );
-      }
-
-      if (profile.isMissing) {
-        return const Padding(
-          padding: CatchInsets.content,
-          child: CatchInlineErrorState(
-            title: 'Account unavailable',
-            message: 'Sign out and sign back in if this keeps happening.',
-            compact: true,
-          ),
-        );
-      }
-
-      return const SizedBox.shrink();
-    },
-  );
-}
-
-Widget _blockedAccountsSection({
-  required SettingsBlockedAccountsState state,
-  required bool unblocking,
-  required VoidCallback onRetry,
-  required ValueChanged<String> onUnblock,
-}) {
-  return Builder(
-    builder: (context) {
-      final t = CatchTokens.of(context);
-
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ColoredBox(
-            color: t.line.withValues(alpha: CatchOpacity.profileInfoDivider),
-            child: const SizedBox(height: CatchStroke.hairline),
-          ),
-          switch (state.status) {
-            SettingsBlockedAccountsStatus.loading => _blockedAccountsSkeleton(
-              context,
-            ),
-            SettingsBlockedAccountsStatus.error => Padding(
-              padding: CatchInsets.content,
-              child: CatchInlineErrorState.fromError(
-                state.error!,
-                compact: true,
-                onRetry: onRetry,
-              ),
-            ),
-            SettingsBlockedAccountsStatus.empty => Padding(
-              padding: CatchInsets.content,
-              child: CatchEmptyState(
-                icon: CatchIcons.verifiedUserOutlined,
-                title: 'No blocked accounts',
-                message: 'People you block will appear here.',
-                iconSize: CatchIcon.tile,
-                titleStyle: CatchTextStyles.sectionTitle(context),
-                messageStyle: CatchTextStyles.supporting(
-                  context,
-                  color: t.ink2,
-                ),
-              ),
-            ),
-            SettingsBlockedAccountsStatus.content => Column(
-              children: [
-                for (var i = 0; i < state.rows.length; i++) ...[
-                  _blockedAccountTile(
-                    row: state.rows[i],
-                    unblocking: unblocking,
-                    onUnblock: onUnblock,
-                  ),
-                  if (i < state.rows.length - 1)
-                    Divider(color: t.line, height: 1),
-                ],
-              ],
-            ),
-          },
-        ],
-      );
-    },
-  );
-}
-
-Widget _blockedAccountsSkeleton(BuildContext context) {
-  return Padding(
-    padding: CatchInsets.content,
-    child: Column(
-      children: [
-        for (var index = 0; index < 3; index++) ...[
-          Row(
-            children: [
-              CatchSkeleton.circle(size: CatchIcon.avatarLg),
-              gapW12,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CatchSkeleton.text(
-                      width: index == 1
-                          ? CatchLayout.skeletonTextTitleWidth
-                          : CatchLayout.skeletonTextShortWidth,
-                    ),
-                    gapH8,
-                    CatchSkeleton.text(
-                      width: index == 2
-                          ? CatchLayout.skeletonTextShortWidth
-                          : CatchLayout.skeletonTextShortWidth,
-                    ),
-                  ],
-                ),
-              ),
-              gapW12,
-              CatchSkeleton.box(
-                width: CatchLayout.skeletonTextShortWidth,
-                height: CatchSpacing.s8,
-                radius: CatchRadius.pill,
-              ),
-            ],
-          ),
-          if (index < 2) ...[
-            gapH12,
-            ColoredBox(
-              color: CatchTokens.of(context).line,
-              child: const SizedBox(height: CatchStroke.hairline),
-            ),
-            gapH12,
-          ],
-        ],
-      ],
-    ),
-  );
-}
-
-Widget _blockedAccountTile({
-  required SettingsBlockedAccountRow row,
-  required bool unblocking,
-  required ValueChanged<String> onUnblock,
-}) {
-  return CatchPersonRow(
-    data: CatchPersonRowData(
-      name: row.name,
-      imageUrl: row.imageUrl,
-      metaLine: row.metaLine,
-      seed: row.seed,
-    ),
-    trailing: CatchButton(
-      key: SettingsKeys.unblockButton(row.uid),
-      label: 'Unblock',
-      isLoading: unblocking,
-      onPressed: unblocking ? null : () => onUnblock(row.uid),
-      variant: CatchButtonVariant.ghost,
-      size: CatchButtonSize.sm,
-    ),
-  );
+  @override
+  Widget build(BuildContext context) {
+    return CatchPersonRow(
+      data: CatchPersonRowData(
+        name: row.name,
+        imageUrl: row.imageUrl,
+        metaLine: row.metaLine,
+        seed: row.seed,
+      ),
+      trailing: CatchButton(
+        key: SettingsKeys.unblockButton(row.uid),
+        label: 'Unblock',
+        isLoading: unblocking,
+        onPressed: unblocking ? null : () => onUnblock(row.uid),
+        variant: CatchButtonVariant.ghost,
+        size: CatchButtonSize.sm,
+      ),
+    );
+  }
 }

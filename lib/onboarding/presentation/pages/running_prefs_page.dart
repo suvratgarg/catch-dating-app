@@ -35,7 +35,35 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
   final Set<PreferredDistance> _distances = {};
   final Set<RunReason> _reasons = {};
   final Set<PreferredRunTime> _runTimes = {};
-  bool _didSeedFromProfile = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _seedFromProfile();
+    });
+  }
+
+  void _seedFromProfile() {
+    final userProfile = ref.read(watchUserProfileProvider).asData?.value;
+    if (userProfile == null) return;
+    setState(() {
+      _paceRange = RangeValues(
+        userProfile.paceMinSecsPerKm.toDouble(),
+        userProfile.paceMaxSecsPerKm.toDouble(),
+      );
+      _distances
+        ..clear()
+        ..addAll(userProfile.preferredDistances);
+      _reasons
+        ..clear()
+        ..addAll(userProfile.runningReasons);
+      _runTimes
+        ..clear()
+        ..addAll(userProfile.preferredRunTimes);
+    });
+  }
 
   void _submit() {
     OnboardingController.completeMutation.run(ref, (tx) async {
@@ -53,28 +81,10 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userProfile = ref.watch(watchUserProfileProvider).asData?.value;
     final mutation = ref.watch(OnboardingController.completeMutation);
     final t = CatchTokens.of(context);
 
-    if (!_didSeedFromProfile && userProfile != null) {
-      _didSeedFromProfile = true;
-      _paceRange = RangeValues(
-        userProfile.paceMinSecsPerKm.toDouble(),
-        userProfile.paceMaxSecsPerKm.toDouble(),
-      );
-      _distances
-        ..clear()
-        ..addAll(userProfile.preferredDistances);
-      _reasons
-        ..clear()
-        ..addAll(userProfile.runningReasons);
-      _runTimes
-        ..clear()
-        ..addAll(userProfile.preferredRunTimes);
-    }
-
-    return onboardingStepLayout(
+    return OnboardingStepLayout(
       footer: CatchButton(
         label: widget.runPreferencesOnly
             ? 'Continue booking'

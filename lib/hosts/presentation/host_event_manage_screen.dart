@@ -30,6 +30,7 @@ import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
@@ -760,7 +761,9 @@ void _shareHostPrivateLink({
                 origin: origin,
               ),
         )
-        .then<void>((_) {}, onError: (_) {}),
+        .then<void>((_) {}, onError: (Object error, StackTrace stackTrace) {
+          ref.read(errorLoggerProvider).logError(error, stackTrace, reason: '_shareHostPrivateLink failed');
+        }),
   );
 }
 
@@ -903,7 +906,9 @@ class HostInviteLinksList extends ConsumerWidget {
           );
       if (!context.mounted) return;
       showCatchSnackBar(context, '$label copied.');
-    } catch (_) {}
+    } catch (error, stackTrace) {
+      ref.read(errorLoggerProvider).logError(error, stackTrace, reason: 'HostInviteLinksList._createNamedLink failed');
+    }
   }
 }
 
@@ -1037,7 +1042,9 @@ class HostInviteLinkRow extends ConsumerWidget {
       );
       if (!context.mounted) return;
       showCatchSnackBar(context, '$label copied.');
-    } catch (_) {}
+    } catch (error, stackTrace) {
+      ref.read(errorLoggerProvider).logError(error, stackTrace, reason: 'HostInviteLinkRow._copyInviteLink failed');
+    }
   }
 
   Future<void> _disableInviteLink(BuildContext context, WidgetRef ref) async {
@@ -1063,7 +1070,9 @@ class HostInviteLinkRow extends ConsumerWidget {
           );
       if (!context.mounted) return;
       showCatchSnackBar(context, '$label disabled.');
-    } catch (_) {}
+    } catch (error, stackTrace) {
+      ref.read(errorLoggerProvider).logError(error, stackTrace, reason: 'HostInviteLinkRow._disableInviteLink failed');
+    }
   }
 }
 

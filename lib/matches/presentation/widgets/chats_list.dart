@@ -60,7 +60,7 @@ class ChatsList extends ConsumerWidget {
         );
 
     return switch (effectiveState) {
-      ChatsListLoading() => _buildChatsListSkeleton(context),
+      ChatsListLoading() => const ChatsListSkeleton(),
       ChatsListError(:final error, :final retryIntent) =>
         CatchSliverErrorState.fromError(
           error,
@@ -206,104 +206,116 @@ final class ChatsListContent extends ChatsListDisplayState {
   final ChatsListViewModel viewModel;
 }
 
-Widget _buildChatsListSkeleton(BuildContext context) {
-  final t = CatchTokens.of(context);
-  final sectionLabel = AppConfig.appRole.isHost
-      ? 'ATTENDEE QUERIES'
-      : 'CONVERSATIONS';
+class ChatsListSkeleton extends StatelessWidget {
+  const ChatsListSkeleton({super.key});
 
-  return SliverMainAxisGroup(
-    slivers: [
-      SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s4,
-            CatchSpacing.micro14,
-            CatchSpacing.s4,
-            CatchSpacing.s2,
-          ),
-          child: Text(
-            sectionLabel,
-            style: CatchTextStyles.kicker(context, color: t.ink2),
-          ),
-        ),
-      ),
-      SliverPadding(
-        padding: CatchInsets.chatListGutter,
-        sliver: SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) => _buildChatPersonRowSkeleton(
-              context,
-              divider: index > 0,
-              squareAvatar: AppConfig.appRole.isHost,
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final sectionLabel = AppConfig.appRole.isHost
+        ? 'ATTENDEE QUERIES'
+        : 'CONVERSATIONS';
+
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.s4,
+              CatchSpacing.micro14,
+              CatchSpacing.s4,
+              CatchSpacing.s2,
             ),
-            childCount: 5,
+            child: Text(
+              sectionLabel,
+              style: CatchTextStyles.kicker(context, color: t.ink2),
+            ),
           ),
         ),
-      ),
-      const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
-    ],
-  );
+        SliverPadding(
+          padding: CatchInsets.chatListGutter,
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => ChatPersonRowSkeleton(
+                divider: index > 0,
+                squareAvatar: AppConfig.appRole.isHost,
+              ),
+              childCount: 5,
+            ),
+          ),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
+      ],
+    );
+  }
 }
 
-Widget _buildChatPersonRowSkeleton(
-  BuildContext context, {
-  required bool divider,
-  required bool squareAvatar,
-}) {
-  final t = CatchTokens.of(context);
-  return Stack(
-    children: [
-      if (divider)
-        Positioned(
-          top: 0,
-          left: CatchLayout.chatListDividerInset,
-          right: 0,
-          child: ColoredBox(
-            color: t.line.withValues(alpha: CatchOpacity.fieldRowDivider),
-            child: const SizedBox(height: CatchStroke.hairline),
+class ChatPersonRowSkeleton extends StatelessWidget {
+  const ChatPersonRowSkeleton({
+    super.key,
+    required this.divider,
+    required this.squareAvatar,
+  });
+
+  final bool divider;
+  final bool squareAvatar;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Stack(
+      children: [
+        if (divider)
+          Positioned(
+            top: 0,
+            left: CatchLayout.chatListDividerInset,
+            right: 0,
+            child: ColoredBox(
+              color: t.line.withValues(alpha: CatchOpacity.fieldRowDivider),
+              child: const SizedBox(height: CatchStroke.hairline),
+            ),
           ),
-        ),
-      Padding(
-        padding: CatchInsets.chatListTileVertical,
-        child: Row(
-          children: [
-            squareAvatar
-                ? CatchSkeleton.box(
-                    width: CatchLayout.chatListAvatarExtent,
-                    height: CatchLayout.chatListAvatarExtent,
-                    radius: CatchRadius.md,
-                  )
-                : CatchSkeleton.circle(size: CatchLayout.chatListAvatarExtent),
-            const SizedBox(width: CatchLayout.chatListTextGap),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        Padding(
+          padding: CatchInsets.chatListTileVertical,
+          child: Row(
+            children: [
+              squareAvatar
+                  ? CatchSkeleton.box(
+                      width: CatchLayout.chatListAvatarExtent,
+                      height: CatchLayout.chatListAvatarExtent,
+                      radius: CatchRadius.md,
+                    )
+                  : CatchSkeleton.circle(size: CatchLayout.chatListAvatarExtent),
+              const SizedBox(width: CatchLayout.chatListTextGap),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+                    const SizedBox(height: CatchSpacing.micro6),
+                    CatchSkeleton.text(),
+                  ],
+                ),
+              ),
+              const SizedBox(width: CatchLayout.chatListTextGap),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+                  CatchSkeleton.text(width: CatchLayout.skeletonTextTimeWidth),
                   const SizedBox(height: CatchSpacing.micro6),
-                  CatchSkeleton.text(),
+                  CatchSkeleton.box(
+                    width: CatchLayout.chatUnreadPillWidth,
+                    height: CatchSpacing.s4,
+                    radius: CatchRadius.pill,
+                  ),
                 ],
               ),
-            ),
-            const SizedBox(width: CatchLayout.chatListTextGap),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CatchSkeleton.text(width: CatchLayout.skeletonTextTimeWidth),
-                const SizedBox(height: CatchSpacing.micro6),
-                CatchSkeleton.box(
-                  width: CatchLayout.chatUnreadPillWidth,
-                  height: CatchSpacing.s4,
-                  radius: CatchRadius.pill,
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }

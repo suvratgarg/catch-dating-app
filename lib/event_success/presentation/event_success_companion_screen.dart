@@ -86,19 +86,30 @@ void _popCompanion(BuildContext context) {
   Navigator.maybeOf(context)?.maybePop();
 }
 
-Widget _companionScaffold(BuildContext context, {required Widget body}) {
-  return Scaffold(
-    backgroundColor: CatchTokens.of(context).bg,
-    appBar: _companionAppBar(context),
-    body: body,
-  );
+class CompanionScaffold extends StatelessWidget {
+  const CompanionScaffold({super.key, required this.body});
+
+  final Widget body;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: CatchTokens.of(context).bg,
+      appBar: _companionAppBar(context),
+      body: body,
+    );
+  }
 }
 
-Widget _companionLoading(BuildContext context) {
-  return _companionScaffold(
-    context,
-    body: const EventSuccessCompanionLoadingBody(),
-  );
+class CompanionLoading extends StatelessWidget {
+  const CompanionLoading({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CompanionScaffold(
+      body: const EventSuccessCompanionLoadingBody(),
+    );
+  }
 }
 
 class EventSuccessCompanionLoadingBody extends StatelessWidget {
@@ -116,11 +127,11 @@ class EventSuccessCompanionLoadingBody extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _companionStageSkeleton(context),
+              const CompanionStageSkeleton(),
               gapH16,
-              _companionPrimaryActionSkeleton(context),
+              const CompanionPrimaryActionSkeleton(),
               gapH16,
-              _companionPeerListSkeleton(context),
+              const CompanionPeerListSkeleton(),
             ],
           ),
         ),
@@ -129,148 +140,178 @@ class EventSuccessCompanionLoadingBody extends StatelessWidget {
   }
 }
 
-Widget _companionStageSkeleton(BuildContext context) {
-  final t = CatchTokens.of(context);
+class CompanionStageSkeleton extends StatelessWidget {
+  const CompanionStageSkeleton({super.key});
 
-  return CatchSurface(
-    borderColor: t.line,
-    padding: CatchInsets.contentRelaxed,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.box(
-          width: CatchLayout.skeletonTextPillWidth,
-          height: CatchLayout.badgeActionHeight,
-          radius: CatchRadius.pill,
-        ),
-        gapH16,
-        CatchSkeleton.text(width: CatchLayout.skeletonTextFeatureWidth),
-        gapH10,
-        CatchSkeleton.textBlock(),
-        gapH18,
-        Row(
-          children: [
-            Expanded(
-              child: CatchSkeleton.box(
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: CatchInsets.contentRelaxed,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.box(
+            width: CatchLayout.skeletonTextPillWidth,
+            height: CatchLayout.badgeActionHeight,
+            radius: CatchRadius.pill,
+          ),
+          gapH16,
+          CatchSkeleton.text(width: CatchLayout.skeletonTextFeatureWidth),
+          gapH10,
+          CatchSkeleton.textBlock(),
+          gapH18,
+          Row(
+            children: [
+              Expanded(
+                child: CatchSkeleton.box(
+                  height: CatchLayout.controlMdMinHeight,
+                  radius: CatchRadius.sm,
+                ),
+              ),
+              gapW10,
+              CatchSkeleton.box(
+                width: CatchLayout.controlMdMinHeight,
                 height: CatchLayout.controlMdMinHeight,
                 radius: CatchRadius.sm,
               ),
-            ),
-            gapW10,
-            CatchSkeleton.box(
-              width: CatchLayout.controlMdMinHeight,
-              height: CatchLayout.controlMdMinHeight,
-              radius: CatchRadius.sm,
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _companionPrimaryActionSkeleton(BuildContext context) {
-  final t = CatchTokens.of(context);
-
-  return CatchSurface(
-    borderColor: t.line,
-    padding: CatchInsets.content,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.skeletonTextActionLabelWidth),
-        gapH12,
-        CatchSkeleton.textBlock(lines: 2),
-        gapH16,
-        CatchSkeleton.box(
-          height: CatchLayout.controlMdMinHeight,
-          radius: CatchRadius.sm,
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _companionPeerListSkeleton(BuildContext context) {
-  final t = CatchTokens.of(context);
-
-  return CatchSurface(
-    borderColor: t.line,
-    padding: CatchInsets.content,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWideWidth),
-        gapH14,
-        for (var i = 0; i < 3; i++) ...[
-          Row(
-            children: [
-              CatchSkeleton.circle(
-                size: CatchLayout.skeletonAvatarCompactExtent,
-              ),
-              gapW12,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CatchSkeleton.text(
-                      width: i == 1
-                          ? CatchLayout.skeletonTextBodyWidth
-                          : CatchLayout.skeletonTextBodyWideWidth,
-                    ),
-                    gapH6,
-                    CatchSkeleton.text(
-                      width: i == 2
-                          ? CatchLayout.skeletonTextCardTitleWidth
-                          : CatchLayout.skeletonTextDetailWidth,
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
-          if (i < 2) gapH16,
         ],
-      ],
-    ),
-  );
+      ),
+    );
+  }
 }
 
-Widget _companionError(
-  BuildContext context, {
-  required Object error,
-  required AppErrorContext errorContext,
-  required VoidCallback onRetry,
-}) {
-  return _companionScaffold(
-    context,
-    body: Center(
-      child: Padding(
-        padding: CatchInsets.contentRelaxed,
-        child: CatchInlineErrorState.fromError(
-          error,
-          context: errorContext,
-          onRetry: onRetry,
+class CompanionPrimaryActionSkeleton extends StatelessWidget {
+  const CompanionPrimaryActionSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: CatchInsets.content,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.text(width: CatchLayout.skeletonTextActionLabelWidth),
+          gapH12,
+          CatchSkeleton.textBlock(lines: 2),
+          gapH16,
+          CatchSkeleton.box(
+            height: CatchLayout.controlMdMinHeight,
+            radius: CatchRadius.sm,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CompanionPeerListSkeleton extends StatelessWidget {
+  const CompanionPeerListSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: CatchInsets.content,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWideWidth),
+          gapH14,
+          for (var i = 0; i < 3; i++) ...[
+            Row(
+              children: [
+                CatchSkeleton.circle(
+                  size: CatchLayout.skeletonAvatarCompactExtent,
+                ),
+                gapW12,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CatchSkeleton.text(
+                        width: i == 1
+                            ? CatchLayout.skeletonTextBodyWidth
+                            : CatchLayout.skeletonTextBodyWideWidth,
+                      ),
+                      gapH6,
+                      CatchSkeleton.text(
+                        width: i == 2
+                            ? CatchLayout.skeletonTextCardTitleWidth
+                            : CatchLayout.skeletonTextDetailWidth,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (i < 2) gapH16,
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class CompanionError extends StatelessWidget {
+  const CompanionError({
+    super.key,
+    required this.error,
+    required this.errorContext,
+    required this.onRetry,
+  });
+
+  final Object error;
+  final AppErrorContext errorContext;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return CompanionScaffold(
+      body: Center(
+        child: Padding(
+          padding: CatchInsets.contentRelaxed,
+          child: CatchInlineErrorState.fromError(
+            error,
+            context: errorContext,
+            onRetry: onRetry,
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
-Widget _companionMessage(
-  BuildContext context, {
-  required String title,
-  required String message,
-}) {
-  return _companionScaffold(
-    context,
-    body: Center(
-      child: Padding(
-        padding: CatchInsets.contentRelaxed,
-        child: CatchInlineErrorState(title: title, message: message),
+class CompanionMessage extends StatelessWidget {
+  const CompanionMessage({
+    super.key,
+    required this.title,
+    required this.message,
+  });
+
+  final String title;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return CompanionScaffold(
+      body: Center(
+        child: Padding(
+          padding: CatchInsets.contentRelaxed,
+          child: CatchInlineErrorState(title: title, message: message),
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class EventSuccessCompanionRouteScreen extends ConsumerWidget {
@@ -297,26 +338,23 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     final planAsync = ref.watch(watchEventSuccessPlanProvider(eventId));
     // Wave 1: core event, profile, participation, and plan load together.
     if (eventAsync.isLoading && event == null) {
-      return _companionLoading(context);
+      return const CompanionLoading();
     }
     if (eventAsync.hasError) {
-      return _companionError(
-        context,
+      return CompanionError(
         error: eventAsync.error!,
         errorContext: AppErrorContext.event,
         onRetry: () => ref.invalidate(watchEventProvider(eventId)),
       );
     }
     if (event == null) {
-      return _companionMessage(
-        context,
+      return CompanionMessage(
         title: 'Event not found',
         message: 'This event is no longer available.',
       );
     }
     if (uid == null) {
-      return _companionMessage(
-        context,
+      return CompanionMessage(
         title: 'Sign in required',
         message: 'Sign in to open your event companion.',
       );
@@ -324,19 +362,17 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     if (profileAsync.isLoading ||
         participationAsync.isLoading ||
         planAsync.isLoading) {
-      return _companionLoading(context);
+      return const CompanionLoading();
     }
     if (profileAsync.hasError) {
-      return _companionError(
-        context,
+      return CompanionError(
         error: profileAsync.error!,
         errorContext: AppErrorContext.profile,
         onRetry: () => ref.invalidate(watchUserProfileProvider),
       );
     }
     if (participationAsync.hasError) {
-      return _companionError(
-        context,
+      return CompanionError(
         error: participationAsync.error!,
         errorContext: AppErrorContext.event,
         onRetry: () =>
@@ -344,8 +380,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       );
     }
     if (planAsync.hasError) {
-      return _companionError(
-        context,
+      return CompanionError(
         error: planAsync.error!,
         errorContext: AppErrorContext.event,
         onRetry: () => ref.invalidate(watchEventSuccessPlanProvider(eventId)),
@@ -355,8 +390,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     final profile = profileAsync.asData?.value;
     final participation = participationAsync.asData?.value;
     if (profile == null || participation == null) {
-      return _companionMessage(
-        context,
+      return CompanionMessage(
         title: 'No booking found',
         message: 'Book this event before opening the companion.',
       );
@@ -364,8 +398,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
 
     final plan = planAsync.asData?.value;
     if (plan == null) {
-      return _companionMessage(
-        context,
+      return CompanionMessage(
         title: 'Companion not available',
         message:
             'The host has not enabled the live event guide for this event yet.',
@@ -406,11 +439,10 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     // Wave 2: arrival mission resolves before the attendee moment so First
     // Hello can preempt questionnaire/check-in when the module is enabled.
     if (arrivalMissionAsync.isLoading) {
-      return _companionLoading(context);
+      return const CompanionLoading();
     }
     if (arrivalMissionAsync.hasError) {
-      return _companionError(
-        context,
+      return CompanionError(
         error: arrivalMissionAsync.error!,
         errorContext: AppErrorContext.event,
         onRetry: () => ref.invalidate(
@@ -441,11 +473,10 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
 
     // Wave 2: compatibility response, resolved before the attendee moment.
     if (compatibilityAsync.isLoading) {
-      return _companionLoading(context);
+      return const CompanionLoading();
     }
     if (compatibilityAsync.hasError) {
-      return _companionError(
-        context,
+      return CompanionError(
         error: compatibilityAsync.error!,
         errorContext: AppErrorContext.event,
         onRetry: () => ref.invalidate(
@@ -536,11 +567,10 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         wingmanRequestAsync.isLoading ||
         assignmentAsync.isLoading ||
         rotationAsync.isLoading) {
-      return _companionLoading(context);
+      return const CompanionLoading();
     }
     if (feedbackAsync.hasError) {
-      return _companionError(
-        context,
+      return CompanionError(
         error: feedbackAsync.error!,
         errorContext: AppErrorContext.event,
         onRetry: () => ref.invalidate(
@@ -549,8 +579,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       );
     }
     if (assignmentAsync.hasError) {
-      return _companionError(
-        context,
+      return CompanionError(
         error: assignmentAsync.error!,
         errorContext: AppErrorContext.event,
         onRetry: () => ref.invalidate(
@@ -559,8 +588,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       );
     }
     if (rotationAsync.hasError) {
-      return _companionError(
-        context,
+      return CompanionError(
         error: rotationAsync.error!,
         errorContext: AppErrorContext.event,
         onRetry: () => ref.invalidate(
@@ -572,8 +600,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       );
     }
     if (preferenceAsync.hasError) {
-      return _companionError(
-        context,
+      return CompanionError(
         error: preferenceAsync.error!,
         errorContext: AppErrorContext.event,
         onRetry: () => ref.invalidate(
@@ -582,8 +609,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       );
     }
     if (wingmanRequestAsync.hasError) {
-      return _companionError(
-        context,
+      return CompanionError(
         error: wingmanRequestAsync.error!,
         errorContext: AppErrorContext.event,
         onRetry: () => ref.invalidate(
@@ -595,8 +621,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       );
     }
     if (candidatesAsync.hasError) {
-      return _companionError(
-        context,
+      return CompanionError(
         error: candidatesAsync.error!,
         errorContext: AppErrorContext.event,
         onRetry: () => ref.invalidate(

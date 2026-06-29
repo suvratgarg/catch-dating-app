@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
@@ -14,7 +17,6 @@ import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart'
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
-import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -268,6 +270,7 @@ class OnboardingController extends _$OnboardingController {
     );
     state = state.copyWith(step: OnboardingStep.genderInterest);
     _saveDraft();
+    ref.read(appAnalyticsProvider).logEvent(AnalyticsEvents.onboardingStarted);
   }
 
   void advanceToPhotos({String? instagramHandle}) {
@@ -330,6 +333,7 @@ class OnboardingController extends _$OnboardingController {
           ),
         );
     await _deleteDraftNow();
+    ref.read(appAnalyticsProvider).logEvent(AnalyticsEvents.onboardingCompleted);
     ref.invalidateSelf();
   }
 
@@ -365,6 +369,7 @@ class OnboardingController extends _$OnboardingController {
     // The router will redirect away shortly.
     // Invalidate self so the keepAlive provider is disposed and its
     // state (including OnboardingData) is freed.
+    ref.read(appAnalyticsProvider).logEvent(AnalyticsEvents.onboardingCompleted);
     ref.invalidateSelf();
   }
 
@@ -562,7 +567,7 @@ class OnboardingController extends _$OnboardingController {
                     error,
                     stackTrace: stack,
                     context: const BackendErrorContext(
-                      service: BackendService.local,
+                      service: BackendService.firestore,
                       action: 'save onboarding draft',
                       resource: 'onboarding_controller',
                     ),

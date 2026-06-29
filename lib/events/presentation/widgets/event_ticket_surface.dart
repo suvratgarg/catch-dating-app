@@ -8,8 +8,16 @@ const double eventTicketDividerHeight = CatchLayout.eventTicketDividerHeight;
 const double eventTicketNotchRadius = CatchLayout.eventTicketNotchRadius;
 const double eventTicketNotchDepth = CatchLayout.eventTicketNotchDepth;
 
-Widget eventHeroSurface({required Object tag, required Widget child}) {
-  return catchHeroSurface(tag: tag, child: child);
+class EventHeroSurface extends StatelessWidget {
+  const EventHeroSurface({super.key, required this.tag, required this.child});
+
+  final Object tag;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return catchHeroSurface(tag: tag, child: child);
+  }
 }
 
 class EventTicketPerforatedDivider extends StatelessWidget {

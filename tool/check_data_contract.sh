@@ -78,7 +78,6 @@ flutter analyze \
   lib/events/data/event_callable_adapters.dart \
   lib/events/data/event_callable_responses.dart \
   lib/user_profile/data/user_profile_repository.dart \
-  lib/user_profile/domain/update_user_profile_patch.dart \
   lib/safety/data/safety_repository.dart \
   lib/payments/data/payment_repository.dart \
   lib/payments/data/payment_history_repository.dart \

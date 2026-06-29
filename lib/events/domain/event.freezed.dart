@@ -52,7 +52,7 @@ $Res call({
 });
 
 
-$EventConstraintsCopyWith<$Res> get constraints;
+$EventMeetingLocationCopyWith<$Res>? get meetingLocation;$EventConstraintsCopyWith<$Res> get constraints;
 
 }
 /// @nodoc
@@ -100,6 +100,18 @@ as Map<String, int>,
   ));
 }
 /// Create a copy of Event
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$EventMeetingLocationCopyWith<$Res>? get meetingLocation {
+    if (_self.meetingLocation == null) {
+    return null;
+  }
+
+  return $EventMeetingLocationCopyWith<$Res>(_self.meetingLocation!, (value) {
+    return _then(_self.copyWith(meetingLocation: value));
+  });
+}/// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -340,7 +352,7 @@ $Res call({
 });
 
 
-@override $EventConstraintsCopyWith<$Res> get constraints;
+@override $EventMeetingLocationCopyWith<$Res>? get meetingLocation;@override $EventConstraintsCopyWith<$Res> get constraints;
 
 }
 /// @nodoc
@@ -389,6 +401,18 @@ as Map<String, int>,
 }
 
 /// Create a copy of Event
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$EventMeetingLocationCopyWith<$Res>? get meetingLocation {
+    if (_self.meetingLocation == null) {
+    return null;
+  }
+
+  return $EventMeetingLocationCopyWith<$Res>(_self.meetingLocation!, (value) {
+    return _then(_self.copyWith(meetingLocation: value));
+  });
+}/// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')

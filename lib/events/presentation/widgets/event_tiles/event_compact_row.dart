@@ -65,8 +65,7 @@ class EventCompactRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _eventCompactDatePill(
-            context,
+          _EventCompactDatePill(
             date: event.startTime,
             accent: visual.accent,
           ),
@@ -120,32 +119,36 @@ class EventCompactRow extends StatelessWidget {
   }
 }
 
-Widget _eventCompactDatePill(
-  BuildContext context, {
-  required DateTime date,
-  required Color accent,
-}) {
-  final t = CatchTokens.of(context);
+class _EventCompactDatePill extends StatelessWidget {
+  const _EventCompactDatePill({required this.date, required this.accent});
 
-  return CatchSurface(
-    width: _datePillWidth,
-    height: _datePillHeight,
-    radius: CatchRadius.md,
-    backgroundColor: accent.withValues(alpha: CatchOpacity.subtleFill),
-    borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          EventFormatters.shortMonth(date).toUpperCase(),
-          style: CatchTextStyles.labelS(context, color: accent),
-        ),
-        gapH2,
-        Text(
-          '${date.day}',
-          style: CatchTextStyles.titleL(context, color: t.ink),
-        ),
-      ],
-    ),
-  );
+  final DateTime date;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      width: _datePillWidth,
+      height: _datePillHeight,
+      radius: CatchRadius.md,
+      backgroundColor: accent.withValues(alpha: CatchOpacity.subtleFill),
+      borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            EventFormatters.shortMonth(date).toUpperCase(),
+            style: CatchTextStyles.labelS(context, color: accent),
+          ),
+          gapH2,
+          Text(
+            '${date.day}',
+            style: CatchTextStyles.titleL(context, color: t.ink),
+          ),
+        ],
+      ),
+    );
+  }
 }

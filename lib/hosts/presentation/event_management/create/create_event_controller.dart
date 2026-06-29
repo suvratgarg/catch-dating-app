@@ -2,12 +2,14 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -178,26 +180,32 @@ class CreateEventController extends _$CreateEventController {
     final imageUploadRepository = ref.read(imageUploadRepositoryProvider);
     final uploadedPhotos = <UploadedPhoto>[];
     try {
-      for (final indexedImage in selectedPhotoImages.indexed) {
-        final upload = await imageUploadRepository.uploadEventPhotoWithMetadata(
-          eventId: eventId,
-          position: indexedImage.$1,
-          image: indexedImage.$2,
-        );
-        uploadedPhotos.add(
-          UploadedPhoto.fromUpload(
-            url: upload.url,
-            storagePath: upload.storagePath,
+      return await withBackendErrorContext(() async {
+        for (final indexedImage in selectedPhotoImages.indexed) {
+          final upload = await imageUploadRepository.uploadEventPhotoWithMetadata(
+            eventId: eventId,
             position: indexedImage.$1,
-          ),
+            image: indexedImage.$2,
+          );
+          uploadedPhotos.add(
+            UploadedPhoto.fromUpload(
+              url: upload.url,
+              storagePath: upload.storagePath,
+              position: indexedImage.$1,
+            ),
+          );
+        }
+        final updatedEvent = event.copyWith(
+          photoUrl: uploadedPhotos.first.url,
+          eventPhotos: uploadedPhotos,
         );
-      }
-      final updatedEvent = event.copyWith(
-        photoUrl: uploadedPhotos.first.url,
-        eventPhotos: uploadedPhotos,
-      );
-      await eventRepo.updateEventDetails(event: updatedEvent);
-      return updatedEvent;
+        await eventRepo.updateEventDetails(event: updatedEvent);
+        return updatedEvent;
+      }, context: const BackendErrorContext(
+        service: BackendService.storage,
+        action: 'upload event photos',
+        resource: 'events',
+      ));
     } catch (_) {
       for (final photo in uploadedPhotos) {
         await imageUploadRepository.deleteByPath(photo.storagePath);

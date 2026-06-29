@@ -6,6 +6,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -109,7 +110,14 @@ class CreateClubController extends _$CreateClubController {
 
     if (existingClub != null) {
       if (!existingClub.isHostedBy(uid)) {
-        throw StateError('Only a club host can edit this club.');
+        throw const BackendOperationException(
+          code: 'unauthorized',
+          message: 'Only a club host can edit this club.',
+          context: BackendErrorContext(
+            service: BackendService.local,
+            action: 'edit club',
+          ),
+        );
       }
 
       var imageUrl = existingClub.imageUrl;
@@ -148,7 +156,14 @@ class CreateClubController extends _$CreateClubController {
       final clubsRepo = ref.read(clubsRepositoryProvider);
       if (!existingClub.isOwnedBy(uid)) {
         if (!clubPhotosChanged && !logoChanged) {
-          throw StateError('Only the club owner can edit club details.');
+          throw const BackendOperationException(
+            code: 'unauthorized',
+            message: 'Only the club owner can edit club details.',
+            context: BackendErrorContext(
+              service: BackendService.local,
+              action: 'edit club details',
+            ),
+          );
         }
         final patch = <String, Object?>{};
         if (clubPhotosChanged) {

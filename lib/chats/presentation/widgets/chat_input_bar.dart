@@ -42,8 +42,7 @@ class ChatInputBar extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (showImageButton)
-            _buildComposerIconAction(
-              context,
+            _ComposerIconAction(
               tooltip: 'Send an image',
               onPressed: disabled ? null : onSendImage,
               disabled: disabled || onSendImage == null,
@@ -81,8 +80,7 @@ class ChatInputBar extends StatelessWidget {
             ),
           ),
           gapW8,
-          _buildComposerIconAction(
-            context,
+          _ComposerIconAction(
             tooltip: 'Send message',
             onPressed: disabled ? null : onSend,
             disabled: disabled || onSend == null,
@@ -108,32 +106,47 @@ class ChatInputBar extends StatelessWidget {
   }
 }
 
-Widget _buildComposerIconAction(
-  BuildContext context, {
-  required String tooltip,
-  required Widget icon,
-  VoidCallback? onPressed,
-  bool disabled = false,
-  Color? backgroundColor,
-  Color? foregroundColor,
-}) {
-  final t = CatchTokens.of(context);
-  final effectiveForeground = foregroundColor ?? t.ink2;
-  final enabled = !disabled && onPressed != null;
+class _ComposerIconAction extends StatelessWidget {
+  const _ComposerIconAction({
+    required this.tooltip,
+    required this.icon,
+    this.onPressed,
+    this.disabled = false,
+    this.backgroundColor,
+    this.foregroundColor,
+  });
 
-  return Tooltip(
-    message: tooltip,
-    child: Opacity(
-      opacity: enabled ? 1 : 0.4,
-      child: IconTheme(
-        data: IconThemeData(color: effectiveForeground, size: CatchIcon.md),
-        child: CatchIconButton(
-          size: 42,
-          background: backgroundColor ?? Colors.transparent,
-          onTap: enabled ? onPressed : null,
-          child: icon,
+  final String tooltip;
+  final Widget icon;
+  final VoidCallback? onPressed;
+  final bool disabled;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final effectiveForeground = foregroundColor ?? t.ink2;
+    final enabled = !disabled && onPressed != null;
+
+    return Semantics(
+      label: tooltip,
+      button: true,
+      child: Tooltip(
+        message: tooltip,
+        child: Opacity(
+          opacity: enabled ? 1 : 0.4,
+          child: IconTheme(
+            data: IconThemeData(color: effectiveForeground, size: CatchIcon.md),
+            child: CatchIconButton(
+              size: 42,
+              background: backgroundColor ?? Colors.transparent,
+              onTap: enabled ? onPressed : null,
+              child: icon,
+            ),
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

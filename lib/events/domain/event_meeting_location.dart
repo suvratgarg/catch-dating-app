@@ -1,4 +1,7 @@
-import 'package:catch_dating_app/core/sentinels.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'event_meeting_location.freezed.dart';
+part 'event_meeting_location.g.dart';
 
 /// Canonical meeting-location object embedded in `events/{eventId}.meetingLocation`
 /// (and accepted by event callables). Mirrors the
@@ -8,26 +11,21 @@ import 'package:catch_dating_app/core/sentinels.dart';
 /// The legacy meeting-point/string + nullable lat/lng fields on Event remain
 /// for back-compat reads; new writes use [EventMeetingLocation] and
 /// `event.effectiveMeetingLocation` for unified consumption.
-class EventMeetingLocation {
-  const EventMeetingLocation({
-    required this.name,
-    required this.latitude,
-    required this.longitude,
-    this.address,
-    this.placeId,
-    this.notes,
-  });
+@freezed
+abstract class EventMeetingLocation with _$EventMeetingLocation {
+  const EventMeetingLocation._();
 
-  factory EventMeetingLocation.fromJson(Map<String, dynamic> json) {
-    return EventMeetingLocation(
-      name: json['name'] as String,
-      address: json['address'] as String?,
-      placeId: json['placeId'] as String?,
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
-      notes: json['notes'] as String?,
-    );
-  }
+  const factory EventMeetingLocation({
+    required String name,
+    String? address,
+    String? placeId,
+    required double latitude,
+    required double longitude,
+    String? notes,
+  }) = _EventMeetingLocation;
+
+  factory EventMeetingLocation.fromJson(Map<String, dynamic> json) =>
+      _$EventMeetingLocationFromJson(json);
 
   /// Reconstructs a meeting location from legacy `meetingPoint` + `startingPoint{Lat,Lng}`
   /// fields on Event. Returns null if there's no usable name or coordinates.
@@ -49,35 +47,6 @@ class EventMeetingLocation {
     );
   }
 
-  final String name;
-  final String? address;
-  final String? placeId;
-  final double latitude;
-  final double longitude;
-  final String? notes;
-
-  EventMeetingLocation copyWith({
-    String? name,
-    Object? address = unsetSentinel,
-    Object? placeId = unsetSentinel,
-    double? latitude,
-    double? longitude,
-    Object? notes = unsetSentinel,
-  }) {
-    return EventMeetingLocation(
-      name: name ?? this.name,
-      address: identical(address, unsetSentinel)
-          ? this.address
-          : address as String?,
-      placeId: identical(placeId, unsetSentinel)
-          ? this.placeId
-          : placeId as String?,
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
-      notes: identical(notes, unsetSentinel) ? this.notes : notes as String?,
-    );
-  }
-
   EventMeetingLocation normalized() {
     return EventMeetingLocation(
       name: name.trim(),
@@ -88,15 +57,6 @@ class EventMeetingLocation {
       notes: _trimToNull(notes),
     );
   }
-
-  Map<String, dynamic> toJson() => <String, dynamic>{
-    'name': name,
-    'address': address,
-    'placeId': placeId,
-    'latitude': latitude,
-    'longitude': longitude,
-    'notes': notes,
-  };
 }
 
 String? _trimToNull(String? value) {

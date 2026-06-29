@@ -413,11 +413,11 @@ String _kindFor(String path) {
 }
 
 void _writeJsonLines(String path, List<Map<String, dynamic>> entries) {
-  final sink = File(path).openWrite();
+  final buffer = StringBuffer();
   for (final entry in entries) {
-    sink.writeln(jsonEncode(entry));
+    buffer.writeln(jsonEncode(entry));
   }
-  sink.close();
+  File(path).writeAsStringSync(buffer.toString());
 }
 
 void _printCounts(

@@ -194,8 +194,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
                       child: SizedBox(
                         width: sceneWidth,
                         height: size.height,
-                        child: _buildWelcomeScene(
-                          context,
+                        child: WelcomeScene(
                           viewportHeight: size.height,
                           mediaPadding: media.padding,
                           spinValue: _spinController.value,
@@ -223,287 +222,329 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
   }
 }
 
-Widget _buildWelcomeScene(
-  BuildContext context, {
-  required double viewportHeight,
-  required EdgeInsets mediaPadding,
-  required double spinValue,
-  required double landingValue,
-  required bool landed,
-  required VoidCallback onContinue,
-  required VoidCallback onExplore,
-}) {
-  const tokens = CatchTokens.sunsetDark;
-  final wheelTop = math.max(
-    CatchLayout.welcomeReelTop,
-    mediaPadding.top + CatchSpacing.s1,
-  );
-  final reelHeight = math.min(
-    CatchLayout.welcomeReelHeight,
-    math.max(0.0, viewportHeight - wheelTop),
-  );
-  final catchTop = wheelTop + CatchLayout.welcomeReelCatchFocusTop;
-  final buttonsBottom = math.max(
-    CatchLayout.welcomeButtonsBottom,
-    mediaPadding.bottom + CatchSpacing.s4,
-  );
-  final ctaTop =
-      viewportHeight - buttonsBottom - CatchLayout.welcomeCtaApproxHeight;
-  final minBodyTop = catchTop + CatchLayout.welcomeHeadlineToBodyGap;
-  final maxBodyTop = math.max(
-    minBodyTop,
-    ctaTop -
-        CatchLayout.welcomeMinBodyToCtaGap -
-        CatchLayout.welcomeCtaApproxHeight,
-  );
-  final bodyTop = math
-      .min(CatchLayout.welcomeBodyTop, maxBodyTop)
-      .clamp(minBodyTop, CatchLayout.welcomeBodyTop)
-      .toDouble();
+class WelcomeScene extends StatelessWidget {
+  const WelcomeScene({
+    super.key,
+    required this.viewportHeight,
+    required this.mediaPadding,
+    required this.spinValue,
+    required this.landingValue,
+    required this.landed,
+    required this.onContinue,
+    required this.onExplore,
+  });
 
-  return Stack(
-    clipBehavior: Clip.none,
-    children: [
-      Positioned(
-        left: 0,
-        right: 0,
-        top: wheelTop,
-        height: reelHeight,
-        child: _buildReelBand(
-          context,
-          spinValue: spinValue,
-          landingValue: landingValue,
-          landed: landed,
-        ),
-      ),
-      Positioned(
-        left: CatchLayout.welcomeReelCatchLeft,
-        top: catchTop,
-        child: Text('Catch', style: _WelcomeType.headline(tokens.ink)),
-      ),
-      if (landed) ...[
+  final double viewportHeight;
+  final EdgeInsets mediaPadding;
+  final double spinValue;
+  final double landingValue;
+  final bool landed;
+  final VoidCallback onContinue;
+  final VoidCallback onExplore;
+
+  @override
+  Widget build(BuildContext context) {
+    const tokens = CatchTokens.sunsetDark;
+    final wheelTop = math.max(
+      CatchLayout.welcomeReelTop,
+      mediaPadding.top + CatchSpacing.s1,
+    );
+    final reelHeight = math.min(
+      CatchLayout.welcomeReelHeight,
+      math.max(0.0, viewportHeight - wheelTop),
+    );
+    final catchTop = wheelTop + CatchLayout.welcomeReelCatchFocusTop;
+    final buttonsBottom = math.max(
+      CatchLayout.welcomeButtonsBottom,
+      mediaPadding.bottom + CatchSpacing.s4,
+    );
+    final ctaTop =
+        viewportHeight - buttonsBottom - CatchLayout.welcomeCtaApproxHeight;
+    final minBodyTop = catchTop + CatchLayout.welcomeHeadlineToBodyGap;
+    final maxBodyTop = math.max(
+      minBodyTop,
+      ctaTop -
+          CatchLayout.welcomeMinBodyToCtaGap -
+          CatchLayout.welcomeCtaApproxHeight,
+    );
+    final bodyTop = math
+        .min(CatchLayout.welcomeBodyTop, maxBodyTop)
+        .clamp(minBodyTop, CatchLayout.welcomeBodyTop)
+        .toDouble();
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
         Positioned(
-          left: CatchLayout.welcomeBodyHorizontalPadding,
-          right: CatchLayout.welcomeBodyHorizontalPadding,
-          top: bodyTop,
-          child: _buildRevealEntrance(
+          left: 0,
+          right: 0,
+          top: wheelTop,
+          height: reelHeight,
+          child: ReelBand(
+            spinValue: spinValue,
             landingValue: landingValue,
-            order: 0,
-            child: Text(
-              'Show up to something you\'d do anyway \u2014 a long run, '
-              'a long table, trivia night. Match only with the people who '
-              'were actually there.',
-              style: _WelcomeType.body(tokens.ink),
-            ),
+            landed: landed,
           ),
         ),
         Positioned(
-          left: CatchLayout.welcomeBodyHorizontalPadding,
-          right: CatchLayout.welcomeBodyHorizontalPadding,
-          bottom: buttonsBottom,
-          child: IgnorePointer(
-            ignoring: landingValue < 0.4,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildRevealEntrance(
-                  landingValue: landingValue,
-                  order: 1,
-                  child: CatchButton(
-                    label: 'Continue with phone',
-                    onPressed: onContinue,
-                    size: CatchButtonSize.lg,
-                    fullWidth: true,
-                    backgroundColor: tokens.primary,
-                    foregroundColor: tokens.primaryInk,
-                  ),
-                ),
-                const SizedBox(height: CatchLayout.welcomeButtonGap),
-                _buildRevealEntrance(
-                  landingValue: landingValue,
-                  order: 2,
-                  child: CatchButton(
-                    label: 'See what\'s on',
-                    onPressed: onExplore,
-                    variant: CatchButtonVariant.secondary,
-                    size: CatchButtonSize.lg,
-                    fullWidth: true,
-                    backgroundColor: Colors.transparent,
-                    foregroundColor: tokens.ink,
-                    borderColor: tokens.line2,
-                  ),
-                ),
-              ],
+          left: CatchLayout.welcomeReelCatchLeft,
+          top: catchTop,
+          child: Text('Catch', style: _WelcomeType.headline(tokens.ink)),
+        ),
+        if (landed) ...[
+          Positioned(
+            left: CatchLayout.welcomeBodyHorizontalPadding,
+            right: CatchLayout.welcomeBodyHorizontalPadding,
+            top: bodyTop,
+            child: RevealEntrance(
+              landingValue: landingValue,
+              order: 0,
+              child: Text(
+                'Show up to something you\'d do anyway \u2014 a long run, '
+                'a long table, trivia night. Match only with the people who '
+                'were actually there.',
+                style: _WelcomeType.body(tokens.ink),
+              ),
             ),
           ),
-        ),
-      ],
-    ],
-  );
-}
-
-Widget _buildReelBand(
-  BuildContext context, {
-  required double spinValue,
-  required double landingValue,
-  required bool landed,
-}) {
-  final offset = _welcomeTrackOffset(spinValue: spinValue, landed: landed);
-  final trackHeight = _welcomePhrases.length * CatchLayout.welcomeReelRowHeight;
-
-  return ShaderMask(
-    blendMode: BlendMode.dstIn,
-    shaderCallback: (bounds) {
-      return const LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          CatchWelcomeColors.reelMaskClear,
-          CatchWelcomeColors.reelMaskOpaque,
-          CatchWelcomeColors.reelMaskOpaque,
-          CatchWelcomeColors.reelMaskClear,
-        ],
-        stops: [
-          0,
-          CatchOpacity.welcomeReelMaskLead,
-          CatchOpacity.welcomeReelMaskTail,
-          1,
-        ],
-      ).createShader(bounds);
-    },
-    child: ClipRect(
-      child: OverflowBox(
-        alignment: Alignment.topCenter,
-        minHeight: trackHeight * 2,
-        maxHeight: trackHeight * 2,
-        child: Transform.translate(
-          offset: Offset(0, -offset),
-          child: SizedBox(
-            height: trackHeight * 2,
-            child: Column(
-              children: [
-                for (var copy = 0; copy < 2; copy += 1)
-                  for (
-                    var index = 0;
-                    index < _welcomePhrases.length;
-                    index += 1
-                  )
-                    _buildReelRow(
-                      context,
-                      phrase: _welcomePhrases[index],
-                      phraseIndex: index,
-                      rowIndex: copy * _welcomePhrases.length + index,
-                      trackOffset: offset,
-                      landingValue: landingValue,
-                      landed: landed,
+          Positioned(
+            left: CatchLayout.welcomeBodyHorizontalPadding,
+            right: CatchLayout.welcomeBodyHorizontalPadding,
+            bottom: buttonsBottom,
+            child: IgnorePointer(
+              ignoring: landingValue < 0.4,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  RevealEntrance(
+                    landingValue: landingValue,
+                    order: 1,
+                    child: CatchButton(
+                      label: 'Continue with phone',
+                      onPressed: onContinue,
+                      size: CatchButtonSize.lg,
+                      fullWidth: true,
+                      backgroundColor: tokens.primary,
+                      foregroundColor: tokens.primaryInk,
                     ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-Widget _buildReelRow(
-  BuildContext context, {
-  required _WelcomePhrase phrase,
-  required int phraseIndex,
-  required int rowIndex,
-  required double trackOffset,
-  required double landingValue,
-  required bool landed,
-}) {
-  const tokens = CatchTokens.sunsetDark;
-  final center = CatchLayout.welcomeReelRowCenter(
-    rowIndex: rowIndex,
-    trackOffset: trackOffset,
-  );
-  final distance = center - CatchLayout.welcomeReelFocus;
-  final absDistance = distance.abs();
-  final inFocus = CatchLayout.welcomeReelRowIsFocused(distance);
-  final isLandingFocus = landed && phraseIndex == _landingIndex && inFocus;
-  final pigment =
-      ActivityPalette.pigments[phrase.activityKind] ??
-      ActivityPalette.pigments[ActivityKind.openActivity]!;
-  final mutedPigment = Color.lerp(
-    tokens.ink3,
-    pigment,
-    CatchOpacity.welcomeReelDecolorPigment,
-  )!;
-  final dimOpacity = math.max(
-    CatchOpacity.welcomeReelDimMin,
-    1 - (absDistance / CatchLayout.welcomeReelDimRange),
-  );
-  final nonFocusFade = _durationProgress(
-    landingValue,
-    CatchMotion.welcomeNonFocusFade,
-  );
-  final colorCool = _durationProgress(
-    landingValue,
-    CatchMotion.welcomeTextCool,
-  );
-  final textColor = isLandingFocus
-      ? Color.lerp(pigment, tokens.ink, colorCool)!
-      : inFocus
-      ? pigment
-      : mutedPigment;
-  final rowOpacity = landed && !isLandingFocus
-      ? dimOpacity * (1 - nonFocusFade)
-      : dimOpacity;
-  final periodOpacity = inFocus ? 1.0 : 0.0;
-  final style = _WelcomeType.headline(textColor).copyWith(
-    decoration: inFocus ? TextDecoration.underline : TextDecoration.none,
-    decorationColor: pigment,
-    decorationThickness: 4,
-  );
-
-  return SizedBox(
-    height: CatchLayout.welcomeReelRowHeight,
-    child: Opacity(
-      opacity: rowOpacity.clamp(0, 1).toDouble(),
-      child: Padding(
-        padding: CatchInsets.welcomeReelRow,
-        child: Align(
-          alignment: Alignment.topLeft,
-          child: Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(text: phrase.object),
-                TextSpan(
-                  text: '.',
-                  style: style.copyWith(
-                    color: textColor.withValues(alpha: periodOpacity),
                   ),
-                ),
-              ],
-              style: style,
+                  const SizedBox(height: CatchLayout.welcomeButtonGap),
+                  RevealEntrance(
+                    landingValue: landingValue,
+                    order: 2,
+                    child: CatchButton(
+                      label: 'See what\'s on',
+                      onPressed: onExplore,
+                      variant: CatchButtonVariant.secondary,
+                      size: CatchButtonSize.lg,
+                      fullWidth: true,
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: tokens.ink,
+                      borderColor: tokens.line2,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            maxLines: 2,
-            overflow: TextOverflow.clip,
-            softWrap: true,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class ReelBand extends StatelessWidget {
+  const ReelBand({
+    super.key,
+    required this.spinValue,
+    required this.landingValue,
+    required this.landed,
+  });
+
+  final double spinValue;
+  final double landingValue;
+  final bool landed;
+
+  @override
+  Widget build(BuildContext context) {
+    final offset = _welcomeTrackOffset(spinValue: spinValue, landed: landed);
+    final trackHeight = _welcomePhrases.length * CatchLayout.welcomeReelRowHeight;
+
+    return ShaderMask(
+      blendMode: BlendMode.dstIn,
+      shaderCallback: (bounds) {
+        return const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            CatchWelcomeColors.reelMaskClear,
+            CatchWelcomeColors.reelMaskOpaque,
+            CatchWelcomeColors.reelMaskOpaque,
+            CatchWelcomeColors.reelMaskClear,
+          ],
+          stops: [
+            0,
+            CatchOpacity.welcomeReelMaskLead,
+            CatchOpacity.welcomeReelMaskTail,
+            1,
+          ],
+        ).createShader(bounds);
+      },
+      child: ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.topCenter,
+          minHeight: trackHeight * 2,
+          maxHeight: trackHeight * 2,
+          child: Transform.translate(
+            offset: Offset(0, -offset),
+            child: SizedBox(
+              height: trackHeight * 2,
+              child: Column(
+                children: [
+                  for (var copy = 0; copy < 2; copy += 1)
+                    for (
+                      var index = 0;
+                      index < _welcomePhrases.length;
+                      index += 1
+                    )
+                      ReelRow(
+                        phrase: _welcomePhrases[index],
+                        phraseIndex: index,
+                        rowIndex: copy * _welcomePhrases.length + index,
+                        trackOffset: offset,
+                        landingValue: landingValue,
+                        landed: landed,
+                      ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
-Widget _buildRevealEntrance({
-  required double landingValue,
-  required int order,
-  required Widget child,
-}) {
-  final progress = _revealProgress(landingValue, order);
+class ReelRow extends StatelessWidget {
+  const ReelRow({
+    super.key,
+    required this.phrase,
+    required this.phraseIndex,
+    required this.rowIndex,
+    required this.trackOffset,
+    required this.landingValue,
+    required this.landed,
+  });
 
-  return Opacity(
-    opacity: progress,
-    child: Transform.translate(
-      offset: Offset(0, (1 - progress) * CatchLayout.welcomeRevealOffsetY),
-      child: child,
-    ),
-  );
+  final _WelcomePhrase phrase;
+  final int phraseIndex;
+  final int rowIndex;
+  final double trackOffset;
+  final double landingValue;
+  final bool landed;
+
+  @override
+  Widget build(BuildContext context) {
+    const tokens = CatchTokens.sunsetDark;
+    final center = CatchLayout.welcomeReelRowCenter(
+      rowIndex: rowIndex,
+      trackOffset: trackOffset,
+    );
+    final distance = center - CatchLayout.welcomeReelFocus;
+    final absDistance = distance.abs();
+    final inFocus = CatchLayout.welcomeReelRowIsFocused(distance);
+    final isLandingFocus = landed && phraseIndex == _landingIndex && inFocus;
+    final pigment =
+        ActivityPalette.pigments[phrase.activityKind] ??
+        ActivityPalette.pigments[ActivityKind.openActivity]!;
+    final mutedPigment = Color.lerp(
+      tokens.ink3,
+      pigment,
+      CatchOpacity.welcomeReelDecolorPigment,
+    )!;
+    final dimOpacity = math.max(
+      CatchOpacity.welcomeReelDimMin,
+      1 - (absDistance / CatchLayout.welcomeReelDimRange),
+    );
+    final nonFocusFade = _durationProgress(
+      landingValue,
+      CatchMotion.welcomeNonFocusFade,
+    );
+    final colorCool = _durationProgress(
+      landingValue,
+      CatchMotion.welcomeTextCool,
+    );
+    final textColor = isLandingFocus
+        ? Color.lerp(pigment, tokens.ink, colorCool)!
+        : inFocus
+        ? pigment
+        : mutedPigment;
+    final rowOpacity = landed && !isLandingFocus
+        ? dimOpacity * (1 - nonFocusFade)
+        : dimOpacity;
+    final periodOpacity = inFocus ? 1.0 : 0.0;
+    final style = _WelcomeType.headline(textColor).copyWith(
+      decoration: inFocus ? TextDecoration.underline : TextDecoration.none,
+      decorationColor: pigment,
+      decorationThickness: 4,
+    );
+
+    return SizedBox(
+      height: CatchLayout.welcomeReelRowHeight,
+      child: Opacity(
+        opacity: rowOpacity.clamp(0, 1).toDouble(),
+        child: Padding(
+          padding: CatchInsets.welcomeReelRow,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(text: phrase.object),
+                  TextSpan(
+                    text: '.',
+                    style: style.copyWith(
+                      color: textColor.withValues(alpha: periodOpacity),
+                    ),
+                  ),
+                ],
+                style: style,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.clip,
+              softWrap: true,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class RevealEntrance extends StatelessWidget {
+  const RevealEntrance({
+    super.key,
+    required this.landingValue,
+    required this.order,
+    required this.child,
+  });
+
+  final double landingValue;
+  final int order;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = _revealProgress(landingValue, order);
+
+    return Opacity(
+      opacity: progress,
+      child: Transform.translate(
+        offset: Offset(0, (1 - progress) * CatchLayout.welcomeRevealOffsetY),
+        child: child,
+      ),
+    );
+  }
 }
 
 double _welcomeTrackOffset({required double spinValue, required bool landed}) {

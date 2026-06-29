@@ -21,6 +21,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_basics_step.dart';
@@ -469,7 +470,9 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                   .deleteDraft();
             }
           })
-          .catchError((Object _) {}),
+          .catchError((error, stackTrace) {
+            ref.read(errorLoggerProvider).logError(error, stackTrace, reason: 'CreateClubScreen._submit failed');
+          }),
     );
   }
 

@@ -1,35 +1,20 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class EventPrivateAccess {
-  const EventPrivateAccess({
-    required this.id,
-    required this.eventId,
-    required this.clubId,
-    required this.inviteCode,
-    required this.createdAt,
-  });
+part 'event_private_access.freezed.dart';
+part 'event_private_access.g.dart';
 
-  factory EventPrivateAccess.fromJson(Map<String, dynamic> json) {
-    return EventPrivateAccess(
-      id: json['id'] as String,
-      eventId: json['eventId'] as String,
-      clubId: json['clubId'] as String,
-      inviteCode: json['inviteCode'] as String,
-      createdAt: const TimestampConverter().fromJson(json['createdAt']),
-    );
-  }
+@freezed
+abstract class EventPrivateAccess with _$EventPrivateAccess {
+  const factory EventPrivateAccess({
+    @JsonKey(includeToJson: false) required String id,
+    required String eventId,
+    required String clubId,
+    required String inviteCode,
+    @TimestampConverter() required DateTime createdAt,
+  }) = _EventPrivateAccess;
 
-  final String id;
-  final String eventId;
-  final String clubId;
-  final String inviteCode;
-  final DateTime createdAt;
-
-  Map<String, Object?> toJson() => {
-    'eventId': eventId,
-    'clubId': clubId,
-    'inviteCode': inviteCode,
-    'createdAt': Timestamp.fromDate(createdAt),
-  };
+  factory EventPrivateAccess.fromJson(Map<String, dynamic> json) =>
+      _$EventPrivateAccessFromJson(json);
 }

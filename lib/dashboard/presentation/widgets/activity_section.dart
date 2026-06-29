@@ -1,22 +1,18 @@
-import 'dart:async';
-
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/dashboard/presentation/notification_route_util.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class ActivitySignedOutState extends StatelessWidget {
   const ActivitySignedOutState({super.key});
@@ -174,8 +170,7 @@ class NotificationDayGroups extends StatelessWidget {
                       style: CatchTextStyles.kicker(context, color: t.ink2),
                     ),
                     gapH8,
-                    _buildNotificationGroup(
-                      context,
+                    NotificationGroupWidget(
                       rows: groupEntry.$2.rows,
                       onOpenRoute: onOpenRoute,
                     ),
@@ -202,63 +197,67 @@ class ActivitySectionSkeleton extends StatelessWidget {
         CatchSkeleton.text(width: CatchLayout.skeletonTextMetaLabelWidth),
         gapH8,
         for (var i = 0; i < count; i++)
-          _buildNotificationRowSkeleton(context, divider: i > 0),
+          NotificationRowSkeleton(divider: i > 0),
       ],
     );
   }
 }
 
-Widget _buildNotificationRowSkeleton(
-  BuildContext context, {
-  required bool divider,
-}) {
-  final t = CatchTokens.of(context);
-  final row = Padding(
-    padding: CatchInsets.contentVerticalMedium,
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.box(
-          width: CatchIcon.md,
-          height: CatchIcon.md,
-          radius: CatchRadius.sm,
-        ),
-        gapW12,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(child: CatchSkeleton.text()),
-                  gapW8,
-                  CatchSkeleton.text(width: CatchLayout.skeletonTextTimeWidth),
-                ],
-              ),
-              gapH6,
-              CatchSkeleton.textBlock(lines: 2),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
+class NotificationRowSkeleton extends StatelessWidget {
+  const NotificationRowSkeleton({super.key, required this.divider});
 
-  return Stack(
-    children: [
-      if (divider)
-        Positioned(
-          top: 0,
-          left: CatchIcon.md + CatchSpacing.s3,
-          right: 0,
-          child: Divider(
-            height: 1,
-            color: t.line.withValues(alpha: CatchOpacity.subtleBorder),
+  final bool divider;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final row = Padding(
+      padding: CatchInsets.contentVerticalMedium,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.box(
+            width: CatchIcon.md,
+            height: CatchIcon.md,
+            radius: CatchRadius.sm,
           ),
-        ),
-      row,
-    ],
-  );
+          gapW12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: CatchSkeleton.text()),
+                    gapW8,
+                    CatchSkeleton.text(width: CatchLayout.skeletonTextTimeWidth),
+                  ],
+                ),
+                gapH6,
+                CatchSkeleton.textBlock(lines: 2),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return Stack(
+      children: [
+        if (divider)
+          Positioned(
+            top: 0,
+            left: CatchIcon.md + CatchSpacing.s3,
+            right: 0,
+            child: Divider(
+              height: 1,
+              color: t.line.withValues(alpha: CatchOpacity.subtleBorder),
+            ),
+          ),
+        row,
+      ],
+    );
+  }
 }
 
 class NotificationRow extends StatelessWidget {
@@ -312,60 +311,39 @@ class NotificationRow extends StatelessWidget {
   }
 }
 
-Widget _buildNotificationGroup(
-  BuildContext context, {
-  required List<NotificationRowDisplay> rows,
-  ValueChanged<String>? onOpenRoute,
-}) {
-  return Column(
-    children: [
-      for (final entry in rows.indexed)
-        NotificationRow(
-          type: entry.$2.type,
-          title: entry.$2.title,
-          time: entry.$2.timeLabel,
-          body: entry.$2.subtitle,
-          unread: entry.$2.isUnread,
-          divider: entry.$1 > 0,
-          onTap: entry.$2.route == null
-              ? null
-              : () =>
-                    (onOpenRoute ??
-                    (route) {
-                      _openNotificationRoute(context, route);
-                    })(entry.$2.route!),
-        ),
-    ],
-  );
-}
+class NotificationGroupWidget extends StatelessWidget {
+  const NotificationGroupWidget({
+    super.key,
+    required this.rows,
+    this.onOpenRoute,
+  });
 
-void _openNotificationRoute(BuildContext context, String route) {
-  try {
-    unawaited(
-      context.push(route).catchError((Object error, StackTrace stackTrace) {
-        if (!context.mounted) return null;
-        _showNotificationRouteError(context, error, stackTrace);
-        return null;
-      }),
+  final List<NotificationRowDisplay> rows;
+  final ValueChanged<String>? onOpenRoute;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (final entry in rows.indexed)
+          NotificationRow(
+            type: entry.$2.type,
+            title: entry.$2.title,
+            time: entry.$2.timeLabel,
+            body: entry.$2.subtitle,
+            unread: entry.$2.isUnread,
+            divider: entry.$1 > 0,
+            onTap: entry.$2.route == null
+                ? null
+                : () =>
+                      (onOpenRoute ??
+                      (route) => openNotificationRoute(context, route))(
+                        entry.$2.route!,
+                      ),
+          ),
+      ],
     );
-  } on Object catch (error, stackTrace) {
-    _showNotificationRouteError(context, error, stackTrace);
   }
-}
-
-void _showNotificationRouteError(
-  BuildContext context,
-  Object error,
-  StackTrace stackTrace,
-) {
-  showCatchErrorSnackBar(
-    context,
-    ExternalActionException(
-      'Could not open this activity update.',
-      cause: error,
-      stackTrace: stackTrace,
-    ),
-  );
 }
 
 class _NotificationVisual {

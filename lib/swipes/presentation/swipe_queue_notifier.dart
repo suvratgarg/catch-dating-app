@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -106,24 +107,29 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
 
     _recordingSwipe = true;
     try {
-      await ref
-          .read(swipeRepositoryProvider)
-          .recordSwipe(
-            swipe: Swipe(
-              swiperId: currentUserId,
-              targetId: target.uid,
-              eventId: eventId,
-              direction: direction,
-              reactionTargetId: effectiveReactionTarget?.id,
-              reactionTargetType: effectiveReactionTarget?.type,
-              reactionTargetLabel: effectiveReactionTarget?.label,
-              reactionTargetPreview: effectiveReactionTarget?.preview,
-              comment: direction == SwipeDirection.like
-                  ? normalizedComment
-                  : null,
-              createdAt: DateTime.now(),
+      await withBackendErrorContext(
+        () => ref.read(swipeRepositoryProvider).recordSwipe(
+              swipe: Swipe(
+                swiperId: currentUserId,
+                targetId: target.uid,
+                eventId: eventId,
+                direction: direction,
+                reactionTargetId: effectiveReactionTarget?.id,
+                reactionTargetType: effectiveReactionTarget?.type,
+                reactionTargetLabel: effectiveReactionTarget?.label,
+                reactionTargetPreview: effectiveReactionTarget?.preview,
+                comment: direction == SwipeDirection.like
+                    ? normalizedComment
+                    : null,
+                createdAt: DateTime.now(),
+              ),
             ),
-          );
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'record swipe',
+          resource: 'swipes',
+        ),
+      );
 
       final latestProfiles = state.value ?? profiles;
       if (latestProfiles.isEmpty) return;

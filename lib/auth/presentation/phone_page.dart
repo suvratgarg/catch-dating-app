@@ -71,7 +71,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
 
     return Form(
       key: _formKey,
-      child: onboardingStepLayout(
+      child: OnboardingStepLayout(
         footer: CatchButton(
           key: AuthFormKeys.sendCode,
           label: 'Send code',

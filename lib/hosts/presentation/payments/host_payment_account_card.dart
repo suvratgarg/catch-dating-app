@@ -19,6 +19,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
@@ -151,7 +152,9 @@ class _HostPaymentAccountCardState
             .get(hostPaymentAccountControllerProvider)
             .startOnboarding(country: country, defaultCurrency: currency),
       );
-    } catch (_) {}
+    } catch (error, stackTrace) {
+      ref.read(errorLoggerProvider).logError(error, stackTrace, reason: '_HostPaymentAccountCardState._startOnboarding failed');
+    }
   }
 
   Future<void> _refresh() async {
@@ -165,7 +168,9 @@ class _HostPaymentAccountCardState
         ref,
         (tx) => tx.get(hostPaymentAccountControllerProvider).refreshStatus(),
       );
-    } catch (_) {}
+    } catch (error, stackTrace) {
+      ref.read(errorLoggerProvider).logError(error, stackTrace, reason: '_HostPaymentAccountCardState._refresh failed');
+    }
   }
 
   @override

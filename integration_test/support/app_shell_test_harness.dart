@@ -53,7 +53,8 @@ import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -875,7 +876,8 @@ class FakeShellConversationRepository implements ConversationRepository {
       Stream.value(const []);
 
   @override
-  String createMessageId({required String conversationId}) => 'message-1';
+  Future<String> createMessageId({required String conversationId}) async =>
+      'message-1';
 
   @override
   Future<void> sendTextMessage({

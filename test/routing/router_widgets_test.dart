@@ -54,7 +54,8 @@ class _FakeConversationRepository implements ConversationRepository {
       Stream.value([]);
 
   @override
-  String createMessageId({required String conversationId}) => 'message-1';
+  Future<String> createMessageId({required String conversationId}) async =>
+      'message-1';
 
   @override
   Future<void> sendImageMessage({

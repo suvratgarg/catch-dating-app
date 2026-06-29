@@ -146,10 +146,9 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
             right: CatchSpacing.s4,
             child: SafeArea(
               bottom: false,
-              child: _mapPickerSearchRow(
-                context,
+              child: MapPickerSearchRow(
                 onBack: () => Navigator.of(context).maybePop(),
-                searchPanel: _placeSearchPanel(
+                searchPanel: PlaceSearchPanel(
                   controller: _searchController,
                   suggestions: _suggestions,
                   stateText: _searchStateText,
@@ -166,7 +165,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
             right: 16,
             child: SafeArea(
               top: false,
-              child: _selectedPointPanel(
+              child: SelectedPointPanel(
                 selectedLabel: _selectedLabel,
                 hasSelection: _selected != null,
                 onConfirm: _selected == null || _pendingSuggestion != null
@@ -328,240 +327,270 @@ String _suggestionLabel(PlaceAutocompleteSuggestion suggestion) {
   return 'selected place';
 }
 
-Widget _mapPickerSearchRow(
-  BuildContext context, {
-  required Widget searchPanel,
-  required VoidCallback onBack,
-}) {
-  final t = CatchTokens.of(context);
+class MapPickerSearchRow extends StatelessWidget {
+  const MapPickerSearchRow({
+    super.key,
+    required this.searchPanel,
+    required this.onBack,
+  });
 
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      CatchTopBarIconAction(
-        icon: CatchIcons.arrowBackIosNewRounded,
-        tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-        backgroundColor: t.surface.withValues(
-          alpha: CatchOpacity.locationPickerTopChromeFill,
-        ),
-        size: CatchControlMetrics.floatingMinHeight,
-        onPressed: onBack,
-      ),
-      gapW12,
-      Expanded(child: searchPanel),
-    ],
-  );
-}
+  final Widget searchPanel;
+  final VoidCallback onBack;
 
-Widget _placeSearchPanel({
-  required TextEditingController controller,
-  required List<PlaceAutocompleteSuggestion> suggestions,
-  required String? stateText,
-  required String? errorText,
-  required ValueChanged<String> onChanged,
-  required ValueChanged<PlaceAutocompleteSuggestion> onSuggestionSelected,
-}) {
-  return Builder(
-    builder: (context) {
-      final t = CatchTokens.of(context);
-      final isPending = stateText != null;
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
 
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CatchSection.contained(
-            hasError: errorText != null && errorText.trim().isNotEmpty,
-            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
-            child: CatchField.input(
-              title: 'Search for a meeting point',
-              showLabel: false,
-              controller: controller,
-              onChanged: onChanged,
-              textInputAction: TextInputAction.search,
-              textCapitalization: TextCapitalization.words,
-              placeholder: 'Search for a meeting point',
-              errorText: errorText,
-              size: CatchFieldSize.floating,
-              prefixIcon: Icon(CatchIcons.searchRounded, size: CatchIcon.md),
-              suffixText: stateText,
-              suffixIcon: isPending
-                  ? const Center(
-                      child: SizedBox.square(
-                        dimension: CatchIcon.md,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    )
-                  : null,
-              showClearButton: !isPending,
-            ),
-          ),
-          if (suggestions.isNotEmpty) ...[
-            gapH8,
-            CatchSurface(
-              padding: EdgeInsets.zero,
-              elevation: CatchSurfaceElevation.overlay,
-              borderColor: t.line,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 260),
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  padding: EdgeInsets.zero,
-                  itemCount: suggestions.length,
-                  separatorBuilder: (_, _) => Divider(height: 1, color: t.line),
-                  itemBuilder: (context, index) {
-                    final suggestion = suggestions[index];
-                    return _placeSuggestionRow(
-                      context,
-                      suggestion: suggestion,
-                      onTap: () => onSuggestionSelected(suggestion),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ],
-        ],
-      );
-    },
-  );
-}
-
-Widget _placeSuggestionRow(
-  BuildContext context, {
-  required PlaceAutocompleteSuggestion suggestion,
-  required VoidCallback onTap,
-}) {
-  final t = CatchTokens.of(context);
-  final title = suggestion.mainText.isNotEmpty
-      ? suggestion.mainText
-      : suggestion.description;
-  final subtitle = suggestion.secondaryText;
-
-  return CatchSurface(
-    tone: CatchSurfaceTone.transparent,
-    radius: 0,
-    borderWidth: 0,
-    onTap: onTap,
-    padding: const EdgeInsets.symmetric(
-      horizontal: CatchSpacing.s4,
-      vertical: CatchSpacing.s3,
-    ),
-    child: Row(
-      crossAxisAlignment: subtitle.isEmpty
-          ? CrossAxisAlignment.center
-          : CrossAxisAlignment.start,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(top: CatchSpacing.micro2),
-          child: Icon(
-            CatchIcons.placeOutlined,
-            color: t.ink2,
-            size: CatchIcon.md,
+        CatchTopBarIconAction(
+          icon: CatchIcons.arrowBackIosNewRounded,
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          backgroundColor: t.surface.withValues(
+            alpha: CatchOpacity.locationPickerTopChromeFill,
           ),
+          size: CatchControlMetrics.floatingMinHeight,
+          onPressed: onBack,
         ),
         gapW12,
-        Expanded(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: CatchTextStyles.labelM(context),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+        Expanded(child: searchPanel),
+      ],
+    );
+  }
+}
+
+class PlaceSearchPanel extends StatelessWidget {
+  const PlaceSearchPanel({
+    super.key,
+    required this.controller,
+    required this.suggestions,
+    required this.stateText,
+    required this.errorText,
+    required this.onChanged,
+    required this.onSuggestionSelected,
+  });
+
+  final TextEditingController controller;
+  final List<PlaceAutocompleteSuggestion> suggestions;
+  final String? stateText;
+  final String? errorText;
+  final ValueChanged<String> onChanged;
+  final ValueChanged<PlaceAutocompleteSuggestion> onSuggestionSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final isPending = stateText != null;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CatchSection.contained(
+          hasError: errorText != null && errorText!.trim().isNotEmpty,
+          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
+          child: CatchField.input(
+            title: 'Search for a meeting point',
+            showLabel: false,
+            controller: controller,
+            onChanged: onChanged,
+            textInputAction: TextInputAction.search,
+            textCapitalization: TextCapitalization.words,
+            placeholder: 'Search for a meeting point',
+            errorText: errorText,
+            size: CatchFieldSize.floating,
+            prefixIcon: Icon(CatchIcons.searchRounded, size: CatchIcon.md),
+            suffixText: stateText,
+            suffixIcon: isPending
+                ? const Center(
+                    child: SizedBox.square(
+                      dimension: CatchIcon.md,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  )
+                : null,
+            showClearButton: !isPending,
+          ),
+        ),
+        if (suggestions.isNotEmpty) ...[
+          gapH8,
+          CatchSurface(
+            padding: EdgeInsets.zero,
+            elevation: CatchSurfaceElevation.overlay,
+            borderColor: t.line,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 260),
+              child: ListView.separated(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                itemCount: suggestions.length,
+                separatorBuilder: (_, _) => Divider(height: 1, color: t.line),
+                itemBuilder: (context, index) {
+                  final suggestion = suggestions[index];
+                  return PlaceSuggestionRow(
+                    suggestion: suggestion,
+                    onTap: () => onSuggestionSelected(suggestion),
+                  );
+                },
               ),
-              if (subtitle.isNotEmpty) ...[
-                gapH4,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class PlaceSuggestionRow extends StatelessWidget {
+  const PlaceSuggestionRow({
+    super.key,
+    required this.suggestion,
+    required this.onTap,
+  });
+
+  final PlaceAutocompleteSuggestion suggestion;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final title = suggestion.mainText.isNotEmpty
+        ? suggestion.mainText
+        : suggestion.description;
+    final subtitle = suggestion.secondaryText;
+
+    return CatchSurface(
+      tone: CatchSurfaceTone.transparent,
+      radius: 0,
+      borderWidth: 0,
+      onTap: onTap,
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s4,
+        vertical: CatchSpacing.s3,
+      ),
+      child: Row(
+        crossAxisAlignment: subtitle.isEmpty
+            ? CrossAxisAlignment.center
+            : CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: CatchSpacing.micro2),
+            child: Icon(
+              CatchIcons.placeOutlined,
+              color: t.ink2,
+              size: CatchIcon.md,
+            ),
+          ),
+          gapW12,
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                  subtitle,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  title,
+                  style: CatchTextStyles.labelM(context),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (subtitle.isNotEmpty) ...[
+                  gapH4,
+                  Text(
+                    subtitle,
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
 
-Widget _selectedPointPanel({
-  required bool hasSelection,
-  required String? selectedLabel,
-  required VoidCallback? onConfirm,
-}) {
-  return Builder(
-    builder: (context) {
-      final t = CatchTokens.of(context);
-      final title = hasSelection
-          ? selectedLabel ?? 'Pinned location'
-          : 'No location selected';
-      final subtitle = hasSelection
-          ? selectedLabel == null
-                ? 'Confirm this map pin or tap elsewhere to adjust.'
-                : 'Confirm this place or tap elsewhere to adjust.'
-          : 'Search for a place or tap the map to set the meeting point.';
+class SelectedPointPanel extends StatelessWidget {
+  const SelectedPointPanel({
+    super.key,
+    required this.hasSelection,
+    required this.selectedLabel,
+    required this.onConfirm,
+  });
 
-      return CatchSurface(
-        padding: CatchInsets.content,
-        elevation: CatchSurfaceElevation.overlay,
-        borderColor: t.line,
-        radius: CatchRadius.md,
-        backgroundColor: t.surface.withValues(
-          alpha: CatchOpacity.locationPickerPanelFill,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  hasSelection
-                      ? CatchIcons.checkCircleOutlineRounded
-                      : CatchIcons.touchAppRounded,
-                  size: 20,
-                  color: hasSelection ? t.success : t.ink2,
-                ),
-                gapW12,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.labelL(context, color: t.ink),
+  final bool hasSelection;
+  final String? selectedLabel;
+  final VoidCallback? onConfirm;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final title = hasSelection
+        ? selectedLabel ?? 'Pinned location'
+        : 'No location selected';
+    final subtitle = hasSelection
+        ? selectedLabel == null
+              ? 'Confirm this map pin or tap elsewhere to adjust.'
+              : 'Confirm this place or tap elsewhere to adjust.'
+        : 'Search for a place or tap the map to set the meeting point.';
+
+    return CatchSurface(
+      padding: CatchInsets.content,
+      elevation: CatchSurfaceElevation.overlay,
+      borderColor: t.line,
+      radius: CatchRadius.md,
+      backgroundColor: t.surface.withValues(
+        alpha: CatchOpacity.locationPickerPanelFill,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                hasSelection
+                    ? CatchIcons.checkCircleOutlineRounded
+                    : CatchIcons.touchAppRounded,
+                size: 20,
+                color: hasSelection ? t.success : t.ink2,
+              ),
+              gapW12,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.labelL(context, color: t.ink),
+                    ),
+                    gapH4,
+                    Text(
+                      subtitle,
+                      style: CatchTextStyles.supporting(
+                        context,
+                        color: t.ink2,
                       ),
-                      gapH4,
-                      Text(
-                        subtitle,
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink2,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            gapH12,
-            CatchButton(
-              label: 'Confirm location',
-              onPressed: onConfirm,
-              fullWidth: true,
-              size: CatchButtonSize.lg,
-            ),
-          ],
-        ),
-      );
-    },
-  );
+              ),
+            ],
+          ),
+          gapH12,
+          CatchButton(
+            label: 'Confirm location',
+            onPressed: onConfirm,
+            fullWidth: true,
+            size: CatchButtonSize.lg,
+          ),
+        ],
+      ),
+    );
+  }
 }

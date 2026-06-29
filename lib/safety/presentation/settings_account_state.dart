@@ -233,16 +233,26 @@ final class SettingsBlockedAccountsState {
                 status: SettingsBlockedAccountsStatus.empty,
                 rows: [],
               )
-            : SettingsBlockedAccountsState._(
-                status: SettingsBlockedAccountsStatus.content,
-                rows: [
-                  for (final blocked in value)
-                    SettingsBlockedAccountRow.fromBlockedUser(
-                      blocked,
-                      profile: blockedProfiles.asData?.value[blocked.uid],
-                    ),
-                ],
-              ),
+            : switch (blockedProfiles) {
+                // Surface profile lookup errors instead of silently falling
+                // through to null profiles.
+                AsyncError(:final error) => SettingsBlockedAccountsState._(
+                  status: SettingsBlockedAccountsStatus.error,
+                  rows: [],
+                  error: error,
+                ),
+                _ => SettingsBlockedAccountsState._(
+                  status: SettingsBlockedAccountsStatus.content,
+                  rows: [
+                    for (final blocked in value)
+                      SettingsBlockedAccountRow.fromBlockedUser(
+                        blocked,
+                        profile:
+                            blockedProfiles.asData?.value[blocked.uid],
+                      ),
+                  ],
+                ),
+              },
       _ => const SettingsBlockedAccountsState._(
         status: SettingsBlockedAccountsStatus.loading,
         rows: [],

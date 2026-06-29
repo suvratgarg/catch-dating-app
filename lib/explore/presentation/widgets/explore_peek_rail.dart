@@ -62,12 +62,12 @@ List<Widget> buildExploreMapSheetLeadSlivers({
       child: switch (feedAsync) {
         AsyncLoading() =>
           leadMode == ExploreMapSheetLeadMode.collapsedSummary
-              ? _buildCollapsedMapSummary(
+              ? CollapsedMapSummary(
                   count: null,
                   scopeLabel: scopeLabel,
                   filters: filters,
                 )
-              : _buildPeekRailSkeleton(),
+              : PeekRailSkeleton(),
         AsyncError(:final error) => Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: CatchSpacing.s5,
@@ -80,8 +80,7 @@ List<Widget> buildExploreMapSheetLeadSlivers({
             compact: true,
           ),
         ),
-        AsyncData(:final value) => _buildExploreMapSheetLead(
-          ref,
+        AsyncData(:final value) => ExploreMapSheetLead(
           items: _sortItemsForCamera(value.items, cameraCenter),
           spotlightEventId: value.featuredItem?.event.id,
           selectedEventId: selectedEventId,
@@ -129,19 +128,32 @@ double? _distanceFromCamera(
   return cameraCenter.distanceTo(eventLocation);
 }
 
-Widget _buildExploreMapSheetLead(
-  WidgetRef ref, {
-  required List<ExploreEventItem> items,
-  required String? spotlightEventId,
-  required String? selectedEventId,
-  required String scopeLabel,
-  required ExploreFilterSelection filters,
-  required ExploreMapSheetLeadMode leadMode,
-  required ValueChanged<Event> onEventTapped,
-  required VoidCallback onSeeAll,
-}) {
+class ExploreMapSheetLead extends ConsumerWidget {
+  const ExploreMapSheetLead({
+    super.key,
+    required this.items,
+    this.spotlightEventId,
+    this.selectedEventId,
+    required this.scopeLabel,
+    required this.filters,
+    required this.leadMode,
+    required this.onEventTapped,
+    required this.onSeeAll,
+  });
+
+  final List<ExploreEventItem> items;
+  final String? spotlightEventId;
+  final String? selectedEventId;
+  final String scopeLabel;
+  final ExploreFilterSelection filters;
+  final ExploreMapSheetLeadMode leadMode;
+  final ValueChanged<Event> onEventTapped;
+  final VoidCallback onSeeAll;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
   if (leadMode == ExploreMapSheetLeadMode.collapsedSummary) {
-    return _buildCollapsedMapSummary(
+    return CollapsedMapSummary(
       count: items.length,
       scopeLabel: scopeLabel,
       filters: filters,
@@ -165,6 +177,7 @@ Widget _buildExploreMapSheetLead(
     onEventTapped: onEventTapped,
     onSeeAll: onSeeAll,
   );
+  }
 }
 
 ExploreEventItem? _selectedItem(
@@ -178,39 +191,45 @@ ExploreEventItem? _selectedItem(
   return null;
 }
 
-Widget _buildCollapsedMapSummary({
-  required int? count,
-  required String scopeLabel,
-  required ExploreFilterSelection filters,
-}) {
-  return Builder(
-    builder: (context) {
-      final t = CatchTokens.of(context);
-      return Padding(
-        padding: _mapSheetLeadPadding,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              _collapsedTitle(count),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: CatchTextStyles.sectionTitle(context),
-            ),
-            gapH4,
-            Text(
-              _collapsedScopeLabel(scopeLabel: scopeLabel, filters: filters),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-          ],
-        ),
-      );
-    },
-  );
+class CollapsedMapSummary extends StatelessWidget {
+  const CollapsedMapSummary({
+    super.key,
+    required this.count,
+    required this.scopeLabel,
+    required this.filters,
+  });
+
+  final int? count;
+  final String scopeLabel;
+  final ExploreFilterSelection filters;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Padding(
+      padding: _mapSheetLeadPadding,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            _collapsedTitle(count),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: CatchTextStyles.sectionTitle(context),
+          ),
+          gapH4,
+          Text(
+            _collapsedScopeLabel(scopeLabel: scopeLabel, filters: filters),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 Widget _buildSelectedEventLead(
@@ -247,7 +266,7 @@ Widget _buildSelectedEventLead(
                   heroTag: eventSpotlightHeroTag(event.id, source),
                 ),
               )
-            : _buildExploreEventTicketCard(
+            : ExploreEventTicketCard(
                 key: ValueKey('explore-selected-${event.id}'),
                 item: item,
                 statusLabel: item.distanceFromUserLabel ?? 'Map pick',
@@ -267,30 +286,40 @@ Widget _buildSelectedEventLead(
   );
 }
 
-Widget _buildExploreEventTicketCard({
-  Key? key,
-  required ExploreEventItem item,
-  String? statusLabel,
-  double? width,
-  Object? heroTag,
-  VoidCallback? onTap,
-}) {
-  final event = item.event;
-  return CatchEventCard.ticket(
-    key: key,
-    width: width,
-    title: event.title,
-    subtitle: _eventTicketSubtitle(item),
-    timeLabel: EventFormatters.time(event.startTime),
-    countdownLabel: _selectedCountdownLabel(event.startTime),
-    priceLabel: item.priceLabel,
-    capacityLabel: _selectedCapacityLabel(item),
-    activityKind: event.activityKind,
-    statusLabel: statusLabel,
-    clockTime: TimeOfDay.fromDateTime(event.startTime),
-    heroTag: heroTag,
-    onTap: onTap,
-  );
+class ExploreEventTicketCard extends StatelessWidget {
+  const ExploreEventTicketCard({
+    super.key,
+    required this.item,
+    this.statusLabel,
+    this.width,
+    this.heroTag,
+    this.onTap,
+  });
+
+  final ExploreEventItem item;
+  final String? statusLabel;
+  final double? width;
+  final Object? heroTag;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final event = item.event;
+    return CatchEventCard.ticket(
+      width: width,
+      title: event.title,
+      subtitle: _eventTicketSubtitle(item),
+      timeLabel: EventFormatters.time(event.startTime),
+      countdownLabel: _selectedCountdownLabel(event.startTime),
+      priceLabel: item.priceLabel,
+      capacityLabel: _selectedCapacityLabel(item),
+      activityKind: event.activityKind,
+      statusLabel: statusLabel,
+      clockTime: TimeOfDay.fromDateTime(event.startTime),
+      heroTag: heroTag,
+      onTap: onTap,
+    );
+  }
 }
 
 class ExplorePeekRailContent extends ConsumerStatefulWidget {
@@ -419,7 +448,7 @@ class _ExplorePeekRailContentState
                 final item = items[index];
                 return Align(
                   alignment: Alignment.topLeft,
-                  child: _buildExploreEventTicketCard(
+                  child: ExploreEventTicketCard(
                     key: ValueKey('explore-peek-${item.event.id}'),
                     item: item,
                     width: _ticketRailCardWidth,
@@ -497,32 +526,37 @@ bool _sameEventOrder(
   return true;
 }
 
-Widget _buildPeekRailSkeleton() {
-  return Padding(
-    padding: _mapSheetLeadPadding,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-        gapH10,
-        SizedBox(
-          height: _ticketRailHeight,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            clipBehavior: Clip.none,
-            physics: const BouncingScrollPhysics(),
-            itemCount: 2,
-            separatorBuilder: (_, _) =>
-                const SizedBox(width: _ticketRailCardSpacing),
-            itemBuilder: (_, _) => CatchSkeleton.card(
-              width: _ticketRailCardWidth,
-              height: _ticketRailHeight,
+class PeekRailSkeleton extends StatelessWidget {
+  const PeekRailSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: _mapSheetLeadPadding,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+          gapH10,
+          SizedBox(
+            height: _ticketRailHeight,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              clipBehavior: Clip.none,
+              physics: const BouncingScrollPhysics(),
+              itemCount: 2,
+              separatorBuilder: (_, _) =>
+                  const SizedBox(width: _ticketRailCardSpacing),
+              itemBuilder: (_, _) => CatchSkeleton.card(
+                width: _ticketRailCardWidth,
+                height: _ticketRailHeight,
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
 
 String _collapsedTitle(int? count) {
@@ -543,8 +577,8 @@ String _collapsedScopeLabel({
       'within ${_distanceScopeLabel(filters.distanceFilter)}',
     if (filters.joinedOnly) 'joined',
     if (filters.highRatedOnly) 'high rated',
-    ?filters.activityTag,
-    ?filters.area,
+    if (filters.activityTag != null) filters.activityTag!,
+    if (filters.area != null) filters.area!,
   ];
   return parts.join(' · ');
 }

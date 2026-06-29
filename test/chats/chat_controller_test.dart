@@ -63,8 +63,7 @@ ProviderContainer _container(
   ],
 );
 
-class _FakeImageUploadRepository extends Fake
-    implements ImageUploadRepository {
+class _FakeImageUploadRepository extends Fake implements ImageUploadRepository {
   _FakeImageUploadRepository({this.pickReturnsNull = false});
 
   final bool pickReturnsNull;
@@ -103,7 +102,8 @@ class _FakeConversationRepository extends Fake
   final sentImageUrls = <String>[];
 
   @override
-  String createMessageId({required String conversationId}) => 'message-1';
+  Future<String> createMessageId({required String conversationId}) async =>
+      'message-1';
 
   @override
   Future<void> sendImageMessage({

@@ -1,87 +1,66 @@
+import 'dart:math' as math;
+
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show OverflowBoxFit;
 
-class ProfileInfoEntry {
-  const ProfileInfoEntry({
-    this.builder,
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.onTap,
-    this.editor,
-    this.isExpanded = false,
-    this.isAddAffordance = false,
-  });
+const profileTabBodyPadding = EdgeInsets.fromLTRB(
+  CatchSpacing.s5,
+  CatchSpacing.micro18,
+  CatchSpacing.s5,
+  CatchSpacing.s7,
+);
 
-  final WidgetBuilder? builder;
-  final IconData icon;
-  final String label;
-  final String value;
-  final VoidCallback? onTap;
-  final Widget? editor;
-  final bool isExpanded;
-  final bool isAddAffordance;
+/// Kept as a top-level function because it's used as a [Builder.builder]
+/// callback (e.g., `Builder(builder: profileSectionDivider)`) and wrapping
+/// it in a widget class would add unnecessary boilerplate.
+Widget profileSectionDivider(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return Divider(
+    height: 1,
+    indent: CatchSpacing.s8,
+    endIndent: CatchSpacing.s8,
+    color: t.line.withValues(alpha: CatchOpacity.fieldRowDivider),
+  );
 }
 
+/// Kept as a top-level builder function because a widget class would add
+/// boilerplate with no benefit: it's a pure mapping from parameters to
+/// a widget subtree without lifecycle or state.
 Widget profileInfoSection({
   Key? key,
   required BuildContext context,
-  required List<ProfileInfoEntry> entries,
+  required List<Widget> children,
   String? title,
   String? subtitle,
   bool grouped = false,
   bool first = false,
+  bool fullBleedRows = false,
 }) {
-  if (entries.isEmpty) {
+  if (children.isEmpty) {
     return const SizedBox.shrink();
   }
 
   final tiles = <Widget>[];
-  for (var i = 0; i < entries.length; i++) {
-    final entry = entries[i];
-    final builder = entry.builder;
-    if (builder != null) {
-      tiles.add(builder(context));
-    } else {
-      tiles.add(
-        profileInfoTile(
-          icon: entry.icon,
-          label: entry.label,
-          value: entry.value,
-          onTap: entry.onTap,
-          isAddAffordance: entry.isAddAffordance,
-          isExpanded: entry.isExpanded,
-        ),
-      );
-      final editor = entry.editor;
-      if (editor != null) {
-        tiles.add(
-          profileInlineAnimatedBody(
-            isExpanded: entry.isExpanded,
-            child: editor,
-          ),
-        );
-      }
-    }
-    if (grouped && i < entries.length - 1) {
-      tiles.add(
-        Divider(
-          height: 1,
-          indent: CatchSpacing.s8,
-          color: CatchTokens.of(
-            context,
-          ).line.withValues(alpha: CatchOpacity.profileInfoDivider),
-        ),
-      );
+  for (var i = 0; i < children.length; i++) {
+    tiles.add(
+      ProfileInfoRowFrame(fullBleed: fullBleedRows,
+        child: children[i],
+      ),
+    );
+    if (grouped && i < children.length - 1) {
+      tiles.add(profileSectionDivider(context));
     }
   }
 
-  final tileList = Column(children: tiles);
+  final tileList = Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: tiles,
+  );
   final Widget section;
   if (grouped && title != null) {
     section = CatchSection.divided(
@@ -121,4 +100,40 @@ Widget profileInfoSection({
 
   if (key == null) return section;
   return KeyedSubtree(key: key, child: section);
+}
+
+class ProfileInfoRowFrame extends StatelessWidget {
+  const ProfileInfoRowFrame({
+    super.key,
+    required this.fullBleed,
+    required this.child,
+  });
+
+  final bool fullBleed;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!fullBleed) return child;
+
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      if (!constraints.hasBoundedWidth) return child;
+
+      final mediaWidth = MediaQuery.sizeOf(context).width;
+      final targetWidth = math.min(
+        mediaWidth,
+        constraints.maxWidth + CatchSpacing.screenPx * 2,
+      );
+      if (targetWidth <= constraints.maxWidth) return child;
+
+      return OverflowBox(
+        minWidth: targetWidth,
+        maxWidth: targetWidth,
+        fit: OverflowBoxFit.deferToChild,
+        child: SizedBox(width: targetWidth, child: child),
+      );
+    },
+  );
+  }
 }

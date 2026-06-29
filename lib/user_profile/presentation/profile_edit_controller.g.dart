@@ -51,7 +51,7 @@ final class ProfileEditControllerProvider
 }
 
 String _$profileEditControllerHash() =>
-    r'f30f89274e5270fc2ed5f9c2dbf3af67b0a7e7de';
+    r'ec55f97afabf2baea94a07d4b6c8a964566367af';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

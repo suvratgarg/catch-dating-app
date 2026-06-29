@@ -830,7 +830,7 @@ void main() {
               description: 'Updated description',
               existingClub: buildClub(),
             ),
-        throwsA(isA<StateError>()),
+        throwsA(isA<BackendOperationException>()),
       );
     });
   });

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/presentation/chat_read_marker_state.dart';
 import 'package:catch_dating_app/chats/presentation/chat_route_state.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
@@ -78,7 +79,8 @@ class FakeConversationRepository implements ConversationRepository {
   }
 
   @override
-  String createMessageId({required String conversationId}) => 'message-1';
+  Future<String> createMessageId({required String conversationId}) async =>
+      'message-1';
 
   @override
   Future<void> sendImageMessage({

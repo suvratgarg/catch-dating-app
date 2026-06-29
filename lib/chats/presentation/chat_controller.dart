@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -45,7 +47,7 @@ class ChatController extends _$ChatController {
     );
     if (image == null) return; // User cancelled
     final conversationRepository = ref.read(conversationRepositoryProvider);
-    final messageId = conversationRepository.createMessageId(
+    final messageId = await conversationRepository.createMessageId(
       conversationId: matchId,
     );
     final uploaded = await imageUploadRepository.uploadChatImageWithMetadata(
@@ -54,11 +56,18 @@ class ChatController extends _$ChatController {
       image: image,
     );
     try {
-      await conversationRepository.sendImageMessage(
-        conversationId: matchId,
-        senderId: senderId,
-        messageId: messageId,
-        imageUrl: uploaded.url,
+      await withBackendErrorContext(
+        () => conversationRepository.sendImageMessage(
+          conversationId: matchId,
+          senderId: senderId,
+          messageId: messageId,
+          imageUrl: uploaded.url,
+        ),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'send image message',
+          resource: 'conversations',
+        ),
       );
     } catch (_) {
       // The message write failed, so the uploaded image would orphan in

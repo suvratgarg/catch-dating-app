@@ -166,8 +166,7 @@ class _EventFocusRailState extends State<EventFocusRail> {
                     switchOutCurve: CatchMotion.easeInCubicCurve,
                     transitionBuilder: (child, animation) =>
                         FadeTransition(opacity: animation, child: child),
-                    child: _buildEventFocusCard(
-                      context,
+                    child: EventFocusCard(
                       key: ValueKey(
                         'event-focus-${selectedItem.kind.name}-'
                         '${selectedItem.event.id}-'
@@ -188,7 +187,7 @@ class _EventFocusRailState extends State<EventFocusRail> {
         ),
         if (items.length > 1) ...[
           gapH10,
-          _buildEventFocusPageIndicator(
+          EventFocusPageIndicator(
             key: EventFocusRail.pageIndicatorKey,
             selectedIndex: _selectedIndex,
             itemCount: items.length,
@@ -304,109 +303,125 @@ class _EventFocusRailState extends State<EventFocusRail> {
   }
 }
 
-Widget _buildEventFocusPageIndicator({
-  Key? key,
-  required int selectedIndex,
-  required int itemCount,
-}) {
-  return Center(
-    key: key,
-    child: CatchPageDots(
-      selectedIndex: selectedIndex,
-      itemCount: itemCount,
-      semanticLabel: 'Event ${selectedIndex + 1} of $itemCount',
-    ),
-  );
+class EventFocusPageIndicator extends StatelessWidget {
+  const EventFocusPageIndicator({
+    super.key,
+    required this.selectedIndex,
+    required this.itemCount,
+  });
+
+  final int selectedIndex;
+  final int itemCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CatchPageDots(
+        selectedIndex: selectedIndex,
+        itemCount: itemCount,
+        semanticLabel: 'Event ${selectedIndex + 1} of $itemCount',
+      ),
+    );
+  }
 }
 
-Widget _buildEventFocusCard(
-  BuildContext context, {
-  Key? key,
-  required _EventFocusItem item,
-  required int cardIndex,
-  required int cardCount,
-  required EventFocusCheckInState checkInState,
-  required ValueChanged<_EventFocusAction> onActionPressed,
-}) {
-  final actions = [item.primaryAction, ...item.secondaryActions];
-  final activity = ActivityPalette.resolve(context, item.event.activityKind);
+class EventFocusCard extends StatelessWidget {
+  const EventFocusCard({
+    super.key,
+    required this.item,
+    required this.cardIndex,
+    required this.cardCount,
+    required this.checkInState,
+    required this.onActionPressed,
+  });
 
-  return EventActionCard(
-    key: key,
-    event: item.event,
-    topAccentColors: [activity.accent, activity.deep],
-    subtitle: item.clubName,
-    urgent: item.isUrgent,
-    indexLabel: cardCount > 1 ? '${cardIndex + 1}/$cardCount' : null,
-    badges: [
-      EventActionCardBadge(
-        label: item.badgeLabel,
-        tone: item.isUrgent ? CatchBadgeTone.brand : CatchBadgeTone.neutral,
-      ),
-      if (item.canSwipe)
+  final _EventFocusItem item;
+  final int cardIndex;
+  final int cardCount;
+  final EventFocusCheckInState checkInState;
+  final ValueChanged<_EventFocusAction> onActionPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final actions = [item.primaryAction, ...item.secondaryActions];
+    final activity = ActivityPalette.resolve(context, item.event.activityKind);
+
+    return EventActionCard(
+      event: item.event,
+      topAccentColors: [activity.accent, activity.deep],
+      subtitle: item.clubName,
+      urgent: item.isUrgent,
+      indexLabel: cardCount > 1 ? '${cardIndex + 1}/$cardCount' : null,
+      badges: [
         EventActionCardBadge(
-          label: 'Catch · ${_swipeCountdown(item.event)}',
-          tone: CatchBadgeTone.brand,
-          icon: PhosphorIconsFill.heart,
+          label: item.badgeLabel,
+          tone: item.isUrgent ? CatchBadgeTone.brand : CatchBadgeTone.neutral,
         ),
-      if (item.needsReview)
-        const EventActionCardBadge(
-          label: 'Review pending',
-          tone: CatchBadgeTone.warning,
-          icon: PhosphorIconsRegular.pencilLine,
-        ),
-    ],
-    metaRows: [
-      [
-        CatchMetaEntry(
-          icon: CatchIcons.clock,
-          label:
-              '${EventFormatters.shortWeekday(item.event.startTime)}, '
-              '${item.event.startTime.day} '
-              '${EventFormatters.shortMonth(item.event.startTime)} · '
-              '${item.event.timeRangeLabel}',
-        ),
+        if (item.canSwipe)
+          EventActionCardBadge(
+            label: 'Catch · ${_swipeCountdown(item.event)}',
+            tone: CatchBadgeTone.brand,
+            icon: PhosphorIconsFill.heart,
+          ),
+        if (item.needsReview)
+          const EventActionCardBadge(
+            label: 'Review pending',
+            tone: CatchBadgeTone.warning,
+            icon: PhosphorIconsRegular.pencilLine,
+          ),
       ],
-      [
-        CatchMetaEntry(
-          icon: CatchIcons.pinOutlined,
-          label: item.event.locationName,
-        ),
+      metaRows: [
+        [
+          CatchMetaEntry(
+            icon: CatchIcons.clock,
+            label:
+                '${EventFormatters.shortWeekday(item.event.startTime)}, '
+                '${item.event.startTime.day} '
+                '${EventFormatters.shortMonth(item.event.startTime)} · '
+                '${item.event.timeRangeLabel}',
+          ),
+        ],
+        [
+          CatchMetaEntry(
+            icon: CatchIcons.pinOutlined,
+            label: item.event.locationName,
+          ),
+        ],
+        [
+          CatchMetaEntry(
+            icon: activityKindGlyph(item.event.activityKind),
+            label: item.event.activitySummaryLabel,
+          ),
+          CatchMetaEntry(
+            icon: CatchIcons.group,
+            label: '${item.event.signedUpCount}/${item.event.capacityLimit}',
+          ),
+        ],
       ],
-      [
-        CatchMetaEntry(
-          icon: activityKindGlyph(item.event.activityKind),
-          label: item.event.activitySummaryLabel,
-        ),
-        CatchMetaEntry(
-          icon: CatchIcons.group,
-          label: '${item.event.signedUpCount}/${item.event.capacityLimit}',
-        ),
+      actions: [
+        for (var index = 0; index < actions.length; index += 1)
+          EventActionCardAction(
+            key: actions[index].key,
+            label: actions[index].label,
+            icon: actions[index].icon,
+            variant: index == 0
+                ? CatchButtonVariant.primary
+                : CatchButtonVariant.secondary,
+            accentColor: index == 0 ? activity.accent : null,
+            isLoading:
+                index == 0 &&
+                item.primaryAction == _EventFocusAction.checkIn &&
+                checkInState.isPending,
+            onPressed:
+                index == 0 &&
+                    item.primaryAction == _EventFocusAction.checkIn &&
+                    checkInState.isPending
+                ? null
+                : () => onActionPressed(actions[index]),
+          ),
       ],
-    ],
-    actions: [
-      for (var index = 0; index < actions.length; index += 1)
-        EventActionCardAction(
-          key: actions[index].key,
-          label: actions[index].label,
-          icon: actions[index].icon,
-          variant: index == 0
-              ? CatchButtonVariant.primary
-              : CatchButtonVariant.secondary,
-          accentColor: index == 0 ? activity.accent : null,
-          isLoading:
-              index == 0 &&
-              item.primaryAction == _EventFocusAction.checkIn &&
-              checkInState.isPending,
-          onPressed:
-              index == 0 &&
-                  item.primaryAction == _EventFocusAction.checkIn &&
-                  checkInState.isPending
-              ? null
-              : () => onActionPressed(actions[index]),
-        ),
-    ],
-  );
+    );
+  }
 }
 
 enum _EventFocusKind { upcoming, checkIn, afterEvent }

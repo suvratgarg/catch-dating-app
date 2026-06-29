@@ -86,8 +86,7 @@ class EventDateRailCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _dateRail(
-                    context,
+                  _DateRail(
                     startTime: event.startTime,
                     color: visual.accent,
                   ),
@@ -184,7 +183,7 @@ class EventDateRailCard extends StatelessWidget {
               top: perforationTop,
               bottom: perforationBottom,
               child: IgnorePointer(
-                child: _perforationLine(color: t.ticketPerforationLine),
+                child: _PerforationLine(color: t.ticketPerforationLine),
               ),
             ),
             Positioned.fill(
@@ -213,7 +212,7 @@ class EventDateRailCard extends StatelessWidget {
           );
     return heroTag == null
         ? card
-        : eventHeroSurface(tag: heroTag!, child: card);
+        : EventHeroSurface(tag: heroTag!, child: card);
   }
 }
 
@@ -371,11 +370,18 @@ class _DateRailTicketBorderPainter extends CustomPainter {
   }
 }
 
-Widget _perforationLine({required Color color}) {
-  return SizedBox(
-    width: 1,
-    child: CustomPaint(painter: _PerforationPainter(color: color)),
-  );
+class _PerforationLine extends StatelessWidget {
+  const _PerforationLine({required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 1,
+      child: CustomPaint(painter: _PerforationPainter(color: color)),
+    );
+  }
 }
 
 class _PerforationPainter extends CustomPainter {
@@ -401,43 +407,47 @@ class _PerforationPainter extends CustomPainter {
       oldDelegate.color != color;
 }
 
-Widget _dateRail(
-  BuildContext context, {
-  required DateTime startTime,
-  required Color color,
-}) {
-  final t = CatchTokens.of(context);
-  final onColor = t.onFill(color);
-  final mutedOnColor = t.onFillMuted(color);
-  return Container(
-    width: _dateRailWidth,
-    padding: CatchInsets.tileVertical,
-    color: color,
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          EventFormatters.shortWeekday(startTime).toUpperCase(),
-          style: CatchTextStyles.monoLabelS(context, color: mutedOnColor),
-        ),
-        gapH4,
-        Text(
-          '${startTime.day}',
-          style: CatchTextStyles.eventDisplay(
-            context,
-            size: 31,
-            height: 0.9,
-            color: onColor,
+class _DateRail extends StatelessWidget {
+  const _DateRail({required this.startTime, required this.color});
+
+  final DateTime startTime;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final onColor = t.onFill(color);
+    final mutedOnColor = t.onFillMuted(color);
+    return Container(
+      width: _dateRailWidth,
+      padding: CatchInsets.tileVertical,
+      color: color,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            EventFormatters.shortWeekday(startTime).toUpperCase(),
+            style: CatchTextStyles.monoLabelS(context, color: mutedOnColor),
           ),
-        ),
-        gapH3,
-        Text(
-          EventFormatters.shortMonth(startTime).toUpperCase(),
-          style: CatchTextStyles.monoLabelS(context, color: mutedOnColor),
-        ),
-      ],
-    ),
-  );
+          gapH4,
+          Text(
+            '${startTime.day}',
+            style: CatchTextStyles.eventDisplay(
+              context,
+              size: 31,
+              height: 0.9,
+              color: onColor,
+            ),
+          ),
+          gapH3,
+          Text(
+            EventFormatters.shortMonth(startTime).toUpperCase(),
+            style: CatchTextStyles.monoLabelS(context, color: mutedOnColor),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 String _priceLabel(Event event) => event.priceInPaise <= 0

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_chunks.dart';
@@ -18,6 +16,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_callable_adapters.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
+import 'package:catch_dating_app/events/data/event_stream_utils.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
@@ -154,64 +153,11 @@ class EventRepository {
     final uniqueIds = eventIds.toSet().toList()..sort();
     if (uniqueIds.isEmpty) return Stream.value(const []);
 
-    var eventSubs = <StreamSubscription<QuerySnapshot<Event>>>[];
-    var closed = false;
-    late final StreamController<List<Event>> controller;
-
-    void emitSortedEvents({
-      required Map<int, List<Event>> eventsByChunk,
-      required int chunkCount,
-    }) {
-      if (eventsByChunk.length < chunkCount || controller.isClosed) return;
-      final byId = <String, Event>{};
-      for (final events in eventsByChunk.values) {
-        for (final event in events) {
-          byId[event.id] = event;
-        }
-      }
-      final events = [
-        for (final id in uniqueIds)
-          if (byId[id] != null) byId[id]!,
-      ]..sort((a, b) => a.startTime.compareTo(b.startTime));
-      controller.add(events);
-    }
-
-    controller = StreamController<List<Event>>(
-      onListen: () {
-        final chunks = chunkedForWhereIn(uniqueIds).toList(growable: false);
-        final eventsByChunk = <int, List<Event>>{};
-        for (var i = 0; i < chunks.length; i += 1) {
-          final chunk = chunks[i];
-          final sub = _eventsRef
-              .where(FieldPath.documentId, whereIn: chunk)
-              .snapshots()
-              .listen((eventSnap) {
-                if (closed) return;
-                eventsByChunk[i] = eventSnap.docs
-                    .map((doc) => doc.data())
-                    .toList();
-                emitSortedEvents(
-                  eventsByChunk: eventsByChunk,
-                  chunkCount: chunks.length,
-                );
-              }, onError: controller.addError);
-          eventSubs.add(sub);
-        }
-      },
-      onCancel: () async {
-        closed = true;
-        for (final sub in eventSubs) {
-          await sub.cancel();
-        }
-        eventSubs = [];
-        if (!controller.isClosed) {
-          await controller.close();
-        }
-      },
-    );
-
     return withBackendErrorStream(
-      () => controller.stream,
+      () => watchEventsByIdStream(
+        idStream: Stream.value(uniqueIds),
+        eventsRef: _eventsRef,
+      ),
       context: const BackendErrorContext(
         service: BackendService.firestore,
         action: 'watch events by id',
@@ -227,104 +173,28 @@ class EventRepository {
   }) {
     if (statuses.isEmpty) return Stream.value(const []);
 
-    StreamSubscription<QuerySnapshot<EventParticipation>>? participationSub;
-    var eventSubs = <StreamSubscription<QuerySnapshot<Event>>>[];
-    var generation = 0;
-    var closed = false;
+    Query<EventParticipation> query = _participationsRef.where(
+      'uid',
+      isEqualTo: uid,
+    );
+    final statusNames = statuses.map((status) => status.name).toList();
+    query = statusNames.length == 1
+        ? query.where('status', isEqualTo: statusNames.single)
+        : query.where('status', whereIn: statusNames);
 
-    late final StreamController<List<Event>> controller;
-
-    void cancelEventSubscriptions() {
-      for (final sub in eventSubs) {
-        unawaited(sub.cancel());
-      }
-      eventSubs = [];
-    }
-
-    void emitSortedEvents({
-      required List<String> eventIds,
-      required Map<int, List<Event>> eventsByChunk,
-      required int chunkCount,
-    }) {
-      if (eventsByChunk.length < chunkCount || controller.isClosed) return;
-      final byId = <String, Event>{};
-      for (final events in eventsByChunk.values) {
-        for (final event in events) {
-          byId[event.id] = event;
-        }
-      }
-      final events =
-          [
-            for (final id in eventIds)
-              if (byId[id] != null) byId[id]!,
-          ]..sort(
-            (a, b) => descending
-                ? b.startTime.compareTo(a.startTime)
-                : a.startTime.compareTo(b.startTime),
-          );
-      controller.add(events);
-    }
-
-    controller = StreamController<List<Event>>(
-      onListen: () {
-        Query<EventParticipation> query = _participationsRef.where(
-          'uid',
-          isEqualTo: uid,
-        );
-        final statusNames = statuses.map((status) => status.name).toList();
-        query = statusNames.length == 1
-            ? query.where('status', isEqualTo: statusNames.single)
-            : query.where('status', whereIn: statusNames);
-
-        participationSub = query.snapshots().listen((snap) {
-          generation += 1;
-          final localGeneration = generation;
-          cancelEventSubscriptions();
-
-          final eventIds = snap.docs
-              .map((doc) => doc.data().eventId)
-              .toSet()
-              .toList();
-          if (eventIds.isEmpty) {
-            if (!controller.isClosed) controller.add(const []);
-            return;
-          }
-
-          final chunks = chunkedForWhereIn(eventIds).toList(growable: false);
-          final eventsByChunk = <int, List<Event>>{};
-
-          for (var i = 0; i < chunks.length; i += 1) {
-            final chunk = chunks[i];
-            final sub = _eventsRef
-                .where(FieldPath.documentId, whereIn: chunk)
-                .snapshots()
-                .listen((eventSnap) {
-                  if (closed || localGeneration != generation) return;
-                  eventsByChunk[i] = eventSnap.docs
-                      .map((doc) => doc.data())
-                      .toList();
-                  emitSortedEvents(
-                    eventIds: eventIds,
-                    eventsByChunk: eventsByChunk,
-                    chunkCount: chunks.length,
-                  );
-                }, onError: controller.addError);
-            eventSubs.add(sub);
-          }
-        }, onError: controller.addError);
-      },
-      onCancel: () async {
-        closed = true;
-        cancelEventSubscriptions();
-        await participationSub?.cancel();
-        if (!controller.isClosed) {
-          await controller.close();
-        }
-      },
+    final idStream = query.snapshots().map(
+      (snap) => snap.docs
+          .map((doc) => doc.data().eventId)
+          .toSet()
+          .toList(),
     );
 
     return withBackendErrorStream(
-      () => controller.stream,
+      () => watchEventsByIdStream(
+        idStream: idStream,
+        eventsRef: _eventsRef,
+        descending: descending,
+      ),
       context: const BackendErrorContext(
         service: BackendService.firestore,
         action: 'watch events by participation',

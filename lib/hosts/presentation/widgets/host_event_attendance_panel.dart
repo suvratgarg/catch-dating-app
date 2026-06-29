@@ -21,6 +21,7 @@ import 'package:catch_dating_app/events/presentation/attendance_sheet_view_model
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_action_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
@@ -919,7 +920,9 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
       );
       if (!context.mounted) return;
       showCatchSnackBar(context, 'Revenue CSV ready.');
-    } catch (_) {}
+    } catch (error, stackTrace) {
+      ref.read(errorLoggerProvider).logError(error, stackTrace, reason: '_HostEventParticipantsListState._shareRevenueReport failed');
+    }
   }
 
   Future<void> _shareOpsReport(BuildContext context, WidgetRef ref) async {
@@ -937,7 +940,9 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
       );
       if (!context.mounted) return;
       showCatchSnackBar(context, 'Ops CSV ready.');
-    } catch (_) {}
+    } catch (error, stackTrace) {
+      ref.read(errorLoggerProvider).logError(error, stackTrace, reason: '_HostEventParticipantsListState._shareOpsReport failed');
+    }
   }
 
   Rect? _shareOrigin(BuildContext context) {

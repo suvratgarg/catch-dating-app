@@ -93,6 +93,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
+      if (_selectedDate == null) return;
       final data = ref.read(onboardingControllerProvider);
       ref
           .read(onboardingControllerProvider.notifier)
@@ -114,7 +115,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
 
     return Form(
       key: _formKey,
-      child: onboardingStepLayout(
+      child: OnboardingStepLayout(
         footer: CatchButton(
           label: 'Continue',
           onPressed: _submit,

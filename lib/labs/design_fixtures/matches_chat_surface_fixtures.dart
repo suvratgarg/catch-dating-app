@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
+import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
@@ -459,8 +460,8 @@ class MatchesChatFixtureConversationRepository
   }
 
   @override
-  String createMessageId({required String conversationId}) =>
-      '$conversationId-design-message';
+  Future<String> createMessageId({required String conversationId}) =>
+      Future.value('$conversationId-design-message');
 
   @override
   Future<void> sendTextMessage({

@@ -57,7 +57,7 @@ class ExploreScreen extends ConsumerWidget {
         SliverToBoxAdapter(
           child: Padding(
             padding: CatchInsets.pageBody,
-            child: _buildExploreSkeletonList(),
+            child: const ExploreSkeletonList(),
           ),
         ),
       ],
@@ -75,8 +75,7 @@ class ExploreScreen extends ConsumerWidget {
         value.isEmpty
             ? [
                 SliverFillRemaining(
-                  child: _buildExploreEmptyState(
-                    ref,
+                  child: ExploreScreenEmptyState(
                     cityLabel: city.label,
                     hasSourceClubs: hasSourceClubs,
                     hasSearch: query.isNotEmpty,
@@ -102,7 +101,7 @@ class ExploreScreen extends ConsumerWidget {
             child: CustomScrollView(
               key: const ValueKey('explore-list-scroll-view'),
               slivers: [
-                SliverToBoxAdapter(child: _buildExploreChrome()),
+                SliverToBoxAdapter(child: const ExploreChrome()),
                 ...bodySlivers,
               ],
             ),
@@ -129,77 +128,109 @@ class ExploreScreen extends ConsumerWidget {
   }
 }
 
-Widget _buildExploreChrome() {
-  return const Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [ExploreDiscoveryCoverHeader(), ExploreFilterRail()],
-  );
+class ExploreChrome extends StatelessWidget {
+  const ExploreChrome({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [ExploreDiscoveryCoverHeader(), ExploreFilterRail()],
+    );
+  }
 }
 
-Widget _buildExploreEmptyState(
-  WidgetRef ref, {
-  required String cityLabel,
-  required bool hasSourceClubs,
-  required bool hasSearch,
-  required ExploreFilterSelection filters,
-}) {
-  final hasFilters = filters.hasActiveFilters;
-  if (!hasSourceClubs) {
+class ExploreScreenEmptyState extends ConsumerWidget {
+  const ExploreScreenEmptyState({
+    super.key,
+    required this.cityLabel,
+    required this.hasSourceClubs,
+    required this.hasSearch,
+    required this.filters,
+  });
+
+  final String cityLabel;
+  final bool hasSourceClubs;
+  final bool hasSearch;
+  final ExploreFilterSelection filters;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasFilters = filters.hasActiveFilters;
+    if (!hasSourceClubs) {
+      return ExploreEmptyState(cityLabel: cityLabel);
+    }
+    if (hasSearch && hasFilters) {
+      return ExploreEmptyState.noFilteredSearchResults(
+        action: ExploreClearAction(clearSearch: true, clearFilters: true),
+      );
+    }
+    if (hasSearch) {
+      return ExploreEmptyState.noSearchResults(
+        hasFilters: false,
+        action: ExploreClearAction(clearSearch: true, clearFilters: false),
+      );
+    }
+    if (hasFilters) {
+      return ExploreEmptyState.noFilterResults(
+        action: ExploreClearAction(clearSearch: false, clearFilters: true),
+      );
+    }
     return ExploreEmptyState(cityLabel: cityLabel);
   }
-  if (hasSearch && hasFilters) {
-    return ExploreEmptyState.noFilteredSearchResults(
-      action: _clearAction(ref, clearSearch: true, clearFilters: true),
-    );
-  }
-  if (hasSearch) {
-    return ExploreEmptyState.noSearchResults(
-      hasFilters: false,
-      action: _clearAction(ref, clearSearch: true, clearFilters: false),
-    );
-  }
-  if (hasFilters) {
-    return ExploreEmptyState.noFilterResults(
-      action: _clearAction(ref, clearSearch: false, clearFilters: true),
-    );
-  }
-  return ExploreEmptyState(cityLabel: cityLabel);
 }
 
-Widget _clearAction(
-  WidgetRef ref, {
-  required bool clearSearch,
-  required bool clearFilters,
-}) {
-  final label = switch ((clearSearch, clearFilters)) {
-    (true, true) => 'Clear search and filters',
-    (true, false) => 'Clear search',
-    (false, true) => 'Clear filters',
-    (false, false) => 'Clear',
-  };
-  return CatchButton(
-    label: label,
-    onPressed: () {
-      if (clearSearch) {
-        ref.read(exploreSearchQueryProvider.notifier).clear();
-      }
-      if (clearFilters) {
-        ref.read(exploreFiltersProvider.notifier).clear();
-      }
-    },
-    variant: CatchButtonVariant.secondary,
-    icon: Icon(CatchIcons.clear),
-  );
+class ExploreClearAction extends ConsumerWidget {
+  const ExploreClearAction({
+    super.key,
+    required this.clearSearch,
+    required this.clearFilters,
+    this.icon,
+  });
+
+  final bool clearSearch;
+  final bool clearFilters;
+
+  /// Optional override for the action icon. Defaults to [CatchIcons.clear].
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final label = switch ((clearSearch, clearFilters)) {
+      (true, true) => 'Clear search and filters',
+      (true, false) => 'Clear search',
+      (false, true) => 'Clear filters',
+      (false, false) => 'Clear',
+    };
+    return CatchButton(
+      label: label,
+      onPressed: () {
+        if (clearSearch) {
+          ref.read(exploreSearchQueryProvider.notifier).clear();
+        }
+        if (clearFilters) {
+          ref.read(exploreFiltersProvider.notifier).clear();
+        }
+      },
+      variant: CatchButtonVariant.secondary,
+      icon: Icon(icon ?? CatchIcons.clear),
+    );
+  }
 }
 
-Widget _buildExploreSkeletonList() {
-  return Column(
-    children: [
-      CatchSkeleton.card(height: CatchLayout.exploreEventsSkeletonHeight),
-      gapH16,
-      CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
-      gapH12,
-      CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
-    ],
-  );
+class ExploreSkeletonList extends StatelessWidget {
+  const ExploreSkeletonList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        CatchSkeleton.card(height: CatchLayout.exploreEventsSkeletonHeight),
+        gapH16,
+        CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
+        gapH12,
+        CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
+      ],
+    );
+  }
 }

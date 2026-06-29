@@ -62,22 +62,19 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
               gapH12,
-              _ratingRow(
-                context,
+              RatingRow(
                 label: 'Welcome',
                 value: _welcome,
                 onChanged: (value) => setState(() => _welcome = value),
               ),
               gapH8,
-              _ratingRow(
-                context,
+              RatingRow(
                 label: 'Structure',
                 value: _structure,
                 onChanged: (value) => setState(() => _structure = value),
               ),
               gapH8,
-              _counterRow(
-                context,
+              CounterRow(
                 value: _metPeople,
                 onChanged: (value) => setState(() => _metPeople = value),
               ),
@@ -176,73 +173,101 @@ bool _isStrongRotationSignal(String compatibility) =>
     compatibility == 'mutual_interest' ||
     compatibility == 'questionnaire_match';
 
-Widget _ratingRow(
-  BuildContext context, {
-  required String label,
-  required int value,
-  required ValueChanged<int> onChanged,
-}) {
-  final t = CatchTokens.of(context);
-  return Row(
-    children: [
-      Expanded(
-        child: Text(label, style: CatchTextStyles.sectionTitle(context)),
-      ),
-      for (var i = 1; i <= 5; i++)
-        _feedbackIconAction(
-          tooltip: '$label $i',
-          icon: i <= value
-              ? CatchIcons.starRounded
-              : CatchIcons.starBorderRounded,
-          color: i <= value ? t.gold : t.ink3,
-          onPressed: () => onChanged(i),
+class RatingRow extends StatelessWidget {
+  const RatingRow({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String label;
+  final int value;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: Text(label, style: CatchTextStyles.sectionTitle(context)),
         ),
-    ],
-  );
+        for (var i = 1; i <= 5; i++)
+          FeedbackIconAction(
+            tooltip: '$label $i',
+            icon: i <= value
+                ? CatchIcons.starRounded
+                : CatchIcons.starBorderRounded,
+            color: i <= value ? t.gold : t.ink3,
+            onPressed: () => onChanged(i),
+          ),
+      ],
+    );
+  }
 }
 
-Widget _counterRow(
-  BuildContext context, {
-  required int value,
-  required ValueChanged<int> onChanged,
-}) {
-  final t = CatchTokens.of(context);
-  return Row(
-    children: [
-      Expanded(
-        child: Text(
-          'People I met',
-          style: CatchTextStyles.sectionTitle(context),
+class CounterRow extends StatelessWidget {
+  const CounterRow({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final int value;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            'People I met',
+            style: CatchTextStyles.sectionTitle(context),
+          ),
         ),
-      ),
-      _feedbackIconAction(
-        tooltip: 'Decrease people met',
-        icon: CatchIcons.removeCircleOutlineRounded,
-        color: value <= 0 ? t.ink3 : t.ink2,
-        onPressed: value <= 0 ? null : () => onChanged(value - 1),
-      ),
-      Text('$value', style: CatchTextStyles.sectionTitle(context)),
-      _feedbackIconAction(
-        tooltip: 'Increase people met',
-        icon: CatchIcons.addCircleOutlineRounded,
-        color: t.ink2,
-        onPressed: () => onChanged(value + 1),
-      ),
-    ],
-  );
+        FeedbackIconAction(
+          tooltip: 'Decrease people met',
+          icon: CatchIcons.removeCircleOutlineRounded,
+          color: value <= 0 ? t.ink3 : t.ink2,
+          onPressed: value <= 0 ? null : () => onChanged(value - 1),
+        ),
+        Text('$value', style: CatchTextStyles.sectionTitle(context)),
+        FeedbackIconAction(
+          tooltip: 'Increase people met',
+          icon: CatchIcons.addCircleOutlineRounded,
+          color: t.ink2,
+          onPressed: () => onChanged(value + 1),
+        ),
+      ],
+    );
+  }
 }
 
-Widget _feedbackIconAction({
-  required String tooltip,
-  required IconData icon,
-  required Color color,
-  required VoidCallback? onPressed,
-}) {
-  return Tooltip(
-    message: tooltip,
-    child: CatchIconButton(
-      onTap: onPressed,
-      child: Icon(icon, size: CatchIcon.md, color: color),
-    ),
-  );
+class FeedbackIconAction extends StatelessWidget {
+  const FeedbackIconAction({
+    super.key,
+    required this.tooltip,
+    required this.icon,
+    required this.color,
+    required this.onPressed,
+  });
+
+  final String tooltip;
+  final IconData icon;
+  final Color color;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: CatchIconButton(
+        onTap: onPressed,
+        child: Icon(icon, size: CatchIcon.md, color: color),
+      ),
+    );
+  }
 }

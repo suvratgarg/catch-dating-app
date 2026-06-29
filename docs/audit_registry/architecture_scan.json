@@ -1,0 +1,48 @@
+{
+  "summary": {
+    "total_screens": 180,
+    "classification": {
+      "no-async": 165,
+      "uses-wrapper": 15
+    },
+    "missing_error_handling": 0,
+    "should_use_wrapper": 0,
+    "legitimate_when_or_switch": 0,
+    "repos_missing_backend_error": 1,
+    "controllers_with_raw_try_catch": 6
+  },
+  "should_use_wrapper": [],
+  "missing_error_handling": [],
+  "repos_missing_backend_error": [
+    {
+      "file": "lib/event_success/data/event_success_repository.dart",
+      "name": "EventSuccessRepository"
+    }
+  ],
+  "controllers_raw_try_catch": [
+    {
+      "file": "lib/auth/presentation/auth_controller.dart",
+      "name": "AuthController"
+    },
+    {
+      "file": "lib/chats/presentation/chat_controller.dart",
+      "name": "ChatController"
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/create/create_event_controller.dart",
+      "name": "CreateEventController"
+    },
+    {
+      "file": "lib/image_uploads/presentation/photo_upload_controller.dart",
+      "name": "PhotoUploadController"
+    },
+    {
+      "file": "lib/onboarding/presentation/onboarding_controller.dart",
+      "name": "OnboardingController"
+    },
+    {
+      "file": "lib/swipes/presentation/swipe_queue_notifier.dart",
+      "name": "SwipeQueueNotifier"
+    }
+  ]
+}

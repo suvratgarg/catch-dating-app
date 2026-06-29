@@ -105,7 +105,7 @@ class _CatchCelebrationScreenState
   @override
   Widget build(BuildContext context) {
     if (widget.appearance == CatchCelebrationAppearance.paper) {
-      return _buildPaperCelebrationScaffold(context, screen: widget);
+      return PaperCelebrationScaffold(screen: widget);
     }
 
     final t = CatchTokens.of(context);
@@ -158,7 +158,7 @@ class _CatchCelebrationScreenState
                           alignment: Alignment.centerLeft,
                           child:
                               widget.visual ??
-                              _buildCelebrationIcon(widget.icon),
+                              CelebrationIcon(icon: widget.icon),
                         ),
                         gapH24,
                         if (widget.eyebrow != null) ...[
@@ -188,14 +188,11 @@ class _CatchCelebrationScreenState
                         ),
                         if (details.isNotEmpty) ...[
                           gapH28,
-                          _buildCelebrationDetailsCard(
-                            context,
-                            details: details,
-                          ),
+                          CelebrationDetailsCard(details: details),
                         ],
                         if (widget.note != null) ...[
                           gapH16,
-                          _buildCelebrationNote(context, note: widget.note!),
+                          CelebrationNote(note: widget.note!),
                         ],
                         for (final child in widget.supplementalChildren) ...[
                           gapH16,
@@ -244,308 +241,346 @@ class _CatchCelebrationScreenState
   }
 }
 
-Widget _buildPaperCelebrationScaffold(
-  BuildContext context, {
-  required CatchCelebrationScreen screen,
-}) {
-  final t = CatchTokens.of(context);
-  final secondaryAction = screen.secondaryAction;
-  final showCloseButton = screen.showCloseButton ?? screen.onClose != null;
+class PaperCelebrationScaffold extends StatelessWidget {
+  const PaperCelebrationScaffold({super.key, required this.screen});
 
-  return Scaffold(
-    backgroundColor: t.bg,
-    body: SafeArea(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              CatchLayout.celebrationPaperTopPadding,
-              CatchSpacing.s5,
-              CatchLayout.celebrationPaperBottomPadding,
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight:
-                    constraints.maxHeight -
-                    CatchLayout.celebrationPaperViewportVerticalPadding,
+  final CatchCelebrationScreen screen;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final secondaryAction = screen.secondaryAction;
+    final showCloseButton = screen.showCloseButton ?? screen.onClose != null;
+
+    return Scaffold(
+      backgroundColor: t.bg,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(
+                CatchSpacing.s5,
+                CatchLayout.celebrationPaperTopPadding,
+                CatchSpacing.s5,
+                CatchLayout.celebrationPaperBottomPadding,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (showCloseButton && screen.onClose != null) ...[
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight:
+                      constraints.maxHeight -
+                      CatchLayout.celebrationPaperViewportVerticalPadding,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (showCloseButton && screen.onClose != null) ...[
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: CatchIconButton(
+                          background: t.primarySoft,
+                          onTap: screen.onClose,
+                          child: Icon(CatchIcons.closeRounded, color: t.primary),
+                        ),
+                      ),
+                      gapH20,
+                    ],
                     Align(
-                      alignment: Alignment.centerRight,
-                      child: CatchIconButton(
-                        background: t.primarySoft,
-                        onTap: screen.onClose,
-                        child: Icon(CatchIcons.closeRounded, color: t.primary),
-                      ),
+                      child:
+                          screen.visual ??
+                          PaperCelebrationIcon(icon: screen.icon),
                     ),
-                    gapH20,
-                  ],
-                  Align(
-                    child:
-                        screen.visual ??
-                        _buildPaperCelebrationIcon(context, screen.icon),
-                  ),
-                  if (screen.eyebrow != null) ...[
-                    gapH16,
-                    Text(
-                      screen.eyebrow!.toUpperCase(),
-                      textAlign: TextAlign.center,
-                      style: CatchTextStyles.labelM(
-                        context,
-                        color: t.primary,
-                      ).copyWith(fontWeight: FontWeight.w800),
-                    ),
-                  ],
-                  gapH8,
-                  Text(
-                    screen.title,
-                    textAlign: TextAlign.center,
-                    style: CatchTextStyles.display(context, color: t.ink),
-                  ),
-                  gapH10,
-                  Align(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 340),
-                      child: Text(
-                        screen.message,
+                    if (screen.eyebrow != null) ...[
+                      gapH16,
+                      Text(
+                        screen.eyebrow!.toUpperCase(),
                         textAlign: TextAlign.center,
-                        style: CatchTextStyles.bodyM(context, color: t.ink2),
+                        style: CatchTextStyles.labelM(
+                          context,
+                          color: t.primary,
+                        ).copyWith(fontWeight: FontWeight.w800),
+                      ),
+                    ],
+                    gapH8,
+                    Text(
+                      screen.title,
+                      textAlign: TextAlign.center,
+                      style: CatchTextStyles.display(context, color: t.ink),
+                    ),
+                    gapH10,
+                    Align(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 340),
+                        child: Text(
+                          screen.message,
+                          textAlign: TextAlign.center,
+                          style: CatchTextStyles.bodyM(context, color: t.ink2),
+                        ),
                       ),
                     ),
-                  ),
-                  if (screen.details.isNotEmpty) ...[
-                    gapH24,
-                    _buildPaperCelebrationDetailsCard(
-                      context,
-                      details: screen.details,
+                    if (screen.details.isNotEmpty) ...[
+                      gapH24,
+                      PaperCelebrationDetailsCard(details: screen.details),
+                    ],
+                    if (screen.note != null) ...[
+                      gapH12,
+                      Text(
+                        screen.note!,
+                        textAlign: TextAlign.center,
+                        style: CatchTextStyles.supporting(context, color: t.ink3),
+                      ),
+                    ],
+                    for (final child in screen.supplementalChildren) ...[
+                      gapH18,
+                      child,
+                    ],
+                    const SizedBox(
+                      height: CatchLayout.celebrationPaperActionTopGap,
                     ),
-                  ],
-                  if (screen.note != null) ...[
-                    gapH12,
-                    Text(
-                      screen.note!,
-                      textAlign: TextAlign.center,
-                      style: CatchTextStyles.supporting(context, color: t.ink3),
-                    ),
-                  ],
-                  for (final child in screen.supplementalChildren) ...[
-                    gapH18,
-                    child,
-                  ],
-                  const SizedBox(
-                    height: CatchLayout.celebrationPaperActionTopGap,
-                  ),
-                  CatchButton(
-                    key: screen.primaryAction.key,
-                    label: screen.primaryAction.label,
-                    onPressed: screen.primaryAction.onPressed,
-                    icon: screen.primaryAction.icon,
-                    fullWidth: true,
-                    backgroundColor: t.primary,
-                    foregroundColor: t.primaryInk,
-                  ),
-                  if (secondaryAction != null) ...[
-                    gapH10,
                     CatchButton(
-                      key: secondaryAction.key,
-                      label: secondaryAction.label,
-                      onPressed: secondaryAction.onPressed,
-                      icon: secondaryAction.icon,
-                      variant: secondaryAction.variant,
+                      key: screen.primaryAction.key,
+                      label: screen.primaryAction.label,
+                      onPressed: screen.primaryAction.onPressed,
+                      icon: screen.primaryAction.icon,
                       fullWidth: true,
-                      backgroundColor: Colors.transparent,
-                      foregroundColor: t.ink,
-                      borderColor: t.line2,
+                      backgroundColor: t.primary,
+                      foregroundColor: t.primaryInk,
                     ),
+                    if (secondaryAction != null) ...[
+                      gapH10,
+                      CatchButton(
+                        key: secondaryAction.key,
+                        label: secondaryAction.label,
+                        onPressed: secondaryAction.onPressed,
+                        icon: secondaryAction.icon,
+                        variant: secondaryAction.variant,
+                        fullWidth: true,
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: t.ink,
+                        borderColor: t.line2,
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-          );
-        },
-      ),
-    ),
-  );
-}
-
-Widget _buildPaperCelebrationIcon(BuildContext context, IconData icon) {
-  final t = CatchTokens.of(context);
-
-  return Container(
-    width: CatchSpacing.s16,
-    height: CatchSpacing.s16,
-    decoration: BoxDecoration(color: t.primarySoft, shape: BoxShape.circle),
-    child: Icon(icon, color: t.primary, size: 30),
-  );
-}
-
-Widget _buildPaperCelebrationDetailsCard(
-  BuildContext context, {
-  required List<CelebrationDetail> details,
-}) {
-  final t = CatchTokens.of(context);
-
-  return DecoratedBox(
-    decoration: BoxDecoration(
-      color: t.surface,
-      borderRadius: BorderRadius.circular(CatchRadius.md),
-      border: Border.all(color: t.line),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
-      child: Column(
-        children: [
-          for (final entry in details.indexed) ...[
-            _buildPaperCelebrationDetailRow(context, detail: entry.$2),
-            if (entry.$1 != details.length - 1)
-              Divider(color: t.line.withValues(alpha: 0.18), height: 1),
-          ],
-        ],
-      ),
-    ),
-  );
-}
-
-Widget _buildPaperCelebrationDetailRow(
-  BuildContext context, {
-  required CelebrationDetail detail,
-}) {
-  final t = CatchTokens.of(context);
-  final icon = detail.icon;
-
-  return Padding(
-    padding: const EdgeInsets.symmetric(
-      vertical: CatchLayout.celebrationPaperDetailRowVerticalPadding,
-    ),
-    child: Row(
-      children: [
-        if (icon != null) ...[Icon(icon, size: 18, color: t.ink3), gapW12],
-        SizedBox(
-          width: CatchLayout.celebrationDetailLabelWidth,
-          child: Text(
-            detail.label.toUpperCase(),
-            style: CatchTextStyles.labelS(context, color: t.ink2),
-          ),
+            );
+          },
         ),
-        gapW12,
-        Expanded(
-          child: Text(
-            detail.value,
-            textAlign: TextAlign.right,
-            style: CatchTextStyles.titleS(context, color: t.ink),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _buildCelebrationIcon(IconData icon) {
-  return Container(
-    width: CatchLayout.celebrationIconExtent,
-    height: CatchLayout.celebrationIconExtent,
-    decoration: BoxDecoration(
-      color: _celebrationCream.withValues(alpha: 0.22),
-      shape: BoxShape.circle,
-      border: Border.all(color: _celebrationCream.withValues(alpha: 0.28)),
-    ),
-    child: Icon(icon, color: _celebrationInk, size: 40),
-  );
-}
-
-Widget _buildCelebrationDetailsCard(
-  BuildContext context, {
-  required List<CelebrationDetail> details,
-}) {
-  return DecoratedBox(
-    decoration: BoxDecoration(
-      color: _celebrationCream.withValues(alpha: 0.28),
-      borderRadius: BorderRadius.circular(CatchRadius.lg),
-      border: Border.all(color: _celebrationCream.withValues(alpha: 0.34)),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
-      child: Column(
-        children: [
-          for (final entry in details.indexed) ...[
-            _buildCelebrationDetailRow(context, detail: entry.$2),
-            if (entry.$1 != details.length - 1)
-              Divider(
-                color: _celebrationInk.withValues(alpha: 0.20),
-                height: CatchSpacing.s4,
-              ),
-          ],
-        ],
       ),
-    ),
-  );
+    );
+  }
 }
 
-Widget _buildCelebrationDetailRow(
-  BuildContext context, {
-  required CelebrationDetail detail,
-}) {
-  final icon = detail.icon;
+class PaperCelebrationIcon extends StatelessWidget {
+  const PaperCelebrationIcon({super.key, required this.icon});
 
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      if (icon != null) ...[
-        Icon(icon, size: 18, color: _celebrationInk),
-        gapW10,
-      ],
-      Expanded(
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Container(
+      width: CatchSpacing.s16,
+      height: CatchSpacing.s16,
+      decoration: BoxDecoration(color: t.primarySoft, shape: BoxShape.circle),
+      child: Icon(icon, color: t.primary, size: 30),
+    );
+  }
+}
+
+class PaperCelebrationDetailsCard extends StatelessWidget {
+  const PaperCelebrationDetailsCard({super.key, required this.details});
+
+  final List<CelebrationDetail> details;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.surface,
+        borderRadius: BorderRadius.circular(CatchRadius.md),
+        border: Border.all(color: t.line),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              detail.label,
-              style: CatchTextStyles.labelS(
-                context,
-                color: _celebrationInk.withValues(alpha: 0.74),
-              ),
-            ),
-            gapH3,
-            Text(
-              detail.value,
-              style: CatchTextStyles.bodyLead(context, color: _celebrationInk),
-            ),
+            for (final entry in details.indexed) ...[
+              PaperCelebrationDetailRow(detail: entry.$2),
+              if (entry.$1 != details.length - 1)
+                Divider(color: t.line.withValues(alpha: 0.18), height: 1),
+            ],
           ],
         ),
       ),
-    ],
-  );
+    );
+  }
 }
 
-Widget _buildCelebrationNote(BuildContext context, {required String note}) {
-  return DecoratedBox(
-    decoration: BoxDecoration(
-      color: _celebrationCream.withValues(alpha: 0.20),
-      borderRadius: BorderRadius.circular(CatchRadius.lg),
-      border: Border.all(color: _celebrationCream.withValues(alpha: 0.28)),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+class PaperCelebrationDetailRow extends StatelessWidget {
+  const PaperCelebrationDetailRow({super.key, required this.detail});
+
+  final CelebrationDetail detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final icon = detail.icon;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: CatchLayout.celebrationPaperDetailRowVerticalPadding,
+      ),
       child: Row(
         children: [
-          Icon(CatchIcons.boltRounded, color: _celebrationInk, size: 18),
-          gapW10,
+          if (icon != null) ...[Icon(icon, size: 18, color: t.ink3), gapW12],
+          SizedBox(
+            width: CatchLayout.celebrationDetailLabelWidth,
+            child: Text(
+              detail.label.toUpperCase(),
+              style: CatchTextStyles.labelS(context, color: t.ink2),
+            ),
+          ),
+          gapW12,
           Expanded(
             child: Text(
-              note,
-              style: CatchTextStyles.supporting(
-                context,
-                color: _celebrationInk,
-              ),
+              detail.value,
+              textAlign: TextAlign.right,
+              style: CatchTextStyles.titleS(context, color: t.ink),
             ),
           ),
         ],
       ),
-    ),
-  );
+    );
+  }
+}
+
+class CelebrationIcon extends StatelessWidget {
+  const CelebrationIcon({super.key, required this.icon});
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: CatchLayout.celebrationIconExtent,
+      height: CatchLayout.celebrationIconExtent,
+      decoration: BoxDecoration(
+        color: _celebrationCream.withValues(alpha: 0.22),
+        shape: BoxShape.circle,
+        border: Border.all(color: _celebrationCream.withValues(alpha: 0.28)),
+      ),
+      child: Icon(icon, color: _celebrationInk, size: 40),
+    );
+  }
+}
+
+class CelebrationDetailsCard extends StatelessWidget {
+  const CelebrationDetailsCard({super.key, required this.details});
+
+  final List<CelebrationDetail> details;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _celebrationCream.withValues(alpha: 0.28),
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
+        border: Border.all(color: _celebrationCream.withValues(alpha: 0.34)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(CatchSpacing.s4),
+        child: Column(
+          children: [
+            for (final entry in details.indexed) ...[
+              CelebrationDetailRow(detail: entry.$2),
+              if (entry.$1 != details.length - 1)
+                Divider(
+                  color: _celebrationInk.withValues(alpha: 0.20),
+                  height: CatchSpacing.s4,
+                ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CelebrationDetailRow extends StatelessWidget {
+  const CelebrationDetailRow({super.key, required this.detail});
+
+  final CelebrationDetail detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final icon = detail.icon;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (icon != null) ...[
+          Icon(icon, size: 18, color: _celebrationInk),
+          gapW10,
+        ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                detail.label,
+                style: CatchTextStyles.labelS(
+                  context,
+                  color: _celebrationInk.withValues(alpha: 0.74),
+                ),
+              ),
+              gapH3,
+              Text(
+                detail.value,
+                style: CatchTextStyles.bodyLead(context, color: _celebrationInk),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class CelebrationNote extends StatelessWidget {
+  const CelebrationNote({super.key, required this.note});
+
+  final String note;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _celebrationCream.withValues(alpha: 0.20),
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
+        border: Border.all(color: _celebrationCream.withValues(alpha: 0.28)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(CatchSpacing.s4),
+        child: Row(
+          children: [
+            Icon(CatchIcons.boltRounded, color: _celebrationInk, size: 18),
+            gapW10,
+            Expanded(
+              child: Text(
+                note,
+                style: CatchTextStyles.supporting(
+                  context,
+                  color: _celebrationInk,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

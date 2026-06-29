@@ -58,8 +58,7 @@ class WhoIsGoing extends ConsumerWidget {
 
     return CatchAsyncValueView<EventParticipationRoster>(
       value: rosterAsync,
-      loadingBuilder: (_) => _whoIsGoingContent(
-        context,
+      loadingBuilder: (_) => WhoIsGoingContent(
         event: event,
         roster: EventParticipationRoster.empty(),
         userProfile: userProfile,
@@ -74,8 +73,7 @@ class WhoIsGoing extends ConsumerWidget {
         onRetry: () =>
             ref.invalidate(watchEventParticipationRosterProvider(event.id)),
       ),
-      builder: (context, roster) => _whoIsGoingContent(
-        context,
+      builder: (context, roster) => WhoIsGoingContent(
         event: event,
         roster: roster,
         userProfile: userProfile,
@@ -86,175 +84,201 @@ class WhoIsGoing extends ConsumerWidget {
   }
 }
 
-Widget _whoIsGoingContent(
-  BuildContext context, {
-  required Event event,
-  required EventParticipationRoster roster,
-  required UserProfile userProfile,
-  int? fallbackTotal,
-  EventDetailSurfaceStyle? surfaceStyle,
-  bool showHeader = true,
-}) {
-  final t = CatchTokens.of(context);
-  final total = fallbackTotal ?? roster.bookedCount;
-  final hasActiveSwipeWindow = hasOpenSwipeWindow(event);
+class WhoIsGoingContent extends StatelessWidget {
+  const WhoIsGoingContent({
+    super.key,
+    required this.event,
+    required this.roster,
+    required this.userProfile,
+    this.fallbackTotal,
+    this.surfaceStyle,
+    this.showHeader = true,
+  });
 
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      if (showHeader) ...[
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                "Who's going",
-                style: CatchTextStyles.titleL(
-                  context,
-                  color: surfaceStyle?.headingColor,
-                ),
-              ),
-            ),
-            Text(
-              '$total/${event.capacityLimit}',
-              style: CatchTextStyles.labelL(
-                context,
-                color: surfaceStyle?.bodyColor ?? t.ink2,
-              ),
-            ),
-          ],
-        ),
-        gapH12,
-      ],
-      if (total == 0)
-        _emptyRosterMessage(
-          context,
-          title: event.isUpcoming ? 'No attendees yet' : 'No attendees booked',
-          message: event.isUpcoming
-              ? 'Be the first to book this event.'
-              : 'This event did not have any booked attendees.',
-          surfaceStyle: surfaceStyle,
-        )
-      else ...[
-        EventHypeAvatarStack(
-          eventId: event.id,
-          totalCount: total,
-          viewerInterestedInGenders: userProfile.interestedInGenders,
-          activityKind: event.activityKind,
-          size: 44,
-          limit: 7,
-          obscured: event.isUpcoming,
-          showOverflowCount: true,
-        ),
-        gapH12,
-        if (event.isUpcoming)
-          _swipeWindowBanner(
-            context,
-            icon: CatchIcons.lockOutlineRounded,
-            message: 'Catches unlock for 24 hours after the event finishes.',
-            surfaceStyle: surfaceStyle,
-          )
-        else if (hasActiveSwipeWindow)
-          _swipeWindowBanner(
-            context,
-            icon: CatchIcons.favoriteRounded,
-            message:
-                'The catch window is open for 24 hours after the event finishes.',
-            surfaceStyle: surfaceStyle,
-          )
-        else
-          _swipeWindowBanner(
-            context,
-            icon: CatchIcons.scheduleRounded,
-            message: 'The catch window for this event has closed.',
-            surfaceStyle: surfaceStyle,
-          ),
-      ],
-    ],
-  );
-}
+  final Event event;
+  final EventParticipationRoster roster;
+  final UserProfile userProfile;
+  final int? fallbackTotal;
+  final EventDetailSurfaceStyle? surfaceStyle;
+  final bool showHeader;
 
-Widget _emptyRosterMessage(
-  BuildContext context, {
-  required String title,
-  required String message,
-  EventDetailSurfaceStyle? surfaceStyle,
-}) {
-  final t = CatchTokens.of(context);
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final total = fallbackTotal ?? roster.bookedCount;
+    final hasActiveSwipeWindow = hasOpenSwipeWindow(event);
 
-  return CatchSurface(
-    padding: CatchInsets.content,
-    radius: CatchRadius.md,
-    backgroundColor: surfaceStyle?.surfaceBackground,
-    borderColor: surfaceStyle?.borderColor ?? t.line,
-    child: Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          CatchIcons.groups2Outlined,
-          size: 20,
-          color: surfaceStyle?.mutedColor ?? t.ink3,
-        ),
-        gapW12,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        if (showHeader) ...[
+          Row(
             children: [
-              Text(
-                title,
-                style: CatchTextStyles.sectionTitle(
-                  context,
-                  color: surfaceStyle?.headingColor,
+              Expanded(
+                child: Text(
+                  "Who's going",
+                  style: CatchTextStyles.titleL(
+                    context,
+                    color: surfaceStyle?.headingColor,
+                  ),
                 ),
               ),
-              gapH4,
               Text(
-                message,
-                style: CatchTextStyles.supporting(
+                '$total/${event.capacityLimit}',
+                style: CatchTextStyles.labelL(
                   context,
                   color: surfaceStyle?.bodyColor ?? t.ink2,
                 ),
               ),
             ],
           ),
-        ),
+          gapH12,
+        ],
+        if (total == 0)
+          EmptyRosterMessage(
+            title: event.isUpcoming ? 'No attendees yet' : 'No attendees booked',
+            message: event.isUpcoming
+                ? 'Be the first to book this event.'
+                : 'This event did not have any booked attendees.',
+            surfaceStyle: surfaceStyle,
+          )
+        else ...[
+          EventHypeAvatarStack(
+            eventId: event.id,
+            totalCount: total,
+            viewerInterestedInGenders: userProfile.interestedInGenders,
+            activityKind: event.activityKind,
+            size: 44,
+            limit: 7,
+            obscured: event.isUpcoming,
+            showOverflowCount: true,
+          ),
+          gapH12,
+          if (event.isUpcoming)
+            SwipeWindowBanner(
+              icon: CatchIcons.lockOutlineRounded,
+              message: 'Catches unlock for 24 hours after the event finishes.',
+              surfaceStyle: surfaceStyle,
+            )
+          else if (hasActiveSwipeWindow)
+            SwipeWindowBanner(
+              icon: CatchIcons.favoriteRounded,
+              message:
+                  'The catch window is open for 24 hours after the event finishes.',
+              surfaceStyle: surfaceStyle,
+            )
+          else
+            SwipeWindowBanner(
+              icon: CatchIcons.scheduleRounded,
+              message: 'The catch window for this event has closed.',
+              surfaceStyle: surfaceStyle,
+            ),
+        ],
       ],
-    ),
-  );
+    );
+  }
 }
 
-Widget _swipeWindowBanner(
-  BuildContext context, {
-  required IconData icon,
-  required String message,
-  EventDetailSurfaceStyle? surfaceStyle,
-}) {
-  final t = CatchTokens.of(context);
+class EmptyRosterMessage extends StatelessWidget {
+  const EmptyRosterMessage({
+    super.key,
+    required this.title,
+    required this.message,
+    this.surfaceStyle,
+  });
 
-  return CatchSurface(
-    padding: CatchInsets.contentDense,
-    tone: surfaceStyle == null
-        ? CatchSurfaceTone.primarySoft
-        : CatchSurfaceTone.transparent,
-    backgroundColor: surfaceStyle?.primarySoftColor,
-    radius: CatchRadius.md,
-    borderWidth: 0,
-    child: Row(
-      children: [
-        Icon(
-          icon,
-          size: CatchIcon.xs,
-          color: surfaceStyle?.primaryColor ?? t.primary,
-        ),
-        gapW8,
-        Expanded(
-          child: Text(
-            message,
-            style: CatchTextStyles.supporting(
-              context,
-              color: surfaceStyle?.primaryColor ?? t.primary,
+  final String title;
+  final String message;
+  final EventDetailSurfaceStyle? surfaceStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      padding: CatchInsets.content,
+      radius: CatchRadius.md,
+      backgroundColor: surfaceStyle?.surfaceBackground,
+      borderColor: surfaceStyle?.borderColor ?? t.line,
+      child: Row(
+        children: [
+          Icon(
+            CatchIcons.groups2Outlined,
+            size: 20,
+            color: surfaceStyle?.mutedColor ?? t.ink3,
+          ),
+          gapW12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: CatchTextStyles.sectionTitle(
+                    context,
+                    color: surfaceStyle?.headingColor,
+                  ),
+                ),
+                gapH4,
+                Text(
+                  message,
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: surfaceStyle?.bodyColor ?? t.ink2,
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
+}
+
+class SwipeWindowBanner extends StatelessWidget {
+  const SwipeWindowBanner({
+    super.key,
+    required this.icon,
+    required this.message,
+    this.surfaceStyle,
+  });
+
+  final IconData icon;
+  final String message;
+  final EventDetailSurfaceStyle? surfaceStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      padding: CatchInsets.contentDense,
+      tone: surfaceStyle == null
+          ? CatchSurfaceTone.primarySoft
+          : CatchSurfaceTone.transparent,
+      backgroundColor: surfaceStyle?.primarySoftColor,
+      radius: CatchRadius.md,
+      borderWidth: 0,
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: CatchIcon.xs,
+            color: surfaceStyle?.primaryColor ?? t.primary,
+          ),
+          gapW8,
+          Expanded(
+            child: Text(
+              message,
+              style: CatchTextStyles.supporting(
+                context,
+                color: surfaceStyle?.primaryColor ?? t.primary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

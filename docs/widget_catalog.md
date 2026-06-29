@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.443
-updated: 2026-06-28
+version: 2.5.450
+updated: 2026-06-29
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,72 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.450
+
+- Profile Insights now renders its summary, trend, empty, loading, tips, and
+  data-coverage surfaces through shared primitives. `CatchMiniBarChart` is the
+  shared compact trend primitive for the tiny bar chart case that previously
+  required feature-local chart chrome.
+- Profile edit cleanup removed stale inline-editor API surface: prompt answer
+  counters stay owned by `ProfileInlinePromptEntryEditor`, range editors no
+  longer accept unused field-name identifiers, and `ProfileInfoEntry` now has a
+  single row-composition model instead of a dormant inline editor branch.
+- `ProfileDirectTextEntryField` keeps the canonical `CatchField.input`
+  empty-first contract: empty rows render collapsed until focus, keep the
+  `EditableText` mounted offstage, and expand without paging flicker on first
+  focus.
+
+### 2.5.449
+
+- `ChatInputBar` now renders one contained dialogue pill: the image upload
+  action is the leading slot, the bare message input is the center slot, and
+  the filled send action is the trailing slot inside the same field outline.
+
+### 2.5.448
+
+- `UserAnalyticsPanel` now composes the Suggestions and Data coverage blocks
+  through `CatchSection` and `CatchField.read` rows instead of feature-local
+  card/row chrome. Data coverage ids map to stable field labels while the
+  backend-provided coverage detail remains the row body.
+
+### 2.5.447
+
+- `CatchField.nav` now supports a shared `chevronOpen` state so expandable rows
+  can rotate the canonical right chevron without profile-local trailing chrome.
+  Icon-only trailing controls stay fixed at the right edge, while `valueText`
+  metadata rows keep their bounded flexible value lane on narrow widths.
+- Edit Profile info sections can opt into full-bleed row frames: row
+  backgrounds, tap/focus highlights, and chevrons extend to the viewport edge
+  while dividers keep the same light section-line color and symmetric insets.
+
+### 2.5.446
+
+- Removed the temporary `CatchField.input` `collapseEmptyInput` API. Empty
+  row-style text entries keep the canonical collapsed label-only state until
+  focus, value, or error requires the editor body.
+- Active row-style `CatchField.input` editors now skip `AnimatedSize`, so the
+  first focused frame lays out at full editor height instead of mounting focused
+  text into a clipped collapsed row.
+
+### 2.5.445
+
+- Superseded by 2.5.446 before publish: the temporary `collapseEmptyInput`
+  API overcorrected first-focus geometry and made empty Edit Profile text rows
+  render as label/value stacks while unfocused.
+
+### 2.5.444
+
+- Edit Profile simple free-text rows now use direct editable
+  `CatchField.input` rows via `ProfileDirectTextEntryField`: Display name,
+  Email, Instagram, Job title, and Company. These rows no longer open inline
+  disclosure drawers or trailing `Cancel`/`Done` actions; they keep keyboard,
+  autofill, validation, trim/normalization, blur, and submit behavior on the
+  shared field primitive.
+- Removed the now-unused `ProfileInlineTextEntryEditor` wrapper. Prompt answer
+  editing still uses `ProfileInlineTextValue` inside
+  `ProfileInlinePromptEntryEditor`, because prompt rows also own prompt-picker
+  selection and slot uniqueness.
 
 ### 2.5.443
 
@@ -3187,9 +3253,9 @@ a feature section here only when auditing that feature's widget surface.
 - Shared public profile cards now follow the Edit Profile section treatment:
   sentence-case titles, calmer title weight, tighter card padding, and less
   crowded prompt/running text.
-- `ProfileInlineTextEntryEditor` now requests focus after the expansion frame
-  instead of using immediate `EditableText.autofocus`, preventing first-tap
-  keyboard/focus flicker while the row opens.
+- The now-retired profile inline text-entry wrapper requested focus after the
+  expansion frame instead of using immediate `EditableText.autofocus`,
+  preventing first-tap keyboard/focus flicker while the row opened.
 - Edit Profile row icons stay on the muted field-icon color even when the row
   is an add affordance; only the add value text uses primary color.
 
@@ -3597,9 +3663,9 @@ a feature section here only when auditing that feature's widget surface.
 
 ### 2.5.49
 
-- Edit Profile bio now uses the same row-owned inline disclosure contract as
-  other profile fields. `ProfileInlineTextEntryEditor` supports multiline
-  row-owned editing for long text such as Bio.
+- Edit Profile bio now used the same row-owned inline disclosure contract as
+  other profile fields. The now-retired profile inline text-entry wrapper
+  supported multiline row-owned editing for long text such as Bio.
 - The signed-in Bio edit flow no longer uses `ProfilePromptCard` or the
   standalone `ProfileInlineTextEditor`; keep prompt-style bio presentation in
   read-only profile-card widgets.
@@ -3705,9 +3771,9 @@ a feature section here only when auditing that feature's widget surface.
   the collapsed value directly and delegates active text entry to
   `CatchField.input` so cursor, underline chrome, focus, validation, and
   formatter behavior stay in the shared field primitive.
-- `ProfileInlineTextEntryEditor` now uses that inline value wrapper instead of
-  embedding feature-local text-field chrome. Long text row variants such as Bio
-  use the same row-owned editable value contract.
+- The now-retired profile inline text-entry wrapper used that inline value
+  wrapper instead of embedding feature-local text-field chrome. Long text row
+  variants such as Bio used the same row-owned editable value contract.
 - The scroll-away Profile title header now owns only the Settings action. Review
   history, payment history, and sign out moved to `SettingsScreen` Account rows.
 
@@ -3760,10 +3826,10 @@ a feature section here only when auditing that feature's widget surface.
   editing. When present, the tile replaces its value text with the supplied
   control and shows a small collapse icon button instead of wrapping the whole
   row in an `InkWell`, so the embedded field can receive focus.
-- Added `ProfileInlineTextEntryEditor`, which renders text Profile rows with a
-  compact label-less `CatchField` in the value position and keeps
-  error/actions below the row. This was superseded by 2.5.49 for long text,
-  which uses the same row contract with a multiline body editor.
+- Added the now-retired profile inline text-entry wrapper, which rendered text
+  Profile rows with a compact label-less `CatchField` in the value position and
+  kept error/actions below the row. This was superseded by 2.5.49 for long text,
+  which used the same row contract with a multiline body editor.
 
 ### 2.5.33
 
@@ -4035,11 +4101,13 @@ a feature section here only when auditing that feature's widget surface.
 
 ### 2.5.10
 
-- Edit Profile now exposes `Display name` as the first About field. It is the
+- Edit Profile exposes `Display name` as the first About field. It is the
   editable public-facing name used by profile preview/public profile surfaces,
   initializes from onboarding first name, trims on save, and rejects blank or
-  whitespace-only values. Legal identity fields from onboarding remain
-  separate: date of birth and gender stay readonly, and last name is private.
+  whitespace-only values. Legal identity fields from onboarding remain separate:
+  date of birth and gender stay readonly, and last name is private. As of
+  2.5.444, Display name and the other simple text fields render directly as
+  editable `CatchField.input` rows, not disclosure drawers.
 
 ### 2.5.9
 
@@ -4445,14 +4513,14 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `AppShell` | `lib/core/presentation/app_shell.dart:34` | Main tab shell with adaptive bottom navigation (Home, Explore, Catches, Chats, You): handoff `CatchTabDock` on Android/non-iOS platforms and native `CupertinoTabBar` on iOS. Watches provider-backed connectivity for the offline app notice, initializes FCM through `appShellFcmInitializationProvider`, exposes active-tab state through `AppShellActiveTab`, and keeps Crashlytics/Analytics user IDs synced with auth state. Shell-level streams stay limited to shell-wide UI such as auth, connectivity, FCM, and unread badges. |
+| `AppShell` | `lib/core/presentation/app_shell.dart:34` | Main tab shell with adaptive bottom navigation (Home, Explore, Catches, Chats, You): native `CupertinoTabBar` on iOS and Material 3 `NavigationBar`-backed `CatchTabDock` elsewhere. Watches provider-backed connectivity for the offline app notice, initializes FCM through `appShellFcmInitializationProvider`, exposes active-tab state through `AppShellActiveTab`, and keeps Crashlytics/Analytics user IDs synced with auth state. Shell-level streams stay limited to shell-wide UI such as auth, connectivity, FCM, and unread badges. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
 | `AppShellActiveTab` | `lib/core/presentation/app_shell_active_tab.dart:9` | Inherited lifecycle signal for indexed-stack tabs. Lets retained tab branches detect whether they are currently selected without coupling feature screens directly to `StatefulNavigationShell`. |
-| `AppShellNavigationBar` / `AppShellNavigationItem` | `lib/core/presentation/app_shell.dart:210` | Shared adaptive bottom-navigation primitive with stable key, destination-driven labels/icons, and unread badge handling. Consumer shell uses the default Home / Explore / Catches / Chats / Profile set; `HostAppShell` supplies Events / Clubs / Inbox / Account through the same Cupertino tab-bar chrome on iOS and Material 3 navigation chrome elsewhere. |
+| `AppShellNavigationBar` / `AppShellNavigationItem` | `lib/core/presentation/app_shell.dart:210` | Shared adaptive bottom-navigation primitive with stable key, destination-driven labels/icons, and unread badge handling. Consumer shell uses the default Home / Explore / Catches / Chats / Profile set; `HostAppShell` supplies Events / Clubs / Inbox / Account through the same native iOS `CupertinoTabBar` chrome and Material 3 `NavigationBar`-backed chrome elsewhere. |
 | `AppShellNavigationBadge` | `lib/core/presentation/app_shell.dart:333` | Shell unread badge. Reserves a fixed icon box and positions the pill inside it so Cupertino and Material bottom nav containers cannot clip the count. |
 | `CatchStartupLoadingScreen` | `lib/core/widgets/catch_startup_loading_screen.dart:5` | Shared route/startup loading surface used during role, route, and force-update async resolution. |
 
@@ -4477,11 +4545,17 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CatchField` | `lib/core/widgets/catch_field.dart:27` | Canonical flat field primitive for row, text-entry, navigation, toggle, expanded-control, add, validation, helper, clearable, and suffix-action states. Use the named constructors (`read`, `nav`, `toggle`, `input`, `select`, `expanding`, `add`) so call sites choose one field family explicitly; the shared implementation constructor is private. The field owns the stable anatomy of optional leading icon, label/value column, optional right value/action/chevron/toggle trailing slot, and field-owned helper/error text. Rounded section, focus, and error container chrome belongs to `CatchSection`, not the field itself. Registered as formal component contract `catch.field`; Widgetbook contract states are the canonical review surface. |
+| `CatchField` | `lib/core/widgets/catch_field.dart:27` | Canonical flat field primitive for row, text-entry, navigation, toggle, expanded-control, add, validation, helper, clearable, and suffix-action states. Use the named constructors (`read`, `nav`, `toggle`, `input`, `select`, `expanding`, `add`) so call sites choose one field family explicitly; the shared implementation constructor is private. The field owns the stable anatomy of optional leading icon, label/value column, optional right value/action/chevron/toggle trailing slot, and field-owned helper/error text. `CatchField.nav` accepts `chevronOpen` for shared expanded-state right-chevron rotation; icon-only trailing slots stay pinned to the row edge, while `valueText` metadata keeps a bounded flexible lane on narrow widths. Rounded section, focus, and error container chrome belongs to `CatchSection`, not the field itself. Registered as formal component contract `catch.field`; Widgetbook contract states are the canonical review surface. |
 | `CatchButton` | `lib/core/widgets/catch_button.dart:13` | Canonical button. Supports `primary`, `secondary`, `ghost`, `danger`, and `light` variants; activity-accent primary fills via `accentColor`; `sm`, `md`, `lg` sizes; loading state with animated dots; hover/press feedback; optional leading icons; and `isInteractive: false` for button-looking labels inside an already tappable parent. Button height is fixed to the selected token size so full-width footer buttons do not expand in unconstrained bottom bars. Use `light` for solid-white pill CTAs so foreground/background colors stay paired across light and dark themes. |
 | `CatchActionMenu<T>` | `lib/core/widgets/catch_action_menu.dart:24` | Anchored overflow trigger for action menus. Opens the shared handoff `CatchMenu` panel from an `IconBtn`, supports icons, sublabels, selected rows, disabled rows, destructive rows, and typed selected values. |
 | `CatchField.select<T>` | `lib/core/widgets/catch_field.dart` | Canonical select-mode factory on `CatchField`. Supports token-driven flat trigger/menu composition, compact/md heights, optional prefix icons, disabled/error states, controlled value syncing, and validation messaging without a separate dropdown/select primitive. |
 | `CatchSearchField` | `lib/core/widgets/catch_search_field.dart:8` | Handoff `SearchField`: raised pill browse input with search glyph, controlled value sync, quiet clear target when non-empty, optional empty-state trailing action for composed search chrome, platform Done submit, focus callbacks, and semantic labeling. Use instead of `CatchField` for label-less browse/search affordances. |
+
+### SingleChildRenderObjectWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `CatchPagerFocusBoundary` | `lib/core/widgets/catch_pager_focus_boundary.dart:5` | Shared focus boundary for pages inside horizontal pagers. Lets inner vertical scrollables satisfy text caret and focus `showOnScreen` requests while preventing those requests from bubbling into `PageView`/`TabBarView` shells and exposing adjacent pages. |
 
 ### StatelessWidget
 
@@ -4496,6 +4570,7 @@ Generated 2026-05-06.
 | `CatchJourneySteps` | `lib/core/widgets/catch_journey_steps.dart:20` | Handoff `JourneySteps`: numbered, line-traced sequence for ordered onboarding, dashboard, and event-flow guidance. Renders mono auto-numbered indices, an accent node rail, function-font titles, optional body copy, and source-owned spacing. Registered as formal component contract `catch.journey_steps`; Widgetbook contract states are the canonical review surface for numbered trace, titles-only, accented, and long-copy sequences. |
 | `CatchDetailHeroBackdrop` | `lib/core/widgets/catch_detail_hero_backdrop.dart:4` | Shared photo-or-branded-fallback backdrop for detail-page heroes. Used by club and event detail headers so no-photo states share the same dark branded gradient and scrim treatment. |
 | `CatchMetricStrip` | `lib/core/widgets/catch_metric_strip.dart:21` | Canonical metric rail for compact value-over-label stats. Owns the surface, border, spacing, hairline dividers, mono value styling, optional unit styling, label truncation, and surface/color overrides so club and event detail stats cannot drift. Registered as formal component contract `catch.metric_strip`; Widgetbook contract states are the canonical review surface. |
+| `CatchMiniBarChart` | `lib/core/widgets/catch_mini_bar_chart.dart:5` | Compact mini bar-chart primitive for trend summaries inside dense metric panels. Owns the surface, border, content padding, bar spacing, zero-value treatment, tokenized fill/empty colors, and semantic label wrapper so insights and dashboard panels do not hand-roll tiny chart chrome. Widgetbook catalogs default, empty, and color-override states. |
 | `CatchTextButton` | `lib/core/widgets/catch_text_button.dart:6` | Canonical text-only action primitive for inline actions, dialog actions, retry links, and top-bar text actions. Uses Catch tokens and text styles while preserving Material `TextButton` semantics. Use `CatchButton` for pill CTAs. |
 | `CatchCodeInput` | `lib/core/widgets/catch_otp_code_field.dart:9` | Handoff `CodeInput`: static controlled verification-code row with 6-cell default, mono digits, 64px surface cells, 10px gaps, interactive-tile radius, ink active rule, and optional caret. |
 | `CatchOtpCodeField` | `lib/core/widgets/catch_otp_code_field.dart:50` | Canonical OTP input primitive. Composes `CatchCodeInput` visuals over one hidden platform `TextField` so SMS autofill, paste, keyboard input, tests, digit-only filtering, and length limiting stay centralized. |
@@ -4546,7 +4621,7 @@ Generated 2026-05-06.
 | `CatchPrivacyBadge` | `lib/core/widgets/catch_privacy_badge.dart:10` | Quiet outlined handoff privacy pill for visibility hints. Supports `Private to you`, `Catch private`, and `Host can see` modes with lock/eye glyphs, transparent `CatchSurface` chrome, and the shared mono badge text role. Registered as formal component contract `catch.privacy_badge`; Widgetbook contract states are the canonical review surface for private-to-you, Catch-private, and host-visible modes. |
 | `CatchCornerSash` | `lib/core/widgets/catch_corner_sash.dart:10` | Single status sash for event/club hero cards when one dominant state should read before supporting metadata. Uses token palettes, optional icon, and asymmetric pill corners instead of competing chip clusters. |
 | `CatchCountPill` | `lib/core/widgets/catch_count_pill.dart:12` | Handoff CountPill control for floating Explore affordances. Renders a raised pill with optional icon, optional mono label, optional active-count badge, shared surface/border tokens, and explicit semantic labels. Use for map/list toggles and compact filter entry points instead of feature-local floating pill decorations. |
-| `CatchTabDock<T>` | `lib/core/widgets/catch_tab_dock.dart:25` | Handoff `TabDock`: bottom navigation dock with translucent blur surface, top hairline, uppercase mono labels, selected filled glyph, idle ink3 glyphs, typed tab IDs, and optional per-tab badges. Used by non-iOS `AppShellNavigationBar`. |
+| `CatchTabDock<T>` | `lib/core/widgets/catch_tab_dock.dart:25` | Handoff `TabDock`: typed bottom-navigation adapter backed by Flutter's Material 3 `NavigationBar` metrics, stable safe-area handling, selected glyphs, typed tab IDs, and optional per-tab `Badge.count` unread indicators. Used by non-iOS `AppShellNavigationBar`. |
 | `CatchMetaDotRow` | `lib/core/widgets/catch_meta_row.dart:13` | Inline dot-separated metadata row for event/club cards. Keeps icon/text entries and optional strong trailing meta in one line with ellipsis behavior, so cards can show time, place, distance, and status without bolting on multiple badges. |
 | `CatchIconButton` | `lib/core/widgets/catch_icon_button.dart:5` | Handoff `IconButton`: circular glyph target with 44px default, 40px top-bar `navSize`, bordered / float / plain variants, active accent tinting, disabled opacity, and legacy child/custom-background escape hatches for existing app surfaces. |
 | `CatchBottomDock.cta` | `lib/core/widgets/catch_bottom_dock.dart:38` | Sticky bottom action footer. Renders a full-width `CatchButton` in a surface-colored bar separated from content by a hairline divider, with optional leading content, optional activity button accent, optional dark/custom footer colors, and bottom safe-area padding. |
@@ -4663,8 +4738,8 @@ Generated 2026-05-06.
 | `HostClubDetailScreenState` / `HostClubDetailRetryIntent` | `lib/clubs/presentation/detail/club_detail_screen.dart:255` | Host Club Detail route adapter over the shared club detail screen. Maps async loading/error/not-found branches, `initialClub` fallback, signed-in host ownership, public-preview mode, membership state, consumer dock suppression, and load-error retry intent typing before `ClubDetailScreen` composes the shared public profile body. The screen wires typed callbacks for retry, schedule route actions, host profile/message actions, contact launches, and share. |
 | `HostInboxScreenState` | `lib/matches/presentation/matches_list_screen.dart:74` | Host Inbox route adapter over the shared `ChatsListScreen`. Reads the uid/view-model/query/provider wave at the route edge, owns selected host filter, unread count, search-action visibility, and delegates loading/error/content/empty mapping to `ChatsListDisplayState` before the route composes `ChatsSliverHeader` and `ChatsList`. Host/consumer chat route callbacks are owned by `ChatsListScreen`; duplicate host-inquiry grouping is covered by the shared match collapse policy. |
 | `ChatsListDisplayState` / `ChatsListRetryIntent` | `lib/matches/presentation/widgets/chats_list.dart:95` | Shared chat-list body adapter. Converts `AsyncValue<ChatsListViewModel>` into loading, error, content, or explicit empty states; applies Host Inbox unread filtering; selects no-threads, no-search-results, or no-unread empty copy; and attaches a typed reload intent to display errors before `ChatsList` renders shared sliver sections. |
-| `ChatRouteState` / `ChatRouteStateArgs` | `lib/chats/presentation/chat_route_state.dart:93` | Host/consumer chat route provider seam. Performs the route-level uid, match, message, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller watches once, then returns the composed lookup state, `HostChatScreenState`, event, messages, pending flags, and visibility booleans that `ChatScreen` renders. |
-| `HostChatScreenState` / `HostChatRetryIntent` / `HostChatActionIntent` | `lib/chats/presentation/host_chat_screen_state.dart:9` | Provider-free Host Chat decision seam over the shared `ChatScreen`. Centralizes host inquiry identity, typed profile/share/safety action availability, route/message/Suvbot retry intents, report/block pending action disabling, action intent policy, safety target copy, message peer name, and composer disabled reason before `ChatRouteState` passes render-ready state to `ChatScreen`. Match-stream errors become `HostChatRouteError` with `HostChatRetryIntent.reloadMatch`, while message-list and Suvbot-control errors expose typed retry targets. `ChatScreen` renders the canonical `CatchTopBar.identity` directly and owns the `CatchTopBarMenuAction` wiring. |
+| `ChatRouteState` / `ChatRouteStateArgs` | `lib/chats/presentation/chat_route_state.dart:93` | Host/consumer chat route provider seam. Performs the route-level uid, match, message, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller watches once, then returns the composed lookup state, `HostChatScreenState`, public-profile async state, event, messages, pending flags, and visibility booleans that `ChatScreen` renders, including whether a consumer match can expose the embedded Chat/Profile tab shell. |
+| `HostChatScreenState` / `HostChatRetryIntent` / `HostChatActionIntent` | `lib/chats/presentation/host_chat_screen_state.dart:9` | Provider-free Host Chat decision seam over the shared `ChatScreen`. Centralizes host inquiry identity, typed profile/share/safety action availability, route/message/Suvbot retry intents, report/block pending action disabling, action intent policy, safety target copy, message peer name, and composer disabled reason before `ChatRouteState` passes render-ready state to `ChatScreen`. Match-stream errors become `HostChatRouteError` with `HostChatRetryIntent.reloadMatch`, while message-list and Suvbot-control errors expose typed retry targets. `ChatScreen` renders the canonical `CatchTopBar.identity` for single-pane host/Suvbot states, switches regular match chats to a `CatchTopBarTabBar` Chat/Profile shell, and owns the `CatchTopBarMenuAction` wiring. |
 | `ChatReadMarkerState` | `lib/chats/presentation/chat_read_marker_state.dart:3` | Provider-free chat read-marker decision seam. Tracks the last known and last marked uid, suppresses duplicate marks unless forced, marks only incoming latest messages, and exposes the dispose-time uid before `ChatScreen` executes the `ConversationReadMarker.markRead` side effect. |
 | `ChatThreadLookupState` | `lib/chats/presentation/chat_thread_lookup_state.dart:6` | Provider-free chat thread lookup-key seam. Derives other participant identity, Suvbot suppression, host-inquiry club id, host profile, public-profile uid, initial routed profile, and latest event id before `ChatRouteState` performs the Riverpod provider watches. |
 
@@ -4836,7 +4911,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ChatScreen` | `lib/chats/presentation/chat_screen.dart:34` | Stateful host/consumer chat thread screen registered as `screen.matches.chat` and `screen.host.chat`. Owns local text/scroll controllers, mounted lifecycle effects, `ConversationReadMarker.markRead` side-effect calls, retry invalidation dispatch through `HostChatRetryIntent`, profile navigation, share-card presentation, mutation snackbar listening, and send/image/report/block/Suvbot action execution through controller mutations. Route provider waves and mutation-pending flags come from `ChatRouteState`; read-marker decision policy comes from `ChatReadMarkerState`; host inquiry identity, top-bar action availability, action intents, route error selection, message/Suvbot retry targets, safety-action pending disabled state, message peer name, and composer disabled copy come from `HostChatScreenState`. |
+| `ChatScreen` | `lib/chats/presentation/chat_screen.dart:34` | Stateful host/consumer chat thread screen registered as `screen.matches.chat` and `screen.host.chat`. Owns local text/scroll/tab controllers, mounted lifecycle effects, `ConversationReadMarker.markRead` side-effect calls, retry invalidation dispatch through `HostChatRetryIntent`, embedded Chat/Profile tab rendering for regular match chats, share-card presentation, mutation snackbar listening, and send/image/report/block/Suvbot action execution through controller mutations. The Chat tab keeps event context, messages, Suvbot controls, and composer; the Profile tab renders the shared public `ProfileSurface` with content-shaped loading, error retry, and unavailable states. Route provider waves and mutation-pending flags come from `ChatRouteState`; read-marker decision policy comes from `ChatReadMarkerState`; host inquiry identity, top-bar action availability, action intents, route error selection, message/Suvbot retry targets, safety-action pending disabled state, message peer name, and composer disabled copy come from `HostChatScreenState`. |
 
 ### StatelessWidget
 
@@ -4845,7 +4920,7 @@ Generated 2026-05-06.
 | `ChatEventContextHeader` | `lib/chats/presentation/widgets/chat_event_context_header.dart:20` | Handoff `ChatThreadHeader` event-context band. Grounds the thread in the latest shared event with activity soft fill, accent hairline/glyph, mono activity stamp, and event title/date copy; falls back to the neutral "MATCHED THROUGH CATCH" state while event context loads. Widgetbook exposes standalone states for social run, no event, dinner, and long custom event context. |
 | `chat_event_context_copy` helpers | `lib/chats/presentation/widgets/chat_event_context_copy.dart:3` | Shared Messaging copy source for event-context stamps, chat share-card titles, and empty-thread prompts. Keeps thread header, share card, and empty state language aligned with the latest shared event and preserves neutral fallbacks while event context is unavailable. |
 | `ChatMessageList` | `lib/chats/presentation/widgets/chat_message_list.dart:14` | Message-list renderer for loading, error, empty, and populated states. Loading uses date plus alternating message-bubble skeletons through `CatchAsyncValueView`; populated data inserts centered day separators, splits same-sender bubble runs across day boundaries, and uses `CatchEmptyState` for empty threads. It receives the latest shared event so the empty prompt can match the Messaging handoff's event-grounded copy before the `Say hi` CTA, and it keeps variable-height `MessageBubble` rows for individual messages; do not add `prototypeItem`/fixed item extents because chat bubbles can wrap or contain images. |
-| `ChatInputBar` | `lib/chats/presentation/widgets/chat_input_bar.dart:10` | Handoff `ChatComposer`: bottom dock with quiet circular image action, raised pill text field, filled circular send action, disabled opacity, loading indicators, and real send/image callbacks. Widgetbook exposes standalone states for ready, sending text, sending image, disabled, and text-only modes. |
+| `ChatInputBar` | `lib/chats/presentation/widgets/chat_input_bar.dart:10` | Handoff `ChatComposer`: bottom dock with one contained dialogue pill. The image upload action is the leading slot, the bare message `CatchField.input` is the center slot, and the filled send action is the trailing slot inside the same field outline; disabled opacity, loading indicators, text-only mode, and real send/image callbacks stay owned by the composer. Widgetbook exposes standalone states for ready, sending text, sending image, disabled, and text-only modes. |
 | `SuvbotActionBar` | `lib/chats/presentation/widgets/suvbot_action_bar.dart:27` | Demo-only chat bottom dock for Suvbot conversations. Groups check/refresh, warm-state, reset, help, and match-tester actions without rendering the normal chat composer. Reset actions open a handoff `CatchBottomSheetScaffold` with tokenized `CatchSurface` action rows instead of raw Material list tiles; text-required match tester actions keep their focused input sheet. |
 | `MessageBubble` | `lib/chats/presentation/widgets/message_bubble.dart:10` | Handoff `ChatBubble`: end/start alignment by sender, primary vs surface fills, fused corners inside sender groups, quiet mono timestamps, pending timestamp state, and optional image attachment. Widgetbook exposes standalone states for self/other, long copy, grouped/sending, and image attachment bubbles. |
 
@@ -4876,7 +4951,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `ProfileScreen` | `lib/user_profile/presentation/profile_screen.dart:16` | Profile tab destination. Gates screen-owned streams while the retained tab branch is inactive, owns the route-level top safe area, uses `NestedScrollView` for a scroll-away "Your profile" title plus a pinned handoff `CatchOptionGroup` Edit/Preview row, and keeps native `TabBarView` paging for smooth horizontal tab swipes. Loading preserves that tab shell: Edit renders `ProfileTabSkeletonSliverBody`, Preview renders `ProfileSurfaceSkeleton`, and no centered spinner replaces the route. The pinned option row is wrapped in `SliverOverlapAbsorber`; each tab body starts with `SliverOverlapInjector`. Owns the `TabController` locally because tab selection is route UI state; `initialTabIndex` exists for deterministic Preview route captures while production keeps the Edit default. Preview renders full-bleed below the option row, with the shared `ProfileSurface` owning the inner body gutter. |
-| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone signed-in edit tab content. Wraps the edit form in a `ListView` for isolated/non-sliver usage and renders the handoff sections Photos, Prompts, About you, Running, and Lifestyle through `CatchSection`/`ProfileInfoSection` on-surface groups. `Display name` is the first editable About field and is the only public-facing profile name; onboarding identity fields such as date of birth and gender are readonly, and last name is not shown publicly. Profile prompt rows use catalog-backed pickers that hide prompt IDs already selected in other rows. Optional/profile-detail fields, including Instagram, remain editable. Running is always visible and owns pace, distances, reasons, and favorite run times. Discovery-only preferences such as interested-in genders and match age range live in Filters, not Edit Profile. Optional single-choice edit sheets open unselected when the underlying field is empty. |
+| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone signed-in edit tab content. Wraps the edit form in a `ListView` for isolated/non-sliver usage and renders the handoff sections Photos, Prompts, About you, Running, and Lifestyle through `CatchSection`/`ProfileInfoSection` on-surface groups. `ProfileInfoSection` stretches every `CatchField` row to the viewport edge so tap/focus highlights and row trailing controls run full-bleed instead of stopping at the section gutter. Simple text rows, including Display name, Email, Instagram, Job title, and Company, render as direct editable `CatchField.input` rows through `ProfileDirectTextEntryField`; they do not open inline disclosure drawers. `Display name` is the first editable About field and is the only public-facing profile name. Onboarding identity fields such as date of birth and gender are readonly, and last name is not shown publicly. Profile prompt rows use catalog-backed pickers that hide prompt IDs already selected in other rows. Optional/profile-detail fields, including Instagram, remain editable. Running is always visible and owns pace, distances, reasons, and favorite run times. Discovery-only preferences such as interested-in genders and match age range live in Filters, not Edit Profile. Optional single-choice edit sheets open unselected when the underlying field is empty. |
 | `ProfileTabContent` | `lib/user_profile/presentation/widgets/profile_tab.dart:41` | Shared provider-free Profile Edit body used by both the standalone `ProfileTab` list and sliver-native `ProfileTabSliverBody`. It owns the handoff section ordering and receives the scroll/content wrapper as a builder so route and isolated review contexts stay canonical without duplicate adapters. |
 | `ProfileTabSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:69` | Sliver-native profile edit body. Reuses the same handoff sections as `ProfileTab` but contributes a padded sliver adapter for parent `CustomScrollView` usage. Uses `profileTabBodyPadding` for the edit body; Preview is full-bleed and no longer shares this inset. |
 | `ProfileTabSkeletonSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:92` | Sliver-native Edit-tab loading skeleton. Reuses `profileTabBodyPadding`, `CatchSection`, the 3x2 profile-photo grid geometry, and profile info-row spacing to mimic Photos, Profile strength, Prompts, About you, Running, and Lifestyle while the signed-in profile stream resolves. |
@@ -4885,21 +4960,21 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `UserAnalyticsPanel` | `lib/user_analytics/presentation/user_analytics_panel.dart:17` | Profile insights panel embedded from the profile tab. Watches the user analytics repository at the route edge and renders the range selector, metric cards, trend, insight tips, data-quality sections, empty state, error state, and report-shaped loading skeleton through function-folded internal composition. Widgetbook catalogs `UserAnalyticsPanel` directly for loaded, empty, loading, and error states. |
+| `UserAnalyticsPanel` | `lib/user_analytics/presentation/user_analytics_panel.dart:17` | Profile insights panel embedded from the profile Insights tab. Watches the user analytics repository at the route edge and renders the range selector, summary, trend, insight tips, data-quality sections, empty state, error state, and report-shaped loading skeleton through primitive-backed composition. Summary, Suggestions, and Data coverage use `CatchSection` plus `CatchField.read`; trend uses `CatchMetricStrip` and `CatchMiniBarChart`; empty/error/loading states route through shared Catch primitives. Widgetbook catalogs `UserAnalyticsPanel` directly for loaded, empty, loading, and error states. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
 | `PreviewTab` | `lib/user_profile/presentation/widgets/preview_tab.dart:5` | Preview tab showing how the user's profile looks to others by rendering the shared handoff `ProfileSurface`, with owner-provided scroll controller, physics, bottom padding, and leading-overscroll callback when mounted inside ProfileScreen. |
-| `ProfileInlineTextValue` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:163` | Row-value wrapper that renders the collapsed display value directly and composes active editing through `CatchField.input`. Supports multiline prompt editing, length limiting, blank-line normalization, autofocus, and shared underline input chrome without profile-local text-field implementation. |
+| `ProfileInlineTextValue` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:299` | Prompt row value wrapper that renders the collapsed display value directly and composes active prompt-answer editing through `CatchField.input`. Supports multiline prompt editing, length limiting, blank-line normalization, autofocus, and shared underline input chrome without profile-local text-field implementation. |
 
 ### StatefulWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ProfileInlineTextEntryEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:249` | Row-owned text editor that turns `CatchField` rows into `ProfileInlineTextValue`, including multiline prompt editing in the row value slot, validation, input normalization, and trailing `Cancel`/`Done` actions in the shared inline panel. |
-| `ProfileInlinePromptEntryEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:428` | Row-owned profile-prompt editor. Combines the inline prompt answer text primitive with a `CatchField.select` catalog picker, filters out prompt IDs used by sibling prompt rows, and saves ordered `profilePrompts` patches so prompt slots stay unique. |
+| `ProfileDirectTextEntryField` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:77` | Direct editable profile text row built on `CatchField.input`. Owns the text controller, validation/save error display, blur/submit save behavior, keyboard/autofill settings, trimming, and field patch conversion for simple Edit Profile text rows. Empty rows keep the shared collapsed field contract until focus, with the offstage editable retained so first focus expands without triggering the horizontal pager. |
+| `ProfileInlinePromptEntryEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:385` | Row-owned profile-prompt editor. Combines the inline prompt answer text primitive with a `CatchField.select` catalog picker, filters out prompt IDs used by sibling prompt rows, and saves ordered `profilePrompts` patches so prompt slots stay unique. |
 | `ProfileInlineHeightEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:642` | Inline bounded height editor using bounded plus-minus controls and the shared inline editor panel. |
 | `ProfileInlineSingleChoiceEntryEditor<T>` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:533` | Row-owned nullable single-choice editor. Selected value renders in the row slot, available alternatives render below, and `Cancel`/`Done` owns commit/discard. |
 | `ProfileInlineMultiChoiceEntryEditor<T>` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:656` | Row-owned multi-choice editor. Selected chips stay in the row slot with check icons, available alternatives render below, and optional fields allow deselecting row chips. |

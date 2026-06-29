@@ -107,8 +107,7 @@ class CatchCoverStory extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (hasChrome)
-                  _buildCoverStoryChrome(context, paper: paper, story: this),
+                if (hasChrome) CoverStoryChrome(paper: paper, story: this),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
                     CatchSpacing.s5,
@@ -116,8 +115,7 @@ class CatchCoverStory extends StatelessWidget {
                     CatchSpacing.s5,
                     CatchSpacing.s6,
                   ),
-                  child: _buildCoverStoryContent(
-                    context,
+                  child: CoverStoryContent(
                     paper: paper,
                     accent: accent,
                     story: this,
@@ -132,171 +130,187 @@ class CatchCoverStory extends StatelessWidget {
   }
 }
 
-Widget _buildCoverStoryChrome(
-  BuildContext context, {
-  required Color paper,
-  required CatchCoverStory story,
-}) {
-  return Padding(
-    padding: const EdgeInsets.fromLTRB(
-      CatchSpacing.s5,
-      CatchSpacing.s3,
-      CatchSpacing.s5,
-      CatchSpacing.s0,
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        if (story.location != null && story.location!.isNotEmpty)
-          GestureDetector(
-            onTap: story.onLocation,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  story.location!.toUpperCase(),
-                  style: CatchTextStyles.kicker(
-                    context,
+class CoverStoryChrome extends StatelessWidget {
+  const CoverStoryChrome({super.key, required this.paper, required this.story});
+
+  final Color paper;
+  final CatchCoverStory story;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.s3,
+        CatchSpacing.s5,
+        CatchSpacing.s0,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (story.location != null && story.location!.isNotEmpty)
+            GestureDetector(
+              onTap: story.onLocation,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    story.location!.toUpperCase(),
+                    style: CatchTextStyles.kicker(
+                      context,
+                      color: paper.withValues(
+                        alpha: CatchOpacity.coverStoryLocation,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: CatchSpacing.micro6),
+                  Icon(
+                    CatchIcons.expandMoreRounded,
+                    size: CatchIcon.xs,
                     color: paper.withValues(
                       alpha: CatchOpacity.coverStoryLocation,
                     ),
                   ),
+                ],
+              ),
+            )
+          else
+            const SizedBox.shrink(),
+          if (story.showSearch)
+            Semantics(
+              button: true,
+              label: 'Search',
+              child: GestureDetector(
+                onTap: story.onSearch,
+                child: Container(
+                  width: CatchLayout.coverStorySearchExtent,
+                  height: CatchLayout.coverStorySearchExtent,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: paper.withValues(
+                        alpha: CatchOpacity.coverStorySearchBorder,
+                      ),
+                    ),
+                  ),
+                  child: Icon(
+                    CatchIcons.searchRounded,
+                    size: CatchIcon.control,
+                    color: paper,
+                  ),
                 ),
-                const SizedBox(width: CatchSpacing.micro6),
-                Icon(
-                  CatchIcons.expandMoreRounded,
-                  size: CatchIcon.xs,
-                  color: paper.withValues(
-                    alpha: CatchOpacity.coverStoryLocation,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class CoverStoryContent extends StatelessWidget {
+  const CoverStoryContent({
+    super.key,
+    required this.paper,
+    required this.accent,
+    required this.story,
+  });
+
+  final Color paper;
+  final Color accent;
+  final CatchCoverStory story;
+
+  @override
+  Widget build(BuildContext context) {
+    final dataLines = [
+      if (story.data != null && story.data!.isNotEmpty) story.data!,
+      if (story.data2 != null && story.data2!.isNotEmpty) story.data2!,
+    ];
+    final hasData = dataLines.isNotEmpty;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (story.kicker != null && story.kicker!.isNotEmpty) ...[
+          Text(
+            story.kicker!.toUpperCase(),
+            style: CatchTextStyles.kickerLg(
+              context,
+              color: Color.lerp(
+                paper,
+                accent,
+                CatchOpacity.coverStoryKickerMix,
+              ),
+            ),
+          ),
+          const SizedBox(height: CatchSpacing.s3),
+        ],
+        Text(
+          story.title,
+          style: CatchTextStyles.eventTitle(context, color: paper),
+        ),
+        if (story.body != null && story.body!.isNotEmpty) ...[
+          const SizedBox(height: CatchSpacing.micro14),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
+            child: Text(
+              story.body!,
+              style: CatchTextStyles.bodyM(
+                context,
+                color: paper.withValues(alpha: CatchOpacity.coverStoryBody),
+              ),
+            ),
+          ),
+        ],
+        if (story.cta != null || hasData) ...[
+          const SizedBox(height: CatchSpacing.s5),
+          Row(
+            children: [
+              if (story.cta != null)
+                Expanded(
+                  child: CatchButton(
+                    label: story.cta!,
+                    onPressed: story.onCta,
+                    backgroundColor: paper,
+                    foregroundColor: CatchTokens.light.ink,
+                    fullWidth: true,
+                    size: CatchButtonSize.lg,
+                  ),
+                ),
+              if (hasData) ...[
+                if (story.cta != null)
+                  const SizedBox(width: CatchSpacing.micro14),
+                // Flexible + single-line ellipsis so the data block yields to
+                // the Expanded CTA on narrow widths / large text scales.
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (var i = 0; i < dataLines.length; i++) ...[
+                        if (i > 0) const SizedBox(height: CatchSpacing.micro3),
+                        Text(
+                          dataLines[i],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.end,
+                          style: CatchTextStyles.monoLabel(
+                            context,
+                            color: paper.withValues(
+                              alpha: CatchOpacity.coverStoryData,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ],
-            ),
-          )
-        else
-          const SizedBox.shrink(),
-        if (story.showSearch)
-          Semantics(
-            button: true,
-            label: 'Search',
-            child: GestureDetector(
-              onTap: story.onSearch,
-              child: Container(
-                width: CatchLayout.coverStorySearchExtent,
-                height: CatchLayout.coverStorySearchExtent,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: paper.withValues(
-                      alpha: CatchOpacity.coverStorySearchBorder,
-                    ),
-                  ),
-                ),
-                child: Icon(
-                  CatchIcons.searchRounded,
-                  size: CatchIcon.control,
-                  color: paper,
-                ),
-              ),
-            ),
-          ),
-      ],
-    ),
-  );
-}
-
-Widget _buildCoverStoryContent(
-  BuildContext context, {
-  required Color paper,
-  required Color accent,
-  required CatchCoverStory story,
-}) {
-  final dataLines = [
-    if (story.data != null && story.data!.isNotEmpty) story.data!,
-    if (story.data2 != null && story.data2!.isNotEmpty) story.data2!,
-  ];
-  final hasData = dataLines.isNotEmpty;
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      if (story.kicker != null && story.kicker!.isNotEmpty) ...[
-        Text(
-          story.kicker!.toUpperCase(),
-          style: CatchTextStyles.kickerLg(
-            context,
-            color: Color.lerp(paper, accent, CatchOpacity.coverStoryKickerMix),
-          ),
-        ),
-        const SizedBox(height: CatchSpacing.s3),
-      ],
-      Text(
-        story.title,
-        style: CatchTextStyles.eventTitle(context, color: paper),
-      ),
-      if (story.body != null && story.body!.isNotEmpty) ...[
-        const SizedBox(height: CatchSpacing.micro14),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 320),
-          child: Text(
-            story.body!,
-            style: CatchTextStyles.bodyM(
-              context,
-              color: paper.withValues(alpha: CatchOpacity.coverStoryBody),
-            ),
-          ),
-        ),
-      ],
-      if (story.cta != null || hasData) ...[
-        const SizedBox(height: CatchSpacing.s5),
-        Row(
-          children: [
-            if (story.cta != null)
-              Expanded(
-                child: CatchButton(
-                  label: story.cta!,
-                  onPressed: story.onCta,
-                  backgroundColor: paper,
-                  foregroundColor: CatchTokens.light.ink,
-                  fullWidth: true,
-                  size: CatchButtonSize.lg,
-                ),
-              ),
-            if (hasData) ...[
-              if (story.cta != null)
-                const SizedBox(width: CatchSpacing.micro14),
-              // Flexible + single-line ellipsis so the data block yields to the
-              // Expanded CTA on narrow widths / large text scales instead of
-              // overflowing the Row.
-              Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    for (var i = 0; i < dataLines.length; i++) ...[
-                      if (i > 0) const SizedBox(height: CatchSpacing.micro3),
-                      Text(
-                        dataLines[i],
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.end,
-                        style: CatchTextStyles.monoLabel(
-                          context,
-                          color: paper.withValues(
-                            alpha: CatchOpacity.coverStoryData,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
             ],
-          ],
-        ),
+          ),
+        ],
       ],
-    ],
-  );
+    );
+  }
 }
 
 /// Faint repeating diagonal hairlines (135°) for the cover's paper texture.

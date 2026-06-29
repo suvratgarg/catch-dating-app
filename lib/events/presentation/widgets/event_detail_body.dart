@@ -12,6 +12,8 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
@@ -119,8 +121,7 @@ class EventDetailBody extends ConsumerWidget {
     if (isHostApp) {
       bottomNavigationBar = null;
     } else if (!isAuthenticated) {
-      bottomNavigationBar = _guestBookCta(
-        context,
+      bottomNavigationBar = GuestBookCta(
         clubId: clubId,
         eventId: event.id,
         inviteCode: inviteCode,
@@ -196,9 +197,7 @@ class EventDetailBody extends ConsumerWidget {
                 participation: participation,
                 showConsumerActions: showConsumerActions,
               ))
-                _eventCompanionEntry(
-                  context,
-                  ref,
+                EventCompanionEntry(
                   event: event,
                   clubId: clubId,
                   surfaceStyle: style,
@@ -209,16 +208,13 @@ class EventDetailBody extends ConsumerWidget {
                 showConsumerActions: showConsumerActions,
                 now: now,
               ))
-                _eventInviteLoopCard(
-                  context,
+                EventInviteLoopCard(
                   event: event,
                   onShare: shareEvent,
                   surfaceStyle: style,
                 ),
               Divider(color: style.dividerColor, height: 1),
-              _eventDetailHostsSection(
-                context,
-                ref,
+              EventDetailHostsSection(
                 event: event,
                 clubId: clubId,
                 currentUid: userProfile?.uid,
@@ -259,62 +255,71 @@ bool _canShowInviteLoop({
   return participation?.status == EventParticipationStatus.signedUp;
 }
 
-Widget _eventInviteLoopCard(
-  BuildContext context, {
-  required Event event,
-  required ValueChanged<BuildContext> onShare,
-  required EventDetailSurfaceStyle surfaceStyle,
-}) {
-  final t = CatchTokens.of(context);
-  return CatchSurface(
-    backgroundColor: surfaceStyle.surfaceBackground,
-    borderColor: surfaceStyle.isDark
-        ? surfaceStyle.borderColor
-        : t.primary.withValues(alpha: CatchOpacity.eventDetailLightBorder),
-    padding: CatchInsets.tileContentCompact,
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(
-          CatchIcons.platformShare(platform: Theme.of(context).platform),
-          color: t.primary,
-        ),
-        gapW12,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Bring someone into the room',
-                style: CatchTextStyles.sectionTitle(
-                  context,
-                  color: surfaceStyle.headingColor,
-                ),
-              ),
-              gapH4,
-              Text(
-                'Your spot is booked. Invite a friend who would make this event better.',
-                style: CatchTextStyles.supporting(
-                  context,
-                  color: surfaceStyle.bodyColor,
-                ),
-              ),
-              gapH12,
-              Builder(
-                builder: (buttonContext) => CatchButton(
-                  label: 'Invite a friend',
-                  variant: CatchButtonVariant.secondary,
-                  icon: Icon(CatchIcons.sendRounded),
-                  onPressed: () => onShare(buttonContext),
-                  fullWidth: true,
-                ),
-              ),
-            ],
+class EventInviteLoopCard extends StatelessWidget {
+  const EventInviteLoopCard({
+    super.key,
+    required this.event,
+    required this.onShare,
+    required this.surfaceStyle,
+  });
+
+  final Event event;
+  final ValueChanged<BuildContext> onShare;
+  final EventDetailSurfaceStyle surfaceStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      backgroundColor: surfaceStyle.surfaceBackground,
+      borderColor: surfaceStyle.isDark
+          ? surfaceStyle.borderColor
+          : t.primary.withValues(alpha: CatchOpacity.eventDetailLightBorder),
+      padding: CatchInsets.tileContentCompact,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            CatchIcons.platformShare(platform: Theme.of(context).platform),
+            color: t.primary,
           ),
-        ),
-      ],
-    ),
-  );
+          gapW12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Bring someone into the room',
+                  style: CatchTextStyles.sectionTitle(
+                    context,
+                    color: surfaceStyle.headingColor,
+                  ),
+                ),
+                gapH4,
+                Text(
+                  'Your spot is booked. Invite a friend who would make this event better.',
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: surfaceStyle.bodyColor,
+                  ),
+                ),
+                gapH12,
+                Builder(
+                  builder: (buttonContext) => CatchButton(
+                    label: 'Invite a friend',
+                    variant: CatchButtonVariant.secondary,
+                    icon: Icon(CatchIcons.sendRounded),
+                    onPressed: () => onShare(buttonContext),
+                    fullWidth: true,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 bool _canOpenCompanion({
@@ -332,80 +337,104 @@ bool _canOpenCompanion({
   };
 }
 
-Widget _eventCompanionEntry(
-  BuildContext context,
-  WidgetRef ref, {
-  required Event event,
-  required String clubId,
-  required EventDetailSurfaceStyle surfaceStyle,
-}) {
-  final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
-  return planAsync.maybeWhen(
-    data: (plan) => plan == null
-        ? const SizedBox.shrink()
-        : _eventCompanionCard(
-            context,
-            event: event,
-            clubId: clubId,
-            surfaceStyle: surfaceStyle,
-          ),
-    orElse: () => const SizedBox.shrink(),
-  );
+class EventCompanionEntry extends ConsumerWidget {
+  const EventCompanionEntry({
+    super.key,
+    required this.event,
+    required this.clubId,
+    required this.surfaceStyle,
+  });
+
+  final Event event;
+  final String clubId;
+  final EventDetailSurfaceStyle surfaceStyle;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
+    return planAsync.when(
+      data: (plan) => plan == null
+          ? const SizedBox.shrink()
+          : EventCompanionCard(
+              event: event,
+              clubId: clubId,
+              surfaceStyle: surfaceStyle,
+            ),
+      loading: () => const Padding(
+        padding: EdgeInsets.all(CatchSpacing.s4),
+        child: Center(child: CatchLoadingIndicator()),
+      ),
+      error: (e, st) => CatchInlineErrorState.fromError(
+        e,
+        onRetry: () => ref.invalidate(watchEventSuccessPlanProvider(event.id)),
+        compact: true,
+      ),
+    );
+  }
 }
 
-Widget _eventCompanionCard(
-  BuildContext context, {
-  required Event event,
-  required String clubId,
-  required EventDetailSurfaceStyle surfaceStyle,
-}) {
-  final t = CatchTokens.of(context);
-  return CatchSurface(
-    backgroundColor: surfaceStyle.surfaceBackground,
-    borderColor: surfaceStyle.borderColor,
-    padding: CatchInsets.tileContentCompact,
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(CatchIcons.autoAwesomeOutlined, color: t.primary),
-        gapW12,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Event companion',
-                style: CatchTextStyles.sectionTitle(
-                  context,
-                  color: surfaceStyle.headingColor,
+class EventCompanionCard extends StatelessWidget {
+  const EventCompanionCard({
+    super.key,
+    required this.event,
+    required this.clubId,
+    required this.surfaceStyle,
+  });
+
+  final Event event;
+  final String clubId;
+  final EventDetailSurfaceStyle surfaceStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      backgroundColor: surfaceStyle.surfaceBackground,
+      borderColor: surfaceStyle.borderColor,
+      padding: CatchInsets.tileContentCompact,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(CatchIcons.autoAwesomeOutlined, color: t.primary),
+          gapW12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Event companion',
+                  style: CatchTextStyles.sectionTitle(
+                    context,
+                    color: surfaceStyle.headingColor,
+                  ),
                 ),
-              ),
-              gapH4,
-              Text(
-                'Check in, see your social prompt, and handle private follow-up after the event.',
-                style: CatchTextStyles.supporting(
-                  context,
-                  color: surfaceStyle.bodyColor,
+                gapH4,
+                Text(
+                  'Check in, see your social prompt, and handle private follow-up after the event.',
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: surfaceStyle.bodyColor,
+                  ),
                 ),
-              ),
-              gapH12,
-              CatchButton(
-                label: 'Open companion',
-                variant: CatchButtonVariant.secondary,
-                icon: Icon(CatchIcons.phoneIphoneRounded),
-                onPressed: () => context.pushNamed(
-                  Routes.eventSuccessCompanionScreen.name,
-                  pathParameters: {'clubId': clubId, 'eventId': event.id},
-                  extra: event,
+                gapH12,
+                CatchButton(
+                  label: 'Open companion',
+                  variant: CatchButtonVariant.secondary,
+                  icon: Icon(CatchIcons.phoneIphoneRounded),
+                  onPressed: () => context.pushNamed(
+                    Routes.eventSuccessCompanionScreen.name,
+                    pathParameters: {'clubId': clubId, 'eventId': event.id},
+                    extra: event,
+                  ),
+                  fullWidth: true,
                 ),
-                fullWidth: true,
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
 
 void _toggleSavedEvent(
@@ -504,101 +533,137 @@ bool _canAddEventToCalendar({
   return participation?.status == EventParticipationStatus.signedUp;
 }
 
-Widget _guestBookCta(
-  BuildContext context, {
-  required String clubId,
-  required String eventId,
-  String? inviteCode,
-  String? inviteLinkId,
-  bool darkSurface = false,
-}) {
-  final t = CatchTokens.of(context);
-  return SafeArea(
-    child: ColoredBox(
-      color: darkSurface ? t.ink : t.surface,
-      child: Padding(
-        padding: CatchInsets.contentBlock,
-        child: CatchButton(
-          label: 'Sign in to book this event',
-          onPressed: () => context.go(
-            Uri(
-              path: Routes.authScreen.path,
-              queryParameters: {
-                'from': AppDeepLinks.inAppEventPath(
-                  clubId: clubId,
-                  eventId: eventId,
-                  inviteCode: inviteCode,
-                  inviteLinkId: inviteLinkId,
-                ),
-              },
-            ).toString(),
+class GuestBookCta extends StatelessWidget {
+  const GuestBookCta({
+    super.key,
+    required this.clubId,
+    required this.eventId,
+    this.inviteCode,
+    this.inviteLinkId,
+    this.darkSurface = false,
+  });
+
+  final String clubId;
+  final String eventId;
+  final String? inviteCode;
+  final String? inviteLinkId;
+  final bool darkSurface;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return SafeArea(
+      child: ColoredBox(
+        color: darkSurface ? t.ink : t.surface,
+        child: Padding(
+          padding: CatchInsets.contentBlock,
+          child: CatchButton(
+            label: 'Sign in to book this event',
+            onPressed: () => context.go(
+              Uri(
+                path: Routes.authScreen.path,
+                queryParameters: {
+                  'from': AppDeepLinks.inAppEventPath(
+                    clubId: clubId,
+                    eventId: eventId,
+                    inviteCode: inviteCode,
+                    inviteLinkId: inviteLinkId,
+                  ),
+                },
+              ).toString(),
+            ),
+            icon: Icon(
+              CatchIcons.lockOutlineRounded,
+              size: CatchIcon.md,
+              color: t.primary,
+            ),
+            fullWidth: true,
           ),
-          icon: Icon(
-            CatchIcons.lockOutlineRounded,
-            size: CatchIcon.md,
-            color: t.primary,
-          ),
-          fullWidth: true,
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 /// "Your hosts" section — watches the event's club and renders the design-system
 /// [EventDetailHostCard] from it, wiring View club (→ club detail) and, for
 /// signed-in consumers, Message host (→ host inquiry chat).
-Widget _eventDetailHostsSection(
-  BuildContext context,
-  WidgetRef ref, {
-  required Event event,
-  required String clubId,
-  required String? currentUid,
-  required bool canMessageHost,
-  EventDetailSurfaceStyle? surfaceStyle,
-}) {
-  final club = ref.watch(fetchClubProvider(clubId)).asData?.value;
-  if (club == null) return const SizedBox.shrink();
+class EventDetailHostsSection extends ConsumerWidget {
+  const EventDetailHostsSection({
+    super.key,
+    required this.event,
+    required this.clubId,
+    required this.currentUid,
+    required this.canMessageHost,
+    this.surfaceStyle,
+  });
 
-  final hostProfiles = club.displayHostProfiles;
-  final hostProfile = hostProfiles.isEmpty ? null : hostProfiles.first;
-  final hostUid = hostProfile?.uid ?? club.ownerOrPrimaryHostUserId;
-  final style = surfaceStyle;
-  final canMessage =
-      canMessageHost &&
-      hostUid != null &&
-      currentUid != null &&
-      currentUid != hostUid;
+  final Event event;
+  final String clubId;
+  final String? currentUid;
+  final bool canMessageHost;
+  final EventDetailSurfaceStyle? surfaceStyle;
 
-  return CatchSection.divided(
-    title: 'Your hosts',
-    dividerColor: style?.dividerColor,
-    titleColor: style?.headingColor,
-    child: EventDetailHostCard(
-      activityKind: event.activityKind,
-      hostName: club.displayHostName,
-      photoUrl: hostProfile?.avatarUrl ?? club.logoPhotoUrl,
-      meta: _hostMeta(club),
-      verified: club.ownerOrPrimaryHostUserId != null,
-      stats: _hostStats(club),
-      surfaceColor: style?.surfaceBackground,
-      borderColor: style?.borderColor,
-      nameColor: style?.headingColor,
-      metaColor: style?.bodyColor,
-      statValueColor: style?.headingColor,
-      statLabelColor: style?.mutedColor,
-      dividerColor: style?.dividerColor,
-      onViewClub: () => context.pushNamed(
-        Routes.clubDetailScreen.name,
-        pathParameters: {'clubId': club.id},
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final clubAsync = ref.watch(fetchClubProvider(clubId));
+    return clubAsync.when(
+      data: (club) => _buildHostContent(context, ref, club),
+      loading: () => const Padding(
+        padding: EdgeInsets.all(CatchSpacing.s4),
+        child: Center(child: CatchLoadingIndicator()),
       ),
-      onMessage: canMessage
-          ? () => unawaited(
-              _messageHost(context, ref, clubId: club.id, hostUid: hostUid),
-            )
-          : null,
-    ),
-  );
+      error: (e, st) => CatchInlineErrorState.fromError(
+        e,
+        onRetry: () => ref.invalidate(fetchClubProvider(clubId)),
+        compact: true,
+      ),
+    );
+  }
+
+  Widget _buildHostContent(BuildContext context, WidgetRef ref, Club? club) {
+    if (club == null) return const SizedBox.shrink();
+
+    final hostProfiles = club.displayHostProfiles;
+    final hostProfile = hostProfiles.isEmpty ? null : hostProfiles.first;
+    final hostUid = hostProfile?.uid ?? club.ownerOrPrimaryHostUserId;
+    final style = surfaceStyle;
+    final canMessage =
+        canMessageHost &&
+        hostUid != null &&
+        currentUid != null &&
+        currentUid != hostUid;
+
+    return CatchSection.divided(
+      title: 'Your hosts',
+      dividerColor: style?.dividerColor,
+      titleColor: style?.headingColor,
+      child: EventDetailHostCard(
+        activityKind: event.activityKind,
+        hostName: club.displayHostName,
+        photoUrl: hostProfile?.avatarUrl ?? club.logoPhotoUrl,
+        meta: _hostMeta(club),
+        verified: club.ownerOrPrimaryHostUserId != null,
+        stats: _hostStats(club),
+        surfaceColor: style?.surfaceBackground,
+        borderColor: style?.borderColor,
+        nameColor: style?.headingColor,
+        metaColor: style?.bodyColor,
+        statValueColor: style?.headingColor,
+        statLabelColor: style?.mutedColor,
+        dividerColor: style?.dividerColor,
+        onViewClub: () => context.pushNamed(
+          Routes.clubDetailScreen.name,
+          pathParameters: {'clubId': club.id},
+        ),
+        onMessage: canMessage
+            ? () => unawaited(
+                _messageHost(context, ref, clubId: club.id, hostUid: hostUid),
+              )
+            : null,
+      ),
+    );
+  }
 }
 
 const List<String> _monthAbbrevs = <String>[

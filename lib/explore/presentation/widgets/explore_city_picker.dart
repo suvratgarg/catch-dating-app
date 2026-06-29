@@ -52,9 +52,7 @@ class _ExploreCityPickerState extends ConsumerState<ExploreCityPicker> {
     });
 
     return citiesAsync.when(
-      data: (cities) => _buildCityTrigger(
-        context,
-        city: selectedCity,
+      data: (cities) => CityTrigger(city: selectedCity,
         focused: _isSheetOpen,
         presentation: widget.presentation,
         foregroundColor: widget.foregroundColor,
@@ -66,9 +64,7 @@ class _ExploreCityPickerState extends ConsumerState<ExploreCityPicker> {
   }
 
   Widget _disabledTrigger(CityData city) {
-    return _buildCityTrigger(
-      context,
-      city: city,
+    return CityTrigger(city: city,
       enabled: false,
       focused: false,
       presentation: widget.presentation,
@@ -118,16 +114,26 @@ class _ExploreCityPickerState extends ConsumerState<ExploreCityPicker> {
   }
 }
 
-Widget _buildCityTrigger(
-  BuildContext context, {
-  required CityData city,
-  required bool focused,
-  ExploreCityPickerPresentation presentation =
-      ExploreCityPickerPresentation.icon,
-  Color? foregroundColor,
-  bool enabled = true,
-  VoidCallback? onTap,
-}) {
+class CityTrigger extends StatelessWidget {
+  const CityTrigger({
+    super.key,
+    required this.city,
+    required this.focused,
+    this.presentation = ExploreCityPickerPresentation.icon,
+    this.foregroundColor,
+    this.enabled = true,
+    this.onTap,
+  });
+
+  final CityData city;
+  final bool focused;
+  final ExploreCityPickerPresentation presentation;
+  final Color? foregroundColor;
+  final bool enabled;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
   final t = CatchTokens.of(context);
   final effectiveForeground = foregroundColor ?? t.ink;
 
@@ -198,6 +204,7 @@ Widget _buildCityTrigger(
       ),
     ),
   );
+  }
 }
 
 Widget _buildExploreCityPickerSheet(

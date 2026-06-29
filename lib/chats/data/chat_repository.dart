@@ -60,12 +60,20 @@ class ChatRepository {
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
-  String createMessageId({required String matchId}) => _db
-      .collection(_matchesCollectionPath)
-      .doc(matchId)
-      .collection('messages')
-      .doc()
-      .id;
+  Future<String> createMessageId({required String matchId}) =>
+      withBackendErrorContext(
+        () async => _db
+            .collection(_matchesCollectionPath)
+            .doc(matchId)
+            .collection('messages')
+            .doc()
+            .id,
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'create message id',
+          resource: 'messages',
+        ),
+      );
 
   Future<void> sendMessage({
     required String matchId,

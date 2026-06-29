@@ -55,8 +55,7 @@ class ExploreFilterRail extends ConsumerWidget {
                       for (final option in _timeOptions) ...[
                         if (option != _timeOptions.first)
                           const SizedBox(width: _optionGap),
-                        _buildExploreRailLabel(
-                          context,
+                        ExploreRailLabel(
                           label: option.label,
                           selected: option.value == filters.timeFilter,
                           onTap: () =>
@@ -68,9 +67,8 @@ class ExploreFilterRail extends ConsumerWidget {
                 ),
               ),
               gapW12,
-              _buildExploreFilterGlyphButton(
+              ExploreFilterGlyphButton(
                 key: const ValueKey('explore-filter-button'),
-                context: context,
                 activeCount: activeCount,
                 onTap: () => _showExploreFilterSheet(context),
               ),
@@ -82,90 +80,99 @@ class ExploreFilterRail extends ConsumerWidget {
   }
 }
 
-Widget _buildExploreRailLabel(
-  BuildContext context, {
-  required String label,
-  required bool selected,
-  required VoidCallback onTap,
-}) {
-  final t = CatchTokens.of(context);
-  final foreground = selected ? t.ink : t.ink3;
+class ExploreRailLabel extends StatelessWidget {
+  const ExploreRailLabel({
+    super.key,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
-  return Semantics(
-    button: true,
-    selected: selected,
-    child: InkWell(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: CatchMotion.fast,
-        curve: CatchMotion.standardCurve,
-        padding: EdgeInsets.only(
-          bottom: selected ? CatchSpacing.micro10 : CatchSpacing.s3,
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final foreground = selected ? t.ink : t.ink3;
+
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: InkWell(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: CatchMotion.fast,
+          curve: CatchMotion.standardCurve,
+          padding: EdgeInsets.only(
+            bottom: selected ? CatchSpacing.micro10 : CatchSpacing.s3,
+          ),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: selected ? t.ink : Colors.transparent,
+                width: CatchSpacing.micro3,
+              ),
+            ),
+          ),
+          child: Text(
+            label,
+            maxLines: 1,
+            softWrap: false,
+            style: CatchTextStyles.labelL(context, color: foreground),
+            textAlign: TextAlign.start,
+          ),
         ),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: selected ? t.ink : Colors.transparent,
-              width: CatchSpacing.micro3,
+      ),
+    );
+  }
+}
+
+class ExploreFilterGlyphButton extends StatelessWidget {
+  const ExploreFilterGlyphButton({
+    super.key,
+    required this.activeCount,
+    required this.onTap,
+  });
+
+  final int activeCount;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final semanticLabel = activeCount == 0
+        ? 'Open explore filters'
+        : 'Open explore filters, $activeCount active';
+
+    return Tooltip(
+      message: semanticLabel,
+      child: Semantics(
+        button: true,
+        label: semanticLabel,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(CatchRadius.pill),
+          child: SizedBox(
+            width: CatchLayout.iconButtonSize,
+            height: CatchLayout.browseHeaderSearchExtent,
+            child: CatchIconBadge(
+              label: '$activeCount',
+              isLabelVisible: activeCount > 0,
+              backgroundColor: t.ink,
+              foregroundColor: t.surface,
+              child: Icon(
+                CatchIcons.tuneRounded,
+                color: t.ink,
+                size: CatchIcon.md,
+              ),
             ),
           ),
         ),
-        child: Text(
-          label,
-          maxLines: 1,
-          softWrap: false,
-          style: CatchTextStyles.labelL(context, color: foreground),
-          textAlign: TextAlign.start,
-        ),
       ),
-    ),
-  );
-}
-
-Widget _buildExploreFilterGlyphButton({
-  required Key key,
-  required BuildContext context,
-  required int activeCount,
-  required VoidCallback onTap,
-}) {
-  final t = CatchTokens.of(context);
-  final semanticLabel = activeCount == 0
-      ? 'Open explore filters'
-      : 'Open explore filters, $activeCount active';
-
-  return Tooltip(
-    message: semanticLabel,
-    child: Semantics(
-      button: true,
-      label: semanticLabel,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        child: SizedBox(
-          key: key,
-          width: CatchLayout.iconButtonSize,
-          height: CatchLayout.browseHeaderSearchExtent,
-          child: Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.center,
-            children: [
-              CatchIconBadge(
-                label: '$activeCount',
-                isLabelVisible: activeCount > 0,
-                backgroundColor: t.ink,
-                foregroundColor: t.surface,
-                child: Icon(
-                  CatchIcons.tuneRounded,
-                  color: t.ink,
-                  size: CatchIcon.md,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
+    );
+  }
 }
 
 class ExploreFilterSheet extends ConsumerWidget {

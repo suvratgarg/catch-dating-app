@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/firestore_chunks.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/events/data/event_stream_utils.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/saved_event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -56,95 +56,21 @@ class SavedEventRepository {
       );
 
   Stream<List<Event>> watchSavedEventDetailsForUser({required String uid}) {
-    StreamSubscription<QuerySnapshot<SavedEvent>>? savedEventSub;
-    var eventSubs = <StreamSubscription<QuerySnapshot<Event>>>[];
-    var generation = 0;
-    var closed = false;
-
-    late final StreamController<List<Event>> controller;
-
-    void cancelEventSubscriptions() {
-      for (final sub in eventSubs) {
-        unawaited(sub.cancel());
-      }
-      eventSubs = [];
-    }
-
-    void emitSortedEvents({
-      required List<String> eventIds,
-      required Map<int, List<Event>> eventsByChunk,
-      required int chunkCount,
-    }) {
-      if (eventsByChunk.length < chunkCount || controller.isClosed) return;
-
-      final byId = <String, Event>{};
-      for (final events in eventsByChunk.values) {
-        for (final event in events) {
-          byId[event.id] = event;
-        }
-      }
-
-      final events = [
-        for (final id in eventIds)
-          if (byId[id] != null) byId[id]!,
-      ]..sort((a, b) => a.startTime.compareTo(b.startTime));
-      controller.add(events);
-    }
-
-    controller = StreamController<List<Event>>(
-      onListen: () {
-        savedEventSub = _savedEventsRef
-            .where('uid', isEqualTo: uid)
-            .snapshots()
-            .listen((snap) {
-              generation += 1;
-              final localGeneration = generation;
-              cancelEventSubscriptions();
-
-              final eventIds = snap.docs
-                  .map((doc) => doc.data().eventId)
-                  .toSet()
-                  .toList();
-              if (eventIds.isEmpty) {
-                if (!controller.isClosed) controller.add(const []);
-                return;
-              }
-
-              final chunks = chunkedForWhereIn(eventIds).toList(growable: false);
-              final eventsByChunk = <int, List<Event>>{};
-
-              for (var i = 0; i < chunks.length; i += 1) {
-                final chunk = chunks[i];
-                final sub = _eventsRef
-                    .where(FieldPath.documentId, whereIn: chunk)
-                    .snapshots()
-                    .listen((eventSnap) {
-                      if (closed || localGeneration != generation) return;
-                      eventsByChunk[i] = eventSnap.docs
-                          .map((doc) => doc.data())
-                          .toList();
-                      emitSortedEvents(
-                        eventIds: eventIds,
-                        eventsByChunk: eventsByChunk,
-                        chunkCount: chunks.length,
-                      );
-                    }, onError: controller.addError);
-                eventSubs.add(sub);
-              }
-            }, onError: controller.addError);
-      },
-      onCancel: () async {
-        closed = true;
-        cancelEventSubscriptions();
-        await savedEventSub?.cancel();
-        if (!controller.isClosed) {
-          await controller.close();
-        }
-      },
-    );
+    final idStream = _savedEventsRef
+        .where('uid', isEqualTo: uid)
+        .snapshots()
+        .map(
+          (snap) => snap.docs
+              .map((doc) => doc.data().eventId)
+              .toSet()
+              .toList(),
+        );
 
     return withBackendErrorStream(
-      () => controller.stream,
+      () => watchEventsByIdStream(
+        idStream: idStream,
+        eventsRef: _eventsRef,
+      ),
       context: const BackendErrorContext(
         service: BackendService.firestore,
         action: 'watch saved event details',
