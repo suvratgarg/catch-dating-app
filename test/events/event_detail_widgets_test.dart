@@ -27,6 +27,7 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.d
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_optimistic_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -92,8 +93,8 @@ void main() {
         ],
       );
 
-      expect(find.byType(EventDetailBody), findsOneWidget);
-      expect(find.byType(CatchSkeleton), findsNothing);
+      expect(find.byType(EventDetailOptimisticBody), findsOneWidget);
+      expect(find.byType(CatchSkeleton), findsWidgets);
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 

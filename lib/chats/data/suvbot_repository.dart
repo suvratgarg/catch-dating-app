@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
@@ -12,39 +13,6 @@ const suvbotUid = 'suvbot';
 
 bool isSuvbotConversation({required String matchId, String? otherUid}) {
   return otherUid == suvbotUid || matchId.startsWith('${suvbotUid}_');
-}
-
-final class SuvbotActionItem {
-  const SuvbotActionItem({
-    required this.id,
-    required this.label,
-    required this.description,
-    required this.icon,
-    this.destructive = false,
-    this.requiresText = false,
-  });
-
-  factory SuvbotActionItem.fromCallableData(Object? data) {
-    if (data case final Map<Object?, Object?> map) {
-      return SuvbotActionItem(
-        id: _stringField(map, 'id'),
-        label: _stringField(map, 'label'),
-        description: _stringField(map, 'description'),
-        icon: _stringField(map, 'icon'),
-        destructive: map['destructive'] == true,
-        requiresText: map['requiresText'] == true,
-      );
-    }
-
-    throw StateError('Suvbot action response was malformed.');
-  }
-
-  final String id;
-  final String label;
-  final String description;
-  final String icon;
-  final bool destructive;
-  final bool requiresText;
 }
 
 /// Typed response for `listSuvbotDemoActions`.
@@ -118,9 +86,3 @@ SuvbotRepository suvbotRepository(Ref ref) =>
 @riverpod
 Future<List<SuvbotActionItem>> suvbotActions(Ref ref) =>
     ref.watch(suvbotRepositoryProvider).fetchActions();
-
-String _stringField(Map<Object?, Object?> map, String key) {
-  final value = map[key];
-  if (value is String && value.trim().isNotEmpty) return value;
-  throw StateError('Suvbot action response was missing $key.');
-}

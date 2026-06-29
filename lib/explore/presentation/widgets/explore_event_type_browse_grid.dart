@@ -31,10 +31,9 @@ class _ExploreEventTypeBrowseGridState
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
     final filters = ref.watch(exploreFiltersProvider);
     return switch (feedAsync) {
-      AsyncLoading() => _buildEventTypeBrowseSkeleton(),
+      AsyncLoading() => const EventTypeBrowseSkeleton(),
       AsyncError() => const SizedBox.shrink(),
-      AsyncData(:final value) => _buildEventTypeBrowseContent(
-        context,
+      AsyncData(:final value) => EventTypeBrowseContent(
         items: value.items,
         activeActivityTag: filters.activityTag,
         expanded: _expanded,
@@ -47,250 +46,306 @@ class _ExploreEventTypeBrowseGridState
   }
 }
 
-Widget _buildEventTypeBrowseContent(
-  BuildContext context, {
-  required List<ExploreEventItem> items,
-  required String? activeActivityTag,
-  required bool expanded,
-  required ValueChanged<ActivityKind> onCategoryTap,
-  required VoidCallback onExpand,
-}) {
-  final entries = _rankedActivityEntries(items);
-  if (entries.isEmpty) return const SizedBox.shrink();
+class EventTypeBrowseContent extends StatelessWidget {
+  const EventTypeBrowseContent({
+    super.key,
+    required this.items,
+    required this.activeActivityTag,
+    required this.expanded,
+    required this.onCategoryTap,
+    required this.onExpand,
+  });
 
-  final visibleEntries = expanded
-      ? entries
-      : entries.take(_activityPreviewCount).toList(growable: false);
-  final remainingCount = entries.length - visibleEntries.length;
-  final slots = [
-    for (final entry in visibleEntries) _ActivitySlot.entry(entry),
-    if (!expanded && remainingCount > 0) _ActivitySlot.more(remainingCount),
-  ];
+  final List<ExploreEventItem> items;
+  final String? activeActivityTag;
+  final bool expanded;
+  final ValueChanged<ActivityKind> onCategoryTap;
+  final VoidCallback onExpand;
 
-  return Padding(
-    padding: CatchInsets.eventTypeBrowseIndex,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('BY ACTIVITY', style: CatchTextStyles.kicker(context)),
-        gapH16,
-        _buildActivityTypeRows(
-          slots: slots,
-          activeActivityTag: activeActivityTag,
-          onCategoryTap: onCategoryTap,
-          onExpand: onExpand,
-        ),
-      ],
-    ),
-  );
+  @override
+  Widget build(BuildContext context) {
+    final entries = _rankedActivityEntries(items);
+    if (entries.isEmpty) return const SizedBox.shrink();
+
+    final visibleEntries = expanded
+        ? entries
+        : entries.take(_activityPreviewCount).toList(growable: false);
+    final remainingCount = entries.length - visibleEntries.length;
+    final slots = [
+      for (final entry in visibleEntries) ActivitySlot.entry(entry),
+      if (!expanded && remainingCount > 0) ActivitySlot.more(remainingCount),
+    ];
+
+    return Padding(
+      padding: CatchInsets.eventTypeBrowseIndex,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('BY ACTIVITY', style: CatchTextStyles.kicker(context)),
+          gapH16,
+          ActivityTypeRows(
+            slots: slots,
+            activeActivityTag: activeActivityTag,
+            onCategoryTap: onCategoryTap,
+            onExpand: onExpand,
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-Widget _buildActivityTypeRows({
-  required List<_ActivitySlot> slots,
-  required String? activeActivityTag,
-  required ValueChanged<ActivityKind> onCategoryTap,
-  required VoidCallback onExpand,
-}) {
-  return LayoutBuilder(
-    builder: (context, constraints) {
-      final columns =
-          constraints.maxWidth >=
-              ComponentBreakpoints.eventTypeGridTwoColumnBreakpoint
-          ? 2
-          : 1;
-      if (columns == 1) {
+class ActivityTypeRows extends StatelessWidget {
+  const ActivityTypeRows({
+    super.key,
+    required this.slots,
+    required this.activeActivityTag,
+    required this.onCategoryTap,
+    required this.onExpand,
+  });
+
+  final List<ActivitySlot> slots;
+  final String? activeActivityTag;
+  final ValueChanged<ActivityKind> onCategoryTap;
+  final VoidCallback onExpand;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns =
+            constraints.maxWidth >=
+                    ComponentBreakpoints.eventTypeGridTwoColumnBreakpoint
+                ? 2
+                : 1;
+        if (columns == 1) {
+          return Column(
+            children: [
+              for (final slot in slots)
+                ActivitySlotView(
+                  slot: slot,
+                  activeActivityTag: activeActivityTag,
+                  onCategoryTap: onCategoryTap,
+                  onExpand: onExpand,
+                ),
+            ],
+          );
+        }
+
+        final rowCount = (slots.length / columns).ceil();
         return Column(
           children: [
-            for (final slot in slots)
-              _buildActivitySlotView(
-                context,
-                slot: slot,
-                activeActivityTag: activeActivityTag,
-                onCategoryTap: onCategoryTap,
-                onExpand: onExpand,
+            for (var row = 0; row < rowCount; row += 1)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: ActivitySlotView(
+                      slot: slots[row * columns],
+                      activeActivityTag: activeActivityTag,
+                      onCategoryTap: onCategoryTap,
+                      onExpand: onExpand,
+                    ),
+                  ),
+                  gapW24,
+                  Expanded(
+                    child: row * columns + 1 < slots.length
+                        ? ActivitySlotView(
+                            slot: slots[row * columns + 1],
+                            activeActivityTag: activeActivityTag,
+                            onCategoryTap: onCategoryTap,
+                            onExpand: onExpand,
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                ],
               ),
           ],
         );
-      }
+      },
+    );
+  }
+}
 
-      final rowCount = (slots.length / columns).ceil();
-      return Column(
-        children: [
-          for (var row = 0; row < rowCount; row += 1)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+class ActivitySlotView extends StatelessWidget {
+  const ActivitySlotView({
+    super.key,
+    required this.slot,
+    required this.activeActivityTag,
+    required this.onCategoryTap,
+    required this.onExpand,
+  });
+
+  final ActivitySlot slot;
+  final String? activeActivityTag;
+  final ValueChanged<ActivityKind> onCategoryTap;
+  final VoidCallback onExpand;
+
+  @override
+  Widget build(BuildContext context) {
+    final entry = slot.entry;
+    if (entry == null) {
+      return MoreActivityTypesRow(
+        remainingCount: slot.remainingCount,
+        onTap: onExpand,
+      );
+    }
+    return ActivityTypeRow(
+      entry: entry,
+      active: _matchesActiveTag(activeActivityTag, entry.activityKind),
+      onTap: () => onCategoryTap(entry.activityKind),
+    );
+  }
+}
+
+class ActivityTypeRow extends StatelessWidget {
+  const ActivityTypeRow({
+    super.key,
+    required this.entry,
+    required this.active,
+    required this.onTap,
+  });
+
+  final ActivityEntry entry;
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final visual = eventActivityVisual(entry.activityKind, context: context);
+    final foreground = active ? visual.deep : t.ink;
+    return Semantics(
+      button: true,
+      selected: active,
+      label: '${visual.label}, ${_countLabel(entry.count)}',
+      child: InkWell(
+        onTap: onTap,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: t.line)),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minHeight: CatchLayout.eventTypeIndexRowHeight,
+            ),
+            child: Row(
               children: [
+                ActivityDot(color: visual.accent),
+                gapW16,
                 Expanded(
-                  child: _buildActivitySlotView(
-                    context,
-                    slot: slots[row * columns],
-                    activeActivityTag: activeActivityTag,
-                    onCategoryTap: onCategoryTap,
-                    onExpand: onExpand,
+                  child: Text(
+                    visual.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.titleL(context, color: foreground),
                   ),
                 ),
-                gapW24,
-                Expanded(
-                  child: row * columns + 1 < slots.length
-                      ? _buildActivitySlotView(
-                          context,
-                          slot: slots[row * columns + 1],
-                          activeActivityTag: activeActivityTag,
-                          onCategoryTap: onCategoryTap,
-                          onExpand: onExpand,
-                        )
-                      : const SizedBox.shrink(),
+                gapW12,
+                Text(
+                  '${entry.count}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  style: CatchTextStyles.titleL(context, color: t.ink2),
                 ),
               ],
             ),
-        ],
-      );
-    },
-  );
-}
-
-Widget _buildActivitySlotView(
-  BuildContext context, {
-  required _ActivitySlot slot,
-  required String? activeActivityTag,
-  required ValueChanged<ActivityKind> onCategoryTap,
-  required VoidCallback onExpand,
-}) {
-  final entry = slot.entry;
-  if (entry == null) {
-    return _buildMoreActivityTypesRow(
-      context,
-      remainingCount: slot.remainingCount,
-      onTap: onExpand,
+          ),
+        ),
+      ),
     );
   }
-  return _buildActivityTypeRow(
-    context,
-    entry: entry,
-    active: _matchesActiveTag(activeActivityTag, entry.activityKind),
-    onTap: () => onCategoryTap(entry.activityKind),
-  );
 }
 
-Widget _buildActivityTypeRow(
-  BuildContext context, {
-  required _ActivityEntry entry,
-  required bool active,
-  required VoidCallback onTap,
-}) {
-  final t = CatchTokens.of(context);
-  final visual = eventActivityVisual(entry.activityKind, context: context);
-  final foreground = active ? visual.deep : t.ink;
-  return Semantics(
-    button: true,
-    selected: active,
-    label: '${visual.label}, ${_countLabel(entry.count)}',
-    child: InkWell(
-      onTap: onTap,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: t.line)),
-        ),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: CatchLayout.eventTypeIndexRowHeight,
+class MoreActivityTypesRow extends StatelessWidget {
+  const MoreActivityTypesRow({
+    super.key,
+    required this.remainingCount,
+    required this.onTap,
+  });
+
+  final int remainingCount;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final label = '+ $remainingCount MORE TYPES';
+    return Semantics(
+      button: true,
+      label: 'Show $remainingCount more activity types',
+      child: InkWell(
+        onTap: onTap,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: t.line)),
           ),
-          child: Row(
-            children: [
-              _buildActivityDot(color: visual.accent),
-              gapW16,
-              Expanded(
-                child: Text(
-                  visual.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.titleL(context, color: foreground),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minHeight: CatchLayout.eventTypeIndexRowHeight,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.kicker(context, color: t.ink3),
+                  ),
                 ),
-              ),
-              gapW12,
-              Text(
-                '${entry.count}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.end,
-                style: CatchTextStyles.titleL(context, color: t.ink2),
-              ),
-            ],
+                gapW12,
+                Icon(CatchIcons.forwardArrow, size: CatchIcon.sm, color: t.ink3),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
-Widget _buildMoreActivityTypesRow(
-  BuildContext context, {
-  required int remainingCount,
-  required VoidCallback onTap,
-}) {
-  final t = CatchTokens.of(context);
-  final label = '+ $remainingCount MORE TYPES';
-  return Semantics(
-    button: true,
-    label: 'Show $remainingCount more activity types',
-    child: InkWell(
-      onTap: onTap,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: t.line)),
-        ),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: CatchLayout.eventTypeIndexRowHeight,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.kicker(context, color: t.ink3),
-                ),
-              ),
-              gapW12,
-              Icon(CatchIcons.forwardArrow, size: CatchIcon.sm, color: t.ink3),
-            ],
-          ),
-        ),
+class ActivityDot extends StatelessWidget {
+  const ActivityDot({super.key, required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchSurface(
+      width: CatchLayout.eventTypeIndexDotSize,
+      height: CatchLayout.eventTypeIndexDotSize,
+      radius: CatchRadius.pill,
+      borderWidth: 0,
+      backgroundColor: color,
+      child: const SizedBox.shrink(),
+    );
+  }
+}
+
+class EventTypeBrowseSkeleton extends StatelessWidget {
+  const EventTypeBrowseSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: CatchInsets.eventTypeBrowseSkeleton,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.text(width: CatchLayout.eventTypeSkeletonTextWidth),
+          gapH16,
+          CatchSkeleton.card(height: CatchLayout.eventTypeIndexRowHeight),
+          gapH12,
+          CatchSkeleton.card(height: CatchLayout.eventTypeIndexRowHeight),
+        ],
       ),
-    ),
-  );
+    );
+  }
 }
 
-Widget _buildActivityDot({required Color color}) {
-  return CatchSurface(
-    width: CatchLayout.eventTypeIndexDotSize,
-    height: CatchLayout.eventTypeIndexDotSize,
-    radius: CatchRadius.pill,
-    borderWidth: 0,
-    backgroundColor: color,
-    child: const SizedBox.shrink(),
-  );
-}
-
-Widget _buildEventTypeBrowseSkeleton() {
-  return Padding(
-    padding: CatchInsets.eventTypeBrowseSkeleton,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.eventTypeSkeletonTextWidth),
-        gapH16,
-        CatchSkeleton.card(height: CatchLayout.eventTypeIndexRowHeight),
-        gapH12,
-        CatchSkeleton.card(height: CatchLayout.eventTypeIndexRowHeight),
-      ],
-    ),
-  );
-}
-
-List<_ActivityEntry> _rankedActivityEntries(List<ExploreEventItem> items) {
+List<ActivityEntry> _rankedActivityEntries(List<ExploreEventItem> items) {
   final counts = <ActivityKind, int>{};
   final firstSeen = <ActivityKind, int>{};
   for (var index = 0; index < items.length; index += 1) {
@@ -305,7 +360,7 @@ List<_ActivityEntry> _rankedActivityEntries(List<ExploreEventItem> items) {
 
   final entries = [
     for (final entry in counts.entries)
-      _ActivityEntry(
+      ActivityEntry(
         activityKind: entry.key,
         count: entry.value,
         firstSeenIndex: firstSeen[entry.key] ?? items.length,
@@ -337,8 +392,8 @@ bool _matchesActiveTag(String? tag, ActivityKind kind) {
       normalized == kind.label.toLowerCase();
 }
 
-class _ActivityEntry {
-  const _ActivityEntry({
+class ActivityEntry {
+  const ActivityEntry({
     required this.activityKind,
     required this.count,
     required this.firstSeenIndex,
@@ -349,11 +404,11 @@ class _ActivityEntry {
   final int firstSeenIndex;
 }
 
-class _ActivitySlot {
-  const _ActivitySlot.entry(this.entry) : remainingCount = 0;
+class ActivitySlot {
+  const ActivitySlot.entry(this.entry) : remainingCount = 0;
 
-  const _ActivitySlot.more(this.remainingCount) : entry = null;
+  const ActivitySlot.more(this.remainingCount) : entry = null;
 
-  final _ActivityEntry? entry;
+  final ActivityEntry? entry;
   final int remainingCount;
 }

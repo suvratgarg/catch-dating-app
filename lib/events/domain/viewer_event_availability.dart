@@ -3,6 +3,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_domain_readiness.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
@@ -105,7 +106,8 @@ ViewerEventAvailability resolveViewerEventAvailability({
     case EventParticipationStatus.signedUp:
       return base.build(ViewerEventAvailabilityStatus.joined);
     case EventParticipationStatus.waitlisted:
-      if (participation?.hasHostApproval == true) {
+      if (participation != null &&
+          EventService.participationStatus(participation).hasHostApproval) {
         return base.build(
           _hasEventStarted(event, referenceNow)
               ? ViewerEventAvailabilityStatus.past

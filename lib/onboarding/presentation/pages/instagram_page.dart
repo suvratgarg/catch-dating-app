@@ -41,7 +41,7 @@ class _InstagramPageState extends ConsumerState<InstagramPage> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return onboardingStepLayout(
+    return OnboardingStepLayout(
       footer: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

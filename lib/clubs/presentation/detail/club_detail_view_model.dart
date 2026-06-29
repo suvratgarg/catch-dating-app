@@ -6,6 +6,7 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -50,6 +51,24 @@ AsyncValue<ClubDetailViewModel?> clubDetailViewModel(Ref ref, String clubId) {
   final membershipAsync = uid == null
       ? const AsyncData<ClubMembership?>(null)
       : ref.watch(watchClubMembershipProvider(clubId, uid));
+
+  // Log errors from secondary (non-blocking) providers so they don't
+  // silently disappear when discarded via .asData?.value in
+  // buildClubDetailViewModel.
+  if (reviewsAsync.hasError) {
+    ref.read(errorLoggerProvider).logError(
+      reviewsAsync.error!,
+      reviewsAsync.stackTrace,
+      reason: 'Failed to load reviews for club $clubId',
+    );
+  }
+  if (userProfileAsync.hasError) {
+    ref.read(errorLoggerProvider).logError(
+      userProfileAsync.error!,
+      userProfileAsync.stackTrace,
+      reason: 'Failed to load user profile in club detail',
+    );
+  }
 
   return buildClubDetailViewModel(
     clubAsync: clubAsync,

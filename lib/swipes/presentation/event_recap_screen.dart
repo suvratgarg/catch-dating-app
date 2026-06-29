@@ -100,8 +100,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _recapHero(
-                        context,
+                      RecapHero(
                         event: event,
                         checkedInCount: viewModel.checkedInCount,
                       ),
@@ -117,7 +116,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
                       ),
                       gapH14,
                       if (attendeeIds.isEmpty)
-                        _emptyRoster()
+                        const EmptyRoster()
                       else
                         GridView.builder(
                           itemCount: attendeeIds.length,
@@ -135,8 +134,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
                               ),
                           itemBuilder: (context, index) {
                             final attendeeId = attendeeIds[index];
-                            return _vibeTile(
-                              context,
+                            return VibeTile(
                               key: SwipeKeys.vibeTile(attendeeId),
                               profile: rosterProfiles[attendeeId],
                               selected: _selectedVibes.contains(attendeeId),
@@ -189,7 +187,7 @@ class EventRecapLoadingBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _recapHeroSkeleton(context),
+                const RecapHeroSkeleton(),
                 gapH24,
                 CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
                 gapH8,
@@ -199,7 +197,7 @@ class EventRecapLoadingBody extends StatelessWidget {
                   child: CatchSkeleton.text(),
                 ),
                 gapH14,
-                _vibeGridSkeleton(context),
+                const VibeGridSkeleton(),
                 gapH24,
                 CatchSkeleton.box(
                   width: double.infinity,
@@ -216,171 +214,201 @@ class EventRecapLoadingBody extends StatelessWidget {
   }
 }
 
-Widget _recapHeroSkeleton(BuildContext context) {
-  final t = CatchTokens.of(context);
+class RecapHeroSkeleton extends StatelessWidget {
+  const RecapHeroSkeleton({super.key});
 
-  return CatchSurface(
-    padding: CatchInsets.contentRelaxed,
-    backgroundColor: t.ink,
-    borderWidth: 0,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-        gapH10,
-        CatchSkeleton.text(width: CatchSpacing.s16 * 2),
-        gapH4,
-        CatchSkeleton.text(width: CatchSpacing.s16 * 3),
-        gapH18,
-        Row(
-          children: [
-            Expanded(child: _recapStatSkeleton()),
-            Expanded(child: _recapStatSkeleton()),
-            Expanded(child: _recapStatSkeleton()),
-          ],
-        ),
-      ],
-    ),
-  );
-}
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
 
-Widget _recapStatSkeleton() {
-  return Padding(
-    padding: const EdgeInsets.only(right: CatchLayout.eventRecapStatInset),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-        gapH6,
-        CatchSkeleton.text(width: CatchSpacing.s12),
-      ],
-    ),
-  );
-}
-
-Widget _vibeGridSkeleton(BuildContext context) {
-  return GridView.count(
-    crossAxisCount: responsiveGridCount(MediaQuery.of(context).size.width),
-    crossAxisSpacing: CatchLayout.eventRecapGridGap,
-    mainAxisSpacing: CatchLayout.eventRecapGridGap,
-    childAspectRatio: CatchAspectRatio.eventRecapVibeTile,
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    children: [
-      for (var i = 0; i < 6; i++)
-        CatchSkeleton.box(
-          height: double.infinity,
-          radius: CatchRadius.md,
-          borderColor: CatchTokens.of(context).line,
-        ),
-    ],
-  );
-}
-
-Widget _recapHero(
-  BuildContext context, {
-  required Event event,
-  required int checkedInCount,
-}) {
-  final t = CatchTokens.of(context);
-  final closesAt = swipeWindowClosesAt(event);
-  final windowLabel = closesAt.isAfter(DateTime.now())
-      ? 'Catches open until ${EventFormatters.time(closesAt)}'
-      : 'Catch window closed';
-
-  return CatchSurface(
-    padding: CatchInsets.contentRelaxed,
-    backgroundColor: t.ink,
-    borderWidth: 0,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '${event.title.toUpperCase()} · COMPLETE',
-          style: CatchTextStyles.labelM(
-            context,
-            color: t.surface.withValues(
-              alpha: CatchOpacity.eventRecapHeroKicker,
-            ),
-          ).copyWith(fontWeight: FontWeight.w800),
-        ),
-        gapH10,
-        Text(
-          event.distanceLabel,
-          style: CatchTextStyles.headline(context, color: t.surface),
-        ),
-        gapH4,
-        Text(
-          '${event.activitySummaryLabel} · $checkedInCount checked in',
-          style: CatchTextStyles.supporting(
-            context,
-            color: t.surface.withValues(alpha: CatchOpacity.eventRecapHeroMeta),
+    return CatchSurface(
+      padding: CatchInsets.contentRelaxed,
+      backgroundColor: t.ink,
+      borderWidth: 0,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+          gapH10,
+          CatchSkeleton.text(width: CatchSpacing.s16 * 2),
+          gapH4,
+          CatchSkeleton.text(width: CatchSpacing.s16 * 3),
+          gapH18,
+          Row(
+            children: [
+              Expanded(child: RecapStatSkeleton()),
+              Expanded(child: RecapStatSkeleton()),
+              Expanded(child: RecapStatSkeleton()),
+            ],
           ),
-        ),
-        gapH18,
-        Row(
-          children: [
-            _recapStat(context, label: 'When', value: event.shortDateLabel),
-            _recapStat(
-              context,
-              label: 'Time',
-              value: event.compactTimeRangeLabel,
-            ),
-            _recapStat(context, label: 'Catches', value: windowLabel),
-          ],
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
 
-Widget _recapStat(
-  BuildContext context, {
-  required String label,
-  required String value,
-}) {
-  final t = CatchTokens.of(context);
-  return Expanded(
-    child: Padding(
+class RecapStatSkeleton extends StatelessWidget {
+  const RecapStatSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
       padding: const EdgeInsets.only(right: CatchLayout.eventRecapStatInset),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+          gapH6,
+          CatchSkeleton.text(width: CatchSpacing.s12),
+        ],
+      ),
+    );
+  }
+}
+
+class VibeGridSkeleton extends StatelessWidget {
+  const VibeGridSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      crossAxisCount: responsiveGridCount(MediaQuery.of(context).size.width),
+      crossAxisSpacing: CatchLayout.eventRecapGridGap,
+      mainAxisSpacing: CatchLayout.eventRecapGridGap,
+      childAspectRatio: CatchAspectRatio.eventRecapVibeTile,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        for (var i = 0; i < 6; i++)
+          CatchSkeleton.box(
+            height: double.infinity,
+            radius: CatchRadius.md,
+            borderColor: CatchTokens.of(context).line,
+          ),
+      ],
+    );
+  }
+}
+
+class RecapHero extends StatelessWidget {
+  const RecapHero({
+    super.key,
+    required this.event,
+    required this.checkedInCount,
+  });
+
+  final Event event;
+  final int checkedInCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final closesAt = swipeWindowClosesAt(event);
+    final windowLabel = closesAt.isAfter(DateTime.now())
+        ? 'Catches open until ${EventFormatters.time(closesAt)}'
+        : 'Catch window closed';
+
+    return CatchSurface(
+      padding: CatchInsets.contentRelaxed,
+      backgroundColor: t.ink,
+      borderWidth: 0,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Text(
-            label.toUpperCase(),
+            '${event.title.toUpperCase()} · COMPLETE',
+            style: CatchTextStyles.labelM(
+              context,
+              color: t.surface.withValues(
+                alpha: CatchOpacity.eventRecapHeroKicker,
+              ),
+            ).copyWith(fontWeight: FontWeight.w800),
+          ),
+          gapH10,
+          Text(
+            event.distanceLabel,
+            style: CatchTextStyles.headline(context, color: t.surface),
+          ),
+          gapH4,
+          Text(
+            '${event.activitySummaryLabel} · $checkedInCount checked in',
             style: CatchTextStyles.supporting(
               context,
               color: t.surface.withValues(
-                alpha: CatchOpacity.eventRecapHeroStatLabel,
+                alpha: CatchOpacity.eventRecapHeroMeta,
               ),
             ),
           ),
-          gapH3,
-          Text(
-            value,
-            style: CatchTextStyles.labelM(context, color: t.surface),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+          gapH18,
+          Row(
+            children: [
+              RecapStat(label: 'When', value: event.shortDateLabel),
+              RecapStat(label: 'Time', value: event.compactTimeRangeLabel),
+              RecapStat(label: 'Catches', value: windowLabel),
+            ],
           ),
         ],
       ),
-    ),
-  );
+    );
+  }
 }
 
-Widget _vibeTile(
-  BuildContext context, {
-  Key? key,
-  required PublicProfile? profile,
-  required bool selected,
-  required VoidCallback onTap,
-}) {
-  final t = CatchTokens.of(context);
-  final name = profile?.name ?? 'guest';
+class RecapStat extends StatelessWidget {
+  const RecapStat({super.key, required this.label, required this.value});
 
-  return KeyedSubtree(
-    key: key,
-    child: Tooltip(
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.only(right: CatchLayout.eventRecapStatInset),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label.toUpperCase(),
+              style: CatchTextStyles.supporting(
+                context,
+                color: t.surface.withValues(
+                  alpha: CatchOpacity.eventRecapHeroStatLabel,
+                ),
+              ),
+            ),
+            gapH3,
+            Text(
+              value,
+              style: CatchTextStyles.labelM(context, color: t.surface),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class VibeTile extends StatelessWidget {
+  const VibeTile({
+    super.key,
+    required this.profile,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final PublicProfile? profile;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final name = profile?.name ?? 'guest';
+
+    return Tooltip(
       message: selected ? 'Remove $name' : 'Remember $name',
       child: Semantics(
         button: true,
@@ -398,7 +426,7 @@ Widget _vibeTile(
           child: Stack(
             fit: StackFit.expand,
             children: [
-              _profilePhoto(context, profile: profile),
+              RecapProfilePhoto(profile: profile),
               DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -447,26 +475,38 @@ Widget _vibeTile(
           ),
         ),
       ),
-    ),
-  );
-}
-
-Widget _profilePhoto(BuildContext context, {required PublicProfile? profile}) {
-  final photoUrl = profile?.primaryPhotoThumbnailUrl;
-  if (photoUrl == null) {
-    return Container(
-      color: CatchTokens.of(context).primarySoft,
-      alignment: Alignment.center,
-      child: Icon(CatchIcons.personRounded, size: CatchIcon.fallbackAvatar),
     );
   }
-  return CatchNetworkImage(photoUrl);
 }
 
-Widget _emptyRoster() {
-  return CatchEmptyState(
-    icon: CatchIcons.groupOffRounded,
-    title: 'No attendees to tag',
-    message: 'No other checked-in attendees are attached to this event yet.',
-  );
+class RecapProfilePhoto extends StatelessWidget {
+  const RecapProfilePhoto({super.key, required this.profile});
+
+  final PublicProfile? profile;
+
+  @override
+  Widget build(BuildContext context) {
+    final photoUrl = profile?.primaryPhotoThumbnailUrl;
+    if (photoUrl == null) {
+      return Container(
+        color: CatchTokens.of(context).primarySoft,
+        alignment: Alignment.center,
+        child: Icon(CatchIcons.personRounded, size: CatchIcon.fallbackAvatar),
+      );
+    }
+    return CatchNetworkImage(photoUrl);
+  }
+}
+
+class EmptyRoster extends StatelessWidget {
+  const EmptyRoster({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchEmptyState(
+      icon: CatchIcons.groupOffRounded,
+      title: 'No attendees to tag',
+      message: 'No other checked-in attendees are attached to this event yet.',
+    );
+  }
 }

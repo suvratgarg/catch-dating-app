@@ -41,40 +41,46 @@ class SwipeHubScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: CatchTokens.of(context).bg,
-      body: _catchesHubStateView(context, state: state, ref: ref),
+      body: CatchesHubStateView(state: state),
     );
   }
 }
 
-Widget _catchesHubStateView(
-  BuildContext context, {
-  required CatchesHubScreenState state,
-  required WidgetRef ref,
-}) {
-  return switch (state) {
-    CatchesHubAccessLoading() => const CatchSkeletonList(),
-    CatchesHubAccessError(:final error) => CatchErrorState.fromError(
-      error,
-      context: AppErrorContext.auth,
-      onRetry: () => ref.invalidate(uidProvider),
-    ),
-    CatchesHubSignedOut() => const SizedBox.shrink(),
-    CatchesHubEventsLoading() => const CatchSkeletonList(),
-    CatchesHubEventsError(:final uid, :final error) =>
-      CatchErrorState.fromError(
+class CatchesHubStateView extends ConsumerWidget {
+  const CatchesHubStateView({
+    super.key,
+    required this.state,
+  });
+
+  final CatchesHubScreenState state;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return switch (state) {
+      CatchesHubAccessLoading() => const CatchSkeletonList(),
+      CatchesHubAccessError(:final error) => CatchErrorState.fromError(
         error,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(watchAttendedEventsProvider(uid)),
+        context: AppErrorContext.auth,
+        onRetry: () => ref.invalidate(uidProvider),
       ),
-    CatchesHubEmpty() => CatchesHubEmptyState(
-      onFindEvent: () => context.go(Routes.exploreScreen.path),
-    ),
-    final CatchesHubReady ready => CatchesHubContent(
-      state: ready,
-      onOpenCatch: (row) => context.push(row.openCatchRoute),
-      onOpenRecap: (row) => context.push(row.recapRoute),
-    ),
-  };
+      CatchesHubSignedOut() => const SizedBox.shrink(),
+      CatchesHubEventsLoading() => const CatchSkeletonList(),
+      CatchesHubEventsError(:final uid, :final error) =>
+        CatchErrorState.fromError(
+          error,
+          context: AppErrorContext.event,
+          onRetry: () => ref.invalidate(watchAttendedEventsProvider(uid)),
+        ),
+      CatchesHubEmpty() => CatchesHubEmptyState(
+        onFindEvent: () => context.go(Routes.exploreScreen.path),
+      ),
+      final CatchesHubReady ready => CatchesHubContent(
+        state: ready,
+        onOpenCatch: (row) => context.push(row.openCatchRoute),
+        onOpenRecap: (row) => context.push(row.recapRoute),
+      ),
+    };
+  }
 }
 
 class CatchesHubContent extends StatelessWidget {
@@ -187,14 +193,17 @@ class CatchesIntroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
-      key: SwipeKeys.activeCatchWindowCard,
-      onTap: onTap,
-      padding: CatchInsets.contentRelaxed,
-      gradient: t.heroGrad,
-      borderWidth: 0,
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
+    return Semantics(
+      label: 'Start catching',
+      button: true,
+      child: CatchSurface(
+        key: SwipeKeys.activeCatchWindowCard,
+        onTap: onTap,
+        padding: CatchInsets.contentRelaxed,
+        gradient: t.heroGrad,
+        borderWidth: 0,
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
         children: [
           Positioned(
             right: CatchLayout.catchesHubBackgroundIconRightOffset,
@@ -230,14 +239,12 @@ class CatchesIntroCard extends StatelessWidget {
               gapH18,
               Row(
                 children: [
-                  _pillStat(
-                    context,
+                  PillStat(
                     label: 'Closes in',
                     value: row.introCountdownLabel,
                   ),
                   gapW10,
-                  _pillStat(
-                    context,
+                  PillStat(
                     label: 'Roster',
                     value: row.attendedCountLabel,
                   ),
@@ -255,45 +262,54 @@ class CatchesIntroCard extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }
 
-Widget _pillStat(
-  BuildContext context, {
-  required String label,
-  required String value,
-}) {
-  final t = CatchTokens.of(context);
-  return Expanded(
-    child: CatchSurface(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.micro10,
-      ),
-      radius: CatchRadius.md,
-      backgroundColor: t.ink.withValues(alpha: CatchOpacity.photoScrimMedium),
-      borderColor: t.ink.withValues(
-        alpha: CatchOpacity.eventSuccessSubtleBorder,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: CatchTextStyles.supporting(
-              context,
-              color: t.ink.withValues(
-                alpha: CatchOpacity.rosterFilterSelectedLabel,
+class PillStat extends StatelessWidget {
+  const PillStat({
+    super.key,
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Expanded(
+      child: CatchSurface(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.s3,
+          vertical: CatchSpacing.micro10,
+        ),
+        radius: CatchRadius.md,
+        backgroundColor: t.ink.withValues(alpha: CatchOpacity.photoScrimMedium),
+        borderColor: t.ink.withValues(
+          alpha: CatchOpacity.eventSuccessSubtleBorder,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: CatchTextStyles.supporting(
+                context,
+                color: t.ink.withValues(
+                  alpha: CatchOpacity.rosterFilterSelectedLabel,
+                ),
               ),
             ),
-          ),
-          gapH2,
-          Text(value, style: CatchTextStyles.mono(context, color: t.ink)),
-        ],
+            gapH2,
+            Text(value, style: CatchTextStyles.mono(context, color: t.ink)),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class CatchesHubEmptyState extends StatelessWidget {

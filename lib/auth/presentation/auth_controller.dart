@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter/foundation.dart';
@@ -128,9 +129,16 @@ class AuthController extends _$AuthController {
             verificationCompleted: (credential) async {
               _debugLog('AuthController.sendOtp: verificationCompleted (auto)');
               try {
-                await ref
-                    .read(authRepositoryProvider)
-                    .signInWithCredential(credential);
+                await withBackendErrorContext(
+                  () => ref
+                      .read(authRepositoryProvider)
+                      .signInWithCredential(credential),
+                  context: const BackendErrorContext(
+                    service: BackendService.auth,
+                    action: 'sign in with credential',
+                    resource: 'phone_auth',
+                  ),
+                );
                 if (!completer.isCompleted) completer.complete();
               } catch (e, st) {
                 if (!completer.isCompleted) completer.completeError(e, st);

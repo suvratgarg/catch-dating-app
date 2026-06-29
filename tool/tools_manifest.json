@@ -53,6 +53,36 @@
       "checks": ["python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/audit/definition_catalog.py').read_text())\""]
     },
     {
+      "id": "audit:architecture-scan",
+      "category": "audit",
+      "path": "tool/scan_architecture.py",
+      "command": "python3 tool/scan_architecture.py",
+      "safety": "local-writes-audit-json",
+      "status": "active",
+      "description": "Scans async-state handling, repository error wrapping, controller mutations, and structural widget overlap.",
+      "checks": ["python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/scan_architecture.py').read_text())\""]
+    },
+    {
+      "id": "audit:widget-antipatterns",
+      "category": "audit",
+      "path": "tool/scan_widget_antipatterns.py",
+      "command": "python3 tool/scan_widget_antipatterns.py",
+      "safety": "local-writes-audit-json",
+      "status": "active",
+      "description": "Scans widget-returning functions and private widget classes for widget architecture migration candidates.",
+      "checks": ["python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/scan_widget_antipatterns.py').read_text())\""]
+    },
+    {
+      "id": "audit:widget-function-migrator",
+      "category": "audit",
+      "path": "tool/migrate_widget_functions.py",
+      "command": "python3 tool/migrate_widget_functions.py",
+      "safety": "local-writes-source",
+      "status": "support",
+      "description": "Mechanical helper for converting private widget-returning functions into widget classes from the widget antipattern scan.",
+      "checks": ["python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/migrate_widget_functions.py').read_text())\""]
+    },
+    {
       "id": "audit:widget-cleanup",
       "category": "audit",
       "path": "tool/widget_cleanup_scan.sh",

@@ -18,47 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
-
-const _noRecommendationCandidates =
-    AsyncData<List<DashboardEventRecommendationCandidate>>([]);
-
-DashboardRecommendationsQuery _recommendationsQueryFor(
-  String uid,
-  List<String> followedClubIds,
-) => DashboardRecommendationsQuery(
-  userId: uid,
-  followedClubIds: followedClubIds,
-);
-
-AsyncData<WeeklyActivitySnapshot> _emptyWeeklyActivitySnapshot() {
-  return AsyncData(
-    WeeklyActivitySnapshot.permissionRequired(
-      referenceDate: DateTime(2026, 5, 13),
-      platformLabel: 'Apple Health',
-    ),
-  );
-}
-
-DashboardEventRecommendationCandidate _recommendationCandidate(
-  Event event, {
-  String clubName = 'Stride Social',
-  String? clubLocation = 'mumbai',
-}) => DashboardEventRecommendationCandidate(
-  event: event,
-  clubName: clubName,
-  clubLocation: clubLocation,
-);
-
-ClubMembership _membership({required String clubId, String uid = 'runner-1'}) {
-  return ClubMembership(
-    id: clubMembershipId(clubId: clubId, uid: uid),
-    clubId: clubId,
-    uid: uid,
-    role: ClubMembershipRole.member,
-    status: ClubMembershipStatus.active,
-    joinedAt: DateTime(2026),
-  );
-}
+import '../support/dashboard_test_helpers.dart';
 
 PhysicalActivity _platformActivity({
   required String id,
@@ -170,14 +130,14 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
             weeklyActivityProvider.overrideWithValue(
-              _emptyWeeklyActivitySnapshot(),
+              emptyWeeklyActivitySnapshot(),
             ),
             watchReviewsByUserProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Review>>([])),
             dashboardRecommendedEventsProvider(
-              _recommendationsQueryFor(user.uid, const []),
-            ).overrideWithValue(_noRecommendationCandidates),
+              recommendationsQueryFor(user.uid, const []),
+            ).overrideWithValue(noRecommendationCandidates),
           ],
         );
         addTearDown(container.dispose);
@@ -198,7 +158,7 @@ void main() {
           watchUserProfileProvider.overrideWithValue(AsyncData(user)),
           watchActiveClubMembershipsForUserProvider(user.uid).overrideWithValue(
             AsyncData<List<ClubMembership>>([
-              _membership(clubId: 'club-a', uid: user.uid),
+              membership(clubId: 'club-a', uid: user.uid),
             ]),
           ),
           watchSignedUpEventsProvider(
@@ -208,14 +168,14 @@ void main() {
             user.uid,
           ).overrideWithValue(const AsyncData<List<Event>>([])),
           weeklyActivityProvider.overrideWithValue(
-            _emptyWeeklyActivitySnapshot(),
+            emptyWeeklyActivitySnapshot(),
           ),
           watchReviewsByUserProvider(
             user.uid,
           ).overrideWithValue(const AsyncData<List<Review>>([])),
           dashboardRecommendedEventsProvider(
-            _recommendationsQueryFor(user.uid, const ['club-a']),
-          ).overrideWithValue(_noRecommendationCandidates),
+            recommendationsQueryFor(user.uid, const ['club-a']),
+          ).overrideWithValue(noRecommendationCandidates),
         ],
       );
       addTearDown(container.dispose);
@@ -241,7 +201,7 @@ void main() {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: [later, earlier],
         attendedEventsAsync: const AsyncData<List<Event>>([]),
-        recommendedEventsAsync: _noRecommendationCandidates,
+        recommendedEventsAsync: noRecommendationCandidates,
         now: now,
       );
 
@@ -266,7 +226,7 @@ void main() {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: [past, upcoming],
         attendedEventsAsync: const AsyncData<List<Event>>([]),
-        recommendedEventsAsync: _noRecommendationCandidates,
+        recommendedEventsAsync: noRecommendationCandidates,
         now: now,
       );
 
@@ -281,7 +241,7 @@ void main() {
           Exception('boom'),
           StackTrace.empty,
         ),
-        recommendedEventsAsync: _noRecommendationCandidates,
+        recommendedEventsAsync: noRecommendationCandidates,
       );
 
       expect(viewModel.attendedEventsSection.hasError, isTrue);
@@ -310,7 +270,7 @@ void main() {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
         attendedEventsAsync: AsyncData<List<Event>>([older, latest]),
-        recommendedEventsAsync: _noRecommendationCandidates,
+        recommendedEventsAsync: noRecommendationCandidates,
         now: now,
       );
 
@@ -333,7 +293,7 @@ void main() {
             platformLabel: 'Apple Health',
           ),
         ),
-        recommendedEventsAsync: _noRecommendationCandidates,
+        recommendedEventsAsync: noRecommendationCandidates,
         now: now,
       );
 
@@ -368,7 +328,7 @@ void main() {
               activities: [platformActivity],
             ),
           ),
-          recommendedEventsAsync: _noRecommendationCandidates,
+          recommendedEventsAsync: noRecommendationCandidates,
           now: now,
         );
 
@@ -406,7 +366,7 @@ void main() {
             activities: [platformActivity],
           ),
         ),
-        recommendedEventsAsync: _noRecommendationCandidates,
+        recommendedEventsAsync: noRecommendationCandidates,
         now: now,
       );
 
@@ -441,7 +401,7 @@ void main() {
         reviewsByUserAsync: AsyncData<List<Review>>([
           buildReview(id: 'reviewed-event~runner-1', eventId: reviewedEvent.id),
         ]),
-        recommendedEventsAsync: _noRecommendationCandidates,
+        recommendedEventsAsync: noRecommendationCandidates,
         now: now,
       );
 
@@ -472,8 +432,8 @@ void main() {
         attendedEventsAsync: const AsyncData<List<Event>>([]),
         recommendedEventsAsync:
             AsyncData<List<DashboardEventRecommendationCandidate>>([
-              _recommendationCandidate(booked),
-              _recommendationCandidate(unbooked),
+              recommendationCandidate(booked),
+              recommendationCandidate(unbooked),
             ]),
       );
 
@@ -519,12 +479,12 @@ void main() {
 
       final recommendations = rankDashboardEventRecommendations(
         candidates: [
-          _recommendationCandidate(
+          recommendationCandidate(
             weakMatch,
             clubName: 'Late Miles',
             clubLocation: 'delhi',
           ),
-          _recommendationCandidate(strongMatch, clubName: 'Bandra Club'),
+          recommendationCandidate(strongMatch, clubName: 'Bandra Club'),
         ],
         signedUpEventIds: const {},
         attendedEvents: [morningHistory],
@@ -584,7 +544,7 @@ void main() {
           full,
           ineligible,
           past,
-        ].map(_recommendationCandidate).toList(),
+        ].map(recommendationCandidate).toList(),
         signedUpEventIds: {'booked'},
         attendedEvents: const [],
         signedUpEvents: const [],
@@ -607,7 +567,7 @@ void main() {
         signedUpEvents: [event],
         uid: 'runner-1',
         attendedEventsAsync: const AsyncData<List<Event>>([]),
-        recommendedEventsAsync: _noRecommendationCandidates,
+        recommendedEventsAsync: noRecommendationCandidates,
         now: now,
       );
 

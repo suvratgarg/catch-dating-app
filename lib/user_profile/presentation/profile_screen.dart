@@ -6,19 +6,24 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_pager_focus_boundary.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/preview_scroll_physics.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+const _profileTabCount = 3;
+
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key, this.initialTabIndex = 0})
-    : assert(initialTabIndex >= 0 && initialTabIndex < 2);
+    : assert(initialTabIndex >= 0 && initialTabIndex < _profileTabCount);
 
   final int initialTabIndex;
 
@@ -36,7 +41,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   void initState() {
     super.initState();
     _tabController = TabController(
-      length: 2,
+      length: _profileTabCount,
       initialIndex: widget.initialTabIndex,
       vsync: this,
     );
@@ -106,7 +111,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         bottom: false,
         child: Semantics(
           label: 'Profile tabs',
-          hint: 'Drag left or right to switch between Edit and Preview.',
+          hint:
+              'Drag left or right to switch between Edit, Preview, and Insights.',
           child: NestedScrollView(
             controller: _outerScrollController,
             headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -132,21 +138,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               loading: () => TabBarView(
                 controller: _tabController,
                 children: [
-                  _profileTabScrollView(
+                  ProfileTabScrollView(
                     scrollKey: const PageStorageKey('profile-edit-tab-loading'),
                     slivers: const [ProfileTabSkeletonSliverBody()],
                   ),
-                  _profileTabScrollView(
+                  ProfileTabScrollView(
                     scrollKey: const PageStorageKey(
                       'profile-preview-tab-loading',
                     ),
                     slivers: [
-                      _previewTabSkeletonSliverBody(
+                      PreviewTabSkeletonSliverBody(
                         scrollController: _previewScrollController,
                         onForwardScroll: _handlePreviewForwardScroll,
                         onLeadingOverscroll: _handlePreviewLeadingOverscroll,
                       ),
                     ],
+                  ),
+                  ProfileTabScrollView(
+                    scrollKey: const PageStorageKey(
+                      'profile-insights-tab-loading',
+                    ),
+                    slivers: const [ProfileInsightsTabSliverBody()],
                   ),
                 ],
               ),
@@ -163,7 +175,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                 return TabBarView(
                   controller: _tabController,
                   children: [
-                    _profileTabScrollView(
+                    ProfileTabScrollView(
                       scrollKey: const PageStorageKey(
                         'profile-edit-tab-scroll',
                       ),
@@ -174,18 +186,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                         ),
                       ],
                     ),
-                    _profileTabScrollView(
+                    ProfileTabScrollView(
                       scrollKey: const PageStorageKey(
                         'profile-preview-tab-scroll',
                       ),
                       slivers: [
-                        _previewTabSliverBody(
+                        PreviewTabSliverBody(
                           profile: publicProfileFromUserProfile(user),
                           scrollController: _previewScrollController,
                           onForwardScroll: _handlePreviewForwardScroll,
                           onLeadingOverscroll: _handlePreviewLeadingOverscroll,
                         ),
                       ],
+                    ),
+                    ProfileTabScrollView(
+                      scrollKey: const PageStorageKey(
+                        'profile-insights-tab-scroll',
+                      ),
+                      slivers: const [ProfileInsightsTabSliverBody()],
                     ),
                   ],
                 );
@@ -197,24 +215,34 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     );
   }
 }
+class ProfileTabScrollView extends StatelessWidget {
+  const ProfileTabScrollView({
+    super.key,
+    required this.scrollKey,
+    required this.slivers,
+  });
 
-Widget _profileTabScrollView({
-  required PageStorageKey<String> scrollKey,
-  required List<Widget> slivers,
-}) {
-  return Builder(
-    builder: (context) {
-      return CustomScrollView(
-        key: scrollKey,
-        slivers: [
-          SliverOverlapInjector(
-            handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-          ),
-          ...slivers,
-        ],
-      );
-    },
-  );
+  final PageStorageKey<String> scrollKey;
+  final List<Widget> slivers;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchPagerFocusBoundary(
+      child: Builder(
+        builder: (context) {
+          return CustomScrollView(
+            key: scrollKey,
+            slivers: [
+              SliverOverlapInjector(
+                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+              ),
+              ...slivers,
+            ],
+          );
+        },
+      ),
+    );
+  }
 }
 
 Widget _profileUnavailableBody() {
@@ -227,86 +255,79 @@ Widget _profileUnavailableBody() {
   );
 }
 
-Widget _previewTabSkeletonSliverBody({
-  required ScrollController scrollController,
-  required double Function(double scrollDelta) onForwardScroll,
-  required ValueChanged<double> onLeadingOverscroll,
-}) {
-  return SliverFillRemaining(
-    child: Padding(
-      padding: const EdgeInsets.only(top: CatchSpacing.s2),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: CatchLayout.maxContentWidth,
-          ),
-          child: ProfileSurfaceSkeleton(
-            scrollController: scrollController,
-            scrollPhysics: _PreviewHeaderBridgeScrollPhysics(
-              onForwardScroll: onForwardScroll,
-            ),
-            bottomPadding: 0,
-            onLeadingOverscroll: onLeadingOverscroll,
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-Widget _previewTabSliverBody({
-  required PublicProfile profile,
-  required ScrollController scrollController,
-  required double Function(double scrollDelta) onForwardScroll,
-  required ValueChanged<double> onLeadingOverscroll,
-}) {
-  return SliverFillRemaining(
-    child: Padding(
-      padding: const EdgeInsets.only(top: CatchSpacing.s2),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: CatchLayout.maxContentWidth,
-          ),
-          child: PreviewTab(
-            profile: profile,
-            scrollController: scrollController,
-            scrollPhysics: _PreviewHeaderBridgeScrollPhysics(
-              onForwardScroll: onForwardScroll,
-            ),
-            bottomPadding: 0,
-            onLeadingOverscroll: onLeadingOverscroll,
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-class _PreviewHeaderBridgeScrollPhysics extends ClampingScrollPhysics {
-  const _PreviewHeaderBridgeScrollPhysics({
+class PreviewTabSkeletonSliverBody extends StatelessWidget {
+  const PreviewTabSkeletonSliverBody({
+    super.key,
+    required this.scrollController,
     required this.onForwardScroll,
-    super.parent,
+    required this.onLeadingOverscroll,
   });
 
+  final ScrollController scrollController;
   final double Function(double scrollDelta) onForwardScroll;
+  final ValueChanged<double> onLeadingOverscroll;
 
   @override
-  _PreviewHeaderBridgeScrollPhysics applyTo(ScrollPhysics? ancestor) {
-    return _PreviewHeaderBridgeScrollPhysics(
-      onForwardScroll: onForwardScroll,
-      parent: buildParent(ancestor),
+  Widget build(BuildContext context) {
+    return SliverFillRemaining(
+      child: Padding(
+        padding: const EdgeInsets.only(top: CatchSpacing.s2),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: CatchLayout.maxContentWidth,
+            ),
+            child: ProfileSurfaceSkeleton(
+              scrollController: scrollController,
+              scrollPhysics: PreviewHeaderBridgeScrollPhysics(
+                onForwardScroll: onForwardScroll,
+              ),
+              bottomPadding: 0,
+              onLeadingOverscroll: onLeadingOverscroll,
+            ),
+          ),
+        ),
+      ),
     );
   }
+}
+
+class PreviewTabSliverBody extends StatelessWidget {
+  const PreviewTabSliverBody({
+    super.key,
+    required this.profile,
+    required this.scrollController,
+    required this.onForwardScroll,
+    required this.onLeadingOverscroll,
+  });
+
+  final PublicProfile profile;
+  final ScrollController scrollController;
+  final double Function(double scrollDelta) onForwardScroll;
+  final ValueChanged<double> onLeadingOverscroll;
 
   @override
-  double applyPhysicsToUserOffset(ScrollMetrics position, double offset) {
-    final childOffset = super.applyPhysicsToUserOffset(position, offset);
-    if (childOffset >= 0) return childOffset;
-
-    final consumedByHeader = onForwardScroll(-childOffset);
-    if (consumedByHeader <= 0) return childOffset;
-
-    return childOffset + math.min(consumedByHeader, -childOffset);
+  Widget build(BuildContext context) {
+    return SliverFillRemaining(
+      child: Padding(
+        padding: const EdgeInsets.only(top: CatchSpacing.s2),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: CatchLayout.maxContentWidth,
+            ),
+            child: PreviewTab(
+              profile: profile,
+              scrollController: scrollController,
+              scrollPhysics: PreviewHeaderBridgeScrollPhysics(
+                onForwardScroll: onForwardScroll,
+              ),
+              bottomPadding: 0,
+              onLeadingOverscroll: onLeadingOverscroll,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

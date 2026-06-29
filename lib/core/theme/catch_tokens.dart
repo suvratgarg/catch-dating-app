@@ -1576,6 +1576,7 @@ abstract final class CatchLayout {
   static const double statStripVerticalPadding = 13.0;
   static const double statStripLabelFontSize = 9.0;
   static const double fieldRowVerticalPadding = 13.0;
+  static const double fieldActionBarWrapBreakpoint = 220.0;
   static const double fieldRowDividerIconInset =
       CatchIcon.control + CatchSpacing.s3;
   static const double searchFieldIconSize = 15.0;

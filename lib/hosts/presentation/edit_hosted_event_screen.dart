@@ -38,6 +38,7 @@ import 'package:catch_dating_app/events/presentation/location_picker_screen.dart
 import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_policy_step.dart';
+import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
@@ -990,7 +991,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   controller: capacityController,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: _positiveRequiredValidator,
+                  validator: positiveRequiredValidator,
                 ),
               ),
               gapW12,
@@ -1050,7 +1051,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                 FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9_-]')),
               ],
               validator: admissionPreset == EventAdmissionPreset.inviteOnly
-                  ? _inviteCodeValidator
+                  ? inviteCodeValidator
                   : null,
             ),
           ],
@@ -1074,7 +1075,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                       controller: maxMenController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: _positiveOptionalValidator,
+                      validator: positiveOptionalValidator,
                     ),
                   ),
                   gapW12,
@@ -1085,7 +1086,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                       controller: maxWomenController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: _positiveOptionalValidator,
+                      validator: positiveOptionalValidator,
                     ),
                   ),
                 ],
@@ -1118,7 +1119,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                       controller: dynamicPricingStepController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: _positiveRequiredValidator,
+                      validator: positiveRequiredValidator,
                     ),
                   ),
                   gapW12,
@@ -1128,7 +1129,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                       controller: dynamicPricingMaxController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: _positiveRequiredValidator,
+                      validator: positiveRequiredValidator,
                     ),
                   ),
                 ],
@@ -1147,7 +1148,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   controller: minAgeController,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: (value) => _validateAge(
+                  validator: (value) => validateAge(
                     value,
                     siblingController: maxAgeController,
                     isMinimum: true,
@@ -1162,7 +1163,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   controller: maxAgeController,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: (value) => _validateAge(
+                  validator: (value) => validateAge(
                     value,
                     siblingController: minAgeController,
                     isMinimum: false,
@@ -1180,16 +1181,16 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             children: [
               for (final policyId in EventCancellationPolicyId.values)
                 CatchSelectChip(
-                  label: _policyFor(policyId).title.toUpperCase(),
+                  label: policyFor(policyId).title.toUpperCase(),
                   active: cancellationPolicyId == policyId,
-                  semanticsLabel: _policyFor(policyId).title,
+                  semanticsLabel: policyFor(policyId).title,
                   onTap: () => onCancellationPolicyChanged(policyId),
                 ),
             ],
           ),
           gapH8,
           Text(
-            _policyFor(cancellationPolicyId).attendeeSummary,
+            policyFor(cancellationPolicyId).attendeeSummary,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
@@ -1362,20 +1363,6 @@ int? _currencyControllerValueInMinorUnits(
   currencyCode: currencyCode,
 );
 
-String? _positiveOptionalValidator(String? value) {
-  if (value == null || value.trim().isEmpty) return null;
-  final n = int.tryParse(value.trim());
-  if (n == null || n < 1) return 'Min 1';
-  return null;
-}
-
-String? _positiveRequiredValidator(String? value) {
-  if (value == null || value.trim().isEmpty) return 'Required';
-  final n = int.tryParse(value.trim());
-  if (n == null || n < 1) return 'Min 1';
-  return null;
-}
-
 String? _moneyRequiredValidator(String? value, {required String currencyCode}) {
   if (value == null || value.trim().isEmpty) return 'Required';
   final amount = parseMajorCurrencyAmountToMinorUnits(
@@ -1384,42 +1371,4 @@ String? _moneyRequiredValidator(String? value, {required String currencyCode}) {
   );
   if (amount == null) return 'Invalid';
   return null;
-}
-
-String? _inviteCodeValidator(String? value) {
-  final code = value?.trim() ?? '';
-  if (code.isEmpty) return 'Required';
-  if (code.length < 4) return 'Min 4 chars';
-  if (code.length > 64) return 'Max 64 chars';
-  return null;
-}
-
-String? _validateAge(
-  String? value, {
-  required TextEditingController siblingController,
-  required bool isMinimum,
-}) {
-  if (value == null || value.trim().isEmpty) return null;
-
-  final parsedValue = int.tryParse(value.trim());
-  if (parsedValue == null || parsedValue < 18 || parsedValue > 99) {
-    return '18-99';
-  }
-
-  final siblingValue = int.tryParse(siblingController.text.trim());
-  if (siblingValue == null) return null;
-
-  if (isMinimum && parsedValue > siblingValue) return '<= max';
-  if (!isMinimum && parsedValue < siblingValue) return '>= min';
-  return null;
-}
-
-EventCancellationPolicy _policyFor(EventCancellationPolicyId id) {
-  return switch (id) {
-    EventCancellationPolicyId.flexible =>
-      const EventCancellationPolicy.flexible(),
-    EventCancellationPolicyId.standard =>
-      const EventCancellationPolicy.standard(),
-    EventCancellationPolicyId.strict => const EventCancellationPolicy.strict(),
-  };
 }

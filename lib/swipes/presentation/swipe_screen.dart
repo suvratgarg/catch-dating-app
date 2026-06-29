@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -48,15 +50,17 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     ProfileReactionTarget? reactionTarget,
     String? comment,
   }) async {
+    Future<void> performSwipe() => ref
+        .read(
+          swipeQueueProvider(
+            widget.eventId,
+            vibeIds: widget.vibeIds,
+          ).notifier,
+        )
+        .swipe(direction, reactionTarget: reactionTarget, comment: comment);
+
     try {
-      await ref
-          .read(
-            swipeQueueProvider(
-              widget.eventId,
-              vibeIds: widget.vibeIds,
-            ).notifier,
-          )
-          .swipe(direction, reactionTarget: reactionTarget, comment: comment);
+      await performSwipe();
     } catch (error) {
       // The deck only advances after the write succeeds, so on failure we keep
       // the current profile and surface the error instead of silently stalling.
@@ -65,6 +69,9 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
           context,
           error,
           errorContext: AppErrorContext.swipes,
+          onRetry: () {
+            unawaited(performSwipe());
+          },
         );
       }
     }
@@ -148,12 +155,12 @@ class CatchesProfileReviewSkeleton extends StatelessWidget {
             bottomPadding: CatchLayout.catchesProfileBottomPadding,
           ),
         ),
-        _catchesTopOverlaySkeleton(context),
+        const CatchesTopOverlaySkeleton(),
         const CatchesBottomScrim(),
         Positioned(
           left: CatchSpacing.s5,
           bottom: CatchSpacing.s4,
-          child: _catchesPassButtonSkeleton(),
+          child: CatchesPassButtonSkeleton(),
         ),
       ],
     );
@@ -226,53 +233,68 @@ class CatchesProfileReview extends StatelessWidget {
   }
 }
 
-Widget _catchesTopOverlaySkeleton(BuildContext context) {
-  final t = CatchTokens.of(context);
+class CatchesTopOverlaySkeleton extends StatelessWidget {
+  const CatchesTopOverlaySkeleton({super.key});
 
-  return Positioned(
-    top: 0,
-    left: 0,
-    right: 0,
-    child: SafeArea(
-      bottom: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s4,
-          CatchSpacing.s3,
-          CatchSpacing.s4,
-          0,
-        ),
-        child: Row(
-          children: [
-            _overlayIconSkeleton(),
-            gapW10,
-            Expanded(
-              child: Center(
-                child: CatchSkeleton.box(
-                  width: CatchSpacing.s16 * 3,
-                  height: CatchSpacing.s9,
-                  radius: CatchRadius.pill,
-                  borderColor: t.line.withValues(
-                    alpha: CatchOpacity.floatingChromeBorder,
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            CatchSpacing.s4,
+            CatchSpacing.s3,
+            CatchSpacing.s4,
+            0,
+          ),
+          child: Row(
+            children: [
+              const OverlayIconSkeleton(),
+              gapW10,
+              Expanded(
+                child: Center(
+                  child: CatchSkeleton.box(
+                    width: CatchSpacing.s16 * 3,
+                    height: CatchSpacing.s9,
+                    radius: CatchRadius.pill,
+                    borderColor: t.line.withValues(
+                      alpha: CatchOpacity.floatingChromeBorder,
+                    ),
                   ),
                 ),
               ),
-            ),
-            gapW10,
-            _overlayIconSkeleton(),
-          ],
+              gapW10,
+              const OverlayIconSkeleton(),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
-Widget _overlayIconSkeleton() {
-  return CatchSkeleton.circle();
+class OverlayIconSkeleton extends StatelessWidget {
+  const OverlayIconSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchSkeleton.circle();
+  }
 }
 
-Widget _catchesPassButtonSkeleton() {
-  return CatchSkeleton.circle(size: CatchLayout.passButtonExtent);
+class CatchesPassButtonSkeleton extends StatelessWidget {
+  const CatchesPassButtonSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchSkeleton.circle(size: CatchLayout.passButtonExtent);
+  }
 }
 
 class CatchesTopOverlay extends StatelessWidget {
@@ -306,8 +328,7 @@ class CatchesTopOverlay extends StatelessWidget {
           ),
           child: Row(
             children: [
-              _overlayIconAction(
-                context,
+              OverlayIconAction(
                 tooltip: 'Back to Catches',
                 icon: CatchIcons.arrowBackIosNewRounded,
                 onPressed: onBack,
@@ -338,8 +359,7 @@ class CatchesTopOverlay extends StatelessWidget {
                 ),
               ),
               gapW10,
-              _overlayIconAction(
-                context,
+              OverlayIconAction(
                 tooltip: 'Filters',
                 icon: CatchIcons.tuneRounded,
                 onPressed: onFilters,
@@ -352,23 +372,36 @@ class CatchesTopOverlay extends StatelessWidget {
   }
 }
 
-Widget _overlayIconAction(
-  BuildContext context, {
-  required String tooltip,
-  required IconData icon,
-  required VoidCallback onPressed,
-}) {
-  final t = CatchTokens.of(context);
+class OverlayIconAction extends StatelessWidget {
+  const OverlayIconAction({
+    super.key,
+    required this.tooltip,
+    required this.icon,
+    required this.onPressed,
+  });
 
-  return Tooltip(
-    message: tooltip,
-    child: CatchIconButton(
-      size: CatchLayout.floatingControlExtent,
-      background: t.surface.withValues(alpha: CatchOpacity.floatingControlFill),
-      onTap: onPressed,
-      child: Icon(icon, color: t.ink, size: CatchIcon.row),
-    ),
-  );
+  final String tooltip;
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Semantics(
+      label: tooltip,
+      button: true,
+      child: Tooltip(
+        message: tooltip,
+        child: CatchIconButton(
+          size: CatchLayout.floatingControlExtent,
+          background: t.surface.withValues(alpha: CatchOpacity.floatingControlFill),
+          onTap: onPressed,
+          child: Icon(icon, color: t.ink, size: CatchIcon.row),
+        ),
+      ),
+    );
+  }
 }
 
 class CatchesBottomScrim extends StatelessWidget {

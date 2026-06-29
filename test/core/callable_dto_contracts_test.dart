@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
+import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/clubs/data/club_callable_responses.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
@@ -24,7 +25,8 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         SelfCheckInAttendanceCallableRequest,
         UnblockUserCallableRequest,
         UpdateEventCallableRequest,
-        UpdateEventReviewCallableRequest;
+        UpdateEventReviewCallableRequest,
+        UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
     as schema_contracts;
 import 'package:catch_dating_app/event_success/data/event_success_callable_responses.dart';
@@ -37,7 +39,6 @@ import 'package:catch_dating_app/locations/data/places_callable_responses.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_requests.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_responses.dart';
-import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

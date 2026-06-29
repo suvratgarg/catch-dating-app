@@ -34,6 +34,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
+    if (_gender == null) return;
     ref
         .read(onboardingControllerProvider.notifier)
         .setGenderInterest(
@@ -52,7 +53,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
 
     return Form(
       key: _formKey,
-      child: onboardingStepLayout(
+      child: OnboardingStepLayout(
         footer: CatchButton(
           label: 'Continue',
           onPressed: _submit,

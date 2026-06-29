@@ -131,8 +131,7 @@ class ClubHeroAppBar extends StatelessWidget {
                 transitionOnUserGestures: true,
                 child: Material(
                   color: Colors.transparent,
-                  child: _buildClubHeroModule(
-                    context,
+                  child: ClubHeroModule(
                     club: club,
                     mediaHeight: mediaHeight,
                     kickerLabel: kickerLabel,
@@ -228,116 +227,126 @@ double _heroCaptionExtentFor(
       CatchLayout.clubDetailHeroCaptionSlack;
 }
 
-Widget _buildClubHeroModule(
-  BuildContext context, {
-  required Club club,
-  required double mediaHeight,
-  required String kickerLabel,
-  required String locationLabel,
-}) {
-  final t = CatchTokens.of(context);
-  final resolvedMediaPadding = clubInteractionMediaPadding.resolve(
-    Directionality.of(context),
-  );
-  final viewportTopRadius = _clubHeroViewportTopCornerRadius(
-    MediaQuery.of(context),
-  );
+class ClubHeroModule extends StatelessWidget {
+  const ClubHeroModule({
+    super.key,
+    required this.club,
+    required this.mediaHeight,
+    required this.kickerLabel,
+    required this.locationLabel,
+  });
 
-  return ColoredBox(
-    key: const ValueKey('club-detail-hero-module'),
-    color: t.surface,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ClipRSuperellipse(
-          key: const ValueKey('club-detail-viewport-curve-frame'),
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          clipper: _ClubHeroViewportCurveClipper(
-            padding: resolvedMediaPadding,
-            viewportTopRadius: viewportTopRadius,
-            cornerRadius: CatchRadius.lg,
-          ),
-          child: ColoredBox(
-            color: t.surface,
-            child: Padding(
-              key: const ValueKey('club-detail-hero-padding'),
-              padding: clubInteractionMediaPadding,
-              child: CatchSurface(
-                key: const ValueKey('club-detail-hero-frame'),
-                backgroundColor: t.surface,
-                borderColor: t.surface,
-                borderWidth: 2,
-                clipBehavior: Clip.hardEdge,
-                child: SizedBox(
-                  height: mediaHeight,
-                  child: CatchDetailHeroBackdrop(
-                    imageUrl: club.imageUrl,
-                    semanticLabel: '${club.name} cover photo',
-                    showScrim: false,
+  final Club club;
+  final double mediaHeight;
+  final String kickerLabel;
+  final String locationLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final resolvedMediaPadding = clubInteractionMediaPadding.resolve(
+      Directionality.of(context),
+    );
+    final viewportTopRadius = _clubHeroViewportTopCornerRadius(
+      MediaQuery.of(context),
+    );
+
+    return ColoredBox(
+      key: const ValueKey('club-detail-hero-module'),
+      color: t.surface,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ClipRSuperellipse(
+            key: const ValueKey('club-detail-viewport-curve-frame'),
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            clipper: _ClubHeroViewportCurveClipper(
+              padding: resolvedMediaPadding,
+              viewportTopRadius: viewportTopRadius,
+              cornerRadius: CatchRadius.lg,
+            ),
+            child: ColoredBox(
+              color: t.surface,
+              child: Padding(
+                key: const ValueKey('club-detail-hero-padding'),
+                padding: clubInteractionMediaPadding,
+                child: CatchSurface(
+                  key: const ValueKey('club-detail-hero-frame'),
+                  backgroundColor: t.surface,
+                  borderColor: t.surface,
+                  borderWidth: 2,
+                  clipBehavior: Clip.hardEdge,
+                  child: SizedBox(
+                    height: mediaHeight,
+                    child: CatchDetailHeroBackdrop(
+                      imageUrl: club.imageUrl,
+                      semanticLabel: '${club.name} cover photo',
+                      showScrim: false,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-        Padding(
-          key: const ValueKey('club-detail-hero-caption'),
-          padding: const EdgeInsets.fromLTRB(
-            CatchLayout.detailScreenHorizontalPadding,
-            CatchLayout.clubDetailHeroTitleTopPadding,
-            CatchLayout.detailScreenHorizontalPadding,
-            CatchLayout.clubDetailHeroTitleBottomPadding,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                kickerLabel,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.monoLabelS(context, color: t.ink),
-              ),
-              gapH8,
-              Text(
-                club.name,
-                key: const ValueKey('club-detail-expanded-title'),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.clubDisplay(
-                  context,
-                  size: CatchLayout.clubDetailHeroExpandedTitleSize,
-                  height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
-                  color: t.ink,
+          Padding(
+            key: const ValueKey('club-detail-hero-caption'),
+            padding: const EdgeInsets.fromLTRB(
+              CatchLayout.detailScreenHorizontalPadding,
+              CatchLayout.clubDetailHeroTitleTopPadding,
+              CatchLayout.detailScreenHorizontalPadding,
+              CatchLayout.clubDetailHeroTitleBottomPadding,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  kickerLabel,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.monoLabelS(context, color: t.ink),
                 ),
-              ),
-              const SizedBox(
-                height: CatchLayout.clubDetailHeroTitleLocationGap,
-              ),
-              Row(
-                children: [
-                  Icon(
-                    CatchIcons.locationOnOutlined,
-                    size: CatchIcon.md,
-                    color: t.ink2,
+                gapH8,
+                Text(
+                  club.name,
+                  key: const ValueKey('club-detail-expanded-title'),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.clubDisplay(
+                    context,
+                    size: CatchLayout.clubDetailHeroExpandedTitleSize,
+                    height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
+                    color: t.ink,
                   ),
-                  gapW6,
-                  Expanded(
-                    child: Text(
-                      locationLabel,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.bodyLead(context, color: t.ink2),
+                ),
+                const SizedBox(
+                  height: CatchLayout.clubDetailHeroTitleLocationGap,
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      CatchIcons.locationOnOutlined,
+                      size: CatchIcon.md,
+                      color: t.ink2,
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    gapW6,
+                    Expanded(
+                      child: Text(
+                        locationLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: CatchTextStyles.bodyLead(context, color: t.ink2),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
 
 String _clubHeroKicker(Club club) {

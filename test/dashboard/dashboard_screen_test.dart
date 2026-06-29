@@ -5,7 +5,6 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -48,53 +47,14 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../clubs/clubs_test_helpers.dart' as club_test;
 import '../events/events_test_helpers.dart';
+import '../support/dashboard_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
-DashboardRecommendationsQuery _recommendationsQueryFor(
-  String uid,
-  List<String> followedClubIds,
-) => DashboardRecommendationsQuery(
-  userId: uid,
-  followedClubIds: followedClubIds,
-);
-
-const _noRecommendationCandidates =
-    AsyncData<List<DashboardEventRecommendationCandidate>>([]);
-
-AsyncData<WeeklyActivitySnapshot> _emptyWeeklyActivitySnapshot() {
-  return AsyncData(
-    WeeklyActivitySnapshot.permissionRequired(
-      referenceDate: DateTime(2026, 5, 13),
-      platformLabel: 'Apple Health',
-    ),
-  );
-}
-
-DashboardEventRecommendationCandidate _recommendationCandidate(
-  Event event, {
-  String clubName = 'Stride Social',
-  String? clubLocation = 'mumbai',
-}) => DashboardEventRecommendationCandidate(
-  event: event,
-  clubName: clubName,
-  clubLocation: clubLocation,
-);
-
-ClubMembership _membership({required String clubId, String uid = 'runner-1'}) =>
-    ClubMembership(
-      id: clubMembershipId(clubId: clubId, uid: uid),
-      clubId: clubId,
-      uid: uid,
-      role: ClubMembershipRole.member,
-      status: ClubMembershipStatus.active,
-      joinedAt: DateTime(2026),
-    );
-
-dynamic _membershipsOverride(UserProfile user, List<String> clubIds) =>
+dynamic membershipsOverride(UserProfile user, List<String> clubIds) =>
     watchActiveClubMembershipsForUserProvider(user.uid).overrideWith(
       (ref) => Stream.value(
         clubIds
-            .map((clubId) => _membership(clubId: clubId, uid: user.uid))
+            .map((clubId) => membership(clubId: clubId, uid: user.uid))
             .toList(),
       ),
     );
@@ -184,7 +144,7 @@ void main() {
         ProviderScope(
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            _membershipsOverride(user, const []),
+            membershipsOverride(user, const []),
             _activityNotificationsOverride(user),
             watchSignedUpEventsProvider(
               user.uid,
@@ -213,7 +173,7 @@ void main() {
         ProviderScope(
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            _membershipsOverride(user, const []),
+            membershipsOverride(user, const []),
             _activityNotificationsOverride(user),
             watchSignedUpEventsProvider(user.uid).overrideWithValue(
               AsyncError<List<Event>>(Exception('boom'), StackTrace.empty),
@@ -280,7 +240,7 @@ void main() {
         ProviderScope(
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            _membershipsOverride(user, const []),
+            membershipsOverride(user, const []),
             _activityNotificationsOverride(user),
             watchSignedUpEventsProvider(
               user.uid,
@@ -318,7 +278,7 @@ void main() {
         ProviderScope(
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            _membershipsOverride(user, const []),
+            membershipsOverride(user, const []),
             _activityNotificationsOverride(user),
             watchSignedUpEventsProvider(
               user.uid,
@@ -327,8 +287,8 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
             dashboardRecommendedEventsProvider(
-              _recommendationsQueryFor(user.uid, const []),
-            ).overrideWithValue(_noRecommendationCandidates),
+              recommendationsQueryFor(user.uid, const []),
+            ).overrideWithValue(noRecommendationCandidates),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             eventCheckInLocationServiceProvider.overrideWithValue(
@@ -377,12 +337,12 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
             dashboardRecommendedEventsProvider(
-              _recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWithValue(_noRecommendationCandidates),
+              recommendationsQueryFor(user.uid, joinedClubIds),
+            ).overrideWithValue(noRecommendationCandidates),
             watchClubsByIdsProvider(
               ClubsByIdQuery(joinedClubIds),
             ).overrideWith((ref) => Stream.value([joinedClub])),
-            _membershipsOverride(user, joinedClubIds),
+            membershipsOverride(user, joinedClubIds),
             _activityNotificationsOverride(user),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
@@ -419,8 +379,8 @@ void main() {
         uid: user.uid,
         viewer: user,
         attendedEventsAsync: const AsyncData<List<Event>>([]),
-        recommendedEventsAsync: _noRecommendationCandidates,
-        weeklyActivityAsync: _emptyWeeklyActivitySnapshot(),
+        recommendedEventsAsync: noRecommendationCandidates,
+        weeklyActivityAsync: emptyWeeklyActivitySnapshot(),
         now: DateTime(2026, 5, 13),
       );
 
@@ -462,7 +422,7 @@ void main() {
         ProviderScope(
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            _membershipsOverride(user, const []),
+            membershipsOverride(user, const []),
             _activityNotificationsOverride(user, [
               _activityNotification(id: 'unread-1', uid: user.uid),
               _activityNotification(id: 'unread-2', uid: user.uid),
@@ -700,8 +660,8 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncLoading<List<Event>>()),
             dashboardRecommendedEventsProvider(
-              _recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWithValue(_noRecommendationCandidates),
+              recommendationsQueryFor(user.uid, joinedClubIds),
+            ).overrideWithValue(noRecommendationCandidates),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             eventCheckInLocationServiceProvider.overrideWithValue(
@@ -738,7 +698,7 @@ void main() {
                 AsyncError<List<Event>>(Exception('boom'), StackTrace.empty),
               ),
               dashboardRecommendedEventsProvider(
-                _recommendationsQueryFor(user.uid, joinedClubIds),
+                recommendationsQueryFor(user.uid, joinedClubIds),
               ).overrideWith(
                 (ref) async => const <DashboardEventRecommendationCandidate>[],
               ),
@@ -777,7 +737,7 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
             dashboardRecommendedEventsProvider(
-              _recommendationsQueryFor(user.uid, joinedClubIds),
+              recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWithValue(
               const AsyncLoading<List<DashboardEventRecommendationCandidate>>(),
             ),
@@ -818,7 +778,7 @@ void main() {
                 user.uid,
               ).overrideWith((ref) => Stream.value(const [])),
               dashboardRecommendedEventsProvider(
-                _recommendationsQueryFor(user.uid, joinedClubIds),
+                recommendationsQueryFor(user.uid, joinedClubIds),
               ).overrideWithValue(
                 AsyncError<List<DashboardEventRecommendationCandidate>>(
                   Exception('boom'),
@@ -887,10 +847,10 @@ void main() {
               user.uid,
             ).overrideWithValue(AsyncData<List<Event>>([swipeRun])),
             dashboardRecommendedEventsProvider(
-              _recommendationsQueryFor(user.uid, joinedClubIds),
+              recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWithValue(
               AsyncData<List<DashboardEventRecommendationCandidate>>([
-                _recommendationCandidate(
+                recommendationCandidate(
                   recommendedRun,
                   clubName: 'Bandra Club',
                 ),
@@ -982,8 +942,8 @@ void main() {
               ),
             ),
             dashboardRecommendedEventsProvider(
-              _recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWithValue(_noRecommendationCandidates),
+              recommendationsQueryFor(user.uid, joinedClubIds),
+            ).overrideWithValue(noRecommendationCandidates),
             ..._dashboardHostOverrides(user, includeWeeklyActivity: false),
           ],
           child: MaterialApp(
@@ -1124,8 +1084,8 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
             dashboardRecommendedEventsProvider(
-              _recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWithValue(_noRecommendationCandidates),
+              recommendationsQueryFor(user.uid, joinedClubIds),
+            ).overrideWithValue(noRecommendationCandidates),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             eventCheckInLocationServiceProvider.overrideWithValue(
@@ -1186,8 +1146,8 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
             dashboardRecommendedEventsProvider(
-              _recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWithValue(_noRecommendationCandidates),
+              recommendationsQueryFor(user.uid, joinedClubIds),
+            ).overrideWithValue(noRecommendationCandidates),
             ..._dashboardHostOverrides(user),
           ],
           child: MaterialApp(
@@ -1225,8 +1185,8 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
             dashboardRecommendedEventsProvider(
-              _recommendationsQueryFor(user.uid, const []),
-            ).overrideWithValue(_noRecommendationCandidates),
+              recommendationsQueryFor(user.uid, const []),
+            ).overrideWithValue(noRecommendationCandidates),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
             eventSuccessRepositoryProvider.overrideWithValue(
               _FakeEventSuccessRepository(),
@@ -1282,8 +1242,8 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
             dashboardRecommendedEventsProvider(
-              _recommendationsQueryFor(user.uid, const []),
-            ).overrideWithValue(_noRecommendationCandidates),
+              recommendationsQueryFor(user.uid, const []),
+            ).overrideWithValue(noRecommendationCandidates),
             eventRepositoryProvider.overrideWithValue(events),
             eventSuccessRepositoryProvider.overrideWithValue(
               _FakeEventSuccessRepository(),
@@ -1336,8 +1296,8 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
             dashboardRecommendedEventsProvider(
-              _recommendationsQueryFor(user.uid, const []),
-            ).overrideWithValue(_noRecommendationCandidates),
+              recommendationsQueryFor(user.uid, const []),
+            ).overrideWithValue(noRecommendationCandidates),
             externalUrlLauncherProvider.overrideWithValue((
               uri, {
               LaunchMode mode = LaunchMode.platformDefault,
@@ -1422,8 +1382,8 @@ void main() {
                 user.uid,
               ).overrideWithValue(const AsyncData<List<Event>>([])),
               dashboardRecommendedEventsProvider(
-                _recommendationsQueryFor(user.uid, const []),
-              ).overrideWithValue(_noRecommendationCandidates),
+                recommendationsQueryFor(user.uid, const []),
+              ).overrideWithValue(noRecommendationCandidates),
               ..._dashboardHostOverrides(user),
             ],
             child: MaterialApp(
@@ -1490,8 +1450,8 @@ void main() {
                 user.uid,
               ).overrideWithValue(const AsyncData<List<Review>>([])),
               dashboardRecommendedEventsProvider(
-                _recommendationsQueryFor(user.uid, const []),
-              ).overrideWithValue(_noRecommendationCandidates),
+                recommendationsQueryFor(user.uid, const []),
+              ).overrideWithValue(noRecommendationCandidates),
               ..._dashboardHostOverrides(user),
             ],
             child: MaterialApp(
@@ -1712,7 +1672,7 @@ List _dashboardHostOverrides(
     ).overrideWithValue(const AsyncData<List<Club>>([])),
     if (includeWeeklyActivity)
       weeklyActivityProvider.overrideWithValue(
-        weeklyActivity ?? _emptyWeeklyActivitySnapshot(),
+        weeklyActivity ?? emptyWeeklyActivitySnapshot(),
       ),
     if (hostedEvents.isNotEmpty)
       watchEventsForClubProvider(

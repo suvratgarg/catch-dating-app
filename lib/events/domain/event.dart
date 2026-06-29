@@ -10,6 +10,7 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
+import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -185,42 +186,18 @@ abstract class Event with _$Event {
   /// User-specific roster state lives in `eventParticipations`, so callers that
   /// know the viewer's participation edge should prefer a view-model seam that
   /// combines the event and participation before rendering action state.
+  @Deprecated('Use EventService.eligibilityFor instead')
   EventEligibility eligibilityFor(
     UserProfile user, {
     DateTime? now,
     bool hasValidInvite = false,
   }) {
-    final referenceNow = now ?? DateTime.now();
-    if (!isUpcomingAt(referenceNow)) return const EventPast();
-    if (user.age < constraints.minAge) return AgeTooYoung(constraints.minAge);
-    if (user.age > constraints.maxAge) return AgeTooOld(constraints.maxAge);
-
-    final policy = effectiveEventPolicy;
-    if (signedUpCount >= policy.capacityLimit) return const EventFull();
-
-    final decision = const EventPolicyEngine().decideAdmission(
-      policy: policy,
-      request: EventAdmissionRequest(
-        attendee: EventAttendeeProfile.fromUserProfile(user),
-        hasValidInvite: hasValidInvite,
-      ),
-      roster: EventRosterSnapshot(bookedCountsByCohort: effectiveCohortCounts),
+    return EventService.eligibilityFor(
+      this,
+      user,
+      now: now,
+      hasValidInvite: hasValidInvite,
     );
-
-    if (decision.isBookable) return const Eligible();
-    if (decision.isWaitlisted) return const EventFull();
-    if (decision.reason == EventAdmissionDecisionReason.cohortCapReached ||
-        decision.reason ==
-            EventAdmissionDecisionReason.balancedRatioLimitReached) {
-      return const GenderCapacityReached();
-    }
-    if (decision.reason == EventAdmissionDecisionReason.capacityFull) {
-      return const EventFull();
-    }
-    if (decision.reason == EventAdmissionDecisionReason.inviteRequired) {
-      return const EventInviteRequired();
-    }
-    return const GenderCapacityReached();
   }
 
   /// Returns the fresh-viewer booking status for [user].
@@ -232,7 +209,8 @@ abstract class Event with _$Event {
     DateTime? now,
     bool hasValidInvite = false,
   }) {
-    return switch (eligibilityFor(
+    return switch (EventService.eligibilityFor(
+      this,
       user,
       now: now,
       hasValidInvite: hasValidInvite,

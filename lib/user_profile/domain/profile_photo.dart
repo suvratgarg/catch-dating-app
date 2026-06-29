@@ -1,37 +1,28 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/core/sentinels.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-@immutable
-class ProfilePhoto {
-  const ProfilePhoto({
-    required this.id,
-    required this.url,
-    required this.thumbnailUrl,
-    required this.storagePath,
-    required this.thumbnailStoragePath,
-    required this.position,
-    required this.createdAt,
-    required this.updatedAt,
-    this.prompt,
-    this.moderation,
-  });
+part 'profile_photo.freezed.dart';
+part 'profile_photo.g.dart';
 
-  factory ProfilePhoto.fromJson(Map<String, dynamic> json) => ProfilePhoto(
-    id: json['id'] as String,
-    url: json['url'] as String,
-    thumbnailUrl: json['thumbnailUrl'] as String,
-    storagePath: json['storagePath'] as String,
-    thumbnailStoragePath: json['thumbnailStoragePath'] as String,
-    prompt: _readPrompt(json['prompt']),
-    moderation: _readModeration(json['moderation']),
-    position: (json['position'] as num).toInt(),
-    createdAt: _readDateTime(json['createdAt']),
-    updatedAt: _readDateTime(json['updatedAt']),
-  );
+@freezed
+abstract class ProfilePhoto with _$ProfilePhoto {
+  const ProfilePhoto._();
+
+  const factory ProfilePhoto({
+    required String id,
+    required String url,
+    required String thumbnailUrl,
+    required String storagePath,
+    required String thumbnailStoragePath,
+    required int position,
+    @TimestampConverter() required DateTime createdAt,
+    @TimestampConverter() required DateTime updatedAt,
+    PhotoPromptAnswer? prompt,
+    ProfilePhotoModeration? moderation,
+  }) = _ProfilePhoto;
 
   factory ProfilePhoto.uploaded({
     required int position,
@@ -55,17 +46,6 @@ class ProfilePhoto {
     );
   }
 
-  final String id;
-  final String url;
-  final String thumbnailUrl;
-  final String storagePath;
-  final String thumbnailStoragePath;
-  final PhotoPromptAnswer? prompt;
-  final ProfilePhotoModeration? moderation;
-  final int position;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-
   Map<String, dynamic> toJson() => <String, dynamic>{
     'id': id,
     'url': url,
@@ -79,106 +59,22 @@ class ProfilePhoto {
     'updatedAt': const TimestampConverter().toJson(updatedAt),
   };
 
-  ProfilePhoto copyWith({
-    String? id,
-    String? url,
-    String? thumbnailUrl,
-    String? storagePath,
-    String? thumbnailStoragePath,
-    Object? prompt = unsetSentinel,
-    Object? moderation = unsetSentinel,
-    int? position,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return ProfilePhoto(
-      id: id ?? this.id,
-      url: url ?? this.url,
-      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
-      storagePath: storagePath ?? this.storagePath,
-      thumbnailStoragePath: thumbnailStoragePath ?? this.thumbnailStoragePath,
-      prompt: identical(prompt, unsetSentinel)
-          ? this.prompt
-          : prompt as PhotoPromptAnswer?,
-      moderation: identical(moderation, unsetSentinel)
-          ? this.moderation
-          : moderation as ProfilePhotoModeration?,
-      position: position ?? this.position,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ProfilePhoto &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          url == other.url &&
-          thumbnailUrl == other.thumbnailUrl &&
-          storagePath == other.storagePath &&
-          thumbnailStoragePath == other.thumbnailStoragePath &&
-          prompt == other.prompt &&
-          moderation == other.moderation &&
-          position == other.position &&
-          createdAt == other.createdAt &&
-          updatedAt == other.updatedAt;
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    url,
-    thumbnailUrl,
-    storagePath,
-    thumbnailStoragePath,
-    prompt,
-    moderation,
-    position,
-    createdAt,
-    updatedAt,
-  );
+  factory ProfilePhoto.fromJson(Map<String, dynamic> json) =>
+      _$ProfilePhotoFromJson(json);
 }
 
-@immutable
-class ProfilePhotoModeration {
-  const ProfilePhotoModeration({
-    required this.status,
-    this.reason,
-    this.reviewedAt,
-  });
+@freezed
+abstract class ProfilePhotoModeration with _$ProfilePhotoModeration {
+  const ProfilePhotoModeration._();
+
+  const factory ProfilePhotoModeration({
+    required String status,
+    String? reason,
+    @TimestampConverter() DateTime? reviewedAt,
+  }) = _ProfilePhotoModeration;
 
   factory ProfilePhotoModeration.fromJson(Map<String, dynamic> json) =>
-      ProfilePhotoModeration(
-        status: json['status'] as String,
-        reason: json['reason'] as String?,
-        reviewedAt: json['reviewedAt'] == null
-            ? null
-            : _readDateTime(json['reviewedAt']),
-      );
-
-  final String status;
-  final String? reason;
-  final DateTime? reviewedAt;
-
-  Map<String, dynamic> toJson() => <String, dynamic>{
-    'status': status,
-    if (reason != null) 'reason': reason,
-    if (reviewedAt != null)
-      'reviewedAt': const TimestampConverter().toJson(reviewedAt!),
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ProfilePhotoModeration &&
-          runtimeType == other.runtimeType &&
-          status == other.status &&
-          reason == other.reason &&
-          reviewedAt == other.reviewedAt;
-
-  @override
-  int get hashCode => Object.hash(status, reason, reviewedAt);
+      _$ProfilePhotoModerationFromJson(json);
 }
 
 List<ProfilePhoto> normalizeProfilePhotos(Iterable<ProfilePhoto> photos) {
@@ -435,38 +331,6 @@ String profilePhotoIdForStoragePath(String storagePath, int position) {
       .replaceAll(RegExp(r'_+'), '_')
       .replaceAll(RegExp(r'^_|_$'), '');
   return normalized.isNotEmpty ? normalized : 'photo_$position';
-}
-
-PhotoPromptAnswer? _readPrompt(Object? value) {
-  if (value is Map<String, dynamic>) return PhotoPromptAnswer.fromJson(value);
-  if (value is Map) {
-    return PhotoPromptAnswer.fromJson(Map<String, dynamic>.from(value));
-  }
-  return null;
-}
-
-ProfilePhotoModeration? _readModeration(Object? value) {
-  if (value is Map<String, dynamic>) {
-    return ProfilePhotoModeration.fromJson(value);
-  }
-  if (value is Map) {
-    return ProfilePhotoModeration.fromJson(Map<String, dynamic>.from(value));
-  }
-  return null;
-}
-
-DateTime _readDateTime(Object? value) {
-  if (value is Timestamp) return const TimestampConverter().fromJson(value);
-  if (value is DateTime) return value;
-  if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
-  if (value is Map) {
-    final seconds = value['_seconds'];
-    final nanos = value['_nanoseconds'];
-    if (seconds is num && nanos is num) {
-      return Timestamp(seconds.toInt(), nanos.toInt()).toDate();
-    }
-  }
-  throw FormatException('Invalid profile photo timestamp: $value');
 }
 
 String _stripExtension(String fileName) {

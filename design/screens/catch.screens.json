@@ -703,7 +703,7 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/widgets/event_detail_body.dart",
-              "symbol": "_eventDetailHostsSection"
+              "symbol": "EventDetailHostsSection"
             },
             "currentOwner": "EventDetailBody",
             "targetOwner": "registered host section plus host-card compound",
@@ -790,7 +790,7 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/widgets/event_detail_body.dart",
-              "symbol": "_eventCompanionEntry"
+              "symbol": "EventCompanionEntry"
             },
             "currentOwner": "EventDetailBody",
             "targetOwner": "registered post-booking prompt section",
@@ -1256,7 +1256,7 @@
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-              "symbol": "_buildClubHostSection"
+              "symbol": "ClubHostSection"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "registered host identity section plus host-card compound",
@@ -1315,7 +1315,7 @@
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-              "symbol": "_buildClubPhotoStrip"
+              "symbol": "ClubPhotoStrip"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "registered club photo strip compound",
@@ -1343,7 +1343,7 @@
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-              "symbol": "_buildClubContactSection"
+              "symbol": "ClubContactSection"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "registered contact section with external-link intents",
@@ -3627,7 +3627,7 @@
             ],
             "flutter": {
               "file": "lib/event_success/presentation/event_success_companion_screen.dart",
-              "symbol": "_companionScaffold"
+              "symbol": "CompanionScaffold"
             },
             "currentOwner": "EventSuccessCompanionRouteScreen",
             "targetOwner": "registered companion chrome section shared by loading/error/content states",
@@ -5651,8 +5651,8 @@
             "symbol": "watchConversationMessages"
           },
           {
-            "file": "lib/chats/data/conversation_repository.dart",
-            "symbol": "ConversationReadMarker"
+            "file": "lib/chats/presentation/chat_read_marker_state.dart",
+            "symbol": "ChatReadMarkerState"
           },
           {
             "file": "lib/matches/data/match_repository.dart",
@@ -6920,8 +6920,8 @@
               "InlineRangeEditor"
             ],
             "flutter": {
-              "file": "lib/user_profile/presentation/widgets/profile_inline_editors.dart",
-              "symbol": "profileInlineFieldScaffold"
+              "file": "lib/user_profile/presentation/widgets/inline_editor_text.dart",
+              "symbol": "ProfileDirectTextEntryField"
             },
             "currentOwner": "ProfileTabSliverBody",
             "targetOwner": "registered inline profile editor compound",
@@ -9883,7 +9883,7 @@
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-              "symbol": "_buildClubHostSection"
+              "symbol": "ClubHostSection"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "provider-free public host identity section",
@@ -9916,7 +9916,7 @@
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-              "symbol": "_buildClubContactSection"
+              "symbol": "ClubContactSection"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "provider-free club overview section group",
@@ -14286,7 +14286,7 @@
             ],
             "flutter": {
               "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-              "symbol": "_buildWelcomeScene"
+              "symbol": "WelcomeScene"
             },
             "currentOwner": "WelcomePage",
             "targetOwner": "provider-free welcome scene section",
@@ -14943,7 +14943,7 @@
             ],
             "flutter": {
               "file": "lib/onboarding/presentation/onboarding_screen.dart",
-              "symbol": "_onboardingTopBar"
+              "symbol": "_OnboardingTopBar"
             },
             "currentOwner": "OnboardingScreen",
             "targetOwner": "provider-free onboarding step header section",
@@ -15303,7 +15303,7 @@
             ],
             "flutter": {
               "file": "lib/calendar/presentation/calendar_screen.dart",
-              "symbol": "_buildCalendarDateHeader"
+              "symbol": "CalendarDateHeader"
             },
             "currentOwner": "CalendarScreen private header state",
             "targetOwner": "provider-free calendar date header section",
@@ -15327,7 +15327,7 @@
             ],
             "flutter": {
               "file": "lib/calendar/presentation/calendar_screen.dart",
-              "symbol": "_buildCalendarStatsHeader"
+              "symbol": "CalendarStatsHeader"
             },
             "currentOwner": "CalendarScreen",
             "targetOwner": "provider-free calendar stats section",
@@ -15375,7 +15375,7 @@
             ],
             "flutter": {
               "file": "lib/calendar/presentation/calendar_screen.dart",
-              "symbol": "_buildCalendarMessage"
+              "symbol": "CalendarMessage"
             },
             "currentOwner": "CalendarScreen",
             "targetOwner": "provider-free calendar state section",
@@ -15642,7 +15642,7 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/saved_events_screen.dart",
-              "symbol": "_savedEventsMessage"
+              "symbol": "SavedEventsMessage"
             },
             "currentOwner": "SavedEventsScreen",
             "targetOwner": "provider-free saved-events state section",
@@ -16240,7 +16240,7 @@
             ],
             "flutter": {
               "file": "lib/swipes/presentation/event_recap_screen.dart",
-              "symbol": "_recapHero"
+              "symbol": "RecapHero"
             },
             "currentOwner": "EventRecapScreen",
             "targetOwner": "provider-free recap hero section",
@@ -16288,7 +16288,7 @@
             ],
             "flutter": {
               "file": "lib/swipes/presentation/event_recap_screen.dart",
-              "symbol": "_vibeTile"
+              "symbol": "VibeTile"
             },
             "currentOwner": "EventRecapScreen",
             "targetOwner": "shared recap attendee tile candidate",
@@ -20969,7 +20969,7 @@
             ],
             "flutter": {
               "file": "lib/safety/presentation/settings_screen.dart",
-              "symbol": "_settingsSection"
+              "symbol": "SettingsSection"
             },
             "currentOwner": "_SettingsSection + CatchSettingsRow",
             "targetOwner": "provider-free settings account section",
@@ -20996,7 +20996,7 @@
             ],
             "flutter": {
               "file": "lib/safety/presentation/settings_screen.dart",
-              "symbol": "_settingsSection"
+              "symbol": "SettingsSection"
             },
             "currentOwner": "_SettingsSection + CatchToggle",
             "targetOwner": "provider-free settings notification preferences section",
@@ -21023,7 +21023,7 @@
             ],
             "flutter": {
               "file": "lib/safety/presentation/settings_screen.dart",
-              "symbol": "_settingsSection"
+              "symbol": "SettingsSection"
             },
             "currentOwner": "_SettingsSection + SettingsController",
             "targetOwner": "provider-free settings privacy and safety section",
@@ -21052,7 +21052,7 @@
             ],
             "flutter": {
               "file": "lib/safety/presentation/settings_screen.dart",
-              "symbol": "_blockedAccountsSection"
+              "symbol": "BlockedAccountsSection"
             },
             "currentOwner": "_BlockedAccountsSection + publicProfilesByIdsProvider",
             "targetOwner": "provider-free blocked accounts footer",
@@ -21083,7 +21083,7 @@
             ],
             "flutter": {
               "file": "lib/safety/presentation/settings_screen.dart",
-              "symbol": "_settingsSection"
+              "symbol": "SettingsSection"
             },
             "currentOwner": "_SettingsSection + AuthSessionController",
             "targetOwner": "provider-free settings about and sign-out sections",

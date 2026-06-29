@@ -58,7 +58,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         child: Builder(
           builder: (context) {
             if (signedUpEventsAsync.isLoading || savedEventsAsync.isLoading) {
-              return _buildCalendarLoadingScreen(context);
+              return const CalendarLoadingScreen();
             }
             if (signedUpEventsAsync.hasError || savedEventsAsync.hasError) {
               return CatchErrorState.fromError(
@@ -104,8 +104,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         context,
                         expanded: _calendarExpanded,
                       ),
-                      child: _buildCalendarDateHeader(
-                        context,
+                      child: CalendarDateHeader(
                         summary: summary,
                         selectedDate: selectedDate,
                         expanded: _calendarExpanded,
@@ -116,7 +115,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     ),
                   ),
                   SliverToBoxAdapter(
-                    child: _buildCalendarStatsHeader(context, summary: summary),
+                    child: CalendarStatsHeader(summary: summary),
                   ),
                   ..._buildCalendarEventSlivers(
                     context: context,
@@ -228,8 +227,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     if (summary.events.isEmpty) {
       return [
         SliverFillRemaining(
-          child: _buildCalendarMessage(
-            context,
+          child: const CalendarMessage(
             title: 'No planned events yet',
             body: 'Events you book or save will show up here by day and time.',
           ),
@@ -284,20 +282,25 @@ String _calendarEventDetailPath(Event event) {
   return '/calendar/clubs/$clubId/events/$eventId';
 }
 
-Widget _buildCalendarLoadingScreen(BuildContext context) {
-  return CustomScrollView(
-    slivers: [
-      SliverPersistentHeader(
-        pinned: true,
-        delegate: _CalendarDateHeaderDelegate(
-          height: _calendarDateHeaderHeightFor(context, expanded: false),
-          child: _buildCalendarDateHeaderSkeleton(context),
+class CalendarLoadingScreen extends StatelessWidget {
+  const CalendarLoadingScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: _CalendarDateHeaderDelegate(
+            height: _calendarDateHeaderHeightFor(context, expanded: false),
+            child: const CalendarDateHeaderSkeleton(),
+          ),
         ),
-      ),
-      SliverToBoxAdapter(child: _buildCalendarStatsHeaderSkeleton(context)),
-      const EventAgendaSliverSkeleton(count: 3),
-    ],
-  );
+        const SliverToBoxAdapter(child: CalendarStatsHeaderSkeleton()),
+        const EventAgendaSliverSkeleton(count: 3),
+      ],
+    );
+  }
 }
 
 double _calendarDateHeaderHeightFor(
@@ -338,127 +341,154 @@ double _calendarDateHeaderHeightFor(
       CatchSpacing.micro2;
 }
 
-Widget _buildCalendarDateHeader(
-  BuildContext context, {
-  required _CalendarEventSummary summary,
-  required DateTime selectedDate,
-  required bool expanded,
-  required ValueChanged<DateTime> onDateSelected,
-  required VoidCallback onTodayPressed,
-  required ValueChanged<double> onVerticalDragDelta,
-}) {
-  return Semantics(
-    label: expanded
-        ? 'Calendar date header. Drag up to collapse the month.'
-        : 'Calendar date header. Drag down to expand the month.',
-    child: GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onVerticalDragUpdate: (details) => onVerticalDragDelta(details.delta.dy),
-      child: Padding(
-        padding: CatchInsets.pageHeaderCompact,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildCalendarTitleRow(
-              context,
-              title: _calendarMonthLabel(selectedDate),
-              onTodayPressed: onTodayPressed,
-            ),
-            gapH14,
-            if (expanded)
-              _buildCalendarMonthGrid(
-                context,
-                summary: summary,
-                selectedDate: selectedDate,
-                onDateSelected: onDateSelected,
-              )
-            else
-              _buildCalendarWeekStrip(
-                context,
-                summary: summary,
-                selectedDate: selectedDate,
-                onDateSelected: onDateSelected,
+class CalendarDateHeader extends StatelessWidget {
+  const CalendarDateHeader({
+    super.key,
+    required this.summary,
+    required this.selectedDate,
+    required this.expanded,
+    required this.onDateSelected,
+    required this.onTodayPressed,
+    required this.onVerticalDragDelta,
+  });
+
+  final _CalendarEventSummary summary;
+  final DateTime selectedDate;
+  final bool expanded;
+  final ValueChanged<DateTime> onDateSelected;
+  final VoidCallback onTodayPressed;
+  final ValueChanged<double> onVerticalDragDelta;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: expanded
+          ? 'Calendar date header. Drag up to collapse the month.'
+          : 'Calendar date header. Drag down to expand the month.',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onVerticalDragUpdate: (details) => onVerticalDragDelta(details.delta.dy),
+        child: Padding(
+          padding: CatchInsets.pageHeaderCompact,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CalendarTitleRow(
+                title: _calendarMonthLabel(selectedDate),
+                onTodayPressed: onTodayPressed,
               ),
-          ],
+              gapH14,
+              if (expanded)
+                CalendarMonthGrid(
+                  summary: summary,
+                  selectedDate: selectedDate,
+                  onDateSelected: onDateSelected,
+                )
+              else
+                CalendarWeekStrip(
+                  summary: summary,
+                  selectedDate: selectedDate,
+                  onDateSelected: onDateSelected,
+                ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 String _calendarMonthLabel(DateTime date) {
   return '${_monthName(date.month)} ${date.year}';
 }
 
-Widget _buildCalendarDateHeaderSkeleton(BuildContext context) {
-  return Padding(
-    padding: CatchInsets.pageHeaderCompact,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-            const Spacer(),
-            CatchSkeleton.box(
-              width: CatchSpacing.s16 + CatchSpacing.s4,
-              height: CatchSpacing.s8,
-              radius: CatchRadius.pill,
-            ),
-          ],
-        ),
-        gapH14,
-        _buildCalendarWeekStripSkeleton(context),
-      ],
-    ),
-  );
+class CalendarDateHeaderSkeleton extends StatelessWidget {
+  const CalendarDateHeaderSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: CatchInsets.pageHeaderCompact,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+              const Spacer(),
+              CatchSkeleton.box(
+                width: CatchSpacing.s16 + CatchSpacing.s4,
+                height: CatchSpacing.s8,
+                radius: CatchRadius.pill,
+              ),
+            ],
+          ),
+          gapH14,
+          const CalendarWeekStripSkeleton(),
+        ],
+      ),
+    );
+  }
 }
 
-Widget _buildCalendarWeekStripSkeleton(BuildContext context) {
-  return Row(
-    children: [
-      for (var i = 0; i < DateTime.daysPerWeek; i++) ...[
+class CalendarWeekStripSkeleton extends StatelessWidget {
+  const CalendarWeekStripSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        for (var i = 0; i < DateTime.daysPerWeek; i++) ...[
+          Expanded(
+            child: CatchSkeleton.box(
+              height: CatchSpacing.s12,
+              radius: CatchRadius.sm,
+              borderColor: i == 2 ? CatchTokens.of(context).line2 : null,
+            ),
+          ),
+          if (i < DateTime.daysPerWeek - 1) gapW4,
+        ],
+      ],
+    );
+  }
+}
+
+class CalendarTitleRow extends StatelessWidget {
+  const CalendarTitleRow({
+    super.key,
+    required this.title,
+    required this.onTodayPressed,
+  });
+
+  final String title;
+  final VoidCallback onTodayPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Row(
+      children: [
         Expanded(
-          child: CatchSkeleton.box(
-            height: CatchSpacing.s12,
-            radius: CatchRadius.sm,
-            borderColor: i == 2 ? CatchTokens.of(context).line2 : null,
+          child: Text(
+            title,
+            style: CatchTextStyles.headlineS(context),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
-        if (i < DateTime.daysPerWeek - 1) gapW4,
-      ],
-    ],
-  );
-}
-
-Widget _buildCalendarTitleRow(
-  BuildContext context, {
-  required String title,
-  required VoidCallback onTodayPressed,
-}) {
-  final t = CatchTokens.of(context);
-
-  return Row(
-    children: [
-      Expanded(
-        child: Text(
-          title,
-          style: CatchTextStyles.headlineS(context),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+        gapW12,
+        CatchButton(
+          label: 'Today',
+          onPressed: onTodayPressed,
+          variant: CatchButtonVariant.secondary,
+          size: CatchButtonSize.sm,
+          foregroundColor: t.ink,
+          borderColor: t.line,
         ),
-      ),
-      gapW12,
-      CatchButton(
-        label: 'Today',
-        onPressed: onTodayPressed,
-        variant: CatchButtonVariant.secondary,
-        size: CatchButtonSize.sm,
-        foregroundColor: t.ink,
-        borderColor: t.line,
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }
 
 class _CalendarDateHeaderDelegate extends SliverPersistentHeaderDelegate {
@@ -500,239 +530,284 @@ class _CalendarDateHeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 }
 
-Widget _buildCalendarStatsHeader(
-  BuildContext context, {
-  required _CalendarEventSummary summary,
-}) {
-  final t = CatchTokens.of(context);
+class CalendarStatsHeader extends StatelessWidget {
+  const CalendarStatsHeader({super.key, required this.summary});
 
-  return Padding(
-    padding: const EdgeInsets.fromLTRB(
-      CatchSpacing.s5,
-      CatchSpacing.micro2,
-      CatchSpacing.s5,
-      CatchSpacing.s3,
-    ),
-    child: Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: CatchLayout.maxContentWidth,
-        ),
-        child: CatchSurface(
-          padding: CatchInsets.tileContentCompact,
-          radius: CatchRadius.md,
-          borderColor: t.line,
-          child: Row(
-            children: [
-              Expanded(
-                child: CatchStatColumn(
-                  key: const ValueKey('calendar.stats.planned'),
-                  label: 'Planned',
-                  value: '${summary.events.length}',
-                ),
-              ),
-              _buildStatDivider(context),
-              Expanded(
-                child: CatchStatColumn(
-                  key: const ValueKey('calendar.stats.distance'),
-                  label: 'Distance',
-                  value: '${summary.totalDistance.round()} km',
-                ),
-              ),
-              _buildStatDivider(context),
-              Expanded(
-                child: CatchStatColumn(
-                  key: const ValueKey('calendar.stats.next'),
-                  label: 'Next',
-                  value: summary.nextEvent == null
-                      ? 'None'
-                      : EventFormatters.time(summary.nextEvent!.startTime),
-                ),
-              ),
-            ],
-          ),
-        ),
+  final _CalendarEventSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.micro2,
+        CatchSpacing.s5,
+        CatchSpacing.s3,
       ),
-    ),
-  );
-}
-
-Widget _buildCalendarStatsHeaderSkeleton(BuildContext context) {
-  final t = CatchTokens.of(context);
-
-  return Padding(
-    padding: const EdgeInsets.fromLTRB(
-      CatchSpacing.s5,
-      CatchSpacing.micro2,
-      CatchSpacing.s5,
-      CatchSpacing.s3,
-    ),
-    child: Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: CatchLayout.maxContentWidth,
-        ),
-        child: CatchSurface(
-          padding: CatchInsets.tileContentCompact,
-          radius: CatchRadius.md,
-          borderColor: t.line,
-          child: Row(
-            children: [
-              Expanded(child: _buildCalendarStatSkeleton()),
-              _buildStatDivider(context),
-              Expanded(child: _buildCalendarStatSkeleton()),
-              _buildStatDivider(context),
-              Expanded(child: _buildCalendarStatSkeleton()),
-            ],
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.maxContentWidth,
           ),
-        ),
-      ),
-    ),
-  );
-}
-
-Widget _buildCalendarStatSkeleton() {
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-      gapH8,
-      CatchSkeleton.text(width: CatchSpacing.s10),
-    ],
-  );
-}
-
-Widget _buildCalendarWeekStrip(
-  BuildContext context, {
-  required _CalendarEventSummary summary,
-  required DateTime selectedDate,
-  required ValueChanged<DateTime> onDateSelected,
-}) {
-  final anchor = selectedDate;
-  final monday = anchor.subtract(Duration(days: anchor.weekday - 1));
-  final eventDays = summary.events
-      .map((event) => DateUtils.dateOnly(event.startTime))
-      .toSet();
-
-  return Row(
-    children: [
-      for (var i = 0; i < 7; i++) ...[
-        Expanded(
-          child: Builder(
-            builder: (context) {
-              final date = DateUtils.dateOnly(monday.add(Duration(days: i)));
-              return EventDateMarker(
-                key: _calendarWeekDayKey(date),
-                date: date,
-                active: DateUtils.isSameDay(date, selectedDate),
-                hasEvent: eventDays.contains(date),
-                onTap: () => onDateSelected(date),
-              );
-            },
-          ),
-        ),
-        if (i < 6) gapW4,
-      ],
-    ],
-  );
-}
-
-Widget _buildCalendarMonthGrid(
-  BuildContext context, {
-  required _CalendarEventSummary summary,
-  required DateTime selectedDate,
-  required ValueChanged<DateTime> onDateSelected,
-}) {
-  final firstOfMonth = DateTime(selectedDate.year, selectedDate.month);
-  final gridStart = firstOfMonth.subtract(
-    Duration(days: firstOfMonth.weekday % DateTime.daysPerWeek),
-  );
-  final eventDays = summary.events
-      .map((event) => DateUtils.dateOnly(event.startTime))
-      .toSet();
-
-  return Column(
-    children: [
-      Row(
-        children: [
-          for (final day in const ['S', 'M', 'T', 'W', 'T', 'F', 'S'])
-            Expanded(
-              child: Text(
-                day,
-                textAlign: TextAlign.center,
-                style: CatchTextStyles.labelM(context),
-              ),
+          child: CatchSurface(
+            padding: CatchInsets.tileContentCompact,
+            radius: CatchRadius.md,
+            borderColor: t.line,
+            child: Row(
+              children: [
+                Expanded(
+                  child: CatchStatColumn(
+                    key: const ValueKey('calendar.stats.planned'),
+                    label: 'Planned',
+                    value: '${summary.events.length}',
+                  ),
+                ),
+                const CalendarStatDivider(),
+                Expanded(
+                  child: CatchStatColumn(
+                    key: const ValueKey('calendar.stats.distance'),
+                    label: 'Distance',
+                    value: '${summary.totalDistance.round()} km',
+                  ),
+                ),
+                const CalendarStatDivider(),
+                Expanded(
+                  child: CatchStatColumn(
+                    key: const ValueKey('calendar.stats.next'),
+                    label: 'Next',
+                    value: summary.nextEvent == null
+                        ? 'None'
+                        : EventFormatters.time(summary.nextEvent!.startTime),
+                  ),
+                ),
+              ],
             ),
-        ],
+          ),
+        ),
       ),
-      gapH8,
-      for (var week = 0; week < 6; week += 1) ...[
+    );
+  }
+}
+
+class CalendarStatsHeaderSkeleton extends StatelessWidget {
+  const CalendarStatsHeaderSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.micro2,
+        CatchSpacing.s5,
+        CatchSpacing.s3,
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.maxContentWidth,
+          ),
+          child: CatchSurface(
+            padding: CatchInsets.tileContentCompact,
+            radius: CatchRadius.md,
+            borderColor: t.line,
+            child: Row(
+              children: [
+                const Expanded(child: CalendarStatSkeleton()),
+                const CalendarStatDivider(),
+                const Expanded(child: CalendarStatSkeleton()),
+                const CalendarStatDivider(),
+                const Expanded(child: CalendarStatSkeleton()),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CalendarStatSkeleton extends StatelessWidget {
+  const CalendarStatSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+        gapH8,
+        CatchSkeleton.text(width: CatchSpacing.s10),
+      ],
+    );
+  }
+}
+
+class CalendarWeekStrip extends StatelessWidget {
+  const CalendarWeekStrip({
+    super.key,
+    required this.summary,
+    required this.selectedDate,
+    required this.onDateSelected,
+  });
+
+  final _CalendarEventSummary summary;
+  final DateTime selectedDate;
+  final ValueChanged<DateTime> onDateSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final anchor = selectedDate;
+    final monday = anchor.subtract(Duration(days: anchor.weekday - 1));
+    final eventDays = summary.events
+        .map((event) => DateUtils.dateOnly(event.startTime))
+        .toSet();
+
+    return Row(
+      children: [
+        for (var i = 0; i < 7; i++) ...[
+          Expanded(
+            child: Builder(
+              builder: (context) {
+                final date = DateUtils.dateOnly(monday.add(Duration(days: i)));
+                return EventDateMarker(
+                  key: _calendarWeekDayKey(date),
+                  date: date,
+                  active: DateUtils.isSameDay(date, selectedDate),
+                  hasEvent: eventDays.contains(date),
+                  onTap: () => onDateSelected(date),
+                );
+              },
+            ),
+          ),
+          if (i < 6) gapW4,
+        ],
+      ],
+    );
+  }
+}
+
+class CalendarMonthGrid extends StatelessWidget {
+  const CalendarMonthGrid({
+    super.key,
+    required this.summary,
+    required this.selectedDate,
+    required this.onDateSelected,
+  });
+
+  final _CalendarEventSummary summary;
+  final DateTime selectedDate;
+  final ValueChanged<DateTime> onDateSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final firstOfMonth = DateTime(selectedDate.year, selectedDate.month);
+    final gridStart = firstOfMonth.subtract(
+      Duration(days: firstOfMonth.weekday % DateTime.daysPerWeek),
+    );
+    final eventDays = summary.events
+        .map((event) => DateUtils.dateOnly(event.startTime))
+        .toSet();
+
+    return Column(
+      children: [
         Row(
           children: [
-            for (var weekday = 0; weekday < DateTime.daysPerWeek; weekday += 1)
+            for (final day in const ['S', 'M', 'T', 'W', 'T', 'F', 'S'])
               Expanded(
-                child: Builder(
-                  builder: (context) {
-                    final date = DateUtils.dateOnly(
-                      gridStart.add(
-                        Duration(days: (week * DateTime.daysPerWeek) + weekday),
-                      ),
-                    );
-                    final inMonth = date.month == selectedDate.month;
-                    return EventDateMarker(
-                      key: inMonth ? _calendarMonthDayKey(date) : null,
-                      date: date,
-                      layout: EventDateMarkerLayout.monthGrid,
-                      enabled: inMonth,
-                      active: DateUtils.isSameDay(date, selectedDate),
-                      today: DateUtils.isSameDay(date, summary.today),
-                      hasEvent: eventDays.contains(date),
-                      onTap: () => onDateSelected(date),
-                    );
-                  },
+                child: Text(
+                  day,
+                  textAlign: TextAlign.center,
+                  style: CatchTextStyles.labelM(context),
                 ),
               ),
           ],
         ),
-        if (week < 5) gapH6,
+        gapH8,
+        for (var week = 0; week < 6; week += 1) ...[
+          Row(
+            children: [
+              for (var weekday = 0; weekday < DateTime.daysPerWeek; weekday += 1)
+                Expanded(
+                  child: Builder(
+                    builder: (context) {
+                      final date = DateUtils.dateOnly(
+                        gridStart.add(
+                          Duration(days: (week * DateTime.daysPerWeek) + weekday),
+                        ),
+                      );
+                      final inMonth = date.month == selectedDate.month;
+                      return EventDateMarker(
+                        key: inMonth ? _calendarMonthDayKey(date) : null,
+                        date: date,
+                        layout: EventDateMarkerLayout.monthGrid,
+                        enabled: inMonth,
+                        active: DateUtils.isSameDay(date, selectedDate),
+                        today: DateUtils.isSameDay(date, summary.today),
+                        hasEvent: eventDays.contains(date),
+                        onTap: () => onDateSelected(date),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+          if (week < 5) gapH6,
+        ],
       ],
-    ],
-  );
+    );
+  }
 }
 
-Widget _buildStatDivider(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return Padding(
-    padding: const EdgeInsets.symmetric(
-      horizontal: CatchLayout.calendarStatDividerHorizontalMargin,
-    ),
-    child: SizedBox(
-      width: CatchStroke.hairline,
-      height: CatchLayout.calendarStatDividerHeight,
-      child: ColoredBox(color: t.line),
-    ),
-  );
-}
+class CalendarStatDivider extends StatelessWidget {
+  const CalendarStatDivider({super.key});
 
-Widget _buildCalendarMessage(
-  BuildContext context, {
-  required String title,
-  required String body,
-}) {
-  return Center(
-    child: CatchEmptyState(
-      icon: CatchIcons.calendarMonthOutlined,
-      title: title,
-      message: body,
-      iconSize: CatchLayout.calendarEmptyIconSize,
-      padding: CatchInsets.contentSpacious,
-      titleStyle: CatchTextStyles.titleL(context),
-      messageStyle: CatchTextStyles.proseM(
-        context,
-        color: CatchTokens.of(context).ink2,
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchLayout.calendarStatDividerHorizontalMargin,
       ),
-    ),
-  );
+      child: SizedBox(
+        width: CatchStroke.hairline,
+        height: CatchLayout.calendarStatDividerHeight,
+        child: ColoredBox(color: t.line),
+      ),
+    );
+  }
+}
+
+class CalendarMessage extends StatelessWidget {
+  const CalendarMessage({
+    super.key,
+    required this.title,
+    required this.body,
+  });
+
+  final String title;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CatchEmptyState(
+        icon: CatchIcons.calendarMonthOutlined,
+        title: title,
+        message: body,
+        iconSize: CatchLayout.calendarEmptyIconSize,
+        padding: CatchInsets.contentSpacious,
+        titleStyle: CatchTextStyles.titleL(context),
+        messageStyle: CatchTextStyles.proseM(
+          context,
+          color: CatchTokens.of(context).ink2,
+        ),
+      ),
+    );
+  }
 }
 
 class _CalendarEventSummary {

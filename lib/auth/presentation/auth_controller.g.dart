@@ -50,7 +50,7 @@ final class AuthInitialCountryDialCodeProvider
 }
 
 String _$authInitialCountryDialCodeHash() =>
-    r'3404b4ac2f9a2d06f03b72e0da0c0ed84566ba01';
+    r'6e46cfda3673f7bcff6a44bc1d6e69e69a2c5e92';
 
 /// **Pattern B: Flow controller with freezed state + Mutations**
 ///
@@ -115,7 +115,7 @@ final class AuthControllerProvider
   }
 }
 
-String _$authControllerHash() => r'87c655c9b7082195520845d1967d69cde5add17a';
+String _$authControllerHash() => r'80128f18d842a146b3b201be4272cfa388e883fd';
 
 /// **Pattern B: Flow controller with freezed state + Mutations**
 ///

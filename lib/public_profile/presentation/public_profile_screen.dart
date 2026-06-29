@@ -2,10 +2,10 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
@@ -140,7 +140,10 @@ class PublicProfileScreen extends ConsumerWidget {
                 ),
             ],
           ),
-          body: profileAsync.when(
+          body: CatchAsyncValueView<PublicProfile?>(
+            value: profileAsync,
+            errorContext: AppErrorContext.profile,
+            onRetry: () => ref.invalidate(watchPublicProfileProvider(uid)),
             loading: () => profile == null
                 ? const ProfileSurfaceSkeleton(bottomPadding: CatchSpacing.s8)
                 : PublicProfileBody(
@@ -149,11 +152,6 @@ class PublicProfileScreen extends ConsumerWidget {
                     viewerProfile: currentUser,
                     sharedRunTitle: sharedRunTitle,
                   ),
-            error: (error, _) => CatchErrorState.fromError(
-              error,
-              context: AppErrorContext.profile,
-              onRetry: () => ref.invalidate(watchPublicProfileProvider(uid)),
-            ),
             data: (loadedProfile) {
               if (loadedProfile == null) {
                 return Center(

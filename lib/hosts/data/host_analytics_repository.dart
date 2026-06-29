@@ -73,8 +73,8 @@ class HostAnalyticsQuery {
         other.clubId == clubId &&
         other.eventId == eventId &&
         other.rangePreset == rangePreset &&
-        DateUtils.isSameDay(other.startDate, startDate) &&
-        DateUtils.isSameDay(other.endDate, endDate) &&
+        other.startDate == startDate &&
+        other.endDate == endDate &&
         other.granularity == granularity;
   }
 
@@ -83,8 +83,8 @@ class HostAnalyticsQuery {
     clubId,
     eventId,
     rangePreset,
-    _dateOnlyString(startDate),
-    _dateOnlyString(endDate),
+    startDate,
+    endDate,
     granularity,
   );
 }

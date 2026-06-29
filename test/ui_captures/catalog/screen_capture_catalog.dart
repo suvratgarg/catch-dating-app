@@ -656,7 +656,7 @@ class _CaptureConversationRepository implements ConversationRepository {
       Stream.value(messagesByConversation[conversationId] ?? const []);
 
   @override
-  String createMessageId({required String conversationId}) =>
+  Future<String> createMessageId({required String conversationId}) async =>
       '$conversationId-new-message';
 
   @override

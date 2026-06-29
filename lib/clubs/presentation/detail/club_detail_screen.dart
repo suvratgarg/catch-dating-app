@@ -9,20 +9,17 @@ import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_con
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/catch_club_dock.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_skeleton.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -40,17 +37,37 @@ class ClubDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final vmAsync = ref.watch(clubDetailViewModelProvider(clubId));
-    final currentUid = ref.watch(uidProvider).asData?.value;
-    final currentUserProfile = ref
-        .watch(watchUserProfileProvider)
-        .asData
-        ?.value;
-    final currentMembership = currentUid == null
-        ? null
-        : ref
-              .watch(watchClubMembershipProvider(clubId, currentUid))
-              .asData
-              ?.value;
+
+    // The uid provider is a stream from auth state — near-instant and fine to
+    // use .asData?.value for. Log errors from secondary (non-blocking) providers
+    // that are silently discarded via .asData?.value.
+    final currentUidAsync = ref.watch(uidProvider);
+    final currentUid = currentUidAsync.asData?.value;
+
+    final currentUserProfileAsync = ref.watch(watchUserProfileProvider);
+    final currentUserProfile = currentUserProfileAsync.asData?.value;
+
+    ClubMembership? currentMembership;
+    if (currentUid != null) {
+      final membershipAsync =
+          ref.watch(watchClubMembershipProvider(clubId, currentUid));
+      currentMembership = membershipAsync.asData?.value;
+      if (membershipAsync.hasError) {
+        ref.read(errorLoggerProvider).logError(
+          membershipAsync.error!,
+          membershipAsync.stackTrace,
+          reason: 'Failed to load club membership in club detail',
+        );
+      }
+    }
+
+    if (currentUserProfileAsync.hasError) {
+      ref.read(errorLoggerProvider).logError(
+        currentUserProfileAsync.error!,
+        currentUserProfileAsync.stackTrace,
+        reason: 'Failed to load user profile in club detail',
+      );
+    }
 
     final joinMutation = ref.watch(ClubMembershipController.joinMutation);
     final leaveMutation = ref.watch(ClubMembershipController.leaveMutation);
@@ -69,18 +86,14 @@ class ClubDetailScreen extends ConsumerWidget {
       appRole: AppConfig.appRole,
     );
 
-    Widget wrapMutationListeners(Widget child) => CatchMutationErrorListener(
-      mutation: ClubMembershipController.joinMutation,
-      child: CatchMutationErrorListener(
-        mutation: ClubMembershipController.leaveMutation,
-        child: CatchMutationErrorListener(
-          mutation: ClubMembershipController.pushNotificationsMutation,
-          child: CatchMutationErrorListener(
-            mutation: ClubHostContactController.startConversationMutation,
-            child: child,
-          ),
-        ),
-      ),
+    Widget wrapMutationListeners(Widget child) => CatchMutationErrorListeners(
+      mutations: [
+        ClubMembershipController.joinMutation,
+        ClubMembershipController.leaveMutation,
+        ClubMembershipController.pushNotificationsMutation,
+        ClubHostContactController.startConversationMutation,
+      ],
+      child: child,
     );
 
     if (screenState is HostClubDetailContent) {
@@ -370,201 +383,5 @@ final class HostClubDetailContent extends HostClubDetailScreenState {
   final bool showMembershipDock;
 }
 
-class ClubDetailLoadingBody extends StatelessWidget {
-  const ClubDetailLoadingBody({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return ColoredBox(
-      color: t.surface,
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(child: _buildClubHeroLoadingSkeleton()),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(
-              CatchLayout.detailScreenHorizontalPadding,
-              CatchLayout.detailScreenTopPadding,
-              CatchLayout.detailScreenHorizontalPadding,
-              CatchLayout.detailScreenBottomPadding,
-            ),
-            sliver: SliverList.list(
-              children: [
-                _buildClubStatsLoadingSkeleton(),
-                CatchSectionStack(
-                  padding: const EdgeInsets.only(top: CatchSpacing.screenPt),
-                  children: [
-                    CatchSection.divided(
-                      title: 'Your hosts',
-                      first: true,
-                      child: _buildClubHostLoadingSkeleton(),
-                    ),
-                    CatchSection.divided(
-                      title: 'About',
-                      child: _buildClubTextLoadingSkeleton(lines: 3),
-                    ),
-                    CatchSection.divided(
-                      title: 'What we do',
-                      child: _buildClubTagLoadingSkeleton(),
-                    ),
-                    CatchSection.divided(
-                      title: 'Upcoming',
-                      child: _buildClubScheduleLoadingSkeleton(),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-Widget _buildClubHeroLoadingSkeleton() {
-  return Stack(
-    children: [
-      CatchSkeleton.box(
-        width: double.infinity,
-        height: CatchLayout.clubDetailHeroNoCoverPhoneHeight,
-        borderRadius: BorderRadius.zero,
-      ),
-      Positioned(
-        left: CatchLayout.detailScreenHorizontalPadding,
-        right: CatchLayout.detailScreenHorizontalPadding,
-        bottom: CatchSpacing.s5,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-            gapH10,
-            CatchSkeleton.text(width: CatchSpacing.s16 * 3),
-            gapH8,
-            FractionallySizedBox(
-              widthFactor: 0.58,
-              alignment: Alignment.centerLeft,
-              child: CatchSkeleton.text(),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-Widget _buildClubStatsLoadingSkeleton() {
-  return Builder(
-    builder: (context) {
-      final t = CatchTokens.of(context);
-
-      return CatchSurface(
-        borderColor: t.line,
-        padding: CatchInsets.tileContentCompact,
-        child: Row(
-          children: [
-            Expanded(child: _buildClubStatLoadingSkeleton()),
-            _buildClubStatsDividerSkeleton(),
-            Expanded(child: _buildClubStatLoadingSkeleton()),
-            _buildClubStatsDividerSkeleton(),
-            Expanded(child: _buildClubStatLoadingSkeleton()),
-          ],
-        ),
-      );
-    },
-  );
-}
-
-Widget _buildClubStatLoadingSkeleton() {
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-      gapH8,
-      CatchSkeleton.text(width: CatchSpacing.s10),
-    ],
-  );
-}
-
-Widget _buildClubStatsDividerSkeleton() {
-  return Builder(
-    builder: (context) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
-        child: SizedBox(
-          width: CatchStroke.hairline,
-          height: CatchSpacing.s11,
-          child: ColoredBox(color: CatchTokens.of(context).line),
-        ),
-      );
-    },
-  );
-}
-
-Widget _buildClubHostLoadingSkeleton() {
-  return Builder(
-    builder: (context) {
-      final t = CatchTokens.of(context);
-
-      return CatchSurface(
-        borderColor: t.line,
-        padding: CatchInsets.tileContentCompact,
-        child: Row(
-          children: [
-            CatchSkeleton.circle(size: CatchSpacing.s10),
-            gapW12,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-                  gapH6,
-                  CatchSkeleton.text(width: CatchSpacing.s16 * 2),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
-
-Widget _buildClubTextLoadingSkeleton({required int lines}) {
-  return CatchSkeleton.textBlock(lines: lines);
-}
-
-Widget _buildClubTagLoadingSkeleton() {
-  return Wrap(
-    spacing: CatchSpacing.s2,
-    runSpacing: CatchSpacing.s2,
-    children: [
-      CatchSkeleton.box(
-        width: CatchSpacing.s16 + CatchSpacing.s6,
-        height: CatchSpacing.s8,
-        radius: CatchRadius.pill,
-      ),
-      CatchSkeleton.box(
-        width: CatchSpacing.s16 + CatchSpacing.s10,
-        height: CatchSpacing.s8,
-        radius: CatchRadius.pill,
-      ),
-      CatchSkeleton.box(
-        width: CatchSpacing.s16 + CatchSpacing.s4,
-        height: CatchSpacing.s8,
-        radius: CatchRadius.pill,
-      ),
-    ],
-  );
-}
-
-Widget _buildClubScheduleLoadingSkeleton() {
-  return Column(
-    children: [
-      CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
-      gapH10,
-      CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
-    ],
-  );
-}
+// ClubDetailLoadingBody and skeleton widget classes have been extracted to
+// club_detail_skeleton.dart.

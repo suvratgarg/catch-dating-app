@@ -21,7 +21,10 @@ void main() {
           launchAccessConfigProvider.overrideWith(
             (ref) => const LaunchAccessConfig(gateEnabled: true),
           ),
-          uidProvider.overrideWith((ref) => const Stream.empty()),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          watchLaunchAccessApplicationProvider(
+            'runner-1',
+          ).overrideWith((ref) => const Stream.empty()),
         ],
         child: MaterialApp(
           theme: AppTheme.light,

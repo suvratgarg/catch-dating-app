@@ -1,5 +1,8 @@
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -24,17 +27,26 @@ class FiltersController extends _$FiltersController {
     required int maxAgePreference,
     required List<String> interestedInGenders,
   }) async {
-    await ref
-        .read(userProfileRepositoryProvider)
-        .updateUserProfile(
-          uid: uid,
-          patch: UpdateUserProfilePatch(
-            minAgePreference: minAgePreference,
-            maxAgePreference: maxAgePreference,
-            interestedInGenders: interestedInGenders
-                .map(Gender.values.byName)
-                .toList(growable: false),
-          ),
-        );
+    return withBackendErrorContext(
+      () async {
+        await ref
+            .read(userProfileRepositoryProvider)
+            .updateUserProfile(
+              uid: uid,
+              patch: UpdateUserProfilePatch(
+                minAgePreference: minAgePreference,
+                maxAgePreference: maxAgePreference,
+                interestedInGenders: interestedInGenders
+                    .map(Gender.values.byName)
+                    .toList(growable: false),
+              ),
+            );
+      },
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'save swipe filters',
+        resource: 'users',
+      ),
+    );
   }
 }

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_skeleton.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_discover_list.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';

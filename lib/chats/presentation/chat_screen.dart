@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
+import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_read_marker_state.dart';
@@ -55,15 +56,15 @@ void _retryHostChat(WidgetRef ref, String matchId, HostChatRetryIntent intent) {
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   final _textController = TextEditingController();
   final _scrollController = ScrollController();
-  late final ConversationReadMarker _readMarker;
   final _readMarkerState = ChatReadMarkerState();
+  late final ConversationRepository _conversationRepository;
   bool _didScrollToLatestMessage = false;
   int _lastMessageCount = 0;
 
   @override
   void initState() {
     super.initState();
-    _readMarker = ref.read(conversationReadMarkerProvider);
+    _conversationRepository = ref.read(conversationRepositoryProvider);
     _resetUnread(ref.read(uidProvider).value);
   }
 
@@ -71,7 +72,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void dispose() {
     final uid = _readMarkerState.disposeMarkUid;
     if (uid != null) {
-      unawaited(_readMarker.markRead(conversationId: widget.matchId, uid: uid));
+      unawaited(
+        _conversationRepository.markRead(
+          conversationId: widget.matchId,
+          uid: uid,
+        ),
+      );
     }
     _textController.dispose();
     _scrollController.dispose();
@@ -82,7 +88,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final uidToMark = _readMarkerState.markForUid(uid, force: force);
     if (uidToMark == null) return;
     unawaited(
-      _readMarker.markRead(conversationId: widget.matchId, uid: uidToMark),
+      _conversationRepository.markRead(
+        conversationId: widget.matchId,
+        uid: uidToMark,
+      ),
     );
   }
 
@@ -386,10 +395,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         );
         if (uidToMark != null) {
           unawaited(
-            _readMarker.markRead(
-              conversationId: widget.matchId,
-              uid: uidToMark,
-            ),
+            ref
+                .read(conversationRepositoryProvider)
+                .markRead(conversationId: widget.matchId, uid: uidToMark),
           );
         }
       });

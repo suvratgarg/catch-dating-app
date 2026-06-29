@@ -1,33 +1,41 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class ExternalEvent {
-  const ExternalEvent({
-    required this.id,
-    required this.canonicalHostId,
-    required this.compatibilityClubId,
-    required this.title,
-    required this.description,
-    required this.startTime,
-    required this.endTime,
-    required this.meetingPoint,
-    required this.activityKind,
-    required this.interactionModel,
-    required this.status,
-    required this.publicationStatus,
-    required this.citySlug,
-    required this.externalLinks,
-    this.timezone,
-    this.locationDetails,
-    this.photoUrl,
-    this.latitude,
-    this.longitude,
-    this.priceDisplayText,
-    this.parsedPriceInPaise,
-    this.currency = defaultCurrencyCode,
-    this.sourcePlatform,
-  });
+part 'external_event.freezed.dart';
+part 'external_event.g.dart';
+
+@freezed
+abstract class ExternalEvent with _$ExternalEvent {
+  const ExternalEvent._();
+
+  const factory ExternalEvent({
+    required String id,
+    required String canonicalHostId,
+    required String compatibilityClubId,
+    required String title,
+    required String description,
+    @TimestampConverter() required DateTime startTime,
+    @NullableTimestampConverter() DateTime? endTime,
+    String? timezone,
+    required String meetingPoint,
+    String? locationDetails,
+    String? photoUrl,
+    double? latitude,
+    double? longitude,
+    required ActivityKind activityKind,
+    required EventInteractionModel interactionModel,
+    String? priceDisplayText,
+    int? parsedPriceInPaise,
+    @Default(defaultCurrencyCode) String currency,
+    required String status,
+    required String publicationStatus,
+    String? citySlug,
+    required List<ExternalEventLink> externalLinks,
+    String? sourcePlatform,
+  }) = _ExternalEvent;
 
   factory ExternalEvent.fromJson(Map<String, dynamic> json) {
     final meetingLocation = _map(json['meetingLocation']);
@@ -37,7 +45,7 @@ class ExternalEvent {
     final discovery = _map(json['discovery']);
     final externalSource = _map(json['externalSource']);
 
-    return ExternalEvent(
+    return _ExternalEvent(
       id: _string(json['eventId']) ?? '',
       canonicalHostId: _string(json['canonicalHostId']) ?? '',
       compatibilityClubId: _string(json['compatibilityClubId']) ?? '',
@@ -51,7 +59,8 @@ class ExternalEvent {
           _string(json['meetingPoint']) ??
           '',
       locationDetails:
-          _string(meetingLocation['notes']) ?? _string(json['locationDetails']),
+          _string(meetingLocation['notes']) ??
+          _string(json['locationDetails']),
       photoUrl: _string(json['photoUrl']),
       latitude: _number(meetingLocation['latitude']),
       longitude: _number(meetingLocation['longitude']),
@@ -78,30 +87,6 @@ class ExternalEvent {
       sourcePlatform: _string(externalSource['platform']),
     );
   }
-
-  final String id;
-  final String canonicalHostId;
-  final String compatibilityClubId;
-  final String title;
-  final String description;
-  final DateTime startTime;
-  final DateTime? endTime;
-  final String? timezone;
-  final String meetingPoint;
-  final String? locationDetails;
-  final String? photoUrl;
-  final double? latitude;
-  final double? longitude;
-  final ActivityKind activityKind;
-  final EventInteractionModel interactionModel;
-  final String? priceDisplayText;
-  final int? parsedPriceInPaise;
-  final String currency;
-  final String status;
-  final String publicationStatus;
-  final String? citySlug;
-  final List<ExternalEventLink> externalLinks;
-  final String? sourcePlatform;
 
   bool get isPublic => publicationStatus == 'public';
   bool get isActive => status == 'active';
@@ -136,33 +121,19 @@ class ExternalEvent {
       platformDisplayLabel(primaryExternalLink?.platform ?? sourcePlatform);
 }
 
-class ExternalEventLink {
-  const ExternalEventLink({
-    required this.platform,
-    required this.url,
-    required this.linkType,
-    required this.sourceEventKey,
-    required this.candidateId,
-    required this.primary,
-  });
+@freezed
+abstract class ExternalEventLink with _$ExternalEventLink {
+  const factory ExternalEventLink({
+    @Default('') String platform,
+    @Default('') String url,
+    @Default('') String linkType,
+    @Default('') String sourceEventKey,
+    @Default('') String candidateId,
+    required bool primary,
+  }) = _ExternalEventLink;
 
-  factory ExternalEventLink.fromJson(Map<String, dynamic> json) {
-    return ExternalEventLink(
-      platform: _string(json['platform']) ?? '',
-      url: _string(json['url']) ?? '',
-      linkType: _string(json['linkType']) ?? '',
-      sourceEventKey: _string(json['sourceEventKey']) ?? '',
-      candidateId: _string(json['candidateId']) ?? '',
-      primary: json['primary'] == true,
-    );
-  }
-
-  final String platform;
-  final String url;
-  final String linkType;
-  final String sourceEventKey;
-  final String candidateId;
-  final bool primary;
+  factory ExternalEventLink.fromJson(Map<String, dynamic> json) =>
+      _$ExternalEventLinkFromJson(json);
 }
 
 String platformDisplayLabel(String? platform) {

@@ -1,8 +1,11 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -89,6 +92,10 @@ class CatchField extends StatefulWidget {
     this._selectValue,
     this._onSelectChanged,
     this._selectValidator,
+    this._onCancel,
+    this._onSubmit,
+    this._isLoading = false,
+    this._actionLeading,
   }) : assert(
          mode != CatchFieldMode.select ||
              (_selectValues != null && _selectItemLabel != null),
@@ -334,6 +341,51 @@ class CatchField extends StatefulWidget {
          onTap: onTap,
        );
 
+  const CatchField.actions({
+    Key? key,
+    required String title,
+    String? body,
+    required Widget control,
+    required VoidCallback onCancel,
+    required VoidCallback onSubmit,
+    bool isLoading = false,
+    Widget? actionLeading,
+    bool initiallyExpanded = false,
+    int titleMaxLines = 1,
+    int bodyMaxLines = 2,
+    CatchFieldEmphasis emphasis = CatchFieldEmphasis.body,
+    CatchFieldTone tone = CatchFieldTone.normal,
+    IconData? icon,
+    Color? iconColor,
+    String? placeholder,
+    String? error,
+    String? errorText,
+    bool divider = false,
+    VoidCallback? onTap,
+  }) : this._(
+         key: key,
+         title: title,
+         body: body,
+         titleMaxLines: titleMaxLines,
+         bodyMaxLines: bodyMaxLines,
+         mode: CatchFieldMode.nav,
+         emphasis: emphasis,
+         tone: tone,
+         icon: icon,
+         iconColor: iconColor,
+         placeholder: placeholder,
+         control: control,
+         initiallyExpanded: initiallyExpanded,
+         error: error,
+         errorText: errorText,
+         divider: divider,
+         onTap: onTap,
+         onCancel: onCancel,
+         onSubmit: onSubmit,
+         isLoading: isLoading,
+         actionLeading: actionLeading,
+       );
+
   const CatchField.add({
     Key? key,
     required String title,
@@ -483,6 +535,11 @@ class CatchField extends StatefulWidget {
   final ValueChanged<Object?>? _onSelectChanged;
   final FormFieldValidator<Object?>? _selectValidator;
 
+  final VoidCallback? _onCancel;
+  final VoidCallback? _onSubmit;
+  final bool _isLoading;
+  final Widget? _actionLeading;
+
   @override
   State<CatchField> createState() => _CatchFieldState();
 }
@@ -520,6 +577,9 @@ class _CatchFieldState extends State<CatchField> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.control != widget.control && widget.control == null) {
       _open = false;
+    }
+    if (oldWidget.initiallyExpanded != widget.initiallyExpanded) {
+      _open = widget.initiallyExpanded && widget.control != null;
     }
     if (oldWidget._selectValue != widget._selectValue ||
         !listEquals(oldWidget._selectValues, widget._selectValues)) {
@@ -1077,9 +1137,72 @@ class _CatchFieldState extends State<CatchField> {
             if (hasLabel || hasValue || hasSupport)
               const SizedBox(height: CatchSpacing.s3),
             control,
+            if (widget._onSubmit != null) ...[
+              const SizedBox(height: CatchSpacing.s3),
+              _buildActionBar(),
+            ],
           ],
         ],
       ),
+    );
+  }
+
+  Widget _buildActionBar() {
+    Widget cancelButton() {
+      return CatchTextButton(
+        label: 'Cancel',
+        onPressed: widget._isLoading
+            ? null
+            : () {
+                setState(() => _open = false);
+                widget._onCancel?.call();
+              },
+        tone: CatchTextButtonTone.neutral,
+      );
+    }
+
+    Widget doneButton() {
+      return CatchButton(
+        label: 'Done',
+        onPressed: widget._isLoading ? null : widget._onSubmit,
+        isLoading: widget._isLoading,
+        size: CatchButtonSize.sm,
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < CatchLayout.fieldActionBarWrapBreakpoint) {
+          return Wrap(
+            alignment: WrapAlignment.end,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: CatchSpacing.s3,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              if (widget._actionLeading != null) widget._actionLeading!,
+              cancelButton(),
+              doneButton(),
+            ],
+          );
+        }
+
+        return Row(
+          children: [
+            if (widget._actionLeading != null)
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: widget._actionLeading,
+                ),
+              )
+            else
+              const Spacer(),
+            cancelButton(),
+            gapW12,
+            doneButton(),
+          ],
+        );
+      },
     );
   }
 

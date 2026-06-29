@@ -114,32 +114,35 @@ class DashboardQuickActionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
-      onTap: onTap,
-      padding: CatchInsets.content,
-      radius: CatchRadius.md,
-      borderColor: t.line,
-      backgroundColor: t.surface,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchIconTile(
-            icon: action.icon,
-            iconColor: t.primary,
-            backgroundColor: t.primarySoft,
-            borderColor: t.primarySoft,
-            size: QuickActions._iconBoxSize,
-            iconSize: CatchIcon.md,
-            radius: CatchRadius.sm,
-          ),
-          gapH8,
-          Text(
-            action.label,
-            style: CatchTextStyles.labelL(context),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+    return Semantics(
+      label: action.label,
+      child: CatchSurface(
+        onTap: onTap,
+        padding: CatchInsets.content,
+        radius: CatchRadius.md,
+        borderColor: t.line,
+        backgroundColor: t.surface,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CatchIconTile(
+              icon: action.icon,
+              iconColor: t.primary,
+              backgroundColor: t.primarySoft,
+              borderColor: t.primarySoft,
+              size: QuickActions._iconBoxSize,
+              iconSize: CatchIcon.md,
+              radius: CatchRadius.sm,
+            ),
+            gapH8,
+            Text(
+              action.label,
+              style: CatchTextStyles.labelL(context),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }

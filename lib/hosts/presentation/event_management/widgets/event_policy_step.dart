@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -92,29 +93,6 @@ class EventPolicyStep extends StatelessWidget {
   final EventCancellationPolicyId cancellationPolicyId;
   final ValueChanged<EventCancellationPolicyId> onCancellationPolicyChanged;
 
-  String? _validateAge(
-    String? value, {
-    required TextEditingController siblingController,
-    required bool isMinimum,
-  }) {
-    if (value == null || value.trim().isEmpty) return null;
-
-    final parsedValue = int.tryParse(value.trim());
-    if (parsedValue == null || parsedValue < 18 || parsedValue > 99) {
-      return '18-99';
-    }
-
-    final siblingValue = int.tryParse(siblingController.text.trim());
-    if (siblingValue == null) return null;
-
-    if (isMinimum && parsedValue > siblingValue) {
-      return '<= max';
-    }
-    if (!isMinimum && parsedValue < siblingValue) {
-      return '>= min';
-    }
-    return null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -250,7 +228,7 @@ class EventPolicyStep extends StatelessWidget {
                     ],
                     validator:
                         admissionPreset == EventAdmissionPreset.inviteOnly
-                        ? _inviteCodeValidator
+                        ? inviteCodeValidator
                         : null,
                   ),
                 ],
@@ -292,7 +270,7 @@ class EventPolicyStep extends StatelessWidget {
                             ],
                             textInputAction: TextInputAction.next,
                             validator: cohortCapsEnabled
-                                ? _positiveOptionalValidator
+                                ? positiveOptionalValidator
                                 : null,
                           ),
                         ),
@@ -311,7 +289,7 @@ class EventPolicyStep extends StatelessWidget {
                             ],
                             textInputAction: TextInputAction.next,
                             validator: cohortCapsEnabled
-                                ? _positiveOptionalValidator
+                                ? positiveOptionalValidator
                                 : null,
                           ),
                         ),
@@ -381,7 +359,7 @@ class EventPolicyStep extends StatelessWidget {
                             ],
                             textInputAction: TextInputAction.next,
                             validator: dynamicPricingEnabled
-                                ? _positiveRequiredValidator
+                                ? positiveRequiredValidator
                                 : null,
                           ),
                         ),
@@ -399,7 +377,7 @@ class EventPolicyStep extends StatelessWidget {
                             ],
                             textInputAction: TextInputAction.next,
                             validator: dynamicPricingEnabled
-                                ? _positiveRequiredValidator
+                                ? positiveRequiredValidator
                                 : null,
                           ),
                         ),
@@ -426,7 +404,7 @@ class EventPolicyStep extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: (value) => _validateAge(
+                  validator: (value) => validateAge(
                     value,
                     siblingController: maxAgeController,
                     isMinimum: true,
@@ -445,7 +423,7 @@ class EventPolicyStep extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: (value) => _validateAge(
+                  validator: (value) => validateAge(
                     value,
                     siblingController: minAgeController,
                     isMinimum: false,
@@ -463,16 +441,16 @@ class EventPolicyStep extends StatelessWidget {
             children: [
               for (final policyId in EventCancellationPolicyId.values)
                 CatchSelectChip(
-                  label: _policyFor(policyId).title.toUpperCase(),
+                  label: policyFor(policyId).title.toUpperCase(),
                   active: cancellationPolicyId == policyId,
-                  semanticsLabel: _policyFor(policyId).title,
+                  semanticsLabel: policyFor(policyId).title,
                   onTap: () => onCancellationPolicyChanged(policyId),
                 ),
             ],
           ),
           gapH8,
           Text(
-            _policyFor(cancellationPolicyId).attendeeSummary,
+            policyFor(cancellationPolicyId).attendeeSummary,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
@@ -488,36 +466,4 @@ class EventPolicyStep extends StatelessWidget {
       ),
     );
   }
-}
-
-String? _positiveOptionalValidator(String? value) {
-  if (value == null || value.trim().isEmpty) return null;
-  final n = int.tryParse(value.trim());
-  if (n == null || n < 1) return 'Min 1';
-  return null;
-}
-
-String? _positiveRequiredValidator(String? value) {
-  if (value == null || value.trim().isEmpty) return 'Required';
-  final n = int.tryParse(value.trim());
-  if (n == null || n < 1) return 'Min 1';
-  return null;
-}
-
-String? _inviteCodeValidator(String? value) {
-  final code = value?.trim() ?? '';
-  if (code.isEmpty) return 'Required';
-  if (code.length < 4) return 'Min 4 chars';
-  if (code.length > 64) return 'Max 64 chars';
-  return null;
-}
-
-EventCancellationPolicy _policyFor(EventCancellationPolicyId id) {
-  return switch (id) {
-    EventCancellationPolicyId.flexible =>
-      const EventCancellationPolicy.flexible(),
-    EventCancellationPolicyId.standard =>
-      const EventCancellationPolicy.standard(),
-    EventCancellationPolicyId.strict => const EventCancellationPolicy.strict(),
-  };
 }

@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/chats/data/chat_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -14,7 +16,7 @@ part 'conversation_repository.g.dart';
 abstract interface class ConversationRepository {
   Stream<List<ChatMessage>> watchMessages({required String conversationId});
 
-  String createMessageId({required String conversationId});
+  Future<String> createMessageId({required String conversationId});
 
   Future<void> sendTextMessage({
     required String conversationId,
@@ -46,7 +48,7 @@ class FirestoreConversationRepository implements ConversationRepository {
       _chatRepository.watchMessages(matchId: conversationId);
 
   @override
-  String createMessageId({required String conversationId}) =>
+  Future<String> createMessageId({required String conversationId}) =>
       _chatRepository.createMessageId(matchId: conversationId);
 
   @override
@@ -77,7 +79,14 @@ class FirestoreConversationRepository implements ConversationRepository {
   Future<void> markRead({
     required String conversationId,
     required String uid,
-  }) => _matchRepository.resetUnread(matchId: conversationId, uid: uid);
+  }) => withBackendErrorContext(
+    () => _matchRepository.resetUnread(matchId: conversationId, uid: uid),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'mark conversation read',
+      resource: 'matches',
+    ),
+  );
 }
 
 @riverpod
@@ -94,21 +103,3 @@ Stream<List<ChatMessage>> watchConversationMessages(
 ) => ref
     .watch(conversationRepositoryProvider)
     .watchMessages(conversationId: conversationId);
-
-class ConversationReadMarker {
-  const ConversationReadMarker(this._conversationRepository);
-
-  final ConversationRepository _conversationRepository;
-
-  Future<void> markRead({
-    required String conversationId,
-    required String uid,
-  }) => _conversationRepository.markRead(
-    conversationId: conversationId,
-    uid: uid,
-  );
-}
-
-@riverpod
-ConversationReadMarker conversationReadMarker(Ref ref) =>
-    ConversationReadMarker(ref.watch(conversationRepositoryProvider));

@@ -59,15 +59,29 @@ class ClubDraftRepository {
   Future<void> saveDraft({
     required String userId,
     required ClubDraft draft,
-  }) async {
-    final prefs = await _prefs;
-    await prefs.setString(_key(userId), ClubDraft.toJsonString(draft));
-  }
+  }) => withBackendErrorContext(
+    () async {
+      final prefs = await _prefs;
+      await prefs.setString(_key(userId), ClubDraft.toJsonString(draft));
+    },
+    context: const BackendErrorContext(
+      service: BackendService.local,
+      action: 'save club draft',
+      resource: 'shared_preferences',
+    ),
+  );
 
-  Future<void> deleteDraft({required String userId}) async {
-    final prefs = await _prefs;
-    await prefs.remove(_key(userId));
-  }
+  Future<void> deleteDraft({required String userId}) => withBackendErrorContext(
+    () async {
+      final prefs = await _prefs;
+      await prefs.remove(_key(userId));
+    },
+    context: const BackendErrorContext(
+      service: BackendService.local,
+      action: 'delete club draft',
+      resource: 'shared_preferences',
+    ),
+  );
 }
 
 @riverpod

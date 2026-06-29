@@ -18,6 +18,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -168,7 +169,8 @@ class HostTeamManagementSection extends ConsumerWidget {
                 .transferOwnership(clubId: club.id, uid: host.uid),
           );
       }
-    } catch (_) {
+    } catch (error, stackTrace) {
+      ref.read(errorLoggerProvider).logError(error, stackTrace, reason: 'HostTeamManagementSection._confirmHostAction failed');
       return;
     }
     if (!context.mounted) return;
@@ -353,7 +355,8 @@ class _HostTeamAddHostSheetState extends ConsumerState<HostTeamAddHostSheet> {
             .get(hostTeamManagementControllerProvider.notifier)
             .addHostByPhone(clubId: widget.clubId, phoneNumber: phone),
       );
-    } catch (_) {
+    } catch (error, stackTrace) {
+      ref.read(errorLoggerProvider).logError(error, stackTrace, reason: '_HostTeamAddHostSheetState._submit failed');
       return;
     }
     if (!mounted) return;

@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
+import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -310,7 +311,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                     controller: _maxMenController,
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    validator: _positiveOptionalValidator,
+                    validator: positiveOptionalValidator,
                     onChanged: (_) => _emitFromControllers(),
                   ),
                 ),
@@ -322,7 +323,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                     controller: _maxWomenController,
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    validator: _positiveOptionalValidator,
+                    validator: positiveOptionalValidator,
                     onChanged: (_) => _emitFromControllers(),
                   ),
                 ),
@@ -359,7 +360,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                       controller: _pricingStepController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: _positiveRequiredValidator,
+                      validator: positiveRequiredValidator,
                       onChanged: (_) => _emitFromControllers(),
                     ),
                   ),
@@ -370,7 +371,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                       controller: _pricingMaxController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: _positiveRequiredValidator,
+                      validator: positiveRequiredValidator,
                       onChanged: (_) => _emitFromControllers(),
                     ),
                   ),
@@ -390,7 +391,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                   controller: _minAgeController,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: (value) => _validateAge(
+                  validator: (value) => validateAge(
                     value,
                     siblingController: _maxAgeController,
                     isMinimum: true,
@@ -406,7 +407,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                   controller: _maxAgeController,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: (value) => _validateAge(
+                  validator: (value) => validateAge(
                     value,
                     siblingController: _minAgeController,
                     isMinimum: false,
@@ -425,9 +426,9 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             children: [
               for (final policyId in EventCancellationPolicyId.values)
                 CatchSelectChip(
-                  label: _policyFor(policyId).title.toUpperCase(),
+                  label: policyFor(policyId).title.toUpperCase(),
                   active: defaults.cancellationPolicyId == policyId,
-                  semanticsLabel: _policyFor(policyId).title,
+                  semanticsLabel: policyFor(policyId).title,
                   onTap: () =>
                       _emit(defaults.copyWith(cancellationPolicyId: policyId)),
                 ),
@@ -435,7 +436,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
           ),
           gapH8,
           Text(
-            _policyFor(defaults.cancellationPolicyId).attendeeSummary,
+            policyFor(defaults.cancellationPolicyId).attendeeSummary,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
@@ -482,47 +483,6 @@ extension on EventAdmissionDefaultPreset {
       'Straight men and women are kept within one spot of each other.',
     EventAdmissionDefaultPreset.fixedCohortCaps =>
       'New events start open with optional straight men and straight women caps.',
-  };
-}
-
-String? _validateAge(
-  String? value, {
-  required TextEditingController siblingController,
-  required bool isMinimum,
-}) {
-  if (value == null || value.trim().isEmpty) return null;
-  final parsedValue = int.tryParse(value.trim());
-  if (parsedValue == null || parsedValue < 18 || parsedValue > 99) {
-    return '18-99';
-  }
-  final siblingValue = int.tryParse(siblingController.text.trim());
-  if (siblingValue == null) return null;
-  if (isMinimum && parsedValue > siblingValue) return '<= max';
-  if (!isMinimum && parsedValue < siblingValue) return '>= min';
-  return null;
-}
-
-String? _positiveOptionalValidator(String? value) {
-  if (value == null || value.trim().isEmpty) return null;
-  final n = int.tryParse(value.trim());
-  if (n == null || n < 1) return 'Min 1';
-  return null;
-}
-
-String? _positiveRequiredValidator(String? value) {
-  if (value == null || value.trim().isEmpty) return 'Required';
-  final n = int.tryParse(value.trim());
-  if (n == null || n < 1) return 'Min 1';
-  return null;
-}
-
-EventCancellationPolicy _policyFor(EventCancellationPolicyId id) {
-  return switch (id) {
-    EventCancellationPolicyId.flexible =>
-      const EventCancellationPolicy.flexible(),
-    EventCancellationPolicyId.standard =>
-      const EventCancellationPolicy.standard(),
-    EventCancellationPolicyId.strict => const EventCancellationPolicy.strict(),
   };
 }
 

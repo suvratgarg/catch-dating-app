@@ -205,7 +205,7 @@ class _DashboardFullSliverBodyState
     }
 
     return clubsAsync.isLoading
-        ? _buildFollowedClubsRailSkeleton(context)
+        ? const FollowedClubsRailSkeleton()
         : const SizedBox.shrink();
   }
 
@@ -375,27 +375,32 @@ class _DashboardFullSliverBodyState
   }
 }
 
-Widget _buildFollowedClubsRailSkeleton(BuildContext context) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Text('Your clubs', style: CatchTextStyles.titleL(context)),
-      const SizedBox(height: CatchSpacing.s3),
-      Row(
-        children: [
-          for (var index = 0; index < 3; index += 1) ...[
-            if (index > 0) const SizedBox(width: CatchSpacing.micro14),
-            Column(
-              children: [
-                CatchSkeleton.circle(size: 64),
-                const SizedBox(height: CatchSpacing.micro6),
-                CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-              ],
-            ),
+class FollowedClubsRailSkeleton extends StatelessWidget {
+  const FollowedClubsRailSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text('Your clubs', style: CatchTextStyles.titleL(context)),
+        const SizedBox(height: CatchSpacing.s3),
+        Row(
+          children: [
+            for (var index = 0; index < 3; index += 1) ...[
+              if (index > 0) const SizedBox(width: CatchSpacing.micro14),
+              Column(
+                children: [
+                  CatchSkeleton.circle(size: 64),
+                  const SizedBox(height: CatchSpacing.micro6),
+                  CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+                ],
+              ),
+            ],
           ],
-        ],
-      ),
-    ],
-  );
+        ),
+      ],
+    );
+  }
 }

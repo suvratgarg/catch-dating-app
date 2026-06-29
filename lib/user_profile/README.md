@@ -16,12 +16,11 @@ data, and the source fields that feed public profile projection.
 
 Verified against `lib/user_profile/presentation/widgets/profile_tab.dart`,
 `lib/user_profile/domain/user_profile.dart`, and
-`test/profile/profile_widgets_test.dart` on 2026-05-21:
+`test/profile/profile_widgets_test.dart` on 2026-06-29:
 
-1. `Phone` is still editable from Profile and saves `phoneNumber` through the
-   profile update path. There is no profile-local Firebase Auth phone
-   re-verification/change flow. Either remove the editor or implement OTP
-   re-verification before phone changes are accepted as identity data.
+1. `Phone` is display-only in Profile. There is still no profile-local Firebase
+   Auth phone re-verification/change flow, so keep it readonly unless an OTP
+   re-verification flow updates the Auth credential first.
 2. `Date of birth` is still display-only. Decide whether corrections go
    through an in-app support flow, admin review, or a carefully constrained
    editor.

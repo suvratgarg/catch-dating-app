@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
@@ -16,11 +17,11 @@ import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
-import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_tile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
@@ -77,6 +78,7 @@ Future<void> _pumpEditableProfileTab(
   UserProfile user,
   FakeProfileEditUserProfileRepository repository,
 ) async {
+  repository.latestProfile = user;
   tester.view.devicePixelRatio = 1.0;
   tester.view.physicalSize = const Size(390, 2200);
   addTearDown(tester.view.resetPhysicalSize);
@@ -137,6 +139,16 @@ Finder _profileInfoTile(String label) => find.byWidgetPredicate(
       widget.variant == CatchFieldVariant.row,
 );
 
+Finder _editableTextForProfileField(String label) => find.descendant(
+  of: _profileInfoTile(label),
+  matching: find.byType(EditableText),
+);
+
+Finder _inlinePromptEditableText() => find.descendant(
+  of: find.byType(ProfileInlineTextValue),
+  matching: find.byType(EditableText),
+);
+
 Finder _profileOptionGroup() => find.byType(CatchOptionGroup<int>);
 
 Finder _catchChip(String label) => find.byWidgetPredicate(
@@ -151,6 +163,12 @@ int _loadingCatchButtonCount(WidgetTester tester) => tester
 Future<void> _tapInlineDone(WidgetTester tester) async {
   final doneButton = find.widgetWithText(CatchButton, 'Done');
   tester.widget<CatchButton>(doneButton).onPressed?.call();
+  await tester.pump();
+}
+
+Future<void> _tapInlineCancel(WidgetTester tester) async {
+  final cancelButton = find.widgetWithText(CatchTextButton, 'Cancel');
+  tester.widget<CatchTextButton>(cancelButton).onPressed?.call();
   await tester.pump();
 }
 
@@ -462,10 +480,10 @@ void main() {
           body: Center(
             child: SizedBox(
               width: 180,
-              child: profileInfoTile(
+              child: CatchField.nav(
                 icon: CatchIcons.emailOutlined,
-                label: 'Email',
-                value: 'averylongemailaddress@examplecatchdatingapp.com',
+                title: 'Email',
+                body: 'averylongemailaddress@examplecatchdatingapp.com',
               ),
             ),
           ),
@@ -571,18 +589,28 @@ void main() {
       );
       final genderTile = tester.widget<CatchField>(_profileInfoTile('Gender'));
 
-      expect(displayNameTile.body, 'S.');
-      expect(displayNameTile.onTap, isNotNull);
+      expect(displayNameTile.mode, CatchFieldMode.edit);
+      expect(displayNameTile.enabled, isTrue);
+      expect(
+        find.descendant(
+          of: _profileInfoTile('Display name'),
+          matching: find.text('S.'),
+        ),
+        findsWidgets,
+      );
       expect(find.text('Name'), findsNothing);
+      expect(dobTile.mode, CatchFieldMode.nav);
       expect(dobTile.onTap, isNull);
+      expect(genderTile.mode, CatchFieldMode.nav);
       expect(genderTile.onTap, isNull);
       expect(_profileInfoTile(_perfectRunPromptTitle), findsOneWidget);
 
       final instagramTile = tester.widget<CatchField>(
         _profileInfoTile('Instagram'),
       );
-      expect(instagramTile.body, '@suvrat_events');
-      expect(instagramTile.onTap, isNotNull);
+      expect(instagramTile.mode, CatchFieldMode.edit);
+      expect(instagramTile.enabled, isTrue);
+      expect(find.text('@suvrat_events'), findsOneWidget);
     },
   );
 
@@ -602,10 +630,10 @@ void main() {
     await tester.tap(displayNameTile);
     await _pumpProfileSheet(tester);
 
-    expect(find.byType(ProfileInlineTextValue), findsOneWidget);
+    expect(_editableTextForProfileField('Display name'), findsOneWidget);
     expect(find.text('Display name'), findsOneWidget);
 
-    var inlineEditable = find.byType(EditableText);
+    var inlineEditable = _editableTextForProfileField('Display name');
     await tester.enterText(inlineEditable, '   ');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pump();
@@ -613,7 +641,7 @@ void main() {
     expect(find.text('Display name is required'), findsOneWidget);
     expect(repository.updatedFields, isNull);
 
-    inlineEditable = find.byType(EditableText);
+    inlineEditable = _editableTextForProfileField('Display name');
     await tester.enterText(inlineEditable, ' S. ');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await _pumpProfileSheet(tester);
@@ -739,14 +767,11 @@ void main() {
     await tester.tap(heightTile);
     await _pumpProfileSheet(tester);
 
-    expect(find.byKey(const ValueKey('profile-inline-expanded')), findsWidgets);
     expect(find.byTooltip('Increase height'), findsOneWidget);
+    expect(find.widgetWithText(CatchButton, 'Done'), findsOneWidget);
+    expect(find.text('Cancel'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Collapse Height'));
-    await tester.pump();
-
-    expect(find.byTooltip('Increase height'), findsOneWidget);
-
+    await _tapInlineCancel(tester);
     await _pumpProfileSheet(tester);
 
     expect(find.byTooltip('Increase height'), findsNothing);
@@ -857,16 +882,15 @@ void main() {
     expect(promptField.maxLines, isNull);
     expect(promptField.minLines, isNull);
     expect(promptField.maxLength, maximumProfilePromptAnswerLength);
-    expect(promptField.showCounter, isTrue);
 
-    await tester.enterText(find.byType(EditableText), ' Updated bio ');
+    await tester.enterText(_inlinePromptEditableText(), ' Updated bio ');
     await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields?['profilePrompts'], [
       containsPair('answer', 'Updated bio'),
     ]);
-    expect(find.byType(EditableText), findsNothing);
+    expect(_inlinePromptEditableText(), findsNothing);
   });
 
   testWidgets('prompt picker excludes prompts used by other rows', (
@@ -932,11 +956,8 @@ void main() {
       await _pumpProfileTab(tester, user);
 
       final promptTile = _profileInfoTile(_perfectRunPromptTitle);
-      final chevron = find.byKey(
-        ValueKey('profile-info-$_perfectRunPromptTitle-chevron'),
-      );
       final collapsedTileTop = tester.getTopLeft(promptTile).dy;
-      final collapsedChevronCenter = tester.getCenter(chevron);
+      final collapsedTileHeight = tester.getSize(promptTile).height;
 
       await tester.tap(promptTile);
       await tester.pump();
@@ -944,24 +965,9 @@ void main() {
 
       expect(tester.getTopLeft(promptTile).dy, closeTo(collapsedTileTop, 0.1));
       expect(
-        tester.getCenter(chevron).dx,
-        closeTo(collapsedChevronCenter.dx, 0.1),
+        tester.getSize(promptTile).height,
+        greaterThan(collapsedTileHeight),
       );
-      expect(
-        tester.getCenter(chevron).dy,
-        closeTo(collapsedChevronCenter.dy, 0.1),
-      );
-      final midRotation = tester
-          .widget<RotationTransition>(
-            find.descendant(
-              of: chevron,
-              matching: find.byType(RotationTransition),
-            ),
-          )
-          .turns
-          .value;
-      expect(midRotation, lessThan(0));
-      expect(midRotation, greaterThanOrEqualTo(-0.25));
 
       await _pumpProfileSheet(tester);
 
@@ -979,10 +985,6 @@ void main() {
       );
 
       expect(tester.getTopLeft(promptTile).dy, closeTo(collapsedTileTop, 0.1));
-      expect(
-        tester.getCenter(chevron).dy,
-        closeTo(collapsedChevronCenter.dy, 0.1),
-      );
       expect(promptInput.variant, CatchFieldVariant.underline);
       expect(promptInput.size, CatchFieldSize.floating);
       expect(promptInput.showLabel, isFalse);
@@ -998,9 +1000,7 @@ void main() {
     await tester.tap(emailTile);
     await _pumpProfileSheet(tester);
 
-    final field = tester.widget<ProfileInlineTextValue>(
-      find.byType(ProfileInlineTextValue),
-    );
+    final field = tester.widget<CatchField>(_profileInfoTile('Email'));
     expect(field.keyboardType, TextInputType.emailAddress);
     expect(field.autofillHints, contains(AutofillHints.email));
   });
@@ -1008,28 +1008,27 @@ void main() {
   testWidgets('inline email edit keeps row geometry stable and actions close', (
     tester,
   ) async {
+    final repository = FakeProfileEditUserProfileRepository();
     final user = buildUser(name: 'Suvrat Garg');
-    await _pumpProfileTab(tester, user);
+    await _pumpEditableProfileTab(tester, user, repository);
 
     final emailTile = _profileInfoTile('Email');
     await _dragProfileTabUntilVisible(tester, emailTile);
-    final chevron = find.byKey(const ValueKey('profile-info-Email-chevron'));
-    final collapsedChevronCenter = tester.getCenter(chevron);
     final collapsedTileHeight = tester.getSize(emailTile).height;
 
     await tester.tap(emailTile);
+    await tester.enterText(
+      _editableTextForProfileField('Email'),
+      'hi@catch.app',
+    );
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await _pumpProfileSheet(tester);
 
-    final expandedChevronCenter = tester.getCenter(chevron);
     final expandedTileHeight = tester.getSize(emailTile).height;
-    final editableBottom = tester.getBottomLeft(
-      find.byType(ProfileInlineTextValue),
-    );
-    final doneTop = tester.getTopLeft(find.widgetWithText(CatchButton, 'Done'));
 
-    expect(expandedChevronCenter.dx, closeTo(collapsedChevronCenter.dx, 0.1));
-    expect(expandedTileHeight - collapsedTileHeight, lessThanOrEqualTo(8));
-    expect(doneTop.dy - editableBottom.dy, lessThanOrEqualTo(20));
+    expect(repository.updatedFields, {'email': 'hi@catch.app'});
+    expect(expandedTileHeight, closeTo(collapsedTileHeight, 1));
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('height inline edit uses bounded plus-minus controls', (
@@ -1099,14 +1098,14 @@ void main() {
     final promptTile = _profileInfoTile(_perfectRunPromptTitle);
     await tester.tap(promptTile);
     await _pumpProfileSheet(tester);
-    await tester.enterText(find.byType(EditableText), 'Updated bio');
+    await tester.enterText(_inlinePromptEditableText(), 'Updated bio');
     await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields?['profilePrompts'], [
       containsPair('answer', 'Updated bio'),
     ]);
-    expect(find.byType(EditableText), findsOneWidget);
+    expect(_inlinePromptEditableText(), findsOneWidget);
     expect(find.textContaining('Save failed'), findsOneWidget);
   });
 
@@ -1121,11 +1120,13 @@ void main() {
     await tester.tap(promptTile);
     await _pumpProfileSheet(tester);
     await tester.enterText(
-      find.byType(EditableText),
+      _inlinePromptEditableText(),
       'a' * (maximumProfilePromptAnswerLength + 1),
     );
     await tester.pump();
-    final editableText = tester.widget<EditableText>(find.byType(EditableText));
+    final editableText = tester.widget<EditableText>(
+      _inlinePromptEditableText(),
+    );
 
     expect(
       editableText.controller.text.length,
@@ -1135,10 +1136,6 @@ void main() {
       '$maximumProfilePromptAnswerLength / $maximumProfilePromptAnswerLength',
     );
     expect(counter, findsOneWidget);
-    expect(
-      tester.getCenter(counter).dy,
-      closeTo(tester.getCenter(find.widgetWithText(CatchButton, 'Done')).dy, 1),
-    );
 
     await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
@@ -1152,7 +1149,7 @@ void main() {
       ),
       findsNothing,
     );
-    expect(find.byType(EditableText), findsNothing);
+    expect(_inlinePromptEditableText(), findsNothing);
   });
 
   testWidgets('prompt edit collapses repeated empty lines while typing', (
@@ -1166,12 +1163,14 @@ void main() {
     await tester.tap(promptTile);
     await _pumpProfileSheet(tester);
     await tester.enterText(
-      find.byType(EditableText),
+      _inlinePromptEditableText(),
       'first\n\n\nsecond\n \n \nthird',
     );
     await tester.pump();
 
-    final editableText = tester.widget<EditableText>(find.byType(EditableText));
+    final editableText = tester.widget<EditableText>(
+      _inlinePromptEditableText(),
+    );
     expect(editableText.controller.text, 'first\n\nsecond\n\nthird');
 
     await _tapInlineDone(tester);
@@ -1191,20 +1190,20 @@ void main() {
     final promptTile = _profileInfoTile(_perfectRunPromptTitle);
     await tester.tap(promptTile);
     await _pumpProfileSheet(tester);
-    await tester.enterText(find.byType(EditableText), 'Updated bio');
+    await tester.enterText(_inlinePromptEditableText(), 'Updated bio');
     await _tapInlineDone(tester);
     await tester.pump();
 
     expect(repository.updatedFields?['profilePrompts'], [
       containsPair('answer', 'Updated bio'),
     ]);
-    expect(find.byType(EditableText), findsOneWidget);
+    expect(_inlinePromptEditableText(), findsOneWidget);
     expect(_loadingCatchButtonCount(tester), 1);
 
     repository.updateCompleter!.complete();
     await _pumpProfileSheet(tester);
 
-    expect(find.byType(EditableText), findsNothing);
+    expect(_inlinePromptEditableText(), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -1226,7 +1225,7 @@ void main() {
         );
         expect(firstChip.active, isFalse, reason: field.tileLabel);
 
-        await tester.tap(find.byTooltip('Collapse ${field.tileLabel}'));
+        await _tapInlineCancel(tester);
         await _pumpProfileSheet(tester);
       }
     },
@@ -1633,8 +1632,13 @@ class FakeProfileEditUserProfileRepository extends Fake
     implements UserProfileRepository {
   Completer<void>? updateCompleter;
   Object? updateError;
+  UserProfile? latestProfile;
   String? updatedUid;
   Map<String, dynamic>? updatedFields;
+
+  @override
+  Future<UserProfile?> fetchUserProfile({required String? uid}) async =>
+      latestProfile;
 
   @override
   Future<void> updateUserProfile({

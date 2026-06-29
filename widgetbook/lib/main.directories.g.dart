@@ -381,6 +381,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchMiniBarChart',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchMiniBarChartCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchStatColumn',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -7273,6 +7283,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Inline Editors',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'ProfileDirectTextEntryField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Direct text entry states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileDirectTextEntryFieldStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfileInlineHeightEditor',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7319,16 +7339,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Inline single choice editor states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .profileInlineSingleChoiceEntryEditorStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ProfileInlineTextEntryEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Inline text editor states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileInlineTextEntryEditorStates,
                   ),
                 ],
               ),

@@ -3,23 +3,24 @@ import 'dart:async';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart';
-import 'package:catch_dating_app/user_analytics/presentation/user_analytics_panel.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
-import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
+export 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -52,9 +53,12 @@ class ProfileTab extends ConsumerWidget {
               constraints: const BoxConstraints(
                 maxWidth: CatchLayout.maxContentWidth,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: children,
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: children,
+                ),
               ),
             ),
           ),
@@ -87,9 +91,12 @@ class ProfileTabSliverBody extends ConsumerWidget {
               constraints: const BoxConstraints(
                 maxWidth: CatchLayout.maxContentWidth,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: children,
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: children,
+                ),
               ),
             ),
           ),
@@ -99,153 +106,8 @@ class ProfileTabSliverBody extends ConsumerWidget {
   }
 }
 
-class ProfileTabSkeletonSliverBody extends StatelessWidget {
-  const ProfileTabSkeletonSliverBody({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: profileTabBodyPadding,
-      sliver: SliverToBoxAdapter(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: CatchLayout.maxContentWidth,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CatchSectionList(
-                  gap: 0,
-                  children: [
-                    _profilePhotosSkeletonSection(),
-                    _profileAnalyticsSkeletonSection(),
-                    _profileInfoSkeletonSection(
-                      title: 'Prompts',
-                      rows: maxProfilePromptAnswers,
-                    ),
-                    _profileInfoSkeletonSection(title: 'About you', rows: 5),
-                    _profileInfoSkeletonSection(title: 'Running', rows: 4),
-                    _profileInfoSkeletonSection(title: 'Lifestyle', rows: 4),
-                  ],
-                ),
-                gapH32,
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-Widget _profilePhotosSkeletonSection() {
-  return CatchSection.divided(
-    title: 'Photos',
-    count: 'loading',
-    first: true,
-    child: GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: CatchSpacing.s2,
-        crossAxisSpacing: CatchSpacing.s2,
-        childAspectRatio: CatchAspectRatio.portrait3x4,
-      ),
-      itemCount: maximumProfilePhotoCount,
-      itemBuilder: (context, index) => CatchSkeleton.box(
-        width: double.infinity,
-        height: double.infinity,
-        radius: CatchRadius.lg,
-      ),
-    ),
-  );
-}
-
-Widget _profileAnalyticsSkeletonSection() {
-  return CatchSection.divided(
-    title: 'Profile strength',
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-        gapH12,
-        CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
-      ],
-    ),
-  );
-}
-
-Widget _profileInfoSkeletonSection({required String title, required int rows}) {
-  return CatchSection.divided(
-    title: title,
-    bodyGap: CatchSpacing.micro10,
-    child: Column(
-      children: [
-        for (var index = 0; index < rows; index++) ...[
-          _profileInfoSkeletonTile(),
-          if (index < rows - 1)
-            const Builder(builder: _profileInfoSkeletonDivider),
-        ],
-      ],
-    ),
-  );
-}
-
-Widget _profileInfoSkeletonTile() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: CatchSpacing.micro14),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: CatchStroke.hairline),
-          child: CatchSkeleton.box(
-            width: CatchIcon.control,
-            height: CatchIcon.control,
-            radius: CatchRadius.pill,
-          ),
-        ),
-        gapW12,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-              gapH4,
-              CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-            ],
-          ),
-        ),
-        CatchSkeleton.box(
-          width: CatchSpacing.s10,
-          height: CatchSpacing.s10,
-          radius: CatchRadius.pill,
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _profileInfoSkeletonDivider(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return Divider(
-    height: 1,
-    indent: CatchSpacing.s8,
-    color: t.line.withValues(alpha: CatchOpacity.profileInfoDivider),
-  );
-}
-
 typedef ProfileTabContentBuilder =
     Widget Function(BuildContext context, List<Widget> children);
-
-const profileTabBodyPadding = EdgeInsets.fromLTRB(
-  CatchSpacing.s5,
-  CatchSpacing.micro18,
-  CatchSpacing.s5,
-  CatchSpacing.s7,
-);
 
 class ProfileTabContent extends ConsumerStatefulWidget {
   const ProfileTabContent({
@@ -268,6 +130,17 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
 
   bool _isExpanded(String fieldName) => _expandedField == fieldName;
 
+  UpdateUserProfilePatch _runningActivityPatch(
+    UserProfile user,
+    RunningPreferences Function(RunningPreferences running) update,
+  ) {
+    return UpdateUserProfilePatch(
+      activityPreferences: user.activityPreferences.copyWith(
+        running: update(user.runningPreferences),
+      ),
+    );
+  }
+
   void _toggleField(String fieldName) {
     setState(() {
       _expandedField = _expandedField == fieldName ? null : fieldName;
@@ -288,8 +161,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
         .where((prompt) => prompt.answer.trim().isNotEmpty)
         .length;
     final basics = [
-      _textEntry(
-        context: context,
+      _ProfileDirectTextEntry(
         icon: CatchIcons.personOutlined,
         label: 'Display name',
         value: user.publicDisplayName,
@@ -305,53 +177,53 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
         validator: validateRequiredDisplayName,
         toFieldValue: (value) => value.trim(),
       ),
-      ProfileInfoEntry(
+      CatchField.nav(
         icon: CatchIcons.cakeOutlined,
-        label: 'Date of birth',
-        value:
+        title: 'Date of birth',
+        body:
             '${user.dateOfBirth.day.toString().padLeft(2, '0')}/${user.dateOfBirth.month.toString().padLeft(2, '0')}/${user.dateOfBirth.year}  (${user.age} years)',
+        bodyMaxLines: 4,
       ),
-      ProfileInfoEntry(
+      CatchField.nav(
         icon: CatchIcons.wcOutlined,
-        label: 'Gender',
-        value: user.gender.label,
+        title: 'Gender',
+        body: user.gender.label,
+        bodyMaxLines: 4,
       ),
       // Phone is the OTP identity credential. It is display-only here; editing
       // it inline would let Firestore phoneNumber diverge from the Firebase Auth
       // identity with no re-verification. Changing it requires an OTP
       // re-verification flow that updates the Auth credential first.
-      ProfileInfoEntry(
+      CatchField.nav(
         icon: CatchIcons.phoneOutlined,
-        label: 'Phone',
-        value: user.phoneNumber,
+        title: 'Phone',
+        body: user.phoneNumber,
+        bodyMaxLines: 4,
       ),
-      _textEntry(
-        context: context,
+      _ProfileDirectTextEntry(
         icon: CatchIcons.emailOutlined,
         label: 'Email',
-        value: user.email.isNotEmpty ? user.email : 'Email',
+        value: 'Email',
         currentValue: user.email,
         fieldName: 'email',
         patchForValue: (value) =>
             UpdateUserProfilePatch(email: value as String),
-        isAddAffordance: user.email.isEmpty,
         keyboardType: TextInputType.emailAddress,
+        textCapitalization: TextCapitalization.none,
         autofillHints: const [AutofillHints.email],
         validator: validateOptionalEmail,
       ),
-      _textEntry(
-        context: context,
+      _ProfileDirectTextEntry(
         icon: CatchIcons.alternateEmailOutlined,
         label: 'Instagram',
-        value: user.instagramHandle?.isNotEmpty == true
+        value: 'Instagram',
+        currentValue: user.instagramHandle?.isNotEmpty == true
             ? '@${user.instagramHandle}'
-            : 'Instagram',
-        currentValue: user.instagramHandle ?? '',
+            : '',
         currentFieldValue: user.instagramHandle,
         fieldName: 'instagramHandle',
         patchForValue: (value) =>
             UpdateUserProfilePatch(instagramHandle: value as String?),
-        isAddAffordance: user.instagramHandle?.isNotEmpty != true,
         keyboardType: TextInputType.text,
         textCapitalization: TextCapitalization.none,
         validator: validateOptionalInstagramHandle,
@@ -360,29 +232,23 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           return handle.isEmpty ? null : handle;
         },
       ),
-      ProfileInfoEntry(
-        builder: (_) => ProfileInlineHeightEditor(
-          key: const ValueKey('inline-height-editor'),
-          icon: CatchIcons.heightOutlined,
-          label: 'Height',
-          value: user.height != null ? '${user.height} cm' : 'Height',
-          currentValue: user.height,
-          isExpanded: _isExpanded('height'),
-          isAddAffordance: user.height == null,
-          patchForValue: (value) => UpdateUserProfilePatch(height: value),
-          onTap: () => _toggleField('height'),
-          onSaved: _collapseField,
-          onCancel: _collapseField,
-        ),
+      ProfileInlineHeightEditor(
+        key: const ValueKey('inline-height-editor'),
         icon: CatchIcons.heightOutlined,
         label: 'Height',
         value: user.height != null ? '${user.height} cm' : 'Height',
+        currentValue: user.height,
+        isExpanded: _isExpanded('height'),
+        isAddAffordance: user.height == null,
+        patchForValue: (value) => UpdateUserProfilePatch(height: value),
+        onTap: () => _toggleField('height'),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
     ];
     final about = [
       ...basics,
-      _singleEnumEntry<CityOption>(
-        context: context,
+      _ProfileSingleEnumEntry<CityOption>(
         icon: CatchIcons.locationOnOutlined,
         label: 'City',
         values: defaultCityOptions
@@ -392,49 +258,58 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
         fieldName: 'city',
         patchForValue: (value) =>
             UpdateUserProfilePatch(city: value?.effectiveMarketId),
+        isExpanded: _isExpanded('city'),
+        onTap: () => _toggleField('city'),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
-      _textEntry(
-        context: context,
+      _ProfileDirectTextEntry(
         icon: CatchIcons.workOutline,
         label: 'Job title',
-        value: user.occupation ?? 'Job title',
+        value: 'Job title',
         currentValue: user.occupation ?? '',
         fieldName: 'occupation',
         patchForValue: (value) =>
             UpdateUserProfilePatch(occupation: value as String),
-        isAddAffordance: user.occupation == null,
+        validator: (value) =>
+            validateOptionalProfileShortText(value, label: 'Job title'),
       ),
-      _textEntry(
-        context: context,
+      _ProfileDirectTextEntry(
         icon: CatchIcons.businessOutlined,
         label: 'Company',
-        value: user.company ?? 'Company',
+        value: 'Company',
         currentValue: user.company ?? '',
         fieldName: 'company',
         patchForValue: (value) =>
             UpdateUserProfilePatch(company: value as String),
-        isAddAffordance: user.company == null,
+        validator: (value) =>
+            validateOptionalProfileShortText(value, label: 'Company'),
       ),
-      _singleEnumEntry<EducationLevel>(
-        context: context,
+      _ProfileSingleEnumEntry<EducationLevel>(
         icon: CatchIcons.schoolOutlined,
         label: 'Education',
         values: EducationLevel.values,
         value: user.education,
         fieldName: 'education',
         patchForValue: (value) => UpdateUserProfilePatch(education: value),
+        isExpanded: _isExpanded('education'),
+        onTap: () => _toggleField('education'),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
-      _singleEnumEntry<Religion>(
-        context: context,
+      _ProfileSingleEnumEntry<Religion>(
         icon: CatchIcons.volunteerActivismOutlined,
         label: 'Religion',
         values: Religion.values,
         value: user.religion,
         fieldName: 'religion',
         patchForValue: (value) => UpdateUserProfilePatch(religion: value),
+        isExpanded: _isExpanded('religion'),
+        onTap: () => _toggleField('religion'),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
-      _multiEnumEntry<Language>(
-        context: context,
+      _ProfileMultiEnumEntry<Language>(
         icon: CatchIcons.languageOutlined,
         label: 'Languages',
         values: Language.values,
@@ -442,9 +317,12 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
         fieldName: 'languages',
         placeholder: 'Languages',
         patchForValues: (values) => UpdateUserProfilePatch(languages: values),
+        isExpanded: _isExpanded('languages'),
+        onTap: () => _toggleField('languages'),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
-      _singleEnumEntry<RelationshipGoal>(
-        context: context,
+      _ProfileSingleEnumEntry<RelationshipGoal>(
         icon: CatchIcons.favoriteOutline,
         label: 'Looking for',
         values: RelationshipGoal.values,
@@ -452,90 +330,109 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
         fieldName: 'relationshipGoal',
         patchForValue: (value) =>
             UpdateUserProfilePatch(relationshipGoal: value),
+        isExpanded: _isExpanded('relationshipGoal'),
+        onTap: () => _toggleField('relationshipGoal'),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
     ];
     final lifestyle = [
-      _singleEnumEntry<DrinkingHabit>(
-        context: context,
+      _ProfileSingleEnumEntry<DrinkingHabit>(
         icon: CatchIcons.localBarOutlined,
         label: 'Drinking',
         values: DrinkingHabit.values,
         value: user.drinking,
         fieldName: 'drinking',
         patchForValue: (value) => UpdateUserProfilePatch(drinking: value),
+        isExpanded: _isExpanded('drinking'),
+        onTap: () => _toggleField('drinking'),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
-      _singleEnumEntry<SmokingHabit>(
-        context: context,
+      _ProfileSingleEnumEntry<SmokingHabit>(
         icon: CatchIcons.smokeFreeOutlined,
         label: 'Smoking',
         values: SmokingHabit.values,
         value: user.smoking,
         fieldName: 'smoking',
         patchForValue: (value) => UpdateUserProfilePatch(smoking: value),
+        isExpanded: _isExpanded('smoking'),
+        onTap: () => _toggleField('smoking'),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
-      _singleEnumEntry<WorkoutFrequency>(
-        context: context,
+      _ProfileSingleEnumEntry<WorkoutFrequency>(
         icon: CatchIcons.fitnessCenterOutlined,
         label: 'Workout',
         values: WorkoutFrequency.values,
         value: user.workout,
         fieldName: 'workout',
         patchForValue: (value) => UpdateUserProfilePatch(workout: value),
+        isExpanded: _isExpanded('workout'),
+        onTap: () => _toggleField('workout'),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
-      _singleEnumEntry<DietaryPreference>(
-        context: context,
+      _ProfileSingleEnumEntry<DietaryPreference>(
         icon: CatchIcons.restaurantOutlined,
         label: 'Diet',
         values: DietaryPreference.values,
         value: user.diet,
         fieldName: 'diet',
         patchForValue: (value) => UpdateUserProfilePatch(diet: value),
+        isExpanded: _isExpanded('diet'),
+        onTap: () => _toggleField('diet'),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
-      _singleEnumEntry<ChildrenStatus>(
-        context: context,
+      _ProfileSingleEnumEntry<ChildrenStatus>(
         icon: CatchIcons.childCareOutlined,
         label: 'Children',
         values: ChildrenStatus.values,
         value: user.children,
         fieldName: 'children',
         patchForValue: (value) => UpdateUserProfilePatch(children: value),
+        isExpanded: _isExpanded('children'),
+        onTap: () => _toggleField('children'),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
     ];
     final running = [
-      ProfileInfoEntry(
-        builder: (_) => ProfileInlineRangeEditor(
-          key: const ValueKey('inline-pace-range-editor'),
-          icon: CatchIcons.speedOutlined,
-          title: 'Pace range',
-          value: formatPaceRange(user.paceMinSecsPerKm, user.paceMaxSecsPerKm),
-          currentMin: user.paceMinSecsPerKm,
-          currentMax: user.paceMaxSecsPerKm,
-          isExpanded: _isExpanded('paceRange'),
-          onTap: () => _toggleField('paceRange'),
-          sliderMin: 240,
-          sliderMax: 540,
-          divisions: 20,
-          labelText: (v) => '${formatPace(v.round())}/km',
-          minFieldName: 'paceMinSecsPerKm',
-          maxFieldName: 'paceMaxSecsPerKm',
-          patchForRange: (min, max) => UpdateUserProfilePatch(
-            activityPreferences: user.activityPreferences.copyWith(
-              running: user.runningPreferences.copyWith(
-                paceMinSecsPerKm: min,
-                paceMaxSecsPerKm: max,
-                version: currentRunPreferencesVersion,
-              ),
+      ProfileInlineRangeEditor(
+        key: const ValueKey('inline-pace-range-editor'),
+        icon: CatchIcons.speedOutlined,
+        title: 'Pace range',
+        value: formatPaceRange(user.paceMinSecsPerKm, user.paceMaxSecsPerKm),
+        currentMin: user.paceMinSecsPerKm,
+        currentMax: user.paceMaxSecsPerKm,
+        isExpanded: _isExpanded('paceRange'),
+        onTap: () => _toggleField('paceRange'),
+        sliderMin: 240,
+        sliderMax: 540,
+        divisions: 20,
+        labelText: (v) => '${formatPace(v.round())}/km',
+        patchForRange: (min, max) => UpdateUserProfilePatch(
+          activityPreferences: user.activityPreferences.copyWith(
+            running: user.runningPreferences.copyWith(
+              paceMinSecsPerKm: min,
+              paceMaxSecsPerKm: max,
+              version: currentRunPreferencesVersion,
             ),
           ),
-          onSaved: _collapseField,
-          onCancel: _collapseField,
         ),
-        icon: CatchIcons.speedOutlined,
-        label: 'Pace range',
-        value: formatPaceRange(user.paceMinSecsPerKm, user.paceMaxSecsPerKm),
+        patchForLatestProfile: (latest, min, max) => _runningActivityPatch(
+          latest,
+          (running) => running.copyWith(
+            paceMinSecsPerKm: min,
+            paceMaxSecsPerKm: max,
+            version: currentRunPreferencesVersion,
+          ),
+        ),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
-      _multiEnumEntry<PreferredDistance>(
-        context: context,
+      _ProfileMultiEnumEntry<PreferredDistance>(
         icon: CatchIcons.straightenOutlined,
         label: 'Preferred distances',
         values: PreferredDistance.values,
@@ -550,9 +447,19 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
             ),
           ),
         ),
+        patchForLatestProfile: (latest, values) => _runningActivityPatch(
+          latest,
+          (running) => running.copyWith(
+            preferredDistances: values,
+            version: currentRunPreferencesVersion,
+          ),
+        ),
+        isExpanded: _isExpanded('preferredDistances'),
+        onTap: () => _toggleField('preferredDistances'),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
-      _multiEnumEntry<RunReason>(
-        context: context,
+      _ProfileMultiEnumEntry<RunReason>(
         icon: CatchIcons.directionsRunOutlined,
         label: 'Why I event',
         values: RunReason.values,
@@ -567,9 +474,19 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
             ),
           ),
         ),
+        patchForLatestProfile: (latest, values) => _runningActivityPatch(
+          latest,
+          (running) => running.copyWith(
+            runningReasons: values,
+            version: currentRunPreferencesVersion,
+          ),
+        ),
+        isExpanded: _isExpanded('runningReasons'),
+        onTap: () => _toggleField('runningReasons'),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
-      _multiEnumEntry<PreferredRunTime>(
-        context: context,
+      _ProfileMultiEnumEntry<PreferredRunTime>(
         icon: CatchIcons.wbTwilightOutlined,
         label: 'Favorite event times',
         values: PreferredRunTime.values,
@@ -584,10 +501,21 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
             ),
           ),
         ),
+        patchForLatestProfile: (latest, values) => _runningActivityPatch(
+          latest,
+          (running) => running.copyWith(
+            preferredRunTimes: values,
+            version: currentRunPreferencesVersion,
+          ),
+        ),
+        isExpanded: _isExpanded('preferredRunTimes'),
+        onTap: () => _toggleField('preferredRunTimes'),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
     ];
     final promptAnswers = normalizeProfilePromptAnswers(user.profilePrompts);
-    final prompts = List<ProfileInfoEntry>.generate(maxProfilePromptAnswers, (
+    final prompts = List<Widget>.generate(maxProfilePromptAnswers, (
       index,
     ) {
       final answer = index < promptAnswers.length ? promptAnswers[index] : null;
@@ -600,13 +528,17 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
         answer: answer,
         usedPromptIds: usedPromptIds,
       );
-      return _profilePromptEntry(
-        context: context,
+      final promptFieldName = 'profilePrompt:$index';
+      return _ProfilePromptEntry(
         user: user,
         index: index,
         definition: definition,
         answer: answer,
         usedPromptIds: usedPromptIds,
+        isExpanded: _isExpanded(promptFieldName),
+        onTap: () => _toggleField(promptFieldName),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       );
     }, growable: false);
 
@@ -614,7 +546,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
       CatchSectionList(
         gap: 0,
         children: [
-          _profilePhotosSection(
+          ProfilePhotosSection(
             first: true,
             profilePhotos: profilePhotos,
             uploadState: uploadState,
@@ -644,97 +576,40 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
               }),
             ),
           ),
-          const UserAnalyticsPanel(),
           profileInfoSection(
             context: context,
             title: 'Prompts',
             subtitle:
                 '$completedPromptCount of $maxProfilePromptAnswers answered',
-            entries: prompts,
+            children: prompts,
             grouped: true,
+            fullBleedRows: true,
           ),
           profileInfoSection(
             context: context,
             title: 'About you',
-            entries: about,
+            children: about,
             grouped: true,
+            fullBleedRows: true,
           ),
           profileInfoSection(
             context: context,
             title: 'Running',
-            entries: running,
+            children: running,
             grouped: true,
+            fullBleedRows: true,
           ),
           profileInfoSection(
             context: context,
             title: 'Lifestyle',
-            entries: lifestyle,
+            children: lifestyle,
             grouped: true,
+            fullBleedRows: true,
           ),
         ],
       ),
       gapH32,
     ]);
-  }
-
-  ProfileInfoEntry _textEntry({
-    required BuildContext context,
-    required IconData icon,
-    required String label,
-    required String value,
-    required String fieldName,
-    String? title,
-    String? expansionKey,
-    String? currentValue,
-    Object? currentFieldValue,
-    bool isAddAffordance = false,
-    TextInputType? keyboardType,
-    TextCapitalization textCapitalization = TextCapitalization.sentences,
-    Iterable<String>? autofillHints,
-    int? maxLines = 1,
-    int? minLines,
-    int? maxLength,
-    bool showCounter = false,
-    bool collapseStackedBlankLines = false,
-    String Function(String value)? normalizeInput,
-    FormFieldValidator<String>? validator,
-    Object? Function(String value)? toFieldValue,
-    required UpdateUserProfilePatch Function(Object? value) patchForValue,
-  }) {
-    final editorTitle = title ?? label;
-    final editorKey = expansionKey ?? fieldName;
-    return ProfileInfoEntry(
-      builder: (_) => ProfileInlineTextEntryEditor(
-        key: ValueKey('inline-$editorKey-entry-editor'),
-        icon: icon,
-        label: label,
-        value: value,
-        currentValue: currentValue ?? value,
-        currentFieldValue: currentFieldValue ?? currentValue ?? value,
-        fieldName: fieldName,
-        isExpanded: _isExpanded(editorKey),
-        isAddAffordance: isAddAffordance,
-        onTap: () => _toggleField(editorKey),
-        maxLines: maxLines,
-        minLines: minLines,
-        maxLength: maxLength,
-        showCounter: showCounter,
-        collapseStackedBlankLines: collapseStackedBlankLines,
-        normalizeInput: normalizeInput,
-        keyboardType: keyboardType,
-        textCapitalization: textCapitalization,
-        autofillHints: autofillHints,
-        validator: validator,
-        toFieldValue: toFieldValue,
-        patchForValue: patchForValue,
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      icon: icon,
-      label: editorTitle,
-      value: value,
-      isAddAffordance: isAddAffordance,
-    );
   }
 
   ProfilePromptDefinition _profilePromptDefinitionForSlot({
@@ -755,6 +630,210 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
       orElse: () => profilePromptCatalog.first,
     );
   }
+}
+
+class _ProfileDirectTextEntry extends StatelessWidget {
+  const _ProfileDirectTextEntry({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.fieldName,
+    this.currentValue,
+    this.currentFieldValue,
+    this.keyboardType,
+    this.textCapitalization = TextCapitalization.sentences,
+    this.autofillHints,
+    this.validator,
+    this.toFieldValue,
+    required this.patchForValue,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final String fieldName;
+  final String? currentValue;
+  final Object? currentFieldValue;
+  final TextInputType? keyboardType;
+  final TextCapitalization textCapitalization;
+  final Iterable<String>? autofillHints;
+  final FormFieldValidator<String>? validator;
+  final Object? Function(String value)? toFieldValue;
+  final UpdateUserProfilePatch Function(Object? value) patchForValue;
+
+  @override
+  Widget build(BuildContext context) {
+    return ProfileDirectTextEntryField(
+      icon: icon,
+      label: label,
+      value: value,
+      currentValue: currentValue ?? value,
+      currentFieldValue: currentFieldValue ?? currentValue ?? value,
+      fieldName: fieldName,
+      keyboardType: keyboardType,
+      textCapitalization: textCapitalization,
+      autofillHints: autofillHints,
+      validator: validator,
+      toFieldValue: toFieldValue,
+      patchForValue: patchForValue,
+    );
+  }
+}
+
+class _ProfileSingleEnumEntry<T extends Labelled> extends StatelessWidget {
+  const _ProfileSingleEnumEntry({
+    required this.icon,
+    required this.label,
+    required this.values,
+    required this.fieldName,
+    required this.patchForValue,
+    required this.isExpanded,
+    required this.onTap,
+    required this.onSaved,
+    required this.onCancel,
+    this.value,
+    this.placeholder,
+  });
+
+  final IconData icon;
+  final String label;
+  final List<T> values;
+  final T? value;
+  final String fieldName;
+  final UpdateUserProfilePatch Function(T? value) patchForValue;
+  final String? placeholder;
+  final bool isExpanded;
+  final VoidCallback onTap;
+  final VoidCallback onSaved;
+  final VoidCallback onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    final displayValue = value?.label ?? placeholder ?? label;
+    return ProfileInlineSingleChoiceEntryEditor<T>(
+      key: ValueKey('inline-$fieldName-entry-editor'),
+      icon: icon,
+      label: label,
+      value: displayValue,
+      values: values,
+      currentValue: value,
+      fieldName: fieldName,
+      patchForValue: patchForValue,
+      isExpanded: isExpanded,
+      isAddAffordance: value == null,
+      onTap: onTap,
+      onSaved: onSaved,
+      onCancel: onCancel,
+    );
+  }
+}
+
+class _ProfileMultiEnumEntry<T extends Labelled> extends StatelessWidget {
+  const _ProfileMultiEnumEntry({
+    required this.icon,
+    required this.label,
+    required this.values,
+    required this.selected,
+    required this.fieldName,
+    required this.placeholder,
+    required this.patchForValues,
+    required this.isExpanded,
+    required this.onTap,
+    required this.onSaved,
+    required this.onCancel,
+    this.patchForLatestProfile,
+    this.isAddAffordanceWhenEmpty = true,
+  });
+
+  final IconData icon;
+  final String label;
+  final List<T> values;
+  final List<T> selected;
+  final String fieldName;
+  final String placeholder;
+  final UpdateUserProfilePatch Function(List<T> values) patchForValues;
+  final UpdateUserProfilePatch Function(UserProfile user, List<T> values)?
+      patchForLatestProfile;
+  final bool isExpanded;
+  final VoidCallback onTap;
+  final VoidCallback onSaved;
+  final VoidCallback onCancel;
+  final bool isAddAffordanceWhenEmpty;
+
+  @override
+  Widget build(BuildContext context) {
+    final isEmpty = selected.isEmpty;
+    final displayValue = isEmpty
+        ? placeholder
+        : selected.map((v) => v.label).join(', ');
+    return ProfileInlineMultiChoiceEntryEditor<T>(
+      key: ValueKey('inline-$fieldName-entry-editor'),
+      icon: icon,
+      label: label,
+      value: displayValue,
+      values: values,
+      currentValues: selected,
+      fieldName: fieldName,
+      patchForValues: patchForValues,
+      patchForLatestProfile: patchForLatestProfile,
+      isExpanded: isExpanded,
+      isAddAffordance: isEmpty && isAddAffordanceWhenEmpty,
+      onTap: onTap,
+      onSaved: onSaved,
+      onCancel: onCancel,
+    );
+  }
+}
+
+class _ProfilePromptEntry extends StatelessWidget {
+  const _ProfilePromptEntry({
+    required this.user,
+    required this.index,
+    required this.definition,
+    required this.answer,
+    required this.usedPromptIds,
+    required this.isExpanded,
+    required this.onTap,
+    required this.onSaved,
+    required this.onCancel,
+  });
+
+  final UserProfile user;
+  final int index;
+  final ProfilePromptDefinition definition;
+  final ProfilePromptAnswer? answer;
+  final Set<String> usedPromptIds;
+  final bool isExpanded;
+  final VoidCallback onTap;
+  final VoidCallback onSaved;
+  final VoidCallback onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = answer?.answer ?? '';
+    final fieldName = 'profilePrompt:$index';
+    final availablePromptIds = _availableProfilePromptIds(
+      usedPromptIds: usedPromptIds,
+      currentPromptId: answer?.promptId ?? definition.id,
+    );
+    return ProfileInlinePromptEntryEditor(
+      key: ValueKey('inline-$fieldName-entry-editor'),
+      icon: CatchIcons.formatQuoteRounded,
+      label: definition.title,
+      value: text.isNotEmpty ? text : definition.placeholder,
+      currentAnswer: text,
+      currentPromptId: answer?.promptId ?? definition.id,
+      currentPrompts: user.profilePrompts,
+      promptIndex: index,
+      availablePromptIds: availablePromptIds,
+      fieldName: fieldName,
+      isExpanded: isExpanded,
+      isAddAffordance: text.isEmpty,
+      onTap: onTap,
+      onSaved: onSaved,
+      onCancel: onCancel,
+    );
+  }
 
   List<String> _availableProfilePromptIds({
     required Set<String> usedPromptIds,
@@ -772,143 +851,43 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
     ];
     return ids.isNotEmpty ? ids : <String>[profilePromptCatalog.first.id];
   }
-
-  ProfileInfoEntry _profilePromptEntry({
-    required BuildContext context,
-    required UserProfile user,
-    required int index,
-    required ProfilePromptDefinition definition,
-    required ProfilePromptAnswer? answer,
-    required Set<String> usedPromptIds,
-  }) {
-    final text = answer?.answer ?? '';
-    final fieldName = 'profilePrompt:$index';
-    final availablePromptIds = _availableProfilePromptIds(
-      usedPromptIds: usedPromptIds,
-      currentPromptId: answer?.promptId ?? definition.id,
-    );
-    return ProfileInfoEntry(
-      builder: (_) => ProfileInlinePromptEntryEditor(
-        key: ValueKey('inline-$fieldName-entry-editor'),
-        icon: CatchIcons.formatQuoteRounded,
-        label: definition.title,
-        value: text.isNotEmpty ? text : definition.placeholder,
-        currentAnswer: text,
-        currentPromptId: answer?.promptId ?? definition.id,
-        currentPrompts: user.profilePrompts,
-        promptIndex: index,
-        availablePromptIds: availablePromptIds,
-        fieldName: fieldName,
-        isExpanded: _isExpanded(fieldName),
-        isAddAffordance: text.isEmpty,
-        onTap: () => _toggleField(fieldName),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      icon: CatchIcons.formatQuoteRounded,
-      label: definition.title,
-      value: text.isNotEmpty ? text : definition.placeholder,
-      isAddAffordance: text.isEmpty,
-    );
-  }
-
-  ProfileInfoEntry _singleEnumEntry<T extends Labelled>({
-    required BuildContext context,
-    required IconData icon,
-    required String label,
-    required List<T> values,
-    required T? value,
-    required String fieldName,
-    required UpdateUserProfilePatch Function(T? value) patchForValue,
-    String? title,
-    String? placeholder,
-  }) {
-    final displayValue = value?.label ?? placeholder ?? label;
-    return ProfileInfoEntry(
-      builder: (_) => ProfileInlineSingleChoiceEntryEditor<T>(
-        key: ValueKey('inline-$fieldName-entry-editor'),
-        icon: icon,
-        label: label,
-        value: displayValue,
-        values: values,
-        currentValue: value,
-        fieldName: fieldName,
-        patchForValue: patchForValue,
-        isExpanded: _isExpanded(fieldName),
-        isAddAffordance: value == null,
-        onTap: () => _toggleField(fieldName),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      icon: icon,
-      label: title ?? label,
-      value: displayValue,
-      isAddAffordance: value == null,
-    );
-  }
-
-  ProfileInfoEntry _multiEnumEntry<T extends Labelled>({
-    required BuildContext context,
-    required IconData icon,
-    required String label,
-    required List<T> values,
-    required List<T> selected,
-    required String fieldName,
-    required String placeholder,
-    required UpdateUserProfilePatch Function(List<T> values) patchForValues,
-    String? title,
-    bool isAddAffordanceWhenEmpty = true,
-  }) {
-    final isEmpty = selected.isEmpty;
-    final displayValue = isEmpty
-        ? placeholder
-        : selected.map((v) => v.label).join(', ');
-    return ProfileInfoEntry(
-      builder: (_) => ProfileInlineMultiChoiceEntryEditor<T>(
-        key: ValueKey('inline-$fieldName-entry-editor'),
-        icon: icon,
-        label: label,
-        value: displayValue,
-        values: values,
-        currentValues: selected,
-        fieldName: fieldName,
-        patchForValues: patchForValues,
-        isExpanded: _isExpanded(fieldName),
-        isAddAffordance: isEmpty && isAddAffordanceWhenEmpty,
-        onTap: () => _toggleField(fieldName),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      icon: icon,
-      label: title ?? label,
-      value: displayValue,
-      isAddAffordance: isEmpty && isAddAffordanceWhenEmpty,
-    );
-  }
 }
 
-Widget _profilePhotosSection({
-  required bool first,
-  required List<ProfilePhoto> profilePhotos,
-  required PhotoUploadState uploadState,
-  required void Function(int index) onSlotTapped,
-  required void Function(int index) onDeletePhoto,
-  required void Function(int fromIndex, int toIndex) onReorderPhoto,
-}) {
-  final completedCount = profilePhotos.length;
-  final canDeletePhotos = completedCount > minimumProfilePhotoCount;
+class ProfilePhotosSection extends StatelessWidget {
+  const ProfilePhotosSection({
+    super.key,
+    required this.first,
+    required this.profilePhotos,
+    required this.uploadState,
+    required this.onSlotTapped,
+    required this.onDeletePhoto,
+    required this.onReorderPhoto,
+  });
 
-  return CatchSection.divided(
-    title: 'Photos',
-    count: '$completedCount of $maximumProfilePhotoCount added',
-    first: first,
-    child: PhotoGrid(
-      profilePhotos: profilePhotos,
-      loadingIndices: uploadState.loadingIndices,
-      onSlotTapped: onSlotTapped,
-      canDeletePhotos: canDeletePhotos,
-      onDeletePhoto: canDeletePhotos ? onDeletePhoto : null,
-      onReorderPhoto: onReorderPhoto,
-    ),
-  );
+  final bool first;
+  final List<ProfilePhoto> profilePhotos;
+  final PhotoUploadState uploadState;
+  final void Function(int index) onSlotTapped;
+  final void Function(int index) onDeletePhoto;
+  final void Function(int fromIndex, int toIndex) onReorderPhoto;
+
+  @override
+  Widget build(BuildContext context) {
+    final completedCount = profilePhotos.length;
+    final canDeletePhotos = completedCount > minimumProfilePhotoCount;
+
+    return CatchSection.divided(
+      title: 'Photos',
+      count: '$completedCount of $maximumProfilePhotoCount added',
+      first: first,
+      child: PhotoGrid(
+        profilePhotos: profilePhotos,
+        loadingIndices: uploadState.loadingIndices,
+        onSlotTapped: onSlotTapped,
+        canDeletePhotos: canDeletePhotos,
+        onDeletePhoto: canDeletePhotos ? onDeletePhoto : null,
+        onReorderPhoto: onReorderPhoto,
+      ),
+    );
+  }
 }

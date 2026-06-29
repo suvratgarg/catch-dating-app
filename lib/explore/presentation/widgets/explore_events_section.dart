@@ -55,7 +55,7 @@ List<Widget> buildExploreEventsSlivers(
   final searchQuery = ref.watch(exploreSearchQueryProvider).trim();
 
   return switch (feedAsync) {
-    AsyncLoading() => [_buildExploreEventsLoadingSliver()],
+    AsyncLoading() => [const ExploreEventsLoadingSliver()],
     AsyncError(:final error) => [
       SliverToBoxAdapter(
         // Bound the error sliver's scroll extent so a long `error.toString()`
@@ -99,8 +99,7 @@ List<Widget> buildExploreEventsSlivers(
               !hasDiscoverableClubCandidates &&
               !canUseSyntheticVisualFill
           ? [
-              _buildExploreEventsEmptySliver(
-                ref,
+              ExploreEventsEmptySliver(
                 filters: filters,
                 searchQuery: searchQuery,
               ),
@@ -194,9 +193,9 @@ List<Widget> _exploreContentSlivers(
             CatchSpacing.s1,
           ),
           child: Builder(
-            builder: (context) => _buildExploreResultCountLine(
-              context,
-              line: _exploreResultCountLine(bodyViewModel),
+            builder: (context) => ExploreMonoLabel(
+              _exploreResultCountLine(bodyViewModel),
+              color: CatchTokens.of(context).ink3,
             ),
           ),
         ),
@@ -211,9 +210,7 @@ List<Widget> _exploreContentSlivers(
             cards.isEmpty ? CatchSpacing.s4 : CatchSpacing.s2,
           ),
           child: Builder(
-            builder: (context) => _buildThisWeekRecommendationsSection(
-              context,
-              items: thisWeekItems,
+            builder: (context) => ThisWeekRecommendationsSection(items: thisWeekItems,
             ),
           ),
         ),
@@ -232,18 +229,14 @@ List<Widget> _exploreContentSlivers(
         separatorBuilder: (_, _) => const SizedBox(height: CatchSpacing.s4),
         itemBuilder: (context, index) {
           return switch (cards[index]) {
-            _MixedEventRowCard(:final item) => _buildExploreFeedEventRow(
-              context,
-              ref,
+            MixedEventRowCard(:final item) => ExploreFeedEventRow(
               item: item,
             ),
-            _MixedExternalEventRowCard(:final item) =>
-              _buildExploreExternalEventRow(context, ref, item: item),
-            _MixedClubSpotlightCard(:final club) =>
-              _buildExploreClubPolaroidCard(context, club: club),
-            _MixedClubRowCard(:final club) => _buildExploreFeedClubRow(
-              context,
-              club: club,
+            MixedExternalEventRowCard(:final item) =>
+              ExploreExternalEventRow(item: item),
+            MixedClubSpotlightCard(:final club) =>
+              ExploreClubPolaroidCard(club: club),
+            MixedClubRowCard(:final club) => ExploreFeedClubRow(club: club,
             ),
           };
         },
@@ -253,7 +246,7 @@ List<Widget> _exploreContentSlivers(
   ];
 }
 
-List<_MixedExploreCard> _buildMixedFeedCards({
+List<MixedExploreCard> _buildMixedFeedCards({
   required ExploreFeedViewModel viewModel,
   required List<Club> candidateClubs,
   required Set<String> joinedClubIds,
@@ -269,31 +262,31 @@ List<_MixedExploreCard> _buildMixedFeedCards({
       .where((item) => !excludeEventIds.contains(item.event.id))
       .toList(growable: true);
   final externalRows = viewModel.externalItems.take(8).toList();
-  final cards = <_MixedExploreCard>[];
+  final cards = <MixedExploreCard>[];
 
   if (eventRows.isEmpty) {
     for (final item in externalRows) {
-      cards.add(_MixedExternalEventRowCard(item));
+      cards.add(MixedExternalEventRowCard(item));
     }
-    if (firstClub != null) cards.add(_MixedClubSpotlightCard(firstClub));
-    if (secondClub != null) cards.add(_MixedClubRowCard(secondClub));
+    if (firstClub != null) cards.add(MixedClubSpotlightCard(firstClub));
+    if (secondClub != null) cards.add(MixedClubRowCard(secondClub));
     return cards;
   }
 
   final leadingCount = eventRows.length >= 2 ? 2 : 1;
   for (var i = 0; i < leadingCount; i += 1) {
-    cards.add(_MixedEventRowCard(eventRows.removeAt(0)));
+    cards.add(MixedEventRowCard(eventRows.removeAt(0)));
   }
-  if (firstClub != null) cards.add(_MixedClubSpotlightCard(firstClub));
+  if (firstClub != null) cards.add(MixedClubSpotlightCard(firstClub));
 
   for (var i = 0; i < eventRows.length; i += 1) {
-    cards.add(_MixedEventRowCard(eventRows[i]));
+    cards.add(MixedEventRowCard(eventRows[i]));
     if (i == 1 && secondClub != null) {
-      cards.add(_MixedClubRowCard(secondClub));
+      cards.add(MixedClubRowCard(secondClub));
     }
   }
   for (final item in externalRows) {
-    cards.add(_MixedExternalEventRowCard(item));
+    cards.add(MixedExternalEventRowCard(item));
   }
   return cards;
 }
@@ -327,43 +320,32 @@ List<Club> _rankClubIntermixCandidates(
   return ranked;
 }
 
-sealed class _MixedExploreCard {
-  const _MixedExploreCard();
+sealed class MixedExploreCard {
+  const MixedExploreCard();
 }
 
-class _MixedEventRowCard extends _MixedExploreCard {
-  const _MixedEventRowCard(this.item);
+class MixedEventRowCard extends MixedExploreCard {
+  const MixedEventRowCard(this.item);
 
   final ExploreEventItem item;
 }
 
-class _MixedExternalEventRowCard extends _MixedExploreCard {
-  const _MixedExternalEventRowCard(this.item);
+class MixedExternalEventRowCard extends MixedExploreCard {
+  const MixedExternalEventRowCard(this.item);
 
   final ExploreExternalEventItem item;
 }
 
-class _MixedClubSpotlightCard extends _MixedExploreCard {
-  const _MixedClubSpotlightCard(this.club);
+class MixedClubSpotlightCard extends MixedExploreCard {
+  const MixedClubSpotlightCard(this.club);
 
   final Club club;
 }
 
-class _MixedClubRowCard extends _MixedExploreCard {
-  const _MixedClubRowCard(this.club);
+class MixedClubRowCard extends MixedExploreCard {
+  const MixedClubRowCard(this.club);
 
   final Club club;
-}
-
-Widget _buildExploreResultCountLine(
-  BuildContext context, {
-  required String line,
-}) {
-  return _buildExploreMonoLabel(
-    context,
-    line,
-    color: CatchTokens.of(context).ink3,
-  );
 }
 
 String _exploreResultCountLine(ExploreFeedViewModel viewModel) {
@@ -398,38 +380,50 @@ String _monthDayLabel(DateTime value) {
   return '${EventFormatters.shortMonth(value).toUpperCase()} ${value.day}';
 }
 
-Widget _buildExploreFeedEventRow(
-  BuildContext context,
-  WidgetRef ref, {
-  required ExploreEventItem item,
-  String analyticsSource = 'mixed_row',
-  EventDateRailCardStripPosition stripPosition =
-      EventDateRailCardStripPosition.single,
-}) {
-  final event = item.event;
-  final heroTag = _isSyntheticExploreItem(item)
-      ? null
-      : eventTicketHeroTag(event.id, analyticsSource);
-  return EventDateRailCard(
-    event: event,
-    kicker: item.club.name,
-    supportingLabel: _rowSupportingLabel(item),
-    priceLabel: item.priceLabel,
-    capacityLabel: _capacityLabel(item),
-    statusLabel: _cardStatusLabel(item),
-    stripPosition: stripPosition,
-    heroTag: heroTag,
-    onTap: _isSyntheticExploreItem(item)
+class ExploreFeedEventRow extends ConsumerWidget {
+  const ExploreFeedEventRow({
+    super.key,
+    required this.item,
+    this.analyticsSource = 'mixed_row',
+    this.stripPosition = EventDateRailCardStripPosition.single,
+  });
+
+  final ExploreEventItem item;
+  final String analyticsSource;
+  final EventDateRailCardStripPosition stripPosition;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final event = item.event;
+    final heroTag = _isSyntheticExploreItem(item)
         ? null
-        : () => _openEvent(context, ref, item, analyticsSource),
-  );
+        : eventTicketHeroTag(event.id, analyticsSource);
+    return EventDateRailCard(
+      event: event,
+      kicker: item.club.name,
+      supportingLabel: _rowSupportingLabel(item),
+      priceLabel: item.priceLabel,
+      capacityLabel: _capacityLabel(item),
+      statusLabel: _cardStatusLabel(item),
+      stripPosition: stripPosition,
+      heroTag: heroTag,
+      onTap: _isSyntheticExploreItem(item)
+          ? null
+          : () => _openEvent(context, ref, item, analyticsSource),
+    );
+  }
 }
 
-Widget _buildExploreExternalEventRow(
-  BuildContext context,
-  WidgetRef ref, {
-  required ExploreExternalEventItem item,
-}) {
+class ExploreExternalEventRow extends ConsumerWidget {
+  const ExploreExternalEventRow({
+    super.key,
+    required this.item,
+  });
+
+  final ExploreExternalEventItem item;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
   final event = item.event;
   final t = CatchTokens.of(context);
   final visual = eventActivityVisual(event.activityKind, context: context);
@@ -452,9 +446,7 @@ Widget _buildExploreExternalEventRow(
             ),
             gapW8,
             Expanded(
-              child: _buildExploreMonoLabel(
-                context,
-                'FROM ${event.platformLabel.toUpperCase()}',
+              child: ExploreMonoLabel('FROM ${event.platformLabel.toUpperCase()}',
                 color: t.ink3,
               ),
             ),
@@ -509,55 +501,53 @@ Widget _buildExploreExternalEventRow(
           ],
         ),
         gapH8,
-        _buildExploreMonoLabel(
-          context,
-          'READ-ONLY SUPPLY · NO CATCH BOOKING',
+        ExploreMonoLabel('READ-ONLY SUPPLY · NO CATCH BOOKING',
           color: t.ink3,
         ),
       ],
     ),
   );
+  }
 }
 
-Widget _buildThisWeekRecommendationsSection(
-  BuildContext context, {
-  required List<ExploreEventItem> items,
-}) {
-  return Consumer(
-    builder: (context, ref, _) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildExploreMonoLabel(
+class ThisWeekRecommendationsSection extends StatelessWidget {
+  const ThisWeekRecommendationsSection({
+    super.key,
+    required this.items,
+  });
+
+  final List<ExploreEventItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ExploreMonoLabel('COMING UP · ${items.length}',
+          color: CatchTokens.of(context).ink3,
+        ),
+        gapH2,
+        CatchSectionHeader(
+          title: 'This week',
+          padding: EdgeInsets.zero,
+          titleStyle: CatchTextStyles.clubDisplay(
             context,
-            'COMING UP · ${items.length}',
-            color: CatchTokens.of(context).ink3,
+            size: 38,
+            height: 0.92,
           ),
-          gapH2,
-          CatchSectionHeader(
-            title: 'This week',
-            padding: EdgeInsets.zero,
-            titleStyle: CatchTextStyles.clubDisplay(
-              context,
-              size: 38,
-              height: 0.92,
-            ),
+        ),
+        gapH12,
+        for (var index = 0; index < items.length; index += 1) ...[
+          ExploreFeedEventRow(
+            item: items[index],
+            analyticsSource: 'this_week',
+            stripPosition: _stripPositionFor(index, items.length),
           ),
-          gapH12,
-          for (var index = 0; index < items.length; index += 1) ...[
-            _buildExploreFeedEventRow(
-              context,
-              ref,
-              item: items[index],
-              analyticsSource: 'this_week',
-              stripPosition: _stripPositionFor(index, items.length),
-            ),
-          ],
         ],
-      );
-    },
-  );
+      ],
+    );
+  }
 }
 
 EventDateRailCardStripPosition _stripPositionFor(int index, int total) {
@@ -567,47 +557,55 @@ EventDateRailCardStripPosition _stripPositionFor(int index, int total) {
   return EventDateRailCardStripPosition.middle;
 }
 
-Widget _buildExploreClubPolaroidCard(
-  BuildContext context, {
-  required Club club,
-}) {
-  final t = CatchTokens.of(context);
-  final isSynthetic = _isSyntheticExploreClub(club);
-  final card = CatchPolaroid(
-    onTap: isSynthetic ? null : () => _openClub(context, club),
-    paddingKey: const ValueKey('explore-club-polaroid-padding'),
-    media: _buildExploreClubCover(context, club: club),
-    mediaOverlay: Positioned(
-      top: CatchSpacing.s3,
-      right: CatchSpacing.s3,
-      child: _buildExploreDarkPill(context, label: clubMemberCountLabel(club)),
-    ),
-    caption: (club.nextEventLabel ?? 'Club to know').toUpperCase(),
-    captionColor: t.ink3,
-    title: club.name,
-    subtitle: _clubSupportingLabel(club),
-    showArrow: false,
-    footer: Row(
-      children: [
-        Expanded(child: _buildExploreClubTags(context, club: club)),
-        gapW10,
-        _buildExploreDarkPill(
-          context,
-          label: isSynthetic ? 'Preview' : 'View club',
-          compact: true,
-        ),
-      ],
-    ),
-  );
-  if (isSynthetic) return card;
-  return Hero(
-    tag: clubInteractionHeroTag(club.id),
-    transitionOnUserGestures: true,
-    child: Material(color: Colors.transparent, child: card),
-  );
+class ExploreClubPolaroidCard extends StatelessWidget {
+  const ExploreClubPolaroidCard({super.key, required this.club});
+
+  final Club club;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final isSynthetic = _isSyntheticExploreClub(club);
+    final card = CatchPolaroid(
+      onTap: isSynthetic ? null : () => _openClub(context, club),
+      paddingKey: const ValueKey('explore-club-polaroid-padding'),
+      media: ExploreClubCover(club: club),
+      mediaOverlay: Positioned(
+        top: CatchSpacing.s3,
+        right: CatchSpacing.s3,
+        child: ExploreDarkPill(clubMemberCountLabel(club)),
+      ),
+      caption: (club.nextEventLabel ?? 'Club to know').toUpperCase(),
+      captionColor: t.ink3,
+      title: club.name,
+      subtitle: _clubSupportingLabel(club),
+      showArrow: false,
+      footer: Row(
+        children: [
+          Expanded(child: ExploreClubTags(club: club)),
+          gapW10,
+          ExploreDarkPill(isSynthetic ? 'Preview' : 'View club',
+            compact: true,
+          ),
+        ],
+      ),
+    );
+    if (isSynthetic) return card;
+    return Hero(
+      tag: clubInteractionHeroTag(club.id),
+      transitionOnUserGestures: true,
+      child: Material(color: Colors.transparent, child: card),
+    );
+  }
 }
 
-Widget _buildExploreFeedClubRow(BuildContext context, {required Club club}) {
+class ExploreFeedClubRow extends StatelessWidget {
+  const ExploreFeedClubRow({super.key, required this.club});
+
+  final Club club;
+
+  @override
+  Widget build(BuildContext context) {
   final t = CatchTokens.of(context);
   final palette = ClubCoverVisualPalette.forClub(context, club);
   final isSynthetic = _isSyntheticExploreClub(club);
@@ -626,7 +624,7 @@ Widget _buildExploreFeedClubRow(BuildContext context, {required Club club}) {
           dimension: CatchLayout.clubCoverThumbnailExtent,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.md),
-            child: _buildExploreClubCover(context, club: club, compact: true),
+            child: ExploreClubCover(club: club, compact: true),
           ),
         ),
         gapW14,
@@ -635,9 +633,7 @@ Widget _buildExploreFeedClubRow(BuildContext context, {required Club club}) {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildExploreMonoLabel(
-                context,
-                'CLUB TO KNOW',
+              ExploreMonoLabel('CLUB TO KNOW',
                 color: palette.accent,
               ),
               gapH4,
@@ -667,76 +663,94 @@ Widget _buildExploreFeedClubRow(BuildContext context, {required Club club}) {
         ),
       ],
     ),
-  );
-}
-
-Widget _buildExploreClubCover(
-  BuildContext context, {
-  required Club club,
-  bool compact = false,
-}) {
-  final url = club.imageUrl?.trim();
-  if (url == null || url.isEmpty) {
-    return ClubPolaroidArtwork(club: club, compact: compact);
-  }
-  return CatchGradedImage(
-    child: CatchNetworkImage(
-      url,
-      errorBuilder: (_, _, _) =>
-          ClubPolaroidArtwork(club: club, compact: compact),
-    ),
-  );
-}
-
-Widget _buildExploreClubTags(BuildContext context, {required Club club}) {
-  final t = CatchTokens.of(context);
-  final tags = visibleClubTags(club, limit: 2);
-  if (tags.isEmpty) {
-    return _buildExploreMonoLabel(
-      context,
-      clubMemberCountLabel(club).toUpperCase(),
-      color: t.ink3,
     );
   }
-  return ClubTagWrap(tags: tags);
 }
 
-Widget _buildExploreDarkPill(
-  BuildContext context, {
-  required String label,
-  bool compact = false,
-}) {
-  final t = CatchTokens.of(context);
-  return CatchSurface(
-    radius: CatchRadius.pill,
-    backgroundColor: t.ink,
-    borderWidth: 0,
-    padding: EdgeInsets.symmetric(
-      horizontal: compact
-          ? CatchLayout.compactDarkPillHorizontalPadding
-          : CatchSpacing.s3,
-      vertical: compact
-          ? CatchLayout.compactDarkPillVerticalPadding
-          : CatchSpacing.s2,
-    ),
-    child: Text(
+class ExploreClubCover extends StatelessWidget {
+  const ExploreClubCover({super.key, required this.club, this.compact = false});
+
+  final Club club;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final url = club.imageUrl?.trim();
+    if (url == null || url.isEmpty) {
+      return ClubPolaroidArtwork(club: club, compact: compact);
+    }
+    return CatchGradedImage(
+      child: CatchNetworkImage(
+        url,
+        errorBuilder: (_, _, _) =>
+            ClubPolaroidArtwork(club: club, compact: compact),
+      ),
+    );
+  }
+}
+
+class ExploreClubTags extends StatelessWidget {
+  const ExploreClubTags({super.key, required this.club});
+
+  final Club club;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final tags = visibleClubTags(club, limit: 2);
+    if (tags.isEmpty) {
+      return ExploreMonoLabel(clubMemberCountLabel(club).toUpperCase(),
+        color: t.ink3,
+      );
+    }
+    return ClubTagWrap(tags: tags);
+  }
+}
+
+class ExploreDarkPill extends StatelessWidget {
+  const ExploreDarkPill(this.label, {super.key, this.compact = false});
+
+  final String label;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      backgroundColor: t.ink,
+      borderWidth: 0,
+      padding: EdgeInsets.symmetric(
+        horizontal: compact
+            ? CatchLayout.compactDarkPillHorizontalPadding
+            : CatchSpacing.s3,
+        vertical: compact
+            ? CatchLayout.compactDarkPillVerticalPadding
+            : CatchSpacing.s2,
+      ),
+      child: Text(
+        label,
+        style: CatchTextStyles.labelM(context, color: t.primaryInk),
+      ),
+    );
+  }
+}
+
+class ExploreMonoLabel extends StatelessWidget {
+  const ExploreMonoLabel(this.label, {super.key, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
       label,
-      style: CatchTextStyles.labelM(context, color: t.primaryInk),
-    ),
-  );
-}
-
-Widget _buildExploreMonoLabel(
-  BuildContext context,
-  String label, {
-  required Color color,
-}) {
-  return Text(
-    label,
-    maxLines: 1,
-    overflow: TextOverflow.ellipsis,
-    style: CatchTextStyles.kicker(context, color: color),
-  );
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: CatchTextStyles.kicker(context, color: color),
+    );
+  }
 }
 
 String _clubSupportingLabel(Club club) {
@@ -774,37 +788,45 @@ void _openClub(BuildContext context, Club club) {
   );
 }
 
-Widget _buildExploreEventsLoadingSliver() {
-  return SliverToBoxAdapter(
-    child: Builder(
-      builder: (context) {
-        final t = CatchTokens.of(context);
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s3,
-            CatchSpacing.s5,
-            CatchSpacing.s3,
+class ExploreEventsLoadingSliver extends StatelessWidget {
+  const ExploreEventsLoadingSliver({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          CatchSpacing.s5,
+          CatchSpacing.s3,
+          CatchSpacing.s5,
+          CatchSpacing.s3,
+        ),
+        child: CatchSurface(
+          clipBehavior: Clip.antiAlias,
+          borderColor: t.line,
+          elevation: CatchSurfaceElevation.card,
+          child: CatchSkeleton.card(
+            height: CatchLayout.exploreEventsSkeletonHeight,
           ),
-          child: CatchSurface(
-            clipBehavior: Clip.antiAlias,
-            borderColor: t.line,
-            elevation: CatchSurfaceElevation.card,
-            child: CatchSkeleton.card(
-              height: CatchLayout.exploreEventsSkeletonHeight,
-            ),
-          ),
-        );
-      },
-    ),
-  );
+        ),
+      ),
+    );
+  }
 }
 
-Widget _buildExploreEventsEmptySliver(
-  WidgetRef ref, {
-  required ExploreFilterSelection filters,
-  required String searchQuery,
-}) {
+class ExploreEventsEmptySliver extends ConsumerWidget {
+  const ExploreEventsEmptySliver({
+    super.key,
+    required this.filters,
+    required this.searchQuery,
+  });
+
+  final ExploreFilterSelection filters;
+  final String searchQuery;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
   return SliverToBoxAdapter(
     child: Builder(
       builder: (context) {
@@ -841,14 +863,15 @@ Widget _buildExploreEventsEmptySliver(
       },
     ),
   );
+  }
 }
 
-_ExploreEmptyStateCopy _emptyStateFor(
+ExploreEmptyStateCopy _emptyStateFor(
   ExploreTimeFilter filter, {
   required bool hasSearch,
 }) {
   if (hasSearch) {
-    return _ExploreEmptyStateCopy(
+    return ExploreEmptyStateCopy(
       title: 'No events match this search',
       message: 'Clear the search and filters to see every upcoming event.',
       actionLabel: 'Clear search and filters',
@@ -857,35 +880,35 @@ _ExploreEmptyStateCopy _emptyStateFor(
     );
   }
   return switch (filter) {
-    ExploreTimeFilter.tonight => _ExploreEmptyStateCopy(
+    ExploreTimeFilter.tonight => ExploreEmptyStateCopy(
       title: 'Nothing tonight',
       message: 'The next good fit may be over the weekend.',
       actionLabel: 'See weekend',
       actionIcon: CatchIcons.thisWeek,
       nextFilter: ExploreTimeFilter.weekend,
     ),
-    ExploreTimeFilter.tomorrow => _ExploreEmptyStateCopy(
+    ExploreTimeFilter.tomorrow => ExploreEmptyStateCopy(
       title: 'Nothing tomorrow',
       message: 'Open up the weekend to catch more event slots.',
       actionLabel: 'See weekend',
       actionIcon: CatchIcons.thisWeek,
       nextFilter: ExploreTimeFilter.weekend,
     ),
-    ExploreTimeFilter.weekend => _ExploreEmptyStateCopy(
+    ExploreTimeFilter.weekend => ExploreEmptyStateCopy(
       title: 'Nothing this weekend',
       message: 'This week has the broader event slate.',
       actionLabel: 'See this week',
       actionIcon: CatchIcons.thisWeek,
       nextFilter: ExploreTimeFilter.thisWeek,
     ),
-    ExploreTimeFilter.thisWeek => _ExploreEmptyStateCopy(
+    ExploreTimeFilter.thisWeek => ExploreEmptyStateCopy(
       title: 'Nothing this week',
       message: 'Remove the time window to see every upcoming event.',
       actionLabel: 'See anytime',
       actionIcon: CatchIcons.clear,
       nextFilter: ExploreTimeFilter.anytime,
     ),
-    ExploreTimeFilter.anytime => _ExploreEmptyStateCopy(
+    ExploreTimeFilter.anytime => ExploreEmptyStateCopy(
       title: 'No upcoming events match this view',
       message:
           'Try a different area, a wider distance, or check the club directory below.',
@@ -895,8 +918,8 @@ _ExploreEmptyStateCopy _emptyStateFor(
   };
 }
 
-class _ExploreEmptyStateCopy {
-  const _ExploreEmptyStateCopy({
+class ExploreEmptyStateCopy {
+  const ExploreEmptyStateCopy({
     required this.title,
     required this.message,
     required this.actionLabel,

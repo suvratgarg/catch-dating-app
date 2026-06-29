@@ -50,7 +50,7 @@ class PhotosPage extends ConsumerWidget {
       uploadingCount: uploadState.loadingIndices.length,
     );
 
-    return onboardingStepLayout(
+    return OnboardingStepLayout(
       footer: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

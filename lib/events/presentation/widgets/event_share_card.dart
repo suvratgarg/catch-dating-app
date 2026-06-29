@@ -161,22 +161,19 @@ class EventShareCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _eventShareMetaRow(
-                        context,
+                      _EventShareMetaRow(
                         icon: CatchIcons.calendarTodayOutlined,
                         label: event.longDateLabel,
                         accent: visual.accent,
                       ),
                       gapH10,
-                      _eventShareMetaRow(
-                        context,
+                      _EventShareMetaRow(
                         icon: CatchIcons.clock,
                         label: event.timeRangeLabel,
                         accent: visual.accent,
                       ),
                       gapH10,
-                      _eventShareMetaRow(
-                        context,
+                      _EventShareMetaRow(
                         icon: CatchIcons.locationOnOutlined,
                         label: event.locationName,
                         accent: visual.accent,
@@ -186,8 +183,8 @@ class EventShareCard extends StatelessWidget {
                         spacing: CatchSpacing.micro6,
                         runSpacing: CatchSpacing.micro6,
                         children: [
-                          _eventSharePill(context, label: priceLabel),
-                          _eventSharePill(context, label: _spotsLabel(event)),
+                          _EventSharePill(label: priceLabel),
+                          _EventSharePill(label: _spotsLabel(event)),
                         ],
                       ),
                       gapH14,
@@ -222,38 +219,54 @@ class EventShareCard extends StatelessWidget {
   }
 }
 
-Widget _eventShareMetaRow(
-  BuildContext context, {
-  required IconData icon,
-  required String label,
-  required Color accent,
-}) {
-  final t = CatchTokens.of(context);
-  return Row(
-    children: [
-      Icon(icon, size: CatchIcon.md, color: accent),
-      gapW10,
-      Expanded(
-        child: Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.labelM(context, color: t.ink),
+class _EventShareMetaRow extends StatelessWidget {
+  const _EventShareMetaRow({
+    required this.icon,
+    required this.label,
+    required this.accent,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Row(
+      children: [
+        Icon(icon, size: CatchIcon.sm, color: accent),
+        gapW8,
+        Expanded(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.labelS(context, color: t.ink2),
+          ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }
 
-Widget _eventSharePill(BuildContext context, {required String label}) {
-  final t = CatchTokens.of(context);
-  return CatchSurface(
-    backgroundColor: t.primarySoft,
-    borderColor: t.primary.withValues(alpha: CatchOpacity.subtleBorder),
-    radius: CatchRadius.pill,
-    padding: CatchInsets.compactLabelContent,
-    child: Text(label, style: CatchTextStyles.labelS(context, color: t.ink)),
-  );
+class _EventSharePill extends StatelessWidget {
+  const _EventSharePill({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      backgroundColor: t.primarySoft,
+      borderColor: t.primary.withValues(alpha: CatchOpacity.subtleBorder),
+      radius: CatchRadius.pill,
+      padding: CatchInsets.compactLabelContent,
+      child: Text(label, style: CatchTextStyles.labelS(context, color: t.ink)),
+    );
+  }
 }
 
 String _spotsLabel(Event event) {

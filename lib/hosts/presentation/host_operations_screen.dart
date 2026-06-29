@@ -19,7 +19,6 @@ import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -52,7 +51,6 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -479,12 +477,16 @@ class HostHomeTodayTaskData {
     );
   }
 
-  static List<HostHomeTodayTaskData> forEvent(Event event) => [
-    HostHomeTodayTaskData.approveRequests(event),
-    HostHomeTodayTaskData.offerWaitlist(event),
-    HostHomeTodayTaskData.guestWaiting(event),
-    HostHomeTodayTaskData.hostSetup(event),
-  ];
+  static List<HostHomeTodayTaskData> forEvent(Event event) {
+    final tasks = <HostHomeTodayTaskData>[];
+    if (event.waitlistCount > 0) {
+      tasks.add(HostHomeTodayTaskData.approveRequests(event));
+      tasks.add(HostHomeTodayTaskData.offerWaitlist(event));
+    }
+    tasks.add(HostHomeTodayTaskData.guestWaiting(event));
+    tasks.add(HostHomeTodayTaskData.hostSetup(event));
+    return tasks;
+  }
 
   final String title;
   final String body;
@@ -4909,12 +4911,6 @@ mixin _HostInlineClubSaveState<T extends ConsumerStatefulWidget>
     }
   }
 
-  Widget? buildSaveError(MutationState mutation) {
-    if (!mutation.hasError) return null;
-    return CatchErrorBanner(
-      message: mutationErrorMessage(mutation, context: AppErrorContext.club),
-    );
-  }
 }
 
 class HostInlineTextEntryEditor extends ConsumerStatefulWidget {
@@ -5052,15 +5048,16 @@ class _HostInlineTextEntryEditorState
   Widget build(BuildContext context) {
     final saveMutation = ref.watch(HostClubEditController.updateClubMutation);
     final saving = saveMutation.isPending;
-    return profileInlineFieldScaffold(
-      context,
+    return CatchField.actions(
       icon: widget.icon,
-      label: widget.label,
-      value: widget.value,
-      isExpanded: widget.isExpanded,
+      title: widget.label,
+      body: widget.value,
+      initiallyExpanded: widget.isExpanded,
       onTap: widget.onTap,
-      isSaving: saving,
-      valueContent: ProfileInlineTextValue(
+      isLoading: saving,
+      error: _validationError ??
+          mutationErrorMessage(saveMutation, context: AppErrorContext.club),
+      control: ProfileInlineTextValue(
         label: widget.label,
         displayValue: widget.value,
         placeholder: widget.placeholder,
@@ -5072,13 +5069,9 @@ class _HostInlineTextEntryEditorState
         maxLines: widget.maxLines,
         minLines: widget.minLines,
         maxLength: widget.maxLength,
-        showCounter: widget.showCounter,
         collapseStackedBlankLines: widget.maxLines != 1,
         onSubmitted: (_) => _submit(),
       ),
-      saveError: _validationError == null
-          ? buildSaveError(saveMutation)
-          : CatchErrorBanner(message: _validationError!),
       actionLeading: widget.showCounter && widget.maxLength != null
           ? AnimatedBuilder(
               animation: _controller,
@@ -5184,38 +5177,40 @@ class HostInlineOptionEditorState<T>
     final displayValue = widget.isExpanded
         ? _labelFor(_selected)
         : widget.value;
-    return profileInlineFieldScaffold(
-      context,
+    return CatchField.actions(
       icon: widget.icon,
-      label: widget.label,
-      value: displayValue,
-      isExpanded: widget.isExpanded,
+      title: widget.label,
+      body: displayValue,
+      initiallyExpanded: widget.isExpanded,
       onTap: widget.onTap,
-      isSaving: saving,
-      saveError: buildSaveError(saveMutation),
-      editorChildren: [
-        if (widget.helperText != null) ...[
-          Text(
-            widget.helperText!,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-          gapH12,
-        ],
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            for (final option in widget.options)
-              CatchSelectChip(
-                label: option.label,
-                active: _selected == option.value,
-                accentColor: option.accentColor,
-                enabled: !saving,
-                onTap: () => setState(() => _selected = option.value),
-              ),
+      isLoading: saving,
+      error: mutationErrorMessage(saveMutation, context: AppErrorContext.club),
+      control: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (widget.helperText != null) ...[
+            Text(
+              widget.helperText!,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
+            gapH12,
           ],
-        ),
-      ],
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (final option in widget.options)
+                CatchSelectChip(
+                  label: option.label,
+                  active: _selected == option.value,
+                  accentColor: option.accentColor,
+                  enabled: !saving,
+                  onTap: () => setState(() => _selected = option.value),
+                ),
+            ],
+          ),
+        ],
+      ),
       onCancel: _cancel,
       onSubmit: _submit,
     );
@@ -5347,44 +5342,40 @@ class _HostInlineAgeRangeEditorState
     final saveMutation = ref.watch(HostClubEditController.updateClubMutation);
     final saving = saveMutation.isPending;
     final displayValue = widget.isExpanded ? _draftValue : widget.value;
-    return profileInlineFieldScaffold(
-      context,
+    return CatchField.actions(
       icon: widget.icon,
-      label: widget.label,
-      value: displayValue,
-      isExpanded: widget.isExpanded,
+      title: widget.label,
+      body: displayValue,
+      initiallyExpanded: widget.isExpanded,
       onTap: widget.onTap,
-      isSaving: saving,
-      saveError: _validationError == null
-          ? buildSaveError(saveMutation)
-          : CatchErrorBanner(message: _validationError!),
-      editorChildren: [
-        Row(
-          children: [
-            Expanded(
-              child: CatchField.input(
-                title: 'Min age',
-                isOptional: true,
-                controller: _minAgeController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                enabled: !saving,
-              ),
+      isLoading: saving,
+      error: _validationError ??
+          mutationErrorMessage(saveMutation, context: AppErrorContext.club),
+      control: Row(
+        children: [
+          Expanded(
+            child: CatchField.input(
+              title: 'Min age',
+              isOptional: true,
+              controller: _minAgeController,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              enabled: !saving,
             ),
-            gapW12,
-            Expanded(
-              child: CatchField.input(
-                title: 'Max age',
-                isOptional: true,
-                controller: _maxAgeController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                enabled: !saving,
-              ),
+          ),
+          gapW12,
+          Expanded(
+            child: CatchField.input(
+              title: 'Max age',
+              isOptional: true,
+              controller: _maxAgeController,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              enabled: !saving,
             ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
       onCancel: _cancel,
       onSubmit: _submit,
     );

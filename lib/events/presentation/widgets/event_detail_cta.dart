@@ -13,6 +13,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_domain_readiness.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/events/presentation/event_action_keys.dart';
 import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
@@ -131,9 +132,14 @@ class EventDetailCta extends ConsumerWidget {
     final hasApprovedJoinRequest =
         requiresHostApproval &&
         participation?.status == EventParticipationStatus.waitlisted &&
-        participation?.hasHostApproval == true;
-    final hasActiveWaitlistOffer =
-        participation?.isWaitlistOfferActiveAt(referenceNow) ?? false;
+        participation != null &&
+        EventService.participationStatus(participation!).hasHostApproval;
+    final hasActiveWaitlistOffer = participation != null
+        ? EventService.participationStatus(
+              participation!,
+              now: referenceNow,
+            ).isWaitlistOfferActive
+        : false;
     final canRequestHostApproval =
         requiresHostApproval && eligibility is GenderCapacityReached;
     final supportsPaid = ref
@@ -175,35 +181,10 @@ class EventDetailCta extends ConsumerWidget {
             context: AppErrorContext.event,
           )
         : null;
-    EventBookingDock dock({
-      required String label,
-      required VoidCallback? onPressed,
-      Widget? leadingContent,
-      Key? buttonKey,
-      bool isLoading = false,
-      Color? buttonAccentColor,
-      String? catchLine,
-      Color? catchLineAccent,
-      String? footnote,
-    }) {
-      return EventBookingDock(
-        label: label,
-        onPressed: onPressed,
-        leadingContent: leadingContent,
-        buttonKey: buttonKey,
-        isLoading: isLoading,
-        backgroundColor: ctaBackground,
-        dividerColor: ctaDivider,
-        buttonAccentColor: buttonAccentColor,
-        catchLine: catchLine,
-        catchLineAccent: catchLineAccent,
-        footnote: footnote,
-        errorMessage: errorMessage,
-      );
-    }
+    // dock() extracted to inline EventBookingDock construction.
 
     if (hasActiveWaitlistOffer) {
-      return dock(
+      return EventBookingDock(
         label: !isFreeForViewer && !supportsPaid
             ? 'Paid booking unavailable'
             : isFreeForViewer
@@ -270,11 +251,14 @@ class EventDetailCta extends ConsumerWidget {
                       .declineWaitlistOffer(event: event),
                 ),
         ),
+        backgroundColor: ctaBackground,
+        dividerColor: ctaDivider,
+        errorMessage: errorMessage,
       );
     }
 
     if (canRequestHostApproval) {
-      return dock(
+      return EventBookingDock(
         buttonKey: EventActionKeys.joinWaitlistButton,
         label: needsRunPreferences ? 'Set run preferences' : 'Request to join',
         onPressed: joinWMutation.isPending
@@ -293,11 +277,14 @@ class EventDetailCta extends ConsumerWidget {
               ),
         isLoading: joinWMutation.isPending,
         buttonAccentColor: bookingAccent,
+        backgroundColor: ctaBackground,
+        dividerColor: ctaDivider,
+        errorMessage: errorMessage,
       );
     }
 
     return switch (status) {
-      EventSignUpStatus.eligible => dock(
+      EventSignUpStatus.eligible => EventBookingDock(
         buttonKey: EventActionKeys.bookButton,
         label: !isFreeForViewer && !supportsPaid
             ? 'Paid booking unavailable'
@@ -360,6 +347,9 @@ class EventDetailCta extends ConsumerWidget {
         buttonAccentColor: bookingAccent,
         catchLine: 'Matching opens for everyone who goes',
         catchLineAccent: bookingAccent,
+        backgroundColor: ctaBackground,
+        dividerColor: ctaDivider,
+        errorMessage: errorMessage,
         leadingContent: isFreeForViewer
             ? null
             : PriceLeading(
@@ -380,7 +370,7 @@ class EventDetailCta extends ConsumerWidget {
           return const SizedBox.shrink();
         }
 
-        return dock(
+        return EventBookingDock(
           buttonKey: EventActionKeys.cancelBookingButton,
           label: 'Cancel booking',
           onPressed: cancelMutation.isPending
@@ -393,9 +383,12 @@ class EventDetailCta extends ConsumerWidget {
                 ),
           isLoading: cancelMutation.isPending,
           leadingContent: const BookedLeading(),
+          backgroundColor: ctaBackground,
+          dividerColor: ctaDivider,
+          errorMessage: errorMessage,
         );
       })(),
-      EventSignUpStatus.full => dock(
+      EventSignUpStatus.full => EventBookingDock(
         buttonKey: EventActionKeys.joinWaitlistButton,
         label: needsRunPreferences
             ? 'Set run preferences'
@@ -417,8 +410,11 @@ class EventDetailCta extends ConsumerWidget {
                     ),
               ),
         isLoading: joinWMutation.isPending,
+        backgroundColor: ctaBackground,
+        dividerColor: ctaDivider,
+        errorMessage: errorMessage,
       ),
-      EventSignUpStatus.waitlisted => dock(
+      EventSignUpStatus.waitlisted => EventBookingDock(
         label: requiresHostApproval ? 'Withdraw request' : 'Leave waitlist',
         onPressed: leaveWMutation.isPending
             ? null
@@ -429,17 +425,26 @@ class EventDetailCta extends ConsumerWidget {
                     .leaveWaitlist(event: event),
               ),
         isLoading: leaveWMutation.isPending,
+        backgroundColor: ctaBackground,
+        dividerColor: ctaDivider,
+        errorMessage: errorMessage,
       ),
-      EventSignUpStatus.attended => dock(
+      EventSignUpStatus.attended => EventBookingDock(
         label: 'You attended this event',
         onPressed: null,
         leadingContent: const AttendedLeading(),
+        backgroundColor: ctaBackground,
+        dividerColor: ctaDivider,
+        errorMessage: errorMessage,
       ),
-      EventSignUpStatus.past => dock(
+      EventSignUpStatus.past => EventBookingDock(
         label: 'This event has ended',
         onPressed: null,
+        backgroundColor: ctaBackground,
+        dividerColor: ctaDivider,
+        errorMessage: errorMessage,
       ),
-      EventSignUpStatus.ineligible => dock(
+      EventSignUpStatus.ineligible => EventBookingDock(
         label: switch (eligibility) {
           AgeTooYoung(:final minAge) => 'Must be $minAge+ to join',
           AgeTooOld(:final maxAge) => 'Must be $maxAge or younger',
@@ -451,6 +456,9 @@ class EventDetailCta extends ConsumerWidget {
           _ => 'Not eligible for this event',
         },
         onPressed: null,
+        backgroundColor: ctaBackground,
+        dividerColor: ctaDivider,
+        errorMessage: errorMessage,
       ),
     };
   }
@@ -468,12 +476,14 @@ EventEligibility _eligibilityForParticipation({
       _hasEventStarted(event, now) ? const Attended() : const AlreadySignedUp(),
     EventParticipationStatus.signedUp => const AlreadySignedUp(),
     EventParticipationStatus.waitlisted
-        when participation?.hasHostApproval == true =>
+        when participation != null &&
+            EventService.participationStatus(participation).hasHostApproval =>
       _hasEventStarted(event, now) ? const EventPast() : const Eligible(),
     EventParticipationStatus.waitlisted => const OnWaitlist(),
     EventParticipationStatus.cancelled ||
     EventParticipationStatus.deleted ||
-    null => event.eligibilityFor(
+    null => EventService.eligibilityFor(
+      event,
       userProfile,
       now: now,
       hasValidInvite: hasInviteCode,

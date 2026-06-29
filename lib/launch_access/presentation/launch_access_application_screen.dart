@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
@@ -34,26 +35,24 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
         child: Padding(
           padding: CatchInsets.contentHorizontal,
           child: !config.gateEnabled
-              ? _launchAccessDisabledView()
-              : uidAsync.when(
-                  loading: _launchAccessLoadingBody,
-                  error: (error, _) =>
-                      Center(child: CatchErrorBanner.fromError(error)),
+              ? const LaunchAccessDisabledView()
+              : CatchAsyncValueView<String?>(
+                  value: uidAsync,
                   data: (uid) {
                     if (uid == null || uid.isEmpty) {
-                      return _launchAccessSignedOutView();
+                      return const LaunchAccessSignedOutView();
                     }
                     final applicationAsync = ref.watch(
                       watchLaunchAccessApplicationProvider(uid),
                     );
                     return applicationAsync.when(
-                      loading: _launchAccessLoadingBody,
+                      loading: () => const LaunchAccessLoadingBody(),
                       error: (error, _) =>
                           Center(child: CatchErrorBanner.fromError(error)),
                       data: (application) {
                         if (application != null &&
                             !application.status.canEditApplication) {
-                          return _launchAccessStatusView(
+                          return LaunchAccessStatusView(
                             application: application,
                           );
                         }
@@ -63,6 +62,7 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
                       },
                     );
                   },
+                  onRetry: () => ref.invalidate(uidProvider),
                 ),
         ),
       ),
@@ -70,74 +70,86 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
   }
 }
 
-Widget _launchAccessLoadingBody() {
-  return SingleChildScrollView(
-    padding: const EdgeInsets.only(top: CatchSpacing.s4),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-        gapH8,
-        CatchSkeleton.textBlock(lines: 2),
-        gapH24,
-        CatchSkeleton.card(height: CatchLayout.controlMdMinHeight),
-        gapH24,
-        _launchAccessChoiceSkeleton(rows: 1),
-        gapH24,
-        _launchAccessChoiceSkeleton(rows: 2),
-        gapH24,
-        _launchAccessChoiceSkeleton(rows: 2),
-        gapH24,
-        Row(
-          children: [
-            Expanded(child: CatchSkeleton.textBlock(lines: 2)),
-            gapW12,
-            CatchSkeleton.box(
-              width: CatchSpacing.s12,
-              height: CatchSpacing.s8,
-              radius: CatchRadius.pill,
-            ),
-          ],
-        ),
-        gapH24,
-        for (var index = 0; index < 3; index++) ...[
-          CatchSkeleton.card(height: CatchLayout.controlMdMinHeight),
-          gapH16,
-        ],
-        CatchSkeleton.card(height: CatchSpacing.s16),
-        gapH32,
-        CatchSkeleton.card(height: CatchLayout.buttonLgHeight),
-        gapH32,
-      ],
-    ),
-  );
-}
+class LaunchAccessLoadingBody extends StatelessWidget {
+  const LaunchAccessLoadingBody({super.key});
 
-Widget _launchAccessChoiceSkeleton({required int rows}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-      gapH10,
-      for (var row = 0; row < rows; row++) ...[
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            for (var index = 0; index < 3; index++)
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(top: CatchSpacing.s4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+          gapH8,
+          CatchSkeleton.textBlock(lines: 2),
+          gapH24,
+          CatchSkeleton.card(height: CatchLayout.controlMdMinHeight),
+          gapH24,
+          const LaunchAccessChoiceSkeleton(rows: 1),
+          gapH24,
+          const LaunchAccessChoiceSkeleton(rows: 2),
+          gapH24,
+          const LaunchAccessChoiceSkeleton(rows: 2),
+          gapH24,
+          Row(
+            children: [
+              Expanded(child: CatchSkeleton.textBlock(lines: 2)),
+              gapW12,
               CatchSkeleton.box(
-                width: index == 1
-                    ? CatchLayout.skeletonTextTitleWidth
-                    : CatchLayout.skeletonTextShortWidth,
+                width: CatchSpacing.s12,
                 height: CatchSpacing.s8,
                 radius: CatchRadius.pill,
               ),
+            ],
+          ),
+          gapH24,
+          for (var index = 0; index < 3; index++) ...[
+            CatchSkeleton.card(height: CatchLayout.controlMdMinHeight),
+            gapH16,
           ],
-        ),
-        if (row < rows - 1) gapH8,
+          CatchSkeleton.card(height: CatchSpacing.s16),
+          gapH32,
+          CatchSkeleton.card(height: CatchLayout.buttonLgHeight),
+          gapH32,
+        ],
+      ),
+    );
+  }
+}
+
+class LaunchAccessChoiceSkeleton extends StatelessWidget {
+  const LaunchAccessChoiceSkeleton({super.key, required this.rows});
+
+  final int rows;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+        gapH10,
+        for (var row = 0; row < rows; row++) ...[
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (var index = 0; index < 3; index++)
+                CatchSkeleton.box(
+                  width: index == 1
+                      ? CatchLayout.skeletonTextTitleWidth
+                      : CatchLayout.skeletonTextShortWidth,
+                  height: CatchSpacing.s8,
+                  radius: CatchRadius.pill,
+                ),
+            ],
+          ),
+          if (row < rows - 1) gapH8,
+        ],
       ],
-    ],
-  );
+    );
+  }
 }
 
 class LaunchAccessApplicationForm extends ConsumerStatefulWidget {
@@ -389,36 +401,53 @@ class _LaunchAccessApplicationFormState
   }
 }
 
-Widget _launchAccessStatusView({required LaunchAccessApplication application}) {
-  return Center(
-    child: CatchEmptyState(
-      icon: application.status.unlocksProfileCreation
-          ? CatchIcons.checkCircleOutlineRounded
-          : CatchIcons.hourglassTopRounded,
-      title: application.status.label,
-      message: application.status.unlocksProfileCreation
-          ? 'Access is approved. Profile creation can be unlocked once the router uses this gate.'
-          : 'Your application is saved for the next launch cohort.',
-    ),
-  );
+class LaunchAccessStatusView extends StatelessWidget {
+  const LaunchAccessStatusView({super.key, required this.application});
+
+  final LaunchAccessApplication application;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CatchEmptyState(
+        icon: application.status.unlocksProfileCreation
+            ? CatchIcons.checkCircleOutlineRounded
+            : CatchIcons.hourglassTopRounded,
+        title: application.status.label,
+        message: application.status.unlocksProfileCreation
+            ? 'Access is approved. Profile creation can be unlocked once the router uses this gate.'
+            : 'Your application is saved for the next launch cohort.',
+      ),
+    );
+  }
 }
 
-Widget _launchAccessDisabledView() {
-  return Center(
-    child: CatchEmptyState(
-      icon: CatchIcons.lockOpenRounded,
-      title: 'Access gate is off',
-      message: 'Remote Config has not enabled launch access for this build.',
-    ),
-  );
+class LaunchAccessDisabledView extends StatelessWidget {
+  const LaunchAccessDisabledView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CatchEmptyState(
+        icon: CatchIcons.lockOpenRounded,
+        title: 'Access gate is off',
+        message: 'Remote Config has not enabled launch access for this build.',
+      ),
+    );
+  }
 }
 
-Widget _launchAccessSignedOutView() {
-  return Center(
-    child: CatchEmptyState(
-      icon: CatchIcons.phoneAndroidRounded,
-      title: 'Verify your phone',
-      message: 'Phone verification is required before applying for access.',
-    ),
-  );
+class LaunchAccessSignedOutView extends StatelessWidget {
+  const LaunchAccessSignedOutView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CatchEmptyState(
+        icon: CatchIcons.phoneAndroidRounded,
+        title: 'Verify your phone',
+        message: 'Phone verification is required before applying for access.',
+      ),
+    );
+  }
 }

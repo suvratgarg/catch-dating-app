@@ -34,7 +34,7 @@ class SavedEventsScreen extends ConsumerWidget {
       body: SafeArea(
         child: CatchAsyncValueView<List<Event>>(
           value: savedEventsAsync,
-          loadingBuilder: (_) => _savedEventsLoading(),
+          loadingBuilder: (_) => const SavedEventsLoading(),
           errorBuilder: (_, error, _) => CatchErrorState.fromError(
             error,
             context: AppErrorContext.event,
@@ -46,7 +46,7 @@ class SavedEventsScreen extends ConsumerWidget {
           ),
           builder: (context, events) {
             if (events.isEmpty) {
-              return _savedEventsMessage(
+              return const SavedEventsMessage(
                 title: 'No saved events yet',
                 message: 'Save events you want to revisit before booking.',
               );
@@ -111,25 +111,40 @@ class SavedEventsScreen extends ConsumerWidget {
   }
 }
 
-Widget _savedEventsLoading() {
-  return CustomScrollView(
-    slivers: [
-      SliverPadding(
-        padding: CatchInsets.pageHeaderCompact,
-        sliver: SliverToBoxAdapter(
-          child: CatchSkeleton.text(
-            width: CatchLayout.skeletonTextHeadlineWidth,
+class SavedEventsLoading extends StatelessWidget {
+  const SavedEventsLoading({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: CatchInsets.pageHeaderCompact,
+          sliver: SliverToBoxAdapter(
+            child: CatchSkeleton.text(
+              width: CatchLayout.skeletonTextHeadlineWidth,
+            ),
           ),
         ),
-      ),
-      const EventAgendaSliverSkeleton(),
-    ],
-  );
+        const EventAgendaSliverSkeleton(),
+      ],
+    );
+  }
 }
 
-Widget _savedEventsMessage({required String title, required String message}) {
-  return Builder(
-    builder: (context) => Center(
+class SavedEventsMessage extends StatelessWidget {
+  const SavedEventsMessage({
+    super.key,
+    required this.title,
+    required this.message,
+  });
+
+  final String title;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
       child: CatchEmptyState(
         icon: CatchIcons.bookmarkBorderRounded,
         title: title,
@@ -138,8 +153,8 @@ Widget _savedEventsMessage({required String title, required String message}) {
         padding: CatchInsets.contentSpacious,
         titleStyle: CatchTextStyles.titleL(context),
       ),
-    ),
-  );
+    );
+  }
 }
 
 List<Event> _orderSavedEvents(List<Event> events, {required DateTime now}) {

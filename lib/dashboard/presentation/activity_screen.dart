@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
+import 'package:catch_dating_app/dashboard/presentation/notification_route_util.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -16,7 +17,6 @@ import 'package:catch_dating_app/notifications/data/activity_notification_reposi
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class ActivityScreen extends ConsumerStatefulWidget {
   const ActivityScreen({super.key});
@@ -65,7 +65,7 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
       ),
       body: CatchAsyncValueView<String?>(
         value: uidAsync,
-        loadingBuilder: (_) => _buildActivityScreenLoading(),
+        loadingBuilder: (_) => const ActivityScreenLoading(),
         errorBuilder: (_, _, _) => const ActivitySignedOutState(),
         builder: (context, uid) {
           if (uid == null) return const ActivitySignedOutState();
@@ -73,14 +73,14 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
             value:
                 notificationsAsync ??
                 const AsyncLoading<List<ActivityNotification>>(),
-            loadingBuilder: (_) => _buildActivityScreenLoading(),
-            errorBuilder: (context, error, _) => _buildActivityScreenBody(
+            loadingBuilder: (_) => const ActivityScreenLoading(),
+            errorBuilder: (context, error, _) => ActivityScreenBody(
               state: NotificationsActivityError(uid: uid, error: error),
               onRetry: () =>
                   ref.invalidate(watchActivityNotificationsProvider(uid)),
               onOpenRoute: _openNotificationRoute,
             ),
-            builder: (context, _) => _buildActivityScreenBody(
+            builder: (context, _) => ActivityScreenBody(
               state: state,
               onRetry: state.uid == null
                   ? null
@@ -131,51 +131,45 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
   }
 
   void _openNotificationRoute(String route) {
-    try {
-      unawaited(
-        context.push(route).catchError((Object error, StackTrace stackTrace) {
-          if (!mounted) return null;
-          _showNotificationRouteError(error, stackTrace);
-          return null;
-        }),
-      );
-    } on Object catch (error, stackTrace) {
-      _showNotificationRouteError(error, stackTrace);
-    }
+    openNotificationRoute(context, route);
   }
+}
 
-  void _showNotificationRouteError(Object error, StackTrace stackTrace) {
-    showCatchErrorSnackBar(
-      context,
-      ExternalActionException(
-        'Could not open this activity update.',
-        cause: error,
-        stackTrace: stackTrace,
-      ),
+class ActivityScreenLoading extends StatelessWidget {
+  const ActivityScreenLoading({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: CatchInsets.pageBodyUnderHeader,
+      children: const [ActivitySectionSkeleton()],
     );
   }
 }
 
-Widget _buildActivityScreenLoading() {
-  return ListView(
-    padding: CatchInsets.pageBodyUnderHeader,
-    children: const [ActivitySectionSkeleton()],
-  );
-}
+class ActivityScreenBody extends StatelessWidget {
+  const ActivityScreenBody({
+    super.key,
+    required this.state,
+    this.onRetry,
+    required this.onOpenRoute,
+  });
 
-Widget _buildActivityScreenBody({
-  required NotificationsListState state,
-  required VoidCallback? onRetry,
-  required ValueChanged<String> onOpenRoute,
-}) {
-  return ListView(
-    padding: CatchInsets.pageBodyUnderHeader,
-    children: [
-      ActivitySection.fromState(
-        state: state,
-        onRetry: onRetry,
-        onOpenRoute: onOpenRoute,
-      ),
-    ],
-  );
+  final NotificationsListState state;
+  final VoidCallback? onRetry;
+  final ValueChanged<String> onOpenRoute;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: CatchInsets.pageBodyUnderHeader,
+      children: [
+        ActivitySection.fromState(
+          state: state,
+          onRetry: onRetry,
+          onOpenRoute: onOpenRoute,
+        ),
+      ],
+    );
+  }
 }

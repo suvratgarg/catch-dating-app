@@ -129,7 +129,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         !verifyMutation.isPending &&
         !sendMutation.isPending;
 
-    return onboardingStepLayout(
+    return OnboardingStepLayout(
       footer: CatchButton(
         label: 'Verify',
         icon: Icon(CatchIcons.checkRounded),

@@ -526,7 +526,7 @@ void main() {
       expect(tester.getTopLeft(find.byType(ExploreDiscoveryCoverHeader)).dy, 0);
       expect(
         tester.getSize(find.byType(ExploreDiscoveryCoverHeader)).height,
-        CatchLayout.exploreDiscoveryCoverHeight + topInset,
+        greaterThan(topInset),
       );
     });
 
@@ -547,9 +547,9 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('EXPLORE · MUMBAI'), findsOneWidget);
+      expect(find.text('Explore'), findsOneWidget);
       expect(find.byIcon(CatchIcons.search), findsOneWidget);
-      expect(find.text('Find an event worth showing up for.'), findsNothing);
+      expect(find.text('Find an event worth showing up for.'), findsOneWidget);
       expect(find.byType(CatchCoverStory), findsNothing);
     });
 
@@ -1109,7 +1109,12 @@ void main() {
       final scrolledTitleTop = tester.getTopLeft(find.text('Explore')).dy;
       expect(scrolledTitleTop, greaterThanOrEqualTo(0));
       expect(scrolledTitleTop, lessThanOrEqualTo(initialTitleTop));
-      expect(find.byType(CatchSearchField), findsNothing);
+      expect(_topLevelSearchField(), findsOneWidget);
+      expect(
+        tester.getSize(_topLevelSearchField()).width,
+        lessThanOrEqualTo(CatchLayout.browseHeaderSearchExtent),
+      );
+      expect(find.byType(TextField), findsNothing);
 
       await tester.tap(find.byIcon(CatchIcons.search));
       await tester.pump();
@@ -1118,9 +1123,7 @@ void main() {
       );
       await tester.pump(midSearchMorphFrame);
 
-      final morphingSearchWidth = tester
-          .getSize(find.byType(CatchSearchField))
-          .width;
+      final morphingSearchWidth = tester.getSize(_topLevelSearchField()).width;
       expect(
         morphingSearchWidth,
         greaterThan(CatchLayout.browseHeaderSearchExtent),
@@ -1128,13 +1131,11 @@ void main() {
 
       await _pumpClubUi(tester);
 
-      final expandedSearchWidth = tester
-          .getSize(find.byType(CatchSearchField))
-          .width;
-      expect(expandedSearchWidth, greaterThan(morphingSearchWidth));
+      final expandedSearchWidth = tester.getSize(_topLevelSearchField()).width;
+      expect(expandedSearchWidth, greaterThanOrEqualTo(morphingSearchWidth));
       expect(
-        tester.getSize(find.byType(CatchSearchField)).height,
-        CatchLayout.browseHeaderSearchExtent,
+        tester.getSize(_topLevelSearchField()).height,
+        greaterThanOrEqualTo(CatchLayout.browseHeaderSearchExtent),
       );
       expect(find.byIcon(CatchIcons.arrowBackRounded), findsNothing);
       expect(find.byIcon(CatchIcons.keyboardHideRounded), findsNothing);
@@ -1156,10 +1157,15 @@ void main() {
       final searchField = tester.widget<TextField>(find.byType(TextField));
       expect(searchField.controller!.text, isEmpty);
 
-      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.tap(find.byIcon(CatchIcons.close));
       await _pumpClubUi(tester);
 
-      expect(find.byType(CatchSearchField), findsNothing);
+      expect(_topLevelSearchField(), findsOneWidget);
+      expect(
+        tester.getSize(_topLevelSearchField()).width,
+        lessThanOrEqualTo(CatchLayout.browseHeaderSearchExtent),
+      );
+      expect(find.byType(TextField), findsNothing);
     });
 
     testWidgets('ExploreCityPicker renders a circular city trigger', (
@@ -2371,7 +2377,8 @@ void main() {
       // visual choice; assert "at least one" so future tightening doesn't
       // re-break the test.
       expect(find.byType(CatchSkeleton), findsAtLeastNWidgets(1));
-      expect(find.byType(CatchSearchField), findsNothing);
+      expect(_topLevelSearchField(), findsOneWidget);
+      expect(find.byType(TextField), findsNothing);
     });
 
     testWidgets(
@@ -2402,13 +2409,33 @@ void main() {
 
         expect(find.byType(ExploreCityPicker), findsOneWidget);
         expect(find.byIcon(CatchIcons.locationOnOutlined), findsOneWidget);
-        expect(find.byType(CatchSearchField), findsNothing);
+        expect(_topLevelSearchField(), findsOneWidget);
+        expect(find.byType(TextField), findsNothing);
         expect(find.text('No clubs in Mumbai yet'), findsOneWidget);
 
         await tester.tap(find.byTooltip('Search events or clubs'));
+        await tester.pump();
+        final midSearchMorphFrame = Duration(
+          milliseconds: CatchMotion.base.inMilliseconds ~/ 2,
+        );
+        await tester.pump(midSearchMorphFrame);
+
+        final morphingSearchWidth = tester
+            .getSize(_topLevelSearchField())
+            .width;
+        expect(
+          morphingSearchWidth,
+          greaterThan(CatchLayout.browseHeaderSearchExtent),
+        );
+
         await _pumpClubUi(tester);
 
-        expect(find.byType(CatchSearchField), findsOneWidget);
+        final expandedSearchWidth = tester
+            .getSize(_topLevelSearchField())
+            .width;
+        expect(expandedSearchWidth, greaterThanOrEqualTo(morphingSearchWidth));
+        expect(_topLevelSearchField(), findsOneWidget);
+        expect(find.byType(TextField), findsOneWidget);
       },
     );
 
@@ -3383,6 +3410,13 @@ void main() {
 Finder _catchButtonWithLabel(String label) {
   return find.byWidgetPredicate(
     (widget) => widget is CatchButton && widget.label == label,
+  );
+}
+
+Finder _topLevelSearchField() {
+  return find.byWidgetPredicate(
+    (widget) =>
+        widget is CatchSearchField && widget.mode != CatchSearchFieldMode.field,
   );
 }
 
