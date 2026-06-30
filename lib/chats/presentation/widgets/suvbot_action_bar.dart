@@ -46,326 +46,228 @@ class SuvbotActionBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchBottomDock(
       child: actions.when(
-        data: (items) => _SuvbotControls(
-          actions: items,
-          pending: pending,
-          onAction: onAction,
-          onTextAction: onTextAction,
-        ),
-        loading: () => const _SuvbotLoadingControls(),
-        error: (_, _) => _SuvbotLoadError(onRetry: onRetry),
-      ),
-    );
-  }
-}
+        data: (items) {
+          final t = CatchTokens.of(context);
+          final colors = Theme.of(context).colorScheme;
+          final byId = {for (final action in items) action.id: action};
+          final warmActions = [
+            byId['warmSignupState'],
+            byId['warmPostEventState'],
+            byId['warmChatState'],
+            byId['warmPaymentState'],
+          ].whereType<SuvbotActionItem>().toList(growable: false);
+          final resetActions = [
+            byId['resetChats'],
+            byId['resetBookings'],
+            byId['resetNotifications'],
+            byId['clearDemoState'],
+          ].whereType<SuvbotActionItem>().toList(growable: false);
+          final checkAction = byId['checkDemoState'];
+          final refreshAction = byId['refreshDemoState'];
+          final helpAction = byId['help'];
+          final matchAction = byId['matchTesterByPhone'];
 
-class _SuvbotControls extends StatelessWidget {
-  const _SuvbotControls({
-    required this.actions,
-    required this.pending,
-    required this.onAction,
-    required this.onTextAction,
-  });
-
-  final List<SuvbotActionItem> actions;
-  final bool pending;
-  final SuvbotActionCallback onAction;
-  final SuvbotTextActionCallback onTextAction;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final byId = {for (final action in actions) action.id: action};
-    final warmActions = [
-      byId['warmSignupState'],
-      byId['warmPostEventState'],
-      byId['warmChatState'],
-      byId['warmPaymentState'],
-    ].whereType<SuvbotActionItem>().toList(growable: false);
-    final resetActions = [
-      byId['resetChats'],
-      byId['resetBookings'],
-      byId['resetNotifications'],
-      byId['clearDemoState'],
-    ].whereType<SuvbotActionItem>().toList(growable: false);
-    final checkAction = byId['checkDemoState'];
-    final refreshAction = byId['refreshDemoState'];
-    final helpAction = byId['help'];
-    final matchAction = byId['matchTesterByPhone'];
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
                 children: [
-                  Text(
-                    'Suvbot controls',
-                    style: CatchTextStyles.sectionTitle(context, color: t.ink),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Suvbot controls',
+                          style: CatchTextStyles.sectionTitle(
+                            context,
+                            color: t.ink,
+                          ),
+                        ),
+                        gapH2,
+                        Text(
+                          'No typing needed',
+                          style: CatchTextStyles.statusLabel(
+                            context,
+                            color: t.ink2,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  gapH2,
-                  Text(
-                    'No typing needed',
-                    style: CatchTextStyles.statusLabel(context, color: t.ink2),
-                  ),
+                  if (helpAction != null)
+                    Semantics(
+                      label: helpAction.label,
+                      button: true,
+                      child: Tooltip(
+                        message: helpAction.label,
+                        child: CatchIconButton(
+                          size: CatchLayout.suvbotCircleActionExtent,
+                          background: t.surface,
+                          disabled: pending,
+                          onTap: pending
+                              ? null
+                              : () => unawaited(onAction(helpAction)),
+                          child: Icon(
+                            CatchIcons.helpOutlineRounded,
+                            size: CatchIcon.md,
+                            color: pending ? t.ink3 : t.ink2,
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
-            ),
-            if (helpAction != null)
-              _CircleActionButton(
-                icon: CatchIcons.helpOutlineRounded,
-                label: helpAction.label,
-                pending: pending,
-                onPressed: () => unawaited(onAction(helpAction)),
+              const SizedBox(height: CatchSpacing.s2),
+              Row(
+                children: [
+                  if (checkAction != null)
+                    Expanded(
+                      child: CatchButton(
+                        label: checkAction.label,
+                        onPressed: pending
+                            ? null
+                            : () => unawaited(onAction(checkAction)),
+                        variant: CatchButtonVariant.secondary,
+                        size: CatchButtonSize.sm,
+                        fullWidth: true,
+                        isLoading: pending,
+                        icon: Icon(_iconFor(checkAction.icon)),
+                        foregroundColor: t.accent,
+                        backgroundColor: t.accent.withValues(
+                          alpha: CatchOpacity.subtleFill,
+                        ),
+                        borderColor: t.line,
+                      ),
+                    ),
+                  if (checkAction != null && refreshAction != null)
+                    const SizedBox(width: CatchSpacing.s2),
+                  if (refreshAction != null)
+                    Expanded(
+                      child: CatchButton(
+                        label: 'Refresh all',
+                        onPressed: pending
+                            ? null
+                            : () => unawaited(onAction(refreshAction)),
+                        variant: CatchButtonVariant.danger,
+                        size: CatchButtonSize.sm,
+                        fullWidth: true,
+                        isLoading: pending,
+                        icon: Icon(_iconFor(refreshAction.icon)),
+                        foregroundColor: colors.error,
+                        backgroundColor: colors.errorContainer.withValues(
+                          alpha: CatchOpacity.suvbotDestructiveFill,
+                        ),
+                        borderColor: t.line,
+                      ),
+                    ),
+                ],
               ),
-          ],
-        ),
-        const SizedBox(height: CatchSpacing.s2),
-        Row(
-          children: [
-            if (checkAction != null)
-              Expanded(
-                child: _SuvbotButton(
-                  label: checkAction.label,
-                  icon: _iconFor(checkAction.icon),
-                  pending: pending,
-                  prominent: true,
-                  onPressed: () => unawaited(onAction(checkAction)),
+              if (warmActions.isNotEmpty) ...[
+                const SizedBox(height: CatchSpacing.s3),
+                Text(
+                  'Create a test state',
+                  style: CatchTextStyles.kicker(context),
                 ),
-              ),
-            if (checkAction != null && refreshAction != null)
-              const SizedBox(width: CatchSpacing.s2),
-            if (refreshAction != null)
-              Expanded(
-                child: _SuvbotButton(
-                  label: 'Refresh all',
-                  icon: _iconFor(refreshAction.icon),
-                  pending: pending,
-                  destructive: true,
-                  onPressed: () => unawaited(onAction(refreshAction)),
-                ),
-              ),
-          ],
-        ),
-        if (warmActions.isNotEmpty) ...[
-          const SizedBox(height: CatchSpacing.s3),
-          _SuvbotGroupLabel(label: 'Create a test state'),
-          const SizedBox(height: CatchSpacing.s1),
-          Row(
-            children: [
-              for (final (index, action) in warmActions.indexed) ...[
-                if (index > 0) const SizedBox(width: CatchSpacing.s1),
-                Expanded(
-                  child: _SuvbotPresetButton(
-                    label: _shortWarmLabel(action),
-                    icon: _iconFor(action.icon),
-                    pending: pending,
-                    onPressed: () => unawaited(onAction(action)),
-                  ),
+                const SizedBox(height: CatchSpacing.s1),
+                Row(
+                  children: [
+                    for (final (index, action) in warmActions.indexed) ...[
+                      if (index > 0) const SizedBox(width: CatchSpacing.s1),
+                      Expanded(
+                        child: CatchButton(
+                          label: _shortWarmLabel(action),
+                          onPressed: pending
+                              ? null
+                              : () => unawaited(onAction(action)),
+                          variant: CatchButtonVariant.secondary,
+                          size: CatchButtonSize.sm,
+                          fullWidth: true,
+                          icon: Icon(_iconFor(action.icon)),
+                          foregroundColor: t.ink,
+                          backgroundColor: t.surface,
+                          borderColor: t.line,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ],
+              const SizedBox(height: CatchSpacing.s2),
+              Row(
+                children: [
+                  if (matchAction != null)
+                    Expanded(
+                      child: CatchButton(
+                        label: matchAction.label,
+                        onPressed: pending
+                            ? null
+                            : () => _showMatchTesterSheet(
+                                context,
+                                action: matchAction,
+                                pending: pending,
+                                onTextAction: onTextAction,
+                              ),
+                        variant: CatchButtonVariant.secondary,
+                        size: CatchButtonSize.sm,
+                        fullWidth: true,
+                        isLoading: pending,
+                        icon: Icon(_iconFor(matchAction.icon)),
+                        foregroundColor: t.ink,
+                        backgroundColor: t.surface,
+                        borderColor: t.line,
+                      ),
+                    ),
+                  if (matchAction != null && resetActions.isNotEmpty)
+                    const SizedBox(width: CatchSpacing.s2),
+                  if (resetActions.isNotEmpty)
+                    Expanded(
+                      child: CatchButton(
+                        label: 'Reset...',
+                        onPressed: pending
+                            ? null
+                            : () => _showResetSheet(
+                                context,
+                                actions: resetActions,
+                                pending: pending,
+                                onAction: onAction,
+                              ),
+                        variant: CatchButtonVariant.danger,
+                        size: CatchButtonSize.sm,
+                        fullWidth: true,
+                        isLoading: pending,
+                        icon: Icon(CatchIcons.cleaningServicesRounded),
+                        foregroundColor: colors.error,
+                        backgroundColor: colors.errorContainer.withValues(
+                          alpha: CatchOpacity.suvbotDestructiveFill,
+                        ),
+                        borderColor: t.line,
+                      ),
+                    ),
+                ],
+              ),
             ],
-          ),
-        ],
-        const SizedBox(height: CatchSpacing.s2),
-        Row(
-          children: [
-            if (matchAction != null)
-              Expanded(
-                child: _SuvbotButton(
-                  label: matchAction.label,
-                  icon: _iconFor(matchAction.icon),
-                  pending: pending,
-                  onPressed: () => _showMatchTesterSheet(
-                    context,
-                    action: matchAction,
-                    pending: pending,
-                    onTextAction: onTextAction,
-                  ),
-                ),
-              ),
-            if (matchAction != null && resetActions.isNotEmpty)
-              const SizedBox(width: CatchSpacing.s2),
-            if (resetActions.isNotEmpty)
-              Expanded(
-                child: _SuvbotButton(
-                  label: 'Reset...',
-                  icon: CatchIcons.cleaningServicesRounded,
-                  pending: pending,
-                  destructive: true,
-                  onPressed: () => _showResetSheet(
-                    context,
-                    actions: resetActions,
-                    pending: pending,
-                    onAction: onAction,
-                  ),
-                ),
-              ),
-          ],
+          );
+        },
+        loading: () => const SizedBox(
+          height: CatchLayout.suvbotLoadingControlsHeight,
+          child: Center(child: CatchLoadingIndicator(strokeWidth: 2)),
         ),
-      ],
-    );
-  }
-}
-
-class _SuvbotButton extends StatelessWidget {
-  const _SuvbotButton({
-    required this.label,
-    required this.icon,
-    required this.pending,
-    required this.onPressed,
-    this.prominent = false,
-    this.destructive = false,
-  });
-
-  final String label;
-  final IconData icon;
-  final bool pending;
-  final VoidCallback onPressed;
-  final bool prominent;
-  final bool destructive;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final colors = Theme.of(context).colorScheme;
-    final foreground = destructive
-        ? colors.error
-        : prominent
-        ? t.accent
-        : t.ink;
-    final background = destructive
-        ? colors.errorContainer.withValues(
-            alpha: CatchOpacity.suvbotDestructiveFill,
-          )
-        : prominent
-        ? t.accent.withValues(alpha: CatchOpacity.subtleFill)
-        : t.surface;
-
-    return CatchButton(
-      label: label,
-      onPressed: pending ? null : onPressed,
-      variant: destructive
-          ? CatchButtonVariant.danger
-          : CatchButtonVariant.secondary,
-      size: CatchButtonSize.sm,
-      fullWidth: true,
-      isLoading: pending,
-      icon: Icon(icon),
-      foregroundColor: foreground,
-      backgroundColor: background,
-      borderColor: t.line,
-    );
-  }
-}
-
-class _SuvbotPresetButton extends StatelessWidget {
-  const _SuvbotPresetButton({
-    required this.label,
-    required this.icon,
-    required this.pending,
-    required this.onPressed,
-  });
-
-  final String label;
-  final IconData icon;
-  final bool pending;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchButton(
-      label: label,
-      onPressed: pending ? null : onPressed,
-      variant: CatchButtonVariant.secondary,
-      size: CatchButtonSize.sm,
-      fullWidth: true,
-      icon: Icon(icon),
-      foregroundColor: t.ink,
-      backgroundColor: t.surface,
-      borderColor: t.line,
-    );
-  }
-}
-
-class _CircleActionButton extends StatelessWidget {
-  const _CircleActionButton({
-    required this.icon,
-    required this.label,
-    required this.pending,
-    required this.onPressed,
-  });
-
-  final IconData icon;
-  final String label;
-  final bool pending;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Semantics(
-      label: label,
-      button: true,
-      child: Tooltip(
-        message: label,
-        child: CatchIconButton(
-          size: CatchLayout.suvbotCircleActionExtent,
-          background: t.surface,
-          onTap: pending ? null : onPressed,
-          child: Icon(
-            icon,
-            size: CatchIcon.md,
-            color: pending ? t.ink3 : t.ink2,
-          ),
-        ),
+        error: (_, _) {
+          final t = CatchTokens.of(context);
+          return CatchButton(
+            label: 'Reload controls',
+            onPressed: onRetry,
+            variant: CatchButtonVariant.secondary,
+            size: CatchButtonSize.sm,
+            fullWidth: true,
+            icon: Icon(CatchIcons.syncRounded),
+            foregroundColor: t.ink,
+            backgroundColor: t.surface,
+            borderColor: t.line,
+          );
+        },
       ),
-    );
-  }
-}
-
-class _SuvbotGroupLabel extends StatelessWidget {
-  const _SuvbotGroupLabel({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(label, style: CatchTextStyles.kicker(context));
-  }
-}
-
-class _SuvbotLoadingControls extends StatelessWidget {
-  const _SuvbotLoadingControls();
-
-  @override
-  Widget build(BuildContext context) {
-    return const SizedBox(
-      height: CatchLayout.suvbotLoadingControlsHeight,
-      child: Center(child: CatchLoadingIndicator(strokeWidth: 2)),
-    );
-  }
-}
-
-class _SuvbotLoadError extends StatelessWidget {
-  const _SuvbotLoadError({required this.onRetry});
-
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return _SuvbotButton(
-      label: 'Reload controls',
-      icon: CatchIcons.syncRounded,
-      pending: false,
-      onPressed: onRetry,
     );
   }
 }

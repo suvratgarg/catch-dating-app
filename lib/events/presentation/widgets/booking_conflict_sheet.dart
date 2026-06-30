@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
+import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:flutter/material.dart';
 
 class BookingConflictEvent {

@@ -1,7 +1,7 @@
 ---
 doc_id: admin_analytics_dashboard_spec
-version: 0.1.0
-updated: 2026-06-01
+version: 0.2.0
+updated: 2026-06-30
 owner: admin_analytics
 status: draft
 ---
@@ -111,6 +111,44 @@ business facts.
 - Firestore-to-BigQuery exports still do not cover every collection needed for
   user cohorts, referrals, finance ledgers, and full admin retention analysis.
   Host/event analytics operational coverage is now declared in `firebase.json`.
+
+## Implementation Status
+
+The admin implementation tracker is folded into this spec. Current state:
+
+- A separate Vite/React/TypeScript admin app exists under `admin/`.
+- The admin app defaults to sample data and can run locally without Firebase
+  admin claims.
+- `adminGetOverview` exists as the first admin overview endpoint, requires
+  custom-claim authorization, and writes `adminAuditLogs` for reads.
+- Access-application approval/denial is implemented through
+  `adminDecideAccessApplication` and dashboard actions.
+- Pending organizer claim requests are included in `adminGetOverview`; dashboard
+  Approve/Reject calls `adminDecideClubClaim`, removes reviewed rows, and
+  decrements the pending organizer-claims metric.
+- The dashboard is still an MVP shell. Live local admin mode, admin Hosting,
+  safety report review actions, payment issue queue actions, audit-log browsing,
+  and the deeper analytics/finance APIs remain open.
+
+Current implementation queue:
+
+| ID | Status | Work |
+|---|---|---|
+| ADM-004 | Pending | Make live local admin mode work against deployed or emulated Functions with App Check/dev token setup and an admin custom claim. |
+| ADM-007 | Pending | Add Firestore rules and rules tests for app-side launch access submissions if launch access remains live. |
+| ADM-008 | Pending | Add safety report review actions with status transitions, reviewer notes, and notification policy. |
+| ADM-009 | Pending | Add payment issue queue actions with refund/retry/reconciliation constraints. |
+| ADM-010 | Pending | Add an admin audit-log viewer. |
+| ADM-011 | Pending | Configure a protected Firebase Hosting admin site/subdomain with App Check and live API validation. |
+| ANL-001..008 | Pending | Build analytics inventory, timestamp fixes, cohort/retention APIs, host/event/user-value metrics, referral graph, and freshness panels. |
+| FIN-001..005 | Pending | Define commission policy, settlement ledger, payout readiness, refund/reconciliation operations, and provider-routing decisions. |
+
+Latest verified commands from the implementation tracker:
+
+- `npm --prefix admin run typecheck`
+- `npm --prefix functions run build`
+- `npm --prefix functions run lint`
+- `node --test functions/lib/admin/overview.test.js`
 
 ## Data Architecture
 

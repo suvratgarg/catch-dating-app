@@ -32,6 +32,8 @@ class ChatInputBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final disabled = sending || sendingImage;
+    final imageActionEnabled = !disabled && onSendImage != null;
+    final sendActionEnabled = !disabled && onSend != null;
 
     return CatchBottomDock(
       padding: const EdgeInsets.symmetric(
@@ -42,24 +44,32 @@ class ChatInputBar extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (showImageButton)
-            _ComposerIconAction(
-              tooltip: 'Send an image',
-              onPressed: disabled ? null : onSendImage,
-              disabled: disabled || onSendImage == null,
-              foregroundColor: t.ink2,
-              icon: sendingImage
-                  ? SizedBox.square(
-                      dimension: CatchIcon.control,
-                      child: CatchLoadingIndicator(
-                        strokeWidth: 2,
-                        color: t.ink2,
-                      ),
-                    )
-                  : Icon(
-                      CatchIcons.imageOutlined,
-                      size: CatchIcon.md,
-                      color: t.ink2,
-                    ),
+            Semantics(
+              label: 'Send an image',
+              button: true,
+              enabled: imageActionEnabled,
+              child: Tooltip(
+                message: 'Send an image',
+                child: CatchIconButton(
+                  size: 42,
+                  background: Colors.transparent,
+                  disabled: !imageActionEnabled,
+                  onTap: imageActionEnabled ? onSendImage : null,
+                  child: sendingImage
+                      ? SizedBox.square(
+                          dimension: CatchIcon.control,
+                          child: CatchLoadingIndicator(
+                            strokeWidth: 2,
+                            color: t.ink2,
+                          ),
+                        )
+                      : Icon(
+                          CatchIcons.imageOutlined,
+                          size: CatchIcon.md,
+                          color: t.ink2,
+                        ),
+                ),
+              ),
             ),
           Expanded(
             child: CatchSection.contained(
@@ -80,72 +90,34 @@ class ChatInputBar extends StatelessWidget {
             ),
           ),
           gapW8,
-          _ComposerIconAction(
-            tooltip: 'Send message',
-            onPressed: disabled ? null : onSend,
-            disabled: disabled || onSend == null,
-            backgroundColor: t.primary,
-            foregroundColor: t.primaryInk,
-            icon: sending
-                ? SizedBox.square(
-                    dimension: CatchIcon.control,
-                    child: CatchLoadingIndicator(
-                      strokeWidth: 2,
-                      color: t.primaryInk,
-                    ),
-                  )
-                : Icon(
-                    CatchIcons.sendRounded,
-                    size: CatchIcon.md,
-                    color: t.primaryInk,
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ComposerIconAction extends StatelessWidget {
-  const _ComposerIconAction({
-    required this.tooltip,
-    required this.icon,
-    this.onPressed,
-    this.disabled = false,
-    this.backgroundColor,
-    this.foregroundColor,
-  });
-
-  final String tooltip;
-  final Widget icon;
-  final VoidCallback? onPressed;
-  final bool disabled;
-  final Color? backgroundColor;
-  final Color? foregroundColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final effectiveForeground = foregroundColor ?? t.ink2;
-    final enabled = !disabled && onPressed != null;
-
-    return Semantics(
-      label: tooltip,
-      button: true,
-      child: Tooltip(
-        message: tooltip,
-        child: Opacity(
-          opacity: enabled ? 1 : 0.4,
-          child: IconTheme(
-            data: IconThemeData(color: effectiveForeground, size: CatchIcon.md),
-            child: CatchIconButton(
-              size: 42,
-              background: backgroundColor ?? Colors.transparent,
-              onTap: enabled ? onPressed : null,
-              child: icon,
+          Semantics(
+            label: 'Send message',
+            button: true,
+            enabled: sendActionEnabled,
+            child: Tooltip(
+              message: 'Send message',
+              child: CatchIconButton(
+                size: 42,
+                background: t.primary,
+                disabled: !sendActionEnabled,
+                onTap: sendActionEnabled ? onSend : null,
+                child: sending
+                    ? SizedBox.square(
+                        dimension: CatchIcon.control,
+                        child: CatchLoadingIndicator(
+                          strokeWidth: 2,
+                          color: t.primaryInk,
+                        ),
+                      )
+                    : Icon(
+                        CatchIcons.sendRounded,
+                        size: CatchIcon.md,
+                        color: t.primaryInk,
+                      ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -1,12 +1,12 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/analytics/app_analytics.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
-import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
@@ -76,7 +76,6 @@ class ExploreBrowseHeaderContent extends ConsumerWidget {
       title: 'Explore',
       subtitle: 'Find an event worth showing up for.',
       backgroundColor: backgroundColor ?? t.bg,
-      gutter: true,
       applySafeArea: false,
       searchEnabled: true,
       searchValue: query,
@@ -89,20 +88,29 @@ class ExploreBrowseHeaderContent extends ConsumerWidget {
   }
 }
 
-class ExploreDiscoveryCoverHeader extends ConsumerWidget {
+class ExploreDiscoveryCoverHeader extends ConsumerStatefulWidget {
   const ExploreDiscoveryCoverHeader({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ExploreDiscoveryCoverHeader> createState() =>
+      _ExploreDiscoveryCoverHeaderState();
+}
+
+class _ExploreDiscoveryCoverHeaderState
+    extends ConsumerState<ExploreDiscoveryCoverHeader> {
+  bool _searchRequested = false;
+
+  @override
+  Widget build(BuildContext context) {
     final query = ref.watch(exploreSearchQueryProvider);
-    final searchActive = query.isNotEmpty;
+    final searchActive = query.trim().isNotEmpty;
     final featuredItem = ref
         .watch(exploreFeedViewModelProvider)
         .asData
         ?.value
         .featuredItem;
 
-    if (searchActive || featuredItem == null) {
+    if (_searchRequested || searchActive || featuredItem == null) {
       final t = CatchTokens.of(context);
       final topInset = MediaQuery.paddingOf(context).top;
       return ColoredBox(
@@ -122,7 +130,13 @@ class ExploreDiscoveryCoverHeader extends ConsumerWidget {
             gutter: false,
             applySafeArea: false,
             searchEnabled: true,
+            searchExpanded: _searchRequested || searchActive,
             searchValue: query,
+            searchAutofocus: _searchRequested,
+            onSearchExpandedChanged: (expanded) {
+              if (_searchRequested == expanded) return;
+              setState(() => _searchRequested = expanded);
+            },
             onSearch: (value) =>
                 ref.read(exploreSearchQueryProvider.notifier).setQuery(value),
             searchPlaceholder: 'Search events or clubs',
@@ -139,15 +153,21 @@ class ExploreDiscoveryCoverHeader extends ConsumerWidget {
       title: featuredItem.event.title,
       cta: 'Claim a seat',
       onCta: () => _openFeaturedEvent(context, ref, featuredItem),
-      data: '${EventFormatters.time(featuredItem.event.startTime)} - ${featuredItem.priceLabel}',
-      data2: '${featuredItem.event.signedUpCount} going - ${_coverSpotsLabel(featuredItem)}',
+      data:
+          '${EventFormatters.time(featuredItem.event.startTime)} - ${featuredItem.priceLabel}',
+      data2:
+          '${featuredItem.event.signedUpCount} going - ${_coverSpotsLabel(featuredItem)}',
       showSearch: true,
-      onSearch: () => ref.read(exploreSearchQueryProvider.notifier).setQuery(' '),
+      onSearch: () => setState(() => _searchRequested = true),
     );
   }
 }
 
-void _openFeaturedEvent(BuildContext context, WidgetRef ref, ExploreEventItem item) {
+void _openFeaturedEvent(
+  BuildContext context,
+  WidgetRef ref,
+  ExploreEventItem item,
+) {
   ref
       .read(appAnalyticsProvider)
       .logEvent(
@@ -167,7 +187,6 @@ void _openFeaturedEvent(BuildContext context, WidgetRef ref, ExploreEventItem it
     ),
   );
 }
-
 
 String _coverKicker(ExploreEventItem item) {
   return '${_coverTimeScope(item.event.startTime)} - '

@@ -2,7 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
-import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:flutter/material.dart';
 
 typedef ChatThreadSelectedCallback = void Function(ChatThreadPreview preview);

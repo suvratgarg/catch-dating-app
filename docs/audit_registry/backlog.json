@@ -1,6 +1,6 @@
 {
   "version": "2.7.0",
-  "updated": "2026-06-16",
+  "updated": "2026-06-30",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
@@ -48,13 +48,29 @@
       "priority": "medium",
       "summary": "Operational remainder split out of MATCH-CHAT-REMAINING-001 once its engineering scope was complete. These need a real device and live Firestore data, so they are the owner's to execute, not agent-closeable: (1) device QA on the live Chats list + thread; (2) inspect and clean seeded duplicate match/message data on the active phone account - per the original item's guard, do NOT treat synthetic duplicates as a UI bug until the Firestore documents and seed scripts (tool/demo/seed_demo_data.mjs, docs/demo_data_seeding.md) are inspected; (3) profile-thumbnail backfill over real data (the generator from DASHBOARD-RUN-HYPE-THUMBNAILS-001 exists; this is the one-time data migration). No code change is blocked on these - they are verification/ops only.",
       "paths": [
-        "lib/matches/presentation/matches_list_screen.dart",
-        "lib/matches/presentation/widgets/chats_list.dart",
+        "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+        "lib/chats/presentation/inbox/widgets/chats_list.dart",
         "lib/chats/presentation/chat_screen.dart",
         "tool/demo/seed_demo_data.mjs",
         "docs/demo_data_seeding.md"
       ],
       "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "NEW-WIDGET-INVENTORY-2026-06-30",
+      "title": "Close remaining new-widget Widgetbook/catalog inventory gaps",
+      "status": "pending",
+      "owner": "agent",
+      "area": "widgets,widgetbook,design_catalog",
+      "priority": "high",
+      "summary": "The new-widget scanner for the HEAD^ -> working-tree delta now reports 283 added widget classes: 254 public, 29 private, 9 exact-name Widgetbook matches, 245 missing Widgetbook coverage, 244 missing catalog mentions, and 0 remaining added Widget-returning helpers after the first pruning pass. Continue from docs/audit_registry/new_widget_inventory_scan.json, pruning or promoting the 29 private widget classes first, then registering public survivors in Widgetbook and docs/widget_catalog.md.",
+      "paths": [
+        "docs/audit_registry/new_widget_inventory_scan.json",
+        "tool/design/check_new_widget_inventory.mjs",
+        "docs/widget_catalog.md",
+        "widgetbook/lib/main.directories.g.dart"
+      ],
+      "source": "2026-06-30-new-widget-inventory-scan"
     }
   ],
   "next_up": [],
@@ -659,7 +675,7 @@
         "EXTERNAL-SIDE-EFFECT-001",
         "AUDIT-REGISTRY-001"
       ],
-      "summary": "Built the app-wide frontend/local error-management layer (delegated, then merged + verified). lib/core/app_error_context.dart adds a frontend operation-context API (AppOperation, AppErrorContext, normalizeAppError/withAppErrorContext/logAppError/runLoggingAppErrors) that adapts the existing backend normalize/log layer without duplicating it. tool/audit/frontend_error_candidates.dart is a new scanner (modeled on the backend one, same 6 buckets) covering bare/named catches, .catchError, raw error prints, raw throws, plugin side effects, and global handlers. Migrated all review candidates -> frontend scanner mustMigrate=0, review=0 (fixed real bugs: launch_access/onboarding StateError copy was being stripped to generic text -> typed ValidationException; swallowed Remote Config + health-plugin failures now logged; image_picker/geolocator wrapped). docs/error-handling-audit.md gains a v2.7.0 frontend section. Backend scanner still mustMigrate=0/review=0. Verified: analyze clean, 1349 client tests + both scanners green. Adversarially reviewed (no confirmed issues in this layer)."
+      "summary": "Built the app-wide frontend/local error-management layer (delegated, then merged + verified). lib/core/app_error_context.dart adds a frontend operation-context API (AppOperation, AppErrorContext, normalizeAppError/withAppErrorContext/logAppError/runLoggingAppErrors) that adapts the existing backend normalize/log layer without duplicating it. tool/audit/frontend_error_candidates.dart is a new scanner (modeled on the backend one, same 6 buckets) covering bare/named catches, .catchError, raw error prints, raw throws, plugin side effects, and global handlers. Migrated all review candidates -> frontend scanner mustMigrate=0, review=0 (fixed real bugs: launch_access/onboarding StateError copy was being stripped to generic text -> typed ValidationException; swallowed Remote Config + health-plugin failures now logged; image_picker/geolocator wrapped). This guidance is now consolidated into docs/app_architecture.md. Backend scanner still mustMigrate=0/review=0. Verified: analyze clean, 1349 client tests + both scanners green. Adversarially reviewed (no confirmed issues in this layer)."
     },
     {
       "id": "CELEBRATION-SOUND-001-DONE",

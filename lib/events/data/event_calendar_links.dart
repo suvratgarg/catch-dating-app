@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

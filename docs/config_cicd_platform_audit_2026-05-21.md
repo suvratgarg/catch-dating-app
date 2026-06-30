@@ -80,7 +80,7 @@ resurrecting the deleted audit index.
 ### A1 — Analytics never collects outside release+prod [quick to verify]
 
 **Where:** `lib/core/app_config.dart` → `shouldCollectObservabilityFor()`;
-consumed by `lib/analytics/app_analytics.dart` and `lib/exceptions/error_logger.dart`.
+consumed by `lib/core/analytics/app_analytics.dart` and `lib/exceptions/error_logger.dart`.
 
 **Problem:** Analytics + Crashlytics collection is gated by
 `AppConfig.shouldCollectObservability`, which is **true only** when:
@@ -582,7 +582,7 @@ fixed in-repo:
   `ios/` (Info.plist, entitlements, xcconfig set, Podfile, AppDelegate,
   ExportOptions, ci_scripts), `android/app/build.gradle`, `web/index.html`,
   `lib/main.dart`, `lib/app.dart`, `lib/core/app_config.dart`,
-  `lib/analytics/app_analytics.dart`, `lib/exceptions/error_logger.dart`,
+  `lib/core/analytics/app_analytics.dart`, `lib/exceptions/error_logger.dart`,
   `contracts/` tree + `contracts/README.md`, `tool/check_data_contract.sh`,
   `tool/flutter_with_env.sh`, `tool/deploy_firebase_targets.sh`,
   `tool/write_ios_maps_key_xcconfig.sh`.

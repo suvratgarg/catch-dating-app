@@ -25,17 +25,19 @@ class ClubImage extends StatelessWidget {
       imageUrl = club.imageUrl ?? club.profileImageUrl;
     }
 
-    Widget placeholder() =>
-        ClubPolaroidArtwork(club: club, compact: fallbackCompact);
+    final placeholder = ClubPolaroidArtwork(
+      club: club,
+      compact: fallbackCompact,
+    );
 
     if (imageUrl != null && imageUrl.isNotEmpty) {
       return CatchGradedImage(
         child: CatchNetworkImage(
           imageUrl,
-          errorBuilder: (_, _, _) => placeholder(),
+          errorBuilder: (_, _, _) => placeholder,
         ),
       );
     }
-    return placeholder();
+    return placeholder;
   }
 }

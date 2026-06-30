@@ -1,6 +1,13 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show CatchAspectRatio, CatchIcon, CatchLayout, CatchRadius, CatchSpacing, CatchStroke;
+    show
+        CatchAspectRatio,
+        CatchIcon,
+        CatchLayout,
+        CatchOpacity,
+        CatchRadius,
+        CatchStroke,
+        CatchTokens;
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
@@ -21,7 +28,7 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
             constraints: const BoxConstraints(
               maxWidth: CatchLayout.maxContentWidth,
             ),
-            child: SizedBox(
+            child: const SizedBox(
               width: double.infinity,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -29,14 +36,14 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
                   CatchSectionList(
                     gap: 0,
                     children: [
-                      const ProfilePhotosSkeletonSection(),
-                      const ProfileInfoSkeletonSection(
+                      ProfilePhotosSkeletonSection(),
+                      ProfileInfoSkeletonSection(
                         title: 'Prompts',
                         rows: maxProfilePromptAnswers,
                       ),
-                      const ProfileInfoSkeletonSection(title: 'About you', rows: 5),
-                      const ProfileInfoSkeletonSection(title: 'Running', rows: 4),
-                      const ProfileInfoSkeletonSection(title: 'Lifestyle', rows: 4),
+                      ProfileInfoSkeletonSection(title: 'About you', rows: 5),
+                      ProfileInfoSkeletonSection(title: 'Running', rows: 4),
+                      ProfileInfoSkeletonSection(title: 'Lifestyle', rows: 4),
                     ],
                   ),
                   gapH32,
@@ -98,7 +105,20 @@ class ProfileInfoSkeletonSection extends StatelessWidget {
         children: [
           for (var index = 0; index < rows; index++) ...[
             const ProfileInfoSkeletonTile(),
-            if (index < rows - 1) Builder(builder: profileSectionDivider),
+            if (index < rows - 1)
+              Builder(
+                builder: (context) {
+                  final t = CatchTokens.of(context);
+                  return Divider(
+                    height: 1,
+                    indent: CatchSpacing.s8,
+                    endIndent: CatchSpacing.s8,
+                    color: t.line.withValues(
+                      alpha: CatchOpacity.fieldRowDivider,
+                    ),
+                  );
+                },
+              ),
           ],
         ],
       ),

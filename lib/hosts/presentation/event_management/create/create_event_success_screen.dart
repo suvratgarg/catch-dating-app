@@ -3,7 +3,7 @@ import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart'
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:flutter/material.dart';
 

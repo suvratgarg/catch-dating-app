@@ -1,7 +1,7 @@
 ---
 doc_id: ads_conversion_spec
-version: 0.1.1
-updated: 2026-06-25
+version: 0.1.2
+updated: 2026-06-30
 owner: marketing_website
 status: active
 ---
@@ -33,7 +33,7 @@ Website:
 
 App:
 
-- `lib/analytics/app_analytics.dart` provides the vendor-neutral analytics
+- `lib/core/analytics/app_analytics.dart` provides the vendor-neutral analytics
   facade.
 - Collection is controlled by release/profile mode and environment flags in
   `AppConfig.shouldCollectObservability`.

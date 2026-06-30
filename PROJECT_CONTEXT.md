@@ -55,6 +55,11 @@ Design system:
 
 ## 3. High-level architecture
 
+Canonical architecture policy lives in
+[`docs/app_architecture.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/app_architecture.md).
+Use this section as a repo map, not as the detailed source of truth for
+screen/controller/repository/widget boundaries.
+
 The app follows a consistent feature-first structure:
 
 - `lib/<feature>/domain`: Freezed models, enums, pure domain logic
@@ -86,10 +91,13 @@ Entry points:
 
 Error handling:
 
-- [`lib/core/firestore_error_message.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/firestore_error_message.dart) — translates Firebase error codes to user messages
-- [`lib/core/firestore_error_util.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/firestore_error_util.dart) — structured error-context wrapper for repository methods
-- [`lib/core/widgets/mutation_error_util.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/widgets/mutation_error_util.dart) — unified mutation error display helper
-- [`lib/exceptions/app_exception.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/exceptions/app_exception.dart) — typed `FirestoreWriteException` and `DocumentNotFoundException`
+- [`docs/app_architecture.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/app_architecture.md) is the detailed app architecture and error-management source of truth.
+- [`lib/core/backend_error_util.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/backend_error_util.dart) wraps backend operations with structured context.
+- [`lib/core/app_error_context.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/app_error_context.dart) wraps frontend/local/platform operations.
+- [`lib/core/app_error_message.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/app_error_message.dart) maps app-facing error title/message copy.
+- [`lib/core/widgets/catch_error_state.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/widgets/catch_error_state.dart), [`lib/core/widgets/catch_error_banner.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/widgets/catch_error_banner.dart), [`lib/core/widgets/catch_error_snackbar.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/widgets/catch_error_snackbar.dart), and [`lib/core/widgets/catch_mutation_error_listener.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/widgets/catch_mutation_error_listener.dart) own branded error rendering.
+- [`lib/core/widgets/mutation_error_util.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/widgets/mutation_error_util.dart) provides unified mutation error helpers.
+- [`lib/exceptions/app_exception.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/exceptions/app_exception.dart) defines typed app exceptions.
 
 ## 4. Runtime behavior
 
@@ -1016,26 +1024,30 @@ These look like support material, not runtime app code:
 
 Primary product code lives in `lib/` and `functions/`.
 
-## 18. Firestore error handling conventions
+## 18. Backend and app error handling conventions
 
-Firebase security rules are the last line of defense — the app must handle rule
-rejections gracefully so users (and developers) aren't left guessing.
+Firebase security rules are the last line of defense, but UI code should never
+deal with raw Firebase/plugin exceptions directly. The current source of truth
+is the Error Handling Contract section in
+[`docs/app_architecture.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/app_architecture.md).
 
 ### Rules
 
-- **Never silently swallow Firestore write errors.** Let `FirebaseException`
-  propagate to the UI layer. The `AsyncErrorLogger` ProviderObserver catches
-  unhandled errors and reports them to Crashlytics automatically.
-- **Use `firestoreErrorMessage()` for user-facing messages.** Located in
-  [`lib/core/firestore_error_message.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/firestore_error_message.dart).
-  It translates `FirebaseException` codes (`permission-denied`, `unavailable`,
-  `deadline-exceeded`, etc.) to human-readable messages. In debug mode it
-  appends the Firebase error code so developers can diagnose issues without
-  recompiling.
-- **Use `withFirestoreErrorContext()` for structured logging.** Located in
-  [`lib/core/firestore_error_util.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/firestore_error_util.dart).
-  Wrap Firestore write operations to catch `FirebaseException` and rethrow
-  as `FirestoreWriteException` with collection/action context.
+- **Never silently swallow backend or plugin failures.** Display, rethrow,
+  normalize/log, or document the intentional fallback.
+- **Wrap backend operations with `withBackendErrorContext()` or
+  `withBackendErrorStream()`.** These live in
+  [`lib/core/backend_error_util.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/backend_error_util.dart)
+  and normalize Firebase/Auth/Storage/Functions failures to typed app
+  exceptions with non-PII operation context.
+- **Wrap frontend/local/platform operations with the app operation context.**
+  [`lib/core/app_error_context.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/app_error_context.dart)
+  owns `withAppErrorContext`, `normalizeAppError`, `logAppError`, and
+  `runLoggingAppErrors`.
+- **Use app error descriptors for user-facing messages.**
+  [`lib/core/app_error_message.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/app_error_message.dart)
+  maps errors to safe title/message/retry descriptors. Do not show raw
+  `error.toString()` or vendor exception messages.
 - **Use `FieldValue` operations instead of full-document `set()` for partial
   updates.** Reading a document, modifying one field in Dart, and writing it
   back causes a `Timestamp → DateTime → Timestamp` round-trip that loses
@@ -1043,17 +1055,20 @@ rejections gracefully so users (and developers) aren't left guessing.
   this as a spurious field change and rejects the write. Use
   `transaction.update()` with `FieldValue.arrayUnion` / `FieldValue.increment`
   to touch only the fields that need to change.
-- **Mutation-driven UIs should use `firestoreErrorMessage()` for error
-  display.** Don't show `error.toString()` to users — it's either raw
-  exception text or uselessly truncated. The `ErrorBanner` widget and
-  `listenForMutationErrorSnackbar` utility are the right display channels.
-- **Firestore rules tests and the contract checker event in CI** on every PR
+- **Mutation-driven UIs must surface mutation errors.** Use
+  `CatchMutationErrorBanner`, `CatchMutationErrorListener(s)`, or
+  `showCatchErrorSnackBar` based on whether the failure should be persistent or
+  transient.
+- **Data-load errors use branded Catch error primitives.** Full-screen errors
+  use `CatchErrorScaffold`/`CatchErrorState`, sliver errors use
+  `CatchSliverErrorState`, and section errors use `CatchInlineErrorState`.
+- **Firestore rules tests and the contract checker run in CI** on every PR
   that touches rules, schema, or contract files. Keep
   `functions/test/firestore.rules.test.cjs` and `tool/contracts/firestore_contract.json`
   in sync with rule changes.
-- **Log backend write failures to Analytics** via
-  `AppAnalytics.logBackendOperationFailed()` so permission spikes and quota
-  issues are visible in dashboards, not just Crashlytics.
+- **Backend write failures can log to Analytics** via
+  `AppAnalytics.logBackendOperationFailed()` when they are product-significant
+  and non-PII.
 
 ### Common Firestore error codes
 

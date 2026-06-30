@@ -36,8 +36,71 @@ class ChatMessageList extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchAsyncValueView<List<ChatMessage>>(
       value: messagesAsync,
-      loadingBuilder: (_) =>
-          _ChatMessageListSkeleton(scrollController: scrollController),
+      loadingBuilder: (_) {
+        final t = CatchTokens.of(context);
+        const bubbleSpecs = [
+          (isMe: false, widthFactor: 0.62),
+          (isMe: false, widthFactor: 0.48),
+          (isMe: true, widthFactor: 0.58),
+          (isMe: true, widthFactor: 0.42),
+          (isMe: false, widthFactor: 0.68),
+        ];
+
+        return ListView(
+          controller: scrollController,
+          padding: CatchInsets.listBodyDense,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                top: CatchSpacing.s1,
+                bottom: CatchSpacing.s4,
+              ),
+              child: Center(
+                child: CatchSkeleton.text(
+                  width: CatchLayout.skeletonTextShortWidth,
+                ),
+              ),
+            ),
+            for (final spec in bubbleSpecs)
+              Padding(
+                padding: CatchInsets.chatBubbleGroupEnd,
+                child: Row(
+                  mainAxisAlignment: spec.isMe
+                      ? MainAxisAlignment.end
+                      : MainAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      child: FractionallySizedBox(
+                        alignment: spec.isMe
+                            ? AlignmentDirectional.centerEnd
+                            : AlignmentDirectional.centerStart,
+                        widthFactor: spec.widthFactor,
+                        child: CatchSkeleton.box(
+                          height: CatchLayout.buttonLgHeight,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(
+                              spec.isMe ? CatchRadius.lg : CatchRadius.sm,
+                            ),
+                            topRight: Radius.circular(
+                              spec.isMe ? CatchRadius.sm : CatchRadius.lg,
+                            ),
+                            bottomLeft: Radius.circular(
+                              spec.isMe ? CatchRadius.lg : CatchRadius.sm,
+                            ),
+                            bottomRight: Radius.circular(
+                              spec.isMe ? CatchRadius.sm : CatchRadius.lg,
+                            ),
+                          ),
+                          borderColor: spec.isMe ? null : t.line,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        );
+      },
       errorBuilder: (_, e, _) => CatchErrorState(
         title: 'Messages unavailable',
         message: 'Unable to load messages.',
@@ -67,7 +130,21 @@ class ChatMessageList extends StatelessWidget {
           itemBuilder: (context, i) {
             final entry = entries[i];
             final date = entry.date;
-            if (date != null) return _ChatDateSeparator(date: date);
+            if (date != null) {
+              final t = CatchTokens.of(context);
+              return Padding(
+                padding: const EdgeInsets.only(
+                  top: CatchSpacing.s1,
+                  bottom: CatchSpacing.s4,
+                ),
+                child: Center(
+                  child: Text(
+                    AppTimeFormatters.weekdayDayMonth(date),
+                    style: CatchTextStyles.badge(context, color: t.ink3),
+                  ),
+                ),
+              );
+            }
 
             final messageIndex = entry.messageIndex!;
             final msg = messages[messageIndex];
@@ -98,87 +175,6 @@ class ChatMessageList extends StatelessWidget {
   }
 }
 
-class _ChatMessageListSkeleton extends StatelessWidget {
-  const _ChatMessageListSkeleton({required this.scrollController});
-
-  final ScrollController scrollController;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      controller: scrollController,
-      padding: CatchInsets.listBodyDense,
-      children: [
-        const _ChatDateSkeleton(),
-        const _ChatBubbleSkeleton(isMe: false, widthFactor: 0.62),
-        const _ChatBubbleSkeleton(isMe: false, widthFactor: 0.48),
-        const _ChatBubbleSkeleton(isMe: true, widthFactor: 0.58),
-        const _ChatBubbleSkeleton(isMe: true, widthFactor: 0.42),
-        const _ChatBubbleSkeleton(isMe: false, widthFactor: 0.68),
-      ],
-    );
-  }
-}
-
-class _ChatDateSkeleton extends StatelessWidget {
-  const _ChatDateSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: CatchSpacing.s1,
-        bottom: CatchSpacing.s4,
-      ),
-      child: Center(
-        child: CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-      ),
-    );
-  }
-}
-
-class _ChatBubbleSkeleton extends StatelessWidget {
-  const _ChatBubbleSkeleton({required this.isMe, required this.widthFactor});
-
-  final bool isMe;
-  final double widthFactor;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final radius = BorderRadius.only(
-      topLeft: Radius.circular(isMe ? CatchRadius.lg : CatchRadius.sm),
-      topRight: Radius.circular(isMe ? CatchRadius.sm : CatchRadius.lg),
-      bottomLeft: Radius.circular(isMe ? CatchRadius.lg : CatchRadius.sm),
-      bottomRight: Radius.circular(isMe ? CatchRadius.sm : CatchRadius.lg),
-    );
-
-    return Padding(
-      padding: CatchInsets.chatBubbleGroupEnd,
-      child: Row(
-        mainAxisAlignment: isMe
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        children: [
-          Flexible(
-            child: FractionallySizedBox(
-              alignment: isMe
-                  ? AlignmentDirectional.centerEnd
-                  : AlignmentDirectional.centerStart,
-              widthFactor: widthFactor,
-              child: CatchSkeleton.box(
-                height: CatchLayout.buttonLgHeight,
-                borderRadius: radius,
-                borderColor: isMe ? null : t.line,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 List<_ChatListEntry> _buildEntries(List<ChatMessage> messages) {
   final entries = <_ChatListEntry>[];
   for (var index = 0; index < messages.length; index++) {
@@ -204,28 +200,4 @@ class _ChatListEntry {
 
   final int? messageIndex;
   final DateTime? date;
-}
-
-class _ChatDateSeparator extends StatelessWidget {
-  const _ChatDateSeparator({required this.date});
-
-  final DateTime date;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: CatchSpacing.s1,
-        bottom: CatchSpacing.s4,
-      ),
-      child: Center(
-        child: Text(
-          AppTimeFormatters.weekdayDayMonth(date),
-          style: CatchTextStyles.badge(context, color: t.ink3),
-        ),
-      ),
-    );
-  }
 }

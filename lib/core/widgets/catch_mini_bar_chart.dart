@@ -52,13 +52,24 @@ class CatchMiniBarChart extends StatelessWidget {
                   for (final (index, value) in values.indexed) ...[
                     if (index > 0) SizedBox(width: spacing),
                     Expanded(
-                      child: _CatchMiniBar(
-                        value: value,
-                        maxValue: effectiveMax,
-                        minFilledHeightFactor: minFilledHeightFactor,
-                        emptyHeightFactor: emptyHeightFactor,
-                        filledColor: filledColor ?? t.ink,
-                        emptyColor: emptyColor ?? t.line2,
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: FractionallySizedBox(
+                          heightFactor: _barRatio(
+                            value: value,
+                            maxValue: effectiveMax,
+                            minFilledHeightFactor: minFilledHeightFactor,
+                            emptyHeightFactor: emptyHeightFactor,
+                          ),
+                          child: CatchSurface(
+                            radius: CatchRadius.xs,
+                            borderWidth: 0,
+                            backgroundColor: value <= 0
+                                ? emptyColor ?? t.line2
+                                : filledColor ?? t.ink,
+                            child: const SizedBox.expand(),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -73,42 +84,14 @@ class CatchMiniBarChart extends StatelessWidget {
   }
 }
 
-class _CatchMiniBar extends StatelessWidget {
-  const _CatchMiniBar({
-    required this.value,
-    required this.maxValue,
-    required this.minFilledHeightFactor,
-    required this.emptyHeightFactor,
-    required this.filledColor,
-    required this.emptyColor,
-  });
-
-  final num value;
-  final num maxValue;
-  final double minFilledHeightFactor;
-  final double emptyHeightFactor;
-  final Color filledColor;
-  final Color emptyColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final ratio = maxValue <= 0
-        ? emptyHeightFactor
-        : (value / maxValue).clamp(minFilledHeightFactor, 1).toDouble();
-
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: FractionallySizedBox(
-        heightFactor: ratio,
-        child: CatchSurface(
-          radius: CatchRadius.xs,
-          borderWidth: 0,
-          backgroundColor: value <= 0 ? emptyColor : filledColor,
-          child: const SizedBox.expand(),
-        ),
-      ),
-    );
-  }
-}
-
 num _maxNum(num max, num value) => value > max ? value : max;
+
+double _barRatio({
+  required num value,
+  required num maxValue,
+  required double minFilledHeightFactor,
+  required double emptyHeightFactor,
+}) {
+  if (maxValue <= 0) return emptyHeightFactor;
+  return (value / maxValue).clamp(minFilledHeightFactor, 1).toDouble();
+}

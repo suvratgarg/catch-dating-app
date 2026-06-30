@@ -38,6 +38,9 @@ jobs:
       - name: Design context pack drift check
         run: node tool/design/build_context_pack.mjs --check
 
+      - name: Backend error boundary gate
+        run: npm run audit:backend-errors:check
+
       - name: Static analysis
         run: flutter analyze --no-fatal-infos
 

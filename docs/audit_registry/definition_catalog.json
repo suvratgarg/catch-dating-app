@@ -10,7 +10,7 @@
       "definition_count": 5
     },
     {
-      "file": "lib/analytics/app_analytics.dart",
+      "file": "lib/core/analytics/app_analytics.dart",
       "line_count": 244,
       "definition_count": 7
     },
@@ -70,7 +70,7 @@
       "definition_count": 1
     },
     {
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line_count": 848,
       "definition_count": 23
     },
@@ -220,7 +220,7 @@
       "definition_count": 1
     },
     {
-      "file": "lib/clubs/presentation/club_name_lookup.dart",
+      "file": "lib/clubs/data/club_name_lookup.dart",
       "line_count": 34,
       "definition_count": 2
     },
@@ -1595,12 +1595,12 @@
       "definition_count": 1
     },
     {
-      "file": "lib/events/presentation/event_activity_visuals.dart",
+      "file": "lib/core/widgets/event_activity_visuals.dart",
       "line_count": 418,
       "definition_count": 10
     },
     {
-      "file": "lib/events/presentation/event_arrival_action.dart",
+      "file": "lib/events/domain/event_arrival_action.dart",
       "line_count": 83,
       "definition_count": 5
     },
@@ -1610,7 +1610,7 @@
       "definition_count": 1
     },
     {
-      "file": "lib/events/presentation/event_calendar_links.dart",
+      "file": "lib/events/data/event_calendar_links.dart",
       "line_count": 99,
       "definition_count": 10
     },
@@ -1620,12 +1620,12 @@
       "definition_count": 1
     },
     {
-      "file": "lib/events/presentation/event_check_in_location_service.dart",
+      "file": "lib/events/data/event_check_in_location_service.dart",
       "line_count": 83,
       "definition_count": 5
     },
     {
-      "file": "lib/events/presentation/event_check_in_qr_payload.dart",
+      "file": "lib/events/domain/event_check_in_qr_payload.dart",
       "line_count": 41,
       "definition_count": 2
     },
@@ -1650,12 +1650,12 @@
       "definition_count": 3
     },
     {
-      "file": "lib/events/presentation/event_formatters.dart",
+      "file": "lib/events/domain/event_formatters.dart",
       "line_count": 67,
       "definition_count": 2
     },
     {
-      "file": "lib/events/presentation/event_invite_share_copy.dart",
+      "file": "lib/events/data/event_invite_share_copy.dart",
       "line_count": 97,
       "definition_count": 1
     },
@@ -1665,7 +1665,7 @@
       "definition_count": 1
     },
     {
-      "file": "lib/events/presentation/event_location_links.dart",
+      "file": "lib/events/domain/event_location_links.dart",
       "line_count": 29,
       "definition_count": 3
     },
@@ -1770,7 +1770,7 @@
       "definition_count": 3
     },
     {
-      "file": "lib/events/presentation/widgets/event_ticket_surface.dart",
+      "file": "lib/core/widgets/event_ticket_surface.dart",
       "line_count": 156,
       "definition_count": 7
     },
@@ -1820,7 +1820,7 @@
       "definition_count": 0
     },
     {
-      "file": "lib/events/presentation/widgets/event_tiles/event_visual_atoms.dart",
+      "file": "lib/core/widgets/event_visual_atoms.dart",
       "line_count": 212,
       "definition_count": 5
     },
@@ -2425,42 +2425,42 @@
       "definition_count": 4
     },
     {
-      "file": "lib/matches/presentation/chats_list_view_model.dart",
+      "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
       "line_count": 175,
       "definition_count": 6
     },
     {
-      "file": "lib/matches/presentation/host_inbox_filter.dart",
+      "file": "lib/chats/presentation/inbox/host_inbox_filter.dart",
       "line_count": 2,
       "definition_count": 1
     },
     {
-      "file": "lib/matches/presentation/matches_list_screen.dart",
+      "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
       "line_count": 225,
       "definition_count": 4
     },
     {
-      "file": "lib/matches/presentation/widgets/chat_conversations_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
       "line_count": 53,
       "definition_count": 2
     },
     {
-      "file": "lib/matches/presentation/widgets/chats_empty_state.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
       "line_count": 55,
       "definition_count": 1
     },
     {
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
       "line_count": 310,
       "definition_count": 11
     },
     {
-      "file": "lib/matches/presentation/widgets/chats_list_body.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
       "line_count": 144,
       "definition_count": 2
     },
     {
-      "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
       "line_count": 196,
       "definition_count": 5
     },
@@ -2780,7 +2780,7 @@
       "definition_count": 7
     },
     {
-      "file": "lib/search/data/explore_search_repository.dart",
+      "file": "lib/explore/data/explore_search_repository.dart",
       "line_count": 84,
       "definition_count": 6
     },
@@ -3056,7 +3056,7 @@
     {
       "name": "AnalyticsReporter",
       "kind": "class",
-      "file": "lib/analytics/app_analytics.dart",
+      "file": "lib/core/analytics/app_analytics.dart",
       "line": 13,
       "signature": "abstract interface class AnalyticsReporter {",
       "is_widget": false,
@@ -3065,7 +3065,7 @@
     {
       "name": "FirebaseAnalyticsReporter",
       "kind": "class",
-      "file": "lib/analytics/app_analytics.dart",
+      "file": "lib/core/analytics/app_analytics.dart",
       "line": 23,
       "signature": "final class FirebaseAnalyticsReporter implements AnalyticsReporter {",
       "superclass": "AnalyticsReporter",
@@ -3075,7 +3075,7 @@
     {
       "name": "appAnalytics",
       "kind": "function",
-      "file": "lib/analytics/app_analytics.dart",
+      "file": "lib/core/analytics/app_analytics.dart",
       "line": 56,
       "signature": "AppAnalytics appAnalytics(Ref ref) => AppAnalytics();",
       "return_type": "AppAnalytics",
@@ -3084,7 +3084,7 @@
     {
       "name": "AppAnalytics",
       "kind": "class",
-      "file": "lib/analytics/app_analytics.dart",
+      "file": "lib/core/analytics/app_analytics.dart",
       "line": 59,
       "signature": "class AppAnalytics {",
       "is_widget": false,
@@ -3093,7 +3093,7 @@
     {
       "name": "AnalyticsRouteObserver",
       "kind": "class",
-      "file": "lib/analytics/app_analytics.dart",
+      "file": "lib/core/analytics/app_analytics.dart",
       "line": 153,
       "signature": "class AnalyticsRouteObserver extends NavigatorObserver {",
       "superclass": "NavigatorObserver",
@@ -3103,7 +3103,7 @@
     {
       "name": "AnalyticsEvents",
       "kind": "class",
-      "file": "lib/analytics/app_analytics.dart",
+      "file": "lib/core/analytics/app_analytics.dart",
       "line": 188,
       "signature": "abstract final class AnalyticsEvents {",
       "is_widget": false,
@@ -3112,7 +3112,7 @@
     {
       "name": "AnalyticsParameters",
       "kind": "class",
-      "file": "lib/analytics/app_analytics.dart",
+      "file": "lib/core/analytics/app_analytics.dart",
       "line": 219,
       "signature": "abstract final class AnalyticsParameters {",
       "is_widget": false,
@@ -3463,7 +3463,7 @@
     {
       "name": "CalendarScreen",
       "kind": "class",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 26,
       "signature": "class CalendarScreen extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
@@ -3473,7 +3473,7 @@
     {
       "name": "_CalendarScreenState",
       "kind": "class",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 35,
       "signature": "class _CalendarScreenState extends ConsumerState<CalendarScreen> {",
       "superclass": "ConsumerState<CalendarScreen>",
@@ -3483,7 +3483,7 @@
     {
       "name": "_calendarEventDetailPath",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 281,
       "signature": "String _calendarEventDetailPath(Event event) {",
       "return_type": "String",
@@ -3492,7 +3492,7 @@
     {
       "name": "_buildCalendarLoadingScreen",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 287,
       "signature": "Widget _buildCalendarLoadingScreen(BuildContext context) {",
       "return_type": "Widget",
@@ -3501,7 +3501,7 @@
     {
       "name": "_calendarDateHeaderHeightFor",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 303,
       "signature": "double _calendarDateHeaderHeightFor(",
       "return_type": "double",
@@ -3510,7 +3510,7 @@
     {
       "name": "_buildCalendarDateHeader",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 341,
       "signature": "Widget _buildCalendarDateHeader(",
       "return_type": "Widget",
@@ -3519,7 +3519,7 @@
     {
       "name": "_calendarMonthLabel",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 389,
       "signature": "String _calendarMonthLabel(DateTime date) {",
       "return_type": "String",
@@ -3528,7 +3528,7 @@
     {
       "name": "_buildCalendarDateHeaderSkeleton",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 393,
       "signature": "Widget _buildCalendarDateHeaderSkeleton(BuildContext context) {",
       "return_type": "Widget",
@@ -3537,7 +3537,7 @@
     {
       "name": "_buildCalendarWeekStripSkeleton",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 417,
       "signature": "Widget _buildCalendarWeekStripSkeleton(BuildContext context) {",
       "return_type": "Widget",
@@ -3546,7 +3546,7 @@
     {
       "name": "_buildCalendarTitleRow",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 434,
       "signature": "Widget _buildCalendarTitleRow(",
       "return_type": "Widget",
@@ -3555,7 +3555,7 @@
     {
       "name": "_CalendarDateHeaderDelegate",
       "kind": "class",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 464,
       "signature": "class _CalendarDateHeaderDelegate extends SliverPersistentHeaderDelegate {",
       "superclass": "SliverPersistentHeaderDelegate",
@@ -3565,7 +3565,7 @@
     {
       "name": "_buildCalendarStatsHeader",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 503,
       "signature": "Widget _buildCalendarStatsHeader(",
       "return_type": "Widget",
@@ -3574,7 +3574,7 @@
     {
       "name": "_buildCalendarStatsHeaderSkeleton",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 560,
       "signature": "Widget _buildCalendarStatsHeaderSkeleton(BuildContext context) {",
       "return_type": "Widget",
@@ -3583,7 +3583,7 @@
     {
       "name": "_buildCalendarStatSkeleton",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 594,
       "signature": "Widget _buildCalendarStatSkeleton() {",
       "return_type": "Widget",
@@ -3592,7 +3592,7 @@
     {
       "name": "_buildCalendarWeekStrip",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 605,
       "signature": "Widget _buildCalendarWeekStrip(",
       "return_type": "Widget",
@@ -3601,7 +3601,7 @@
     {
       "name": "_buildCalendarMonthGrid",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 640,
       "signature": "Widget _buildCalendarMonthGrid(",
       "return_type": "Widget",
@@ -3610,7 +3610,7 @@
     {
       "name": "_buildStatDivider",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 703,
       "signature": "Widget _buildStatDivider(BuildContext context) {",
       "return_type": "Widget",
@@ -3619,7 +3619,7 @@
     {
       "name": "_buildCalendarMessage",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 717,
       "signature": "Widget _buildCalendarMessage(",
       "return_type": "Widget",
@@ -3628,7 +3628,7 @@
     {
       "name": "_CalendarEventSummary",
       "kind": "class",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 738,
       "signature": "class _CalendarEventSummary {",
       "is_widget": false,
@@ -3637,7 +3637,7 @@
     {
       "name": "_monthName",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 817,
       "signature": "String _monthName(int month) {",
       "return_type": "String",
@@ -3646,7 +3646,7 @@
     {
       "name": "_calendarWeekDayKey",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 834,
       "signature": "Key _calendarWeekDayKey(DateTime date) {",
       "return_type": "Key",
@@ -3655,7 +3655,7 @@
     {
       "name": "_calendarMonthDayKey",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 838,
       "signature": "Key _calendarMonthDayKey(DateTime date) {",
       "return_type": "Key",
@@ -3664,7 +3664,7 @@
     {
       "name": "_dateKey",
       "kind": "function",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "line": 842,
       "signature": "String _dateKey(DateTime date) {",
       "return_type": "String",
@@ -4687,7 +4687,7 @@
     {
       "name": "ClubNameLookupQuery",
       "kind": "class",
-      "file": "lib/clubs/presentation/club_name_lookup.dart",
+      "file": "lib/clubs/data/club_name_lookup.dart",
       "line": 5,
       "signature": "class ClubNameLookupQuery {",
       "is_widget": false,
@@ -4696,7 +4696,7 @@
     {
       "name": "clubNameLookupProvider",
       "kind": "constant",
-      "file": "lib/clubs/presentation/club_name_lookup.dart",
+      "file": "lib/clubs/data/club_name_lookup.dart",
       "line": 22,
       "signature": "final clubNameLookupProvider = FutureProvider.autoDispose",
       "body_hash": "0b8c62f8bfcc5cfd"
@@ -18198,7 +18198,7 @@
     {
       "name": "EventActivityPattern",
       "kind": "enum",
-      "file": "lib/events/presentation/event_activity_visuals.dart",
+      "file": "lib/core/widgets/event_activity_visuals.dart",
       "line": 13,
       "signature": "enum EventActivityPattern {",
       "body_hash": "fd3703cfb826d1a7"
@@ -18206,7 +18206,7 @@
     {
       "name": "EventActivityVisualSpec",
       "kind": "class",
-      "file": "lib/events/presentation/event_activity_visuals.dart",
+      "file": "lib/core/widgets/event_activity_visuals.dart",
       "line": 32,
       "signature": "class EventActivityVisualSpec {",
       "is_widget": false,
@@ -18215,7 +18215,7 @@
     {
       "name": "activityKindGlyph",
       "kind": "function",
-      "file": "lib/events/presentation/event_activity_visuals.dart",
+      "file": "lib/core/widgets/event_activity_visuals.dart",
       "line": 51,
       "signature": "IconData activityKindGlyph(ActivityKind activityKind) {",
       "return_type": "IconData",
@@ -18224,7 +18224,7 @@
     {
       "name": "primaryBrowseActivityKinds",
       "kind": "constant",
-      "file": "lib/events/presentation/event_activity_visuals.dart",
+      "file": "lib/core/widgets/event_activity_visuals.dart",
       "line": 56,
       "signature": "const primaryBrowseActivityKinds = <ActivityKind>[",
       "body_hash": "12f3a533671775b9"
@@ -18232,7 +18232,7 @@
     {
       "name": "allActivityKindsForVisuals",
       "kind": "constant",
-      "file": "lib/events/presentation/event_activity_visuals.dart",
+      "file": "lib/core/widgets/event_activity_visuals.dart",
       "line": 73,
       "signature": "const allActivityKindsForVisuals = <ActivityKind>[",
       "body_hash": "7226e35d95e45292"
@@ -18240,7 +18240,7 @@
     {
       "name": "eventActivityVisual",
       "kind": "function",
-      "file": "lib/events/presentation/event_activity_visuals.dart",
+      "file": "lib/core/widgets/event_activity_visuals.dart",
       "line": 96,
       "signature": "EventActivityVisualSpec eventActivityVisual(",
       "return_type": "EventActivityVisualSpec",
@@ -18249,7 +18249,7 @@
     {
       "name": "_ActivityMeta",
       "kind": "typedef",
-      "file": "lib/events/presentation/event_activity_visuals.dart",
+      "file": "lib/core/widgets/event_activity_visuals.dart",
       "line": 112,
       "signature": "typedef _ActivityMeta = ({String label, EventActivityPattern pattern});",
       "body_hash": "f1782885cd8a4311"
@@ -18257,7 +18257,7 @@
     {
       "name": "_activityMeta",
       "kind": "function",
-      "file": "lib/events/presentation/event_activity_visuals.dart",
+      "file": "lib/core/widgets/event_activity_visuals.dart",
       "line": 114,
       "signature": "_ActivityMeta _activityMeta(ActivityKind kind) => switch (kind) {",
       "return_type": "_ActivityMeta",
@@ -18266,7 +18266,7 @@
     {
       "name": "EventActivityBackdrop",
       "kind": "class",
-      "file": "lib/events/presentation/event_activity_visuals.dart",
+      "file": "lib/core/widgets/event_activity_visuals.dart",
       "line": 181,
       "signature": "class EventActivityBackdrop extends StatelessWidget {",
       "superclass": "StatelessWidget",
@@ -18276,7 +18276,7 @@
     {
       "name": "_ActivityPatternPainter",
       "kind": "class",
-      "file": "lib/events/presentation/event_activity_visuals.dart",
+      "file": "lib/core/widgets/event_activity_visuals.dart",
       "line": 241,
       "signature": "class _ActivityPatternPainter extends CustomPainter {",
       "superclass": "CustomPainter",
@@ -18286,7 +18286,7 @@
     {
       "name": "EventArrivalActionKind",
       "kind": "enum",
-      "file": "lib/events/presentation/event_arrival_action.dart",
+      "file": "lib/events/domain/event_arrival_action.dart",
       "line": 6,
       "signature": "enum EventArrivalActionKind { selfCheckIn, takeAttendance }",
       "body_hash": "20d90e9d186f4e6c"
@@ -18294,7 +18294,7 @@
     {
       "name": "EventArrivalAction",
       "kind": "class",
-      "file": "lib/events/presentation/event_arrival_action.dart",
+      "file": "lib/events/domain/event_arrival_action.dart",
       "line": 8,
       "signature": "class EventArrivalAction {",
       "is_widget": false,
@@ -18303,7 +18303,7 @@
     {
       "name": "selectEventArrivalAction",
       "kind": "function",
-      "file": "lib/events/presentation/event_arrival_action.dart",
+      "file": "lib/events/domain/event_arrival_action.dart",
       "line": 15,
       "signature": "EventArrivalAction? selectEventArrivalAction({",
       "return_type": "EventArrivalAction?",
@@ -18312,7 +18312,7 @@
     {
       "name": "isSelfCheckInOpenForParticipationStatus",
       "kind": "function",
-      "file": "lib/events/presentation/event_arrival_action.dart",
+      "file": "lib/events/domain/event_arrival_action.dart",
       "line": 49,
       "signature": "bool isSelfCheckInOpenForParticipationStatus({",
       "return_type": "bool",
@@ -18321,7 +18321,7 @@
     {
       "name": "_isSelfCheckInOpen",
       "kind": "function",
-      "file": "lib/events/presentation/event_arrival_action.dart",
+      "file": "lib/events/domain/event_arrival_action.dart",
       "line": 62,
       "signature": "bool _isSelfCheckInOpen({",
       "return_type": "bool",
@@ -18340,7 +18340,7 @@
     {
       "name": "_calendarChannel",
       "kind": "constant",
-      "file": "lib/events/presentation/event_calendar_links.dart",
+      "file": "lib/events/data/event_calendar_links.dart",
       "line": 8,
       "signature": "const _calendarChannel = MethodChannel('catch/calendar');",
       "body_hash": "92bbc49e08749c9e"
@@ -18348,7 +18348,7 @@
     {
       "name": "NativeCalendarLauncher",
       "kind": "typedef",
-      "file": "lib/events/presentation/event_calendar_links.dart",
+      "file": "lib/events/data/event_calendar_links.dart",
       "line": 10,
       "signature": "typedef NativeCalendarLauncher =",
       "body_hash": "b9ca5e9bfea511e7"
@@ -18356,7 +18356,7 @@
     {
       "name": "Function",
       "kind": "function",
-      "file": "lib/events/presentation/event_calendar_links.dart",
+      "file": "lib/events/data/event_calendar_links.dart",
       "line": 11,
       "signature": "Future<bool> Function(CalendarEventPayload event);",
       "return_type": "Future<bool>",
@@ -18365,7 +18365,7 @@
     {
       "name": "nativeCalendarLauncher",
       "kind": "function",
-      "file": "lib/events/presentation/event_calendar_links.dart",
+      "file": "lib/events/data/event_calendar_links.dart",
       "line": 14,
       "signature": "NativeCalendarLauncher nativeCalendarLauncher(Ref ref) {",
       "return_type": "NativeCalendarLauncher",
@@ -18374,7 +18374,7 @@
     {
       "name": "eventCalendarController",
       "kind": "function",
-      "file": "lib/events/presentation/event_calendar_links.dart",
+      "file": "lib/events/data/event_calendar_links.dart",
       "line": 31,
       "signature": "EventCalendarController eventCalendarController(Ref ref) =>",
       "return_type": "EventCalendarController",
@@ -18383,7 +18383,7 @@
     {
       "name": "EventCalendarController",
       "kind": "class",
-      "file": "lib/events/presentation/event_calendar_links.dart",
+      "file": "lib/events/data/event_calendar_links.dart",
       "line": 34,
       "signature": "class EventCalendarController {",
       "is_widget": false,
@@ -18392,7 +18392,7 @@
     {
       "name": "CalendarEventPayload",
       "kind": "class",
-      "file": "lib/events/presentation/event_calendar_links.dart",
+      "file": "lib/events/data/event_calendar_links.dart",
       "line": 44,
       "signature": "class CalendarEventPayload {",
       "is_widget": false,
@@ -18401,7 +18401,7 @@
     {
       "name": "calendarEventPayloadForEvent",
       "kind": "function",
-      "file": "lib/events/presentation/event_calendar_links.dart",
+      "file": "lib/events/data/event_calendar_links.dart",
       "line": 70,
       "signature": "CalendarEventPayload calendarEventPayloadForEvent(Event event) {",
       "return_type": "CalendarEventPayload",
@@ -18410,7 +18410,7 @@
     {
       "name": "_calendarDetails",
       "kind": "function",
-      "file": "lib/events/presentation/event_calendar_links.dart",
+      "file": "lib/events/data/event_calendar_links.dart",
       "line": 80,
       "signature": "String _calendarDetails(Event event) {",
       "return_type": "String",
@@ -18419,7 +18419,7 @@
     {
       "name": "_calendarLocation",
       "kind": "function",
-      "file": "lib/events/presentation/event_calendar_links.dart",
+      "file": "lib/events/data/event_calendar_links.dart",
       "line": 92,
       "signature": "String _calendarLocation(Event event) {",
       "return_type": "String",
@@ -18438,7 +18438,7 @@
     {
       "name": "eventCheckInLocationService",
       "kind": "function",
-      "file": "lib/events/presentation/event_check_in_location_service.dart",
+      "file": "lib/events/data/event_check_in_location_service.dart",
       "line": 9,
       "signature": "EventCheckInLocationService eventCheckInLocationService(Ref ref) =>",
       "return_type": "EventCheckInLocationService",
@@ -18447,7 +18447,7 @@
     {
       "name": "GeolocatorEventCheckInLocationService",
       "kind": "function",
-      "file": "lib/events/presentation/event_check_in_location_service.dart",
+      "file": "lib/events/data/event_check_in_location_service.dart",
       "line": 10,
       "signature": "const GeolocatorEventCheckInLocationService();",
       "return_type": "const",
@@ -18456,7 +18456,7 @@
     {
       "name": "EventCheckInLocation",
       "kind": "class",
-      "file": "lib/events/presentation/event_check_in_location_service.dart",
+      "file": "lib/events/data/event_check_in_location_service.dart",
       "line": 12,
       "signature": "class EventCheckInLocation {",
       "is_widget": false,
@@ -18465,7 +18465,7 @@
     {
       "name": "EventCheckInLocationService",
       "kind": "class",
-      "file": "lib/events/presentation/event_check_in_location_service.dart",
+      "file": "lib/events/data/event_check_in_location_service.dart",
       "line": 19,
       "signature": "abstract interface class EventCheckInLocationService {",
       "is_widget": false,
@@ -18474,7 +18474,7 @@
     {
       "name": "GeolocatorEventCheckInLocationService",
       "kind": "class",
-      "file": "lib/events/presentation/event_check_in_location_service.dart",
+      "file": "lib/events/data/event_check_in_location_service.dart",
       "line": 23,
       "signature": "class GeolocatorEventCheckInLocationService",
       "is_widget": false,
@@ -18483,7 +18483,7 @@
     {
       "name": "eventCheckInQrKind",
       "kind": "constant",
-      "file": "lib/events/presentation/event_check_in_qr_payload.dart",
+      "file": "lib/events/domain/event_check_in_qr_payload.dart",
       "line": 3,
       "signature": "const eventCheckInQrKind = 'catch:event-check-in';",
       "body_hash": "eb3a75811a63e207"
@@ -18491,7 +18491,7 @@
     {
       "name": "EventCheckInQrPayload",
       "kind": "class",
-      "file": "lib/events/presentation/event_check_in_qr_payload.dart",
+      "file": "lib/events/domain/event_check_in_qr_payload.dart",
       "line": 5,
       "signature": "class EventCheckInQrPayload {",
       "is_widget": false,
@@ -18727,7 +18727,7 @@
     {
       "name": "EventFormatters",
       "kind": "class",
-      "file": "lib/events/presentation/event_formatters.dart",
+      "file": "lib/events/domain/event_formatters.dart",
       "line": 5,
       "signature": "class EventFormatters {",
       "is_widget": false,
@@ -18736,7 +18736,7 @@
     {
       "name": "EventFormattingX",
       "kind": "extension",
-      "file": "lib/events/presentation/event_formatters.dart",
+      "file": "lib/events/domain/event_formatters.dart",
       "line": 50,
       "signature": "extension EventFormattingX on Event {",
       "body_hash": "ef8d3aae481687d2"
@@ -18744,7 +18744,7 @@
     {
       "name": "EventInviteShareCopy",
       "kind": "class",
-      "file": "lib/events/presentation/event_invite_share_copy.dart",
+      "file": "lib/events/data/event_invite_share_copy.dart",
       "line": 5,
       "signature": "abstract final class EventInviteShareCopy {",
       "is_widget": false,
@@ -18763,7 +18763,7 @@
     {
       "name": "directionsUriForEvent",
       "kind": "function",
-      "file": "lib/events/presentation/event_location_links.dart",
+      "file": "lib/events/domain/event_location_links.dart",
       "line": 3,
       "signature": "Uri directionsUriForEvent(Event event) {",
       "return_type": "Uri",
@@ -18772,7 +18772,7 @@
     {
       "name": "_directionsUri",
       "kind": "function",
-      "file": "lib/events/presentation/event_location_links.dart",
+      "file": "lib/events/domain/event_location_links.dart",
       "line": 14,
       "signature": "Uri _directionsUri({required double latitude, required double longitude}) {",
       "return_type": "Uri",
@@ -18781,7 +18781,7 @@
     {
       "name": "_searchUri",
       "kind": "function",
-      "file": "lib/events/presentation/event_location_links.dart",
+      "file": "lib/events/domain/event_location_links.dart",
       "line": 23,
       "signature": "Uri _searchUri({required String query}) {",
       "return_type": "Uri",
@@ -20210,7 +20210,7 @@
     {
       "name": "eventTicketDividerHeight",
       "kind": "constant",
-      "file": "lib/events/presentation/widgets/event_ticket_surface.dart",
+      "file": "lib/core/widgets/event_ticket_surface.dart",
       "line": 7,
       "signature": "const double eventTicketDividerHeight = CatchLayout.eventTicketDividerHeight;",
       "body_hash": "11ff0a8cec371a0e"
@@ -20218,7 +20218,7 @@
     {
       "name": "eventTicketNotchRadius",
       "kind": "constant",
-      "file": "lib/events/presentation/widgets/event_ticket_surface.dart",
+      "file": "lib/core/widgets/event_ticket_surface.dart",
       "line": 8,
       "signature": "const double eventTicketNotchRadius = CatchLayout.eventTicketNotchRadius;",
       "body_hash": "8415ba041d8da4ed"
@@ -20226,7 +20226,7 @@
     {
       "name": "eventTicketNotchDepth",
       "kind": "constant",
-      "file": "lib/events/presentation/widgets/event_ticket_surface.dart",
+      "file": "lib/core/widgets/event_ticket_surface.dart",
       "line": 9,
       "signature": "const double eventTicketNotchDepth = CatchLayout.eventTicketNotchDepth;",
       "body_hash": "2978350186d95292"
@@ -20234,7 +20234,7 @@
     {
       "name": "eventHeroSurface",
       "kind": "function",
-      "file": "lib/events/presentation/widgets/event_ticket_surface.dart",
+      "file": "lib/core/widgets/event_ticket_surface.dart",
       "line": 11,
       "signature": "Widget eventHeroSurface({required Object tag, required Widget child}) {",
       "return_type": "Widget",
@@ -20243,7 +20243,7 @@
     {
       "name": "EventTicketPerforatedDivider",
       "kind": "class",
-      "file": "lib/events/presentation/widgets/event_ticket_surface.dart",
+      "file": "lib/core/widgets/event_ticket_surface.dart",
       "line": 15,
       "signature": "class EventTicketPerforatedDivider extends StatelessWidget {",
       "superclass": "StatelessWidget",
@@ -20253,7 +20253,7 @@
     {
       "name": "EventTicketShapeClipper",
       "kind": "class",
-      "file": "lib/events/presentation/widgets/event_ticket_surface.dart",
+      "file": "lib/core/widgets/event_ticket_surface.dart",
       "line": 42,
       "signature": "class EventTicketShapeClipper extends CustomClipper<Path> {",
       "superclass": "CustomClipper<Path>",
@@ -20263,7 +20263,7 @@
     {
       "name": "EventTicketPerforationPainter",
       "kind": "class",
-      "file": "lib/events/presentation/widgets/event_ticket_surface.dart",
+      "file": "lib/core/widgets/event_ticket_surface.dart",
       "line": 123,
       "signature": "class EventTicketPerforationPainter extends CustomPainter {",
       "superclass": "CustomPainter",
@@ -20640,7 +20640,7 @@
     {
       "name": "EventActivityStamp",
       "kind": "class",
-      "file": "lib/events/presentation/widgets/event_tiles/event_visual_atoms.dart",
+      "file": "lib/core/widgets/event_visual_atoms.dart",
       "line": 9,
       "signature": "class EventActivityStamp extends StatelessWidget {",
       "superclass": "StatelessWidget",
@@ -20650,7 +20650,7 @@
     {
       "name": "EventClockMark",
       "kind": "class",
-      "file": "lib/events/presentation/widgets/event_tiles/event_visual_atoms.dart",
+      "file": "lib/core/widgets/event_visual_atoms.dart",
       "line": 36,
       "signature": "class EventClockMark extends StatelessWidget {",
       "superclass": "StatelessWidget",
@@ -20660,7 +20660,7 @@
     {
       "name": "EventStatusPillTone",
       "kind": "enum",
-      "file": "lib/events/presentation/widgets/event_tiles/event_visual_atoms.dart",
+      "file": "lib/core/widgets/event_visual_atoms.dart",
       "line": 86,
       "signature": "enum EventStatusPillTone { soft, dark }",
       "body_hash": "aafad400fbd83ee9"
@@ -20668,7 +20668,7 @@
     {
       "name": "EventStatusPill",
       "kind": "class",
-      "file": "lib/events/presentation/widgets/event_tiles/event_visual_atoms.dart",
+      "file": "lib/core/widgets/event_visual_atoms.dart",
       "line": 88,
       "signature": "class EventStatusPill extends StatelessWidget {",
       "superclass": "StatelessWidget",
@@ -20678,7 +20678,7 @@
     {
       "name": "_EventClockPainter",
       "kind": "class",
-      "file": "lib/events/presentation/widgets/event_tiles/event_visual_atoms.dart",
+      "file": "lib/core/widgets/event_visual_atoms.dart",
       "line": 129,
       "signature": "class _EventClockPainter extends CustomPainter {",
       "superclass": "CustomPainter",
@@ -28223,7 +28223,7 @@
     {
       "name": "ChatsListViewModel",
       "kind": "class",
-      "file": "lib/matches/presentation/chats_list_view_model.dart",
+      "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
       "line": 16,
       "signature": "abstract class ChatsListViewModel with _$ChatsListViewModel {",
       "superclass": "_",
@@ -28233,7 +28233,7 @@
     {
       "name": "ChatThreadPreview",
       "kind": "class",
-      "file": "lib/matches/presentation/chats_list_view_model.dart",
+      "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
       "line": 29,
       "signature": "class ChatThreadPreview {",
       "is_widget": false,
@@ -28242,7 +28242,7 @@
     {
       "name": "ChatSearchQuery",
       "kind": "class",
-      "file": "lib/matches/presentation/chats_list_view_model.dart",
+      "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
       "line": 58,
       "signature": "class ChatSearchQuery extends _$ChatSearchQuery {",
       "superclass": "_",
@@ -28252,7 +28252,7 @@
     {
       "name": "chatsListViewModel",
       "kind": "function",
-      "file": "lib/matches/presentation/chats_list_view_model.dart",
+      "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
       "line": 73,
       "signature": "AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {",
       "return_type": "AsyncValue<ChatsListViewModel>",
@@ -28261,7 +28261,7 @@
     {
       "name": "_previewForMatch",
       "kind": "function",
-      "file": "lib/matches/presentation/chats_list_view_model.dart",
+      "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
       "line": 127,
       "signature": "ChatThreadPreview _previewForMatch(Ref ref, Match match, String uid) {",
       "return_type": "ChatThreadPreview",
@@ -28270,7 +28270,7 @@
     {
       "name": "_hostProfileFor",
       "kind": "function",
-      "file": "lib/matches/presentation/chats_list_view_model.dart",
+      "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
       "line": 168,
       "signature": "ClubHostProfile? _hostProfileFor(Club? club, String uid) {",
       "return_type": "ClubHostProfile?",
@@ -28279,7 +28279,7 @@
     {
       "name": "HostInboxFilter",
       "kind": "enum",
-      "file": "lib/matches/presentation/host_inbox_filter.dart",
+      "file": "lib/chats/presentation/inbox/host_inbox_filter.dart",
       "line": 1,
       "signature": "enum HostInboxFilter { all, unread }",
       "body_hash": "43b173dfe9a69d2f"
@@ -28287,7 +28287,7 @@
     {
       "name": "ChatsListScreen",
       "kind": "class",
-      "file": "lib/matches/presentation/matches_list_screen.dart",
+      "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
       "line": 16,
       "signature": "class ChatsListScreen extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
@@ -28297,7 +28297,7 @@
     {
       "name": "_ChatsListScreenState",
       "kind": "class",
-      "file": "lib/matches/presentation/matches_list_screen.dart",
+      "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
       "line": 23,
       "signature": "class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {",
       "superclass": "ConsumerState<ChatsListScreen>",
@@ -28307,7 +28307,7 @@
     {
       "name": "HostInboxScreenState",
       "kind": "class",
-      "file": "lib/matches/presentation/matches_list_screen.dart",
+      "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
       "line": 89,
       "signature": "class HostInboxScreenState {",
       "is_widget": false,
@@ -28316,7 +28316,7 @@
     {
       "name": "HostBroadcastComposerSheet",
       "kind": "class",
-      "file": "lib/matches/presentation/matches_list_screen.dart",
+      "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
       "line": 136,
       "signature": "class HostBroadcastComposerSheet extends StatelessWidget {",
       "superclass": "StatelessWidget",
@@ -28326,7 +28326,7 @@
     {
       "name": "ChatThreadSelectedCallback",
       "kind": "typedef",
-      "file": "lib/matches/presentation/widgets/chat_conversations_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
       "line": 8,
       "signature": "typedef ChatThreadSelectedCallback = void Function(ChatThreadPreview preview);",
       "body_hash": "c09e67e4bf01333c"
@@ -28334,7 +28334,7 @@
     {
       "name": "ChatConversationsList",
       "kind": "class",
-      "file": "lib/matches/presentation/widgets/chat_conversations_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
       "line": 10,
       "signature": "class ChatConversationsList extends StatelessWidget {",
       "superclass": "StatelessWidget",
@@ -28344,7 +28344,7 @@
     {
       "name": "ChatsEmptyState",
       "kind": "class",
-      "file": "lib/matches/presentation/widgets/chats_empty_state.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
       "line": 8,
       "signature": "class ChatsEmptyState extends StatelessWidget {",
       "superclass": "StatelessWidget",
@@ -28354,7 +28354,7 @@
     {
       "name": "ChatsList",
       "kind": "class",
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
       "line": 18,
       "signature": "class ChatsList extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
@@ -28364,7 +28364,7 @@
     {
       "name": "_retryChatsList",
       "kind": "function",
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
       "line": 92,
       "signature": "void _retryChatsList(WidgetRef ref, ChatsListRetryIntent intent) {",
       "return_type": "void",
@@ -28373,7 +28373,7 @@
     {
       "name": "ChatsListEmptyKind",
       "kind": "enum",
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
       "line": 99,
       "signature": "enum ChatsListEmptyKind { noThreads, noSearchResults, noUnreadQueries }",
       "body_hash": "4f3372f13f00cd8d"
@@ -28381,7 +28381,7 @@
     {
       "name": "ChatsListRetryIntent",
       "kind": "enum",
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
       "line": 101,
       "signature": "enum ChatsListRetryIntent { reloadViewModel }",
       "body_hash": "f37c01f29ad6c7b4"
@@ -28389,7 +28389,7 @@
     {
       "name": "ChatsListDisplayState",
       "kind": "class",
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
       "line": 103,
       "signature": "sealed class ChatsListDisplayState {",
       "is_widget": false,
@@ -28398,7 +28398,7 @@
     {
       "name": "ChatsListLoading",
       "kind": "class",
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
       "line": 183,
       "signature": "final class ChatsListLoading extends ChatsListDisplayState {",
       "superclass": "ChatsListDisplayState",
@@ -28408,7 +28408,7 @@
     {
       "name": "ChatsListError",
       "kind": "class",
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
       "line": 187,
       "signature": "final class ChatsListError extends ChatsListDisplayState {",
       "superclass": "ChatsListDisplayState",
@@ -28418,7 +28418,7 @@
     {
       "name": "ChatsListEmpty",
       "kind": "class",
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
       "line": 197,
       "signature": "final class ChatsListEmpty extends ChatsListDisplayState {",
       "superclass": "ChatsListDisplayState",
@@ -28428,7 +28428,7 @@
     {
       "name": "ChatsListContent",
       "kind": "class",
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
       "line": 203,
       "signature": "final class ChatsListContent extends ChatsListDisplayState {",
       "superclass": "ChatsListDisplayState",
@@ -28438,7 +28438,7 @@
     {
       "name": "_buildChatsListSkeleton",
       "kind": "function",
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
       "line": 209,
       "signature": "Widget _buildChatsListSkeleton(BuildContext context) {",
       "return_type": "Widget",
@@ -28447,7 +28447,7 @@
     {
       "name": "_buildChatPersonRowSkeleton",
       "kind": "function",
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
       "line": 249,
       "signature": "Widget _buildChatPersonRowSkeleton(",
       "return_type": "Widget",
@@ -28456,7 +28456,7 @@
     {
       "name": "ChatsListBody",
       "kind": "class",
-      "file": "lib/matches/presentation/widgets/chats_list_body.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
       "line": 10,
       "signature": "class ChatsListBody extends StatelessWidget {",
       "superclass": "StatelessWidget",
@@ -28466,7 +28466,7 @@
     {
       "name": "HostInboxBroadcastCard",
       "kind": "class",
-      "file": "lib/matches/presentation/widgets/chats_list_body.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
       "line": 72,
       "signature": "class HostInboxBroadcastCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
@@ -28476,7 +28476,7 @@
     {
       "name": "_chatsBrowseHeaderHeight",
       "kind": "constant",
-      "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
       "line": 11,
       "signature": "const double _chatsBrowseHeaderHeight = CatchLayout.browseHeaderHeight;",
       "body_hash": "7edac3278e6c9dca"
@@ -28484,7 +28484,7 @@
     {
       "name": "_hostInboxFilterHeight",
       "kind": "constant",
-      "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
       "line": 12,
       "signature": "const double _hostInboxFilterHeight = CatchSpacing.s11;",
       "body_hash": "91fe6123fda1d6e1"
@@ -28492,7 +28492,7 @@
     {
       "name": "ChatsSliverHeader",
       "kind": "class",
-      "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
       "line": 14,
       "signature": "class ChatsSliverHeader extends CatchSliverHeader {",
       "superclass": "CatchSliverHeader",
@@ -28502,7 +28502,7 @@
     {
       "name": "ChatsBrowseHeader",
       "kind": "class",
-      "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
       "line": 34,
       "signature": "class ChatsBrowseHeader extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
@@ -28512,7 +28512,7 @@
     {
       "name": "_ChatsBrowseHeaderState",
       "kind": "class",
-      "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
+      "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
       "line": 52,
       "signature": "class _ChatsBrowseHeaderState extends ConsumerState<ChatsBrowseHeader> {",
       "superclass": "ConsumerState<ChatsBrowseHeader>",
@@ -30826,7 +30826,7 @@
     {
       "name": "exploreSearchRepository",
       "kind": "function",
-      "file": "lib/search/data/explore_search_repository.dart",
+      "file": "lib/explore/data/explore_search_repository.dart",
       "line": 10,
       "signature": "ExploreSearchRepository exploreSearchRepository(Ref ref) =>",
       "return_type": "ExploreSearchRepository",
@@ -30835,7 +30835,7 @@
     {
       "name": "ExploreSearchRepository",
       "kind": "class",
-      "file": "lib/search/data/explore_search_repository.dart",
+      "file": "lib/explore/data/explore_search_repository.dart",
       "line": 13,
       "signature": "abstract interface class ExploreSearchRepository {",
       "is_widget": false,
@@ -30844,7 +30844,7 @@
     {
       "name": "FirebaseExploreSearchRepository",
       "kind": "class",
-      "file": "lib/search/data/explore_search_repository.dart",
+      "file": "lib/explore/data/explore_search_repository.dart",
       "line": 21,
       "signature": "class FirebaseExploreSearchRepository implements ExploreSearchRepository {",
       "superclass": "ExploreSearchRepository",
@@ -30854,7 +30854,7 @@
     {
       "name": "ExploreSearchResult",
       "kind": "class",
-      "file": "lib/search/data/explore_search_repository.dart",
+      "file": "lib/explore/data/explore_search_repository.dart",
       "line": 48,
       "signature": "class ExploreSearchResult {",
       "is_widget": false,
@@ -30863,7 +30863,7 @@
     {
       "name": "_stringList",
       "kind": "function",
-      "file": "lib/search/data/explore_search_repository.dart",
+      "file": "lib/explore/data/explore_search_repository.dart",
       "line": 67,
       "signature": "List<String> _stringList(Object? value) {",
       "return_type": "List<String>",
@@ -30872,7 +30872,7 @@
     {
       "name": "exploreServerSearch",
       "kind": "function",
-      "file": "lib/search/data/explore_search_repository.dart",
+      "file": "lib/explore/data/explore_search_repository.dart",
       "line": 73,
       "signature": "Future<ExploreSearchResult?> exploreServerSearch(",
       "return_type": "Future<ExploreSearchResult?>",

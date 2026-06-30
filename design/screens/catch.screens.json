@@ -69,7 +69,7 @@
             "symbol": "EventBookingController"
           },
           {
-            "file": "lib/events/presentation/event_calendar_links.dart",
+            "file": "lib/events/data/event_calendar_links.dart",
             "symbol": "EventCalendarController"
           }
         ],
@@ -5055,22 +5055,22 @@
         }
       ],
       "source": {
-        "file": "lib/matches/presentation/matches_list_screen.dart",
+        "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
         "symbol": "ChatsListScreen"
       },
       "stateController": {
         "primary": "chatsListViewModelProvider",
         "files": [
           {
-            "file": "lib/matches/presentation/matches_list_screen.dart",
+            "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
             "symbol": "ChatsListScreen"
           },
           {
-            "file": "lib/matches/presentation/chats_list_view_model.dart",
+            "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
             "symbol": "ChatsListViewModel"
           },
           {
-            "file": "lib/matches/presentation/chats_list_view_model.dart",
+            "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
             "symbol": "ChatSearchQuery"
           },
           {
@@ -5209,7 +5209,7 @@
             "matches_list_context"
           ],
           "tests": [
-            "test/chats/matches_list_screen_test.dart",
+            "test/chats/chat_inbox_screen_test.dart",
             "test/core/catch_person_row_test.dart"
           ],
           "nextAction": "Compare row hierarchy and timestamp/unread treatment against exported design references.",
@@ -5239,7 +5239,7 @@
           "status": "captured",
           "source": "ChatsSliverHeader expands the pinned CatchBrowseHeader search field and writes chatSearchQueryProvider.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -5255,7 +5255,7 @@
           "status": "captured",
           "source": "Non-empty source with no visible query results renders ChatsEmptyState.noSearchResults.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -5271,7 +5271,7 @@
           "status": "captured",
           "source": "No matches render ChatsEmptyState default consumer copy.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -5287,7 +5287,7 @@
           "status": "captured",
           "source": "collapseMatchesByOtherUser keeps one latest row per person and merges unread/event context.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart",
+            "test/chats/chat_inbox_screen_test.dart",
             "test/chats/match_repository_test.dart"
           ],
           "nextAction": "Keep aggregation in the view model and add fixture coverage for duplicate matches if row grouping changes.",
@@ -5304,7 +5304,7 @@
           "status": "captured",
           "source": "CatchPersonRow shows row-level unread treatment and hides unread count for own latest message.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart",
+            "test/chats/chat_inbox_screen_test.dart",
             "test/core/catch_person_row_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
@@ -5321,7 +5321,7 @@
           "status": "captured",
           "source": "Host app role switches copy to Inbox/Attendee queries and exposes All/Unread host filters.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
@@ -5413,7 +5413,7 @@
               "HostFilter"
             ],
             "flutter": {
-              "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
+              "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
               "symbol": "ChatsSliverHeader"
             },
             "currentOwner": "ChatsListScreen",
@@ -5445,7 +5445,7 @@
               "ChatsListStates"
             ],
             "flutter": {
-              "file": "lib/matches/presentation/widgets/chats_list.dart",
+              "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
               "symbol": "ChatsList"
             },
             "currentOwner": "ChatsListScreen",
@@ -5476,7 +5476,7 @@
               "ThreadSectionLabel"
             ],
             "flutter": {
-              "file": "lib/matches/presentation/widgets/chats_list_body.dart",
+              "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
               "symbol": "ChatsListBody"
             },
             "currentOwner": "ChatsList",
@@ -5541,7 +5541,7 @@
               "NoUnreadQueries"
             ],
             "flutter": {
-              "file": "lib/matches/presentation/widgets/chats_empty_state.dart",
+              "file": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
               "symbol": "ChatsEmptyState"
             },
             "currentOwner": "ChatsList",
@@ -12496,30 +12496,30 @@
         }
       ],
       "source": {
-        "file": "lib/matches/presentation/matches_list_screen.dart",
+        "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
         "symbol": "ChatsListScreen"
       },
       "stateController": {
         "primary": "HostInboxScreenState.fromAsync + chatsListViewModelProvider + chatSearchQueryProvider",
         "files": [
           {
-            "file": "lib/matches/presentation/matches_list_screen.dart",
+            "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
             "symbol": "ChatsListScreen"
           },
           {
-            "file": "lib/matches/presentation/chats_list_view_model.dart",
+            "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
             "symbol": "ChatsListViewModel"
           },
           {
-            "file": "lib/matches/presentation/chats_list_view_model.dart",
+            "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
             "symbol": "chatsListViewModel"
           },
           {
-            "file": "lib/matches/presentation/chats_list_view_model.dart",
+            "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
             "symbol": "ChatSearchQuery"
           },
           {
-            "file": "lib/matches/presentation/host_inbox_filter.dart",
+            "file": "lib/chats/presentation/inbox/host_inbox_filter.dart",
             "symbol": "HostInboxFilter"
           },
           {
@@ -12527,19 +12527,19 @@
             "symbol": "watchMatchesForUser"
           },
           {
-            "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
+            "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
             "symbol": "ChatsSliverHeader"
           },
           {
-            "file": "lib/matches/presentation/widgets/chats_list.dart",
+            "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
             "symbol": "ChatsList"
           },
           {
-            "file": "lib/matches/presentation/widgets/chats_list_body.dart",
+            "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
             "symbol": "ChatsListBody"
           },
           {
-            "file": "lib/matches/presentation/widgets/chat_conversations_list.dart",
+            "file": "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
             "symbol": "ChatConversationsList"
           },
           {
@@ -12547,7 +12547,7 @@
             "symbol": "CatchPersonRow"
           },
           {
-            "file": "lib/matches/presentation/widgets/chats_empty_state.dart",
+            "file": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
             "symbol": "ChatsEmptyState"
           }
         ],
@@ -12559,7 +12559,7 @@
           "id": "repo.host-inbox-tests",
           "kind": "repo",
           "status": "available",
-          "path": "test/chats/matches_list_screen_test.dart",
+          "path": "test/chats/chat_inbox_screen_test.dart",
           "notes": "Chats list tests cover pinned search header, empty state, search-empty state, duplicate match collapse, host inbox attendee-query framing, host All/Unread filter, and row behavior."
         },
         {
@@ -12660,7 +12660,7 @@
             "ChatsListScreen/Host inbox states"
           ],
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "captureIds": [
             "host_inbox_uid_loading"
@@ -12676,7 +12676,7 @@
             "ChatsListScreen/Host inbox states"
           ],
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "captureIds": [
             "host_inbox_loading"
@@ -12692,7 +12692,7 @@
             "ChatsListScreen/Host inbox states"
           ],
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "captureIds": [
             "host_inbox_error"
@@ -12721,7 +12721,7 @@
             "ChatsListScreen/Host inbox states"
           ],
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ]
         },
         {
@@ -12730,7 +12730,7 @@
           "status": "captured",
           "source": "Host Inbox renders attendee-query rows plus a host broadcast card for host-mode conversations.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "nextAction": "Host Inbox populated-query state now has a manifest-registered reference and compares within threshold after the broadcast-card and reference-safe-area capture pass: mismatch 8.64%, meanDelta 14.81, maxDelta 240. Continue backend send wiring and state-specific unread/search/text-scale/theme variants if design exports them.",
           "previewIds": [
@@ -12748,7 +12748,7 @@
           "status": "captured",
           "source": "ChatsSliverHeader renders Inbox title, Attendee queries subtitle, and host-specific search tooltip/semantic label in host app role.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "nextAction": "Add more header-only captures only if no-search-action or long-copy behavior diverges visually from the route states.",
           "previewIds": [
@@ -12766,7 +12766,7 @@
           "status": "captured",
           "source": "HostInboxScreenState provides HostInboxFilter and unread count; ChatsListDisplayState applies unread filtering before rows render.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "nextAction": "Add long-count 99+ capture only if backend data can produce that count in host inbox.",
           "previewIds": [
@@ -12790,7 +12790,7 @@
             "matches_host_unread_empty"
           ],
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ]
         },
         {
@@ -12799,7 +12799,7 @@
           "status": "captured",
           "source": "CatchBrowseHeader starts with no text field when there are no threads and shows search action only when count or query makes search useful.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "nextAction": "Add no-search-action capture only if empty header behavior changes from the current empty route capture.",
           "previewIds": [
@@ -12816,7 +12816,7 @@
           "status": "captured",
           "source": "Pinned chats header expands CatchExpandingSearch, binds chatSearchQueryProvider, clears query, and closes empty search on done/focus loss.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "nextAction": "Keyboard-safe host search layout remains a future simulator/manual pass if needed.",
           "previewIds": [
@@ -12832,7 +12832,7 @@
           "status": "captured",
           "source": "Search with no matching names renders No chats match your search copy instead of the generic empty state.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "nextAction": "Decide whether search-empty copy should say attendee queries instead of chats before final reference comparison.",
           "previewIds": [
@@ -12861,7 +12861,7 @@
           "status": "captured",
           "source": "ChatsListBody folds newMatches and conversations into one host inbox body, leads host-mode populated content with HostInboxBroadcastCard, and ChatConversationsList renders contiguous rows.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "nextAction": "Add row-count/divider-only captures only if the contiguous list diverges from populated and unread-filter states.",
           "previewIds": [
@@ -12919,7 +12919,7 @@
           "status": "tested",
           "source": "collapseMatchesByOtherUser keeps one row per person for consumer chats and one row per club plus attendee for host inquiries, so duplicate event inquiries collapse inside the same club while separate club inquiries remain separate rows.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "nextAction": "Add host-specific duplicate inquiry test where multiple event inquiries from one attendee collapse intentionally or decide if host inbox should group by event instead.",
           "previewIds": [
@@ -12932,7 +12932,7 @@
           "status": "tested",
           "source": "ChatsListScreen owns the typed chat-thread route callback, chooses Routes.hostChatScreen in host app role, and passes the callback through ChatsList/ChatsListBody into provider/router-free ChatConversationsList rows.",
           "tests": [
-            "test/chats/matches_list_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart"
           ],
           "nextAction": "Keep this callback contract aligned with screen.host.chat as the chat adapter is expanded.",
           "previewIds": [
@@ -13005,7 +13005,7 @@
               "HostInboxScreenState"
             ],
             "flutter": {
-              "file": "lib/matches/presentation/matches_list_screen.dart",
+              "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
               "symbol": "ChatsListScreen"
             },
             "currentOwner": "HostInboxScreenState + ChatsListDisplayState",
@@ -13037,7 +13037,7 @@
               "CatchBrowseHeader"
             ],
             "flutter": {
-              "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
+              "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
               "symbol": "ChatsSliverHeader"
             },
             "currentOwner": "ChatsSliverHeader",
@@ -13068,7 +13068,7 @@
               "HostInboxFilterRow"
             ],
             "flutter": {
-              "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
+              "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
               "symbol": "ChatsSliverHeader"
             },
             "currentOwner": "HostInboxScreenState + ChatsSliverHeader",
@@ -13097,7 +13097,7 @@
               "HostInboxAsyncBody"
             ],
             "flutter": {
-              "file": "lib/matches/presentation/widgets/chats_list.dart",
+              "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
               "symbol": "ChatsList"
             },
             "currentOwner": "ChatsListDisplayState + ChatsList",
@@ -13127,7 +13127,7 @@
               "HostAttendeeQueriesSection"
             ],
             "flutter": {
-              "file": "lib/matches/presentation/widgets/chats_list_body.dart",
+              "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
               "symbol": "ChatsListBody"
             },
             "currentOwner": "ChatsListBody",
@@ -13156,7 +13156,7 @@
               "HostInboxRowList"
             ],
             "flutter": {
-              "file": "lib/matches/presentation/widgets/chat_conversations_list.dart",
+              "file": "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
               "symbol": "ChatConversationsList"
             },
             "currentOwner": "ChatsListScreen + ChatConversationsList",
@@ -13217,7 +13217,7 @@
               "HostInboxEmptyState"
             ],
             "flutter": {
-              "file": "lib/matches/presentation/widgets/chats_empty_state.dart",
+              "file": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
               "symbol": "ChatsEmptyState"
             },
             "currentOwner": "ChatsEmptyState",
@@ -14155,7 +14155,7 @@
             "symbol": "WelcomePage"
           },
           {
-            "file": "lib/analytics/app_analytics.dart",
+            "file": "lib/core/analytics/app_analytics.dart",
             "symbol": "AppAnalytics"
           }
         ],
@@ -15126,14 +15126,14 @@
         }
       ],
       "source": {
-        "file": "lib/calendar/presentation/calendar_screen.dart",
+        "file": "lib/events/presentation/calendar/calendar_screen.dart",
         "symbol": "CalendarScreen"
       },
       "stateController": {
         "primary": "CalendarScreen + uidProvider + watchSignedUpEventsProvider + watchSavedEventDetailsForUserProvider + clubNameLookupProvider",
         "files": [
           {
-            "file": "lib/calendar/presentation/calendar_screen.dart",
+            "file": "lib/events/presentation/calendar/calendar_screen.dart",
             "symbol": "CalendarScreen"
           },
           {
@@ -15145,7 +15145,7 @@
             "symbol": "watchSavedEventDetailsForUser"
           },
           {
-            "file": "lib/clubs/presentation/club_name_lookup.dart",
+            "file": "lib/clubs/data/club_name_lookup.dart",
             "symbol": "ClubNameLookupQuery"
           }
         ],
@@ -15277,7 +15277,7 @@
               "CalendarHomeState"
             ],
             "flutter": {
-              "file": "lib/calendar/presentation/calendar_screen.dart",
+              "file": "lib/events/presentation/calendar/calendar_screen.dart",
               "symbol": "CalendarScreen"
             },
             "currentOwner": "CalendarScreen + provider watches",
@@ -15302,7 +15302,7 @@
               "CalendarDateHeader"
             ],
             "flutter": {
-              "file": "lib/calendar/presentation/calendar_screen.dart",
+              "file": "lib/events/presentation/calendar/calendar_screen.dart",
               "symbol": "CalendarDateHeader"
             },
             "currentOwner": "CalendarScreen private header state",
@@ -15326,7 +15326,7 @@
               "CalendarStatsHeader"
             ],
             "flutter": {
-              "file": "lib/calendar/presentation/calendar_screen.dart",
+              "file": "lib/events/presentation/calendar/calendar_screen.dart",
               "symbol": "CalendarStatsHeader"
             },
             "currentOwner": "CalendarScreen",
@@ -15349,7 +15349,7 @@
               "CalendarAgenda"
             ],
             "flutter": {
-              "file": "lib/calendar/presentation/calendar_screen.dart",
+              "file": "lib/events/presentation/calendar/calendar_screen.dart",
               "symbol": "CalendarScreen"
             },
             "currentOwner": "CalendarScreen + EventAgendaSliverList",
@@ -15374,7 +15374,7 @@
               "CalendarStateSurfaces"
             ],
             "flutter": {
-              "file": "lib/calendar/presentation/calendar_screen.dart",
+              "file": "lib/events/presentation/calendar/calendar_screen.dart",
               "symbol": "CalendarMessage"
             },
             "currentOwner": "CalendarScreen",
@@ -15444,7 +15444,7 @@
             "symbol": "watchSavedEventDetailsForUser"
           },
           {
-            "file": "lib/clubs/presentation/club_name_lookup.dart",
+            "file": "lib/clubs/data/club_name_lookup.dart",
             "symbol": "ClubNameLookupQuery"
           }
         ],

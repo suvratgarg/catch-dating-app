@@ -21,7 +21,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -177,10 +177,7 @@ class ClubDetailBody extends StatelessWidget {
                     if (tags.isNotEmpty)
                       CatchSection.divided(
                         title: 'What we do',
-                        child: ClubActivitySection(
-                          club: club,
-                          tags: tags,
-                        ),
+                        child: ClubActivitySection(club: club, tags: tags),
                       ),
                     if (club.clubPhotos.isNotEmpty)
                       CatchSection.divided(
@@ -293,11 +290,7 @@ String _clubHeroLocationLabel(Club club, Event? nextEvent) {
 }
 
 class ClubNextRunBanner extends StatelessWidget {
-  const ClubNextRunBanner({
-    super.key,
-    required this.event,
-    this.onTap,
-  });
+  const ClubNextRunBanner({super.key, required this.event, this.onTap});
 
   final Event event;
   final VoidCallback? onTap;
@@ -326,7 +319,11 @@ class ClubNextRunBanner extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(activity.glyph, size: CatchIcon.sm, color: activity.deep),
+                  Icon(
+                    activity.glyph,
+                    size: CatchIcon.sm,
+                    color: activity.deep,
+                  ),
                   gapW10,
                   Expanded(
                     child: Text(
@@ -385,15 +382,6 @@ class ClubActivitySection extends StatelessWidget {
     final firstGenericTag = genericTags.isEmpty ? null : genericTags.first;
     final remainingGenericTags = genericTags.skip(1).toList(growable: false);
 
-    Widget genericTagChip(String tag) {
-      return ClubTagWrap(
-        tags: [tag],
-        tone: CatchBadgeTone.neutral,
-        size: CatchBadgeSize.md,
-        uppercase: false,
-      );
-    }
-
     final primaryWrap = Wrap(
       spacing: CatchSpacing.micro6,
       runSpacing: CatchSpacing.micro6,
@@ -409,7 +397,13 @@ class ClubActivitySection extends StatelessWidget {
             label: tags.first,
             primary: true,
           ),
-        if (firstGenericTag != null) genericTagChip(firstGenericTag),
+        if (firstGenericTag != null)
+          ClubTagWrap(
+            tags: [firstGenericTag],
+            tone: CatchBadgeTone.neutral,
+            size: CatchBadgeSize.md,
+            uppercase: false,
+          ),
       ],
     );
 
@@ -423,7 +417,15 @@ class ClubActivitySection extends StatelessWidget {
         Wrap(
           spacing: CatchSpacing.micro6,
           runSpacing: CatchSpacing.micro6,
-          children: [for (final tag in remainingGenericTags) genericTagChip(tag)],
+          children: [
+            for (final tag in remainingGenericTags)
+              ClubTagWrap(
+                tags: [tag],
+                tone: CatchBadgeTone.neutral,
+                size: CatchBadgeSize.md,
+                uppercase: false,
+              ),
+          ],
         ),
       ],
     );
@@ -476,12 +478,12 @@ class ClubHostSection extends StatelessWidget {
                   showChevron: canViewProfile,
                   onMessage:
                       canMessageHost &&
-                              currentUid != null &&
-                              currentUid != host.uid &&
-                              !isMessageHostPending &&
-                              onMessageHost != null
-                          ? () => unawaited(onMessageHost!(context, host))
-                          : null,
+                          currentUid != null &&
+                          currentUid != host.uid &&
+                          !isMessageHostPending &&
+                          onMessageHost != null
+                      ? () => unawaited(onMessageHost!(context, host))
+                      : null,
                 ),
               ),
             ),
@@ -577,7 +579,11 @@ class ClubHostRow extends StatelessWidget {
         ],
         if (showChevron) ...[
           gapW8,
-          Icon(CatchIcons.chevronRightRounded, size: CatchIcon.lg, color: t.ink3),
+          Icon(
+            CatchIcons.chevronRightRounded,
+            size: CatchIcon.lg,
+            color: t.ink3,
+          ),
         ],
       ],
     );
@@ -619,10 +625,10 @@ class ClubContactSection extends StatelessWidget {
                 title: ClubContactAction.instagram(club.instagramHandle!).label,
                 onTap: onContactSelected != null
                     ? () => unawaited(
-                          onContactSelected!(
-                            ClubContactAction.instagram(club.instagramHandle!),
-                          ),
-                        )
+                        onContactSelected!(
+                          ClubContactAction.instagram(club.instagramHandle!),
+                        ),
+                      )
                     : null,
                 showChevron: false,
                 action: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
@@ -637,10 +643,10 @@ class ClubContactSection extends StatelessWidget {
                 title: ClubContactAction.phone(club.phoneNumber!).label,
                 onTap: onContactSelected != null
                     ? () => unawaited(
-                          onContactSelected!(
-                            ClubContactAction.phone(club.phoneNumber!),
-                          ),
-                        )
+                        onContactSelected!(
+                          ClubContactAction.phone(club.phoneNumber!),
+                        ),
+                      )
                     : null,
                 showChevron: false,
                 action: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
@@ -655,10 +661,10 @@ class ClubContactSection extends StatelessWidget {
                 title: ClubContactAction.email(club.email!).label,
                 onTap: onContactSelected != null
                     ? () => unawaited(
-                          onContactSelected!(
-                            ClubContactAction.email(club.email!),
-                          ),
-                        )
+                        onContactSelected!(
+                          ClubContactAction.email(club.email!),
+                        ),
+                      )
                     : null,
                 showChevron: false,
                 action: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),

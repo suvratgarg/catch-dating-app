@@ -13,6 +13,32 @@
       "checks": ["node --check tool/run.mjs"]
     },
     {
+      "id": "agent:context-pack",
+      "category": "agent",
+      "path": "tool/agent/context_pack.mjs",
+      "command": "node tool/agent/context_pack.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Builds a scoped AI-agent context packet from owner docs, project-local skills, active rules, regression guards, and command plans.",
+      "checks": [
+        "node --check tool/agent/context_pack.mjs",
+        "node tool/agent/context_pack.mjs --task agent-readiness --paths AGENTS.md,docs/agent_operating_model.md --json"
+      ]
+    },
+    {
+      "id": "agent:readiness",
+      "category": "agent",
+      "path": "tool/agent/check_agent_readiness.mjs",
+      "command": "node tool/agent/check_agent_readiness.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates the Catch agent harness, project-local skills, regression ledger, tool registration, and metrics parseability.",
+      "checks": [
+        "node --check tool/agent/check_agent_readiness.mjs",
+        "node tool/agent/check_agent_readiness.mjs"
+      ]
+    },
+    {
       "id": "audit:registry",
       "category": "audit",
       "path": "tool/audit_registry.dart",
@@ -30,7 +56,10 @@
       "safety": "local",
       "status": "active",
       "description": "Scans backend error handling migration candidates.",
-      "checks": ["dart analyze tool/audit/backend_error_candidates.dart"]
+      "checks": [
+        "dart analyze tool/audit/backend_error_candidates.dart",
+        "dart tool/audit/backend_error_candidates.dart --check"
+      ]
     },
     {
       "id": "audit:frontend-errors",
@@ -1706,6 +1735,19 @@
       "checks": [
         "node --check tool/design/check_widget_classification.mjs",
         "node tool/design/check_widget_classification.mjs"
+      ]
+    },
+    {
+      "id": "design:new-widget-inventory",
+      "category": "design",
+      "path": "tool/design/check_new_widget_inventory.mjs",
+      "command": "node tool/design/check_new_widget_inventory.mjs",
+      "safety": "local-writes-audit-json",
+      "status": "active",
+      "description": "Compares the working tree against a base ref to find newly introduced widget classes, private widget classes, Widget-returning helpers, and Widgetbook/catalog coverage gaps.",
+      "checks": [
+        "node --check tool/design/check_new_widget_inventory.mjs",
+        "node tool/design/check_new_widget_inventory.mjs --no-write"
       ]
     },
     {

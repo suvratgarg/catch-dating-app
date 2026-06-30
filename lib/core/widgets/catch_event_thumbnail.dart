@@ -3,10 +3,10 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
+import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:flutter/material.dart';
 
-export 'package:catch_dating_app/events/presentation/event_activity_visuals.dart'
+export 'package:catch_dating_app/core/widgets/event_activity_visuals.dart'
     show activityKindGlyph;
 
 /// Shared image/fallback primitive for any event-card surface.

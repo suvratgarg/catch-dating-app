@@ -36,11 +36,8 @@ class ExploreScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final feedCount = ref
-        .watch(exploreFeedViewModelProvider)
-        .asData
-        ?.value
-        .count;
+    final feedAsync = ref.watch(exploreFeedViewModelProvider);
+    final feedCount = feedAsync.asData?.value.count;
     final mapLabel = feedCount == null || feedCount == 0
         ? 'Map'
         : 'Map · $feedCount';
@@ -54,10 +51,10 @@ class ExploreScreen extends ConsumerWidget {
 
     final bodySlivers = switch (viewModelAsync) {
       AsyncLoading() => <Widget>[
-        SliverToBoxAdapter(
+        const SliverToBoxAdapter(
           child: Padding(
             padding: CatchInsets.pageBody,
-            child: const ExploreSkeletonList(),
+            child: ExploreSkeletonList(),
           ),
         ),
       ],
@@ -71,25 +68,42 @@ class ExploreScreen extends ConsumerWidget {
           },
         ),
       ],
-      AsyncData(:final value) =>
-        value.isEmpty
-            ? [
-                SliverFillRemaining(
-                  child: ExploreScreenEmptyState(
-                    cityLabel: city.label,
-                    hasSourceClubs: hasSourceClubs,
-                    hasSearch: query.isNotEmpty,
-                    filters: filters,
-                  ),
-                ),
-              ]
-            : buildExploreBodySlivers(
-                context: context,
-                ref: ref,
-                viewModel: value,
-                includeJoinedClubsRail: false,
-                includeClubDirectory: false,
-              ),
+      AsyncData(:final value)
+          when !value.isEmpty || feedAsync.asData?.value.isEmpty == false =>
+        buildExploreBodySlivers(
+          context: context,
+          ref: ref,
+          viewModel: value,
+          includeJoinedClubsRail: false,
+          includeClubDirectory: false,
+        ),
+      AsyncData() => switch (feedAsync) {
+        AsyncLoading() => <Widget>[
+          const SliverToBoxAdapter(
+            child: Padding(
+              padding: CatchInsets.pageBody,
+              child: ExploreSkeletonList(),
+            ),
+          ),
+        ],
+        AsyncError(:final error) => [
+          CatchSliverErrorState.fromError(
+            error,
+            context: AppErrorContext.event,
+            onRetry: () => ref.invalidate(exploreFeedViewModelProvider),
+          ),
+        ],
+        AsyncData() => [
+          SliverFillRemaining(
+            child: ExploreScreenEmptyState(
+              cityLabel: city.label,
+              hasSourceClubs: hasSourceClubs,
+              hasSearch: query.isNotEmpty,
+              filters: filters,
+            ),
+          ),
+        ],
+      },
     };
 
     return Scaffold(
@@ -101,7 +115,7 @@ class ExploreScreen extends ConsumerWidget {
             child: CustomScrollView(
               key: const ValueKey('explore-list-scroll-view'),
               slivers: [
-                SliverToBoxAdapter(child: const ExploreChrome()),
+                const SliverToBoxAdapter(child: ExploreChrome()),
                 ...bodySlivers,
               ],
             ),
@@ -161,18 +175,18 @@ class ExploreScreenEmptyState extends ConsumerWidget {
       return ExploreEmptyState(cityLabel: cityLabel);
     }
     if (hasSearch && hasFilters) {
-      return ExploreEmptyState.noFilteredSearchResults(
+      return const ExploreEmptyState.noFilteredSearchResults(
         action: ExploreClearAction(clearSearch: true, clearFilters: true),
       );
     }
     if (hasSearch) {
-      return ExploreEmptyState.noSearchResults(
+      return const ExploreEmptyState.noSearchResults(
         hasFilters: false,
         action: ExploreClearAction(clearSearch: true, clearFilters: false),
       );
     }
     if (hasFilters) {
-      return ExploreEmptyState.noFilterResults(
+      return const ExploreEmptyState.noFilterResults(
         action: ExploreClearAction(clearSearch: false, clearFilters: true),
       );
     }

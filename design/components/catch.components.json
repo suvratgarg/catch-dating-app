@@ -7406,7 +7406,7 @@
           {
             "id": "catch.event_card.activity_backdrop",
             "symbol": "EventActivityBackdrop",
-            "file": "lib/events/presentation/event_activity_visuals.dart",
+            "file": "lib/core/widgets/event_activity_visuals.dart",
             "summary": "Shared activity artwork backdrop used by event cards, thumbnails, and no-photo event media states.",
             "states": [
               "dense",
@@ -7417,7 +7417,7 @@
           {
             "id": "catch.event_card.perforated_divider",
             "symbol": "EventTicketPerforatedDivider",
-            "file": "lib/events/presentation/widgets/event_ticket_surface.dart",
+            "file": "lib/core/widgets/event_ticket_surface.dart",
             "summary": "Ticket-card divider member for the event ticket metaphor.",
             "states": [
               "default"
@@ -7426,7 +7426,7 @@
           {
             "id": "catch.event_card.clock_mark",
             "symbol": "EventClockMark",
-            "file": "lib/events/presentation/widgets/event_tiles/event_visual_atoms.dart",
+            "file": "lib/core/widgets/event_visual_atoms.dart",
             "summary": "Event-card time glyph member used by ticket and agenda compositions.",
             "states": [
               "default",
@@ -7436,7 +7436,7 @@
           {
             "id": "catch.event_card.status_pill",
             "symbol": "EventStatusPill",
-            "file": "lib/events/presentation/widgets/event_tiles/event_visual_atoms.dart",
+            "file": "lib/core/widgets/event_visual_atoms.dart",
             "summary": "Event-card status pill member for booked, nearby, waitlist, and other event state labels.",
             "states": [
               "light",

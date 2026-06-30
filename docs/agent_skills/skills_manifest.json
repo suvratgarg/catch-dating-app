@@ -1,0 +1,232 @@
+{
+  "version": 1,
+  "updated": "2026-06-30",
+  "owner": "agent_operating_model",
+  "skills": [
+    {
+      "skill_id": "catch-architecture-refactor",
+      "path": "docs/agent_skills/catch-architecture-refactor.md",
+      "version": "1.0.0",
+      "updated": "2026-06-30",
+      "applies_to": [
+        "lib/**",
+        "test/**",
+        "docs/app_architecture.md",
+        "lib/README.md"
+      ],
+      "source_docs": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/app_architecture.md",
+        "lib/README.md",
+        "docs/audit_registry/README.md",
+        "docs/agent_regression_ledger.json"
+      ],
+      "required_tools": [
+        "agent:context-pack",
+        "agent:readiness",
+        "audit:registry"
+      ],
+      "required_commands": [
+        "node tool/agent/context_pack.mjs --task architecture-refactor --paths lib",
+        "dart tool/audit_registry.dart refresh",
+        "flutter analyze --no-fatal-infos",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "success_receipt": "Focused tests/analyzer pass, relevant scanners run, generated artifacts refreshed, and audit registry pass stamped.",
+      "known_failure_modes": [
+        "Refactor starts from ad hoc files instead of registry/scanner output.",
+        "Generated Dart, design, Widgetbook, or tool metadata is left stale.",
+        "Feature boundaries are moved without updating app architecture docs."
+      ]
+    },
+    {
+      "skill_id": "catch-ui-implementation",
+      "path": "docs/agent_skills/catch-ui-implementation.md",
+      "version": "1.0.0",
+      "updated": "2026-06-30",
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/core/widgets/**",
+        "widgetbook/**",
+        "docs/design_parity/**"
+      ],
+      "source_docs": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/design_language.md",
+        "docs/design_parity/README.md",
+        "docs/widget_catalog.md",
+        "docs/app_architecture.md"
+      ],
+      "required_tools": [
+        "agent:context-pack",
+        "agent:readiness",
+        "design:widget-classification-check",
+        "design:widgetbook-coverage"
+      ],
+      "required_commands": [
+        "node tool/agent/context_pack.mjs --task ui-implementation --paths lib",
+        "node tool/run.mjs check --category design",
+        "flutter analyze --no-fatal-infos",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "success_receipt": "UI change is tied to component contracts or Widgetbook states where relevant and passes focused UI/design checks.",
+      "known_failure_modes": [
+        "Design handoff is implemented by eyeballing instead of contract and Widgetbook state coverage.",
+        "New local primitives duplicate existing global concepts.",
+        "Text, sizing, or scroll behavior regresses outside the inspected viewport."
+      ]
+    },
+    {
+      "skill_id": "catch-design-parity",
+      "path": "docs/agent_skills/catch-design-parity.md",
+      "version": "1.0.0",
+      "updated": "2026-06-30",
+      "applies_to": [
+        "docs/design_parity/**",
+        "design/**",
+        "design_context_pack/**",
+        "widgetbook/**",
+        "lib/core/widgets/**"
+      ],
+      "source_docs": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/design_parity/README.md",
+        "docs/design_parity/claude_widgetbook_inventory.md",
+        "docs/design_parity/composition_migration_spec.md",
+        "docs/widget_catalog.md"
+      ],
+      "required_tools": [
+        "agent:context-pack",
+        "design:parity-gate",
+        "design:context-pack",
+        "agent:readiness"
+      ],
+      "required_commands": [
+        "node tool/agent/context_pack.mjs --task design-parity --paths docs/design_parity,widgetbook,lib/core/widgets",
+        "node tool/run.mjs check --category design",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "success_receipt": "Review uses canonical/repair/unify/register/discard decisions and updates contracts, Widgetbook, ledgers, or docs in the same pass.",
+      "known_failure_modes": [
+        "Aliases or feature-only buckets survive as final state.",
+        "Widgetbook route or generated directory state is stale.",
+        "Design context pack and component contracts drift independently."
+      ]
+    },
+    {
+      "skill_id": "catch-doc-hygiene",
+      "path": "docs/agent_skills/catch-doc-hygiene.md",
+      "version": "1.0.0",
+      "updated": "2026-06-30",
+      "applies_to": [
+        "docs/**",
+        "PROJECT_CONTEXT.md",
+        "README.md",
+        "AGENTS.md"
+      ],
+      "source_docs": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/README.md",
+        "docs/audit_registry/doc_versions.json",
+        "docs/audit_registry/doc_summaries.json"
+      ],
+      "required_tools": [
+        "agent:context-pack",
+        "agent:readiness",
+        "audit:registry"
+      ],
+      "required_commands": [
+        "node tool/agent/context_pack.mjs --task doc-hygiene --paths docs",
+        "dart tool/audit_registry.dart refresh",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "success_receipt": "Durable guidance is folded into owner docs, duplicate docs are deleted or indexed as temporary, and doc_versions/docs index stay current.",
+      "known_failure_modes": [
+        "New markdown is added where an existing source-of-truth doc should have been updated.",
+        "Deleted docs leave stale references.",
+        "Temporary trackers remain after durable decisions are migrated."
+      ]
+    },
+    {
+      "skill_id": "catch-contract-change",
+      "path": "docs/agent_skills/catch-contract-change.md",
+      "version": "1.0.0",
+      "updated": "2026-06-30",
+      "applies_to": [
+        "contracts/**",
+        "tool/contracts/**",
+        "functions/src/**",
+        "firestore.rules",
+        "storage.rules",
+        "lib/**/data/**",
+        "lib/**/domain/**"
+      ],
+      "source_docs": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/data_contracts.md",
+        "docs/backend_operation_catalog.md",
+        "docs/audit_registry/README.md"
+      ],
+      "required_tools": [
+        "agent:context-pack",
+        "contracts:check-all",
+        "agent:readiness"
+      ],
+      "required_commands": [
+        "node tool/agent/context_pack.mjs --task contract-change --paths contracts,functions/src,firestore.rules,lib",
+        "./tool/check_data_contract.sh",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "success_receipt": "Schema/rules/model/tooling sources agree, generated contracts are refreshed, and data-contract checks pass or external blockers are documented.",
+      "known_failure_modes": [
+        "Client model nullability diverges from Firestore schema.",
+        "Rules tests are run without required emulators.",
+        "Backfill or repair tooling is missing for existing data drift."
+      ]
+    },
+    {
+      "skill_id": "catch-release-check",
+      "path": "docs/agent_skills/catch-release-check.md",
+      "version": "1.0.0",
+      "updated": "2026-06-30",
+      "applies_to": [
+        ".github/workflows/**",
+        "firebase.json",
+        ".firebaserc",
+        "tool/firebase/**",
+        "tool/deploy_firebase_targets.sh",
+        "ios/**",
+        "android/**",
+        "docs/release_operations.md"
+      ],
+      "source_docs": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/release_operations.md",
+        "docs/web_surface_architecture.md",
+        "tool/README.md"
+      ],
+      "required_tools": [
+        "agent:context-pack",
+        "agent:readiness",
+        "tool:runner"
+      ],
+      "required_commands": [
+        "node tool/agent/context_pack.mjs --task release-check --paths .github,tool/firebase,ios,android,docs/release_operations.md",
+        "node tool/run.mjs check --manifest-only",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "success_receipt": "Local CI-equivalent checks are run, branch/workflow/deploy state is verified when required, and release docs stay current.",
+      "known_failure_modes": [
+        "PR checks are treated as deploy proof.",
+        "Local tool manifest drift hides broken release helpers.",
+        "Live Firebase/App Store state is assumed without verification."
+      ]
+    }
+  ]
+}

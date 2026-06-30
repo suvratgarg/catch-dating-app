@@ -1,10 +1,10 @@
 {
-  "version": "4.1.10",
-  "updated": "2026-06-24",
+  "version": "4.2.0",
+  "updated": "2026-06-30",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
-      "purpose": "High-level repo map and durable project context.",
+      "purpose": "High-level repo map and durable project context. Use docs/app_architecture.md for canonical app code-organization policy.",
       "read_when": [
         "Starting broad repo work",
         "Explaining app architecture",
@@ -34,6 +34,25 @@
       ],
       "skip_when": [
         "A narrow file-level task already has a specific owner doc"
+      ]
+    },
+    "docs/app_architecture.md": {
+      "purpose": "Canonical Flutter app architecture spec for app-role boundaries, feature/layer/screen/controller/repository/widget ownership, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, realtime stream lifecycle, and enforcement policy.",
+      "read_when": [
+        "Changing code organization under lib/",
+        "Defining or reviewing feature folder structure",
+        "Changing host/consumer app-role boundaries or role-specific routing",
+        "Moving behavior between widgets, controllers, repositories, services, or domain classes",
+        "Deciding screen vs body/widget ownership",
+        "Changing async loading/error/mutation state boundaries",
+        "Changing shared screen padding, tab body insets, sliver body gaps, scroll ownership, or sizing constraints",
+        "Changing exceptions, error mappers, operation context, logging, analytics, or user-facing error rendering",
+        "Changing keepAlive, autoDispose, or retained-tab stream ownership",
+        "Adding architecture lints, scanners, or overrides"
+      ],
+      "skip_when": [
+        "Only changing a backend data contract already covered by data_contracts.md",
+        "Only changing generated widget inventory already covered by widget_catalog.md"
       ]
     },
     "firebase/README.md": {
@@ -98,22 +117,6 @@
         "Only changing schema contracts; use data_contracts.md"
       ]
     },
-    "docs/ui_architecture.md": {
-      "purpose": "Unified layout architecture guide for spacing, scroll ownership, slivers, NestedScrollView tab bodies, sticky headers, semantic UI lint policy, token tiers, design-tool workflow, component contracts, and scroll-heavy widget tests.",
-      "read_when": [
-        "Changing shared screen padding, tab body insets, or sliver body gaps",
-        "Adding layout constants intended to be reused across sibling widgets",
-        "Adding or escalating Catch UI analyzer lints or design-token categories",
-        "Changing Style Dictionary adoption policy or component contract registry workflow",
-        "Changing CustomScrollView, SliverList, SliverPersistentHeader, or NestedScrollView surfaces",
-        "Debugging inconsistent spacing, blank scroll states, or overflow scroll bugs"
-      ],
-      "skip_when": [
-        "The task is pure business logic or repository/controller work",
-        "A local component uses a one-off spacing value that is not becoming a reusable contract",
-        "No scroll/sliver behavior is involved; use SLIVER-001 summary instead"
-      ]
-    },
     "docs/audit_registry/rules.json": {
       "purpose": "Active/watch/archived recursive audit rules, including provider stream lifecycle constraints and branded error UI requirements.",
       "read_when": [
@@ -167,14 +170,14 @@
       ]
     },
     "docs/event_success.md": {
-      "purpose": "Live event-success architecture, format mapping, product guardrails, Firestore contracts, manual QA, participant metrics, and open product decisions.",
+      "purpose": "Live event-success architecture, format mapping, product guardrails, Firestore contracts, assignment engine, host reporting, manual QA, participant metrics, and open product decisions.",
       "read_when": [
         "Auditing lib/event_success",
         "Considering dead-code cleanup of event success files",
         "Changing event-success host setup, attendee companion, or feedback/report metrics",
+        "Changing assignment engine inputs, scorecards, invite links, waitlist offers, or host reporting proof",
         "Changing event-success Firestore collections, Functions, scorecards, or participant metrics",
-        "Running manual QA for event-success host or attendee surfaces",
-        "Planning live event facilitation, host coaching, check-in, host help, reveal, compatibility, or activity-agnostic event platform work"
+        "Running manual QA for event-success host or attendee surfaces"
       ],
       "skip_when": [
         "The task does not touch live event success, event quality, attendee mixing, participant metrics, or post-event coaching strategy"
@@ -193,17 +196,6 @@
         "No event-success experience, invite, recap, or sensory behavior is touched"
       ]
     },
-    "docs/controller_patterns.md": {
-      "purpose": "Current controller, view-model, and realtime stream lifecycle boundary rules.",
-      "read_when": [
-        "Controller/state-management/refactor work",
-        "Moving business logic out of widgets",
-        "Changing keepAlive, autoDispose, or retained-tab stream ownership"
-      ],
-      "skip_when": [
-        "Pure visual primitive work"
-      ]
-    },
     "docs/action_cardinality_policy.md": {
       "purpose": "Product and engineering policy for not-allowed, singleton, unbounded, and domain-bounded user actions.",
       "read_when": [
@@ -216,21 +208,8 @@
         "The task is purely visual and does not add, remove, enable, disable, or change an action"
       ]
     },
-    "docs/error-handling-audit.md": {
-      "purpose": "Active app-wide error-management source of truth, backend hard-migration checklist, frontend/local error-management playbook, presentation descriptor contract, Error 101 guide, app error catalogue, remediation map, and branded error surface guidance.",
-      "read_when": [
-        "Changing exceptions, stable error codes, backend or frontend/local error mapping, presentation descriptors, logging, analytics, or user-facing error rendering",
-        "Adding Firebase/Auth/Storage/Functions/Messaging/Remote Config/App Check operations",
-        "Adding validation, local persistence, route/deep-link, plugin/platform, provider, mutation, or global-framework error handling",
-        "Deciding whether a repeated failure deserves a new AppException subclass",
-        "Replacing raw AsyncValue error branches"
-      ],
-      "skip_when": [
-        "No error behavior is touched"
-      ]
-    },
     "docs/data_contracts.md": {
-      "purpose": "Firestore document shape, Cloud Functions write ownership, schema tooling, relationship documents, migration policy, and rules-test workflow.",
+      "purpose": "Firestore document shape, Cloud Functions write ownership, schema tooling, relationship documents, organizer claim documents, migration policy, and rules-test workflow.",
       "read_when": [
         "Changing Firestore rules",
         "Changing Functions mutation boundaries",
@@ -249,7 +228,7 @@
       ]
     },
     "docs/backend_operation_catalog.md": {
-      "purpose": "Human-readable backend write ownership catalog covering direct client writes, callable-owned mutations, trigger-owned projections, server-only collections, and notification starting points.",
+      "purpose": "Human-readable backend write ownership catalog covering direct client writes, callable-owned mutations, organizer claim/index/review-response operations, trigger-owned projections, server-only collections, and notification starting points.",
       "read_when": [
         "Changing a repository write or callable interface",
         "Changing Firestore rules for a write path",
@@ -302,26 +281,26 @@
       ]
     },
     "docs/release_operations.md": {
-      "purpose": "Consolidated CI, release, deploy, environment, smoke-test, store-readiness, and release-evidence runbook.",
+      "purpose": "Consolidated CI, release, deploy, environment, app-shell integration, smoke-test, store-readiness, host TestFlight, and release-evidence runbook.",
       "read_when": [
         "Changing GitHub Actions release gates",
         "Deploying Firebase/Functions/rules/storage changes",
-        "Preparing TestFlight or production release evidence",
+        "Preparing TestFlight, Play, or production release evidence",
         "Checking environment setup or deploy order",
-        "Checking remaining store/product release tasks after production checklist deletion"
+        "Checking host TestFlight setup or app-shell integration coverage"
       ],
       "skip_when": [
-        "No CI, deploy, release, or environment behavior is touched"
+        "No CI, deploy, release, environment, integration-smoke, or store behavior is touched"
       ]
     },
     "docs/web_surface_architecture.md": {
-      "purpose": "Domain/subdomain ownership, Firebase Hosting targets, stack boundaries for marketing/app/admin, marketing CI/CD, and future host-portal placement.",
+      "purpose": "Domain/subdomain ownership, Firebase Hosting targets, stack boundaries for marketing/app/admin, organizer website functionality, marketing CI/CD, and future host-portal placement.",
       "read_when": [
         "Changing website stacks",
         "Changing Firebase Hosting targets or custom domains",
         "Changing marketing website CI/CD",
-        "Planning app, marketing, admin, or host dashboard subdomains",
-        "Deciding whether host tools belong under admin, app, or a host portal"
+        "Changing organizer directory, claim, review, or host product website behavior",
+        "Planning app, marketing, admin, or host dashboard subdomains"
       ],
       "skip_when": [
         "Only changing Flutter mobile UI behavior",
@@ -329,11 +308,12 @@
       ]
     },
     "docs/plans/host_listing_discovery_architecture.md": {
-      "purpose": "Organizer and event discovery architecture for source mentions, deterministic dedupe, bounded LLM extraction/adjudication, admin review, claimable listings, and Firestore projection planning.",
+      "purpose": "Organizer and event discovery architecture for source mentions, deterministic dedupe, bounded LLM extraction/adjudication, admin review, claimable listings, organizer claim workflow, and Firestore projection planning.",
       "read_when": [
         "Changing organizer or event intake workflows",
         "Adding crawler, search, editorial, or platform-source ingestion",
         "Designing source-mention, cluster, dedupe, LLM, or admin-review policy",
+        "Changing organizer claim request, review, ownership, or indexability workflow",
         "Planning claimable organizer pages or external event projection"
       ],
       "skip_when": [
@@ -354,29 +334,17 @@
       ]
     },
     "docs/marketing_landing_page_research.md": {
-      "purpose": "Reference-site research, corrected product-positioning brief, rejected run-only preview note, content inventory, visual direction, asset requirements, and app-theme implications for the Catch marketing website.",
+      "purpose": "Marketing landing-page research, production rewrite rationale, content inventory, visual direction, guardrails, asset requirements, and app-theme implications.",
       "read_when": [
         "Redesigning the Catch marketing site",
         "Changing launch landing-page copy or imagery",
         "Choosing brand palette, typography, or visual direction that should inform the app",
-        "Reviewing competitor or alternative landing-page patterns for hosts, dating, or event software",
-        "Checking why the first isolated preview was rejected"
+        "Checking why the first isolated preview was rejected",
+        "Checking production website guardrails or residual landing-page product decisions"
       ],
       "skip_when": [
         "Only syncing existing app screenshots through the media manifest",
         "Only changing backend waitlist storage or form submission behavior"
-      ]
-    },
-    "docs/marketing_landing_page_tracker.md": {
-      "purpose": "Temporary active tracker for the marketing landing-page research, rejected isolated preview, corrected preview, production rewrite, and app visual-direction follow-up.",
-      "read_when": [
-        "Checking what remains before the website rewrite",
-        "Finding reference screenshot status",
-        "Confirming whether production website files should be edited yet",
-        "Checking whether a preview is approved, rejected, or pending"
-      ],
-      "skip_when": [
-        "The marketing rewrite has shipped and this tracker has been folded into durable docs"
       ]
     },
     "docs/demo_data_seeding.md": {
@@ -425,6 +393,79 @@
       ],
       "skip_when": [
         "No synthetic persona image assets are being generated, uploaded, or published"
+      ]
+    },
+    "docs/design_parity/README.md": {
+      "purpose": "Design parity folder owner and workflow for state matrices, screen contracts, captures, Widgetbook, component contracts, and route-ledger hygiene.",
+      "read_when": [
+        "Starting design-parity work",
+        "Changing screen contracts, capture coverage, Widgetbook references, or design parity ledgers"
+      ],
+      "skip_when": [
+        "Only changing unrelated Flutter architecture or backend contracts"
+      ]
+    },
+    "docs/design_parity/comprehensive_todo.md": {
+      "purpose": "Canonical and only human-readable execution checklist for remaining design-parity work; JSON ledgers own detailed evidence and counts.",
+      "read_when": [
+        "Choosing or updating design-parity execution order",
+        "Closing design-parity gaps",
+        "Updating design-parity pass cadence or DoD"
+      ],
+      "skip_when": [
+        "Only checking component inventory; use claude_widgetbook_inventory.md or component registries"
+      ]
+    },
+    "docs/design_language.md": {
+      "purpose": "Canonical Catch visual identity for palette, typography, photography, metaphors, surfaces, motion, and remaining map-pin palette policy.",
+      "read_when": [
+        "Changing visual identity, typography, palette, photo treatment, motion feel, or map-pin color policy"
+      ],
+      "skip_when": [
+        "Only changing layout architecture; use app_architecture.md"
+      ]
+    },
+    "docs/ui_elevation_implementation.md": {
+      "purpose": "Temporary implementation checklist for UI elevation and design-system re-sync details; durable identity and architecture live in design_language.md and app_architecture.md.",
+      "read_when": [
+        "Closing UI elevation implementation details",
+        "Checking historical rollout/golden/design-system verification context"
+      ],
+      "skip_when": [
+        "Only needing current identity or layout policy"
+      ]
+    },
+    "docs/admin_analytics_dashboard_spec.md": {
+      "purpose": "Canonical admin console and analytics dashboard architecture, implementation status, admin API model, metric taxonomy, data model work, and guardrails.",
+      "read_when": [
+        "Changing admin app architecture",
+        "Changing admin APIs/actions",
+        "Changing admin analytics, finance, BigQuery marts, or deployment"
+      ],
+      "skip_when": [
+        "Only changing public website or Flutter mobile UI"
+      ]
+    },
+    "docs/admin_dashboard_user_stories_and_component_catalogue.md": {
+      "purpose": "Admin dashboard tab user stories, workflow fit, architecture assessment, React admin primitive/component catalogue, and prioritized improvements.",
+      "read_when": [
+        "Redesigning admin tabs",
+        "Changing admin user stories/workflows",
+        "Migrating admin React primitives/components"
+      ],
+      "skip_when": [
+        "Only changing backend admin callables; use admin_analytics_dashboard_spec.md and backend_operation_catalog.md"
+      ]
+    },
+    "docs/plans/catch_ui_lint_rules_plan.md": {
+      "purpose": "Remaining roadmap for Catch UI analyzer plugin diagnostics, migrated scanner wrappers, visual-regression governance, and lint lifecycle decisions.",
+      "read_when": [
+        "Changing packages/catch_ui_lints",
+        "Changing UI scanner wrapper scripts",
+        "Escalating visual/UI drift rules"
+      ],
+      "skip_when": [
+        "Only fixing one lint violation without changing rule behavior"
       ]
     }
   }

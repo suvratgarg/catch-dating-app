@@ -1,7 +1,7 @@
 ---
 doc_id: audit_registry
 version: 2.3.0
-updated: 2026-06-27
+updated: 2026-06-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -28,8 +28,10 @@ Use this registry before reading long tracker docs. The goal is to answer:
 | `doc_versions.json` | Version metadata for durable docs that Codex reads repeatedly. |
 | `backlog.json` | Active backlog, next-up order, stable debt ids, and scanner counts. |
 | `doc_summaries.json` | Compact read/skip policies for long docs. |
+| `agent_metrics.jsonl` | Append-only measurements for agent-readiness score, check counts, and workflow-quality trend events. |
 | `widget_classification.json` | Generated registry of every Dart widget class, its role, ownership boundaries, catalog status, and allowed public remediation path. |
 | `widget_classification.schema.json` | JSON schema for the generated widget classification registry. |
+| `new_widget_inventory_scan.json` | Generated report comparing the working tree to a base ref for newly added widgets, private widget classes, widget-returning helpers, and Widgetbook/catalog coverage gaps. |
 | `archive/` | Historical detail that should be searched only when a debt id or rule requires it. |
 
 ## Workflow
@@ -57,6 +59,7 @@ Use this registry before reading long tracker docs. The goal is to answer:
    ```sh
    npm run design:widgets:classify
    npm run design:widgets:check
+   npm run design:widgets:new
    ```
 
    Private helper widgets are not an allowed destination. A widget that is too

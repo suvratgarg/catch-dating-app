@@ -20,7 +20,7 @@ import 'package:catch_dating_app/event_success/data/event_success_repository.dar
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
-import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
+import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
@@ -608,7 +608,54 @@ class EventDetailHostsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final clubAsync = ref.watch(fetchClubProvider(clubId));
     return clubAsync.when(
-      data: (club) => _buildHostContent(context, ref, club),
+      data: (club) {
+        if (club == null) return const SizedBox.shrink();
+
+        final hostProfiles = club.displayHostProfiles;
+        final hostProfile = hostProfiles.isEmpty ? null : hostProfiles.first;
+        final hostUid = hostProfile?.uid ?? club.ownerOrPrimaryHostUserId;
+        final style = surfaceStyle;
+        final canMessage =
+            canMessageHost &&
+            hostUid != null &&
+            currentUid != null &&
+            currentUid != hostUid;
+
+        return CatchSection.divided(
+          title: 'Your hosts',
+          dividerColor: style?.dividerColor,
+          titleColor: style?.headingColor,
+          child: EventDetailHostCard(
+            activityKind: event.activityKind,
+            hostName: club.displayHostName,
+            photoUrl: hostProfile?.avatarUrl ?? club.logoPhotoUrl,
+            meta: _hostMeta(club),
+            verified: club.ownerOrPrimaryHostUserId != null,
+            stats: _hostStats(club),
+            surfaceColor: style?.surfaceBackground,
+            borderColor: style?.borderColor,
+            nameColor: style?.headingColor,
+            metaColor: style?.bodyColor,
+            statValueColor: style?.headingColor,
+            statLabelColor: style?.mutedColor,
+            dividerColor: style?.dividerColor,
+            onViewClub: () => context.pushNamed(
+              Routes.clubDetailScreen.name,
+              pathParameters: {'clubId': club.id},
+            ),
+            onMessage: canMessage
+                ? () => unawaited(
+                    _messageHost(
+                      context,
+                      ref,
+                      clubId: club.id,
+                      hostUid: hostUid,
+                    ),
+                  )
+                : null,
+          ),
+        );
+      },
       loading: () => const Padding(
         padding: EdgeInsets.all(CatchSpacing.s4),
         child: Center(child: CatchLoadingIndicator()),
@@ -617,50 +664,6 @@ class EventDetailHostsSection extends ConsumerWidget {
         e,
         onRetry: () => ref.invalidate(fetchClubProvider(clubId)),
         compact: true,
-      ),
-    );
-  }
-
-  Widget _buildHostContent(BuildContext context, WidgetRef ref, Club? club) {
-    if (club == null) return const SizedBox.shrink();
-
-    final hostProfiles = club.displayHostProfiles;
-    final hostProfile = hostProfiles.isEmpty ? null : hostProfiles.first;
-    final hostUid = hostProfile?.uid ?? club.ownerOrPrimaryHostUserId;
-    final style = surfaceStyle;
-    final canMessage =
-        canMessageHost &&
-        hostUid != null &&
-        currentUid != null &&
-        currentUid != hostUid;
-
-    return CatchSection.divided(
-      title: 'Your hosts',
-      dividerColor: style?.dividerColor,
-      titleColor: style?.headingColor,
-      child: EventDetailHostCard(
-        activityKind: event.activityKind,
-        hostName: club.displayHostName,
-        photoUrl: hostProfile?.avatarUrl ?? club.logoPhotoUrl,
-        meta: _hostMeta(club),
-        verified: club.ownerOrPrimaryHostUserId != null,
-        stats: _hostStats(club),
-        surfaceColor: style?.surfaceBackground,
-        borderColor: style?.borderColor,
-        nameColor: style?.headingColor,
-        metaColor: style?.bodyColor,
-        statValueColor: style?.headingColor,
-        statLabelColor: style?.mutedColor,
-        dividerColor: style?.dividerColor,
-        onViewClub: () => context.pushNamed(
-          Routes.clubDetailScreen.name,
-          pathParameters: {'clubId': club.id},
-        ),
-        onMessage: canMessage
-            ? () => unawaited(
-                _messageHost(context, ref, clubId: club.id, hostUid: hostUid),
-              )
-            : null,
       ),
     );
   }

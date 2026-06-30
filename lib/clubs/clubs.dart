@@ -48,4 +48,4 @@ export 'presentation/shared/club_transition_tags.dart';
 
 // ── Presentation — value types & formatters ─────────────────────────────────
 export 'presentation/club_action_keys.dart';
-export 'presentation/club_name_lookup.dart';
+export 'data/club_name_lookup.dart';

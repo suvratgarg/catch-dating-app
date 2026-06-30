@@ -1,7 +1,7 @@
 ---
 doc_id: ui_elevation_implementation
-version: 2.1.0
-updated: 2026-05-31
+version: 2.2.0
+updated: 2026-06-30
 owner: ui_elevation_initiative
 status: active — mechanical execution checklist for implementing agents
 ---
@@ -45,7 +45,7 @@ per-screen visual review. It pairs with [`marketing_app_media_pipeline.md`](mark
 
 1. [`docs/design_language.md`](design_language.md) — locked identity. **Source of truth.**
 2. [`PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md) — architecture, routes, gotchas.
-3. [`docs/ui_architecture.md`](ui_architecture.md) — layout/spacing/sliver/scroll rules.
+3. [`docs/app_architecture.md`](app_architecture.md) — layout/spacing/sliver/scroll rules.
 4. [`docs/widget_catalog.md`](widget_catalog.md) — existing primitives (large; read per-surface).
 
 ## 1. Hard guardrails (do not break these)
@@ -237,7 +237,7 @@ with no stranded color outside the allowlist. `flutter analyze` clean; tests gre
 ## Task 1b — Sizing/constraint doctrine + Dynamic Type  🟡 doctrine + scanner + migration DONE (`check_sizing.sh` green, wired in CI); remaining: ticket-rail overflow fix + Dynamic-Type spot-check ⬜
 
 **✅ Already landed:**
-- **Doctrine written** — `docs/ui_architecture.md` → "Sizing & Constraints" (allowed-constant
+- **Doctrine written** — `docs/app_architecture.md` → "Sizing And Constraints" (allowed-constant
   allowlist, banned→preferred table, `CatchLayout.maxContentWidth` clamp, Dynamic-Type rule, and a
   numbered **deterministic conversion algorithm**).
 - **Scanner written** — `tool/check_sizing.sh` (portable `perl`+`find`; no ripgrep/GNU-grep needed).
@@ -330,8 +330,9 @@ restored as a non-reactable "Looking for" facts section, the preview tab targets
 
 # PHASE 3 — ROLL OUT TO PAR (by gap)  ✅ DONE
 Per screen: tokens-only, `proseL/M` for editorial copy, constraint-based, light+dark, Dynamic-Type
-checked, anti-drift gate green, and tick the matching item in
-[`docs/ui_modernization_backlog.md`](ui_modernization_backlog.md). Order by gap:
+checked, anti-drift gate green, and update `docs/widget_catalog.md` or
+`docs/app_architecture.md` when a surface changes a reusable component or
+architecture rule. Historical rollout order by gap:
 
 As-built: the listed production surfaces have been brought to parity and the
 `explore_concept` sandbox has been retired. The checklist below is retained as
@@ -383,11 +384,9 @@ more precision before CI enforcement.
 
 ## Highest-priority critiques
 
-1. **The linked plan is stale and can mislead implementing agents.**
-   `docs/plans/cryptic-hatching-hummingbird.md` still describes the old planning state: Instrument
-   Serif, one confident accent, and Phase 0 as future identity selection. This doc now says Phase 0
-   is done with Archivo, no global accent, and B&W tokens. Either update that plan to the current
-   state or remove it from "Read first" so agents do not follow obsolete guidance.
+1. **Superseded plan cleanup is complete.**
+   The old exploratory plan was deleted after its single remaining map-pin
+   policy decision moved to `docs/design_language.md`.
 
 2. **`design_language.md` needs its status / remaining-work section refreshed.**
    It still says encoding into tokens/fonts is the next step and lists Phase 0 closeout as remaining.

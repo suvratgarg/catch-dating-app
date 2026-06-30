@@ -49,7 +49,7 @@ export 'presentation/attendance_sheet_view_model.dart';
 export 'presentation/event_booking_controller.dart';
 export 'presentation/event_detail_controller.dart';
 export 'presentation/event_detail_view_model.dart';
-export 'presentation/event_invite_share_copy.dart';
+export 'data/event_invite_share_copy.dart';
 export 'presentation/event_map_view_model.dart';
 
 // ── Presentation — widgets commonly reused outside the feature ──────────────
@@ -63,17 +63,18 @@ export 'presentation/widgets/event_photo_header.dart';
 export 'presentation/widgets/event_pins_map.dart';
 export 'presentation/widgets/event_share_card.dart';
 export 'presentation/widgets/event_stats_grid.dart';
-export 'presentation/widgets/event_ticket_surface.dart';
+export 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
+export 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 export 'presentation/widgets/event_tiles/event_tile_data.dart';
 export 'presentation/widgets/event_tiles/event_tiles.dart';
 
 // ── Presentation — value types & formatters ─────────────────────────────────
 export 'presentation/event_action_keys.dart';
-export 'presentation/event_activity_visuals.dart';
-export 'presentation/event_arrival_action.dart';
-export 'presentation/event_calendar_links.dart';
-export 'presentation/event_check_in_qr_payload.dart';
+export 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+export 'domain/event_arrival_action.dart';
+export 'domain/event_check_in_qr_payload.dart';
+export 'domain/event_formatters.dart';
+export 'domain/event_location_links.dart';
+export 'data/event_calendar_links.dart';
 export 'presentation/event_detail_route_transition.dart';
-export 'presentation/event_formatters.dart';
-export 'presentation/event_location_links.dart';
 export 'presentation/event_map_center.dart';

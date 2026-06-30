@@ -1095,7 +1095,7 @@
       "builder_methods_on_state": []
     },
     {
-      "file": "lib/events/presentation/widgets/event_ticket_surface.dart",
+      "file": "lib/core/widgets/event_ticket_surface.dart",
       "widget_functions": [
         {
           "name": "eventHeroSurface",
@@ -2359,7 +2359,7 @@
       "action": "needs-judgment"
     },
     {
-      "file": "lib/events/presentation/widgets/event_ticket_surface.dart",
+      "file": "lib/core/widgets/event_ticket_surface.dart",
       "name": "eventHeroSurface",
       "line": 11,
       "has_widgetref": false,

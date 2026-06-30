@@ -1,8 +1,10 @@
 # Lib Code Map
 
 Read `PROJECT_CONTEXT.md` first for the whole-app architecture and product
-flow. Use this file to route feature-specific code work without opening broad
-audit history.
+flow. Use `docs/app_architecture.md` as the canonical spec for feature, layer,
+screen, controller, repository, async-state, error-surface, and widget
+ownership. Use this file to route feature-specific code work without opening
+broad audit history.
 
 ## Structure
 
@@ -11,6 +13,18 @@ Most app features follow the same shape:
 - `domain`: Freezed models, enums, value objects, and pure domain helpers.
 - `data`: repositories, Firebase adapters, and Riverpod providers.
 - `presentation`: screens, controllers, widgets, and feature UI state.
+
+Current ownership clarifications:
+
+- Cross-cutting analytics code lives in `core/analytics`, not a top-level
+  feature folder.
+- Explore-owned search lives in `explore/data`.
+- The calendar agenda route lives in `events/presentation/calendar`.
+- Chat and host-inbox list UI lives in `chats/presentation/inbox`; `matches`
+  owns match lifecycle models/repositories and match-specific presentation.
+- Event display helpers and platform seams that are not widgets live in
+  `events/domain` or `events/data`; shared event/activity visual primitives
+  used by core widgets live in `core/widgets`.
 
 Generated `*.g.dart`, `*.freezed.dart`, and Riverpod outputs live next to their
 source files and should not be hand-edited.
@@ -28,12 +42,12 @@ generic audit trackers:
 
 ## Cross-Cutting Docs
 
+- `docs/app_architecture.md`: **canonical Flutter app architecture spec** —
+  feature folder shape, dependency direction, screen/controller/repository
+  ownership, async state boundaries, error surfaces, UI layout/scroll/sizing
+  rules, widget ownership, controller patterns, and enforcement policy.
 - `docs/design_language.md`: **visual identity source of truth** — palette, typography,
   activity-color system, photo grading, metaphors, and the UI elevation roadmap.
-- `docs/ui_architecture.md`: spacing, slivers, scroll ownership, sticky headers,
-  and widget-test layout expectations.
-- `docs/controller_patterns.md`: controller/view-model boundaries and retained
-  stream lifecycle rules.
 - `docs/data_contracts.md`: Firestore documents, schema generation,
   relationship documents, migration policy, and rules-test workflow.
 - `docs/backend_operation_catalog.md`: which writes are client-owned,

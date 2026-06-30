@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/analytics/app_analytics.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';

@@ -8,6 +8,8 @@ paths.
 node tool/run.mjs list
 node tool/run.mjs list --category data
 node tool/run.mjs check --manifest-only
+node tool/run.mjs check audit:backend-errors
+npm run audit:backend-errors:check
 node tool/run.mjs check --category demo
 node tool/run.mjs run demo:ops --help
 ```
@@ -15,6 +17,8 @@ node tool/run.mjs run demo:ops --help
 ## Layout
 
 - `audit/`: repo audit and code catalog scripts.
+- `agent/`: AI-agent context-pack and readiness checks for deterministic repo
+  work.
 - `branding/`: native launcher and splash branding generators.
 - `contracts/`: Firestore, schema, business-rule, and generated contract gates.
 - `data/`: Firestore data validators, repair scripts, and backfills.
@@ -164,6 +168,27 @@ searches are active:
 - `tool/host_discovery/generated/source_evidence.json`
 - `tool/host_discovery/generated/index_readiness_report.json`
 - `tool/host_discovery/generated/firestore_seed_import_plan.json`
+
+## Agent Harness
+
+The agent harness turns project instructions into small context packets and
+validation gates. Use it before broad cleanup, architecture refactors, docs
+consolidation, design-parity work, and any task where an agent needs to preserve
+hard-won prior fixes.
+
+```sh
+node tool/agent/context_pack.mjs --task architecture-refactor --paths lib/events,lib/explore
+node tool/agent/context_pack.mjs --task doc-hygiene --paths docs --json
+node tool/agent/check_agent_readiness.mjs
+node tool/agent/check_agent_readiness.mjs --record-metric
+node tool/run.mjs check --category agent
+```
+
+`AGENTS.md` is the short entrypoint. Durable process guidance lives in
+`docs/agent_operating_model.md`, regression guards in
+`docs/agent_regression_ledger.json`, project-local skill routers in
+`docs/agent_skills/`, and trendable measurements in
+`docs/audit_registry/agent_metrics.jsonl`.
 
 ## Design Tokens
 

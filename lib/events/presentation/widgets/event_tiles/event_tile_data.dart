@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_capacity_presenter.dart';
 
 enum EventTileStatus {
