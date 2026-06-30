@@ -11,8 +11,8 @@ status: reference — reusable agent prompt
 Reusable prompt for handing the **fixed-dimension → constraint** migration to a
 capable model (use **Sonnet**, not Haiku — the media-vs-cap-vs-art judgment is the
 hard part). Pairs with the doctrine in
-[`ui_architecture.md` → "Sizing & Constraints"](ui_architecture.md) and the scanner
-`tool/check_sizing.sh`.
+[`app_architecture.md` → "Sizing And Constraints"](app_architecture.md) and the
+scanner `tool/check_sizing.sh`.
 
 > **Check first:** `bash tool/check_sizing.sh --count`. If it prints `0`, there is
 > nothing to do (the doctrine is already satisfied on this branch). Point the agent
@@ -27,7 +27,7 @@ Copy everything below into the agent task:
 
 Drive `tool/check_sizing.sh` to a clean exit (0) by converting hardcoded content
 dimensions to constraint-based layout, so the UI scales across phone sizes and
-Dynamic Type. Source-of-truth: `docs/ui_architecture.md → "Sizing & Constraints"`
+Dynamic Type. Source-of-truth: `docs/app_architecture.md → "Sizing And Constraints"`
 (read it first). Work in small batches; verify constantly.
 
 ## Step 1 — see the work

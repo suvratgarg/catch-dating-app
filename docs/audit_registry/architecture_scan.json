@@ -2,12 +2,13 @@
   "summary": {
     "total_screens": 180,
     "classification": {
-      "no-async": 165,
-      "uses-wrapper": 15
+      "no-async": 163,
+      "uses-wrapper": 15,
+      "legitimate-when": 2
     },
     "missing_error_handling": 0,
     "should_use_wrapper": 0,
-    "legitimate_when_or_switch": 0,
+    "legitimate_when_or_switch": 2,
     "repos_missing_backend_error": 1,
     "controllers_with_raw_try_catch": 6
   },

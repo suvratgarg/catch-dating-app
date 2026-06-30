@@ -1,10 +1,10 @@
 {
   "audit_registry": {
     "path": "docs/audit_registry/README.md",
-    "version": "2.2.0",
-    "updated": "2026-05-06",
+    "version": "2.3.1",
+    "updated": "2026-06-30",
     "status": "active",
-    "read_policy": "Read first for recursive audit workflow, registry files, completion criteria, and pruning policy."
+    "read_policy": "Read first for recursive audit workflow, registry files, completion criteria, pruning policy, and agent metrics ledger."
   },
   "audit_backlog": {
     "path": "docs/audit_registry/backlog.json",
@@ -15,31 +15,52 @@
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "4.1.10",
-    "updated": "2026-06-24",
+    "version": "4.2.0",
+    "updated": "2026-06-30",
     "status": "active",
     "read_policy": "Use for compact read/skip policies before opening long markdown docs."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "4.1.204",
-    "updated": "2026-06-25",
+    "version": "4.3.0",
+    "updated": "2026-06-30",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
   },
+  "agent_entrypoint": {
+    "path": "AGENTS.md",
+    "version": "1.0.0",
+    "updated": "2026-06-30",
+    "status": "active",
+    "read_policy": "Read first when an AI agent enters the repo; routes to owner docs, context-pack generation, readiness checks, and completion standards."
+  },
+  "agent_operating_model": {
+    "path": "docs/agent_operating_model.md",
+    "version": "1.0.0",
+    "updated": "2026-06-30",
+    "status": "active",
+    "read_policy": "Read before broad AI-assisted cleanup, architecture refactors, design implementation, doc consolidation, or workflow-harness changes."
+  },
+  "agent_regression_ledger": {
+    "path": "docs/agent_regression_ledger.json",
+    "version": "1.0.0",
+    "updated": "2026-06-30",
+    "status": "active",
+    "read_policy": "Use before touching a scope with hard-won prior fixes; context packs surface matching active/watch regression guards."
+  },
+  "agent_skills": {
+    "path": "docs/agent_skills/README.md",
+    "version": "1.0.0",
+    "updated": "2026-06-30",
+    "status": "active",
+    "read_policy": "Use for project-local Catch workflow routers; machine-readable skill definitions live in docs/agent_skills/skills_manifest.json."
+  },
   "audit_rules": {
     "path": "docs/audit_registry/rules.json",
-    "version": "2.5.8",
-    "updated": "2026-06-23",
+    "version": "2.5.10",
+    "updated": "2026-06-30",
     "status": "active",
-    "read_policy": "Use for active/watch/archived recursive audit rules, including widget catalog updates, realtime stream lifecycle constraints, branded error UI requirements, Firestore rules emulator-test workflow, event-policy/event-success in-development preservation, and error catalogue maintenance."
-  },
-  "controller_patterns": {
-    "path": "docs/controller_patterns.md",
-    "version": "2.1.1",
-    "updated": "2026-05-06",
-    "status": "active",
-    "read_policy": "Read for controller/view-model boundary rules and realtime stream lifecycle ownership before architecture or state-management cleanup."
+    "read_policy": "Use for active/watch/archived recursive audit rules, including agent-harness workflow proof, widget catalog updates, realtime stream lifecycle constraints, branded error UI requirements, Firestore rules emulator-test workflow, event-policy/event-success in-development preservation, and error catalogue maintenance."
   },
   "action_cardinality_policy": {
     "path": "docs/action_cardinality_policy.md",
@@ -50,10 +71,18 @@
   },
   "lib_code_map": {
     "path": "lib/README.md",
-    "version": "1.0.0",
-    "updated": "2026-05-22",
+    "version": "1.1.0",
+    "updated": "2026-06-30",
     "status": "active",
-    "read_policy": "Read before broad lib/ feature work; use it to find feature-level README owners and cross-cutting architecture docs."
+    "read_policy": "Read before broad lib/ feature work; use it to find feature-level README owners and cross-cutting architecture docs. Read docs/app_architecture.md for the canonical architecture contract."
+  },
+  "app_architecture": {
+    "path": "docs/app_architecture.md",
+    "version": "1.2.1",
+    "updated": "2026-06-30",
+    "status": "active",
+    "read_policy": "Read first for Flutter app code organization, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, realtime stream lifecycle, and architecture enforcement policy.",
+    "read_when": "Changing code organization under lib/; Defining or reviewing feature folder structure; Changing host/consumer app-role boundaries or role-specific routing; Moving behavior between widgets, controllers, repositories, services, or domain classes; Deciding screen vs body/widget ownership; Changing async loading/error/mutation state boundaries; Changing shared screen padding, tab body insets, sliver body gaps, scroll ownership, or sizing constraints; Changing exceptions, error mappers, operation context, logging, analytics, or user-facing error rendering; Changing keepAlive, autoDispose, or retained-tab stream ownership; Adding architecture lints, scanners, or overrides"
   },
   "event_policies_readme": {
     "path": "lib/event_policies/README.md",
@@ -78,10 +107,10 @@
   },
   "event_success": {
     "path": "docs/event_success.md",
-    "version": "1.1.0",
-    "updated": "2026-05-24",
+    "version": "1.2.0",
+    "updated": "2026-06-30",
     "status": "active",
-    "read_policy": "Read before deleting, moving, wiring, auditing, or QA-ing lib/event_success, event-success Firestore collections, Functions, scorecards, participant metrics, or manual QA surfaces."
+    "read_policy": "Read before deleting, moving, wiring, auditing, or QA-ing lib/event_success, event-success Firestore collections, Functions, scorecards, assignment engines, host reporting, participant metrics, or manual QA surfaces."
   },
   "event_success_theatrical_experience_tracker": {
     "path": "docs/event_success_theatrical_experience_tracker.md",
@@ -92,31 +121,24 @@
   },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "4.1.17",
-    "updated": "2026-06-24",
+    "version": "4.3.0",
+    "updated": "2026-06-30",
     "status": "active",
     "read_policy": "Read before adding, deleting, or consolidating docs."
   },
   "design_parity_tracker": {
     "path": "docs/design_parity/README.md",
-    "version": "0.1.9",
-    "updated": "2026-06-22",
+    "version": "0.1.10",
+    "updated": "2026-06-30",
     "status": "active",
     "read_policy": "Use before design-parity passes to pick feature scope, state coverage, screen contracts, preview/capture requirements, visual-diff gaps, component-contract gaps, and drift-prevention follow-ups."
   },
   "design_parity_comprehensive_todo": {
     "path": "docs/design_parity/comprehensive_todo.md",
-    "version": "0.2.165",
-    "updated": "2026-06-25",
+    "version": "0.2.166",
+    "updated": "2026-06-30",
     "status": "active",
-    "read_policy": "Use as the canonical execution checklist for remaining design-parity work across sources of truth, state contracts, Widgetbook, captures, pixel comparison, composition, tokens, feature queues, drift prevention, and pass cadence."
-  },
-  "design_parity_todo": {
-    "path": "docs/design_parity/design_parity_todo.md",
-    "version": "0.2.85",
-    "updated": "2026-06-22",
-    "status": "active",
-    "read_policy": "Use as the detailed working backlog and historical evidence trail; prefer docs/design_parity/comprehensive_todo.md for current execution order."
+    "read_policy": "Use as the canonical and only human-readable execution checklist for remaining design-parity work; detailed state and evidence live in JSON ledgers and pass receipts."
   },
   "claude_widgetbook_inventory": {
     "path": "docs/design_parity/claude_widgetbook_inventory.md",
@@ -139,33 +161,26 @@
     "status": "active",
     "read_policy": "Use for the Event Detail composition migration map, Claude-to-Flutter section inventory, current state coverage, and first implementation slice."
   },
-  "error_handling_audit": {
-    "path": "docs/error-handling-audit.md",
-    "version": "2.7.2",
-    "updated": "2026-06-20",
-    "status": "active",
-    "read_policy": "Use as the current app-wide error-management source of truth, backend migration checklist, frontend/local error-management playbook, app error catalogue, descriptor contract, naming convention, and branded error surface guidance; refresh with dart tool/audit/backend_error_candidates.dart before new backend error work and create the app-wide scanner before frontend/local migration."
-  },
   "data_contracts": {
     "path": "docs/data_contracts.md",
-    "version": "1.1.6",
-    "updated": "2026-06-24",
+    "version": "1.1.7",
+    "updated": "2026-06-30",
     "status": "active",
     "read_policy": "Read before Firestore rules, Functions mutation boundaries, schema-source tooling, Dart/TypeScript model generation, callable validation schemas, seed validation, relationship documents, data migrations, or rules test execution."
   },
   "backend_operation_catalog": {
     "path": "docs/backend_operation_catalog.md",
-    "version": "1.2.2",
-    "updated": "2026-05-21",
+    "version": "1.2.3",
+    "updated": "2026-06-30",
     "status": "active",
     "read_policy": "Read before changing repository writes, callable interfaces, trigger-owned projections, server-only collections, Firestore rules for write paths, or notification fan-out."
   },
   "project_context": {
     "path": "PROJECT_CONTEXT.md",
-    "version": "2.1.6",
-    "updated": "2026-05-22",
+    "version": "2.1.8",
+    "updated": "2026-06-30",
     "status": "active",
-    "read_policy": "Use as the high-level repo map; prefer audit registry and focused docs for pass-specific rules."
+    "read_policy": "Use as the high-level repo map; prefer docs/app_architecture.md for app code-organization policy and focused docs for pass-specific rules."
   },
   "repo_readme": {
     "path": "README.md",
@@ -181,17 +196,10 @@
     "status": "active",
     "read_policy": "Read before changing Firebase environment config, App Check, project aliases, native/web config files, or deploy prerequisites."
   },
-  "ui_architecture": {
-    "path": "docs/ui_architecture.md",
-    "version": "1.4.0",
-    "updated": "2026-06-17",
-    "status": "active",
-    "read_policy": "Read before changing shared screen padding, tab body insets, sliver-native screens, NestedScrollView tabs, sticky headers, scroll ownership, semantic UI lint policy, design-token tier ownership, Style Dictionary adoption, or component contract registry policy."
-  },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.443",
-    "updated": "2026-06-28",
+    "version": "2.5.452",
+    "updated": "2026-06-30",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },
@@ -218,24 +226,24 @@
   },
   "release_operations": {
     "path": "docs/release_operations.md",
-    "version": "1.7.7",
-    "updated": "2026-05-28",
+    "version": "1.7.8",
+    "updated": "2026-06-30",
     "status": "active",
-    "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, store readiness, or release evidence."
+    "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, store readiness, app-shell integration coverage, host TestFlight setup, or release evidence."
   },
   "web_surface_architecture": {
     "path": "docs/web_surface_architecture.md",
-    "version": "0.3.0",
-    "updated": "2026-06-02",
+    "version": "0.6.0",
+    "updated": "2026-06-30",
     "status": "active",
-    "read_policy": "Read before changing website stacks, Firebase Hosting targets, domain/subdomain routing, public marketing pages, Flutter web deployment, admin web deployment, or host portal placement."
+    "read_policy": "Read before changing website stacks, Firebase Hosting targets, domain/subdomain routing, public marketing pages, organizer website functionality, Flutter web deployment, admin web deployment, or host portal placement."
   },
   "host_listing_discovery_architecture": {
     "path": "docs/plans/host_listing_discovery_architecture.md",
-    "version": "0.2.0",
-    "updated": "2026-06-24",
+    "version": "0.3.0",
+    "updated": "2026-06-30",
     "status": "draft",
-    "read_policy": "Read before changing organizer/event discovery, source-mention extraction, deterministic dedupe, LLM adjudication, admin review packets, claimable listings, or Firestore projection planning."
+    "read_policy": "Read before changing organizer/event discovery, source-mention extraction, deterministic dedupe, LLM adjudication, admin review packets, claimable listings, organizer claim workflow, or Firestore projection planning."
   },
   "marketing_app_media_pipeline": {
     "path": "docs/marketing_app_media_pipeline.md",
@@ -246,17 +254,10 @@
   },
   "marketing_landing_page_research": {
     "path": "docs/marketing_landing_page_research.md",
-    "version": "0.3.0",
-    "updated": "2026-06-02",
-    "status": "active",
-    "read_policy": "Read before redesigning the Catch marketing site, changing launch landing-page content, selecting website imagery, or applying website-derived brand direction to the app theme; this doc supersedes the rejected run-only preview."
-  },
-  "marketing_landing_page_tracker": {
-    "path": "docs/marketing_landing_page_tracker.md",
     "version": "0.4.0",
-    "updated": "2026-06-02",
-    "status": "temporary_active",
-    "read_policy": "Use while the marketing landing-page research, rejected isolated preview, corrected preview, production rewrite, and app visual-direction follow-up remain open."
+    "updated": "2026-06-30",
+    "status": "active",
+    "read_policy": "Read before redesigning the Catch marketing site, changing launch landing-page content, selecting website imagery, applying website-derived brand direction to the app theme, or checking production rewrite guardrails."
   },
   "location_stack": {
     "path": "docs/location_stack_plan.md",
@@ -292,5 +293,40 @@
     "updated": "2026-05-25",
     "status": "active",
     "read_policy": "Read before changing sales-grade synthetic personas, host demo seed quality, image generation pilots, persona catalog migration, or high-fidelity demo acceptance criteria."
+  },
+  "design_language": {
+    "path": "docs/design_language.md",
+    "version": "1.2.0",
+    "updated": "2026-06-30",
+    "status": "active",
+    "read_policy": "Read before changing Catch visual identity, palette, typography, photography treatment, metaphors, motion, or remaining map-pin palette policy."
+  },
+  "ui_elevation_implementation": {
+    "path": "docs/ui_elevation_implementation.md",
+    "version": "2.2.0",
+    "updated": "2026-06-30",
+    "status": "temporary_active",
+    "read_policy": "Read only while closing UI elevation/design-system re-sync implementation details; durable identity lives in design_language.md and architecture/layout rules live in app_architecture.md."
+  },
+  "admin_analytics_dashboard_spec": {
+    "path": "docs/admin_analytics_dashboard_spec.md",
+    "version": "0.2.0",
+    "updated": "2026-06-30",
+    "status": "active",
+    "read_policy": "Read before changing admin app architecture, live ops actions, admin APIs, analytics dashboard metrics, finance queues, BigQuery marts, or admin deployment."
+  },
+  "admin_dashboard_user_stories_and_component_catalogue": {
+    "path": "docs/admin_dashboard_user_stories_and_component_catalogue.md",
+    "version": "0.2.1",
+    "updated": "2026-06-30",
+    "status": "active",
+    "read_policy": "Read before redesigning admin dashboard tabs, user stories, workflow fit, or React admin primitive/component migration."
+  },
+  "catch_ui_lint_rules_plan": {
+    "path": "docs/plans/catch_ui_lint_rules_plan.md",
+    "version": "0.5.0",
+    "updated": "2026-06-30",
+    "status": "temporary_active",
+    "read_policy": "Read when changing packages/catch_ui_lints, UI analyzer diagnostics, UI scanner wrapper commands, or visual drift governance."
   }
 }

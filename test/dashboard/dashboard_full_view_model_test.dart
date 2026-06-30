@@ -6,7 +6,7 @@ import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendation
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
-import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
+import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';

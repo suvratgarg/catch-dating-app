@@ -6,11 +6,11 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
-import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
-import 'package:catch_dating_app/matches/presentation/host_inbox_filter.dart';
-import 'package:catch_dating_app/matches/presentation/widgets/chat_conversations_list.dart';
-import 'package:catch_dating_app/matches/presentation/widgets/chats_empty_state.dart';
-import 'package:catch_dating_app/matches/presentation/widgets/chats_list_body.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversations_list.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_state.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list_body.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/match_celebration_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -285,14 +285,18 @@ class ChatPersonRowSkeleton extends StatelessWidget {
                       height: CatchLayout.chatListAvatarExtent,
                       radius: CatchRadius.md,
                     )
-                  : CatchSkeleton.circle(size: CatchLayout.chatListAvatarExtent),
+                  : CatchSkeleton.circle(
+                      size: CatchLayout.chatListAvatarExtent,
+                    ),
               const SizedBox(width: CatchLayout.chatListTextGap),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+                    CatchSkeleton.text(
+                      width: CatchLayout.skeletonTextTitleWidth,
+                    ),
                     const SizedBox(height: CatchSpacing.micro6),
                     CatchSkeleton.text(),
                   ],

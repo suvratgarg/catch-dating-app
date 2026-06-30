@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 1,
-  "updated": "2026-06-29",
+  "updated": "2026-06-30",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -10,33 +10,33 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1061,
-    "widgetClasses": 962,
-    "stateClasses": 99,
+    "total": 1049,
+    "widgetClasses": 949,
+    "stateClasses": 100,
     "publicClasses": 917,
-    "privateClasses": 144,
+    "privateClasses": 132,
     "byRole": {
       "atom": 35,
-      "composition": 277,
-      "feature-adapter": 319,
+      "composition": 278,
+      "feature-adapter": 305,
       "pattern": 14,
       "screen": 317,
-      "widget-state": 99
+      "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 100,
-      "keep-public-cataloged": 655,
-      "keep-widget-state": 99,
-      "review-catalog-coverage": 160,
-      "review-promote-or-consolidate": 2,
-      "review-promote-or-inline": 45
+      "keep-public-cataloged": 654,
+      "keep-widget-state": 100,
+      "review-catalog-coverage": 159,
+      "review-promote-or-consolidate": 4,
+      "review-promote-or-inline": 32
     },
     "byCatalogStatus": {
       "cataloged": 572,
       "contracted": 100,
-      "not-applicable": 99,
+      "not-applicable": 100,
       "route-covered": 85,
-      "uncataloged": 205
+      "uncataloged": 192
     }
   },
   "widgets": [
@@ -248,328 +248,6 @@
       "flags": []
     },
     {
-      "name": "_CalendarScreenState",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
-      "classKind": "widget-state",
-      "baseClass": "ConsumerState<CalendarScreen>",
-      "visibility": "private",
-      "role": "widget-state",
-      "canonicalFamily": "state.calendar_screen",
-      "publicApi": false,
-      "catalogStatus": "not-applicable",
-      "contractId": null,
-      "allowedDependencyLevel": "owning-widget-state",
-      "stateOwnership": "owning-widget-state",
-      "asyncOwnership": "owning-widget-state",
-      "layoutOwnership": "owning-widget-state",
-      "actionOwnership": "owning-widget-state",
-      "decision": "keep-widget-state",
-      "remediationOptions": [
-        "moveStateToController",
-        "routeThroughScreenState"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CalendarDateHeader",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.calendar_date_header",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CalendarDateHeaderSkeleton",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.calendar_date_header_skeleton",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CalendarLoadingScreen",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.calendar_loading_screen",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CalendarMessage",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.calendar_message",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CalendarMonthGrid",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.calendar_month_grid",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CalendarScreen",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
-      "classKind": "widget",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.calendar_screen",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CalendarStatDivider",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.calendar_stat_divider",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CalendarStatsHeader",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.calendar_stats_header",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CalendarStatsHeaderSkeleton",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.calendar_stats_header_skeleton",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CalendarStatSkeleton",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.calendar_stat_skeleton",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CalendarTitleRow",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.calendar_title_row",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CalendarWeekStrip",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.calendar_week_strip",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CalendarWeekStripSkeleton",
-      "file": "lib/calendar/presentation/calendar_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.calendar_week_strip_skeleton",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "_ChatScreenState",
       "file": "lib/chats/presentation/chat_screen.dart",
       "classKind": "widget-state",
@@ -616,6 +294,295 @@
       "flags": []
     },
     {
+      "name": "_ChatsListScreenState",
+      "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+      "classKind": "widget-state",
+      "baseClass": "ConsumerState<ChatsListScreen>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.chats_list_screen",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "ChatsListScreen",
+      "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.chats_list_screen",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "HostBroadcastComposerSheet",
+      "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.host_broadcast_composer_sheet",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "ChatConversationsList",
+      "file": "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.chat_conversations_list",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "ChatsEmptyState",
+      "file": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.chats.chats_empty_state",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "ChatsListBody",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.chats_list_body",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "HostInboxBroadcastCard",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.host_inbox_broadcast_card",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "ChatPersonRowSkeleton",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.chats.chat_person_row_skeleton",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "review-catalog-coverage",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
+      "name": "ChatsList",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.chats_list",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": [
+        "primitive-imports-data-layer",
+        "primitive-imports-provider-layer"
+      ]
+    },
+    {
+      "name": "ChatsListSkeleton",
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.chats.chats_list_skeleton",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "review-catalog-coverage",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
+      "name": "_ChatsBrowseHeaderState",
+      "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+      "classKind": "widget-state",
+      "baseClass": "ConsumerState<ChatsBrowseHeader>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.chats_browse_header",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "ChatsBrowseHeader",
+      "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.chats_browse_header",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": [
+        "primitive-imports-provider-layer"
+      ]
+    },
+    {
       "name": "ChatEventContextHeader",
       "file": "lib/chats/presentation/widgets/chat_event_context_header.dart",
       "classKind": "widget",
@@ -639,32 +606,6 @@
       "flags": []
     },
     {
-      "name": "_ComposerIconAction",
-      "file": "lib/chats/presentation/widgets/chat_input_bar.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.chats.composer_icon_action",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
-    },
-    {
       "name": "ChatInputBar",
       "file": "lib/chats/presentation/widgets/chat_input_bar.dart",
       "classKind": "widget",
@@ -686,110 +627,6 @@
         "mergeIntoCanonical"
       ],
       "flags": []
-    },
-    {
-      "name": "_ChatBubbleSkeleton",
-      "file": "lib/chats/presentation/widgets/chat_message_list.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.chats.chat_bubble_skeleton",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
-    },
-    {
-      "name": "_ChatDateSeparator",
-      "file": "lib/chats/presentation/widgets/chat_message_list.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.chats.chat_date_separator",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
-    },
-    {
-      "name": "_ChatDateSkeleton",
-      "file": "lib/chats/presentation/widgets/chat_message_list.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.chats.chat_date_skeleton",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
-    },
-    {
-      "name": "_ChatMessageListSkeleton",
-      "file": "lib/chats/presentation/widgets/chat_message_list.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.chats.chat_message_list_skeleton",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
     },
     {
       "name": "ChatMessageList",
@@ -1013,32 +850,6 @@
       "flags": []
     },
     {
-      "name": "_CircleActionButton",
-      "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.chats.circle_action_button",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
-    },
-    {
       "name": "_MatchTesterSheetState",
       "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
       "classKind": "widget-state",
@@ -1060,162 +871,6 @@
         "routeThroughScreenState"
       ],
       "flags": []
-    },
-    {
-      "name": "_SuvbotButton",
-      "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.chats.suvbot_button",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
-    },
-    {
-      "name": "_SuvbotControls",
-      "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.chats.suvbot_controls",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
-    },
-    {
-      "name": "_SuvbotGroupLabel",
-      "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.chats.suvbot_group_label",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
-    },
-    {
-      "name": "_SuvbotLoadError",
-      "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.chats.suvbot_load_error",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
-    },
-    {
-      "name": "_SuvbotLoadingControls",
-      "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.chats.suvbot_loading_controls",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
-    },
-    {
-      "name": "_SuvbotPresetButton",
-      "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.chats.suvbot_preset_button",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
     },
     {
       "name": "MatchTesterSheet",
@@ -4143,33 +3798,6 @@
       "flags": []
     },
     {
-      "name": "_CatchMiniBar",
-      "file": "lib/core/widgets/catch_mini_bar_chart.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "composition",
-      "canonicalFamily": "catch.catch_mini_bar",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "core-widget-without-contract",
-        "private-widget-publicization-required"
-      ]
-    },
-    {
       "name": "CatchMiniBarChart",
       "file": "lib/core/widgets/catch_mini_bar_chart.dart",
       "classKind": "widget",
@@ -5438,6 +5066,153 @@
       "publicApi": true,
       "catalogStatus": "contracted",
       "contractId": "catch.section.vertical_section",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "EventActivityBackdrop",
+      "file": "lib/core/widgets/event_activity_visuals.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.event_card",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.event_card.activity_backdrop",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "EventHeroSurface",
+      "file": "lib/core/widgets/event_ticket_surface.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.event_hero_surface",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
+      "name": "EventTicketPerforatedDivider",
+      "file": "lib/core/widgets/event_ticket_surface.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.event_card",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.event_card.perforated_divider",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "EventActivityStamp",
+      "file": "lib/core/widgets/event_visual_atoms.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.event_activity_stamp",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
+      "name": "EventClockMark",
+      "file": "lib/core/widgets/event_visual_atoms.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.event_card",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.event_card.clock_mark",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "EventStatusPill",
+      "file": "lib/core/widgets/event_visual_atoms.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.event_card",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.event_card.status_pill",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
@@ -12290,22 +12065,321 @@
       "flags": []
     },
     {
-      "name": "EventActivityBackdrop",
-      "file": "lib/events/presentation/event_activity_visuals.dart",
+      "name": "_CalendarScreenState",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "classKind": "widget-state",
+      "baseClass": "ConsumerState<CalendarScreen>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.calendar_screen",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CalendarDateHeader",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "classKind": "widget",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.event_card",
+      "role": "screen",
+      "canonicalFamily": "screen.calendar_date_header",
       "publicApi": true,
-      "catalogStatus": "contracted",
-      "contractId": "catch.event_card.activity_backdrop",
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-canonical-contract",
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CalendarDateHeaderSkeleton",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.calendar_date_header_skeleton",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CalendarLoadingScreen",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.calendar_loading_screen",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CalendarMessage",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.calendar_message",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CalendarMonthGrid",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.calendar_month_grid",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CalendarScreen",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.calendar_screen",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CalendarStatDivider",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.calendar_stat_divider",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CalendarStatsHeader",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.calendar_stats_header",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CalendarStatsHeaderSkeleton",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.calendar_stats_header_skeleton",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CalendarStatSkeleton",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.calendar_stat_skeleton",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CalendarTitleRow",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.calendar_title_row",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CalendarWeekStrip",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.calendar_week_strip",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CalendarWeekStripSkeleton",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.calendar_week_strip_skeleton",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
         "keepPublicCataloged",
         "mergeIntoCanonical"
@@ -14326,6 +14400,7 @@
         "inlineDelete"
       ],
       "flags": [
+        "primitive-imports-data-layer",
         "private-widget-publicization-required"
       ]
     },
@@ -14376,7 +14451,9 @@
         "keepPublicCataloged",
         "mergeIntoCanonical"
       ],
-      "flags": []
+      "flags": [
+        "primitive-imports-data-layer"
+      ]
     },
     {
       "name": "EventStatsGrid",
@@ -14395,56 +14472,6 @@
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
       "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "EventHeroSurface",
-      "file": "lib/events/presentation/widgets/event_ticket_surface.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.events.event_hero_surface",
-      "publicApi": true,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
-      "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
-    },
-    {
-      "name": "EventTicketPerforatedDivider",
-      "file": "lib/events/presentation/widgets/event_ticket_surface.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.event_card",
-      "publicApi": true,
-      "catalogStatus": "contracted",
-      "contractId": "catch.event_card.perforated_divider",
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-canonical-contract",
       "remediationOptions": [
         "keepPublicCataloged",
         "mergeIntoCanonical"
@@ -14742,75 +14769,6 @@
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
       "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "EventActivityStamp",
-      "file": "lib/events/presentation/widgets/event_tiles/event_visual_atoms.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.events.event_activity_stamp",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "EventClockMark",
-      "file": "lib/events/presentation/widgets/event_tiles/event_visual_atoms.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.event_card",
-      "publicApi": true,
-      "catalogStatus": "contracted",
-      "contractId": "catch.event_card.clock_mark",
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-canonical-contract",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "EventStatusPill",
-      "file": "lib/events/presentation/widgets/event_tiles/event_visual_atoms.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.event_card",
-      "publicApi": true,
-      "catalogStatus": "contracted",
-      "contractId": "catch.event_card.status_pill",
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-canonical-contract",
       "remediationOptions": [
         "keepPublicCataloged",
         "mergeIntoCanonical"
@@ -16134,6 +16092,29 @@
       ]
     },
     {
+      "name": "_ExploreDiscoveryCoverHeaderState",
+      "file": "lib/explore/presentation/widgets/explore_header.dart",
+      "classKind": "widget-state",
+      "baseClass": "ConsumerState<ExploreDiscoveryCoverHeader>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.explore_discovery_cover_header",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
       "name": "ExploreBrowseHeaderContent",
       "file": "lib/explore/presentation/widgets/explore_header.dart",
       "classKind": "widget",
@@ -16160,7 +16141,7 @@
       "name": "ExploreDiscoveryCoverHeader",
       "file": "lib/explore/presentation/widgets/explore_header.dart",
       "classKind": "widget",
-      "baseClass": "ConsumerWidget",
+      "baseClass": "ConsumerStatefulWidget",
       "visibility": "public",
       "role": "composition",
       "canonicalFamily": "catch.explore_discovery_cover_header",
@@ -20990,295 +20971,6 @@
         "mergeIntoCanonical"
       ],
       "flags": []
-    },
-    {
-      "name": "_ChatsListScreenState",
-      "file": "lib/matches/presentation/matches_list_screen.dart",
-      "classKind": "widget-state",
-      "baseClass": "ConsumerState<ChatsListScreen>",
-      "visibility": "private",
-      "role": "widget-state",
-      "canonicalFamily": "state.chats_list_screen",
-      "publicApi": false,
-      "catalogStatus": "not-applicable",
-      "contractId": null,
-      "allowedDependencyLevel": "owning-widget-state",
-      "stateOwnership": "owning-widget-state",
-      "asyncOwnership": "owning-widget-state",
-      "layoutOwnership": "owning-widget-state",
-      "actionOwnership": "owning-widget-state",
-      "decision": "keep-widget-state",
-      "remediationOptions": [
-        "moveStateToController",
-        "routeThroughScreenState"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ChatsListScreen",
-      "file": "lib/matches/presentation/matches_list_screen.dart",
-      "classKind": "widget",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.chats_list_screen",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "HostBroadcastComposerSheet",
-      "file": "lib/matches/presentation/matches_list_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_broadcast_composer_sheet",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ChatConversationsList",
-      "file": "lib/matches/presentation/widgets/chat_conversations_list.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.chat_conversations_list",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ChatsEmptyState",
-      "file": "lib/matches/presentation/widgets/chats_empty_state.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.matches.chats_empty_state",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ChatsListBody",
-      "file": "lib/matches/presentation/widgets/chats_list_body.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.chats_list_body",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "HostInboxBroadcastCard",
-      "file": "lib/matches/presentation/widgets/chats_list_body.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.host_inbox_broadcast_card",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ChatPersonRowSkeleton",
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.matches.chat_person_row_skeleton",
-      "publicApi": true,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
-      "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
-    },
-    {
-      "name": "ChatsList",
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
-      "classKind": "widget",
-      "baseClass": "ConsumerWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.chats_list",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": [
-        "primitive-imports-data-layer",
-        "primitive-imports-provider-layer"
-      ]
-    },
-    {
-      "name": "ChatsListSkeleton",
-      "file": "lib/matches/presentation/widgets/chats_list.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.matches.chats_list_skeleton",
-      "publicApi": true,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
-      "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
-    },
-    {
-      "name": "_ChatsBrowseHeaderState",
-      "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
-      "classKind": "widget-state",
-      "baseClass": "ConsumerState<ChatsBrowseHeader>",
-      "visibility": "private",
-      "role": "widget-state",
-      "canonicalFamily": "state.chats_browse_header",
-      "publicApi": false,
-      "catalogStatus": "not-applicable",
-      "contractId": null,
-      "allowedDependencyLevel": "owning-widget-state",
-      "stateOwnership": "owning-widget-state",
-      "asyncOwnership": "owning-widget-state",
-      "layoutOwnership": "owning-widget-state",
-      "actionOwnership": "owning-widget-state",
-      "decision": "keep-widget-state",
-      "remediationOptions": [
-        "moveStateToController",
-        "routeThroughScreenState"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ChatsBrowseHeader",
-      "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
-      "classKind": "widget",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.chats_browse_header",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": [
-        "primitive-imports-provider-layer"
-      ]
     },
     {
       "name": "MatchCelebrationDialog",

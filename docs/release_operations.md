@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.7.7
-updated: 2026-06-18
+version: 1.7.8
+updated: 2026-06-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -732,9 +732,8 @@ emulator backed.
 
 Last updated: 2026-06-04.
 
-The deterministic app-shell integration coverage is tracked in
-`docs/plans/integration_test_architecture_tracker.md`. Run the split local
-suite with:
+The deterministic app-shell integration architecture is folded into this
+release runbook. Run the split local suite with:
 
 ```bash
 node tool/run.mjs run test:app-shell-integration
@@ -812,10 +811,15 @@ distribution:
    does not expose the `host-prod` scheme through `CI_XCODE_SCHEME`.
    App Store Connect web for app id `6778927317` currently says to create the
    workflow in Xcode.
-2. Confirm provisioning, Associated Domains, HealthKit, Maps key injection,
+2. Add the required Xcode Cloud secret `GOOGLE_MAPS_IOS_API_KEY_PROD`.
+3. Confirm provisioning, Associated Domains, HealthKit, Maps key injection,
    App Attest, and Firebase host config are present in the exported host IPA.
-3. Upload one host build to TestFlight and verify install, launch, App Check,
-   maps, phone auth, push registration, and host event-management entrypoints.
+4. Upload one host build to TestFlight and verify install, launch, App Check,
+   maps rendering, phone auth, push registration, and host event-management
+   entrypoints.
+5. Record Play internal-testing proof separately after Play Console enrollment;
+   Play app-signing certificate fingerprints still need to be added to Firebase
+   before Android release evidence is complete.
 
 Current host icon status: host builds use generated `AppIcon-host-dev`,
 `AppIcon-host-staging`, and `AppIcon-host-prod` catalogs on iOS/macOS, plus

@@ -37,6 +37,31 @@
         "Docs index and doc_versions remain current for five broad passes"
       ]
     },
+    "AGENT-HARNESS-001": {
+      "title": "Use the agent harness for broad AI-assisted work",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "agent_operating_model",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/agent_regression_ledger.json",
+        "docs/agent_skills/**",
+        "docs/audit_registry/**",
+        "tool/agent/**",
+        "tool/tools_manifest.json",
+        "lib/**",
+        "docs/**",
+        "tool/**"
+      ],
+      "instruction": "Before broad cleanup, refactor, docs consolidation, design parity, or workflow-harness work, generate a scoped context pack, check matching regression guards, run the agent readiness gate, and record proof or blockers in the audit registry. Add durable failure modes to docs/agent_regression_ledger.json instead of relying on thread memory.",
+      "sunset_when": [
+        "The agent readiness gate is mandatory in CI for broad-work branches",
+        "Five consecutive broad passes include context-pack proof, readiness proof, and no missing regression-ledger updates"
+      ]
+    },
     "CODEGEN-001": {
       "title": "Keep generated Dart outputs synchronized during iterative work",
       "status": "active",
@@ -145,8 +170,8 @@
       "title": "Codify audited UI invariants as analyzer plugin rules",
       "status": "active",
       "introduced_in": {
-        "doc_id": "ui_architecture",
-        "version": "1.2.0"
+        "doc_id": "app_architecture",
+        "version": "1.1.0"
       },
       "applies_to": [
         "analysis_options.yaml",
@@ -222,8 +247,8 @@
       "title": "Keep product behavior out of presentation widgets",
       "status": "active",
       "introduced_in": {
-        "doc_id": "controller_patterns",
-        "version": "2.1.0"
+        "doc_id": "app_architecture",
+        "version": "1.1.0"
       },
       "applies_to": [
         "lib/**/presentation/**"
@@ -237,8 +262,8 @@
       "title": "Use feature-owned provider seams",
       "status": "active",
       "introduced_in": {
-        "doc_id": "controller_patterns",
-        "version": "2.1.0"
+        "doc_id": "app_architecture",
+        "version": "1.1.0"
       },
       "applies_to": [
         "lib/**"
@@ -327,8 +352,8 @@
       "title": "Use branded error surfaces for app-facing failures",
       "status": "active",
       "introduced_in": {
-        "doc_id": "error_handling_audit",
-        "version": "2.1.0"
+        "doc_id": "app_architecture",
+        "version": "1.1.0"
       },
       "applies_to": [
         "lib/**/presentation/**",
@@ -345,17 +370,17 @@
       "title": "Keep the app error catalogue current",
       "status": "active",
       "introduced_in": {
-        "doc_id": "error_handling_audit",
-        "version": "2.3.0"
+        "doc_id": "app_architecture",
+        "version": "1.1.0"
       },
       "applies_to": [
         "lib/exceptions/**",
         "lib/core/*error*",
         "lib/core/widgets/catch_error*",
         "lib/**/presentation/**",
-        "docs/error-handling-audit.md"
+        "docs/app_architecture.md"
       ],
-      "instruction": "When adding, renaming, or removing an AppException subclass, stable error code, error mapper, AppErrorContext, branded error primitive, or repeated app-facing failure category, update the catalogue, naming convention, and decision-tree sections in docs/error-handling-audit.md in the same pass. Add typed exceptions only for stable product/domain errors that need branching, analytics, retry policy, or tests; use mapped copy for one-off message changes.",
+      "instruction": "When adding, renaming, or removing an AppException subclass, stable error code, error mapper, AppErrorContext, branded error primitive, or repeated app-facing failure category, update the error handling contract and error quick-reference sections in docs/app_architecture.md in the same pass. Add typed exceptions only for stable product/domain errors that need branching, analytics, retry policy, or tests; use mapped copy for one-off message changes.",
       "sunset_when": [
         "A generated or CI-backed error catalogue check validates subclass/code/doc parity"
       ]
@@ -364,8 +389,8 @@
       "title": "Advance multi-step flows only after required mutations succeed",
       "status": "active",
       "introduced_in": {
-        "doc_id": "controller_patterns",
-        "version": "2.0.0"
+        "doc_id": "app_architecture",
+        "version": "1.1.0"
       },
       "applies_to": [
         "lib/**/presentation/**",

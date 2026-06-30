@@ -60,17 +60,12 @@ class SavedEventRepository {
         .where('uid', isEqualTo: uid)
         .snapshots()
         .map(
-          (snap) => snap.docs
-              .map((doc) => doc.data().eventId)
-              .toSet()
-              .toList(),
+          (snap) => snap.docs.map((doc) => doc.data().eventId).toSet().toList(),
         );
 
-    return withBackendErrorStream(
-      () => watchEventsByIdStream(
-        idStream: idStream,
-        eventsRef: _eventsRef,
-      ),
+    return watchEventsByIdStream(
+      idStream: idStream,
+      eventsRef: _eventsRef,
       context: const BackendErrorContext(
         service: BackendService.firestore,
         action: 'watch saved event details',

@@ -38,9 +38,9 @@ class ExploreBody extends ConsumerWidget {
 }
 
 /// Returns the slivers that make up the Explore feed body — mixed event/club
-/// discovery feed, optional legacy club rails, and browse prompts — as a flat list so they can be
-/// spread directly into a parent `CustomScrollView.slivers` without
-/// triggering nested-group layout pathologies.
+/// discovery feed, optional legacy club rails, and browse prompts — as a flat
+/// list so they can be spread directly into a parent `CustomScrollView.slivers`
+/// without triggering nested-group layout pathologies.
 List<Widget> buildExploreBodySlivers({
   required BuildContext context,
   required WidgetRef ref,
@@ -52,21 +52,19 @@ List<Widget> buildExploreBodySlivers({
   return [
     if (includeJoinedClubsRail && viewModel.joinedClubs.isNotEmpty)
       SliverToBoxAdapter(child: ClubAvatarRail(clubs: viewModel.joinedClubs)),
-    if (viewModel.allClubs.isNotEmpty)
-      ...buildExploreEventsSlivers(
-        ref,
-        candidateClubs: viewModel.allClubs,
-        joinedClubIds: viewModel.joinedClubIds,
-        pinnedDayHeaders: pinnedExploreDayHeaders,
-      ),
+    ...buildExploreEventsSlivers(
+      ref,
+      candidateClubs: viewModel.allClubs,
+      joinedClubIds: viewModel.joinedClubIds,
+      pinnedDayHeaders: pinnedExploreDayHeaders,
+    ),
     if (includeClubDirectory && viewModel.allClubs.isNotEmpty)
       ...buildClubDirectorySlivers(
         context: context,
         clubs: viewModel.allClubs,
         joinedClubIds: viewModel.joinedClubIds,
       ),
-    if (viewModel.allClubs.isNotEmpty)
-      const SliverToBoxAdapter(child: ExploreEventTypeBrowseGrid()),
+    const SliverToBoxAdapter(child: ExploreEventTypeBrowseGrid()),
     const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
   ];
 }

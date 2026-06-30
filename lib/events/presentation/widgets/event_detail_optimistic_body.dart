@@ -56,15 +56,33 @@ class EventDetailOptimisticBody extends StatelessWidget {
       backgroundColor: style.pageBackground,
       body: CustomScrollView(
         slivers: [
-          _buildHeroAppBar(context),
-          SliverToBoxAdapter(
-            child: EventDetailTicketStubBand(event: event),
+          EventDetailHeroAppBar(
+            event: event,
+            isSaved: false,
+            savePending: false,
+            onBack: () => Navigator.of(context).pop(),
+            onShare: (_) {},
+            showAddToCalendar: false,
+            onAddToCalendar: (_) {},
+            presentationMode: presentationMode,
+            heroTag: heroTag,
+            onToggleSaved: _onToggleSaved(context),
           ),
+          SliverToBoxAdapter(child: EventDetailTicketStubBand(event: event)),
           CatchDetailSliverSectionList(
             topPadding: CatchSpacing.screenPt,
             bottomPadding: CatchSpacing.screenPb,
             sections: [
-              _buildOverviewSection(context, style),
+              EventDetailOverviewSection(
+                event: event,
+                surfaceStyle: style,
+                onLocationTap: event.hasExactStartingPoint
+                    ? () => context.pushNamed(
+                        Routes.eventLocationMapScreen.name,
+                        pathParameters: {'eventId': event.id},
+                      )
+                    : null,
+              ),
               const _OptimisticHostsSkeleton(),
               const _OptimisticSocialSkeleton(),
             ],
@@ -74,51 +92,20 @@ class EventDetailOptimisticBody extends StatelessWidget {
     );
   }
 
-  Widget _buildHeroAppBar(BuildContext context) {
-    return EventDetailHeroAppBar(
-      event: event,
-      isSaved: false,
-      savePending: false,
-      onBack: () => Navigator.of(context).pop(),
-      onShare: (_) {},
-      showAddToCalendar: false,
-      onAddToCalendar: (_) {},
-      presentationMode: presentationMode,
-      heroTag: heroTag,
-      onToggleSaved: _onToggleSaved(context),
-    );
-  }
-
-  Widget _buildOverviewSection(
-    BuildContext context,
-    EventDetailSurfaceStyle style,
-  ) {
-    return EventDetailOverviewSection(
-      event: event,
-      surfaceStyle: style,
-      onLocationTap: event.hasExactStartingPoint
-          ? () => context.pushNamed(
-                Routes.eventLocationMapScreen.name,
-                pathParameters: {'eventId': event.id},
-              )
-          : null,
-    );
-  }
-
   VoidCallback _onToggleSaved(BuildContext context) {
     return () => context.go(
-          Uri(
-            path: Routes.authScreen.path,
-            queryParameters: {
-              'from': AppDeepLinks.inAppEventPath(
-                clubId: clubId,
-                eventId: event.id,
-                inviteCode: inviteCode,
-                inviteLinkId: inviteLinkId,
-              ),
-            },
-          ).toString(),
-        );
+      Uri(
+        path: Routes.authScreen.path,
+        queryParameters: {
+          'from': AppDeepLinks.inAppEventPath(
+            clubId: clubId,
+            eventId: event.id,
+            inviteCode: inviteCode,
+            inviteLinkId: inviteLinkId,
+          ),
+        },
+      ).toString(),
+    );
   }
 }
 

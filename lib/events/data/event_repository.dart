@@ -153,11 +153,9 @@ class EventRepository {
     final uniqueIds = eventIds.toSet().toList()..sort();
     if (uniqueIds.isEmpty) return Stream.value(const []);
 
-    return withBackendErrorStream(
-      () => watchEventsByIdStream(
-        idStream: Stream.value(uniqueIds),
-        eventsRef: _eventsRef,
-      ),
+    return watchEventsByIdStream(
+      idStream: Stream.value(uniqueIds),
+      eventsRef: _eventsRef,
       context: const BackendErrorContext(
         service: BackendService.firestore,
         action: 'watch events by id',
@@ -183,18 +181,13 @@ class EventRepository {
         : query.where('status', whereIn: statusNames);
 
     final idStream = query.snapshots().map(
-      (snap) => snap.docs
-          .map((doc) => doc.data().eventId)
-          .toSet()
-          .toList(),
+      (snap) => snap.docs.map((doc) => doc.data().eventId).toSet().toList(),
     );
 
-    return withBackendErrorStream(
-      () => watchEventsByIdStream(
-        idStream: idStream,
-        eventsRef: _eventsRef,
-        descending: descending,
-      ),
+    return watchEventsByIdStream(
+      idStream: idStream,
+      eventsRef: _eventsRef,
+      descending: descending,
       context: const BackendErrorContext(
         service: BackendService.firestore,
         action: 'watch events by participation',

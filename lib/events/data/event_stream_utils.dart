@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firestore_chunks.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Listens to [idStream] — a stream of event-ID lists — and reconciles them
@@ -22,6 +24,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 Stream<List<Event>> watchEventsByIdStream({
   required Stream<List<String>> idStream,
   required CollectionReference<Event> eventsRef,
+  required BackendErrorContext context,
   bool descending = false,
 }) {
   var eventSubs = <StreamSubscription<QuerySnapshot<Event>>>[];
@@ -51,59 +54,53 @@ Stream<List<Event>> watchEventsByIdStream({
       }
     }
 
-    final events = [
-      for (final id in eventIds)
-        if (byId[id] != null) byId[id]!,
-    ]..sort(
-      (a, b) => descending
-          ? b.startTime.compareTo(a.startTime)
-          : a.startTime.compareTo(b.startTime),
-    );
+    final events =
+        [
+          for (final id in eventIds)
+            if (byId[id] != null) byId[id]!,
+        ]..sort(
+          (a, b) => descending
+              ? b.startTime.compareTo(a.startTime)
+              : a.startTime.compareTo(b.startTime),
+        );
     controller.add(events);
   }
 
   controller = StreamController<List<Event>>(
     onListen: () {
       StreamSubscription<List<String>>? idSub;
-      idSub = idStream.listen(
-        (eventIds) {
-          generation += 1;
-          final localGeneration = generation;
-          cancelEventSubscriptions();
+      idSub = idStream.listen((eventIds) {
+        generation += 1;
+        final localGeneration = generation;
+        cancelEventSubscriptions();
 
-          if (eventIds.isEmpty) {
-            if (!controller.isClosed) controller.add(const []);
-            return;
-          }
+        if (eventIds.isEmpty) {
+          if (!controller.isClosed) controller.add(const []);
+          return;
+        }
 
-          final chunks =
-              chunkedForWhereIn(eventIds).toList(growable: false);
-          final eventsByChunk = <int, List<Event>>{};
+        final chunks = chunkedForWhereIn(eventIds).toList(growable: false);
+        final eventsByChunk = <int, List<Event>>{};
 
-          for (var i = 0; i < chunks.length; i += 1) {
-            final chunk = chunks[i];
-            final sub = eventsRef
-                .where(FieldPath.documentId, whereIn: chunk)
-                .snapshots()
-                .listen(
-                  (eventSnap) {
-                    if (closed || localGeneration != generation) return;
-                    eventsByChunk[i] = eventSnap.docs
-                        .map((doc) => doc.data())
-                        .toList();
-                    emitSortedEvents(
-                      eventIds: eventIds,
-                      eventsByChunk: eventsByChunk,
-                      chunkCount: chunks.length,
-                    );
-                  },
-                  onError: controller.addError,
+        for (var i = 0; i < chunks.length; i += 1) {
+          final chunk = chunks[i];
+          final sub = eventsRef
+              .where(FieldPath.documentId, whereIn: chunk)
+              .snapshots()
+              .listen((eventSnap) {
+                if (closed || localGeneration != generation) return;
+                eventsByChunk[i] = eventSnap.docs
+                    .map((doc) => doc.data())
+                    .toList();
+                emitSortedEvents(
+                  eventIds: eventIds,
+                  eventsByChunk: eventsByChunk,
+                  chunkCount: chunks.length,
                 );
-            eventSubs.add(sub);
-          }
-        },
-        onError: controller.addError,
-      );
+              }, onError: controller.addError);
+          eventSubs.add(sub);
+        }
+      }, onError: controller.addError);
 
       controller.onCancel = () async {
         closed = true;
@@ -116,5 +113,5 @@ Stream<List<Event>> watchEventsByIdStream({
     },
   );
 
-  return controller.stream;
+  return withBackendErrorStream(() => controller.stream, context: context);
 }

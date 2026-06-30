@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.165
-updated: 2026-06-25
+version: 0.2.166
+updated: 2026-06-30
 owner: product_design_parity
 status: active
 ---
@@ -729,8 +729,8 @@ tests, captures, Widgetbook, and audit receipts.
   screen registry or state matrix only when implementation, preview/capture,
   test, and scanner proof exist or the gap is intentionally excluded.
 - [ ] `TODO-MASTER-LEDGER-004` Do not create duplicate backlog docs. Add new
-  design-parity work here, in `design_parity_todo.md` for detailed evidence, or
-  in the relevant JSON registry.
+  design-parity work here or in the relevant JSON registry. This is the only
+  human-readable design-parity worklist.
 
 ### 1. Design References And Pixel Comparison
 

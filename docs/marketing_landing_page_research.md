@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_landing_page_research
-version: 0.3.0
-updated: 2026-06-02
+version: 0.4.0
+updated: 2026-06-30
 owner: marketing_website
 status: active
 ---
@@ -679,3 +679,34 @@ Verification evidence:
 - The homepage was visually inspected against the generated desktop concept and
   the corrected mobile concept. The final implementation intentionally keeps
   the stronger dark editorial direction while removing the old run-only framing.
+
+## Production Tracker Closure
+
+The marketing landing-page tracker is folded into this document. The production
+rewrite shipped, then moved to Vite + React + TypeScript. The rejected isolated
+preview remains historical evidence only; it is not a product direction.
+
+Durable guardrails:
+
+- Do not invent social proof, press, user counts, host revenue, match success,
+  or safety guarantees.
+- Do not return to a run-club-only frame.
+- Do not bury the host path below member-only copy.
+- Keep host tooling concrete: admission, cohort balance, waitlist, payments,
+  check-in/live mode, and reporting where those claims are true.
+- Do not imply every event format supports the same live facilitation depth.
+- Do not ship placeholder phone mockups as the primary proof when deterministic
+  app-sourced captures exist.
+- Keep the screenshot manifest contract intact unless
+  `docs/marketing_app_media_pipeline.md` changes in the same pass.
+
+Residual product decisions:
+
+- Which event formats are public-launch-ready versus roadmap-visible.
+- Whether the next site iteration should keep one combined member/host page or
+  deepen `/host/` as a host-specific conversion page.
+- Which claims are safe today: attendance-gated matching, private catches, host
+  controls, live guide, event-success report, App Store/Play Store timing, and
+  payment.
+- Whether temporary hero/event media should be generated, owned, or blocked
+  until real event photography exists.

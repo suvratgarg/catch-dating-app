@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
+import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -15,7 +15,7 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:flutter/material.dart';
@@ -367,7 +367,8 @@ class CalendarDateHeader extends StatelessWidget {
           : 'Calendar date header. Drag down to expand the month.',
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onVerticalDragUpdate: (details) => onVerticalDragDelta(details.delta.dy),
+        onVerticalDragUpdate: (details) =>
+            onVerticalDragDelta(details.delta.dy),
         child: Padding(
           padding: CatchInsets.pageHeaderCompact,
           child: Column(
@@ -730,13 +731,19 @@ class CalendarMonthGrid extends StatelessWidget {
         for (var week = 0; week < 6; week += 1) ...[
           Row(
             children: [
-              for (var weekday = 0; weekday < DateTime.daysPerWeek; weekday += 1)
+              for (
+                var weekday = 0;
+                weekday < DateTime.daysPerWeek;
+                weekday += 1
+              )
                 Expanded(
                   child: Builder(
                     builder: (context) {
                       final date = DateUtils.dateOnly(
                         gridStart.add(
-                          Duration(days: (week * DateTime.daysPerWeek) + weekday),
+                          Duration(
+                            days: (week * DateTime.daysPerWeek) + weekday,
+                          ),
                         ),
                       );
                       final inMonth = date.month == selectedDate.month;
@@ -782,11 +789,7 @@ class CalendarStatDivider extends StatelessWidget {
 }
 
 class CalendarMessage extends StatelessWidget {
-  const CalendarMessage({
-    super.key,
-    required this.title,
-    required this.body,
-  });
+  const CalendarMessage({super.key, required this.title, required this.body});
 
   final String title;
   final String body;

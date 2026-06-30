@@ -6,4 +6,4 @@ export 'event_date_marker.dart';
 export 'event_date_rail_card.dart';
 export 'event_tile_atoms.dart';
 export 'event_tile_data.dart';
-export 'event_visual_atoms.dart';
+export 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';

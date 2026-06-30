@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "updated": "2026-06-30",
+  "owner": "agent_operating_model",
+  "entries": [
+    {
+      "id": "REG-AGENT-001",
+      "title": "Broad cleanup skips the deterministic audit registry loop",
+      "status": "active",
+      "applies_to": [
+        "lib/**",
+        "test/**",
+        "tool/**",
+        "docs/**"
+      ],
+      "symptom": "A broad cleanup edits ad hoc files, omits registry refresh or pass proof, and leaves future agents without a durable receipt.",
+      "guard": {
+        "type": "command",
+        "command": "dart tool/audit_registry.dart refresh"
+      },
+      "owner_docs": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/audit_registry/README.md"
+      ],
+      "notes": "For cleanup/refactor work, also stamp a pass with focused verification proof before final handoff."
+    },
+    {
+      "id": "REG-AGENT-002",
+      "title": "Design-system primitives drift into aliases or feature-only buckets",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/**",
+        "lib/**/presentation/widgets/**",
+        "docs/design_parity/**",
+        "design/**",
+        "widgetbook/**"
+      ],
+      "symptom": "A design pass preserves duplicate concepts under local aliases instead of converging on a canonical global contract and Widgetbook coverage path.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check --category design"
+      },
+      "owner_docs": [
+        "docs/design_parity/README.md",
+        "docs/widget_catalog.md",
+        "docs/app_architecture.md"
+      ],
+      "notes": "Use canonical, repair, unify, register, discard as the review taxonomy."
+    },
+    {
+      "id": "REG-AGENT-003",
+      "title": "Generated design and tool manifests are stale after wide refactors",
+      "status": "active",
+      "applies_to": [
+        "design_context_pack/**",
+        "docs/audit_registry/**",
+        "tool/tools_manifest.json",
+        "tool/design/**",
+        "widgetbook/**"
+      ],
+      "symptom": "CI or local checks fail after a logic-safe refactor because generated inventories, context packs, Widgetbook directories, or tool manifest entries were not refreshed.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check --manifest-only"
+      },
+      "owner_docs": [
+        "tool/README.md",
+        "docs/audit_registry/README.md",
+        "docs/design_parity/README.md"
+      ],
+      "notes": "When generated source changes, run the owning generator/check instead of editing generated JSON by hand."
+    },
+    {
+      "id": "REG-AGENT-004",
+      "title": "Widgetbook launch failures are misdiagnosed as setup failures",
+      "status": "active",
+      "applies_to": [
+        "widgetbook/**",
+        "lib/**",
+        "docs/design_parity/**"
+      ],
+      "symptom": "A Widgetbook run fails because dirty-checkout compile blockers exist, but the failure is treated as a Widgetbook setup or port issue.",
+      "guard": {
+        "type": "manual",
+        "command": "Inspect the first compile error from the Widgetbook run before changing Widgetbook setup."
+      },
+      "owner_docs": [
+        "docs/design_parity/README.md",
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Run Widgetbook from the `widgetbook/` package and clear reported source blockers first."
+    },
+    {
+      "id": "REG-AGENT-005",
+      "title": "Unclaimed organizer event data crashes on non-null host fields",
+      "status": "active",
+      "applies_to": [
+        "lib/explore/**",
+        "lib/events/**",
+        "functions/src/**",
+        "contracts/**",
+        "tool/contracts/**"
+      ],
+      "symptom": "Explore or event cards assume organizer host fields are non-null even though unclaimed organizer data allows null host ownership.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/explore/explore_view_model_test.dart"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/app_architecture.md"
+      ],
+      "notes": "Model nullable fields where schema allows null and provide display fallbacks."
+    }
+  ]
+}

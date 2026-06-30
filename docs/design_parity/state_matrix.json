@@ -2882,11 +2882,11 @@
           "id": "matches.list",
           "routeId": "matchesListScreen",
           "implementationPaths": [
-            "lib/matches/presentation/matches_list_screen.dart",
-            "lib/matches/presentation/chats_list_view_model.dart",
-            "lib/matches/presentation/widgets/chats_sliver_header.dart",
-            "lib/matches/presentation/widgets/chats_list.dart",
-            "lib/matches/presentation/widgets/chats_list_body.dart",
+            "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+            "lib/chats/presentation/inbox/chats_list_view_model.dart",
+            "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+            "lib/chats/presentation/inbox/widgets/chats_list.dart",
+            "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
             "lib/core/widgets/catch_person_row.dart"
           ],
           "componentIds": [
@@ -2953,7 +2953,7 @@
                 "matches_list_context"
               ],
               "tests": [
-                "test/chats/matches_list_screen_test.dart",
+                "test/chats/chat_inbox_screen_test.dart",
                 "test/core/catch_person_row_test.dart"
               ],
               "notes": "matches_list_context renders synthetic conversation previews and row-level new/unread treatment.",
@@ -2981,7 +2981,7 @@
               "kind": "populated",
               "status": "captured",
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "notes": "ChatsSliverHeader expands the pinned CatchBrowseHeader search field and writes chatSearchQueryProvider.",
               "previewIds": [
@@ -2996,7 +2996,7 @@
               "kind": "empty",
               "status": "captured",
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "notes": "Non-empty source with no visible query results renders ChatsEmptyState.noSearchResults.",
               "previewIds": [
@@ -3011,7 +3011,7 @@
               "kind": "empty",
               "status": "captured",
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "notes": "No matches render ChatsEmptyState default consumer copy.",
               "previewIds": [
@@ -3026,7 +3026,7 @@
               "kind": "populated",
               "status": "captured",
               "tests": [
-                "test/chats/matches_list_screen_test.dart",
+                "test/chats/chat_inbox_screen_test.dart",
                 "test/chats/match_repository_test.dart"
               ],
               "notes": "collapseMatchesByOtherUser keeps one latest row per person and merges unread/event context.",
@@ -3042,7 +3042,7 @@
               "kind": "populated",
               "status": "captured",
               "tests": [
-                "test/chats/matches_list_screen_test.dart",
+                "test/chats/chat_inbox_screen_test.dart",
                 "test/core/catch_person_row_test.dart"
               ],
               "notes": "CatchPersonRow shows row-level unread treatment and hides unread count for own latest message.",
@@ -3058,7 +3058,7 @@
               "kind": "permission",
               "status": "captured",
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "notes": "Host app role switches copy to Inbox/Attendee queries and exposes All/Unread host filters.",
               "previewIds": [
@@ -6445,15 +6445,15 @@
           "id": "host.inbox",
           "routeId": "hostInboxScreen",
           "implementationPaths": [
-            "lib/matches/presentation/matches_list_screen.dart",
-            "lib/matches/presentation/chats_list_view_model.dart",
-            "lib/matches/presentation/host_inbox_filter.dart",
-            "lib/matches/presentation/widgets/chats_sliver_header.dart",
-            "lib/matches/presentation/widgets/chats_list.dart",
-            "lib/matches/presentation/widgets/chats_list_body.dart",
-            "lib/matches/presentation/widgets/chat_conversations_list.dart",
+            "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+            "lib/chats/presentation/inbox/chats_list_view_model.dart",
+            "lib/chats/presentation/inbox/host_inbox_filter.dart",
+            "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+            "lib/chats/presentation/inbox/widgets/chats_list.dart",
+            "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
+            "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
             "lib/core/widgets/catch_person_row.dart",
-            "lib/matches/presentation/widgets/chats_empty_state.dart",
+            "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
             "lib/matches/data/match_repository.dart"
           ],
           "componentIds": [
@@ -6498,7 +6498,7 @@
                 "ChatsListScreen/Host inbox states"
               ],
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "captureIds": [
                 "host_inbox_uid_loading"
@@ -6513,7 +6513,7 @@
                 "ChatsListScreen/Host inbox states"
               ],
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "captureIds": [
                 "host_inbox_loading"
@@ -6528,7 +6528,7 @@
                 "ChatsListScreen/Host inbox states"
               ],
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "captureIds": [
                 "host_inbox_error"
@@ -6555,7 +6555,7 @@
                 "ChatsListScreen/Host inbox states"
               ],
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ]
             },
             {
@@ -6564,7 +6564,7 @@
               "status": "captured",
               "notes": "Host Inbox renders attendee-query rows plus a host broadcast card for host-mode conversations. Host Inbox populated-query state now has a manifest-registered reference and compares within threshold after the broadcast-card and reference-safe-area capture pass: mismatch 8.64%, meanDelta 14.81, maxDelta 240. Continue backend send wiring and state-specific unread/search/text-scale/theme variants if design exports them.",
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
                 "ChatsListScreen/Host inbox states"
@@ -6581,7 +6581,7 @@
               "status": "captured",
               "notes": "ChatsSliverHeader renders Inbox title, Attendee queries subtitle, and host-specific search tooltip/semantic label in host app role. Add Widgetbook states for collapsed search, expanded search, no-search-action, long title/subtitle, and text scale. Add more header-only captures only if no-search-action or long-copy behavior diverges visually from the route states.",
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
                 "ChatsListScreen/Host inbox states"
@@ -6598,7 +6598,7 @@
               "status": "captured",
               "notes": "HostInboxScreenState provides HostInboxFilter and unread count; ChatsListDisplayState applies unread filtering before rows render. Add long-count 99+ capture only if backend data can produce that count in host inbox.",
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
                 "ChatsListScreen/Host inbox states"
@@ -6617,7 +6617,7 @@
                 "ChatsListScreen/Host inbox states"
               ],
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "captureIds": [
                 "matches_host_unread_empty"
@@ -6629,7 +6629,7 @@
               "status": "captured",
               "notes": "CatchBrowseHeader starts with no text field when there are no threads and shows search action only when count or query makes search useful. Add Host Inbox header preview for no search action, search available, and search-open states. Add no-search-action capture only if empty header behavior changes from the current empty route capture.",
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
                 "ChatsListScreen/Host inbox states"
@@ -6645,7 +6645,7 @@
               "status": "captured",
               "notes": "Pinned chats header expands CatchSearchField expanding mode, binds chatSearchQueryProvider, clears query, and closes empty search on done/focus loss. Add host-specific search capture with attendee query copy and keyboard-safe layout. Keyboard-safe host search layout remains a future simulator/manual pass if needed.",
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
                 "ChatsListScreen/Host inbox states"
@@ -6660,7 +6660,7 @@
               "status": "captured",
               "notes": "Search with no matching names renders No chats match your search copy instead of the generic empty state. Add host inbox search-empty capture and decide whether copy should say attendee queries instead of chats. Decide whether search-empty copy should say attendee queries instead of chats before final reference comparison.",
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
                 "ChatsListScreen/Host inbox states"
@@ -6687,7 +6687,7 @@
               "status": "captured",
               "notes": "ChatsListBody folds newMatches and conversations into one contiguous row list, renders HostInboxBroadcastCard as the host populated-state lead-in, and ChatConversationsList renders the rows. Add Widgetbook states for the broadcast card, one row, many rows, dividers, long names, long preview, and timestamp edge cases. Add row-count/divider-only captures only if the contiguous list diverges from populated and unread-filter states.",
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
                 "ChatsListScreen/Host inbox states"
@@ -6741,7 +6741,7 @@
               "status": "tested",
               "notes": "collapseMatchesByOtherUser keeps one row per person for consumer chats and one row per club plus attendee for host inquiries, so duplicate event inquiries collapse inside the same club while separate club inquiries remain separate rows.",
               "tests": [
-                "test/chats/matches_list_screen_test.dart",
+                "test/chats/chat_inbox_screen_test.dart",
                 "test/chats/match_repository_test.dart"
               ],
               "previewIds": [
@@ -6754,7 +6754,7 @@
               "status": "tested",
               "notes": "ChatsListScreen now owns the typed chat-thread route callback, chooses Routes.hostChatScreen in host app role, and passes the callback through ChatsList/ChatsListBody into provider/router-free ChatConversationsList rows.",
               "tests": [
-                "test/chats/matches_list_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart"
               ],
               "previewIds": [
                 "ChatsListScreen/Host inbox states"
@@ -8531,10 +8531,10 @@
           "id": "calendar.home",
           "routeId": "calendarScreen",
           "implementationPaths": [
-            "lib/calendar/presentation/calendar_screen.dart",
+            "lib/events/presentation/calendar/calendar_screen.dart",
             "lib/events/data/event_repository.dart",
             "lib/events/data/saved_event_repository.dart",
-            "lib/clubs/presentation/club_name_lookup.dart"
+            "lib/clubs/data/club_name_lookup.dart"
           ],
           "componentIds": [
             "catch.surface",
@@ -8668,7 +8668,7 @@
           "implementationPaths": [
             "lib/events/presentation/saved_events_screen.dart",
             "lib/events/data/saved_event_repository.dart",
-            "lib/clubs/presentation/club_name_lookup.dart"
+            "lib/clubs/data/club_name_lookup.dart"
           ],
           "componentIds": [
             "catch.surface",

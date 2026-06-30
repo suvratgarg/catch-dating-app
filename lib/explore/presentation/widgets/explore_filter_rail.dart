@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -7,6 +9,8 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -192,6 +196,9 @@ class ExploreFilterSheet extends ConsumerWidget {
     final filters = ref.watch(exploreFiltersProvider);
     final controller = ref.read(exploreFiltersProvider.notifier);
     final activeCount = _activeFilterCount(filters);
+    final sourceClubs =
+        ref.watch(exploreSourceClubsProvider).asData?.value ?? const <Club>[];
+    final areaOptions = _areaOptions(sourceClubs, filters.area);
 
     return CatchBottomSheetScaffold(
       title: 'Explore filters',
@@ -216,35 +223,94 @@ class ExploreFilterSheet extends ConsumerWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'DISTANCE',
-            style: CatchTextStyles.kicker(context, color: t.ink2),
-          ),
-          gapH12,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.56,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (final distanceFilter in _distanceFilters)
-                CatchSelectChip(
-                  label: _distanceFilterLabel(distanceFilter),
-                  active: filters.distanceFilter == distanceFilter,
-                  onTap: () => controller.setDistanceFilter(distanceFilter),
+              Text(
+                'DISTANCE',
+                style: CatchTextStyles.kicker(context, color: t.ink2),
+              ),
+              gapH12,
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  for (final distanceFilter in _distanceFilters)
+                    CatchSelectChip(
+                      label: _distanceFilterLabel(distanceFilter),
+                      active: filters.distanceFilter == distanceFilter,
+                      onTap: () => controller.setDistanceFilter(distanceFilter),
+                    ),
+                ],
+              ),
+              gapH20,
+              Text(
+                'CLUBS',
+                style: CatchTextStyles.kicker(context, color: t.ink2),
+              ),
+              gapH12,
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  CatchSelectChip(
+                    label: 'Joined clubs',
+                    active: filters.joinedOnly,
+                    onTap: controller.toggleJoinedOnly,
+                  ),
+                  CatchSelectChip(
+                    label: 'Rated 4.5+',
+                    active: filters.highRatedOnly,
+                    onTap: controller.toggleHighRatedOnly,
+                  ),
+                ],
+              ),
+              gapH20,
+              Text(
+                'ACTIVITY',
+                style: CatchTextStyles.kicker(context, color: t.ink2),
+              ),
+              gapH12,
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  for (final kind in primaryBrowseActivityKinds)
+                    CatchSelectChip(
+                      label: kind.label,
+                      active: _activityFilterActive(filters.activityTag, kind),
+                      onTap: () => controller.toggleActivityTag(kind.name),
+                    ),
+                ],
+              ),
+              if (areaOptions.isNotEmpty) ...[
+                gapH20,
+                Text(
+                  'AREA',
+                  style: CatchTextStyles.kicker(context, color: t.ink2),
                 ),
+                gapH12,
+                Wrap(
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s2,
+                  children: [
+                    for (final area in areaOptions)
+                      CatchSelectChip(
+                        label: area,
+                        active: exploreFilterValuesMatch(filters.area, area),
+                        onTap: () => controller.toggleArea(area),
+                      ),
+                  ],
+                ),
+              ],
             ],
           ),
-          gapH20,
-          Text('CLUBS', style: CatchTextStyles.kicker(context, color: t.ink2)),
-          gapH12,
-          CatchSelectChip(
-            label: 'Joined clubs',
-            active: filters.joinedOnly,
-            onTap: controller.toggleJoinedOnly,
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -279,4 +345,21 @@ String _distanceFilterLabel(ExploreDistanceFilter filter) {
     ExploreDistanceFilter.fiveKm => '5 km',
     ExploreDistanceFilter.tenKm => '10 km',
   };
+}
+
+bool _activityFilterActive(String? selected, ActivityKind kind) {
+  return exploreFilterValuesMatch(selected, kind.name) ||
+      exploreFilterValuesMatch(selected, kind.label);
+}
+
+List<String> _areaOptions(Iterable<Club> clubs, String? selectedArea) {
+  final areas = <String>{};
+  for (final club in clubs) {
+    final area = club.area.trim();
+    if (area.isNotEmpty) areas.add(area);
+  }
+  final selected = selectedArea?.trim();
+  if (selected != null && selected.isNotEmpty) areas.add(selected);
+  return areas.toList()
+    ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 }

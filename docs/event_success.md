@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.1.0
-updated: 2026-05-24
+version: 1.2.0
+updated: 2026-06-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -356,6 +356,61 @@ foundation.
   !Platform.environment.containsKey('FLUTTER_TEST')` before `.repeat()`.
   Production runs fully kinetic; widget tests get a static surface and
   `pumpAndSettle` resolves.
+
+## Host Sales And Reporting Closure
+
+The completed host-sales gap tracker is folded into this document. The durable
+product truth is that Event Success now supports a credible host story around
+turnout, event operations, participant connection, and post-event reporting
+without exposing private attendee identities.
+
+Implemented host-facing proof points:
+
+- Invite links are attributed performance objects with opens, requests,
+  bookings, paid completions, check-ins, catches, matches, and chats.
+- Waitlist movement supports host-created expiring offers, attendee
+  accept/decline paths, paid handoff, reserved-capacity checks, expiry cleanup,
+  and report/export visibility.
+- Scorecards refresh from feedback, attendance, catches, matches, first-message
+  activity, payment state, invite-link writes, participation writes, and
+  waitlist-offer writes.
+- Host reports show a funnel from invite opens and demand through bookings,
+  attendance, catches, matches, chats, repeat attendees, and coaching signals.
+- Host-visible "caught someone" metrics are aggregate only:
+  `catchSentCount`, `attendeesWhoCaughtSomeone`, `catchRecipientCount`, and
+  `catchRate`. Hosts never see target identities for private catches.
+- The assignment engine is primitive-driven. It accepts group size, rotations,
+  gender/orientation fit, questionnaire signal, blocks, opt-outs, host
+  keep-together/keep-apart/anchor constraints, activity attributes, repeat
+  strategy, maximum pair meetings, and richer slot metadata.
+- Assignment docs carry unit kind/index/label, reason summaries, reason codes,
+  rotation fairness counts, slot ids, peer counts, and sit-out slots.
+- Host setup persists repeat strategy, max pair meetings, balance/cluster
+  activity goals, and activity attribute goals where the event format supplies
+  safe inputs.
+
+Marketing and sales caveats:
+
+- Synthetic demo metrics are near-term proof. Do not present them as production
+  benchmarks or customer outcomes.
+- Pre-install invite-click tracking is intentionally not part of early host
+  proof. Current app/callable attribution is sufficient until hosts ask for
+  channel-level diagnosis before install/open.
+- Pace, skill, role, and activity-specific attributes are optional future
+  inputs unless the format has a clear host-facing reason and a privacy-safe
+  source of truth.
+- Strict no-repeat guarantees for complex table/team rotations require a
+  small-cohort search/repair pass. The current group-rotation repeat policy uses
+  placement costs and fairness metadata rather than an absolute guarantee.
+- Host-readable explainability exists in backend results, but a durable
+  host-facing generation audit/summary should be added before claiming hosts can
+  inspect every relaxed constraint and missing-data reason.
+- Per-link and per-offer drilldowns are deferred reporting surfaces; the
+  underlying data is recorded, but product demand should justify the UI.
+- Event cancellation should eventually mark active waitlist offers `cancelled`
+  instead of relying only on expiry.
+- Host screenshots should remain deterministic synthetic states until founding
+  host usage creates enough production-data-backed or anonymized proof.
 
 ## Open Product Decisions
 

@@ -1,7 +1,7 @@
 ---
 doc_id: catch-ui-lint-rules-plan
-version: 0.4.0
-updated: 2026-06-05
+version: 0.5.0
+updated: 2026-06-30
 owner: ui_elevation_initiative
 dri: TBD
 status: remaining_work
@@ -43,21 +43,24 @@ unimplemented or still-weak lint/governance work.
   - `catch_icon_button_requires_tooltip`
   - `catch_no_allow_debt`
   - `catch_no_widget_returning_method`
-- Semantic spacing exists through `CatchGaps`, `CatchInsets`, and the UI architecture
-  docs.
+- Semantic spacing exists through `CatchGaps`, `CatchInsets`, and
+  `docs/app_architecture.md`.
 - Token source detection now covers import-prefixed token references such as
   `tokens.CatchSpacing.s4` and guards against top-level local declarations that
   shadow Catch token/source names.
-- `docs/ui_architecture.md` now documents the token tier model and explicitly
+- `docs/app_architecture.md` now documents the token tier model and explicitly
   rejects new `CatchBreakpoints` / `CatchZIndex` namespaces for the current app
   shape.
 - Color/text/font drift count is currently `0` via `tool/check_catch_ui_lint_drift.sh`.
 - `tool/check_catch_ui_lint_drift.sh --all --json <path>` emits a reusable JSON
   count artifact for drift snapshots, including analyzer completion status.
-- P0 alignment gaps from `catch_ui_lint_p0_spec.md` are closed: no retired sandbox
+- P0 alignment gaps from the deleted P0 spec are closed: no retired sandbox
   exclusions, line-level art exceptions instead of whole-file color exemptions,
   completed radius coverage, narrowed Chip/Card/Badge material-control scope, and
   analyzer-backed local-constant/allow-debt counts.
+- The old UI debt inventory is closed. Future work should come from fresh
+  scanner deltas, screen reviews, or analyzer rule escalation, not the retired
+  broad-count tracker.
 - Former shell scanner entry points are now analyzer-output wrappers:
   `check_sizing.sh`, `check_ui_local_constant_wrappers.sh`,
   `check_ui_system_raw_values.sh`, and `check_ui_allow_debt.sh`.
@@ -77,9 +80,8 @@ unimplemented or still-weak lint/governance work.
 
 ## Phase 1 - P0 Alignment Gaps
 
-The implementation now matches the narrowed P0 scope documented in
-`catch_ui_lint_p0_spec.md`. Keep future changes in that file if a P0 rule is widened
-again.
+Closed. If a P0 rule is widened again, update this roadmap and the lint contract
+tests in the same pass instead of creating another standalone P0 tracker.
 
 ## Phase 1.5 - Scanner Family Migration
 

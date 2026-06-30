@@ -7,6 +7,9 @@
     "website"
   ],
   "scripts": {
+    "agent:context": "node tool/agent/context_pack.mjs",
+    "agent:readiness": "node tool/agent/check_agent_readiness.mjs",
+    "agent:readiness:record": "node tool/agent/check_agent_readiness.mjs --record-metric",
     "web:admin:dev": "npm --workspace catch-admin run dev",
     "web:admin:build": "npm --workspace catch-admin run build",
     "web:admin:check:boundaries": "npm --workspace catch-admin run check:boundaries",
@@ -18,9 +21,12 @@
     "web:typecheck": "npm run web:marketing:typecheck && npm run web:admin:typecheck",
     "web:tokens": "dart run tool/design_tokens.dart",
     "web:tokens:check": "dart run tool/design_tokens.dart --check",
+    "audit:backend-errors:check": "dart tool/audit/backend_error_candidates.dart --check",
     "design:components:check": "node tool/design/check_component_contracts.mjs",
     "design:widgets:classify": "node tool/design/generate_widget_classification.mjs",
     "design:widgets:check": "node tool/design/check_widget_classification.mjs",
+    "design:widgets:new": "node tool/design/check_new_widget_inventory.mjs",
+    "design:widgets:new:check": "node tool/design/check_new_widget_inventory.mjs --check",
     "design:widgets:variants": "node tool/design/generate_widget_variant_inventory.mjs",
     "design:widgets:variants:check": "node tool/design/generate_widget_variant_inventory.mjs --check",
     "design:parity:check": "node tool/design/check_design_parity.mjs --check"

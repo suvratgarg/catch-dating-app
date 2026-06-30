@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.450
-updated: 2026-06-29
+version: 2.5.452
+updated: 2026-06-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,35 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.452
+
+- Updated catalog paths after the feature-boundary cleanup that moved chat
+  inbox UI to `lib/chats/presentation/inbox`, calendar to
+  `lib/events/presentation/calendar`, shared event/activity visual primitives
+  to `lib/core/widgets`, and event non-UI helpers/services to `events/domain`
+  or `events/data`.
+
+### 2.5.451
+
+- Added `tool/design/check_new_widget_inventory.mjs` plus
+  `npm run design:widgets:new` to compare the working tree against `HEAD^`
+  and report newly introduced widget classes, private widget classes,
+  widget-returning helpers, and Widgetbook/catalog coverage gaps.
+- First scanner pass over the 2026-06-30 widget-architecture commit found
+  297 added widget classes, 42 new private widget classes, and 9 new
+  widget-returning helpers. This pass pruned the most obvious wrapper/helper
+  redundancies in `ChatInputBar`, `SuvbotActionBar`, `ChatMessageList`,
+  `CatchMiniBarChart`, `CatchField`, club image/activity chips, profile
+  dividers, and Event Detail optimistic/host sections.
+- Current generated delta after pruning: 283 added widget classes, 254 public
+  added widget classes, 9 exact-name Widgetbook matches, 29 private
+  widget-class blockers, 0 widget-returning helper blockers, 245 added widgets
+  still missing exact-name Widgetbook coverage, and 244 added widgets still
+  missing catalog mentions. The next focused pruning targets are Event Detail
+  hero/tile private wrappers, chat share/media bubble fragments, and
+  feature-local public section widgets that should either merge into existing
+  primitives or get explicit Widgetbook/catalog ownership.
 
 ### 2.5.450
 
@@ -4640,10 +4669,10 @@ Generated 2026-05-06.
 | `CatchGradedImage` / `CatchGrade` | `lib/core/widgets/catch_graded_image.dart:21` | Non-destructive display-time photo grade. Applies the shared brightness-aware matte duotone through color filters at render time, leaving uploaded images untouched while keeping mixed UGC and generated activity art inside one editorial visual family. Split-tone colors are alpha-aware: multiply and screen tints are derived by lerping from each blend mode's no-op color so low-alpha token values do not wash light-mode photos to white in deterministic captures. |
 | `CatchNetworkImage` | `lib/core/widgets/catch_network_image.dart:19` | Canonical remote/bundled image primitive. Keeps the existing decode-size capped `Image.network` path for remote photos, renders `assets/` and `packages/` paths through `Image.asset` for deterministic fixture/capture use, and preserves caller-owned framing, fitting, semantics, loading, and branded fallback behavior. |
 | `CatchPageBody` / `CatchScreenBody` / `CatchSectionStack` / `CatchSectionList` / `CatchSection` / `CatchDetailSliverSectionList` | `lib/core/widgets/catch_section_layout.dart:9` | Semantic body and section composition primitives. `CatchScreenBody` maps the handoff scrolling body with `screenPx` gutter, `pt`/`pb` overrides, full-bleed gutter opt-out, and optional non-scroll mode; `CatchSectionStack` maps the handoff `SectionStack` gutter and defaults to no inserted section gap; `CatchSection` is the canonical information-grouping primitive with named constructors for divided hairline groups, contained rounded groups, and plain titled blocks, plus optional count/trailing content and optional lead activity accent; `CatchDetailSliverSectionList` provides sliver-native page gutters with the same section-owned rhythm by default. `CatchSection`, `CatchScreenBody`, and `CatchSectionStack` are registered as formal component contracts (`catch.section`, `catch.screen_body`, `catch.section_stack`); Widgetbook exposes contract states for section, scrolling/non-scroll body modes, and stack rhythm. |
-| `EventActivityVisualSpec` / `EventActivityBackdrop` | `lib/events/presentation/event_activity_visuals.dart:17` | Mutable presentation schema for `ActivityKind` imagery. Centralizes activity label, icon, gradient palette, pattern, and browse-order choices so Explore cards, spotlight cards, thumbnails, browse tiles, and event detail headers do not fork color decisions. |
-| `EventTicketPerforatedDivider` / `EventTicketShapeClipper` | `lib/events/presentation/widgets/event_ticket_surface.dart:17` | Shared event-ticket transition primitives. Own the horizontal perforation, ticket notch constants, ticket clipper, and full-card Hero wrapper used by ticket cards, spotlight cards, date-rail cards, and ticket-mode event detail headers. |
+| `EventActivityVisualSpec` / `EventActivityBackdrop` | `lib/core/widgets/event_activity_visuals.dart:17` | Mutable presentation schema for `ActivityKind` imagery. Centralizes activity label, icon, gradient palette, pattern, and browse-order choices so Explore cards, spotlight cards, thumbnails, browse tiles, and event detail headers do not fork color decisions. |
+| `EventTicketPerforatedDivider` / `EventTicketShapeClipper` | `lib/core/widgets/event_ticket_surface.dart:17` | Shared event-ticket transition primitives. Own the horizontal perforation, ticket notch constants, ticket clipper, and full-card Hero wrapper used by ticket cards, spotlight cards, date-rail cards, and ticket-mode event detail headers. |
 | `EventCapacityPresenter` | `lib/events/presentation/widgets/event_tiles/event_capacity_presenter.dart:4` | Shared event-capacity display helper. Owns signed-up/spots/progress values plus "going · left/full", activity summary, attendee-confirmed, and join-CTA availability copy so cards and CTAs do not fork booking language. |
-| `EventActivityStamp` / `EventClockMark` / `EventCapacityProgress` / `EventStatusPill` | `lib/events/presentation/widgets/event_tiles/event_visual_atoms.dart:8` | Shared visual atoms for activity-coded event rows and tickets. Use these for circular activity marks, analog time marks, capacity progress bars, and compact status pills before adding card-local painters or badges. |
+| `EventActivityStamp` / `EventClockMark` / `EventCapacityProgress` / `EventStatusPill` | `lib/core/widgets/event_visual_atoms.dart:8` | Shared visual atoms for activity-coded event rows and tickets. Use these for circular activity marks, analog time marks, capacity progress bars, and compact status pills before adding card-local painters or badges. |
 | `CatchChipField<T>` | `lib/core/widgets/catch_chip_field.dart:14` | Multi/single-select chip selector wrapping `FormField<Set<T>>`. Uses `CatchChip` children inside a `Wrap`, lets callers attach semantic chip keys, keeps the parent-owned `selected` set, supports disabled state for pending mutation sheets, and shows a leading check icon on selected chips only in multi-select mode. |
 | `CatchDetailRow` | `lib/core/widgets/catch_detail_row.dart:5` | Compact label/value row for detail and payment-history sheets. Uses supporting text roles, fixed label lane, and expanded value copy so dense read-only metadata aligns without a new local table layout. |
 | `CatchErrorBanner` | `lib/core/widgets/catch_error_banner.dart:12` | Styled inline error banner for persistent mutation/form errors within page content. Shares the internal inline-message shell with `CatchSurface.message` so danger banners and neutral/tinted notes keep one row grammar. Optionally includes a "Try again" button. |
@@ -4736,8 +4765,8 @@ Generated 2026-05-06.
 | `HostHomeTodayDashboardState` / `HostHomeTodayTaskData` | `lib/hosts/presentation/host_operations_screen.dart:376` | Host Home Today display seam. Maps the selected club event async branch into loading, error, empty, or content states; chooses the next active event; and derives needs-you task rows so Today widgets do not own event filtering, task copy, or retry state. |
 | `HostClubsScreenState` | `lib/hosts/presentation/host_operations_screen.dart:350` | Host Clubs selected-club display seam. Resolves an optional initial club id, clamps selected indexes as club streams change, owns the selected `HostClubTab`, exposes title/switcher visibility, and centralizes owner/co-host role capability for the scaffold and deterministic captures. |
 | `HostClubDetailScreenState` / `HostClubDetailRetryIntent` | `lib/clubs/presentation/detail/club_detail_screen.dart:255` | Host Club Detail route adapter over the shared club detail screen. Maps async loading/error/not-found branches, `initialClub` fallback, signed-in host ownership, public-preview mode, membership state, consumer dock suppression, and load-error retry intent typing before `ClubDetailScreen` composes the shared public profile body. The screen wires typed callbacks for retry, schedule route actions, host profile/message actions, contact launches, and share. |
-| `HostInboxScreenState` | `lib/matches/presentation/matches_list_screen.dart:74` | Host Inbox route adapter over the shared `ChatsListScreen`. Reads the uid/view-model/query/provider wave at the route edge, owns selected host filter, unread count, search-action visibility, and delegates loading/error/content/empty mapping to `ChatsListDisplayState` before the route composes `ChatsSliverHeader` and `ChatsList`. Host/consumer chat route callbacks are owned by `ChatsListScreen`; duplicate host-inquiry grouping is covered by the shared match collapse policy. |
-| `ChatsListDisplayState` / `ChatsListRetryIntent` | `lib/matches/presentation/widgets/chats_list.dart:95` | Shared chat-list body adapter. Converts `AsyncValue<ChatsListViewModel>` into loading, error, content, or explicit empty states; applies Host Inbox unread filtering; selects no-threads, no-search-results, or no-unread empty copy; and attaches a typed reload intent to display errors before `ChatsList` renders shared sliver sections. |
+| `HostInboxScreenState` | `lib/chats/presentation/inbox/chat_inbox_screen.dart:74` | Host Inbox route adapter over the shared `ChatsListScreen`. Reads the uid/view-model/query/provider wave at the route edge, owns selected host filter, unread count, search-action visibility, and delegates loading/error/content/empty mapping to `ChatsListDisplayState` before the route composes `ChatsSliverHeader` and `ChatsList`. Host/consumer chat route callbacks are owned by `ChatsListScreen`; duplicate host-inquiry grouping is covered by the shared match collapse policy. |
+| `ChatsListDisplayState` / `ChatsListRetryIntent` | `lib/chats/presentation/inbox/widgets/chats_list.dart:95` | Shared chat-list body adapter. Converts `AsyncValue<ChatsListViewModel>` into loading, error, content, or explicit empty states; applies Host Inbox unread filtering; selects no-threads, no-search-results, or no-unread empty copy; and attaches a typed reload intent to display errors before `ChatsList` renders shared sliver sections. |
 | `ChatRouteState` / `ChatRouteStateArgs` | `lib/chats/presentation/chat_route_state.dart:93` | Host/consumer chat route provider seam. Performs the route-level uid, match, message, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller watches once, then returns the composed lookup state, `HostChatScreenState`, public-profile async state, event, messages, pending flags, and visibility booleans that `ChatScreen` renders, including whether a consumer match can expose the embedded Chat/Profile tab shell. |
 | `HostChatScreenState` / `HostChatRetryIntent` / `HostChatActionIntent` | `lib/chats/presentation/host_chat_screen_state.dart:9` | Provider-free Host Chat decision seam over the shared `ChatScreen`. Centralizes host inquiry identity, typed profile/share/safety action availability, route/message/Suvbot retry intents, report/block pending action disabling, action intent policy, safety target copy, message peer name, and composer disabled reason before `ChatRouteState` passes render-ready state to `ChatScreen`. Match-stream errors become `HostChatRouteError` with `HostChatRetryIntent.reloadMatch`, while message-list and Suvbot-control errors expose typed retry targets. `ChatScreen` renders the canonical `CatchTopBar.identity` for single-pane host/Suvbot states, switches regular match chats to a `CatchTopBarTabBar` Chat/Profile shell, and owns the `CatchTopBarMenuAction` wiring. |
 | `ChatReadMarkerState` | `lib/chats/presentation/chat_read_marker_state.dart:3` | Provider-free chat read-marker decision seam. Tracks the last known and last marked uid, suppresses duplicate marks unless forced, marks only incoming latest messages, and exposes the dispose-time uid before `ChatScreen` executes the `ConversationReadMarker.markRead` side effect. |
@@ -4881,27 +4910,27 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ChatsListScreen` | `lib/matches/presentation/matches_list_screen.dart:16` | "Chats" / Host "Inbox" tab shell registered as `screen.host.inbox` for the host route. Builds `HostInboxScreenState` from uid, `ChatsListViewModel`, search query, and host filter state; owns typed host/consumer chat route callbacks plus the route-scoped host broadcast review sheet; then renders the pinned composable browse header and chat body from explicit display state. |
-| `ChatsBrowseHeader` | `lib/matches/presentation/widgets/chats_sliver_header.dart:34` | Stateful chats browse-header adapter that removes the old count badge, composes pinned title/search chrome through `CatchTopBar`, binds `chatSearchQueryProvider`, and renders the host inbox `All` / `Unread · n` option row when supplied. It owns provider and filter wiring only; reusable top-bar/search visuals stay in the canonical primitive. |
+| `ChatsListScreen` | `lib/chats/presentation/inbox/chat_inbox_screen.dart:16` | "Chats" / Host "Inbox" tab shell registered as `screen.host.inbox` for the host route. Builds `HostInboxScreenState` from uid, `ChatsListViewModel`, search query, and host filter state; owns typed host/consumer chat route callbacks plus the route-scoped host broadcast review sheet; then renders the pinned composable browse header and chat body from explicit display state. |
+| `ChatsBrowseHeader` | `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart:34` | Stateful chats browse-header adapter that removes the old count badge, composes pinned title/search chrome through `CatchTopBar`, binds `chatSearchQueryProvider`, and renders the host inbox `All` / `Unread · n` option row when supplied. It owns provider and filter wiring only; reusable top-bar/search visuals stay in the canonical primitive. |
 
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ChatsList` | `lib/matches/presentation/widgets/chats_list.dart:18` | Sliver body for chat conversations fed from `ChatsListDisplayState` or, for legacy callers, `chatsListViewModelProvider`. Uses a section-labeled inbox-row skeleton loading sliver, branded error state, explicit empty states, host unread filtering, and delegates populated data plus optional row-selection and host-broadcast callbacks to `ChatsListBody`. |
+| `ChatsList` | `lib/chats/presentation/inbox/widgets/chats_list.dart:18` | Sliver body for chat conversations fed from `ChatsListDisplayState` or, for legacy callers, `chatsListViewModelProvider`. Uses a section-labeled inbox-row skeleton loading sliver, branded error state, explicit empty states, host unread filtering, and delegates populated data plus optional row-selection and host-broadcast callbacks to `ChatsListBody`. |
 | `MatchCelebrationDialog` | `lib/matches/presentation/widgets/match_celebration_dialog.dart:46` | Compatibility-named full-screen match celebration route. Uses `CatchCelebrationScreen` with match haptics, then routes the primary action into `ChatScreen` or dismisses back to swiping. |
 | `CatchPersonRow` | `lib/core/widgets/catch_person_row.dart:77` | Canonical inbox and roster row. Receives `CatchPersonRowData`, renders directly on the page surface with an optional inset hairline divider, `CatchPersonAvatar` (rounded square for host inquiries), display name, semantic `chatPreview` secondary text, timestamp, and row-level unread/new treatment through avatar ring, text color, timestamp color, unread badge, or a trailing new-match dot. Routes to `ChatScreen` or `hostChatScreen` through the parent row-list section. Widgetbook exposes standalone states for read, unread, new match, own latest, host inquiry, roster, and long preview rows. |
 | `ChatSearchField` | `lib/matches/presentation/widgets/chat_search_field.dart:6` | Chats query adapter over `CatchSearchField` for standalone chat search placements. `ChatsSliverHeader` binds `chatSearchQueryProvider` directly through the shared `CatchSearchField` expanding mode primitive. |
-| `ChatConversationsList` | `lib/matches/presentation/widgets/chat_conversations_list.dart:8` | Headerless, provider/router-free `SliverList` of chat previews driven by `ChatsListViewModel`. Renders contiguous on-surface `CatchPersonRow` rows with row dividers instead of spacing between card surfaces; callers decide whether the input list includes new matches, conversations, or both and supply the row-selection callback. |
+| `ChatConversationsList` | `lib/chats/presentation/inbox/widgets/chat_conversations_list.dart:8` | Headerless, provider/router-free `SliverList` of chat previews driven by `ChatsListViewModel`. Renders contiguous on-surface `CatchPersonRow` rows with row dividers instead of spacing between card surfaces; callers decide whether the input list includes new matches, conversations, or both and supply the row-selection callback. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ChatsEmptyState` | `lib/matches/presentation/widgets/chats_empty_state.dart:6` | Empty state shown when there are no chat conversations, no search results, or no unread host queries. |
-| `ChatsListBody` | `lib/matches/presentation/widgets/chats_list_body.dart:10` | Body wrapper for the chats list. Folds `viewModel.newMatches` and `viewModel.conversations` into one contiguous row list, renders `HostInboxBroadcastCard` as the host populated-state lead-in, keeps the consumer `CONVERSATIONS` section label, and delegates row rendering plus parent-supplied callbacks to `ChatConversationsList` without rendering the old new-match rail. |
-| `HostInboxBroadcastCard` | `lib/matches/presentation/widgets/chats_list_body.dart:72` | Provider-free dark host broadcast lead-in card for populated Host Inbox states. Shows the broadcast affordance, attendee-count copy, short template hint, and a parent-owned tap callback so route-level send/review behavior stays outside the row-list primitive. |
-| `ChatsSliverHeader` | `lib/matches/presentation/widgets/chats_sliver_header.dart:12` | Chats-specific pinned sliver header. It expands its fixed bottom height for the host `OptionGroup`, delegates title/search chrome to `ChatsBrowseHeader` and `CatchTopBar`, and keeps query state in `chatSearchQueryProvider`. |
+| `ChatsEmptyState` | `lib/chats/presentation/inbox/widgets/chats_empty_state.dart:6` | Empty state shown when there are no chat conversations, no search results, or no unread host queries. |
+| `ChatsListBody` | `lib/chats/presentation/inbox/widgets/chats_list_body.dart:10` | Body wrapper for the chats list. Folds `viewModel.newMatches` and `viewModel.conversations` into one contiguous row list, renders `HostInboxBroadcastCard` as the host populated-state lead-in, keeps the consumer `CONVERSATIONS` section label, and delegates row rendering plus parent-supplied callbacks to `ChatConversationsList` without rendering the old new-match rail. |
+| `HostInboxBroadcastCard` | `lib/chats/presentation/inbox/widgets/chats_list_body.dart:72` | Provider-free dark host broadcast lead-in card for populated Host Inbox states. Shows the broadcast affordance, attendee-count copy, short template hint, and a parent-owned tap callback so route-level send/review behavior stays outside the row-list primitive. |
+| `ChatsSliverHeader` | `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart:12` | Chats-specific pinned sliver header. It expands its fixed bottom height for the host `OptionGroup`, delegates title/search chrome to `ChatsBrowseHeader` and `CatchTopBar`, and keeps query state in `chatSearchQueryProvider`. |
 
 ---
 
@@ -5186,7 +5215,7 @@ Generated 2026-05-06.
 | `EventJoinedCelebrationScreen` | `lib/events/presentation/event_joined_celebration_screen.dart:8` | User event-signup celebration surface shared by free bookings and post-payment confirmation. Shows event details, optional payment details, haptics, and View event / Back home actions. |
 | `EventCheckInCelebrationScreen` | `lib/events/presentation/event_check_in_celebration_screen.dart:7` | Participant self-check-in celebration surface. Used only after user self-check-in from Home succeeds; host attendance remains an operational flow. |
 | `BookingConflictSheet` | `lib/events/presentation/widgets/booking_conflict_sheet.dart:32` | Booking handoff conflict-warning sheet. Renders the already-booked and incoming events as activity-colored rows, keeps warning copy and sheet chrome on Catch primitives, and exposes replace / keep-both / keep-existing callbacks for a future overlap-resolution flow. Widgetbook exposes standalone states for default conflict, replacement decision, long event names, and fallback activity visuals; sold-out/full-capacity remains outside this primitive API. |
-| `EventCheckInLocationService` | `lib/events/presentation/event_check_in_location_service.dart:16` | Provider-backed location seam for self-check-in. Production uses Geolocator with high accuracy and a timeout; tests can inject coordinates without invoking platform plugins. |
+| `EventCheckInLocationService` | `lib/events/data/event_check_in_location_service.dart:16` | Provider-backed location seam for self-check-in. Production uses Geolocator with high accuracy and a timeout; tests can inject coordinates without invoking platform plugins. |
 | `EventLocationMapLoadingBody` | `lib/events/presentation/event_location_map_screen.dart:70` | Location-map route loading body. Composes `EventMapLoadingBody` with bottom location summary and directions-button placeholders while `_ChromelessMapScaffold` keeps the floating map controls visible. |
 | `EventLocationMapScreen` | `lib/events/presentation/event_location_map_screen.dart:135` | Chromeless full-screen single-event map for `screen.event.location_map`, with one pinned exact starting point, floating back controls, and a bottom location summary. Reuses `EventPinsMap`, supports deterministic no-network map captures, and should only render when `Event.hasExactStartingPoint` is true. |
 | `EventShareCard` | `lib/events/presentation/widgets/event_share_card.dart:42` | Shareable event invite card rendered inside `RichShareCardSheet`. Uses the activity visual palette, `EventActivityBackdrop`, tokenized field rows, price/spots pills, and `EventInviteShareCopy` so event detail, payment confirmation, and referral invite surfaces share the same visual card and link payload. |
@@ -5271,14 +5300,14 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CalendarScreen` | `lib/calendar/presentation/calendar_screen.dart:26` | Calendar route registered as `screen.calendar.home`. Merges booked events with future saved events, labels mixed agenda rows as JOINED/SAVED, uses one sliver-native scroll surface, and anchors the header to the next upcoming event or current week. Header, loading, stats, week/month selector, divider, and empty-message chunks are function-folded under the cataloged `CalendarScreen` states instead of remaining private widget classes. |
+| `CalendarScreen` | `lib/events/presentation/calendar/calendar_screen.dart:26` | Calendar route registered as `screen.calendar.home`. Merges booked events with future saved events, labels mixed agenda rows as JOINED/SAVED, uses one sliver-native scroll surface, and anchors the header to the next upcoming event or current week. Header, loading, stats, week/month selector, divider, and empty-message chunks are function-folded under the cataloged `CalendarScreen` states instead of remaining private widget classes. |
 
 ### Internal helpers
 
 | Helper | File | Purpose |
 |---|---|---|
-| `_CalendarDateHeaderDelegate` | `lib/calendar/presentation/calendar_screen.dart:464` | Fixed-height sliver delegate that pins the calendar date header and adds a bottom divider while content overlaps. |
-| `_CalendarEventSummary` | `lib/calendar/presentation/calendar_screen.dart:738` | Private view model for calendar display order and header stats. De-duplicates signed-up/saved events, keeps only future saved-only events, puts upcoming events first, uses current week as the fallback anchor, and exposes `nextEvent`. |
+| `_CalendarDateHeaderDelegate` | `lib/events/presentation/calendar/calendar_screen.dart:464` | Fixed-height sliver delegate that pins the calendar date header and adds a bottom divider while content overlaps. |
+| `_CalendarEventSummary` | `lib/events/presentation/calendar/calendar_screen.dart:738` | Private view model for calendar display order and header stats. De-duplicates signed-up/saved events, keeps only future saved-only events, puts upcoming events first, uses current week as the fallback anchor, and exposes `nextEvent`. |
 
 ---
 

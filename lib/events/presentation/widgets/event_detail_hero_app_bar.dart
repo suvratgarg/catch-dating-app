@@ -6,11 +6,11 @@ import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
+import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
-import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_ticket_surface.dart';
+import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
 import 'package:flutter/material.dart';
 
 class EventDetailHeroAppBar extends StatelessWidget {

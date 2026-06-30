@@ -58,7 +58,7 @@ only.
    - Keep the current `.txt`/`.html`/`.json`/`.png` upload format decision.
    - Add the exact update/check commands to the owner doc or `tool/README.md` after the
      generated-vs-committed gallery decision is final. The component registry side
-     is now documented in `docs/ui_architecture.md` and `design/components/README.md`.
+     is now documented in `docs/app_architecture.md` and `design/components/README.md`.
 
 ## Parked / Not Worth Right Now
 

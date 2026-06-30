@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.5.0
-updated: 2026-06-25
+version: 0.6.0
+updated: 2026-06-30
 owner: web_platform
 status: active
 ---
@@ -418,6 +418,51 @@ Do consolidate shared layers:
 - neutral React primitives in a future `packages/web-ui`;
 - safe callable client helpers;
 - media/token/build validators.
+
+## Website Component And Organizer Functionality
+
+The completed website mockup functionality tracker is folded into this
+architecture doc. The production website should use Catch tokens, canonical
+React website components, generated public projections, and existing Firebase
+callable boundaries. Prototype-only globals, fabricated organizer data, hash
+routing, and image-slot editing utilities must not be imported.
+
+Current canonical component layer under `website/src/components/` includes:
+
+- site shell: `SiteHeader`, `SiteFooter`;
+- shared display primitives: `ActivityMark`, `StatusBadge`, `ProfileStrength`,
+  `CaptureCard`, `SectionHeader`;
+- public discovery primitives: `PublicSearchBar`, `PublicEventCard`;
+- host/product blocks and listing/claim/review primitives owned by the website
+  feature folders.
+
+Implemented website behavior:
+
+- Homepage discovery can render real event/search data from generated organizer
+  projections.
+- Directory filters are URL-backed for query, city, format, status, upcoming,
+  rating, and sort.
+- Organizer listing pages support event-aware search results, claim pressure,
+  verified/public review grouping, owner response pressure, Catch-created event
+  CTAs/deep links, and share behavior.
+- Claim surfaces show pending, already-claimed, not-found, and "while you wait"
+  states.
+- `/host/` uses reusable host product blocks for paid checkout, waitlist
+  offers, balanced cohorts, active-step create-event walkthrough, and
+  Event Success copy aligned with product/privacy constraints.
+
+Deferred website decisions:
+
+- Decide whether fabricated prototype organizers become real seed listings,
+  demo-only fixtures, or stay excluded.
+- Decide whether the public website should call a live public event projection
+  callable or keep public events inside generated static JSON.
+- Add an Instagram DM code-verification backend path before promising that as
+  an automated claim option.
+- Add new marketing capture slots only through
+  `tool/marketing/capture_manifest.json` and the existing sync/export pipeline.
+- Replace proxy host-create step captures with exact create-event step
+  screenshots once the UI capture catalog has those fixtures.
 
 ## Future Host Dashboard
 

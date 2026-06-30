@@ -1,7 +1,7 @@
 ---
 doc_id: host_listing_discovery_architecture
 version: 0.3.0
-updated: 2026-06-24
+updated: 2026-06-30
 owner: marketing_website
 status: draft
 ---
@@ -498,6 +498,47 @@ until this graduates to Firestore or BigQuery:
 The website should render only page-ready club documents. The scraper ledger and
 evidence collections may contain low-quality, duplicate, rejected, raw, private,
 and suppressed candidates.
+
+## Organizer Claim Workflow
+
+Programmatic organizer pages become owner-controlled only through the server
+claim workflow. The completed implementation plan is folded here so the claim
+contract stays with organizer discovery and indexability policy.
+
+Rules:
+
+- `clubs/{clubId}` remains the canonical organizer document.
+- Do not overload `clubHostClaims/{uid}` for public claim review. That
+  collection remains the one-hosted-club owner lock.
+- Claim requests live in `clubClaimRequests/{requestId}` and are callable-owned.
+  Clients cannot directly read or write claim requests.
+- `requestClubClaim` creates a claim request for a signed-in user and updates
+  `clubs/{clubId}.claim.state` to `claimPending` while preserving
+  `ownership.state = programmatic` and `appVisibility = hidden`.
+- `adminDecideClubClaim` approves or rejects requests. Approval sets
+  `ownerUserId`, `hostUserId`, `hostUserIds`, `hostProfiles`, `ownership.state =
+  claimed`, and claim audit fields on the club.
+- Claim approval writes a deterministic owner-facing `clubUpdate`
+  notification/activity item.
+- Claimed club hosts can write owner review responses through
+  `setReviewResponse`; responses render in app and public website review
+  surfaces from the canonical review snapshot.
+- `adminSetClubIndexStatus` is the promotion/hold seam for public indexing. It
+  records `publicPage.indexReview` evidence for source quality, media rights,
+  cadence, and owner/contact verification.
+- Operationally, seeded pages stay `noindex` until source evidence, media
+  rights, cadence, and owner/contact verification are complete.
+
+Open product decisions:
+
+- whether one organizer account can own multiple city profiles under a national
+  brand;
+- whether venues can claim multiple venue-specific profiles with one account;
+- whether claim approval can be automated from official-domain email;
+- whether owner-submitted corrections should directly mutate `publicProfile` or
+  create admin-review patches;
+- whether public review responses should be available before the organizer hosts
+  a Catch event.
 
 ## Candidate Backlog
 

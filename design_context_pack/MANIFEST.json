@@ -15,13 +15,13 @@
     },
     {
       "path": "design_system/components.json",
-      "sha256": "64046c3e014e6ae8a802faa473bc6fb7aa6134bcef1fb1915bc69bd89ec125c5",
-      "bytes": 225783
+      "sha256": "a8b6addccd95937e691db80dc375d7e315bec108320af0b9bba18406c8bfc88e",
+      "bytes": 225707
     },
     {
       "path": "design_system/design_language.txt",
-      "sha256": "1fc8dc302266dc2727f1c776a9a0c52e7cb4ee423b4e920be2d4b223fee0c6a6",
-      "bytes": 13516
+      "sha256": "7918e51f74ecec1d3820e17735e847d7a2dcdce494a92284ebf09e1d97818796",
+      "bytes": 13543
     },
     {
       "path": "design_system/specimens/catch_design_system.html",

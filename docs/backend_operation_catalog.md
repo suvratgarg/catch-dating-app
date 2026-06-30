@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.2.2
-updated: 2026-05-21
+version: 1.2.3
+updated: 2026-06-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -79,6 +79,10 @@ should be repairable from edge/source documents.
 | `generateProfilePhotoThumbnail` | Storage trigger on `users/{uid}/photos/{fileName}` finalize | Backend | Storage `users/{uid}/photoThumbnails/{fileName}`, `users/{uid}.profilePhotos` | Generates 160px JPEG thumbnails for avatar-scale surfaces. Dashboard/event-detail hype avatars must use thumbnail URLs, not full profile photos. Existing beta data can be backfilled with `npm --prefix functions run backfill:profile-thumbnails -- --apply` after setting `FIREBASE_STORAGE_BUCKET`; the script updates grouped `profilePhotos`. |
 | `createClub` | Callable | `ClubsRepository.createClub` | `clubs/{clubId}`, `clubMemberships/{clubId_uid}`, `clubHostClaims/{uid}`, optional `hostProfiles/{uid}` seed | Server derives host identity from `hostProfiles/{uid}` with migration fallback only when seeding a missing professional host profile; a complete dating profile is not required. Initializes lifecycle fields as active/unarchived; the membership edge is the source of truth and `memberCount` is the parent aggregate. `clubHostClaims/{uid}` enforces the current product rule that a user can host at most one club. |
 | `updateClub` | Callable | `ClubsRepository.updateClub` | `clubs/{clubId}` descriptive fields | Host-only profile edit seam. Direct client updates to `clubs/{clubId}` are denied so Zod owns field validation and aggregate/projection fields stay backend-owned. |
+| `requestClubClaim` | Callable | Public organizer claim form | `clubClaimRequests/{requestId}`, `clubs/{clubId}.claim` | Auth-backed public claim request. Does not grant ownership; records requester identity/proof fields and moves the club claim state to pending while programmatic ownership and hidden app visibility remain in place. |
+| `adminDecideClubClaim` | Callable | Admin organizer claim queue | `clubClaimRequests/{requestId}`, `clubs/{clubId}.ownerUserId/hostUserId/hostUserIds/hostProfiles/ownership/claim`, `notifications/{uid}/items/{notificationId}` | Admin-only approval/rejection seam. Approval makes the requester the canonical owner/host for the existing club document and writes deterministic owner-facing activity. |
+| `adminSetClubIndexStatus` | Callable | Admin organizer index-review queue | `clubs/{clubId}.publicPage`, `clubs/{clubId}.publicPage.indexReview` | Admin-only promotion/hold seam for programmatic organizer pages. Records source-evidence, media-rights, cadence, and owner/contact review before a generated page becomes indexable. |
+| `setReviewResponse` | Callable | Claimed organizer review UI | `reviews/{reviewId}.ownerResponse` | Server-owned owner response on public review documents. Only claimed hosts for the owning club can write responses; app and website render the canonical review snapshot. |
 | `joinClub` | Callable | `ClubsRepository.joinClub` | `clubMemberships/{clubId_uid}`, `clubs/{clubId}.memberCount` | Multi-doc membership mutation; does not mirror membership into user or club arrays. `syncClubMemberStats` repairs the parent count from active membership edges after any membership write. |
 | `leaveClub` | Callable | `ClubsRepository.leaveClub` | `clubMemberships/{clubId_uid}`, `clubs/{clubId}.memberCount` | Rejects host leaving their own club; does not mirror membership into user or club arrays. `syncClubMemberStats` repairs the parent count from active membership edges after any membership write. |
 | `syncClubMemberStats` | Firestore trigger on `clubMemberships/{membershipId}` write | Backend | `clubs/{clubId}.memberCount` | Recomputes active membership count from edge documents. This makes duplicate trigger delivery safe and repairs stale callable-era or manually drifted parent projections. |

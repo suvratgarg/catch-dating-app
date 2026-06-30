@@ -1,7 +1,7 @@
 ---
 doc_id: admin_dashboard_user_stories_and_component_catalogue
-version: 0.2.0
-updated: 2026-06-24
+version: 0.2.1
+updated: 2026-06-30
 owner: admin_console
 status: active
 ---
@@ -12,7 +12,7 @@ status: active
 
 Read this before adding, removing, renaming, or refactoring an admin dashboard
 tab, feature workspace, or shared React admin component. Pair it with
-`docs/admin_analytics_dashboard_spec.md`, `docs/controller_patterns.md`, and
+`docs/admin_analytics_dashboard_spec.md`, `docs/app_architecture.md`, and
 `docs/data_contracts.md`.
 
 ## Audit Scope
@@ -81,7 +81,6 @@ Files inspected:
 - `functions/src/admin/**` and `functions/src/clubs/clubClaims.ts` for API
   ownership context
 - `docs/admin_analytics_dashboard_spec.md`
-- `docs/plans/admin_analytics_dashboard_tracker.md`
 - `firebase.json`
 - `.github/workflows/admin-website.yml`
 

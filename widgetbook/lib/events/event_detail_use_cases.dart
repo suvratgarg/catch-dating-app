@@ -4,7 +4,7 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
+import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -52,7 +52,7 @@ import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_c
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_date_marker.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_visual_atoms.dart';
+import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_overlay_controls.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/events/presentation/widgets/requirements_row.dart';

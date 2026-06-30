@@ -15,19 +15,6 @@ const profileTabBodyPadding = EdgeInsets.fromLTRB(
   CatchSpacing.s7,
 );
 
-/// Kept as a top-level function because it's used as a [Builder.builder]
-/// callback (e.g., `Builder(builder: profileSectionDivider)`) and wrapping
-/// it in a widget class would add unnecessary boilerplate.
-Widget profileSectionDivider(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return Divider(
-    height: 1,
-    indent: CatchSpacing.s8,
-    endIndent: CatchSpacing.s8,
-    color: t.line.withValues(alpha: CatchOpacity.fieldRowDivider),
-  );
-}
-
 /// Kept as a top-level builder function because a widget class would add
 /// boilerplate with no benefit: it's a pure mapping from parameters to
 /// a widget subtree without lifecycle or state.
@@ -45,15 +32,21 @@ Widget profileInfoSection({
     return const SizedBox.shrink();
   }
 
+  final t = CatchTokens.of(context);
   final tiles = <Widget>[];
   for (var i = 0; i < children.length; i++) {
     tiles.add(
-      ProfileInfoRowFrame(fullBleed: fullBleedRows,
-        child: children[i],
-      ),
+      ProfileInfoRowFrame(fullBleed: fullBleedRows, child: children[i]),
     );
     if (grouped && i < children.length - 1) {
-      tiles.add(profileSectionDivider(context));
+      tiles.add(
+        Divider(
+          height: 1,
+          indent: CatchSpacing.s8,
+          endIndent: CatchSpacing.s8,
+          color: t.line.withValues(alpha: CatchOpacity.fieldRowDivider),
+        ),
+      );
     }
   }
 
@@ -73,7 +66,7 @@ Widget profileInfoSection({
   } else {
     final body = grouped
         ? CatchSurface(
-            borderColor: CatchTokens.of(context).line,
+            borderColor: t.line,
             padding: CatchInsets.contentHorizontal,
             child: tileList,
           )
@@ -116,24 +109,24 @@ class ProfileInfoRowFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!fullBleed) return child;
 
-  return LayoutBuilder(
-    builder: (context, constraints) {
-      if (!constraints.hasBoundedWidth) return child;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (!constraints.hasBoundedWidth) return child;
 
-      final mediaWidth = MediaQuery.sizeOf(context).width;
-      final targetWidth = math.min(
-        mediaWidth,
-        constraints.maxWidth + CatchSpacing.screenPx * 2,
-      );
-      if (targetWidth <= constraints.maxWidth) return child;
+        final mediaWidth = MediaQuery.sizeOf(context).width;
+        final targetWidth = math.min(
+          mediaWidth,
+          constraints.maxWidth + CatchSpacing.screenPx * 2,
+        );
+        if (targetWidth <= constraints.maxWidth) return child;
 
-      return OverflowBox(
-        minWidth: targetWidth,
-        maxWidth: targetWidth,
-        fit: OverflowBoxFit.deferToChild,
-        child: SizedBox(width: targetWidth, child: child),
-      );
-    },
-  );
+        return OverflowBox(
+          minWidth: targetWidth,
+          maxWidth: targetWidth,
+          fit: OverflowBoxFit.deferToChild,
+          child: SizedBox(width: targetWidth, child: child),
+        );
+      },
+    );
   }
 }

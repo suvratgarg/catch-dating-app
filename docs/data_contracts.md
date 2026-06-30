@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.1.6
-updated: 2026-06-24
+version: 1.1.7
+updated: 2026-06-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -203,6 +203,22 @@ Direct client writes are still allowed only for narrow owner-owned actions that
 rules can prove locally: onboarding drafts, saved events, outgoing profile decisions,
 match-scoped chat messages, own unread reset, own notification `readAt`, and
 own FCM token. Multi-document product writes belong in callables or triggers.
+
+## Organizer Claim Documents
+
+Public organizer claims use a dedicated review collection instead of overloading
+host locks:
+
+| Collection / field | Owner | Notes |
+|---|---|---|
+| `clubClaimRequests/{requestId}` | `requestClubClaim`, `adminDecideClubClaim` | Server-owned claim queue. Clients create and decide only through callables; direct Firestore reads/writes are denied. |
+| `clubs/{clubId}.claim` | claim callables and admin index-review callables | Public-page claim state, latest request id, review audit, and owner-facing status. |
+| `clubs/{clubId}.ownership` | claim callables, create/update club callables | `programmatic` before ownership, `claimed` after approval. |
+| `clubs/{clubId}.publicPage.indexReview` | `adminSetClubIndexStatus` | Audit evidence for source quality, media rights, cadence, and owner/contact verification before a page becomes indexable. |
+| `reviews/{reviewId}.ownerResponse` | `setReviewResponse` | Server-owned owner response rendered by app and website review surfaces. |
+
+`clubHostClaims/{uid}` remains the one-hosted-club lock. It is not the public
+claim request queue.
 
 ## Event Discovery Projection
 

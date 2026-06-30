@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
-import 'package:catch_dating_app/events/presentation/event_invite_share_copy.dart';
-import 'package:catch_dating_app/events/presentation/event_location_links.dart';
+import 'package:catch_dating_app/events/data/event_calendar_links.dart';
+import 'package:catch_dating_app/events/data/event_invite_share_copy.dart';
+import 'package:catch_dating_app/events/domain/event_location_links.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'payment_confirmation_controller.g.dart';

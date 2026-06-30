@@ -1,0 +1,4 @@
+{"timestamp":"2026-06-30T00:00:00Z","event":"agent_harness_initialized","readiness_score":0,"context_packs":0,"checks_planned":0,"checks_run":0,"regressions_active":5,"notes":"Baseline entry created with the initial agent operating model. Replace score with check output after first readiness run."}
+{"timestamp":"2026-06-30T14:59:32.530Z","event":"agent_readiness_check","readiness_score":100,"checks_passed":196,"checks_failed":0,"checks_total":196}
+{"timestamp":"2026-06-30T15:00:14.599Z","event":"agent_readiness_check","readiness_score":100,"checks_passed":197,"checks_failed":0,"checks_total":197}
+{"timestamp":"2026-06-30T15:00:21.770Z","event":"agent_readiness_check","readiness_score":100,"checks_passed":198,"checks_failed":0,"checks_total":198}

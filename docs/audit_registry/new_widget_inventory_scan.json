@@ -1,0 +1,4219 @@
+{
+  "generatedAt": "2026-06-30T09:06:51.407Z",
+  "baseRef": "HEAD^",
+  "current": "working tree",
+  "sourceOfTruth": {
+    "widgetbook": "widgetbook/lib/main.directories.g.dart",
+    "catalog": "docs/widget_catalog.md",
+    "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
+  },
+  "summary": {
+    "addedWidgetClasses": 283,
+    "addedPublicWidgetClasses": 254,
+    "addedPrivateWidgetClasses": 29,
+    "addedWidgetReturningHelpers": 0,
+    "coveredNewWidgets": 9,
+    "unresolved": 274,
+    "widgetsByStatus": {
+      "unresolved": 274,
+      "covered": 9
+    },
+    "helpersByStatus": {},
+    "issues": {
+      "missing-widgetbook": 245,
+      "missing-widget-catalog": 244,
+      "private-widget-class": 29
+    }
+  },
+  "addedWidgets": [
+    {
+      "name": "CalendarLoadingScreen",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 285,
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CalendarDateHeader",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 344,
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CalendarDateHeaderSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 405,
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CalendarWeekStripSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 434,
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CalendarTitleRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 456,
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CalendarStatsHeader",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 533,
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CalendarStatsHeaderSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 594,
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CalendarStatSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 633,
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CalendarWeekStrip",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 649,
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CalendarMonthGrid",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 693,
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CalendarStatDivider",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 765,
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CalendarMessage",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 784,
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "_ShareCardHeader",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 232,
+      "file": "lib/chats/presentation/widgets/chat_share_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_ShareCardBubble",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 287,
+      "file": "lib/chats/presentation/widgets/chat_share_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_TimestampedMessageText",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 110,
+      "file": "lib/chats/presentation/widgets/message_bubble.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_MediaMessageBody",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 209,
+      "file": "lib/chats/presentation/widgets/message_bubble.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "DockCount",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 191,
+      "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DockBell",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 225,
+      "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubNextRunBanner",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 292,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubActivitySection",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 362,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubHostSection",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 435,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubHostRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 498,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubContactSection",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 593,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubPhotoStrip",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 679,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubDetailLoadingBody",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 9,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "ClubHeroLoadingSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 62,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubStatsLoadingSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 98,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubStatLoadingSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 123,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubStatsDividerSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 139,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubHostLoadingSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 155,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubTextLoadingSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 185,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubTagLoadingSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 196,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubScheduleLoadingSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 225,
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubHeroModule",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 230,
+      "file": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubShareArtwork",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 134,
+      "file": "lib/clubs/presentation/detail/widgets/club_share_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubShareMetaRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 153,
+      "file": "lib/clubs/presentation/detail/widgets/club_share_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "AvatarChip",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 6,
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/avatar_chip.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubImage",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 3,
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/club_image.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DirectoryCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 3,
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DirectoryPhotoCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 40,
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DirectoryIdentityCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 82,
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubPhotoMediaOverlay",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 125,
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubPhotoChrome",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 136,
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubPhotoScrim",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 189,
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubLogoCrest",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 217,
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubLogoFallback",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 257,
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubDirectoryFooter",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 266,
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubRule",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 304,
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubHostActionRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 318,
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "MembershipTrailing",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 373,
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "PaperCelebrationScaffold",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 244,
+      "file": "lib/core/celebration/catch_celebration_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "PaperCelebrationIcon",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 374,
+      "file": "lib/core/celebration/catch_celebration_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "PaperCelebrationDetailsCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 392,
+      "file": "lib/core/celebration/catch_celebration_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "PaperCelebrationDetailRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 423,
+      "file": "lib/core/celebration/catch_celebration_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CelebrationIcon",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 461,
+      "file": "lib/core/celebration/catch_celebration_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CelebrationDetailsCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 481,
+      "file": "lib/core/celebration/catch_celebration_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CelebrationDetailRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 513,
+      "file": "lib/core/celebration/catch_celebration_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CelebrationNote",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 553,
+      "file": "lib/core/celebration/catch_celebration_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CatchMiniBarChart",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 5,
+      "file": "lib/core/widgets/catch_mini_bar_chart.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "ActivityScreenLoading",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 138,
+      "file": "lib/dashboard/presentation/activity_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ActivityScreenBody",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 150,
+      "file": "lib/dashboard/presentation/activity_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DashboardEmptyHomeScreen",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 73,
+      "file": "lib/dashboard/presentation/dashboard_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DashboardHomeScreen",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 93,
+      "file": "lib/dashboard/presentation/dashboard_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "NotificationsAction",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 131,
+      "file": "lib/dashboard/presentation/dashboard_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DashboardLoadingScreen",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 190,
+      "file": "lib/dashboard/presentation/dashboard_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DashboardLoadingHeader",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 230,
+      "file": "lib/dashboard/presentation/dashboard_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DashboardFocusLoadingCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 261,
+      "file": "lib/dashboard/presentation/dashboard_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DashboardStrideLoadingCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 303,
+      "file": "lib/dashboard/presentation/dashboard_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DashboardQuickActionsLoadingRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 333,
+      "file": "lib/dashboard/presentation/dashboard_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DashboardRecommendedLoadingSection",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 354,
+      "file": "lib/dashboard/presentation/dashboard_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DashboardErrorScreen",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 373,
+      "file": "lib/dashboard/presentation/dashboard_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "NotificationRowSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 206,
+      "file": "lib/dashboard/presentation/widgets/activity_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "NotificationGroupWidget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 314,
+      "file": "lib/dashboard/presentation/widgets/activity_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "FollowedClubsRailSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 378,
+      "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DashboardHeaderContent",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 15,
+      "file": "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EmptyHeroContent",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 57,
+      "file": "lib/dashboard/presentation/widgets/empty_hero_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventFocusPageIndicator",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 306,
+      "file": "lib/dashboard/presentation/widgets/event_focus_rail.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventFocusCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 328,
+      "file": "lib/dashboard/presentation/widgets/event_focus_rail.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "RatingRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 176,
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CounterRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 210,
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "FeedbackIconAction",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 249,
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CompanionScaffold",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 89,
+      "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CompanionLoading",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 104,
+      "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CompanionStageSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 143,
+      "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CompanionPrimaryActionSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 188,
+      "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CompanionPeerListSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 215,
+      "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CompanionError",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 265,
+      "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CompanionMessage",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 294,
+      "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventDetailLoadingScreen",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 147,
+      "file": "lib/events/presentation/event_detail_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventDetailHeroSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 190,
+      "file": "lib/events/presentation/event_detail_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventDetailTicketStubSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 280,
+      "file": "lib/events/presentation/event_detail_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "TicketStubCellSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 315,
+      "file": "lib/events/presentation/event_detail_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventDetailPlanSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 338,
+      "file": "lib/events/presentation/event_detail_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventDetailHintSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 358,
+      "file": "lib/events/presentation/event_detail_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventDetailItinerarySkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 391,
+      "file": "lib/events/presentation/event_detail_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventDetailMapSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 428,
+      "file": "lib/events/presentation/event_detail_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventDetailMechanismSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 440,
+      "file": "lib/events/presentation/event_detail_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventDetailSocialSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 469,
+      "file": "lib/events/presentation/event_detail_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventDetailLoadingCta",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 490,
+      "file": "lib/events/presentation/event_detail_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "MapPickerSearchRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 330,
+      "file": "lib/events/presentation/location_picker_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "PlaceSearchPanel",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 363,
+      "file": "lib/events/presentation/location_picker_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "PlaceSuggestionRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 444,
+      "file": "lib/events/presentation/location_picker_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "SelectedPointPanel",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 514,
+      "file": "lib/events/presentation/location_picker_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "SavedEventsLoading",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 114,
+      "file": "lib/events/presentation/saved_events_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "SavedEventsMessage",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 135,
+      "file": "lib/events/presentation/saved_events_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "_BookingConflictEventRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 151,
+      "file": "lib/events/presentation/widgets/booking_conflict_sheet.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_EventAgendaTileSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 200,
+      "file": "lib/events/presentation/widgets/event_agenda_list.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_AgendaDayGroup",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 292,
+      "file": "lib/events/presentation/widgets/event_agenda_list.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "EventInviteLoopCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 258,
+      "file": "lib/events/presentation/widgets/event_detail_body.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventCompanionEntry",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 340,
+      "file": "lib/events/presentation/widgets/event_detail_body.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventCompanionCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 376,
+      "file": "lib/events/presentation/widgets/event_detail_body.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "GuestBookCta",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 536,
+      "file": "lib/events/presentation/widgets/event_detail_body.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventDetailHostsSection",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 591,
+      "file": "lib/events/presentation/widgets/event_detail_body.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventDetailPhotoStripTile",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 335,
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "TicketStubCell",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 392,
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "HairlineList",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 463,
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ItineraryRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 506,
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "MapPill",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 604,
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "HostAvatar",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 1131,
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "_LegacyEventHeroSurface",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 171,
+      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_EventDetailTicketHeroSurface",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 217,
+      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_EventDetailTicketSurface",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 240,
+      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_HeroActivityBadge",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 408,
+      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_HeroTimeChip",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 438,
+      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "EventDetailOptimisticBody",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 25,
+      "file": "lib/events/presentation/widgets/event_detail_optimistic_body.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "_OptimisticHostsSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 112,
+      "file": "lib/events/presentation/widgets/event_detail_optimistic_body.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_OptimisticSocialSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 139,
+      "file": "lib/events/presentation/widgets/event_detail_optimistic_body.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_EventDescription",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 130,
+      "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_WhatToExpectSection",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 173,
+      "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_GuestWhoIsGoing",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 89,
+      "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_EventShareMetaRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 222,
+      "file": "lib/events/presentation/widgets/event_share_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_EventSharePill",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 254,
+      "file": "lib/events/presentation/widgets/event_share_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "EventHeroSurface",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 11,
+      "file": "lib/core/widgets/event_ticket_surface.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "_EventActionCardHeader",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 170,
+      "file": "lib/events/presentation/widgets/event_tiles/event_action_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_EventActionCardActions",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 208,
+      "file": "lib/events/presentation/widgets/event_tiles/event_action_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_EventCompactDatePill",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 122,
+      "file": "lib/events/presentation/widgets/event_tiles/event_compact_row.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_WeekMarker",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 56,
+      "file": "lib/events/presentation/widgets/event_tiles/event_date_marker.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_MonthMarker",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 125,
+      "file": "lib/events/presentation/widgets/event_tiles/event_date_marker.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_PerforationLine",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 373,
+      "file": "lib/events/presentation/widgets/event_tiles/event_date_rail_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_DateRail",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 410,
+      "file": "lib/events/presentation/widgets/event_tiles/event_date_rail_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "WhoIsGoingContent",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 87,
+      "file": "lib/events/presentation/widgets/who_is_going.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EmptyRosterMessage",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 182,
+      "file": "lib/events/presentation/widgets/who_is_going.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "SwipeWindowBanner",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 239,
+      "file": "lib/events/presentation/widgets/who_is_going.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreChrome",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 145,
+      "file": "lib/explore/presentation/explore_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreScreenEmptyState",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 157,
+      "file": "lib/explore/presentation/explore_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreClearAction",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 197,
+      "file": "lib/explore/presentation/explore_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreSkeletonList",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 235,
+      "file": "lib/explore/presentation/explore_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CoverStoryChrome",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 133,
+      "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CoverStoryContent",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 210,
+      "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CrossPathsSurface",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 190,
+      "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CrossPathsPortrait",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 226,
+      "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CrossPathsPolaroidRail",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 251,
+      "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CrossPathsCtaRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 321,
+      "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CityTrigger",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 117,
+      "file": "lib/explore/presentation/widgets/explore_city_picker.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventTypeBrowseContent",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 49,
+      "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ActivityTypeRows",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 98,
+      "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ActivitySlotView",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 170,
+      "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ActivityTypeRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 201,
+      "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "MoreActivityTypesRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 261,
+      "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ActivityDot",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 309,
+      "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EventTypeBrowseSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 327,
+      "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreFeedEventRow",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 383,
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreExternalEventRow",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 417,
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ThisWeekRecommendationsSection",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 513,
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreClubPolaroidCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 560,
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreFeedClubRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 602,
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreClubCover",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 670,
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreClubTags",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 692,
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreDarkPill",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 710,
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreMonoLabel",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 739,
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreEventsLoadingSliver",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 791,
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreEventsEmptySliver",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 818,
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreRailLabel",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 83,
+      "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreFilterGlyphButton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 132,
+      "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreBrowseHeaderContent",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 33,
+      "file": "lib/explore/presentation/widgets/explore_header.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "ExploreListEmptyState",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 70,
+      "file": "lib/explore/presentation/widgets/explore_list.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubDirectorySkeletonList",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 105,
+      "file": "lib/explore/presentation/widgets/explore_list.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubDirectorySkeletonCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 122,
+      "file": "lib/explore/presentation/widgets/explore_list.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreMapSheetLead",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 131,
+      "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CollapsedMapSummary",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 194,
+      "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ExploreEventTicketCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 289,
+      "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "PeekRailSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 529,
+      "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EditClubPhotosLabel",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 149,
+      "file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ClubProfileImageTile",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 167,
+      "file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "HostCreateEventRouteLoadingScreen",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 49,
+      "file": "lib/hosts/presentation/event_management/host_create_event_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CreateEventLoadingBody",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 78,
+      "file": "lib/hosts/presentation/event_management/host_create_event_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "LoadingChipRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 114,
+      "file": "lib/hosts/presentation/event_management/host_create_event_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CreateEventLoadingFooter",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 136,
+      "file": "lib/hosts/presentation/event_management/host_create_event_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "DraftCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 168,
+      "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "HostAnalyticsMetricGridSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 301,
+      "file": "lib/hosts/presentation/widgets/host_loading_skeletons.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "StripedPhotoPlaceholder",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 235,
+      "file": "lib/image_uploads/presentation/widgets/photo_slot.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "PhotoSlotMainBadge",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 261,
+      "file": "lib/image_uploads/presentation/widgets/photo_slot.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "LaunchAccessLoadingBody",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 73,
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "LaunchAccessChoiceSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 121,
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "LaunchAccessStatusView",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 404,
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "LaunchAccessDisabledView",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 425,
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "LaunchAccessSignedOutView",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 440,
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ChatsListSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 209,
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ChatPersonRowSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 253,
+      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "_OnboardingTopBar",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 143,
+      "file": "lib/onboarding/presentation/onboarding_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "PromptField",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 195,
+      "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "WelcomeScene",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 225,
+      "file": "lib/onboarding/presentation/pages/welcome_page.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ReelBand",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 356,
+      "file": "lib/onboarding/presentation/pages/welcome_page.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ReelRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 428,
+      "file": "lib/onboarding/presentation/pages/welcome_page.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "RevealEntrance",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 524,
+      "file": "lib/onboarding/presentation/pages/welcome_page.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "OnboardingStepLayout",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 6,
+      "file": "lib/onboarding/presentation/widgets/onboarding_step_layout.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "SettingsSection",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 496,
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "AccountProfileStatus",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 556,
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "BlockedAccountsSection",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 594,
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "BlockedAccountsSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 662,
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "BlockedAccountTile",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 719,
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "RecapHeroSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 217,
+      "file": "lib/swipes/presentation/event_recap_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "RecapStatSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 250,
+      "file": "lib/swipes/presentation/event_recap_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "VibeGridSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 269,
+      "file": "lib/swipes/presentation/event_recap_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "RecapHero",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 293,
+      "file": "lib/swipes/presentation/event_recap_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "RecapStat",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 356,
+      "file": "lib/swipes/presentation/event_recap_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "VibeTile",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 394,
+      "file": "lib/swipes/presentation/event_recap_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "RecapProfilePhoto",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 482,
+      "file": "lib/swipes/presentation/event_recap_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "EmptyRoster",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 501,
+      "file": "lib/swipes/presentation/event_recap_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "AgeFilterSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 294,
+      "file": "lib/swipes/presentation/filters_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "GenderFilterSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 326,
+      "file": "lib/swipes/presentation/filters_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileHeroWidget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 115,
+      "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileHeroScrim",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 195,
+      "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfilePhoto",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 223,
+      "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": true,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook"
+      ],
+      "recommendedAction": "Add an exact-name Widgetbook component or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileSectionView",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 256,
+      "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileSectionKicker",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 305,
+      "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileCompatibility",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 327,
+      "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfilePrompt",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 387,
+      "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileRunning",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 411,
+      "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "RunningStat",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 459,
+      "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileFacts",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 488,
+      "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfilePhotoBlock",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 528,
+      "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "PhotoCaption",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 573,
+      "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileRule",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 593,
+      "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileSurfaceHeroSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 143,
+      "file": "lib/swipes/presentation/profile_surface.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileSurfaceSectionSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 185,
+      "file": "lib/swipes/presentation/profile_surface.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileSurfaceRunningSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 219,
+      "file": "lib/swipes/presentation/profile_surface.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileSurfacePhotoSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 254,
+      "file": "lib/swipes/presentation/profile_surface.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileSurfaceFactsSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 276,
+      "file": "lib/swipes/presentation/profile_surface.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileSurfaceRule",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 308,
+      "file": "lib/swipes/presentation/profile_surface.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CatchesHubStateView",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 49,
+      "file": "lib/swipes/presentation/swipe_hub_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "PillStat",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 270,
+      "file": "lib/swipes/presentation/swipe_hub_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CatchesTopOverlaySkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 236,
+      "file": "lib/swipes/presentation/swipe_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "OverlayIconSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 282,
+      "file": "lib/swipes/presentation/swipe_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CatchesPassButtonSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 291,
+      "file": "lib/swipes/presentation/swipe_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "OverlayIconAction",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 375,
+      "file": "lib/swipes/presentation/swipe_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ReactionControlButton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 190,
+      "file": "lib/swipes/presentation/widgets/profile_reaction_controls.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "UserAnalyticsReportView",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 84,
+      "file": "lib/user_analytics/presentation/user_analytics_panel.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "UserAnalyticsEmptyState",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 114,
+      "file": "lib/user_analytics/presentation/user_analytics_panel.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "UserAnalyticsReportSkeleton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 150,
+      "file": "lib/user_analytics/presentation/user_analytics_panel.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "UserAnalyticsMetricGrid",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 309,
+      "file": "lib/user_analytics/presentation/user_analytics_panel.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "UserAnalyticsMetricTile",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 335,
+      "file": "lib/user_analytics/presentation/user_analytics_panel.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "UserAnalyticsTrendPanel",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 396,
+      "file": "lib/user_analytics/presentation/user_analytics_panel.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "UserAnalyticsBar",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 466,
+      "file": "lib/user_analytics/presentation/user_analytics_panel.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "UserAnalyticsTipsPanel",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 495,
+      "file": "lib/user_analytics/presentation/user_analytics_panel.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "UserAnalyticsTipRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 520,
+      "file": "lib/user_analytics/presentation/user_analytics_panel.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "UserAnalyticsDataQualityPanel",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 555,
+      "file": "lib/user_analytics/presentation/user_analytics_panel.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "UserAnalyticsDataQualityRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 580,
+      "file": "lib/user_analytics/presentation/user_analytics_panel.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "UserAnalyticsSection",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 604,
+      "file": "lib/user_analytics/presentation/user_analytics_panel.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "UserAnalyticsInlineStat",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 627,
+      "file": "lib/user_analytics/presentation/user_analytics_panel.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileTabScrollView",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 218,
+      "file": "lib/user_profile/presentation/profile_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "PreviewTabSkeletonSliverBody",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 258,
+      "file": "lib/user_profile/presentation/profile_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "PreviewTabSliverBody",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 295,
+      "file": "lib/user_profile/presentation/profile_screen.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileChipPlaceholder",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 415,
+      "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileInlineHeightEditor",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 14,
+      "file": "lib/user_profile/presentation/widgets/inline_editor_height.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "ProfileHeightStepperControls",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 106,
+      "file": "lib/user_profile/presentation/widgets/inline_editor_height.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileHeightStepButton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 141,
+      "file": "lib/user_profile/presentation/widgets/inline_editor_height.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileInlinePromptEntryEditor",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 17,
+      "file": "lib/user_profile/presentation/widgets/inline_editor_prompt.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "ProfileInlineRangeEditor",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 11,
+      "file": "lib/user_profile/presentation/widgets/inline_editor_range.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "ProfileDirectTextEntryField",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 16,
+      "file": "lib/user_profile/presentation/widgets/inline_editor_text.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "ProfileInlineTextValue",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 158,
+      "file": "lib/user_profile/presentation/widgets/inline_editor_text.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "ProfileInfoRowFrame",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 98,
+      "file": "lib/user_profile/presentation/widgets/profile_info_section.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileInsightsTabSliverBody",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 7,
+      "file": "lib/user_profile/presentation/widgets/profile_insights_tab.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileTitle",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 26,
+      "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileTabBar",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 54,
+      "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileSettingsButton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 94,
+      "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileTabSkeletonSliverBody",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 18,
+      "file": "lib/user_profile/presentation/widgets/profile_tab_skeleton.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "ProfilePhotosSkeletonSection",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 60,
+      "file": "lib/user_profile/presentation/widgets/profile_tab_skeleton.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileInfoSkeletonSection",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 89,
+      "file": "lib/user_profile/presentation/widgets/profile_tab_skeleton.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "ProfileInfoSkeletonTile",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 129,
+      "file": "lib/user_profile/presentation/widgets/profile_tab_skeleton.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    },
+    {
+      "name": "_ProfileDirectTextEntry",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 635,
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "_ProfilePromptEntry",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 788,
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "ProfilePhotosSection",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 856,
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook",
+        "missing-widget-catalog"
+      ],
+      "recommendedAction": "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget."
+    }
+  ],
+  "addedWidgetHelpers": []
+}

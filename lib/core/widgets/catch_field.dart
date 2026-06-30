@@ -1097,6 +1097,57 @@ class _CatchFieldState extends State<CatchField> {
                     ? t.ink3
                     : _toneColor(t, primaryFallback: t.ink),
               ));
+    final actionBar = LayoutBuilder(
+      builder: (context, constraints) {
+        final cancelButton = CatchTextButton(
+          label: 'Cancel',
+          onPressed: widget._isLoading
+              ? null
+              : () {
+                  setState(() => _open = false);
+                  widget._onCancel?.call();
+                },
+          tone: CatchTextButtonTone.neutral,
+        );
+        final doneButton = CatchButton(
+          label: 'Done',
+          onPressed: widget._isLoading ? null : widget._onSubmit,
+          isLoading: widget._isLoading,
+          size: CatchButtonSize.sm,
+        );
+
+        if (constraints.maxWidth < CatchLayout.fieldActionBarWrapBreakpoint) {
+          return Wrap(
+            alignment: WrapAlignment.end,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: CatchSpacing.s3,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              if (widget._actionLeading != null) widget._actionLeading!,
+              cancelButton,
+              doneButton,
+            ],
+          );
+        }
+
+        return Row(
+          children: [
+            if (widget._actionLeading != null)
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: widget._actionLeading,
+                ),
+              )
+            else
+              const Spacer(),
+            cancelButton,
+            gapW12,
+            doneButton,
+          ],
+        );
+      },
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: CatchSpacing.micro2),
@@ -1139,70 +1190,11 @@ class _CatchFieldState extends State<CatchField> {
             control,
             if (widget._onSubmit != null) ...[
               const SizedBox(height: CatchSpacing.s3),
-              _buildActionBar(),
+              actionBar,
             ],
           ],
         ],
       ),
-    );
-  }
-
-  Widget _buildActionBar() {
-    Widget cancelButton() {
-      return CatchTextButton(
-        label: 'Cancel',
-        onPressed: widget._isLoading
-            ? null
-            : () {
-                setState(() => _open = false);
-                widget._onCancel?.call();
-              },
-        tone: CatchTextButtonTone.neutral,
-      );
-    }
-
-    Widget doneButton() {
-      return CatchButton(
-        label: 'Done',
-        onPressed: widget._isLoading ? null : widget._onSubmit,
-        isLoading: widget._isLoading,
-        size: CatchButtonSize.sm,
-      );
-    }
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < CatchLayout.fieldActionBarWrapBreakpoint) {
-          return Wrap(
-            alignment: WrapAlignment.end,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: CatchSpacing.s3,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              if (widget._actionLeading != null) widget._actionLeading!,
-              cancelButton(),
-              doneButton(),
-            ],
-          );
-        }
-
-        return Row(
-          children: [
-            if (widget._actionLeading != null)
-              Expanded(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: widget._actionLeading,
-                ),
-              )
-            else
-              const Spacer(),
-            cancelButton(),
-            gapW12,
-            doneButton(),
-          ],
-        );
-      },
     );
   }
 

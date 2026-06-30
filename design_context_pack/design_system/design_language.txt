@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.1.0
-updated: 2026-05-31
+version: 1.2.0
+updated: 2026-06-30
 owner: ui_elevation_initiative
 status: active — identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -9,12 +9,10 @@ status: active — identity locked; Phase 0–1 complete (bundled optical-sized 
 # Catch Design Language
 
 Source of truth for Catch's **visual identity**: palette, typography, photographic
-treatment, metaphors, surfaces, and motion. Pairs with `docs/ui_architecture.md`
-(layout/scroll/sizing) and `docs/widget_catalog.md` (component inventory). The
+treatment, metaphors, surfaces, and motion. Pairs with `docs/app_architecture.md`
+(layout/scroll/sizing architecture) and `docs/widget_catalog.md` (component inventory). The
 multi-phase rollout + **live status** lives in
-[`docs/ui_elevation_implementation.md`](ui_elevation_implementation.md) (the original
-exploration plan [`docs/plans/cryptic-hatching-hummingbird.md`](plans/cryptic-hatching-hummingbird.md)
-is **superseded**).
+[`docs/ui_elevation_implementation.md`](ui_elevation_implementation.md).
 
 > **Status (2026-05-31):** The "Sunset" cream+orange palette is **retired**; the direction
 > below is **locked** (see §9). Phases 0–1 are implemented (fonts bundled + optically sized,
@@ -239,7 +237,7 @@ What we tried and why, so we don't relitigate it:
    tracking/leading).
 4. ✅ Refresh or delete the superseded `identity_candidate_lab_app.dart`.
 
-**Then the plan's phases** ([`docs/plans/cryptic-hatching-hummingbird.md`](plans/cryptic-hatching-hummingbird.md)):
+**Implemented rollout phases:**
 - **Phase 1** — route palette-owners (`event_activity_visuals.dart`,
   `profile_card_style.dart`, `club_cover_fallback.dart`, …) through tokens → **re-skin
   proof**; sizing/constraint doctrine + Dynamic Type; motion spec; anti-drift CI gate.
@@ -247,3 +245,7 @@ What we tried and why, so we don't relitigate it:
 - **Phase 3** — rollout to par: onboarding, **Dashboard + Profile tabs**, clubs (land the
   named polaroid; retire `club_cover_fallback`), chat/matches, settings/payments/calendar,
   event_success. Retire dead sandboxes (`labs/`, `explore_concept/`).
+
+**Remaining policy decision:** map pins still need an explicit art-vs-token
+decision. Either route `CatchMapPinColors` through `ActivityPalette`/tokens, or
+document the map-pin palette as a sanctioned expressive-art exception here.

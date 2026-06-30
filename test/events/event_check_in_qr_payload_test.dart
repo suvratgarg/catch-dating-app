@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/events/presentation/event_check_in_qr_payload.dart';
+import 'package:catch_dating_app/events/domain/event_check_in_qr_payload.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

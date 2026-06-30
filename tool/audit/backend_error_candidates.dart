@@ -90,11 +90,27 @@ final rules = <CandidateRule>[
   ),
 ];
 
+const blockingReviewRuleIds = {
+  'direct_functions_callable',
+  'direct_firestore_stream',
+  'direct_firestore_read',
+  'direct_firestore_write',
+  'raw_firebase_exception_type',
+};
+
 void main(List<String> args) {
+  final checkOutput = args.contains('--check');
   final jsonOutput = args.contains('--json');
   final markdownOutput = args.contains('--markdown');
   final roots = _rootsFromArgs(args);
   final candidates = _scan(roots);
+
+  if (checkOutput) {
+    final blockingCandidates = candidates.where(_isBlockingCandidate).toList();
+    _printCheck(roots, candidates, blockingCandidates);
+    if (blockingCandidates.isNotEmpty) exitCode = 1;
+    return;
+  }
 
   if (jsonOutput) {
     stdout.writeln(
@@ -228,6 +244,49 @@ void _printMarkdown(List<String> roots, List<Candidate> candidates) {
       '${candidate.disposition}: ${candidate.recommendation} |',
     );
   }
+}
+
+void _printCheck(
+  List<String> roots,
+  List<Candidate> candidates,
+  List<Candidate> blockingCandidates,
+) {
+  final summary = _summary(candidates);
+  final nonBlockingReviews = candidates
+      .where((candidate) => candidate.status == CandidateStatus.review)
+      .where((candidate) => !_isBlockingCandidate(candidate))
+      .length;
+
+  stdout.writeln('Backend error pre-submit check');
+  stdout.writeln('roots: ${roots.join(', ')}');
+  for (final entry in summary.entries) {
+    stdout.writeln('${entry.key}: ${entry.value}');
+  }
+  stdout.writeln('blocking: ${blockingCandidates.length}');
+  if (nonBlockingReviews > 0) {
+    stdout.writeln('nonBlockingReview: $nonBlockingReviews');
+  }
+
+  if (blockingCandidates.isEmpty) {
+    stdout.writeln('No unwrapped backend call candidates found.');
+    return;
+  }
+
+  stderr.writeln();
+  stderr.writeln('Unresolved backend error candidates block this check:');
+  for (final candidate in blockingCandidates) {
+    stderr.writeln(
+      '- ${candidate.rule.id} at ${candidate.path}:${candidate.line}: '
+      '${candidate.disposition}. ${candidate.recommendation}',
+    );
+    stderr.writeln('  ${candidate.snippet}');
+  }
+}
+
+bool _isBlockingCandidate(Candidate candidate) {
+  if (candidate.status == CandidateStatus.mustMigrate) return true;
+  return candidate.status == CandidateStatus.review &&
+      blockingReviewRuleIds.contains(candidate.rule.id);
 }
 
 CandidateDisposition _dispositionFor({
