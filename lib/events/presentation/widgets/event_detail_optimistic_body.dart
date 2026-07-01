@@ -83,8 +83,8 @@ class EventDetailOptimisticBody extends StatelessWidget {
                       )
                     : null,
               ),
-              const _OptimisticHostsSkeleton(),
-              const _OptimisticSocialSkeleton(),
+              const OptimisticHostsSkeleton(),
+              const OptimisticSocialSkeleton(),
             ],
           ),
         ],
@@ -109,8 +109,8 @@ class EventDetailOptimisticBody extends StatelessWidget {
   }
 }
 
-class _OptimisticHostsSkeleton extends StatelessWidget {
-  const _OptimisticHostsSkeleton();
+class OptimisticHostsSkeleton extends StatelessWidget {
+  const OptimisticHostsSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -136,8 +136,8 @@ class _OptimisticHostsSkeleton extends StatelessWidget {
   }
 }
 
-class _OptimisticSocialSkeleton extends StatelessWidget {
-  const _OptimisticSocialSkeleton();
+class OptimisticSocialSkeleton extends StatelessWidget {
+  const OptimisticSocialSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {

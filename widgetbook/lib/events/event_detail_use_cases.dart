@@ -43,6 +43,7 @@ import 'package:catch_dating_app/events/presentation/widgets/booking_conflict_sh
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_optimistic_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
@@ -396,6 +397,30 @@ Widget eventWhatToExpectState(BuildContext context) {
   return Padding(
     padding: CatchInsets.contentDense,
     child: WhatToExpectSection(event: _event),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Optimistic hosts skeleton',
+  type: OptimisticHostsSkeleton,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailOptimisticHostsSkeletonState(BuildContext context) {
+  return const Padding(
+    padding: CatchInsets.contentDense,
+    child: OptimisticHostsSkeleton(),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Optimistic social skeleton',
+  type: OptimisticSocialSkeleton,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailOptimisticSocialSkeletonState(BuildContext context) {
+  return const Padding(
+    padding: CatchInsets.contentDense,
+    child: OptimisticSocialSkeleton(),
   );
 }
 

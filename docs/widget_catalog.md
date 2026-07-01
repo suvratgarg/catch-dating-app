@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.504
+version: 2.5.505
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.505
+
+- Promoted `OptimisticHostsSkeleton` and `OptimisticSocialSkeleton` as public
+  cataloged loading sections used by `EventDetailOptimisticBody`, with exact
+  Widgetbook coverage. The classification scanner's private widget review count
+  drops by two without changing optimistic event-detail rendering.
 
 ### 2.5.504
 
@@ -5629,6 +5636,8 @@ Generated 2026-05-06.
 | `EventAgendaTileSkeleton` | `lib/events/presentation/widgets/event_agenda_list.dart:200` | Public placeholder row renderer used by `EventAgendaSliverSkeleton`. Mirrors the date rail plus body layout of agenda event tiles with shared skeleton primitives and owns no loading state. |
 | `AgendaDayGroup` | `lib/events/presentation/widgets/event_agenda_list.dart:292` | Public day-group renderer used by `EventAgendaSliverList`. Renders the day label, maps grouped events into `EventAgendaTile`, and applies caller-provided badge, club-name, status, selection, and gap policies without owning sorting or grouping. |
 | `EventDetailOverviewSection` | `lib/events/presentation/widgets/event_detail_overview_section.dart:10` | Handoff-ordered event-detail body stack: The plan, Why you might click, Itinerary, Photos when available, Where, How sign-ups work, and Good to know. Uses `CatchSection` plus event-detail primitives while retaining requirements, expectation, cancellation, and settlement policy copy from the existing event policy model. |
+| `OptimisticHostsSkeleton` | `lib/events/presentation/widgets/event_detail_optimistic_body.dart:112` | Public optimistic-loading host section used by `EventDetailOptimisticBody` while the full event-detail view model resolves. Renders a divided host section with avatar/text skeletons. |
+| `OptimisticSocialSkeleton` | `lib/events/presentation/widgets/event_detail_optimistic_body.dart:139` | Public optimistic-loading social section used by `EventDetailOptimisticBody` while the full event-detail view model resolves. Renders the Who's going section with avatar and copy skeletons. |
 | `EventDescription` | `lib/events/presentation/widgets/event_detail_overview_section.dart:130` | Public description block used by `EventDetailOverviewSection` for the plan copy. Renders the local heading and body text with optional event-detail surface colors. |
 | `WhatToExpectSection` | `lib/events/presentation/widgets/event_detail_overview_section.dart:174` | Public expectation-summary block used by `EventDetailOverviewSection`. Maps an event into policy summary lines inside a tokenized surface without owning section ordering. |
 | `EventDetailSocialSection` | `lib/events/presentation/widgets/event_detail_social_section.dart:10` | Social context sections for the loaded event detail body: Who's going and Reviews, both composed with `CatchSection`. The roster supports a guest lock prompt and signed-in roster view; review writing requires an attended `EventParticipation` and an event end time that has passed. |

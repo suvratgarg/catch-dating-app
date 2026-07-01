@@ -2173,6 +2173,26 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'OptimisticHostsSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Optimistic hosts skeleton',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailOptimisticHostsSkeletonState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OptimisticSocialSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Optimistic social skeleton',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailOptimisticSocialSkeletonState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventDetailPolicySummary',
             useCases: [
               _widgetbook.WidgetbookUseCase(
