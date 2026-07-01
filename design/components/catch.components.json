@@ -2132,6 +2132,114 @@
       }
     },
     {
+      "id": "catch.mini_bar_chart",
+      "name": "CatchMiniBarChart",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Compact mini bar chart for dense metric panels and data-coverage summaries.",
+      "dart": {
+        "symbol": "CatchMiniBarChart",
+        "file": "lib/core/widgets/catch_mini_bar_chart.dart",
+        "constructors": [
+          "CatchMiniBarChart"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/MiniBarChart",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "MiniBarChart",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "values",
+            "type": "list",
+            "required": true,
+            "dartType": "List<num>"
+          },
+          {
+            "name": "maxValue",
+            "type": "number",
+            "required": false,
+            "dartType": "num?"
+          },
+          {
+            "name": "height",
+            "type": "number",
+            "required": false,
+            "default": "space.s16",
+            "dartType": "double"
+          },
+          {
+            "name": "spacing",
+            "type": "number",
+            "required": false,
+            "default": "space.micro6",
+            "dartType": "double"
+          },
+          {
+            "name": "semanticLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          }
+        ],
+        "states": [
+          "default",
+          "empty",
+          "zero-values",
+          "color-override",
+          "semantic-label"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s16",
+          "space.micro6",
+          "space.s4",
+          "radius.xs",
+          "theme.light.color.surface",
+          "theme.light.color.line",
+          "theme.light.color.line2",
+          "theme.light.color.ink"
+        ],
+        "dartRoles": [
+          "CatchSurface",
+          "CatchInsets.contentDense",
+          "CatchRadius.xs"
+        ],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use only for compact trend or coverage summaries; larger analytical charts need a dedicated data visualization surface.",
+          "Always provide a semantic label when the chart communicates non-decorative data."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.mini_bar_chart",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical"
+      }
+    },
+    {
       "id": "catch.metric_strip",
       "name": "CatchMetricStrip",
       "status": "active",
@@ -2735,6 +2843,171 @@
         "asyncOwnership": "none",
         "layoutOwnership": "internal-only",
         "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical"
+      }
+    },
+    {
+      "id": "catch.control_shell",
+      "name": "CatchControlShell",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Shared one-line control chrome for fields, selects, steppers, search controls, and compact picker triggers.",
+      "dart": {
+        "symbol": "CatchControlShell",
+        "file": "lib/core/widgets/catch_control_shell.dart",
+        "constructors": [
+          "CatchControlShell"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/ControlShell",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "ControlShell",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "child",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget"
+          },
+          {
+            "name": "size",
+            "type": "enum",
+            "required": false,
+            "default": "md",
+            "dartType": "CatchControlSize",
+            "values": [
+              "floating",
+              "compact",
+              "md"
+            ]
+          },
+          {
+            "name": "shape",
+            "type": "enum",
+            "required": false,
+            "default": "rounded",
+            "dartType": "CatchControlShape",
+            "values": [
+              "rounded",
+              "pill"
+            ]
+          },
+          {
+            "name": "tone",
+            "type": "enum",
+            "required": false,
+            "default": "surface",
+            "dartType": "CatchControlTone",
+            "values": [
+              "surface",
+              "raised"
+            ]
+          },
+          {
+            "name": "enabled",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          },
+          {
+            "name": "hasError",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "focused",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "semanticButton",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          }
+        ],
+        "states": [
+          "surface-md",
+          "raised-compact",
+          "pill",
+          "focused",
+          "error",
+          "disabled",
+          "semantic-button"
+        ],
+        "slots": [
+          {
+            "name": "child",
+            "kind": "required-control-content"
+          }
+        ],
+        "tokens": [
+          "space.s3",
+          "space.micro14",
+          "radius.md",
+          "radius.pill",
+          "theme.light.color.surface",
+          "theme.light.color.raised",
+          "theme.light.color.line2",
+          "theme.light.color.primary",
+          "theme.light.color.danger"
+        ],
+        "dartRoles": [
+          "CatchControlMetrics",
+          "CatchControlSize",
+          "CatchControlShape",
+          "CatchControlTone",
+          "CatchElevation.focusRing",
+          "CatchStroke.underline"
+        ],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.field",
+          "catch.search_field",
+          "catch.number_stepper"
+        ],
+        "notes": [
+          "Use as internal chrome for control primitives; product UI should usually enter through the higher-level field, search, select, or stepper APIs.",
+          "Do not fork control borders, focus rings, or compact heights in feature widgets."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.control_shell",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
       }
@@ -7451,6 +7724,26 @@
               "dense",
               "full-artwork",
               "activity-pigment"
+            ]
+          },
+          {
+            "id": "catch.event_card.activity_stamp",
+            "symbol": "EventActivityStamp",
+            "file": "lib/core/widgets/event_visual_atoms.dart",
+            "summary": "Circular activity glyph stamp used by event cards, agenda rows, and ticket compositions.",
+            "states": [
+              "default",
+              "custom-size",
+              "activity-variants"
+            ]
+          },
+          {
+            "id": "catch.event_card.hero_surface",
+            "symbol": "EventHeroSurface",
+            "file": "lib/core/widgets/event_ticket_surface.dart",
+            "summary": "Named full-card Hero wrapper for ticket-card to event-detail transitions.",
+            "states": [
+              "wrapper"
             ]
           },
           {

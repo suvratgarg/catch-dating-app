@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
@@ -31,6 +32,7 @@ import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
+import 'package:catch_dating_app/core/widgets/catch_mini_bar_chart.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
@@ -54,6 +56,9 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
+import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
@@ -1640,6 +1645,94 @@ Widget catchIconTileContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchControlShell,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchControlShellContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  Widget shell({
+    required String label,
+    CatchControlSize size = CatchControlSize.md,
+    CatchControlShape shape = CatchControlShape.rounded,
+    CatchControlTone tone = CatchControlTone.surface,
+    bool enabled = true,
+    bool hasError = false,
+    bool focused = false,
+    VoidCallback? onTap,
+    bool semanticButton = false,
+  }) {
+    return SizedBox(
+      width: 180,
+      child: CatchControlShell(
+        size: size,
+        shape: shape,
+        tone: tone,
+        enabled: enabled,
+        hasError: hasError,
+        focused: focused,
+        onTap: onTap,
+        semanticButton: semanticButton,
+        child: Text(label, style: CatchTextStyles.bodyM(context, color: t.ink)),
+      ),
+    );
+  }
+
+  return _ContractScreen(
+    title: 'CatchControlShell',
+    contractId: 'catch.control_shell',
+    states: const [
+      'surface-md',
+      'raised-compact',
+      'pill',
+      'focused',
+      'error',
+      'disabled',
+      'semantic-button',
+    ],
+    children: [
+      _StateCard(
+        label: 'surface-md',
+        child: shell(label: 'Regular field'),
+      ),
+      _StateCard(
+        label: 'raised-compact',
+        child: shell(
+          label: 'Compact raised',
+          size: CatchControlSize.compact,
+          tone: CatchControlTone.raised,
+        ),
+      ),
+      _StateCard(
+        label: 'pill',
+        child: shell(
+          label: 'Pill trigger',
+          size: CatchControlSize.compact,
+          shape: CatchControlShape.pill,
+        ),
+      ),
+      _StateCard(
+        label: 'focused',
+        child: shell(label: 'Focused', focused: true),
+      ),
+      _StateCard(
+        label: 'error',
+        child: shell(label: 'Error', hasError: true),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: shell(label: 'Disabled', enabled: false),
+      ),
+      _StateCard(
+        label: 'semantic-button',
+        child: shell(label: 'Open picker', onTap: _noop, semanticButton: true),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchNumberStepper,
   path: '[Core primitives]/Inputs',
 )
@@ -1943,6 +2036,58 @@ Widget catchSurfaceContractStates(BuildContext context) {
               messageTone: CatchSurfaceMessageTone.success,
             ),
           ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchMiniBarChart,
+  path: '[Core primitives]/Data display',
+)
+Widget catchMiniBarChartContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchMiniBarChart',
+    contractId: 'catch.mini_bar_chart',
+    states: const [
+      'default',
+      'empty',
+      'zero-values',
+      'color-override',
+      'semantic-label',
+    ],
+    children: [
+      const _StateCard(
+        label: 'default',
+        child: CatchMiniBarChart(values: [2, 6, 3, 8, 5, 9, 7]),
+      ),
+      const _StateCard(
+        label: 'empty',
+        child: CatchMiniBarChart(values: []),
+      ),
+      const _StateCard(
+        label: 'zero-values',
+        child: CatchMiniBarChart(values: [0, 0, 0, 0], maxValue: 10),
+      ),
+      _StateCard(
+        label: 'color-override',
+        child: CatchMiniBarChart(
+          values: const [1, 3, 6, 4, 8],
+          filledColor: t.primary,
+          emptyColor: t.primarySoft,
+          backgroundColor: t.raised,
+          borderColor: t.primary.withValues(alpha: CatchOpacity.mutedBorder),
+        ),
+      ),
+      const _StateCard(
+        label: 'semantic-label',
+        child: CatchMiniBarChart(
+          values: [4, 5, 7, 8, 6],
+          semanticLabel: 'Weekly attendance trend',
         ),
       ),
     ],
@@ -4259,6 +4404,87 @@ Widget catchEventCardContractStates(BuildContext context) {
           priceLabel: '₹800',
           capacityLabel: '6 left',
           activityKind: ActivityKind.pickleball,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: EventActivityStamp,
+  path: '[Core primitives]/Product composites',
+)
+Widget eventActivityStampContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'EventActivityStamp',
+    contractId: 'catch.event_card.activity_stamp',
+    states: const ['default', 'custom-size', 'activity-variants'],
+    children: [
+      _StateCard(
+        label: 'default',
+        child: EventActivityStamp(
+          visual: eventActivityVisual(ActivityKind.socialRun, context: context),
+        ),
+      ),
+      _StateCard(
+        label: 'custom-size',
+        child: EventActivityStamp(
+          visual: eventActivityVisual(ActivityKind.dinner, context: context),
+          size: 64,
+          iconSize: 30,
+        ),
+      ),
+      _StateCard(
+        label: 'activity-variants',
+        child: _InlineWrap(
+          children: [
+            EventActivityStamp(
+              visual: eventActivityVisual(
+                ActivityKind.socialRun,
+                context: context,
+              ),
+            ),
+            EventActivityStamp(
+              visual: eventActivityVisual(
+                ActivityKind.dinner,
+                context: context,
+              ),
+            ),
+            EventActivityStamp(
+              visual: eventActivityVisual(
+                ActivityKind.pickleball,
+                context: context,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: EventHeroSurface,
+  path: '[Core primitives]/Product composites',
+)
+Widget eventHeroSurfaceContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'EventHeroSurface',
+    contractId: 'catch.event_card.hero_surface',
+    states: const ['wrapper'],
+    children: [
+      _StateCard(
+        label: 'wrapper',
+        child: EventHeroSurface(
+          tag: 'contract-event-hero-surface',
+          child: CatchSurface.card(
+            child: Text(
+              'Shared ticket Hero wrapper',
+              style: CatchTextStyles.bodyM(context),
+            ),
+          ),
         ),
       ),
     ],

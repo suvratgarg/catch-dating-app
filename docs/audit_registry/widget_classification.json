@@ -3013,26 +3013,22 @@
       "classKind": "widget",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "role": "composition",
+      "role": "atom",
       "canonicalFamily": "catch.control_shell",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
+      "catalogStatus": "contracted",
+      "contractId": "catch.control_shell",
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
       "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
+      "layoutOwnership": "internal-only",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract"
-      ]
+      "flags": []
     },
     {
       "name": "CatchCornerSash",
@@ -3757,27 +3753,22 @@
       "classKind": "widget",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "role": "composition",
+      "role": "atom",
       "canonicalFamily": "catch.mini_bar_chart",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
+      "catalogStatus": "contracted",
+      "contractId": "catch.mini_bar_chart",
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
       "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "layoutOwnership": "internal-only",
+      "actionOwnership": "none",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract",
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "CatchMonoLabel",
@@ -5059,25 +5050,21 @@
       "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "composition",
-      "canonicalFamily": "catch.event_hero_surface",
+      "canonicalFamily": "catch.event_card",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
+      "catalogStatus": "contracted",
+      "contractId": "catch.event_card.hero_surface",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract"
-      ]
+      "flags": []
     },
     {
       "name": "EventTicketPerforatedDivider",
@@ -5109,25 +5096,21 @@
       "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "composition",
-      "canonicalFamily": "catch.event_activity_stamp",
+      "canonicalFamily": "catch.event_card",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
+      "catalogStatus": "contracted",
+      "contractId": "catch.event_card.activity_stamp",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract"
-      ]
+      "flags": []
     },
     {
       "name": "EventClockMark",
