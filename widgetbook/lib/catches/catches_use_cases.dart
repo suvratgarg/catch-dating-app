@@ -699,6 +699,328 @@ Widget catchProfileViewStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Hero states',
+  type: ProfileHeroWidget,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileHeroWidgetStates(BuildContext context) {
+  final data = _profileView();
+  return _CatchesCatalog(
+    title: 'ProfileHeroWidget',
+    contractId: 'screen.catches.profile.hero',
+    children: [
+      _StateCard(
+        label: 'read only',
+        child: _SectionFrame(height: 520, child: ProfileHeroWidget(data: data)),
+      ),
+      _StateCard(
+        label: 'reactable',
+        child: _SectionFrame(
+          height: 520,
+          child: ProfileHeroWidget(data: data, onReact: _noopReaction),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Hero scrim states',
+  type: ProfileHeroScrim,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileHeroScrimStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileHeroScrim',
+    contractId: 'screen.catches.profile.hero_scrim',
+    children: [
+      _StateCard(
+        label: 'dark gradient',
+        child: _SectionFrame(
+          height: 280,
+          child: DecoratedBox(
+            decoration: BoxDecoration(color: Color(0xFF111111)),
+            child: ProfileHeroScrim(base: Color(0xFF111111)),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Photo states',
+  type: ProfilePhoto,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profilePhotoStates(BuildContext context) {
+  final data = _profileView();
+  return _CatchesCatalog(
+    title: 'ProfilePhoto',
+    contractId: 'screen.catches.profile.photo',
+    children: [
+      _StateCard(
+        label: 'graded photo',
+        child: _SectionFrame(
+          height: 520,
+          child: ProfilePhoto(image: data.heroPhoto),
+        ),
+      ),
+      _StateCard(
+        label: 'activity fallback',
+        child: _SectionFrame(
+          height: 520,
+          child: ProfilePhoto(image: null, activity: data.kickerActivity),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Photo block states',
+  type: ProfilePhotoBlock,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profilePhotoBlockStates(BuildContext context) {
+  final section = _profileSection<ProfilePhotoSection>();
+  return _CatchesCatalog(
+    title: 'ProfilePhotoBlock',
+    contractId: 'screen.catches.profile.photo_block',
+    children: [
+      _StateCard(
+        label: 'caption',
+        child: _SectionFrame(
+          height: 520,
+          child: ProfilePhotoBlock(section: section),
+        ),
+      ),
+      _StateCard(
+        label: 'reactable',
+        child: _SectionFrame(
+          height: 520,
+          child: ProfilePhotoBlock(section: section, onReact: _noopReaction),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Photo caption states',
+  type: PhotoCaption,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget photoCaptionStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'PhotoCaption',
+    contractId: 'screen.catches.profile.photo_caption',
+    children: [
+      _StateCard(
+        label: 'overlay copy',
+        child: _DeckChromeFrame(
+          child: Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: CatchInsets.content,
+              child: PhotoCaption(text: 'Post-run coffee is non-negotiable.'),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Section dispatch states',
+  type: ProfileSectionView,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSectionViewStates(BuildContext context) {
+  final section = _profileSection<ProfileCompatibilitySection>();
+  return _CatchesCatalog(
+    title: 'ProfileSectionView',
+    contractId: 'screen.catches.profile.section_view',
+    children: [
+      _StateCard(
+        label: 'passive section',
+        child: _SectionFrame(
+          height: 220,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileSectionView(section: section),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reactable section',
+        child: _SectionFrame(
+          height: 260,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileSectionView(section: section, onReact: _noopReaction),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Section kicker states',
+  type: ProfileSectionKicker,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSectionKickerStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSectionKicker',
+    contractId: 'screen.catches.profile.section_kicker',
+    children: [
+      _StateCard(
+        label: 'mono label',
+        child: ProfileSectionKicker('Running rhythm'),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Compatibility states',
+  type: ProfileCompatibility,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileCompatibilityStates(BuildContext context) {
+  return _CatchesCatalog(
+    title: 'ProfileCompatibility',
+    contractId: 'screen.catches.profile.compatibility',
+    children: [
+      _StateCard(
+        label: 'reasons and signals',
+        child: _SectionFrame(
+          height: 260,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileCompatibility(
+              section: _profileSection<ProfileCompatibilitySection>(),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Prompt states',
+  type: ProfilePrompt,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profilePromptStates(BuildContext context) {
+  return _CatchesCatalog(
+    title: 'ProfilePrompt',
+    contractId: 'screen.catches.profile.prompt',
+    children: [
+      _StateCard(
+        label: 'prompt answer',
+        child: ProfilePrompt(
+          section: _profileSection<ProfilePromptSectionData>(),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Running states',
+  type: ProfileRunning,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileRunningStates(BuildContext context) {
+  return _CatchesCatalog(
+    title: 'ProfileRunning',
+    contractId: 'screen.catches.profile.running',
+    children: [
+      _StateCard(
+        label: 'running rhythm',
+        child: _SectionFrame(
+          height: 230,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileRunning(
+              section: _profileSection<ProfileRunningSection>(),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Running stat states',
+  type: RunningStat,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget runningStatStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'RunningStat',
+    contractId: 'screen.catches.profile.running_stat',
+    children: [
+      _StateCard(
+        label: 'pace',
+        child: RunningStat(label: 'Pace', value: '5:30/km'),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Facts states',
+  type: ProfileFacts,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileFactsStates(BuildContext context) {
+  return _CatchesCatalog(
+    title: 'ProfileFacts',
+    contractId: 'screen.catches.profile.facts',
+    children: [
+      _StateCard(
+        label: 'details',
+        child: _SectionFrame(
+          height: 260,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileFacts(
+              section: _profileSection<ProfileFactsSection>(),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Rule states',
+  type: ProfileRule,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileRuleStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatchesCatalog(
+    title: 'ProfileRule',
+    contractId: 'screen.catches.profile.rule',
+    children: [
+      _StateCard(
+        label: 'hairline',
+        child: ProfileRule(color: t.line),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Profile skeleton states',
   type: ProfileSurfaceSkeleton,
   path: '[P1 product surfaces]/Catches/Sections',
@@ -1498,6 +1820,10 @@ ProfileView _profileView() {
     kickerActivity: CatchesSurfaceFixtures.openWindowEvent().activityKind,
     metaLine: profile.city,
   );
+}
+
+T _profileSection<T extends ProfileSection>() {
+  return _profileView().sections.whereType<T>().first;
 }
 
 void _noopTap() {}

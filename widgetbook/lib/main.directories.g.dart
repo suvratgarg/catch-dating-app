@@ -3481,12 +3481,92 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'PhotoCaption',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Photo caption states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .photoCaptionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileCompatibility',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Compatibility states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profileCompatibilityStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileFacts',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Facts states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profileFactsStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileHeroScrim',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Hero scrim states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profileHeroScrimStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileHeroWidget',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Hero states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profileHeroWidgetStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfileInfoChip',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Profile info chip states',
                     builder: _widgetbook_workspace_catches_catches_use_cases
                         .profileInfoChipStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfilePhoto',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Photo states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profilePhotoStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfilePhotoBlock',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Photo block states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profilePhotoBlockStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfilePrompt',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Prompt states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profilePromptStates,
                   ),
                 ],
               ),
@@ -3511,6 +3591,46 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'ProfileRule',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Rule states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profileRuleStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileRunning',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Running states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profileRunningStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileSectionKicker',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Section kicker states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profileSectionKickerStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileSectionView',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Section dispatch states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profileSectionViewStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfileSurface',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -3527,6 +3647,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Profile skeleton states',
                     builder: _widgetbook_workspace_catches_catches_use_cases
                         .profileSurfaceSkeletonStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'RunningStat',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Running stat states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .runningStatStates,
                   ),
                 ],
               ),
