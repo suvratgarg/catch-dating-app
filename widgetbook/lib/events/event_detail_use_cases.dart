@@ -17,6 +17,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
@@ -43,6 +44,7 @@ import 'package:catch_dating_app/events/presentation/widgets/booking_conflict_sh
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_optimistic_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
@@ -326,6 +328,199 @@ Widget eventDetailScreenStates(BuildContext context) {
           child: _RouteFrame(
             value: AsyncData(_eventVm(_event, participation: _signedUp)),
             child: EventDetailScreen(clubId: _clubId, eventId: _event.id),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Legacy hero states',
+  type: LegacyEventHeroSurface,
+  path: '[Event Detail]/Hero',
+)
+Widget eventDetailLegacyHeroSurfaceStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'LegacyEventHeroSurface',
+    catalogId: 'event_detail.hero.legacy_surface',
+    children: [
+      _StateCard(
+        label: 'standard route hero',
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(CatchRadius.lg),
+          child: SizedBox(
+            height: 280,
+            child: LegacyEventHeroSurface(event: _event),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Ticket hero states',
+  type: EventDetailTicketHeroSurface,
+  path: '[Event Detail]/Hero',
+)
+Widget eventDetailTicketHeroSurfaceStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'EventDetailTicketHeroSurface',
+    catalogId: 'event_detail.hero.ticket_hero_surface',
+    children: [
+      _StateCard(
+        label: 'ticket transition target',
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(CatchRadius.lg),
+          child: SizedBox(
+            height: 360,
+            child: EventDetailTicketHeroSurface(
+              event: _event,
+              presentationMode: EventDetailPresentationMode.ticket,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'spotlight transition target',
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(CatchRadius.lg),
+          child: SizedBox(
+            height: 360,
+            child: EventDetailTicketHeroSurface(
+              event: _event,
+              presentationMode: EventDetailPresentationMode.spotlightDark,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Ticket surface states',
+  type: EventDetailTicketSurface,
+  path: '[Event Detail]/Hero',
+)
+Widget eventDetailTicketSurfaceStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'EventDetailTicketSurface',
+    catalogId: 'event_detail.hero.ticket_surface',
+    children: [
+      _StateCard(
+        label: 'ticket and spotlight bodies',
+        child: Wrap(
+          spacing: CatchSpacing.s4,
+          runSpacing: CatchSpacing.s4,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(CatchRadius.lg),
+              child: SizedBox(
+                width: 320,
+                height: 360,
+                child: EventDetailTicketSurface(
+                  event: _event,
+                  presentationMode: EventDetailPresentationMode.ticket,
+                ),
+              ),
+            ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(CatchRadius.lg),
+              child: SizedBox(
+                width: 320,
+                height: 360,
+                child: EventDetailTicketSurface(
+                  event: _event,
+                  presentationMode: EventDetailPresentationMode.spotlightDark,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Activity badge states',
+  type: HeroActivityBadge,
+  path: '[Event Detail]/Hero',
+)
+Widget eventDetailHeroActivityBadgeStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'HeroActivityBadge',
+    catalogId: 'event_detail.hero.activity_badge',
+    children: [
+      _StateCard(
+        label: 'activity badges',
+        child: ColoredBox(
+          color: CatchTokens.editorialDark,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: Wrap(
+              spacing: CatchSpacing.s3,
+              runSpacing: CatchSpacing.s3,
+              children: [
+                HeroActivityBadge(
+                  visual: eventActivityVisual(
+                    ActivityKind.socialRun,
+                    context: context,
+                  ),
+                ),
+                HeroActivityBadge(
+                  visual: eventActivityVisual(
+                    ActivityKind.dinner,
+                    context: context,
+                  ),
+                ),
+                HeroActivityBadge(
+                  visual: eventActivityVisual(
+                    ActivityKind.pickleball,
+                    context: context,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Time chip states',
+  type: HeroTimeChip,
+  path: '[Event Detail]/Hero',
+)
+Widget eventDetailHeroTimeChipStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'HeroTimeChip',
+    catalogId: 'event_detail.hero.time_chip',
+    children: [
+      _StateCard(
+        label: 'time chips',
+        child: ColoredBox(
+          color: CatchTokens.editorialDark,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: Wrap(
+              spacing: CatchSpacing.s3,
+              runSpacing: CatchSpacing.s3,
+              children: [
+                HeroTimeChip(event: _event),
+                HeroTimeChip(
+                  event: _eventDetailEvent(
+                    id: 'widgetbook-event-detail-evening',
+                    activityKind: ActivityKind.dinner,
+                    startTime: DateTime(2026, 6, 24, 19, 30),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -1901,10 +2096,7 @@ Widget eventActionCardHeaderState(BuildContext context) {
           tone: CatchBadgeTone.success,
           icon: CatchIcons.checkCircleRounded,
         ),
-        EventActionCardBadge(
-          label: 'Host pick',
-          tone: CatchBadgeTone.brand,
-        ),
+        EventActionCardBadge(label: 'Host pick', tone: CatchBadgeTone.brand),
       ],
     ),
   );
@@ -1971,11 +2163,7 @@ Widget eventDateRailCardState(BuildContext context) {
   );
 }
 
-@widgetbook.UseCase(
-  name: 'Date rail',
-  type: DateRail,
-  path: '[Events]/Tiles',
-)
+@widgetbook.UseCase(name: 'Date rail', type: DateRail, path: '[Events]/Tiles')
 Widget eventDateRailState(BuildContext context) {
   return DateRail(
     startTime: _event.startTime,
@@ -1991,7 +2179,9 @@ Widget eventDateRailState(BuildContext context) {
 Widget eventPerforationLineState(BuildContext context) {
   return SizedBox(
     height: 120,
-    child: PerforationLine(color: CatchTokens.of(context).ticketPerforationLine),
+    child: PerforationLine(
+      color: CatchTokens.of(context).ticketPerforationLine,
+    ),
   );
 }
 

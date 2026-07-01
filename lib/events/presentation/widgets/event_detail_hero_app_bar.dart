@@ -5,12 +5,12 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
 import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
 import 'package:flutter/material.dart';
 
 class EventDetailHeroAppBar extends StatelessWidget {
@@ -135,12 +135,12 @@ class EventDetailHeroAppBar extends StatelessWidget {
       flexibleSpace: FlexibleSpaceBar(
         collapseMode: CollapseMode.pin,
         background: isTicketPresentation
-            ? _EventDetailTicketHeroSurface(
+            ? EventDetailTicketHeroSurface(
                 event: event,
                 presentationMode: presentationMode,
                 heroTag: heroTag,
               )
-            : _LegacyEventHeroSurface(event: event),
+            : LegacyEventHeroSurface(event: event),
       ),
     );
   }
@@ -168,8 +168,8 @@ double _expandedHeightFor({
       .toDouble();
 }
 
-class _LegacyEventHeroSurface extends StatelessWidget {
-  const _LegacyEventHeroSurface({required this.event});
+class LegacyEventHeroSurface extends StatelessWidget {
+  const LegacyEventHeroSurface({super.key, required this.event});
 
   final Event event;
 
@@ -191,7 +191,7 @@ class _LegacyEventHeroSurface extends StatelessWidget {
             children: [
               Align(
                 alignment: Alignment.centerLeft,
-                child: _HeroActivityBadge(visual: visual),
+                child: HeroActivityBadge(visual: visual),
               ),
               const SizedBox(height: CatchSpacing.s3),
               Text(
@@ -214,8 +214,9 @@ class _LegacyEventHeroSurface extends StatelessWidget {
   }
 }
 
-class _EventDetailTicketHeroSurface extends StatelessWidget {
-  const _EventDetailTicketHeroSurface({
+class EventDetailTicketHeroSurface extends StatelessWidget {
+  const EventDetailTicketHeroSurface({
+    super.key,
     required this.event,
     required this.presentationMode,
     this.heroTag,
@@ -227,7 +228,7 @@ class _EventDetailTicketHeroSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final surface = _EventDetailTicketSurface(
+    final surface = EventDetailTicketSurface(
       event: event,
       presentationMode: presentationMode,
     );
@@ -237,8 +238,9 @@ class _EventDetailTicketHeroSurface extends StatelessWidget {
   }
 }
 
-class _EventDetailTicketSurface extends StatelessWidget {
-  const _EventDetailTicketSurface({
+class EventDetailTicketSurface extends StatelessWidget {
+  const EventDetailTicketSurface({
+    super.key,
     required this.event,
     required this.presentationMode,
   });
@@ -339,9 +341,9 @@ class _EventDetailTicketSurface extends StatelessWidget {
                           ? const SizedBox.shrink()
                           : Row(
                               children: [
-                                _HeroActivityBadge(visual: visual),
+                                HeroActivityBadge(visual: visual),
                                 const Spacer(),
-                                _HeroTimeChip(event: event),
+                                HeroTimeChip(event: event),
                               ],
                             ),
                     ),
@@ -368,7 +370,8 @@ class _EventDetailTicketSurface extends StatelessWidget {
                             style: CatchTextStyles.eventDisplay(
                               context,
                               size: isCompactFlight
-                                  ? CatchLayout.eventDetailTicketTitleCompactSize
+                                  ? CatchLayout
+                                        .eventDetailTicketTitleCompactSize
                                   : CatchLayout
                                         .eventDetailTicketTitleExpandedSize,
                               height:
@@ -405,8 +408,8 @@ class _EventDetailTicketSurface extends StatelessWidget {
   }
 }
 
-class _HeroActivityBadge extends StatelessWidget {
-  const _HeroActivityBadge({required this.visual});
+class HeroActivityBadge extends StatelessWidget {
+  const HeroActivityBadge({super.key, required this.visual});
 
   final EventActivityVisualSpec visual;
 
@@ -423,7 +426,11 @@ class _HeroActivityBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(visual.icon, color: d.ink, size: CatchLayout.activityChipIconSize),
+          Icon(
+            visual.icon,
+            color: d.ink,
+            size: CatchLayout.activityChipIconSize,
+          ),
           const SizedBox(width: CatchSpacing.micro6),
           Text(
             visual.label.toUpperCase(),
@@ -435,8 +442,8 @@ class _HeroActivityBadge extends StatelessWidget {
   }
 }
 
-class _HeroTimeChip extends StatelessWidget {
-  const _HeroTimeChip({required this.event});
+class HeroTimeChip extends StatelessWidget {
+  const HeroTimeChip({super.key, required this.event});
 
   final Event event;
 

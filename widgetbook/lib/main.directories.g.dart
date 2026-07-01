@@ -2050,6 +2050,61 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Hero',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'EventDetailTicketHeroSurface',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Ticket hero states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailTicketHeroSurfaceStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventDetailTicketSurface',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Ticket surface states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailTicketSurfaceStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HeroActivityBadge',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Activity badge states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailHeroActivityBadgeStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HeroTimeChip',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Time chip states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailHeroTimeChipStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'LegacyEventHeroSurface',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Legacy hero states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailLegacyHeroSurfaceStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Screen states',
         children: [
           _widgetbook.WidgetbookComponent(

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.508
+version: 2.5.509
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,14 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.509
+
+- Promoted `LegacyEventHeroSurface`, `EventDetailTicketHeroSurface`,
+  `EventDetailTicketSurface`, `HeroActivityBadge`, and `HeroTimeChip` as public
+  cataloged renderers used by `EventDetailHeroAppBar`, with exact Widgetbook
+  coverage. The classification scanner's private widget review count drops by
+  five without changing event-detail hero behavior.
 
 ### 2.5.508
 
@@ -5610,6 +5618,11 @@ Generated 2026-05-06.
 | `EventCompanionEntry` | `lib/events/presentation/widgets/event_detail_body.dart:343` | Provider-free Event Detail companion section adapter. Switches explicit `EventDetailCompanionState` into hidden/loading/error/available rendering, delegates retry and open-companion effects to route callbacks, and keeps the Event Success provider watch in `EventDetailScreen`. Widgetbook covers hidden, loading, available, and error states. |
 | `EventDetailHostsSection` | `lib/events/presentation/widgets/event_detail_body.dart:472` | Provider-free Event Detail host section adapter. Switches explicit `EventDetailHostState` into hidden/loading/error/content rendering, renders `EventDetailHostCard` from preformatted display data, and delegates View club, Message host, and retry effects to route callbacks. Widgetbook covers hidden, loading, content, and error states. |
 | `EventDetailHeroAppBar` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:10` | Event detail hero app bar. Uses the shared event photo header for standard routes and a full-bleed ticket-mode visual band for card-opened routes; both paths prefer uploaded photos and fall back to activity artwork. Standard and ticket/spotlight expanded heights resolve through named `CatchLayout.eventDetailHero*` constants; ticket mode keeps the perforated ticket seam, shares the event display font with cards, and owns floating back/share/save/calendar actions without adding the club-detail viewport-curve inset. |
+| `LegacyEventHeroSurface` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:171` | Standard event-detail hero surface used by `EventDetailHeroAppBar` for non-ticket routes. Composes the uploaded-photo header with the activity badge and display-title overlay while keeping route actions in the sliver app bar. Widgetbook covers the exact surface state directly. |
+| `EventDetailTicketHeroSurface` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:217` | Ticket-mode hero transition adapter used by `EventDetailHeroAppBar`. Wraps `EventDetailTicketSurface` in the shared `EventHeroSurface` only when a route-provided hero tag exists, so direct ticket rendering and card-to-detail Hero flights stay separated. Widgetbook covers ticket and spotlight transition-target states. |
+| `EventDetailTicketSurface` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:241` | Full-bleed ticket hero body for ticket and spotlight event-detail presentations. Owns the activity thumbnail/scrim band, perforated divider, event display title, subtitle, compact-flight layout, and dark/light body colors. Widgetbook covers ticket and spotlight body states directly. |
+| `HeroActivityBadge` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:410` | Frosted activity badge used by both standard and ticket event-detail heroes. Receives a resolved `EventActivityVisualSpec` so activity icon/label mapping remains centralized in `event_activity_visuals.dart`. Widgetbook covers run, dinner, and pickleball badge states. |
+| `HeroTimeChip` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:440` | Compact weekday/time chip used by the expanded ticket hero visual band. Formats event start time through `EventFormatters` and keeps the dark hero chrome tokenized. Widgetbook covers morning and evening event states. |
 | `EventDetailTicketStubBand` / `EventDetailHintList` / `EventDetailItinerary` / `EventDetailMapCard` / `EventDetailMechanismList` / `EventDetailPhotoStrip` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:10` | Flutter event-detail counterparts to the handoff primitives: ticket counter-foil, why-click hints, timed itinerary rail, activity-pigmented map preview, sign-up mechanics, and the canonical three-tile photo strip with activity-soft placeholders. They resolve pigment/glyph through `ActivityPalette` and derive copy from the current `Event` model. |
 | `EventPhotoHeader` | `lib/events/presentation/widgets/event_photo_header.dart:5` | Visual-only standard event hero wrapper. Delegates rendering to `CatchEventThumbnail` so uploaded event photos lead when present and activity artwork remains the no-photo/failure fallback; exposes the stable event-photo Hero tag for standard photo-header transitions and intentionally does not duplicate event title, location, stats, or activity copy. |
 | `EventStatsGrid` | `lib/events/presentation/widgets/event_stats_grid.dart:7` | Event detail stats adapter. Converts event facts into `CatchMetricStrip` items so event stats share the same rail, dividers, value styling, and responsive truncation as club detail stats, with optional dark surface colors for spotlight detail. |
