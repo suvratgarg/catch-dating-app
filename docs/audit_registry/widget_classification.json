@@ -25286,6 +25286,29 @@
       "flags": []
     },
     {
+      "name": "ProfileFieldRow",
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.user_profile.profile_field_row",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "ProfilePhotosSection",
       "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
       "classKind": "widget",
