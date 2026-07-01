@@ -510,7 +510,7 @@ class CatchRosterTable extends StatelessWidget {
                             const SizedBox(height: CatchSpacing.s1),
                             Text(
                               emptyMessage!,
-                              style: CatchTextStyles.bodyS(context),
+                              style: CatchTextStyles.supporting(context),
                             ),
                           ],
                         ],

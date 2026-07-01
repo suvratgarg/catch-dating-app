@@ -262,7 +262,7 @@ class CoverStoryContent extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 320),
             child: Text(
               story.body!,
-              style: CatchTextStyles.bodyM(
+              style: CatchTextStyles.proseM(
                 context,
                 color: paper.withValues(alpha: CatchOpacity.coverStoryBody),
               ),

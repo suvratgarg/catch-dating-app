@@ -98,7 +98,7 @@ class CatchCrossPathsCard extends StatelessWidget {
                       ],
                       Text(_nameAge, style: CatchTextStyles.titleL(context)),
                       const SizedBox(height: CatchSpacing.micro2),
-                      Text(quote, style: CatchTextStyles.bodyS(context)),
+                      Text(quote, style: CatchTextStyles.supporting(context)),
                       if (meta != null && meta!.isNotEmpty) ...[
                         const SizedBox(height: CatchSpacing.micro6),
                         Text(

@@ -1122,7 +1122,7 @@ class RevealRoundRow extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style:
-                  CatchTextStyles.bodyS(
+                  CatchTextStyles.supporting(
                     context,
                     color: hidden
                         ? foreground.withValues(

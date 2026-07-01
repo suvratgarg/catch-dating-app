@@ -238,7 +238,7 @@ class PaperCompanionNav extends StatelessWidget {
               child: Text(
                 'Event companion',
                 textAlign: TextAlign.center,
-                style: CatchTextStyles.titleS(context),
+                style: CatchTextStyles.fieldRowTitle(context),
               ),
             ),
             gapW8,
@@ -683,7 +683,7 @@ class PaperExpectationRow extends StatelessWidget {
         ),
         gapW12,
         Expanded(
-          child: Text(item.label, style: CatchTextStyles.bodyM(context)),
+          child: Text(item.label, style: CatchTextStyles.supporting(context)),
         ),
       ],
     );

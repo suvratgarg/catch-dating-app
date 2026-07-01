@@ -490,7 +490,7 @@ class LiveNowConsole extends StatelessWidget {
               gapH6,
               Text(
                 activeStepInstruction,
-                style: CatchTextStyles.bodyS(
+                style: CatchTextStyles.supporting(
                   context,
                   color: fg.withValues(
                     alpha: CatchOpacity.eventSuccessProminent,
@@ -519,7 +519,7 @@ class LiveNowConsole extends StatelessWidget {
                     Expanded(
                       child: Text(
                         attendeeExperience,
-                        style: CatchTextStyles.bodyS(
+                        style: CatchTextStyles.supporting(
                           context,
                           color: fg.withValues(
                             alpha: CatchOpacity.eventSuccessProminent,
