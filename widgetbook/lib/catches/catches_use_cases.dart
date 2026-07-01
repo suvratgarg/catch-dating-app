@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -18,6 +20,7 @@ import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_hub_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/event_recap_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_card_content.dart';
@@ -338,9 +341,18 @@ Widget catchesEventDeckRouteStates(BuildContext context) {
 )
 Widget eventRecapScreenRouteStates(BuildContext context) {
   final event = CatchesSurfaceFixtures.closedWindowEvent();
+  final openEvent = CatchesSurfaceFixtures.openWindowEvent();
   final attendeeIds = CatchesSurfaceFixtures.candidates
       .map((profile) => profile.uid)
       .toList(growable: false);
+  final partialAttendeeIds = [
+    CatchesSurfaceFixtures.candidateUid,
+    _missingRecapProfileUid,
+  ];
+  final partialRoster = {
+    CatchesSurfaceFixtures.candidateUid:
+        CatchesSurfaceFixtures.candidates.first,
+  };
 
   return _CatchesCatalog(
     title: 'EventRecapScreen',
@@ -356,16 +368,57 @@ Widget eventRecapScreenRouteStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'view-model error',
+        child: _DeviceFrame(
+          child: _RecapRouteScope(
+            event: event,
+            recapValue: AsyncError<EventRecapViewModel?>(
+              _offlineException(action: 'load event recap'),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'checked-in roster',
         child: _DeviceFrame(
           child: _RecapRouteScope(
             event: event,
             recapValue: AsyncData(
-              EventRecapViewModel(
-                event: event,
-                attendeeIds: attendeeIds,
-                checkedInCount: attendeeIds.length + 1,
-              ),
+              _recapViewModel(event: event, attendeeIds: attendeeIds),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'partial profile fallback',
+        child: _DeviceFrame(
+          child: _RecapRouteScope(
+            event: event,
+            recapValue: AsyncData(
+              _recapViewModel(event: event, attendeeIds: partialAttendeeIds),
+            ),
+            rosterProfiles: partialRoster,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'selected vibe tile',
+        child: _DeviceFrame(
+          child: _RecapReadyBodyPreview(
+            event: event,
+            attendeeIds: attendeeIds,
+            selectedVibeIds: const {CatchesSurfaceFixtures.secondCandidateUid},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'open catch window',
+        child: _DeviceFrame(
+          child: _RecapRouteScope(
+            event: openEvent,
+            recapValue: AsyncData(
+              _recapViewModel(event: openEvent, attendeeIds: attendeeIds),
             ),
           ),
         ),
@@ -376,11 +429,7 @@ Widget eventRecapScreenRouteStates(BuildContext context) {
           child: _RecapRouteScope(
             event: event,
             recapValue: AsyncData(
-              EventRecapViewModel(
-                event: event,
-                attendeeIds: const [],
-                checkedInCount: 1,
-              ),
+              _recapViewModel(event: event, attendeeIds: const []),
             ),
           ),
         ),
@@ -391,6 +440,48 @@ Widget eventRecapScreenRouteStates(BuildContext context) {
           child: _RecapRouteScope(
             event: event,
             recapValue: const AsyncData<EventRecapViewModel?>(null),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2.0',
+        child: _DeviceFrame(
+          child: _MediaOverride(
+            textScaler: const TextScaler.linear(2),
+            child: _RecapRouteScope(
+              event: event,
+              recapValue: AsyncData(
+                _recapViewModel(event: event, attendeeIds: attendeeIds),
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reduced motion',
+        child: _DeviceFrame(
+          child: _MediaOverride(
+            disableAnimations: true,
+            child: _RecapRouteScope(
+              event: event,
+              recapValue: AsyncData(
+                _recapViewModel(event: event, attendeeIds: attendeeIds),
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'dark theme',
+        child: Theme(
+          data: AppTheme.dark,
+          child: _DeviceFrame(
+            child: _RecapRouteScope(
+              event: event,
+              recapValue: AsyncData(
+                _recapViewModel(event: event, attendeeIds: attendeeIds),
+              ),
+            ),
           ),
         ),
       ),
@@ -1174,29 +1265,71 @@ class _DeckRouteScope extends StatelessWidget {
 }
 
 class _RecapRouteScope extends StatelessWidget {
-  const _RecapRouteScope({required this.event, required this.recapValue});
+  const _RecapRouteScope({
+    required this.event,
+    required this.recapValue,
+    this.rosterProfiles,
+  });
 
   final Event event;
   final AsyncValue<EventRecapViewModel?> recapValue;
+  final Map<String, PublicProfile>? rosterProfiles;
 
   @override
   Widget build(BuildContext context) {
-    final roster = {
-      for (final profile in CatchesSurfaceFixtures.candidates)
-        profile.uid: profile,
-    };
+    final roster = rosterProfiles ?? _recapRosterProfiles();
+    final attendeeIds = recapValue.asData?.value?.attendeeIds ?? roster.keys;
 
     return ProviderScope(
       overrides: [
         eventRecapViewModelProvider(event.id).overrideWith((ref) => recapValue),
         publicProfilesByIdsProvider(
-          PublicProfilesQuery(roster.keys),
+          PublicProfilesQuery(attendeeIds),
         ).overrideWith((ref) async => roster),
       ],
       child: EventRecapScreen(eventId: event.id),
     );
   }
 }
+
+class _RecapReadyBodyPreview extends StatelessWidget {
+  const _RecapReadyBodyPreview({
+    required this.event,
+    required this.attendeeIds,
+    required this.selectedVibeIds,
+  });
+
+  final Event event;
+  final List<String> attendeeIds;
+  final Set<String> selectedVibeIds;
+
+  @override
+  Widget build(BuildContext context) {
+    final screenState = buildEventRecapScreenState(
+      eventId: event.id,
+      viewModel: CatchAsyncState.data(
+        _recapViewModel(event: event, attendeeIds: attendeeIds),
+      ),
+      rosterProfiles: _recapRosterProfiles(),
+      selectedVibeIds: selectedVibeIds,
+      now: CatchesSurfaceFixtures.now,
+    );
+
+    return Scaffold(
+      backgroundColor: CatchTokens.of(context).bg,
+      body: switch (screenState) {
+        EventRecapReady ready => EventRecapReadyBody(
+          state: ready,
+          onToggleVibe: _ignoreString,
+          onOpenCatchesDeck: _ignoreRecapOpenDeck,
+        ),
+        _ => const SizedBox.shrink(),
+      },
+    );
+  }
+}
+
+const _missingRecapProfileUid = 'design-catches-missing-profile';
 
 const _reactionTarget = ProfileReactionTarget(
   id: 'design-catches-prompt',
@@ -1217,6 +1350,24 @@ CatchesHubReady _hubReadyState() {
   return CatchesHubReady(
     uid: CatchesSurfaceFixtures.viewerUid,
     rows: _hubRows(),
+  );
+}
+
+Map<String, PublicProfile> _recapRosterProfiles() {
+  return {
+    for (final profile in CatchesSurfaceFixtures.candidates)
+      profile.uid: profile,
+  };
+}
+
+EventRecapViewModel _recapViewModel({
+  required Event event,
+  required List<String> attendeeIds,
+}) {
+  return EventRecapViewModel(
+    event: event,
+    attendeeIds: attendeeIds,
+    checkedInCount: attendeeIds.length + 1,
   );
 }
 
@@ -1242,6 +1393,10 @@ ProfileView _profileView() {
 void _noopTap() {}
 
 void _ignoreCatchesRow(CatchesHubEventRow row) {}
+
+void _ignoreString(String value) {}
+
+void _ignoreRecapOpenDeck(EventRecapOpenDeckIntent intent) {}
 
 Future<void> _noopReaction(
   ProfileReactionTarget target,

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-01T14:45:11.431Z",
+  "generatedAt": "2026-07-01T14:52:55.405Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
@@ -7,9 +7,9 @@
   "summary": {
     "useCases": 629,
     "components": 613,
-    "stateCards": 1351,
-    "reviewCandidates": 33,
-    "oversizedUseCases": 42,
+    "stateCards": 1358,
+    "reviewCandidates": 34,
+    "oversizedUseCases": 43,
     "multiUseCaseComponents": 16
   },
   "reviewCandidates": [
@@ -2555,6 +2555,92 @@
             {
               "label": "reduced motion",
               "normalizedLabel": "reduced motion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "EventRecapScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 11,
+      "paths": [
+        "[P1 product surfaces]/Catches"
+      ],
+      "labels": [
+        "checked-in roster",
+        "dark theme",
+        "empty roster",
+        "event missing",
+        "open catch window",
+        "partial profile fallback",
+        "recap loading",
+        "reduced motion",
+        "selected vibe tile",
+        "text scale 2.0",
+        "view-model error"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "eventRecapScreenRouteStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Event recap route states",
+          "functionName": "eventRecapScreenRouteStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches",
+          "stateCardCount": 11,
+          "stateCards": [
+            {
+              "label": "recap loading",
+              "normalizedLabel": "recap loading"
+            },
+            {
+              "label": "view-model error",
+              "normalizedLabel": "view model error"
+            },
+            {
+              "label": "checked-in roster",
+              "normalizedLabel": "checked in roster"
+            },
+            {
+              "label": "partial profile fallback",
+              "normalizedLabel": "partial profile fallback"
+            },
+            {
+              "label": "selected vibe tile",
+              "normalizedLabel": "selected vibe tile"
+            },
+            {
+              "label": "open catch window",
+              "normalizedLabel": "open catch window"
+            },
+            {
+              "label": "empty roster",
+              "normalizedLabel": "empty roster"
+            },
+            {
+              "label": "event missing",
+              "normalizedLabel": "event missing"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "dark theme",
+              "normalizedLabel": "dark theme"
             }
           ]
         }
@@ -6238,6 +6324,92 @@
             {
               "label": "reduced motion",
               "normalizedLabel": "reduced motion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "EventRecapScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 11,
+      "paths": [
+        "[P1 product surfaces]/Catches"
+      ],
+      "labels": [
+        "checked-in roster",
+        "dark theme",
+        "empty roster",
+        "event missing",
+        "open catch window",
+        "partial profile fallback",
+        "recap loading",
+        "reduced motion",
+        "selected vibe tile",
+        "text scale 2.0",
+        "view-model error"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "eventRecapScreenRouteStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Event recap route states",
+          "functionName": "eventRecapScreenRouteStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches",
+          "stateCardCount": 11,
+          "stateCards": [
+            {
+              "label": "recap loading",
+              "normalizedLabel": "recap loading"
+            },
+            {
+              "label": "view-model error",
+              "normalizedLabel": "view model error"
+            },
+            {
+              "label": "checked-in roster",
+              "normalizedLabel": "checked in roster"
+            },
+            {
+              "label": "partial profile fallback",
+              "normalizedLabel": "partial profile fallback"
+            },
+            {
+              "label": "selected vibe tile",
+              "normalizedLabel": "selected vibe tile"
+            },
+            {
+              "label": "open catch window",
+              "normalizedLabel": "open catch window"
+            },
+            {
+              "label": "empty roster",
+              "normalizedLabel": "empty roster"
+            },
+            {
+              "label": "event missing",
+              "normalizedLabel": "event missing"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "dark theme",
+              "normalizedLabel": "dark theme"
             }
           ]
         }
@@ -11370,53 +11542,6 @@
             {
               "label": "pinned location",
               "normalizedLabel": "pinned location"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "EventRecapScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 4,
-      "paths": [
-        "[P1 product surfaces]/Catches"
-      ],
-      "labels": [
-        "checked-in roster",
-        "empty roster",
-        "event missing",
-        "recap loading"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Event recap route states",
-          "functionName": "eventRecapScreenRouteStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches",
-          "stateCardCount": 4,
-          "stateCards": [
-            {
-              "label": "recap loading",
-              "normalizedLabel": "recap loading"
-            },
-            {
-              "label": "checked-in roster",
-              "normalizedLabel": "checked in roster"
-            },
-            {
-              "label": "empty roster",
-              "normalizedLabel": "empty roster"
-            },
-            {
-              "label": "event missing",
-              "normalizedLabel": "event missing"
             }
           ]
         }

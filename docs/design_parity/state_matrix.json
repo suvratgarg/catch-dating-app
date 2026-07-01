@@ -9578,6 +9578,9 @@
               "notes": "eventRecapViewModelProvider loading renders EventRecapLoadingBody under the Event recap top bar, including recap hero, attendee grid, and CTA placeholders.",
               "tests": [
                 "test/swipes/event_recap_screen_test.dart"
+              ],
+              "previewIds": [
+                "EventRecapScreen/Event recap route states"
               ]
             },
             {
@@ -9587,7 +9590,10 @@
               "tests": [
                 "test/swipes/event_recap_screen_state_test.dart"
               ],
-              "notes": "EventRecapScreenState maps view-model errors to retry intents for event, participation, uid, and view-model provider invalidation."
+              "notes": "EventRecapScreenState maps view-model errors to retry intents for event, participation, uid, and view-model provider invalidation.",
+              "previewIds": [
+                "EventRecapScreen/Event recap route states"
+              ]
             },
             {
               "id": "event_not_found",
@@ -9596,7 +9602,10 @@
               "tests": [
                 "test/swipes/event_recap_screen_state_test.dart"
               ],
-              "notes": "EventRecapScreenState maps a null event from the view model to the Event not found branch."
+              "notes": "EventRecapScreenState maps a null event from the view model to the Event not found branch.",
+              "previewIds": [
+                "EventRecapScreen/Event recap route states"
+              ]
             },
             {
               "id": "populated_attendees",
@@ -9608,7 +9617,10 @@
               "tests": [
                 "test/swipes/event_recap_screen_test.dart"
               ],
-              "notes": "event_recap_attendees renders the recap hero, checked-in count, batched attendee profile grid, local selection, and Open catches deck CTA."
+              "notes": "event_recap_attendees renders the recap hero, checked-in count, batched attendee profile grid, local selection, and Open catches deck CTA.",
+              "previewIds": [
+                "EventRecapScreen/Event recap route states"
+              ]
             },
             {
               "id": "empty_roster",
@@ -9617,7 +9629,10 @@
               "tests": [
                 "test/swipes/event_recap_screen_state_test.dart"
               ],
-              "notes": "No other checked-in attendee ids map to an empty ready state for the No attendees to tag branch."
+              "notes": "No other checked-in attendee ids map to an empty ready state for the No attendees to tag branch.",
+              "previewIds": [
+                "EventRecapScreen/Event recap route states"
+              ]
             },
             {
               "id": "profile_lookup_fallback",
@@ -9626,7 +9641,10 @@
               "tests": [
                 "test/swipes/event_recap_screen_state_test.dart"
               ],
-              "notes": "Missing public-profile entries map to Guest fallback attendee rows while present profiles supply tile names and photos."
+              "notes": "Missing public-profile entries map to Guest fallback attendee rows while present profiles supply tile names and photos.",
+              "previewIds": [
+                "EventRecapScreen/Event recap route states"
+              ]
             },
             {
               "id": "vibe_selection",
@@ -9636,7 +9654,10 @@
                 "test/swipes/event_recap_screen_state_test.dart",
                 "test/swipes/event_recap_screen_test.dart"
               ],
-              "notes": "EventRecapScreenState projects selected ids into row selected state; the route test toggles a tile before opening the Catches deck."
+              "notes": "EventRecapScreenState projects selected ids into row selected state; the route test toggles a tile before opening the Catches deck.",
+              "previewIds": [
+                "EventRecapScreen/Event recap route states"
+              ]
             },
             {
               "id": "open_catches_deck",
@@ -9650,21 +9671,27 @@
             {
               "id": "text_scale_2",
               "kind": "accessibility",
-              "status": "planned",
-              "notes": "No text-scale 2.0 Event Recap capture exists yet."
+              "status": "implemented",
+              "notes": "Widgetbook renders the Event Recap route at text scale 2.0 for hero stats, intro copy, grid labels, empty/error states, and CTA review.",
+              "previewIds": [
+                "EventRecapScreen/Event recap route states"
+              ]
             },
             {
               "id": "reduced_motion",
               "kind": "accessibility",
-              "status": "planned",
-              "notes": "No reduced-motion Event Recap capture exists yet."
+              "status": "implemented",
+              "notes": "Widgetbook renders Event Recap with MediaQuery.disableAnimations enabled for selection animation and route-state review.",
+              "previewIds": [
+                "EventRecapScreen/Event recap route states"
+              ]
             }
           ],
           "gaps": [
             {
               "id": "DP-EVENT-RECAP-001",
-              "status": "open",
-              "nextAction": "Add Event Recap Widgetbook states for loading, error, missing event, populated attendees, empty roster, partial profile lookup, selected vibe tiles, closed/open catch window, text scale, reduced motion, and theme variants."
+              "status": "closed",
+              "nextAction": "Closed by Event Recap Widgetbook route states covering loading, view-model error, missing event, populated attendees, empty roster, partial profile fallback, selected vibe tile, closed/open catch-window copy, text scale, reduced motion, and dark theme."
             },
             {
               "id": "DP-EVENT-RECAP-002",

@@ -17090,7 +17090,10 @@
           "tests": [
             "test/swipes/event_recap_screen_test.dart"
           ],
-          "nextAction": "Add deterministic loading capture."
+          "nextAction": "Add deterministic loading capture.",
+          "previewIds": [
+            "EventRecapScreen/Event recap route states"
+          ]
         },
         {
           "id": "recap_error",
@@ -17100,7 +17103,10 @@
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart"
           ],
-          "nextAction": "Add event/participation/uid error and offline captures."
+          "nextAction": "Add event/participation/uid error and offline captures.",
+          "previewIds": [
+            "EventRecapScreen/Event recap route states"
+          ]
         },
         {
           "id": "event_not_found",
@@ -17110,7 +17116,10 @@
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart"
           ],
-          "nextAction": "Add missing/deleted event capture."
+          "nextAction": "Add missing/deleted event capture.",
+          "previewIds": [
+            "EventRecapScreen/Event recap route states"
+          ]
         },
         {
           "id": "populated_attendees",
@@ -17123,7 +17132,10 @@
           "tests": [
             "test/swipes/event_recap_screen_test.dart"
           ],
-          "nextAction": "Compare hero/grid hierarchy against exported design references."
+          "nextAction": "Compare hero/grid hierarchy against exported design references.",
+          "previewIds": [
+            "EventRecapScreen/Event recap route states"
+          ]
         },
         {
           "id": "empty_roster",
@@ -17133,7 +17145,10 @@
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart"
           ],
-          "nextAction": "Add empty roster capture and test."
+          "nextAction": "Add empty roster capture and test.",
+          "previewIds": [
+            "EventRecapScreen/Event recap route states"
+          ]
         },
         {
           "id": "profile_lookup_fallback",
@@ -17143,7 +17158,10 @@
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart"
           ],
-          "nextAction": "Add capture for partial profile lookup and missing photos."
+          "nextAction": "Add capture for partial profile lookup and missing photos.",
+          "previewIds": [
+            "EventRecapScreen/Event recap route states"
+          ]
         },
         {
           "id": "vibe_selection",
@@ -17154,7 +17172,10 @@
             "test/swipes/event_recap_screen_state_test.dart",
             "test/swipes/event_recap_screen_test.dart"
           ],
-          "nextAction": "Add focused test and capture for selected/unselected grid tiles."
+          "nextAction": "Add focused test and capture for selected/unselected grid tiles.",
+          "previewIds": [
+            "EventRecapScreen/Event recap route states"
+          ]
         },
         {
           "id": "open_catches_deck",
@@ -17169,16 +17190,22 @@
         {
           "id": "text_scale_2",
           "kind": "accessibility",
-          "status": "planned",
-          "source": "No text-scale 2.0 Event Recap capture exists yet.",
-          "nextAction": "Add text-scale capture for hero stats, intro copy, grid labels, empty/error states, and CTA."
+          "status": "implemented",
+          "source": "Widgetbook renders the Event Recap route at text scale 2.0 for hero stats, intro copy, grid labels, empty/error states, and CTA review.",
+          "nextAction": "Add deterministic text-scale capture for hero stats, intro copy, grid labels, empty/error states, and CTA.",
+          "previewIds": [
+            "EventRecapScreen/Event recap route states"
+          ]
         },
         {
           "id": "reduced_motion",
           "kind": "accessibility",
-          "status": "planned",
-          "source": "No reduced-motion Event Recap capture exists yet.",
-          "nextAction": "Review selection animation and route transition under reduced motion."
+          "status": "implemented",
+          "source": "Widgetbook renders Event Recap with MediaQuery.disableAnimations enabled for selection animation and route-state review.",
+          "nextAction": "Add deterministic reduced-motion capture for selection animation and route-state review.",
+          "previewIds": [
+            "EventRecapScreen/Event recap route states"
+          ]
         }
       ],
       "composition": {
@@ -17231,7 +17258,7 @@
               "populated_attendees",
               "text_scale_2"
             ],
-            "migration": "RecapHero now renders EventRecapHeroState display data for event title, distance, checked-in count, and catch-window copy."
+            "migration": "RecapHero now renders EventRecapHeroState display data for event title, distance, checked-in count, and catch-window copy; Widgetbook covers closed and open catch-window preview states."
           },
           {
             "id": "section.event_recap.vibe_grid",
@@ -17256,7 +17283,7 @@
               "profile_lookup_fallback",
               "vibe_selection"
             ],
-            "migration": "VibeGrid now renders EventRecapAttendeeRow models with profile fallback, selected state, and typed toggle callbacks."
+            "migration": "VibeGrid now renders EventRecapAttendeeRow models with profile fallback, selected state, and typed toggle callbacks; Widgetbook covers full roster, empty roster, partial profile fallback, selected tile, text-scale, reduced-motion, and dark-theme states."
           },
           {
             "id": "section.event_recap.vibe_tile",
@@ -17310,8 +17337,8 @@
       "openGaps": [
         {
           "id": "DS-EVENT-RECAP-001",
-          "status": "open",
-          "nextAction": "Add Event Recap Widgetbook states for loading, error, missing event, populated attendees, empty roster, partial profile lookup, selected vibe tiles, closed/open catch window, text scale, reduced motion, and theme variants."
+          "status": "closed",
+          "nextAction": "Closed by Event Recap Widgetbook route states covering loading, view-model error, missing event, populated attendees, empty roster, partial profile fallback, selected vibe tile, closed/open catch-window copy, text scale, reduced motion, and dark theme."
         },
         {
           "id": "DS-EVENT-RECAP-002",
