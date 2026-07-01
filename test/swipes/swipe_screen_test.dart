@@ -19,6 +19,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   testWidgets('SwipeScreen shows profile-shaped skeleton while queue loads', (
     tester,
@@ -70,7 +72,7 @@ void main() {
 
     swipeRepository.recordCompleter!.complete();
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 180));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 180));
 
     expect(
       find.byKey(const ValueKey(CatchesSurfaceFixtures.candidateUid)),

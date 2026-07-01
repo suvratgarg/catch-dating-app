@@ -119,7 +119,7 @@ Future<List<CaptureArtifact>> captureCatchWidget(
     );
     await _pumpCaptureFrame(tester);
     if (includeOverlays) {
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
     }
     if (drive != null) {
       await drive(tester);

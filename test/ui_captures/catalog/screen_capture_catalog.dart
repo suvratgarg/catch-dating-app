@@ -207,6 +207,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../clubs/clubs_test_helpers.dart' as club_test;
 import '../../events/events_test_helpers.dart';
+import '../../test_pump_helpers.dart';
 import '../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../support/capture_device.dart';
 
@@ -6780,7 +6781,7 @@ Future<void> _driveOnboardingRevealError(WidgetTester tester) async {
     find.byKey(OnboardingStepLayout.scrollBodyKey),
     const Offset(0, -360),
   );
-  await tester.pumpAndSettle();
+  await pumpFeatureUi(tester);
 }
 
 class _AuthCaptureSeeder extends ConsumerStatefulWidget {
@@ -6913,7 +6914,7 @@ Future<void> _driveAuthPhoneValidationError(WidgetTester tester) async {
 Future<void> _driveAuthCountryPickerOpen(WidgetTester tester) async {
   await tester.tap(find.text('+91'), warnIfMissed: false);
   await tester.pump();
-  await tester.pump(const Duration(milliseconds: 300));
+  await pumpFeatureUiFor(tester, const Duration(milliseconds: 300));
   expect(find.text('Select Country'), findsOneWidget);
 }
 
@@ -6921,7 +6922,7 @@ Future<void> _cleanupAuthCountryPickerOpen(WidgetTester tester) async {
   final dialogs = find.byType(Dialog).evaluate();
   if (dialogs.isEmpty) return;
   Navigator.of(dialogs.first, rootNavigator: true).pop();
-  await tester.pumpAndSettle();
+  await pumpFeatureUi(tester);
 }
 
 class _CaptureAuthRepository implements AuthRepository {

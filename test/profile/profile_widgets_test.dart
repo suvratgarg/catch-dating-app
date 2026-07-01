@@ -301,7 +301,7 @@ void main() {
     await tester.pump();
 
     await tester.tap(find.byTooltip('Settings'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Settings route reached'), findsOneWidget);
   });

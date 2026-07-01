@@ -267,9 +267,9 @@ void main() {
     await tester.tap(find.byKey(SwipeKeys.vibeTile('runner-3')));
     await tester.pump();
     await tester.ensureVisible(find.byKey(SwipeKeys.openCatchesDeckButton));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.tap(find.byKey(SwipeKeys.openCatchesDeckButton));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Deck ${event.id}'), findsOneWidget);
     expect(routedExtra, isA<Set<String>>());
