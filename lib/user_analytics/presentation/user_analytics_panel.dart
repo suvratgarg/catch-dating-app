@@ -136,7 +136,7 @@ class UserAnalyticsEmptyState extends StatelessWidget {
                 gapH6,
                 Text(
                   UserAnalyticsCopy.emptyBody,
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
             ),
@@ -377,14 +377,17 @@ class UserAnalyticsMetricTile extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: CatchTextStyles.labelM(context, color: t.ink2),
           ),
-          if (UserAnalyticsCopy.metricCaption(metric.id, fallback: metric.caption)
+          if (UserAnalyticsCopy.metricCaption(
+                metric.id,
+                fallback: metric.caption,
+              )
               case final caption? when caption.trim().isNotEmpty) ...[
             gapH8,
             Text(
               caption,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.bodyS(context, color: t.ink3),
+              style: CatchTextStyles.supporting(context, color: t.ink3),
             ),
           ],
         ],
@@ -542,7 +545,7 @@ class UserAnalyticsTipRow extends StatelessWidget {
               gapH4,
               Text(
                 copy.body,
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ],
           ),
@@ -593,7 +596,7 @@ class UserAnalyticsDataQualityRow extends StatelessWidget {
         Expanded(
           child: Text(
             row.detail,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ),
       ],
@@ -642,7 +645,7 @@ class UserAnalyticsInlineStat extends StatelessWidget {
       children: [
         Text(value, style: CatchTextStyles.numericLarge(context)),
         gapH2,
-        Text(label, style: CatchTextStyles.bodyS(context, color: t.ink3)),
+        Text(label, style: CatchTextStyles.supporting(context, color: t.ink3)),
       ],
     );
   }
