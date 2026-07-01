@@ -651,7 +651,12 @@ void main() {
       'Updated dawn loops.',
     );
     final doneButton = find.text('Done');
-    await tester.drag(find.byType(Scrollable).first, const Offset(0, -96));
+    final editorScrollView = find.ancestor(
+      of: descriptionEditor,
+      matching: find.byType(Scrollable),
+    );
+    expect(editorScrollView, findsOneWidget);
+    await tester.drag(editorScrollView, const Offset(0, -96));
     await pumpFeatureUi(tester);
     await tester.tap(doneButton);
     await pumpFeatureUi(tester);

@@ -149,6 +149,7 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.d
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
@@ -6775,7 +6776,10 @@ Future<void> _driveOnboardingContinueValidation(WidgetTester tester) async {
 }
 
 Future<void> _driveOnboardingRevealError(WidgetTester tester) async {
-  await tester.drag(find.byType(Scrollable).first, const Offset(0, -360));
+  await tester.drag(
+    find.byKey(OnboardingStepLayout.scrollBodyKey),
+    const Offset(0, -360),
+  );
   await tester.pumpAndSettle();
 }
 

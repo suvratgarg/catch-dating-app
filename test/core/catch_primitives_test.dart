@@ -2805,6 +2805,7 @@ void main() {
   testWidgets(
     'CatchSearchField expanding mode opens, clears, and closes from the app bar slot',
     (tester) async {
+      const searchFieldKey = ValueKey('expanding-search-field');
       var query = 'tempo';
       var opened = false;
       var closed = false;
@@ -2815,6 +2816,7 @@ void main() {
             builder: (context, setState) => SizedBox(
               width: 280,
               child: CatchSearchField(
+                key: searchFieldKey,
                 mode: CatchSearchFieldMode.expanding,
                 progress: 0,
                 maxWidth: 280,
@@ -2830,7 +2832,7 @@ void main() {
       );
 
       expect(find.byType(TextField), findsNothing);
-      expect(tester.getSize(find.byType(CatchSearchField).first).width, 280);
+      expect(tester.getSize(find.byKey(searchFieldKey)).width, 280);
       expect(find.byIcon(CatchIcons.search), findsOneWidget);
 
       await tester.tap(find.byIcon(CatchIcons.search));

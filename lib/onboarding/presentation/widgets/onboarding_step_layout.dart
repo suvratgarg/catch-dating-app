@@ -22,6 +22,8 @@ class OnboardingStepLayout extends StatelessWidget {
     ),
   });
 
+  static const scrollBodyKey = ValueKey<String>('onboarding-step-scroll-body');
+
   final List<Widget> children;
   final Widget? footer;
   final EdgeInsetsGeometry padding;
@@ -33,6 +35,7 @@ class OnboardingStepLayout extends StatelessWidget {
       children: [
         Expanded(
           child: CatchScreenBody(
+            key: scrollBodyKey,
             padding: padding,
             child: Center(
               child: ConstrainedBox(
