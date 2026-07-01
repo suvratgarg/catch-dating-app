@@ -5636,8 +5636,8 @@
           "id": "text_scale_2",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No text-scale 2.0 matches list capture exists yet.",
-          "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+          "source": "matches_list_text_scale_2 captures the consumer Matches List route at TextScaler 2.0.",
+          "nextAction": "Text-scale route coverage is registered; compare only if future text-scale references are exported.",
           "previewIds": [
             "ChatsListScreen/Consumer route states"
           ],
@@ -5649,8 +5649,8 @@
           "id": "reduced_motion",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No reduced-motion list capture exists yet.",
-          "nextAction": "Review search morph and match celebration motion under reduced-motion settings.",
+          "source": "matches_list_reduced_motion captures the consumer Matches List route with MediaQuery.disableAnimations enabled.",
+          "nextAction": "Reduced-motion route coverage is registered; add focused motion proof only if search or celebration animation behavior changes.",
           "previewIds": [
             "ChatsListScreen/Consumer route states"
           ],
@@ -5662,8 +5662,8 @@
           "id": "light_dark",
           "kind": "theme",
           "status": "captured",
-          "source": "No paired light/dark matches list capture exists yet.",
-          "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+          "source": "matches_list_context emits paired light/dark artifacts through the capture harness and anchors the populated reference comparison.",
+          "nextAction": "Populated light/dark baseline is registered; compare additional theme variants only if design exports them.",
           "previewIds": [
             "ChatsListScreen/Consumer route states"
           ],
@@ -5874,7 +5874,7 @@
         {
           "id": "DS-MATCHES-LIST-002",
           "status": "open",
-          "nextAction": "Deterministic list captures and a canonical Messaging inbox reference now cover the populated list baseline. HostInboxScreenState, ChatsListDisplayState, ChatsListCelebrationController, and ChatsSearchHeaderController own the code seams. Remaining work is additional reference variants and ongoing advisory pixel comparison; interaction-specific search/filter coverage waits unless search/filter state becomes external."
+          "nextAction": "Deterministic list captures and a canonical Messaging inbox reference now cover the populated list baseline, and the advisory comparison against matches_list_context is within threshold at 7.28% mismatch / 8.86 meanDelta. HostInboxScreenState, ChatsListDisplayState, ChatsListCelebrationController, and ChatsSearchHeaderController own the code seams. Remaining work is only additional reference variants if design exports them; interaction-specific search/filter coverage waits unless search/filter state becomes external."
         },
         {
           "id": "DS-MATCHES-LIST-003",

@@ -3370,7 +3370,7 @@
               "id": "text_scale_2",
               "kind": "accessibility",
               "status": "captured",
-              "notes": "No text-scale 2.0 matches list capture exists yet.",
+              "notes": "matches_list_text_scale_2 captures the consumer Matches List route at TextScaler 2.0.",
               "previewIds": [
                 "ChatsListScreen/Consumer route states"
               ],
@@ -3382,7 +3382,7 @@
               "id": "reduced_motion",
               "kind": "accessibility",
               "status": "captured",
-              "notes": "No reduced-motion list capture exists yet.",
+              "notes": "matches_list_reduced_motion captures the consumer Matches List route with MediaQuery.disableAnimations enabled.",
               "previewIds": [
                 "ChatsListScreen/Consumer route states"
               ],
@@ -3394,7 +3394,7 @@
               "id": "light_dark",
               "kind": "theme",
               "status": "captured",
-              "notes": "No paired light/dark matches list capture exists yet.",
+              "notes": "matches_list_context emits paired light/dark artifacts through the capture harness and anchors the populated reference comparison.",
               "previewIds": [
                 "ChatsListScreen/Consumer route states"
               ],
@@ -3412,7 +3412,7 @@
             {
               "id": "DP-MATCHES-LIST-002",
               "status": "open",
-              "nextAction": "List captures and a canonical Messaging inbox reference now cover the populated baseline. HostInboxScreenState, ChatsListDisplayState, ChatsListCelebrationController, and ChatsSearchHeaderController own the code seams. Remaining work is additional reference variants and ongoing advisory pixel comparison; interaction-specific search/filter coverage waits unless search/filter state becomes external."
+              "nextAction": "List captures and a canonical Messaging inbox reference now cover the populated baseline, and the advisory comparison against matches_list_context is within threshold at 7.28% mismatch / 8.86 meanDelta. HostInboxScreenState, ChatsListDisplayState, ChatsListCelebrationController, and ChatsSearchHeaderController own the code seams. Remaining work is only additional reference variants if design exports them; interaction-specific search/filter coverage waits unless search/filter state becomes external."
             },
             {
               "id": "DP-MATCHES-LIST-003",
