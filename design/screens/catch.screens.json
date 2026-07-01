@@ -6859,6 +6859,11 @@
           "id": "profile_self_reduced_motion",
           "status": "captured",
           "notes": "Deterministic ProfileScreen route capture registered in screen_capture_catalog.dart."
+        },
+        {
+          "id": "profile_self_light_dark",
+          "status": "captured",
+          "notes": "Deterministic ProfileScreen route capture records the explicit paired light/dark audit baseline."
         }
       ],
       "states": [
@@ -7087,7 +7092,7 @@
           "id": "light_dark",
           "kind": "theme",
           "status": "captured",
-          "source": "Profile view goldens cover light and dark profile surface variants; full route paired captures are not yet registered.",
+          "source": "Profile view goldens cover light and dark profile surface variants; profile_self_light_dark records the full route paired light/dark baseline.",
           "tests": [
             "test/goldens/profile_view_test.dart",
             "test/swipes/profile_card_widget_test.dart"
@@ -7097,6 +7102,7 @@
             "ProfileScreen/Self section states"
           ],
           "captureIds": [
+            "profile_self_light_dark",
             "profile_self_edit_tab",
             "profile_self_preview_tab"
           ],

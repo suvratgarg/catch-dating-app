@@ -7106,6 +7106,13 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _selfProfileCapture(),
   ),
   ScreenCaptureEntry(
+    id: 'profile_self_light_dark',
+    routeIds: const <String>['profileScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _selfProfileProviderOverrides(),
+    builder: (context) => _selfProfileCapture(),
+  ),
+  ScreenCaptureEntry(
     id: 'start_welcome',
     routeIds: const <String>['startScreen'],
     device: CaptureDevice.reviewPhone,

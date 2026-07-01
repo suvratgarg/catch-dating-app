@@ -472,7 +472,8 @@
         "profile_self_inline_save_pending",
         "profile_self_inline_save_error",
         "profile_self_text_scale_2",
-        "profile_self_reduced_motion"
+        "profile_self_reduced_motion",
+        "profile_self_light_dark"
       ],
       "reason": "Self-profile captures now cover flagship profile surface plus deterministic full-route loading, error, offline, unavailable, edit tab, preview tab, upload-pending, upload-failure snackbar, inline save pending/error drawers, text scale, reduced motion, and paired light/dark variants."
     },

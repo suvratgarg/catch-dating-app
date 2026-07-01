@@ -3878,7 +3878,8 @@
             "profile_self_inline_save_pending",
             "profile_self_inline_save_error",
             "profile_self_text_scale_2",
-            "profile_self_reduced_motion"
+            "profile_self_reduced_motion",
+            "profile_self_light_dark"
           ],
           "designRefs": [
             {
@@ -4104,12 +4105,13 @@
                 "test/goldens/profile_view_test.dart",
                 "test/swipes/profile_card_widget_test.dart"
               ],
-              "notes": "The capture harness emits paired light/dark artifacts for profile_self_edit_tab and profile_self_preview_tab.",
+              "notes": "profile_self_light_dark records the full edit route as the explicit paired light/dark audit baseline; profile_self_edit_tab and profile_self_preview_tab also emit paired artifacts through the capture harness.",
               "previewIds": [
                 "ProfileScreen/Self route states",
                 "ProfileScreen/Self section states"
               ],
               "captureIds": [
+                "profile_self_light_dark",
                 "profile_self_edit_tab",
                 "profile_self_preview_tab"
               ]
