@@ -16478,7 +16478,7 @@
             "symbol": "SavedEventRepository"
           }
         ],
-        "notes": "SavedEventsScreen watches the current uid, streams saved event details, owns the route Scaffold, loading/error/empty states, retry invalidation, club-name lookup, and saved-event detail navigation. SavedEventsListState owns event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input before the shared agenda renders."
+        "notes": "SavedEventsScreen watches the current uid, streams saved event details, owns the route Scaffold, retry invalidation, club-name lookup, and saved-event detail navigation. SavedEventsListState owns event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input. SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage own provider-free header, agenda, loading, error, lookup-error, and empty surfaces."
       },
       "designRefs": [
         {
@@ -16617,7 +16617,7 @@
           "tests": [
             "test/events/saved_events_screen_test.dart"
           ],
-          "nextAction": "Keep route test coverage while future passes extract provider-free agenda/state sections."
+          "nextAction": "Keep route test coverage while future passes add reference-specific visual variants."
         },
         {
           "id": "text_scale_2",
@@ -16641,8 +16641,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "SavedEventsScreen owns uid/provider orchestration, route Scaffold, club-name lookup, retry invalidation, empty/error/loading states, and event-detail navigation, then resolves SavedEventsListState for ordering, saved/past labels, tile statuses, today, and club-id lookup input before composing shared agenda rows.",
-        "targetLayout": "Saved Events should keep SavedEventsListState as the provider-free adapter for ordered rows, status labels, tile states, today, and club-id lookup input while future passes extract named provider-free header, agenda, and state sections.",
+        "currentLayout": "SavedEventsScreen owns uid/provider orchestration, route Scaffold, club-name lookup, retry invalidation, and event-detail navigation, then resolves SavedEventsListState before passing typed data into provider-free SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage sections.",
+        "targetLayout": "Saved Events should keep providers at the route boundary, SavedEventsListState as the ordered-row adapter, and public section widgets as the owner of header, agenda, loading/error, lookup-error, and empty surfaces.",
         "sections": [
           {
             "id": "section.saved_events.list_adapter",
@@ -16679,10 +16679,10 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/saved_events_screen.dart",
-              "symbol": "SavedEventsScreen"
+              "symbol": "SavedEventsHeaderSliver"
             },
-            "currentOwner": "SavedEventsScreen",
-            "targetOwner": "provider-free saved-events header section",
+            "currentOwner": "SavedEventsHeaderSliver",
+            "targetOwner": "SavedEventsHeaderSliver",
             "dependencies": [
               "catch.top_bar"
             ],
@@ -16690,7 +16690,7 @@
               "populated_saved_events",
               "text_scale_2"
             ],
-            "migration": "Keep page title/header copy adapter-owned so row list and empty state can share route context."
+            "migration": "SavedEventsHeaderSliver owns page title/header copy as a provider-free sliver section."
           },
           {
             "id": "section.saved_events.agenda",
@@ -16702,10 +16702,10 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/saved_events_screen.dart",
-              "symbol": "SavedEventsScreen"
+              "symbol": "SavedEventsAgendaSliver"
             },
-            "currentOwner": "SavedEventsScreen + EventAgendaSliverList",
-            "targetOwner": "provider-free saved-events agenda section",
+            "currentOwner": "SavedEventsAgendaSliver + SavedEventsListState",
+            "targetOwner": "SavedEventsAgendaSliver + SavedEventsListState",
             "dependencies": [
               "catch.badge",
               "catch.surface"
@@ -16715,7 +16715,7 @@
               "club_names_loading_error",
               "detail_navigation"
             ],
-            "migration": "Reuse EventAgendaSliverList while SavedEventsListState supplies ordering, badge labels, tile statuses, and today; the screen supplies club names and route callbacks."
+            "migration": "SavedEventsAgendaSliver reuses EventAgendaSliverList while SavedEventsListState supplies ordering, badge labels, tile statuses, and today; the route supplies club names and navigation callbacks."
           },
           {
             "id": "section.saved_events.empty_error",
@@ -16729,8 +16729,8 @@
               "file": "lib/events/presentation/saved_events_screen.dart",
               "symbol": "SavedEventsMessage"
             },
-            "currentOwner": "SavedEventsScreen",
-            "targetOwner": "provider-free saved-events state section",
+            "currentOwner": "SavedEventsLoading + SavedEventsError + SavedEventsClubNamesErrorSliver + SavedEventsMessage",
+            "targetOwner": "SavedEventsLoading + SavedEventsError + SavedEventsClubNamesErrorSliver + SavedEventsMessage",
             "dependencies": [
               "catch.surface"
             ],
@@ -16740,7 +16740,7 @@
               "saved_events_error",
               "club_names_loading_error"
             ],
-            "migration": "Name and fixture all saved-events route state surfaces before visual comparison."
+            "migration": "Saved Events route state surfaces are named provider-free widgets; the screen only supplies retry callbacks and provider values."
           }
         ]
       },
@@ -16757,8 +16757,8 @@
         },
         {
           "id": "DS-SAVED-EVENTS-003",
-          "status": "open",
-          "nextAction": "SavedEventsListState now covers ordering, saved/past labels, tile statuses, today, and club-id lookup input; remaining work is provider-free header/agenda/state section extraction."
+          "status": "closed",
+          "nextAction": "Closed by SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
         },
         {
           "id": "DS-SAVED-EVENTS-004",

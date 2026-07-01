@@ -37,9 +37,8 @@ class SavedEventsScreen extends ConsumerWidget {
         child: CatchAsyncValueView<List<Event>>(
           value: savedEventsAsync,
           loadingBuilder: (_) => const SavedEventsLoading(),
-          errorBuilder: (_, error, _) => CatchErrorState.fromError(
-            error,
-            context: AppErrorContext.event,
+          errorBuilder: (_, error, _) => SavedEventsError(
+            error: error,
             onRetry: uid == null
                 ? null
                 : () => ref.invalidate(
@@ -67,33 +66,19 @@ class SavedEventsScreen extends ConsumerWidget {
 
             return CustomScrollView(
               slivers: [
-                SliverPadding(
-                  padding: CatchInsets.pageHeaderCompact,
-                  sliver: SliverToBoxAdapter(
-                    child: Text(
-                      'Events you saved',
-                      style: CatchTextStyles.headlineS(context),
-                    ),
-                  ),
-                ),
+                const SavedEventsHeaderSliver(),
                 CatchAsyncValueSliver<Map<String, String>>(
                   value: clubNamesAsync,
                   sliverLoadingBuilder: (_) =>
                       const EventAgendaSliverSkeleton(),
                   sliverErrorBuilder: (_, error, _) =>
-                      CatchSliverErrorState.fromError(
-                        error,
-                        context: AppErrorContext.event,
+                      SavedEventsClubNamesErrorSliver(
+                        error: error,
                         onRetry: () => ref.invalidate(clubNameLookupProvider),
                       ),
-                  builder: (context, clubNames) => EventAgendaSliverList(
-                    events: savedEventsState.orderedEvents,
-                    showClubName: true,
-                    clubNameBuilder: (event) => clubNames[event.clubId],
-                    today: savedEventsState.today,
-                    preserveInputOrder: true,
-                    badgeLabelBuilder: savedEventsState.badgeLabelFor,
-                    statusBuilder: savedEventsState.statusFor,
+                  builder: (context, clubNames) => SavedEventsAgendaSliver(
+                    state: savedEventsState,
+                    clubNames: clubNames,
                     onEventSelected: (event) =>
                         _openEventDetail(context, event),
                   ),
@@ -110,6 +95,50 @@ class SavedEventsScreen extends ConsumerWidget {
     final clubId = Uri.encodeComponent(event.clubId);
     final eventId = Uri.encodeComponent(event.id);
     context.push('/saved-events/clubs/$clubId/events/$eventId', extra: event);
+  }
+}
+
+class SavedEventsHeaderSliver extends StatelessWidget {
+  const SavedEventsHeaderSliver({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPadding(
+      padding: CatchInsets.pageHeaderCompact,
+      sliver: SliverToBoxAdapter(
+        child: Text(
+          'Events you saved',
+          style: CatchTextStyles.headlineS(context),
+        ),
+      ),
+    );
+  }
+}
+
+class SavedEventsAgendaSliver extends StatelessWidget {
+  const SavedEventsAgendaSliver({
+    super.key,
+    required this.state,
+    required this.clubNames,
+    required this.onEventSelected,
+  });
+
+  final SavedEventsListState state;
+  final Map<String, String> clubNames;
+  final ValueChanged<Event> onEventSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return EventAgendaSliverList(
+      events: state.orderedEvents,
+      showClubName: true,
+      clubNameBuilder: (event) => clubNames[event.clubId],
+      today: state.today,
+      preserveInputOrder: true,
+      badgeLabelBuilder: state.badgeLabelFor,
+      statusBuilder: state.statusFor,
+      onEventSelected: onEventSelected,
+    );
   }
 }
 
@@ -130,6 +159,42 @@ class SavedEventsLoading extends StatelessWidget {
         ),
         const EventAgendaSliverSkeleton(),
       ],
+    );
+  }
+}
+
+class SavedEventsError extends StatelessWidget {
+  const SavedEventsError({super.key, required this.error, this.onRetry});
+
+  final Object error;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchErrorState.fromError(
+      error,
+      context: AppErrorContext.event,
+      onRetry: onRetry,
+    );
+  }
+}
+
+class SavedEventsClubNamesErrorSliver extends StatelessWidget {
+  const SavedEventsClubNamesErrorSliver({
+    super.key,
+    required this.error,
+    required this.onRetry,
+  });
+
+  final Object error;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchSliverErrorState.fromError(
+      error,
+      context: AppErrorContext.event,
+      onRetry: onRetry,
     );
   }
 }

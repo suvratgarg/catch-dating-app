@@ -9388,7 +9388,7 @@
               "tests": [
                 "test/events/saved_events_screen_test.dart"
               ],
-              "notes": "Selecting a saved event pushes the saved Event Detail alias route with event extra."
+              "notes": "Selecting a saved event pushes the saved Event Detail alias route with event extra; route test coverage stays while future work adds reference-specific visual variants."
             },
             {
               "id": "text_scale_2",
@@ -9422,8 +9422,8 @@
             },
             {
               "id": "DP-SAVED-EVENTS-003",
-              "status": "open",
-              "nextAction": "SavedEventsListState now covers ordering, saved/past labels, tile statuses, today, and club-id lookup input; remaining work is provider-free header/agenda/state section extraction."
+              "status": "closed",
+              "nextAction": "Closed by SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
             },
             {
               "id": "DP-SAVED-EVENTS-004",
