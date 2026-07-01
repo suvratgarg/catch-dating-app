@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.522
+version: 2.5.523
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.523
+
+- Cataloged the Event Success private-feedback row primitives directly:
+  ratings, people-met counter, and icon actions. This keeps the attendee
+  afterglow feedback form reviewable below the full form shell without changing
+  companion runtime behavior.
 
 ### 2.5.522
 
@@ -5904,6 +5911,9 @@ Generated 2026-05-06.
 | `EventSuccessHostSetupFlow` | `lib/event_success/presentation/event_success_feature_blocks.dart:36` | Event-success concept-lab setup flow. Lets product iterate across playbooks, shows the selected playbook summary, embeds `EventSuccessStructureConfigEditor`, and toggles modules/readiness issues from an in-memory draft. Uses handoff `SelectChip` choices for the format selector. |
 | `EventSuccessSetupBody` | `lib/event_success/presentation/event_success_setup_body.dart:52` | Shared event-success setup body used by create-event defaults and Host Manage setup. Renders preset review, guide notes, lifecycle stage cards, structure, advanced match-clue questions, and safety footer while emitting draft changes to its owner. Uses `CatchField.toggle` rows for module recommendations, `SelectChip` choices for rotation cadence / reveal countdown / match-clue mode, and tokenized `CatchSurface` disclosure rows for Guide notes and Advanced sections instead of Material `ExpansionTile`. |
 | `EventSuccessFeedbackForm` | `lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart:11` | Provider-free attendee companion post-event feedback form. Captures private welcome/structure ratings, people-met count, private note, and a Catch-private safety/comfort review flag from local draft state, while submit pending and persistence flow through explicit `EventSuccessFeedbackActionState` and a typed feedback callback. |
+| `RatingRow` | `lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart:184` | Event Success feedback rating row. Renders one labeled 1-5 star selector from explicit value and callback props so the feedback form can keep draft state local while the row remains provider-free and directly reviewable. |
+| `CounterRow` | `lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart:218` | Event Success people-met counter row. Renders decrement/increment icon actions around a numeric value, disables decrement at zero, and delegates all value changes through the supplied callback. |
+| `FeedbackIconAction` | `lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart:253` | Event Success feedback icon action wrapper. Applies tooltip, icon sizing, token color, and disabled tap behavior through the shared `CatchIconButton` primitive for compact rating and counter controls. |
 | `_SetupTab` | `lib/event_success/presentation/host_parts/event_success_host_setup.dart:3` | Event-success setup form for playbook selection, target attendee count, host goal, attendee prompt, structure config, module toggles, reveal-clue opt-in, wingman requests, and setup save/ensure mutations. Essentials render first; advanced structure, tool, and delivery controls are progressively disclosed, with multiline guide-note fields and host-facing group/team/table language. |
 
 ### ConsumerStatefulWidget

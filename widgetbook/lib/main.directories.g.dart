@@ -4318,6 +4318,17 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Event Success companion',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CounterRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Feedback counter row',
+                builder:
+                    _widgetbook_workspace_event_success_event_success_companion_use_cases
+                        .eventSuccessFeedbackCounterRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventSuccessCompanionLoadingBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4358,6 +4369,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_event_success_event_success_companion_use_cases
                         .eventSuccessFeedbackFormStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FeedbackIconAction',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Feedback icon action',
+                builder:
+                    _widgetbook_workspace_event_success_event_success_companion_use_cases
+                        .eventSuccessFeedbackIconActionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'RatingRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Feedback rating row',
+                builder:
+                    _widgetbook_workspace_event_success_event_success_companion_use_cases
+                        .eventSuccessFeedbackRatingRowStates,
               ),
             ],
           ),
