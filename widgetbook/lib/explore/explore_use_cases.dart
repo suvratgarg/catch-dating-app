@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
+import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
@@ -1263,6 +1264,198 @@ Widget exploreEventTypeBrowseGridStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Activity content states',
+  type: EventTypeBrowseContent,
+  path: '[Explore]/Sections',
+)
+Widget eventTypeBrowseContentStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'EventTypeBrowseContent',
+    catalogId: 'section.explore.activity_grid.content',
+    children: [
+      _StateCard(
+        label: 'collapsed preview',
+        child: EventTypeBrowseContent(
+          items: _feedItems,
+          activeActivityTag: ActivityKind.dinner.name,
+          expanded: false,
+          onCategoryTap: _ignoreActivityKind,
+          onExpand: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'expanded list',
+        child: EventTypeBrowseContent(
+          items: _feedItems,
+          activeActivityTag: null,
+          expanded: true,
+          onCategoryTap: _ignoreActivityKind,
+          onExpand: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Activity rows states',
+  type: ActivityTypeRows,
+  path: '[Explore]/Sections',
+)
+Widget activityTypeRowsStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ActivityTypeRows',
+    catalogId: 'section.explore.activity_grid.rows',
+    children: [
+      _StateCard(
+        label: 'single column',
+        child: SizedBox(
+          width: 280,
+          child: ActivityTypeRows(
+            slots: _activitySlots,
+            activeActivityTag: ActivityKind.socialRun.name,
+            onCategoryTap: _ignoreActivityKind,
+            onExpand: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'two columns',
+        child: SizedBox(
+          width: 560,
+          child: ActivityTypeRows(
+            slots: _activitySlots,
+            activeActivityTag: ActivityKind.pickleball.label,
+            onCategoryTap: _ignoreActivityKind,
+            onExpand: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Activity slot states',
+  type: ActivitySlotView,
+  path: '[Explore]/Sections',
+)
+Widget activitySlotViewStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ActivitySlotView',
+    catalogId: 'section.explore.activity_grid.slot',
+    children: [
+      _StateCard(
+        label: 'activity entry',
+        child: ActivitySlotView(
+          slot: const ActivitySlot.entry(_socialRunActivityEntry),
+          activeActivityTag: ActivityKind.socialRun.name,
+          onCategoryTap: _ignoreActivityKind,
+          onExpand: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'more slot',
+        child: ActivitySlotView(
+          slot: const ActivitySlot.more(3),
+          activeActivityTag: null,
+          onCategoryTap: _ignoreActivityKind,
+          onExpand: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Activity row states',
+  type: ActivityTypeRow,
+  path: '[Explore]/Rows',
+)
+Widget activityTypeRowStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ActivityTypeRow',
+    catalogId: 'row.explore.activity_type',
+    children: [
+      _StateCard(
+        label: 'inactive row',
+        child: ActivityTypeRow(
+          entry: _dinnerActivityEntry,
+          active: false,
+          onTap: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'active row',
+        child: ActivityTypeRow(
+          entry: _socialRunActivityEntry,
+          active: true,
+          onTap: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'More row states',
+  type: MoreActivityTypesRow,
+  path: '[Explore]/Rows',
+)
+Widget moreActivityTypesRowStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'MoreActivityTypesRow',
+    catalogId: 'row.explore.activity_type.more',
+    children: [
+      _StateCard(
+        label: 'collapsed overflow',
+        child: MoreActivityTypesRow(remainingCount: 3, onTap: _noop),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Activity dot states',
+  type: ActivityDot,
+  path: '[Explore]/Rows',
+)
+Widget activityDotStates(BuildContext context) {
+  final run = eventActivityVisual(ActivityKind.socialRun, context: context);
+  final dinner = eventActivityVisual(ActivityKind.dinner, context: context);
+  return _CatalogScreen(
+    title: 'ActivityDot',
+    catalogId: 'row.explore.activity_type.dot',
+    children: [
+      _StateCard(
+        label: 'activity accents',
+        child: _InlineSwatches(
+          children: [
+            ActivityDot(color: run.accent),
+            ActivityDot(color: dinner.accent),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Activity skeleton states',
+  type: EventTypeBrowseSkeleton,
+  path: '[Explore]/Sections',
+)
+Widget eventTypeBrowseSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'EventTypeBrowseSkeleton',
+    catalogId: 'section.explore.activity_grid.skeleton',
+    children: [
+      _StateCard(label: 'loading rows', child: EventTypeBrowseSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Map launcher states',
   type: CatchCountPill,
   path: '[Explore]/Sections',
@@ -1736,6 +1929,21 @@ class _MapPillFrame extends StatelessWidget {
   }
 }
 
+class _InlineSwatches extends StatelessWidget {
+  const _InlineSwatches({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: CatchSpacing.s3,
+      runSpacing: CatchSpacing.s3,
+      children: children,
+    );
+  }
+}
+
 class _MediaOverride extends StatelessWidget {
   const _MediaOverride({
     required this.child,
@@ -1921,3 +2129,30 @@ Widget _secondaryAction(String label) {
 }
 
 void _noop() {}
+
+void _ignoreActivityKind(ActivityKind _) {}
+
+const _socialRunActivityEntry = ActivityEntry(
+  activityKind: ActivityKind.socialRun,
+  count: 3,
+  firstSeenIndex: 0,
+);
+
+const _dinnerActivityEntry = ActivityEntry(
+  activityKind: ActivityKind.dinner,
+  count: 2,
+  firstSeenIndex: 1,
+);
+
+const _pickleballActivityEntry = ActivityEntry(
+  activityKind: ActivityKind.pickleball,
+  count: 1,
+  firstSeenIndex: 2,
+);
+
+const _activitySlots = [
+  ActivitySlot.entry(_socialRunActivityEntry),
+  ActivitySlot.entry(_dinnerActivityEntry),
+  ActivitySlot.entry(_pickleballActivityEntry),
+  ActivitySlot.more(3),
+];

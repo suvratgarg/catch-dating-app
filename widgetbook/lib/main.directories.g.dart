@@ -3180,6 +3180,26 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Rows',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'ActivityDot',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Activity dot states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .activityDotStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ActivityTypeRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Activity row states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .activityTypeRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ExploreExternalEventRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3209,6 +3229,16 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'MoreActivityTypesRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'More row states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .moreActivityTypesRowStates,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(
@@ -3230,12 +3260,52 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Sections',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'ActivitySlotView',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Activity slot states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .activitySlotViewStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ActivityTypeRows',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Activity rows states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .activityTypeRowsStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchCountPill',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Map launcher states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .exploreMapLauncherStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventTypeBrowseContent',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Activity content states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .eventTypeBrowseContentStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventTypeBrowseSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Activity skeleton states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .eventTypeBrowseSkeletonStates,
               ),
             ],
           ),
