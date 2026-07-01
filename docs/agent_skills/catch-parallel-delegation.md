@@ -12,11 +12,15 @@ Loop:
    path it will keep locally.
 2. Parent assigns subagents only independent sidecar work with explicit owned
    paths, excluded paths, base branch, base SHA, checks, and result format.
-3. Subagents work in disposable Git worktrees/branches and commit proposals
+3. Before editing, each subagent reports `pwd`, `git branch --show-current`,
+   `git rev-parse HEAD`, and `git status --short --branch`. Stop the subagent
+   if it is on the parent branch, in the parent worktree, or not at the assigned
+   base SHA.
+4. Subagents work in disposable Git worktrees/branches and commit proposals
    there.
-4. Parent reviews the subagent commit, imports accepted changes into the parent
+5. Parent reviews the subagent commit, imports accepted changes into the parent
    branch, updates canonical docs/registries/stamps, and runs final checks.
-5. Parent records a delegation outcome with
+6. Parent records a delegation outcome with
    `node tool/agent/record_delegation_outcome.mjs`.
 
 Default parent-owned files: `AGENTS.md`, `docs/agent_operating_model.md`,
@@ -24,7 +28,7 @@ Default parent-owned files: `AGENTS.md`, `docs/agent_operating_model.md`,
 `docs/design_parity/**`, `docs/widget_catalog.md`, generated registries, tool
 manifest entries, and audit pass receipts.
 
-Failure modes to avoid: parallel agents editing the same file, subagents
-updating canonical docs without parent review, long-lived stale branches,
-parallel Flutter test/analyzer races, and accepting a patch whose pattern delta
-was not reviewed.
+Failure modes to avoid: subagents accidentally sharing the parent worktree,
+parallel agents editing the same file, subagents updating canonical docs without
+parent review, long-lived stale branches, parallel Flutter test/analyzer races,
+and accepting a patch whose pattern delta was not reviewed.

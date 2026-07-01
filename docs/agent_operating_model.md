@@ -104,14 +104,27 @@ Use Git worktrees as the isolation boundary:
 2. Parent creates or asks for a disposable subagent branch from that HEAD.
 3. Each subagent receives a task id, owned paths, excluded paths, required owner
    docs, allowed checks, and the structured result format.
-4. Subagent commits its proposal on its branch and reports the commit SHA,
+4. Before editing, the subagent must prove isolation by reporting
+   `pwd`, `git branch --show-current`, `git rev-parse HEAD`, and
+   `git status --short --branch`. The branch must not be the parent branch, the
+   HEAD must match the assigned base SHA, and the worktree must not be the
+   parent's live worktree. If any preflight value is wrong, the subagent stops
+   without editing and the parent recreates the delegation locally or with a
+   real disposable worktree.
+5. Subagent commits its proposal on its branch and reports the commit SHA,
    changed files, checks run, blockers, and quality risks.
-5. Parent reviews with `git show`, `git diff`, or `cherry-pick -n`, then imports
+6. Parent reviews with `git show`, `git diff`, or `cherry-pick -n`, then imports
    only the accepted changes into the parent branch.
-6. Parent runs final checks, updates canonical docs/registries, stamps the audit
+7. Parent runs final checks, updates canonical docs/registries, stamps the audit
    pass, commits the integrated loop, and records the delegation outcome.
-7. Disposable worktrees/branches may be removed after the parent has accepted or
+8. Disposable worktrees/branches may be removed after the parent has accepted or
    rejected the proposal.
+
+If a subagent is discovered on the parent worktree or on a branch that includes
+unreviewed parent-only commits, interrupt it immediately. Accept only reviewed
+commit diffs by cherry-picking them onto the intended parent branch, record the
+isolation failure in delegation metrics, and do not delegate more patch work
+until the next worker can pass the preflight.
 
 If the parent branch advances while a subagent is still working, either rebase
 the subagent branch onto the new parent HEAD or discard/recreate the worktree.
@@ -143,6 +156,7 @@ base_sha:
 worktree_path:
 branch:
 commit_sha:
+preflight:
 owned_paths:
 excluded_paths:
 files_changed:
