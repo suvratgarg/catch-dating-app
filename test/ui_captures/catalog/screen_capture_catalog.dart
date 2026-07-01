@@ -157,6 +157,7 @@ import 'package:catch_dating_app/payments/presentation/payment_history_screen.da
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -1789,6 +1790,82 @@ Widget _publicProfileCapture({
   String uid = ProfileSurfaceFixtures.targetUid,
   PublicProfile? initialProfile,
 }) => PublicProfileScreen(uid: uid, initialProfile: initialProfile);
+
+class _PublicProfileReportMutationCapture extends ConsumerStatefulWidget {
+  const _PublicProfileReportMutationCapture({required this.mode});
+
+  final _PublicProfileReportMutationMode mode;
+
+  @override
+  ConsumerState<_PublicProfileReportMutationCapture> createState() =>
+      _PublicProfileReportMutationCaptureState();
+}
+
+class _PublicProfileReportMutationCaptureState
+    extends ConsumerState<_PublicProfileReportMutationCapture> {
+  bool _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _started) return;
+      _started = true;
+      PublicProfileController.reportUserMutation.reset(ref);
+      switch (widget.mode) {
+        case _PublicProfileReportMutationMode.pending:
+          _runPending(PublicProfileController.reportUserMutation);
+          break;
+        case _PublicProfileReportMutationMode.success:
+          _runSuccess(PublicProfileController.reportUserMutation);
+          break;
+        case _PublicProfileReportMutationMode.error:
+          _runError(PublicProfileController.reportUserMutation);
+          break;
+      }
+    });
+  }
+
+  void _runPending(Mutation<void> mutation) {
+    final completer = Completer<void>();
+    _publicProfileReportPendingCompleter = completer;
+    unawaited(mutation.run(ref, (_) => completer.future));
+  }
+
+  void _runSuccess(Mutation<void> mutation) {
+    unawaited(
+      mutation.run(ref, (_) async {
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      }),
+    );
+  }
+
+  void _runError(Mutation<void> mutation) {
+    unawaited(
+      mutation
+          .run(ref, (_) async {
+            await Future<void>.delayed(const Duration(milliseconds: 50));
+            throw StateError('report failed');
+          })
+          .catchError((_) {}),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => _publicProfileCapture();
+}
+
+enum _PublicProfileReportMutationMode { pending, success, error }
+
+Completer<void>? _publicProfileReportPendingCompleter;
+
+Future<void> _cleanupPublicProfileReportPending(WidgetTester tester) async {
+  final completer = _publicProfileReportPendingCompleter;
+  _publicProfileReportPendingCompleter = null;
+  if (completer != null && !completer.isCompleted) {
+    completer.complete();
+  }
+}
 
 class _PublicProfilePendingOverlayCapture extends StatelessWidget {
   const _PublicProfilePendingOverlayCapture();
@@ -13104,6 +13181,34 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['publicProfileScreen'],
     device: CaptureDevice.reviewTall,
     builder: (context) => const _PublicProfilePendingOverlayCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'public_profile_report_pending',
+    routeIds: const <String>['publicProfileScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _publicProfileProviderOverrides(),
+    builder: (context) => const _PublicProfileReportMutationCapture(
+      mode: _PublicProfileReportMutationMode.pending,
+    ),
+    cleanup: _cleanupPublicProfileReportPending,
+  ),
+  ScreenCaptureEntry(
+    id: 'public_profile_report_success_snackbar',
+    routeIds: const <String>['publicProfileScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _publicProfileProviderOverrides(),
+    builder: (context) => const _PublicProfileReportMutationCapture(
+      mode: _PublicProfileReportMutationMode.success,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'public_profile_report_failure_snackbar',
+    routeIds: const <String>['publicProfileScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _publicProfileProviderOverrides(),
+    builder: (context) => const _PublicProfileReportMutationCapture(
+      mode: _PublicProfileReportMutationMode.error,
+    ),
   ),
   ScreenCaptureEntry(
     id: 'public_profile_report_sheet',

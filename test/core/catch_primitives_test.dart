@@ -1993,6 +1993,32 @@ void main() {
     expect(find.text('snack failed'), findsOneWidget);
   });
 
+  testWidgets('showCatchSnackBar pins token contrast in dark mode', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.dark,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showCatchSnackBar(context, 'Saved.'),
+              child: const Text('Show snackbar'),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Show snackbar'));
+    await tester.pump();
+
+    final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+    final message = tester.widget<Text>(find.text('Saved.'));
+    expect(snackBar.backgroundColor, CatchTokens.dark.ink);
+    expect(message.style?.color, CatchTokens.dark.bg);
+  });
+
   testWidgets(
     'showCatchErrorSnackBar exposes retry action for retryable errors',
     (tester) async {

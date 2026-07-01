@@ -4110,6 +4110,9 @@
             "public_profile_unavailable",
             "public_profile_own_profile",
             "public_profile_block_pending",
+            "public_profile_report_pending",
+            "public_profile_report_success_snackbar",
+            "public_profile_report_failure_snackbar",
             "public_profile_report_sheet",
             "public_profile_block_confirmation",
             "public_profile_text_scale_2",
@@ -4242,13 +4245,19 @@
             {
               "id": "report_mutation",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
               "tests": [
-                "test/public_profile/public_profile_controller_test.dart"
+                "test/public_profile/public_profile_controller_test.dart",
+                "test/public_profile/public_profile_screen_test.dart"
               ],
-              "notes": "PublicProfileController.reportUser delegates to SafetyRepository.reportUser and PublicProfileScreen shows success/error feedback through mutation listeners. Report success now uses the shared Catch snackbar helper. Add UI proof for pending overlay, success snackbar, and mutation failure snackbar.",
+              "notes": "public_profile_report_pending captures the report mutation overlay through PublicProfileScreenState, while public_profile_report_success_snackbar and public_profile_report_failure_snackbar seed PublicProfileController.reportUserMutation through the route listeners for shared feedback proof.",
               "previewIds": [
                 "PublicProfileScreen/Safety action states"
+              ],
+              "captureIds": [
+                "public_profile_report_pending",
+                "public_profile_report_success_snackbar",
+                "public_profile_report_failure_snackbar"
               ]
             },
             {
@@ -4314,6 +4323,9 @@
               "captureIds": [
                 "public_profile_member",
                 "public_profile_own_profile",
+                "public_profile_report_pending",
+                "public_profile_report_success_snackbar",
+                "public_profile_report_failure_snackbar",
                 "public_profile_report_sheet",
                 "public_profile_block_confirmation"
               ]

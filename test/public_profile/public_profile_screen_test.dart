@@ -135,6 +135,34 @@ void main() {
     },
   );
 
+  testWidgets('PublicProfileScreen surfaces report mutation failures', (
+    tester,
+  ) async {
+    final safetyRepository = _FakePublicProfileSafetyRepository(
+      failReports: true,
+    );
+    final profile = buildPublicProfile(name: 'Riya');
+    await _pumpPublicProfile(
+      tester,
+      targetStream: Stream<PublicProfile?>.value(profile),
+      safetyRepository: safetyRepository,
+    );
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.byIcon(CatchIcons.moreHorizRounded));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Report'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Fake or misleading profile'));
+    await pumpFeatureUi(tester);
+
+    expect(safetyRepository.reportCalls, [
+      (targetUserId: 'runner-1', reasonCode: 'fake_or_misleading_profile'),
+    ]);
+    expect(find.text('report failed'), findsOneWidget);
+    expect(find.text('Report submitted.'), findsNothing);
+  });
+
   testWidgets(
     'PublicProfileScreen surfaces block mutation failures after confirmation',
     (tester) async {
@@ -203,9 +231,13 @@ Future<void> _pumpPublicProfile(
 
 class _FakePublicProfileSafetyRepository extends Fake
     implements SafetyRepository {
-  _FakePublicProfileSafetyRepository({this.failBlocks = false});
+  _FakePublicProfileSafetyRepository({
+    this.failBlocks = false,
+    this.failReports = false,
+  });
 
   final bool failBlocks;
+  final bool failReports;
   final reportCalls = <({String targetUserId, String? reasonCode})>[];
   final blockCalls = <String>[];
 
@@ -218,6 +250,9 @@ class _FakePublicProfileSafetyRepository extends Fake
     String? notes,
   }) async {
     reportCalls.add((targetUserId: targetUserId, reasonCode: reasonCode));
+    if (failReports) {
+      throw StateError('report failed');
+    }
   }
 
   @override

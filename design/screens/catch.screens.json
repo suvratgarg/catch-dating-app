@@ -7461,6 +7461,21 @@
           "notes": "Deterministic PublicProfileScreen or public-profile section capture registered in screen_capture_catalog.dart."
         },
         {
+          "id": "public_profile_report_pending",
+          "status": "captured",
+          "notes": "Deterministic PublicProfileScreen report mutation pending capture registered in screen_capture_catalog.dart."
+        },
+        {
+          "id": "public_profile_report_success_snackbar",
+          "status": "captured",
+          "notes": "Deterministic PublicProfileScreen report mutation success snackbar capture registered in screen_capture_catalog.dart."
+        },
+        {
+          "id": "public_profile_report_failure_snackbar",
+          "status": "captured",
+          "notes": "Deterministic PublicProfileScreen report mutation failure snackbar capture registered in screen_capture_catalog.dart."
+        },
+        {
           "id": "public_profile_report_sheet",
           "status": "captured",
           "notes": "Deterministic PublicProfileScreen or public-profile section capture registered in screen_capture_catalog.dart."
@@ -7607,14 +7622,20 @@
         {
           "id": "report_mutation",
           "kind": "mutation",
-          "status": "tested",
-          "source": "PublicProfileController.reportUser delegates to SafetyRepository.reportUser and PublicProfileScreen shows success/error feedback through mutation listeners; report success uses the shared Catch snackbar helper.",
+          "status": "captured",
+          "source": "PublicProfileController.reportUser delegates to SafetyRepository.reportUser; PublicProfileScreenState exposes report pending, and PublicProfileScreen shows shared success/error snackbar feedback through mutation listeners.",
           "tests": [
-            "test/public_profile/public_profile_controller_test.dart"
+            "test/public_profile/public_profile_controller_test.dart",
+            "test/public_profile/public_profile_screen_test.dart"
           ],
-          "nextAction": "Add selected-reason pending, shared success snackbar, and failure snackbar proof.",
+          "nextAction": "Report selected-reason, pending, success snackbar, and failure snackbar proof is closed; continue only visual parity or additional product-policy variants.",
           "previewIds": [
             "PublicProfileScreen/Safety action states"
+          ],
+          "captureIds": [
+            "public_profile_report_pending",
+            "public_profile_report_success_snackbar",
+            "public_profile_report_failure_snackbar"
           ]
         },
         {
@@ -7684,6 +7705,9 @@
           "captureIds": [
             "public_profile_member",
             "public_profile_own_profile",
+            "public_profile_report_pending",
+            "public_profile_report_success_snackbar",
+            "public_profile_report_failure_snackbar",
             "public_profile_report_sheet",
             "public_profile_block_confirmation"
           ],
