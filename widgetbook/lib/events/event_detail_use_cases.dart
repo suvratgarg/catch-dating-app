@@ -8,6 +8,7 @@ import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -15,6 +16,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
@@ -661,6 +663,245 @@ Widget eventDetailPolicySummaryLineState(BuildContext context) {
     icon: CatchIcons.groupOutlined,
     title: 'Open booking',
     body: 'Anyone who meets the event requirements can book instantly.',
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Photo strip tile states',
+  type: EventDetailPhotoStripTile,
+  path: '[Event Detail]/Design Primitives',
+)
+Widget eventDetailPhotoStripTileStates(BuildContext context) {
+  final activity = ActivityPalette.resolve(context, ActivityKind.socialRun);
+  final photo = UploadedPhoto.fromUpload(
+    url:
+        'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=640&q=80',
+    storagePath: 'widgetbook/events/photo-strip-tile.jpg',
+    position: 0,
+    now: _now,
+  );
+
+  return _CatalogScreen(
+    title: 'EventDetailPhotoStripTile',
+    catalogId: 'event_detail.design.photo_strip_tile',
+    children: [
+      _StateCard(
+        label: 'uploaded photo',
+        child: SizedBox(
+          width: 116,
+          child: EventDetailPhotoStripTile(
+            index: 0,
+            photo: photo,
+            backgroundColor: activity.soft,
+            iconColor: activity.deep,
+            icon: activity.glyph,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'placeholder',
+        child: SizedBox(
+          width: 116,
+          child: EventDetailPhotoStripTile(
+            index: 1,
+            photo: null,
+            backgroundColor: activity.soft,
+            iconColor: activity.deep,
+            icon: activity.glyph,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Ticket stub cell states',
+  type: TicketStubCell,
+  path: '[Event Detail]/Design Primitives',
+)
+Widget eventDetailTicketStubCellStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'TicketStubCell',
+    catalogId: 'event_detail.design.ticket_stub_cell',
+    children: [
+      _StateCard(
+        label: 'ticket row cells',
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: Row(
+            children: [
+              Expanded(
+                child: TicketStubCell(
+                  cell: TicketStubCellData(
+                    label: 'When',
+                    value: 'Wed, Jun 24',
+                    detail: '6:30 AM-8:15 AM',
+                    icon: CatchIcons.calendarAdd,
+                  ),
+                  showDivider: false,
+                ),
+              ),
+              Expanded(
+                child: TicketStubCell(
+                  cell: TicketStubCellData(
+                    label: 'Where',
+                    value: 'Carter Road Jetty',
+                    detail: 'Bandra West',
+                    icon: CatchIcons.locationOnOutlined,
+                  ),
+                  showDivider: true,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Hairline list states',
+  type: HairlineList,
+  path: '[Event Detail]/Design Primitives',
+)
+Widget eventDetailHairlineListStates(BuildContext context) {
+  final activity = ActivityPalette.resolve(context, ActivityKind.socialRun);
+  final icons = [
+    CatchIcons.calendarTodayOutlined,
+    CatchIcons.groupOutlined,
+    CatchIcons.receiptLongOutlined,
+  ];
+  final titles = ['Arrival', 'Group rhythm', 'Cancellation'];
+  final bodies = [
+    'Host check-in starts ten minutes before the run.',
+    'Regroup points keep the route social without stopping the flow.',
+    'Free cancellation until 24 hours before start time.',
+  ];
+
+  return _CatalogScreen(
+    title: 'HairlineList',
+    catalogId: 'event_detail.design.hairline_list',
+    children: [
+      _StateCard(
+        label: 'field rows',
+        child: HairlineList(
+          itemCount: titles.length,
+          itemBuilder: (context, index) => CatchField.read(
+            icon: icons[index],
+            iconColor: activity.deep,
+            title: titles[index],
+            body: bodies[index],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Itinerary row states',
+  type: ItineraryRow,
+  path: '[Event Detail]/Design Primitives',
+)
+Widget eventDetailItineraryRowStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  final activity = ActivityPalette.resolve(context, ActivityKind.socialRun);
+  final steps = const [
+    ItineraryStep(
+      time: '6:30 AM',
+      title: 'Gather at Carter Road Jetty',
+      detail: 'Quick hellos, host check-in, and the plan for the group.',
+    ),
+    ItineraryStep(
+      time: '6:45 AM',
+      title: 'Easy social run',
+      detail: 'A conversational 5 km route with two regroup points.',
+    ),
+    ItineraryStep(
+      time: '8:15 AM',
+      title: 'Coffee finish',
+      detail: 'Attendees can linger naturally; follow-up unlocks after.',
+    ),
+  ];
+
+  return _CatalogScreen(
+    title: 'ItineraryRow',
+    catalogId: 'event_detail.design.itinerary_row',
+    children: [
+      _StateCard(
+        label: 'timeline rows',
+        child: Column(
+          children: [
+            for (var index = 0; index < steps.length; index += 1)
+              ItineraryRow(
+                step: steps[index],
+                isLast: index == steps.length - 1,
+                accent: activity.accent,
+                railColor: t.line2,
+              ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Map pill states',
+  type: MapPill,
+  path: '[Event Detail]/Design Primitives',
+)
+Widget eventDetailMapPillStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatalogScreen(
+    title: 'MapPill',
+    catalogId: 'event_detail.design.map_pill',
+    children: [
+      _StateCard(
+        label: 'location labels',
+        child: Wrap(
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
+          children: [
+            MapPill(text: 'Carter Road Jetty', color: t.ink),
+            MapPill(text: 'PIN READY', color: t.ink2),
+            MapPill(text: 'DROPS MORNING-OF', color: t.ink2),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Host avatar states',
+  type: HostAvatar,
+  path: '[Event Detail]/Design Primitives',
+)
+Widget eventDetailHostAvatarStates(BuildContext context) {
+  final activity = ActivityPalette.resolve(context, ActivityKind.socialRun);
+  return _CatalogScreen(
+    title: 'HostAvatar',
+    catalogId: 'event_detail.design.host_avatar',
+    children: [
+      _StateCard(
+        label: 'fallback and photo',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            HostAvatar(activity: activity),
+            gapW12,
+            HostAvatar(
+              activity: activity,
+              photoUrl:
+                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&q=80',
+            ),
+          ],
+        ),
+      ),
+    ],
   );
 }
 

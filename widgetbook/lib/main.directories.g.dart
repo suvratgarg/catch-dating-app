@@ -2412,6 +2412,71 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Design Primitives',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'EventDetailPhotoStripTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Photo strip tile states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailPhotoStripTileStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HairlineList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Hairline list states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailHairlineListStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostAvatar',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Host avatar states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailHostAvatarStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ItineraryRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Itinerary row states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailItineraryRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'MapPill',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Map pill states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailMapPillStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'TicketStubCell',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Ticket stub cell states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailTicketStubCellStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Hero',
         children: [
           _widgetbook.WidgetbookComponent(

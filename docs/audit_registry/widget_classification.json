@@ -25,16 +25,16 @@
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 764,
+      "keep-public-cataloged": 770,
       "keep-widget-state": 101,
-      "review-catalog-coverage": 78
+      "review-catalog-coverage": 72
     },
     "byCatalogStatus": {
-      "cataloged": 693,
+      "cataloged": 699,
       "contracted": 121,
       "not-applicable": 101,
       "route-covered": 71,
-      "uncataloged": 78
+      "uncataloged": 72
     }
   },
   "widgets": [
@@ -13638,23 +13638,19 @@
       "role": "composition",
       "canonicalFamily": "catch.event_detail_photo_strip_tile",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "EventDetailTicketStubBand",
@@ -13688,23 +13684,19 @@
       "role": "composition",
       "canonicalFamily": "catch.hairline_list",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "HostAvatar",
@@ -13715,23 +13707,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.events.host_avatar",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ItineraryRow",
@@ -13742,23 +13730,19 @@
       "role": "composition",
       "canonicalFamily": "catch.itinerary_row",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "MapPill",
@@ -13769,23 +13753,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.events.map_pill",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "TicketStubCell",
@@ -13796,23 +13776,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.events.ticket_stub_cell",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "EventDetailHeroAppBar",

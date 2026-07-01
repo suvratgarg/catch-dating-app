@@ -223,10 +223,7 @@ class EventDetailMapCard extends StatelessWidget {
                   child: Row(
                     children: [
                       Expanded(
-                        child: MapPill(
-                          text: event.locationName,
-                          color: t.ink,
-                        ),
+                        child: MapPill(text: event.locationName, color: t.ink),
                       ),
                       gapW8,
                       MapPill(text: note, color: t.ink2),
@@ -375,8 +372,8 @@ class EventDetailPhotoStripTile extends StatelessWidget {
   }
 }
 
-class _TicketStubCellData {
-  const _TicketStubCellData({
+class TicketStubCellData {
+  const TicketStubCellData({
     required this.label,
     required this.value,
     this.detail,
@@ -396,7 +393,7 @@ class TicketStubCell extends StatelessWidget {
     required this.showDivider,
   });
 
-  final _TicketStubCellData cell;
+  final TicketStubCellData cell;
   final bool showDivider;
 
   @override
@@ -441,7 +438,10 @@ class TicketStubCell extends StatelessWidget {
                       cell.detail!,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.numericMeta(context, color: t.ink2),
+                      style: CatchTextStyles.numericMeta(
+                        context,
+                        color: t.ink2,
+                      ),
                     ),
                   ],
                 ],
@@ -491,8 +491,8 @@ class HairlineList extends StatelessWidget {
   }
 }
 
-class _ItineraryStep {
-  const _ItineraryStep({
+class ItineraryStep {
+  const ItineraryStep({
     required this.time,
     required this.title,
     required this.detail,
@@ -515,7 +515,7 @@ class ItineraryRow extends StatelessWidget {
     this.dotBackgroundColor,
   });
 
-  final _ItineraryStep step;
+  final ItineraryStep step;
   final bool isLast;
   final Color accent;
   final Color railColor;
@@ -602,11 +602,7 @@ class ItineraryRow extends StatelessWidget {
 }
 
 class MapPill extends StatelessWidget {
-  const MapPill({
-    super.key,
-    required this.text,
-    required this.color,
-  });
+  const MapPill({super.key, required this.text, required this.color});
 
   final String text;
   final Color color;
@@ -734,23 +730,23 @@ class _MapGridPainter extends CustomPainter {
       oldDelegate.routeColor != routeColor;
 }
 
-List<_TicketStubCellData> _ticketStubCells(Event event) {
+List<TicketStubCellData> _ticketStubCells(Event event) {
   final locationDetail = event.locationNotes;
   return [
-    _TicketStubCellData(
+    TicketStubCellData(
       label: 'When',
       value: event.shortDateLabel,
       detail: event.compactTimeRangeLabel,
       icon: CatchIcons.calendarAdd,
     ),
-    _TicketStubCellData(
+    TicketStubCellData(
       label: 'Where',
       value: event.locationName,
       detail: locationDetail == null || locationDetail.isEmpty
           ? null
           : locationDetail,
     ),
-    _TicketStubCellData(
+    TicketStubCellData(
       label: _levelLabelFor(event.activityKind),
       value: event.pace.label,
       detail: event.activitySummaryLabel,
@@ -768,20 +764,20 @@ List<String> _hintsFor(Event event) {
   return [capacityHint, _interactionHint(event.eventFormat.interactionModel)];
 }
 
-List<_ItineraryStep> _itineraryFor(Event event) {
+List<ItineraryStep> _itineraryFor(Event event) {
   final warmupTime = event.startTime.add(const Duration(minutes: 15));
   return [
-    _ItineraryStep(
+    ItineraryStep(
       time: EventFormatters.time(event.startTime),
       title: 'Gather at ${event.locationName}',
       detail: 'Quick hellos, host check-in, and the plan for the group.',
     ),
-    _ItineraryStep(
+    ItineraryStep(
       time: EventFormatters.time(warmupTime),
       title: event.eventFormat.label,
       detail: _activityPlanDetail(event),
     ),
-    _ItineraryStep(
+    ItineraryStep(
       time: EventFormatters.time(event.endTime),
       title: 'Wrap up',
       detail:
@@ -1128,11 +1124,7 @@ class EventDetailHostCard extends StatelessWidget {
 /// The 46px host avatar — a graded photo over the activity-pigment gradient,
 /// or the bare gradient when no photo is supplied.
 class HostAvatar extends StatelessWidget {
-  const HostAvatar({
-    super.key,
-    required this.activity,
-    this.photoUrl,
-  });
+  const HostAvatar({super.key, required this.activity, this.photoUrl});
 
   final CatchActivity activity;
   final String? photoUrl;

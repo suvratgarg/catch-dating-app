@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.518
+version: 2.5.519
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,14 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.519
+
+- Cataloged the Event Detail design primitive leaves directly: photo strip
+  tile, ticket stub cell, hairline list, itinerary row, map pill, and host
+  avatar. `TicketStubCell` and `ItineraryRow` now accept public display-data
+  objects so their public widget APIs can be instantiated from Widgetbook and
+  tests without private-library access.
 
 ### 2.5.518
 
@@ -5766,6 +5774,12 @@ Generated 2026-05-06.
 | `HeroActivityBadge` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:410` | Frosted activity badge used by both standard and ticket event-detail heroes. Receives a resolved `EventActivityVisualSpec` so activity icon/label mapping remains centralized in `event_activity_visuals.dart`. Widgetbook covers run, dinner, and pickleball badge states. |
 | `HeroTimeChip` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:440` | Compact weekday/time chip used by the expanded ticket hero visual band. Formats event start time through `EventFormatters` and keeps the dark hero chrome tokenized. Widgetbook covers morning and evening event states. |
 | `EventDetailTicketStubBand` / `EventDetailHintList` / `EventDetailItinerary` / `EventDetailMapCard` / `EventDetailMechanismList` / `EventDetailPhotoStrip` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:10` | Flutter event-detail counterparts to the handoff primitives: ticket counter-foil, why-click hints, timed itinerary rail, activity-pigmented map preview, sign-up mechanics, and the canonical three-tile photo strip with activity-soft placeholders. They resolve pigment/glyph through `ActivityPalette` and derive copy from the current `Event` model. |
+| `EventDetailPhotoStripTile` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:332` | Leaf tile for the Event Detail photo strip. Renders uploaded event media through `CatchNetworkImage`, falls back to the activity glyph on the activity-soft background, and keeps fixed strip sizing plus stable tile keys for review/tests. |
+| `TicketStubCell` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:389` | Leaf ticket counter-foil cell used by `EventDetailTicketStubBand`. Receives public `TicketStubCellData`, renders mono label/value/detail text, optional trailing icon, and the perforated vertical divider state. |
+| `HairlineList` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:463` | Minimal Event Detail list shell for hint/mechanism rows. It owns only the hairline dividers and delegates row bodies to an indexed builder, keeping section copy and icons outside the shell. |
+| `ItineraryRow` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:506` | Leaf itinerary timeline row used by `EventDetailItinerary`. Receives public `ItineraryStep` display data plus accent/rail colors, renders the fixed time column, dot, connecting rail, title, and supporting detail. |
+| `MapPill` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:604` | Compact translucent map label pill used inside `EventDetailMapCard` for location and pin-status labels, with caller-provided text color and ellipsis-safe mono labeling. |
+| `HostAvatar` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:1126` | Event Detail host avatar leaf. Renders the activity gradient fallback and optional graded host photo while keeping the 46px circular host mark independent of the larger host card. |
 | `EventPhotoHeader` | `lib/events/presentation/widgets/event_photo_header.dart:5` | Visual-only standard event hero wrapper. Delegates rendering to `CatchEventThumbnail` so uploaded event photos lead when present and activity artwork remains the no-photo/failure fallback; exposes the stable event-photo Hero tag for standard photo-header transitions and intentionally does not duplicate event title, location, stats, or activity copy. |
 | `EventStatsGrid` | `lib/events/presentation/widgets/event_stats_grid.dart:7` | Event detail stats adapter. Converts event facts into `CatchMetricStrip` items so event stats share the same rail, dividers, value styling, and responsive truncation as club detail stats, with optional dark surface colors for spotlight detail. |
 | `EventDetailCta` | `lib/events/presentation/widgets/event_detail_cta.dart:60` | Controller-backed bottom CTA adapter for non-host event detail viewers. Owns booking, cancellation, waitlist, eligibility, attended/past, free-booking celebration, and paid booking handoff actions from the current viewer's `EventParticipation` edge, then delegates provider-free rendering to `EventBookingDock`. |
