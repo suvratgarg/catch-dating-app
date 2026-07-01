@@ -3251,7 +3251,7 @@
             {
               "id": "DP-MATCHES-LIST-002",
               "status": "open",
-              "nextAction": "List captures and a canonical Messaging inbox reference now cover the populated baseline. Remaining work is adapter extraction, interaction-specific search/filter coverage if externalized, additional empty/search refs if needed, and ongoing advisory pixel comparison."
+              "nextAction": "List captures and a canonical Messaging inbox reference now cover the populated baseline. HostInboxScreenState, ChatsListDisplayState, ChatsListCelebrationController, and ChatsSearchHeaderController own the code seams. Remaining work is additional reference variants and ongoing advisory pixel comparison; interaction-specific search/filter coverage waits unless search/filter state becomes external."
             },
             {
               "id": "DP-MATCHES-LIST-003",

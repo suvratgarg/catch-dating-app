@@ -378,7 +378,7 @@ bool _isActionableGap(String status, String nextAction) {
 }
 
 String _gapActionKind(String nextAction) {
-  final lowerAction = nextAction.toLowerCase();
+  final lowerAction = _remainingActionText(nextAction).toLowerCase();
   final hasProductOnlySignal = _containsAny(lowerAction, const [
     'if contractual',
     'if product keeps',
@@ -447,6 +447,28 @@ String _gapActionKind(String nextAction) {
     return 'engineering';
   }
   return 'engineering';
+}
+
+String _remainingActionText(String nextAction) {
+  final lowerAction = nextAction.toLowerCase();
+  const markers = [
+    'remaining route capture work is ',
+    'remaining capture work is ',
+    'remaining work is ',
+    'remaining references are ',
+    'continue only ',
+    'continue ',
+  ];
+  for (final marker in markers) {
+    final index = lowerAction.indexOf(marker);
+    if (index >= 0) {
+      if (marker.contains('references')) {
+        return nextAction.substring(index);
+      }
+      return nextAction.substring(index + marker.length);
+    }
+  }
+  return nextAction;
 }
 
 bool _containsAny(String value, List<String> needles) {

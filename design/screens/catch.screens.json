@@ -5806,7 +5806,7 @@
         {
           "id": "DS-MATCHES-LIST-002",
           "status": "open",
-          "nextAction": "Deterministic list captures and a canonical Messaging inbox reference now cover the populated list baseline. Remaining work is adapter extraction, interaction-specific coverage if search/filter state becomes external, additional empty/search references if needed, and ongoing advisory pixel comparison."
+          "nextAction": "Deterministic list captures and a canonical Messaging inbox reference now cover the populated list baseline. HostInboxScreenState, ChatsListDisplayState, ChatsListCelebrationController, and ChatsSearchHeaderController own the code seams. Remaining work is additional reference variants and ongoing advisory pixel comparison; interaction-specific search/filter coverage waits unless search/filter state becomes external."
         },
         {
           "id": "DS-MATCHES-LIST-003",
