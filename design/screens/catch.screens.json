@@ -17375,7 +17375,7 @@
             "symbol": "ImageUploadRepository"
           }
         ],
-        "notes": "HostCreateClubScreen is the route-facing wrapper for CreateClubScreen. CreateClubScreen owns PageController step state, form controllers, draft restoration/saving, cover/profile photo picking, host defaults, Event Success defaults, submit mutation feedback, and pop-on-success behavior. A future HostClubCreateScreenState should separate route/auth state, draft state, step validation, media selection, mutation state, and typed navigation callbacks before visual parity edits."
+        "notes": "HostCreateClubScreen is the route-facing wrapper for CreateClubScreen. CreateClubScreen owns PageController step state, form controllers, draft restoration/saving, cover/profile photo picking, host defaults, Event Success defaults, submit mutation feedback, and pop-on-success behavior. HostClubCreateState now owns the visible step title, footer labels/enabled state, media/edit-scaffold enabled state, mutation error copy, and typed primary/save-draft intents; draft-load retry, validation display, and route callback ownership still need to move out of the route before visual parity edits."
       },
       "designRefs": [
         {
@@ -17668,8 +17668,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostCreateClubScreen delegates to CreateClubScreen, where route-level form state, draft persistence, media picking, validation, mutation handling, and visual sections are still owned together.",
-        "targetLayout": "Host Create Club should resolve a HostClubCreateState adapter for draft, step, media, validation, mutation, and navigation state before composing provider-free step sections and a footer.",
+        "currentLayout": "HostCreateClubScreen delegates to CreateClubScreen, where route-level form state, draft persistence, form validation, and media value ownership still live beside visual sections; HostClubCreateState owns step title, footer action state, media/edit-scaffold enabled state, mutation error copy, and primary/save-draft intents.",
+        "targetLayout": "Host Create Club should continue moving draft load/save retry, validation display, media selection values, and route callbacks into HostClubCreateState before composing provider-free step sections and a footer.",
         "sections": [
           {
             "id": "section.host.club_create.adapter",
@@ -17694,7 +17694,7 @@
               "submit_pending",
               "submit_error"
             ],
-            "migration": "Move draft load/save, submit mutation state, media inputs, current step, and route callbacks into an adapter before visual parity refactors."
+            "migration": "HostClubCreateState now owns current-step title, submit/save loading, mutation error copy, media/edit-scaffold enabled state, footer labels, and primary/save-draft action intents. Continue moving draft-load retry, validation display, media selection values, and route callbacks into the adapter before visual parity refactors."
           },
           {
             "id": "section.host.club_create.step_header",
@@ -17718,7 +17718,7 @@
               "text_scale_2",
               "reduced_motion"
             ],
-            "migration": "Keep CatchStepFlowHeader, but feed title/progress/back behavior from adapter state."
+            "migration": "CatchStepFlowHeader now receives the title from HostClubCreateState; continue feeding progress and back behavior from adapter state."
           },
           {
             "id": "section.host.club_create.basics_step",
@@ -17744,7 +17744,7 @@
               "basics_validation",
               "club_photos"
             ],
-            "migration": "Move field values, validation display, city selection, and media callbacks into adapter display data."
+            "migration": "Media callback availability now comes from HostClubCreateState; continue moving field values, validation display, city selection, and selected media values into adapter display data."
           },
           {
             "id": "section.host.club_create.details_step",
@@ -17817,7 +17817,7 @@
               "submit_error",
               "success_pop"
             ],
-            "migration": "StepperFooter now renders the shared create-flow footer; screen adapters should continue owning next/save/create availability and mutation labels."
+            "migration": "StepperFooter now renders labels, loading, enabled state, and next/save/create intents from HostClubCreateFooterState while CreateClubScreen executes the typed intents."
           }
         ]
       },
@@ -17835,7 +17835,7 @@
         {
           "id": "DS-HOST-CLUB-CREATE-003",
           "status": "open",
-          "nextAction": "Extend HostClubCreateState beyond header/footer display data into draft load/save, media selection, validation display, retry intents, and typed route callbacks."
+          "nextAction": "HostClubCreateState now owns footer action labels/enabled state, media/edit-scaffold enabled state, mutation error copy, and typed primary/save-draft intents. Continue moving draft-load retry, validation display, media selection values, and typed route callbacks into the adapter."
         },
         {
           "id": "DS-HOST-CLUB-CREATE-004",

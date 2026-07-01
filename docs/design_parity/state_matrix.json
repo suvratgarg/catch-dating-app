@@ -8063,7 +8063,7 @@
             {
               "id": "DP-HOST-CLUB-CREATE-002",
               "status": "open",
-              "nextAction": "Extend HostClubCreateState beyond header/footer display data into retry intents and typed route callbacks, then align with Claude/Figma references."
+              "nextAction": "HostClubCreateState now owns footer action labels/enabled state, media/edit-scaffold enabled state, mutation error copy, and typed primary/save-draft intents. Continue moving draft-load retry, validation display, media selection values, and typed route callbacks into the adapter, then align with Claude/Figma references."
             }
           ]
         },

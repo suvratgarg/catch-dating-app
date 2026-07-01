@@ -60,6 +60,46 @@ class CreateClubScreen extends ConsumerStatefulWidget {
   ConsumerState<CreateClubScreen> createState() => _CreateClubScreenState();
 }
 
+enum HostClubCreatePrimaryIntent { nextStep, submit }
+
+enum HostClubCreateSaveDraftIntent { saveDraft }
+
+@immutable
+class HostClubCreateFooterState {
+  const HostClubCreateFooterState({
+    required this.isLastStep,
+    required this.isLoading,
+    required this.primaryEnabled,
+    required this.primaryLabel,
+    required this.lastStepLabel,
+    required this.primaryIntent,
+    required this.saveDraftIntent,
+  });
+
+  final bool isLastStep;
+  final bool isLoading;
+  final bool primaryEnabled;
+  final String primaryLabel;
+  final String lastStepLabel;
+  final HostClubCreatePrimaryIntent primaryIntent;
+  final HostClubCreateSaveDraftIntent? saveDraftIntent;
+
+  bool get canSaveDraft => saveDraftIntent != null;
+}
+
+@immutable
+class HostClubEditScaffoldState {
+  const HostClubEditScaffoldState({
+    required this.mediaEnabled,
+    required this.cityPickerEnabled,
+    required this.footer,
+  });
+
+  final bool mediaEnabled;
+  final bool cityPickerEnabled;
+  final HostClubCreateFooterState footer;
+}
+
 @immutable
 class HostClubCreateState {
   const HostClubCreateState({
@@ -70,9 +110,11 @@ class HostClubCreateState {
     required this.title,
     required this.subtitle,
     required this.showEditScaffold,
-    required this.canSaveDraft,
-    required this.lastStepLabel,
-    required this.isLoading,
+    required this.isLastStep,
+    required this.canPickMedia,
+    required this.footer,
+    required this.editScaffold,
+    required this.mutationError,
   });
 
   final bool isEditing;
@@ -82,9 +124,15 @@ class HostClubCreateState {
   final String title;
   final String? subtitle;
   final bool showEditScaffold;
-  final bool canSaveDraft;
-  final String lastStepLabel;
-  final bool isLoading;
+  final bool isLastStep;
+  final bool canPickMedia;
+  final HostClubCreateFooterState footer;
+  final HostClubEditScaffoldState? editScaffold;
+  final String? mutationError;
+
+  bool get canSaveDraft => footer.canSaveDraft;
+  String get lastStepLabel => footer.lastStepLabel;
+  bool get isLoading => footer.isLoading;
 
   factory HostClubCreateState.resolve({
     required bool isEditing,
@@ -94,23 +142,56 @@ class HostClubCreateState {
     required Club? initialClub,
     required bool submitPending,
     required bool saveDraftPending,
+    required String? mutationError,
   }) {
-    final clampedStep = currentStep.clamp(0, activeSteps.length - 1).toInt();
+    final totalSteps = activeSteps.length;
+    final clampedStep = totalSteps == 0
+        ? 0
+        : currentStep.clamp(0, totalSteps - 1).toInt();
+    final showEditScaffold = isEditing && !mediaOnly;
+    final isLastStep =
+        showEditScaffold || totalSteps == 0 || clampedStep == totalSteps - 1;
+    final isLoading = showEditScaffold
+        ? submitPending
+        : submitPending || saveDraftPending;
+    final canPickMedia = !submitPending;
+    final lastStepLabel = mediaOnly
+        ? 'Save photos'
+        : isEditing
+        ? 'Save changes'
+        : 'Create club';
+    final footer = HostClubCreateFooterState(
+      isLastStep: isLastStep,
+      isLoading: isLoading,
+      primaryEnabled: !isLoading,
+      primaryLabel: isLastStep ? lastStepLabel : 'Next',
+      lastStepLabel: lastStepLabel,
+      primaryIntent: isLastStep
+          ? HostClubCreatePrimaryIntent.submit
+          : HostClubCreatePrimaryIntent.nextStep,
+      saveDraftIntent: !isEditing && !mediaOnly
+          ? HostClubCreateSaveDraftIntent.saveDraft
+          : null,
+    );
     return HostClubCreateState(
       isEditing: isEditing,
       mediaOnly: mediaOnly,
       currentStep: clampedStep,
-      totalSteps: activeSteps.length,
-      title: formTitleForStep(activeSteps, clampedStep),
+      totalSteps: totalSteps,
+      title: totalSteps == 0 ? '' : formTitleForStep(activeSteps, clampedStep),
       subtitle: isEditing ? initialClub!.name : null,
-      showEditScaffold: isEditing && !mediaOnly,
-      canSaveDraft: !isEditing && !mediaOnly,
-      lastStepLabel: mediaOnly
-          ? 'Save photos'
-          : isEditing
-          ? 'Save changes'
-          : 'Create club',
-      isLoading: submitPending || saveDraftPending,
+      showEditScaffold: showEditScaffold,
+      isLastStep: isLastStep,
+      canPickMedia: canPickMedia,
+      footer: footer,
+      editScaffold: showEditScaffold
+          ? HostClubEditScaffoldState(
+              mediaEnabled: canPickMedia,
+              cityPickerEnabled: canPickMedia,
+              footer: footer,
+            )
+          : null,
+      mutationError: mutationError,
     );
   }
 }
@@ -378,19 +459,35 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     Navigator.of(context).maybePop();
   }
 
-  void _next() {
+  void _handlePrimaryIntent(HostClubCreatePrimaryIntent intent) {
     final steps = _activeSteps;
     final formKey = formKeyForStep(steps, _currentStep);
     if (!(formKey?.currentState?.validate() ?? true)) {
       return;
     }
 
-    if (_currentStep < steps.length - 1) {
-      _goToStep(_currentStep + 1);
-      return;
+    switch (intent) {
+      case HostClubCreatePrimaryIntent.nextStep:
+        if (_currentStep < steps.length - 1) {
+          _goToStep(_currentStep + 1);
+          return;
+        }
+        _submit();
+        return;
+      case HostClubCreatePrimaryIntent.submit:
+        _submit();
+        return;
     }
+  }
 
-    _submit();
+  Future<void> _handleSaveDraftIntent(
+    HostClubCreateSaveDraftIntent intent,
+  ) async {
+    switch (intent) {
+      case HostClubCreateSaveDraftIntent.saveDraft:
+        await _saveDraft();
+        return;
+    }
   }
 
   void _submitEdit() {
@@ -520,6 +617,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       initialClub: widget.initialClub,
       submitPending: submitMutation.isPending,
       saveDraftPending: saveDraftMutation.isPending,
+      mutationError: mutationError,
     );
 
     ref.listen(CreateClubController.submitMutation, (previous, current) {
@@ -528,11 +626,12 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       }
     });
 
-    if (screenState.showEditScaffold) {
+    final editScaffold = screenState.editScaffold;
+    if (editScaffold != null) {
       return _buildEditClubScaffold(
         tokens: t,
-        isSubmitting: submitMutation.isPending,
-        mutationError: mutationError,
+        scaffoldState: editScaffold,
+        mutationError: screenState.mutationError,
       );
     }
 
@@ -563,7 +662,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                       _selectedCity = city?.effectiveMarketId;
                     }),
                     areaController: _areaController,
-                    detailsEnabled: !mediaOnly,
+                    detailsEnabled: !screenState.mediaOnly,
                     clubPhotoPreviews: _clubPhotoPreviews,
                     existingImageUrl: _clubPhotos.isEmpty
                         ? widget.initialClub?.imageUrl
@@ -571,20 +670,20 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     profileImageBytes: _profileImage?.bytes,
                     existingProfileImageUrl:
                         widget.initialClub?.profileImageUrl,
-                    onPickClubPhotos: submitMutation.isPending
-                        ? null
-                        : _pickClubPhotos,
-                    onRemoveClubPhoto: submitMutation.isPending
-                        ? null
-                        : _removeClubPhoto,
-                    onReorderClubPhoto: submitMutation.isPending
-                        ? null
-                        : _reorderClubPhoto,
-                    onPickProfileImage: submitMutation.isPending
-                        ? null
-                        : _pickProfileImage,
+                    onPickClubPhotos: screenState.canPickMedia
+                        ? _pickClubPhotos
+                        : null,
+                    onRemoveClubPhoto: screenState.canPickMedia
+                        ? _removeClubPhoto
+                        : null,
+                    onReorderClubPhoto: screenState.canPickMedia
+                        ? _reorderClubPhoto
+                        : null,
+                    onPickProfileImage: screenState.canPickMedia
+                        ? _pickProfileImage
+                        : null,
                   ),
-                  if (!mediaOnly) ...[
+                  if (!screenState.mediaOnly) ...[
                     ClubDetailsStep(
                       formKey: _detailsFormKey,
                       descriptionController: _descriptionController,
@@ -609,13 +708,19 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                 ],
               ),
             ),
-            if (mutationError != null) CatchErrorBanner(message: mutationError),
+            if (screenState.mutationError != null)
+              CatchErrorBanner(message: screenState.mutationError!),
             StepperFooter(
-              isLastStep: screenState.currentStep == activeSteps.length - 1,
-              isLoading: screenState.isLoading,
-              onPrimary: _next,
-              onSaveDraft: screenState.canSaveDraft ? _saveDraft : null,
-              lastStepLabel: screenState.lastStepLabel,
+              isLastStep: screenState.footer.isLastStep,
+              isLoading: screenState.footer.isLoading,
+              primaryLabel: screenState.footer.primaryLabel,
+              onPrimary: () =>
+                  _handlePrimaryIntent(screenState.footer.primaryIntent),
+              onSaveDraft: screenState.footer.saveDraftIntent == null
+                  ? null
+                  : () => _handleSaveDraftIntent(
+                      screenState.footer.saveDraftIntent!,
+                    ),
             ),
           ],
         ),
@@ -625,7 +730,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
 
   Widget _buildEditClubScaffold({
     required CatchTokens tokens,
-    required bool isSubmitting,
+    required HostClubEditScaffoldState scaffoldState,
     required String? mutationError,
   }) {
     return Scaffold(
@@ -651,7 +756,9 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                   CreateClubProfileImagePicker(
                     imageBytes: _profileImage?.bytes,
                     existingImageUrl: widget.initialClub?.profileImageUrl,
-                    onTap: isSubmitting ? null : _pickProfileImage,
+                    onTap: scaffoldState.mediaEnabled
+                        ? _pickProfileImage
+                        : null,
                     variant: CreateClubProfileImagePickerVariant.editLogo,
                   ),
                   gapH20,
@@ -660,9 +767,15 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     existingImageUrl: _clubPhotos.isEmpty
                         ? widget.initialClub?.imageUrl
                         : null,
-                    onAddPhotos: isSubmitting ? null : _pickClubPhotos,
-                    onRemovePhoto: isSubmitting ? null : _removeClubPhoto,
-                    onReorderPhoto: isSubmitting ? null : _reorderClubPhoto,
+                    onAddPhotos: scaffoldState.mediaEnabled
+                        ? _pickClubPhotos
+                        : null,
+                    onRemovePhoto: scaffoldState.mediaEnabled
+                        ? _removeClubPhoto
+                        : null,
+                    onReorderPhoto: scaffoldState.mediaEnabled
+                        ? _reorderClubPhoto
+                        : null,
                     variant: CreateClubPhotosPickerVariant.editStrip,
                   ),
                   Form(
@@ -696,7 +809,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                               _buildEditClubCityField(
                                 city: cityOptionByName(_selectedCity),
                                 rawCityName: _selectedCity,
-                                enabled: !isSubmitting,
+                                enabled: scaffoldState.cityPickerEnabled,
                                 onPickCity: _pickCityForEdit,
                               ),
                               CatchField.input(
@@ -798,7 +911,10 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
             ),
           ),
           if (mutationError != null) CatchErrorBanner(message: mutationError),
-          _buildEditClubFooter(isLoading: isSubmitting, onSave: _submitEdit),
+          _buildEditClubFooter(
+            footer: scaffoldState.footer,
+            onSave: _submitEdit,
+          ),
         ],
       ),
     );
@@ -868,7 +984,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   }
 
   Widget _buildEditClubFooter({
-    required bool isLoading,
+    required HostClubCreateFooterState footer,
     required VoidCallback onSave,
   }) {
     return CatchBottomDock(
@@ -879,11 +995,11 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
         CatchSpacing.micro18,
       ),
       child: CatchButton(
-        label: 'Save changes',
+        label: footer.primaryLabel,
         icon: Icon(CatchIcons.saveOutlined),
-        isLoading: isLoading,
+        isLoading: footer.isLoading,
         fullWidth: true,
-        onPressed: isLoading ? null : onSave,
+        onPressed: footer.primaryEnabled ? onSave : null,
       ),
     );
   }
