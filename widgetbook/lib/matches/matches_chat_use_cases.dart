@@ -1434,6 +1434,45 @@ Widget chatInputBarPrimitiveStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Timestamped message text',
+  type: TimestampedMessageText,
+  path: '[P1 product surfaces]/Matches and chat/Primitives',
+)
+Widget timestampedMessageTextState(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return Padding(
+    padding: CatchInsets.content,
+    child: TimestampedMessageText(
+      text: 'That final kilometer was harder than advertised.',
+      timestamp: '7:42 PM',
+      textStyle: CatchTextStyles.chatMessage(context, color: t.ink),
+      timestampStyle: CatchTextStyles.meta(context, color: t.ink3),
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Media message body',
+  type: MediaMessageBody,
+  path: '[P1 product surfaces]/Matches and chat/Primitives',
+)
+Widget mediaMessageBodyState(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return Padding(
+    padding: CatchInsets.content,
+    child: MediaMessageBody(
+      text: 'Route card from tonight.',
+      timestamp: '8:04 PM',
+      imageUrl: MatchesChatSurfaceFixtures.imageMessages.first.imageUrl,
+      textStyle: CatchTextStyles.chatMessage(context, color: t.ink),
+      timestampStyle: CatchTextStyles.meta(context, color: t.ink3),
+    ),
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Primitive states',
   type: SuvbotActionBar,
   path: '[P1 product surfaces]/Matches and chat/Primitives',

@@ -84,13 +84,13 @@ class MessageBubble extends StatelessWidget {
                   ),
                 ),
                 child: imageUrl == null && text.isNotEmpty
-                    ? _TimestampedMessageText(
+                    ? TimestampedMessageText(
                         text: text,
                         timestamp: timeStr,
                         textStyle: messageStyle,
                         timestampStyle: timestampStyle,
                       )
-                    : _MediaMessageBody(
+                    : MediaMessageBody(
                         text: text,
                         timestamp: timeStr,
                         imageUrl: imageUrl,
@@ -107,8 +107,9 @@ class MessageBubble extends StatelessWidget {
   }
 }
 
-class _TimestampedMessageText extends StatelessWidget {
-  const _TimestampedMessageText({
+class TimestampedMessageText extends StatelessWidget {
+  const TimestampedMessageText({
+    super.key,
     required this.text,
     required this.timestamp,
     required this.textStyle,
@@ -206,8 +207,9 @@ class _TimestampedMessageText extends StatelessWidget {
   }
 }
 
-class _MediaMessageBody extends StatelessWidget {
-  const _MediaMessageBody({
+class MediaMessageBody extends StatelessWidget {
+  const MediaMessageBody({
+    super.key,
     required this.text,
     required this.timestamp,
     required this.imageUrl,

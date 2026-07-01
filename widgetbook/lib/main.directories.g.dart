@@ -7573,6 +7573,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'TimestampedMessageText',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Timestamped message text',
+                    builder:
+                        _widgetbook_workspace_matches_matches_chat_use_cases
+                            .timestampedMessageTextState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'MediaMessageBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Media message body',
+                    builder:
+                        _widgetbook_workspace_matches_matches_chat_use_cases
+                            .mediaMessageBodyState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'SuvbotActionBar',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

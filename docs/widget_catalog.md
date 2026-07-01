@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.506
+version: 2.5.507
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.507
+
+- Promoted `TimestampedMessageText` and `MediaMessageBody` as public cataloged
+  renderers used by `MessageBubble`, with exact Widgetbook coverage. The
+  classification scanner's private widget review count drops by two without
+  changing chat bubble text/media behavior.
 
 ### 2.5.506
 
@@ -5336,6 +5343,8 @@ Generated 2026-05-06.
 | `ChatInputBar` | `lib/chats/presentation/widgets/chat_input_bar.dart:10` | Handoff `ChatComposer`: bottom dock with one contained dialogue pill. The image upload action is the leading slot, the bare message `CatchField.input` is the center slot, and the filled send action is the trailing slot inside the same field outline; disabled opacity, loading indicators, text-only mode, and real send/image callbacks stay owned by the composer. Widgetbook exposes standalone states for ready, sending text, sending image, disabled, and text-only modes. |
 | `SuvbotActionBar` | `lib/chats/presentation/widgets/suvbot_action_bar.dart:27` | Demo-only chat bottom dock for Suvbot conversations. Groups check/refresh, warm-state, reset, help, and match-tester actions without rendering the normal chat composer. Reset actions open a handoff `CatchBottomSheetScaffold` with tokenized `CatchSurface` action rows instead of raw Material list tiles; text-required match tester actions keep their focused input sheet. |
 | `MessageBubble` | `lib/chats/presentation/widgets/message_bubble.dart:10` | Handoff `ChatBubble`: end/start alignment by sender, primary vs surface fills, fused corners inside sender groups, quiet mono timestamps, pending timestamp state, and optional image attachment. Widgetbook exposes standalone states for self/other, long copy, grouped/sending, and image attachment bubbles. |
+| `TimestampedMessageText` | `lib/chats/presentation/widgets/message_bubble.dart:110` | Public inline/stacked text timestamp renderer used by `MessageBubble`. Measures message and timestamp text with the current text scaler so short messages can place the timestamp inline and long messages stack it without overlap. |
+| `MediaMessageBody` | `lib/chats/presentation/widgets/message_bubble.dart:210` | Public media/text body renderer used by `MessageBubble`. Renders optional image attachment, optional caption text, and trailing timestamp with caller-provided styles. |
 
 ---
 
