@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -21,6 +22,7 @@ import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_empty_state.dart';
@@ -780,6 +782,152 @@ Widget exploreEventsSectionStates(BuildContext context) {
             child: const _ExploreEventsSliverPreview(),
           ),
         ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cross paths surface states',
+  type: CrossPathsSurface,
+  path: '[Explore]/Cards',
+)
+Widget crossPathsSurfaceStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatalogScreen(
+    title: 'CrossPathsSurface',
+    catalogId: 'card.explore.cross_paths.surface',
+    children: [
+      _StateCard(
+        label: 'raised postcard chrome',
+        child: SizedBox(
+          width: 340,
+          child: CrossPathsSurface(
+            borderColor: t.line2,
+            radius: CatchSpacing.micro6,
+            elevation: CatchSurfaceShadow.raised,
+            child: Padding(
+              padding: CatchInsets.content,
+              child: Text(
+                'I am going for coffee after the run.',
+                style: CatchTextStyles.profileAnswer(context),
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'clipped photo-row chrome',
+        child: SizedBox(
+          width: 340,
+          height: 120,
+          child: CrossPathsSurface(
+            borderColor: t.line,
+            radius: CatchRadius.md,
+            clip: true,
+            child: ColoredBox(color: t.primarySoft),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cross paths portrait states',
+  type: CrossPathsPortrait,
+  path: '[Explore]/Cards',
+)
+Widget crossPathsPortraitStates(BuildContext context) {
+  final activity = ActivityPalette.resolve(context, ActivityKind.socialRun);
+  return _CatalogScreen(
+    title: 'CrossPathsPortrait',
+    catalogId: 'card.explore.cross_paths.portrait',
+    children: [
+      _StateCard(
+        label: 'fallback and photo',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 112,
+              height: 150,
+              child: CrossPathsPortrait(activity: activity),
+            ),
+            gapW12,
+            SizedBox(
+              width: 112,
+              height: 150,
+              child: CrossPathsPortrait(
+                activity: activity,
+                photoUrl:
+                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=240&q=80',
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cross paths polaroid states',
+  type: CrossPathsPolaroidRail,
+  path: '[Explore]/Cards',
+)
+Widget crossPathsPolaroidRailStates(BuildContext context) {
+  final activity = ActivityPalette.resolve(context, ActivityKind.socialRun);
+  return _CatalogScreen(
+    title: 'CrossPathsPolaroidRail',
+    catalogId: 'card.explore.cross_paths.polaroid_rail',
+    children: [
+      _StateCard(
+        label: 'fallback and photo',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: CatchLayout.crossPathsRailColumnWidth,
+              child: CrossPathsPolaroidRail(activity: activity),
+            ),
+            gapW24,
+            SizedBox(
+              width: CatchLayout.crossPathsRailColumnWidth,
+              child: CrossPathsPolaroidRail(
+                activity: activity,
+                photoUrl:
+                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=240&q=80',
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cross paths CTA states',
+  type: CrossPathsCtaRow,
+  path: '[Explore]/Cards',
+)
+Widget crossPathsCtaRowStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'CrossPathsCtaRow',
+    catalogId: 'card.explore.cross_paths.cta_row',
+    children: [
+      _StateCard(
+        label: 'join and like',
+        child: CrossPathsCtaRow(
+          cta: 'Join her there',
+          onJoin: _noop,
+          onLike: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'disabled actions',
+        child: CrossPathsCtaRow(cta: 'Join waitlist'),
       ),
     ],
   );

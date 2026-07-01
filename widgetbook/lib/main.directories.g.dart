@@ -3155,6 +3155,46 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Cards',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CrossPathsCtaRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Cross paths CTA states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .crossPathsCtaRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CrossPathsPolaroidRail',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Cross paths polaroid states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .crossPathsPolaroidRailStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CrossPathsPortrait',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Cross paths portrait states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .crossPathsPortraitStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CrossPathsSurface',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Cross paths surface states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .crossPathsSurfaceStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ExploreClubCover',
             useCases: [
               _widgetbook.WidgetbookUseCase(

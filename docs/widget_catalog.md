@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.520
+version: 2.5.521
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.521
+
+- Cataloged the `CatchCrossPathsCard` inventory row and its public leaf
+  renderers: surface chrome, graded portrait, polaroid rail, and CTA row. The
+  formal composite contract remains in Widgetbook, while Explore now also has
+  direct states for the pieces used by postcard/photo-row variants.
 
 ### 2.5.520
 
@@ -5689,6 +5696,11 @@ Generated 2026-05-06.
 | `ExploreScreen` | `lib/explore/presentation/explore_screen.dart:31` | Explore tab route. Owns the persistent sheet-over-map browse surface: `EventMapView` stays mounted behind a draggable sheet and receives its map view model from the same filtered event discovery feed used by the list. The Explore chrome/header/filter rail are part of the primary `CustomScrollView`, so the cover header scrolls away with the feed instead of sitting outside the scroll owner. The screen no longer wraps the scroll view in a top `SafeArea`; the Explore header owns top-inset padding so the hero/background can paint to the viewport edge while row content stays below the status area. The floating `Map` control uses shared `CatchCountPill` and appears only in this full/list state; after opening, users close or resize by dragging the handle. Programmatic map open lands on a higher detent just under the filter strip, fades the top lid/header/filter backgrounds transparent, and keeps the city/search/filter controls floating over the map while the sheet edge rounds and selected map pins render a full-width ticket card unless the selected pin is the feed's actual featured event, in which case the spotlight card remains. User drags use soft settling zones: releases near the shorter bottom extent, map detent, or full/list state animate into those anchors, while the middle range can rest naturally. The peek state renders only aggregate result summary copy. Selecting a map pin stores the selected event id and snaps to the map selected-card state. The screen also listens for map camera-center changes so nearby event ordering can remain spatial, and a distance-ring tap cycles the active distance filter. |
 | `ExploreBody` | `lib/explore/presentation/widgets/explore_body.dart:10` | Sliver-native data body for the Explore tab. Production `ExploreScreen` disables the old personal rail and directory stack, then composes the mixed `ExploreEventsSection` with the bottom-of-page `ExploreEventTypeBrowseGrid` without embedding a vertical `ListView` inside the parent `CustomScrollView`. Legacy callers can still opt into the joined-club rail or club directory through explicit flags. |
 | `ExploreEventsSection` | `lib/explore/presentation/widgets/explore_events_section.dart:132` | Mixed Explore discovery section. Watches the event discovery feed, accepts candidate clubs from `ExploreBody`, removes the feed's featured item from the body list, and renders a handoff result-count line from the remaining visible items (`1 PLAN` / `10 PLANS · JUN 11-17`), skipping that cue for club-only fallback content. It leads the default This week filter with a no-gap ticket strip only when there are at least five day-level `EventDateRailCard` recommendations. Weekly-strip events are excluded from the remaining mixed feed, which interleaves leftover compact event rows, an Instax-like club spotlight, and compact club rows. Event taps route to `Routes.eventDetailScreen`, club taps route to `Routes.clubDetailScreen`, club cards use shared club identity atoms, and event rows use `EventCapacityPresenter` for going/left copy. Skeleton/error/empty states still belong to the event discovery feed; debug builds can opt into non-tappable synthetic visual fill with `ENABLE_EXPLORE_SYNTHETIC_VISUAL_FILL`. |
+| `CatchCrossPathsCard` | `lib/explore/presentation/widgets/catch_cross_paths_card.dart:21` | Explore cross-paths person card. Renders the postcard invitation variant or compact photo-row variant from activity pigment, quote/name/meta copy, optional graded portrait, join CTA, and optional like action while keeping navigation/mutations outside the card. |
+| `CrossPathsSurface` | `lib/explore/presentation/widgets/catch_cross_paths_card.dart:193` | Shared Cross Paths card shell. Wraps caller content in tokenized `CatchSurface` chrome, border/radius, optional clipping, and card/raised shadow selection for postcard and photo-row variants. |
+| `CrossPathsPortrait` | `lib/explore/presentation/widgets/catch_cross_paths_card.dart:225` | Graded Cross Paths portrait renderer. Paints the activity gradient fallback and overlays a graded network image when a profile photo URL is available. |
+| `CrossPathsPolaroidRail` | `lib/explore/presentation/widgets/catch_cross_paths_card.dart:250` | Postcard-side visual rail with tilted white polaroid, embedded `CrossPathsPortrait`, `TO: YOU` postal copy, and hairline address rules. |
+| `CrossPathsCtaRow` | `lib/explore/presentation/widgets/catch_cross_paths_card.dart:318` | Compact Cross Paths action row with primary join CTA and hairline favorite icon button. The parent card supplies callbacks so routing and like mutations stay outside the renderer. |
 | `ExploreEventTypeBrowseGrid` | `lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:17` | Bottom-of-page Browse by event type surface. Reads the current Explore feed and `exploreFiltersProvider`, renders `primaryBrowseActivityKinds` with the shared activity palette and visible-feed counts, and toggles `activityTag` filters from each tile. |
 | `EventTypeBrowseContent` | `lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:49` | Provider-free Browse by activity content renderer. Ranks visible feed items into activity slots, applies collapsed/expanded preview limits, and delegates responsive row layout to `ActivityTypeRows`. |
 | `ActivityTypeRows` | `lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:98` | Responsive row layout for Browse by activity. Uses one column below the event-type breakpoint and two columns above it while preserving `ActivitySlotView` routing and row spacing. |
