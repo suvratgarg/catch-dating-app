@@ -197,6 +197,8 @@ export function useOrganizerDirectoryController() {
   };
 }
 
+export type OrganizerDirectoryController = ReturnType<typeof useOrganizerDirectoryController>;
+
 function resolveFieldUpdate<T>(updater: FieldUpdater<T>, current: T) {
   return typeof updater === "function" ?
     (updater as (current: T) => T)(current) :

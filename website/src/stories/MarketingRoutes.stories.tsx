@@ -1,7 +1,9 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
+import {MemoryRouter} from "react-router";
 import {HomePage} from "../features/home/HomePage";
 import {HostPage} from "../features/host/HostPage";
 import {HostPreviewPage} from "../features/host/HostPreviewPage";
+import {OrganizerSearchPage} from "../features/organizers/OrganizerSearchPage";
 import {captures} from "./fixtures/marketingCaptures";
 
 const meta = {
@@ -69,4 +71,25 @@ export const HostPreview: Story = {
     },
   },
   render: () => <HostPreviewPage captures={captures} />,
+};
+
+export const OrganizerSearch: Story = {
+  name: "/organizers/",
+  parameters: {
+    catchRoute: {
+      id: "organizer_search",
+      path: "/organizers/",
+      reviewStates: ["default", "filtered", "empty-results", "saved-organizers"],
+    },
+    catchComponent: {
+      id: "route_organizer_search",
+      routeIds: ["organizer_search"],
+      states: ["default", "filtered", "empty-results", "saved-organizers"],
+    },
+  },
+  render: () => (
+    <MemoryRouter initialEntries={["/organizers/"]}>
+      <OrganizerSearchPage />
+    </MemoryRouter>
+  ),
 };

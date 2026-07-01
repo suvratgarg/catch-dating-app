@@ -1,6 +1,6 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 1,
+  "version": 2,
   "updated": "2026-07-01",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -10,7 +10,7 @@
   },
   "coverage": {
     "strategy": "route-plus-sections",
-    "currentFocus": ["home", "host", "host_preview"],
+    "currentFocus": ["home", "host", "host_preview", "organizer_search"],
     "storyKinds": ["route", "section", "flow"]
   },
   "components": [
@@ -77,6 +77,26 @@
         "states": ["default", "founding-host-offer", "create-flow"]
       },
       "notes": "Client-only preview route uses the same host section registry."
+    },
+    {
+      "id": "route_organizer_search",
+      "kind": "route",
+      "routeIds": ["organizer_search"],
+      "owner": "features/organizers",
+      "source": "website/src/features/organizers/OrganizerSearchPage.tsx",
+      "exportName": "OrganizerSearchPage",
+      "css": [
+        "website/src/styles/site-shell.css",
+        "website/src/styles/organizers.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/MarketingRoutes.stories.tsx",
+        "exportName": "OrganizerSearch",
+        "states": ["default", "filtered", "empty-results", "saved-organizers"]
+      },
+      "notes": "Reference organizer-directory route story; URL state remains controller-owned through React Router search params."
     },
     {
       "id": "host_create_event_walkthrough",
@@ -157,6 +177,63 @@
         "states": ["initial", "interactive-steps"]
       },
       "notes": "Initial flow coverage only; fixed submitted/error states need a later controller seam."
+    },
+    {
+      "id": "organizer_search_hero",
+      "kind": "section",
+      "routeIds": ["organizer_search"],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/OrganizerSearchSections.tsx",
+      "exportName": "OrganizerSearchHeroSection",
+      "css": [
+        "website/src/styles/organizers.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerSearchSections.stories.tsx",
+        "exportName": "OrganizerSearchHero",
+        "states": ["default", "filtered"]
+      },
+      "notes": "Search/filter hero section backed by the organizer directory URL-state controller."
+    },
+    {
+      "id": "organizer_directory_claim_pressure",
+      "kind": "section",
+      "routeIds": ["organizer_search"],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/OrganizerSearchSections.tsx",
+      "exportName": "DirectoryClaimPressureStrip",
+      "css": [
+        "website/src/styles/organizers.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerSearchSections.stories.tsx",
+        "exportName": "DirectoryClaimPressure",
+        "states": ["default", "claimable-listings"]
+      },
+      "notes": "Directory-level claim CTA strip for unclaimed organizer profiles."
+    },
+    {
+      "id": "organizer_results_section",
+      "kind": "section",
+      "routeIds": ["organizer_search"],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/OrganizerSearchSections.tsx",
+      "exportName": "OrganizerResultsSection",
+      "css": [
+        "website/src/styles/organizers.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerSearchSections.stories.tsx",
+        "exportName": "OrganizerResults",
+        "states": ["default", "event-backed", "unclaimed", "empty-results"]
+      },
+      "notes": "Organizer result-list section including empty state coverage."
     }
   ]
 }

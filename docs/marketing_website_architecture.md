@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.3.8
+version: 0.3.9
 updated: 2026-07-01
 owner: marketing_website
 status: active
@@ -35,12 +35,17 @@ The website is already split out of the old monolithic shell:
   `website/src/features/host/sections/**`, and host application form state lives
   under `website/src/features/host/application/**`.
 - `website/src/features/host/HostPages.tsx` is a compatibility re-export only.
+- `website/src/features/organizers/OrganizerSearchPage.tsx` now composes
+  organizer-owned search sections from
+  `website/src/features/organizers/sections/OrganizerSearchSections.tsx`; the
+  controller remains the URL/search-param state owner.
 - `website/src/shared/site/**` owns neutral site shell/display primitives:
   `SiteHeader`, `SiteFooter`, and `SectionHeader`.
 - `website/src/components/site.tsx` still owns marketing and organizer-shaped
   display blocks, and re-exports the shared-site primitives for compatibility.
 - `website/.storybook/**`, `website/src/stories/MarketingRoutes.stories.tsx`,
-  and `website/src/stories/HostSections.stories.tsx` provide the first
+  `website/src/stories/HostSections.stories.tsx`, and
+  `website/src/stories/OrganizerSearchSections.stories.tsx` provide the first
   component-first workbench for route-linked and section-linked review.
 - Website CSS is split from the former `shared-core.css` aggregate into
   ordered ownership files under `website/src/styles/**`. `responsive.css`
@@ -353,8 +358,9 @@ website/src/
    Storybook is the React equivalent to Widgetbook for the marketing website.
    Stories should use `design/website/routes.json` route ids and
    `design/website/components.json` component ids. `MarketingRoutes.stories.tsx`
-   covers `/`, `/host/`, and `/host/preview/`; `HostSections.stories.tsx` covers
-   the first Host section layer. Add route plus section stories before smaller
+   covers `/`, `/host/`, `/host/preview/`, and `/organizers/`.
+   `HostSections.stories.tsx` and `OrganizerSearchSections.stories.tsx` cover
+   the first section layers. Add route plus section stories before smaller
    reusable component atoms.
 
 7. Keep server-state conventions explicit.
@@ -367,8 +373,8 @@ website/src/
 
 The next code refactor should be small:
 
-1. Expand route plus section Storybook coverage to one organizer route, using
-   the Host route registry entries as the reference.
+1. Extend route plus section Storybook coverage to one generated organizer
+   listing route, using `/organizers/` and Host as the reference exhibits.
 2. Migrate one website callable boundary, preferably public listing reviews or
    claim submission, to TanStack Query mutations and explicit invalidation.
 3. Migrate one more admin read controller with repeated manual loading state,

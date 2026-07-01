@@ -247,7 +247,7 @@
   },
   "marketing_website_architecture": {
     "path": "docs/marketing_website_architecture.md",
-    "version": "0.3.8",
+    "version": "0.3.9",
     "updated": "2026-07-01",
     "status": "active",
     "read_policy": "Read before changing marketing website source layout, React dependency choices, route shell ownership, feature/page/controller/component boundaries, CSS ownership, server-state conventions, component ownership registry, or component-first workbench strategy."
@@ -261,14 +261,14 @@
   },
   "marketing_website_components": {
     "path": "design/website/components.json",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "updated": "2026-07-01",
     "status": "active",
     "read_policy": "Read before changing marketing website component ownership, CSS ownership, Storybook route or section coverage, or component-first review status."
   },
   "website_readme": {
     "path": "website/README.md",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "updated": "2026-07-01",
     "status": "active",
     "read_policy": "Read before running or changing the marketing website local workflow, route-contract gate, component registry gate, Storybook workbench, analytics setup, or Firebase Hosting CI/CD notes."

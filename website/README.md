@@ -66,8 +66,10 @@ npm run build:storybook
 ```
 
 The checked-in starter stories live in `src/stories/MarketingRoutes.stories.tsx`
-and cover `/`, `/host/`, and `/host/preview/` with mocked app-capture assets.
-Host route section stories live in `src/stories/HostSections.stories.tsx`.
+and cover `/`, `/host/`, `/host/preview/`, and `/organizers/` with mocked
+app-capture assets where relevant. Host route section stories live in
+`src/stories/HostSections.stories.tsx`; organizer search section stories live in
+`src/stories/OrganizerSearchSections.stories.tsx`.
 Storybook writes its static build to `storybook-static/`, which is ignored.
 
 ## Analytics Setup
