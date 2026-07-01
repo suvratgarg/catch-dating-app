@@ -1373,8 +1373,8 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - planned: None
   - implemented: None
   - tested: `required_field_errors`, `save_profile_mutation`, `complete_mutation`
-  - captured: `welcome_entry`, `name_dob_step`, `gender_interest_step`, `instagram_step`, `photos_photo_gate`, `prompts_step`, `running_prefs_step`, `saved_draft`, `text_scale_2`, `reduced_motion`
-  - DP-ONBOARDING-001: Onboarding welcome reference and masks are exported and registered. Route captures now cover each primary step, saved draft, text scale, and reduced motion. Add validation-error and disabled-CTA captures/previews, photo upload/count variants, mutation pending/error variants, and state-specific references.
+  - captured: `welcome_entry`, `name_dob_step`, `name_dob_validation_error`, `gender_interest_step`, `gender_interest_validation_error`, `instagram_step`, `photos_photo_gate`, `photos_one_photo_disabled`, `photos_count_met`, `photos_upload_pending`, `prompts_step`, `running_prefs_step`, `save_profile_mutation`, `complete_mutation`, `saved_draft`, `text_scale_2`, `reduced_motion`
+  - DP-ONBOARDING-001: Onboarding welcome reference and masks are exported and registered. Route captures now cover each primary step, saved draft, name/DOB and gender validation errors, photo disabled/count-met/upload-pending states, save-profile pending/error, complete-run-preferences pending/error, text scale, and reduced motion. Add upload-failure transition coverage, prompt partial/complete/long-answer variants, Instagram filled/invalid/skipped variants, Widgetbook parity variants, and state-specific references.
   - DP-ONBOARDING-002: Catalogue repeated step layouts and promote only genuinely shared patterns to component contracts.
 - [ ] Feature-level drift/previews
   - DP-LINT-002: Add an advisory rule/check that new shared primitives need a component contract and preview/story entry.

@@ -15991,9 +15991,19 @@
           "notes": "Signed-in route capture for the name/DOB step with verified phone state."
         },
         {
+          "id": "onboarding_name_dob_validation_error",
+          "status": "captured",
+          "notes": "Name/DOB route capture after tapping Continue with required fields empty."
+        },
+        {
           "id": "onboarding_gender_interest",
           "status": "captured",
           "notes": "Route capture for the gender/interest step seeded through OnboardingController."
+        },
+        {
+          "id": "onboarding_gender_interest_validation_error",
+          "status": "captured",
+          "notes": "Gender/interest route capture after tapping Continue with no selections."
         },
         {
           "id": "onboarding_instagram",
@@ -16006,6 +16016,21 @@
           "notes": "Profile-completion route capture for the empty photo gate."
         },
         {
+          "id": "onboarding_photos_one_photo_disabled",
+          "status": "captured",
+          "notes": "Profile-completion photo gate capture with one photo and disabled Continue hint."
+        },
+        {
+          "id": "onboarding_photos_count_met",
+          "status": "captured",
+          "notes": "Profile-completion photo gate capture with the minimum count met."
+        },
+        {
+          "id": "onboarding_photos_upload_pending",
+          "status": "captured",
+          "notes": "Profile-completion photo gate capture with an upload in progress and disabled Continue hint."
+        },
+        {
           "id": "onboarding_prompts_empty",
           "status": "captured",
           "notes": "Profile-completion route capture for empty prompt answers."
@@ -16014,6 +16039,26 @@
           "id": "onboarding_running_prefs",
           "status": "captured",
           "notes": "Run-preferences-only route capture."
+        },
+        {
+          "id": "onboarding_save_profile_pending",
+          "status": "captured",
+          "notes": "Gender/interest route capture with saveProfileMutation pending."
+        },
+        {
+          "id": "onboarding_save_profile_error",
+          "status": "captured",
+          "notes": "Gender/interest route capture with saveProfileMutation error banner visible."
+        },
+        {
+          "id": "onboarding_complete_run_prefs_pending",
+          "status": "captured",
+          "notes": "Run-preferences route capture with completeMutation pending."
+        },
+        {
+          "id": "onboarding_complete_run_prefs_error",
+          "status": "captured",
+          "notes": "Run-preferences route capture with completeMutation error banner visible."
         },
         {
           "id": "onboarding_saved_draft",
@@ -16052,12 +16097,13 @@
           "source": "NameDobPage collects first name, last name, DOB, and verified phone state inside the shared step frame.",
           "captureIds": [
             "onboarding_name_dob",
+            "onboarding_name_dob_validation_error",
             "onboarding_name_dob_text_scale_2"
           ],
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Deterministic route captures cover default and text scale 2.0. Add validation-error and state-specific reference exports."
+          "nextAction": "Deterministic route captures cover default, required-field validation, and text scale 2.0. Add state-specific reference exports."
         },
         {
           "id": "gender_interest_step",
@@ -16066,12 +16112,13 @@
           "source": "GenderInterestPage collects identity and interest selections through OnboardingController.setGenderInterest and step navigation.",
           "captureIds": [
             "onboarding_gender_interest",
+            "onboarding_gender_interest_validation_error",
             "onboarding_gender_interest_reduced_motion"
           ],
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Deterministic route captures cover default and reduced-motion samples. Add validation-error, partial/complete selection, long-option, and state-specific reference variants."
+          "nextAction": "Deterministic route captures cover default, required-selection validation, and reduced-motion samples. Add partial/complete selection, long-option, and state-specific reference variants."
         },
         {
           "id": "instagram_step",
@@ -16089,12 +16136,15 @@
           "status": "captured",
           "source": "PhotosPage enforces the required photo gate before profile completion, adapts copy for profileCompletionOnly mode, and routes upload-failure feedback through the shared Catch snackbar helper.",
           "captureIds": [
-            "onboarding_photos_gate"
+            "onboarding_photos_gate",
+            "onboarding_photos_one_photo_disabled",
+            "onboarding_photos_count_met",
+            "onboarding_photos_upload_pending"
           ],
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Deterministic route capture covers the empty profile-completion gate. Add one-photo, count-met, upload-pending, upload-failure, and state-specific reference variants."
+          "nextAction": "Deterministic route captures cover the empty profile-completion gate, one-photo disabled CTA, count-met CTA, and upload-pending disabled CTA. Add upload-failure transition coverage and state-specific reference variants."
         },
         {
           "id": "prompts_step",
@@ -16123,12 +16173,16 @@
         {
           "id": "required_field_errors",
           "kind": "error",
-          "status": "tested",
+          "status": "captured",
           "source": "Step pages validate required fields before advancing or completing the flow.",
+          "captureIds": [
+            "onboarding_name_dob_validation_error",
+            "onboarding_gender_interest_validation_error"
+          ],
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Add validation-error captures for each step with required fields."
+          "nextAction": "Name/DOB and gender/interest validation-error captures are registered. Add validation captures for future required prompt/photo editor states if those forms become required."
         },
         {
           "id": "saved_draft",
@@ -16147,22 +16201,30 @@
         {
           "id": "save_profile_mutation",
           "kind": "mutation",
-          "status": "tested",
+          "status": "captured",
           "source": "OnboardingController.saveProfileMutation owns profile-save operations while step pages render pending/error feedback.",
+          "captureIds": [
+            "onboarding_save_profile_pending",
+            "onboarding_save_profile_error"
+          ],
           "tests": [
             "test/onboarding/onboarding_controller_test.dart"
           ],
-          "nextAction": "Add save pending and save failure previews/captures for identity/social-profile steps."
+          "nextAction": "Save pending and visible save failure captures are registered for the gender/interest step."
         },
         {
           "id": "complete_mutation",
           "kind": "mutation",
-          "status": "tested",
+          "status": "captured",
           "source": "OnboardingController.completeMutation owns final completion and controller invalidation once onboarding is done.",
+          "captureIds": [
+            "onboarding_complete_run_prefs_pending",
+            "onboarding_complete_run_prefs_error"
+          ],
           "tests": [
             "test/onboarding/onboarding_controller_test.dart"
           ],
-          "nextAction": "Add completion pending/failure/success-exit captures or focused route tests."
+          "nextAction": "Run-preferences completion pending and visible failure captures are registered; add success-exit route assertions only if redirect behavior changes."
         },
         {
           "id": "text_scale_2",
@@ -16375,12 +16437,12 @@
         {
           "id": "DS-ONBOARDING-001",
           "status": "open",
-          "nextAction": "Expand Onboarding Widgetbook states beyond default route/step coverage for validation, disabled CTA, upload, mutation pending/error, text scale, reduced motion, and theme variants."
+          "nextAction": "Expand Onboarding Widgetbook states beyond default route/step coverage for validation, disabled CTA, upload pending, save/complete mutation pending/error, text scale, reduced motion, and theme variants now covered by deterministic route captures."
         },
         {
           "id": "DS-ONBOARDING-002",
           "status": "open",
-          "nextAction": "Remaining deterministic capture work is validation errors, disabled CTA, photo count-met/upload pending/upload failure, mutation pending/error, and step-specific text-scale/reduced-motion variants where layout diverges."
+          "nextAction": "Remaining deterministic capture work is upload-failure transition coverage, prompt partial/complete/long-answer variants, Instagram filled/invalid/skipped variants, and step-specific text-scale/reduced-motion variants where layout diverges."
         },
         {
           "id": "DS-ONBOARDING-003",

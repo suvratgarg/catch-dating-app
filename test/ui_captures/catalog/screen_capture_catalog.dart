@@ -6532,6 +6532,20 @@ final _authAustraliaProviderOverrides = <Object>[
 
 final _onboardingCaptureProfileNoPhotos = ProfileSurfaceFixtures.viewer
     .copyWith(profileComplete: false, profilePhotos: const []);
+final _onboardingCaptureProfileOnePhoto = ProfileSurfaceFixtures.viewer
+    .copyWith(
+      profileComplete: false,
+      profilePhotos: ProfileSurfaceFixtures.viewer.profilePhotos
+          .take(1)
+          .toList(growable: false),
+    );
+final _onboardingCaptureProfileReadyPhotos = ProfileSurfaceFixtures.viewer
+    .copyWith(
+      profileComplete: false,
+      profilePhotos: ProfileSurfaceFixtures.viewer.profilePhotos
+          .take(2)
+          .toList(growable: false),
+    );
 final _onboardingCaptureProfileNoPrompts = ProfileSurfaceFixtures.viewer
     .copyWith(profileComplete: false, profilePrompts: const []);
 final _onboardingCaptureDraft = OnboardingDraft(
@@ -6547,7 +6561,16 @@ final _onboardingCaptureDraft = OnboardingDraft(
   profilePrompts: ProfileSurfaceFixtures.viewer.profilePrompts,
 );
 
-enum _OnboardingCaptureMode { routeDefault, genderInterest, instagram }
+enum _OnboardingCaptureMode {
+  routeDefault,
+  genderInterest,
+  instagram,
+  photos,
+  saveProfilePending,
+  saveProfileError,
+  completeRunPrefsPending,
+  completeRunPrefsError,
+}
 
 class _OnboardingCapture extends StatelessWidget {
   const _OnboardingCapture({
@@ -6650,6 +6673,70 @@ class _OnboardingCaptureSeederState
         );
         controller.goToStep(OnboardingStep.instagram);
         break;
+      case _OnboardingCaptureMode.photos:
+        _seedBookingIdentity(controller);
+        controller.setGenderInterest(
+          gender: Gender.woman,
+          interestedInGenders: const [Gender.man],
+        );
+        controller.goToStep(OnboardingStep.photos);
+        break;
+      case _OnboardingCaptureMode.saveProfilePending:
+        _seedBookingIdentity(controller);
+        controller.setGenderInterest(
+          gender: Gender.woman,
+          interestedInGenders: const [Gender.man],
+        );
+        controller.goToStep(OnboardingStep.genderInterest);
+        _runAfterNextFrame(
+          () => _runPending(OnboardingController.saveProfileMutation),
+        );
+        break;
+      case _OnboardingCaptureMode.saveProfileError:
+        _seedBookingIdentity(controller);
+        controller.setGenderInterest(
+          gender: Gender.woman,
+          interestedInGenders: const [Gender.man],
+        );
+        controller.goToStep(OnboardingStep.genderInterest);
+        _runAfterNextFrame(
+          () => _runError(
+            OnboardingController.saveProfileMutation,
+            const NetworkException(
+              'capture-onboarding-save-failed',
+              'We could not save your profile. Please try again.',
+              context: BackendErrorContext(
+                service: BackendService.firestore,
+                action: 'save onboarding profile',
+                resource: 'users',
+              ),
+            ),
+          ),
+        );
+        break;
+      case _OnboardingCaptureMode.completeRunPrefsPending:
+        controller.goToStep(OnboardingStep.runningPrefs);
+        _runAfterNextFrame(
+          () => _runPending(OnboardingController.completeMutation),
+        );
+        break;
+      case _OnboardingCaptureMode.completeRunPrefsError:
+        controller.goToStep(OnboardingStep.runningPrefs);
+        _runAfterNextFrame(
+          () => _runError(
+            OnboardingController.completeMutation,
+            const NetworkException(
+              'capture-onboarding-complete-failed',
+              'We could not finish onboarding. Please try again.',
+              context: BackendErrorContext(
+                service: BackendService.firestore,
+                action: 'complete onboarding',
+                resource: 'users',
+              ),
+            ),
+          ),
+        );
+        break;
     }
   }
 
@@ -6663,8 +6750,33 @@ class _OnboardingCaptureSeederState
     );
   }
 
+  void _runAfterNextFrame(VoidCallback callback) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) callback();
+    });
+  }
+
+  void _runPending(Mutation<void> mutation) {
+    final completer = Completer<void>();
+    unawaited(mutation.run(ref, (_) => completer.future));
+  }
+
+  void _runError(Mutation<void> mutation, Object error) {
+    unawaited(mutation.run(ref, (_) async => throw error).catchError((_) {}));
+  }
+
   @override
   Widget build(BuildContext context) => widget.child;
+}
+
+Future<void> _driveOnboardingContinueValidation(WidgetTester tester) async {
+  await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
+  await tester.pump();
+}
+
+Future<void> _driveOnboardingRevealError(WidgetTester tester) async {
+  await tester.drag(find.byType(Scrollable).first, const Offset(0, -360));
+  await tester.pumpAndSettle();
 }
 
 class _AuthCaptureSeeder extends ConsumerStatefulWidget {
@@ -7150,12 +7262,29 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => const _OnboardingCapture(),
   ),
   ScreenCaptureEntry(
+    id: 'onboarding_name_dob_validation_error',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(),
+    builder: (context) => const _OnboardingCapture(),
+    drive: _driveOnboardingContinueValidation,
+  ),
+  ScreenCaptureEntry(
     id: 'onboarding_gender_interest',
     routeIds: const <String>['onboardingScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: _onboardingProviderOverrides(),
     builder: (context) =>
         const _OnboardingCapture(mode: _OnboardingCaptureMode.genderInterest),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_gender_interest_validation_error',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(),
+    builder: (context) =>
+        const _OnboardingCapture(mode: _OnboardingCaptureMode.genderInterest),
+    drive: _driveOnboardingContinueValidation,
   ),
   ScreenCaptureEntry(
     id: 'onboarding_instagram',
@@ -7175,6 +7304,43 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => const _OnboardingCapture(profileCompletionOnly: true),
   ),
   ScreenCaptureEntry(
+    id: 'onboarding_photos_one_photo_disabled',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(
+      profile: _onboardingCaptureProfileOnePhoto,
+    ),
+    builder: (context) => const _OnboardingCapture(
+      mode: _OnboardingCaptureMode.photos,
+      profileCompletionOnly: true,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_photos_count_met',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(
+      profile: _onboardingCaptureProfileReadyPhotos,
+    ),
+    builder: (context) => const _OnboardingCapture(
+      mode: _OnboardingCaptureMode.photos,
+      profileCompletionOnly: true,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_photos_upload_pending',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(
+      profile: _onboardingCaptureProfileOnePhoto,
+      uploadLoadingIndices: <int>{1},
+    ),
+    builder: (context) => const _OnboardingCapture(
+      mode: _OnboardingCaptureMode.photos,
+      profileCompletionOnly: true,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'onboarding_prompts_empty',
     routeIds: const <String>['onboardingScreen'],
     device: CaptureDevice.reviewPhone,
@@ -7191,6 +7357,49 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       profile: ProfileSurfaceFixtures.viewer,
     ),
     builder: (context) => const _OnboardingCapture(runPreferencesOnly: true),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_save_profile_pending',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(),
+    builder: (context) => const _OnboardingCapture(
+      mode: _OnboardingCaptureMode.saveProfilePending,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_save_profile_error',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(),
+    builder: (context) =>
+        const _OnboardingCapture(mode: _OnboardingCaptureMode.saveProfileError),
+    drive: _driveOnboardingRevealError,
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_complete_run_prefs_pending',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(
+      profile: ProfileSurfaceFixtures.viewer,
+    ),
+    builder: (context) => const _OnboardingCapture(
+      mode: _OnboardingCaptureMode.completeRunPrefsPending,
+      runPreferencesOnly: true,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_complete_run_prefs_error',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(
+      profile: ProfileSurfaceFixtures.viewer,
+    ),
+    builder: (context) => const _OnboardingCapture(
+      mode: _OnboardingCaptureMode.completeRunPrefsError,
+      runPreferencesOnly: true,
+    ),
+    drive: _driveOnboardingRevealError,
   ),
   ScreenCaptureEntry(
     id: 'onboarding_saved_draft',

@@ -301,11 +301,20 @@
           "captureIds": [
             "onboarding_welcome",
             "onboarding_name_dob",
+            "onboarding_name_dob_validation_error",
             "onboarding_gender_interest",
+            "onboarding_gender_interest_validation_error",
             "onboarding_instagram",
             "onboarding_photos_gate",
+            "onboarding_photos_one_photo_disabled",
+            "onboarding_photos_count_met",
+            "onboarding_photos_upload_pending",
             "onboarding_prompts_empty",
             "onboarding_running_prefs",
+            "onboarding_save_profile_pending",
+            "onboarding_save_profile_error",
+            "onboarding_complete_run_prefs_pending",
+            "onboarding_complete_run_prefs_error",
             "onboarding_saved_draft",
             "onboarding_name_dob_text_scale_2",
             "onboarding_gender_interest_reduced_motion"
@@ -372,12 +381,15 @@
               "kind": "empty",
               "status": "captured",
               "captureIds": [
-                "onboarding_photos_gate"
+                "onboarding_photos_gate",
+                "onboarding_photos_one_photo_disabled",
+                "onboarding_photos_count_met",
+                "onboarding_photos_upload_pending"
               ],
               "tests": [
                 "test/onboarding/onboarding_widgets_test.dart"
               ],
-              "notes": "PhotosPage enforces the required photo gate before profile completion, adapts copy for profileCompletionOnly mode, and routes upload-failure feedback through the shared Catch snackbar helper; deterministic route capture covers the empty profile-completion gate. Add one-photo, count-met, upload-pending, upload-failure, and state-specific reference variants."
+              "notes": "PhotosPage enforces the required photo gate before profile completion, adapts copy for profileCompletionOnly mode, and routes upload-failure feedback through the shared Catch snackbar helper; deterministic route captures cover the empty gate, one-photo disabled CTA, count-met CTA, and upload-pending disabled CTA. Add upload-failure transition coverage and state-specific reference variants."
             },
             {
               "id": "prompts_step",
@@ -404,10 +416,15 @@
             {
               "id": "required_field_errors",
               "kind": "error",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "onboarding_name_dob_validation_error",
+                "onboarding_gender_interest_validation_error"
+              ],
               "tests": [
                 "test/onboarding/onboarding_widgets_test.dart"
-              ]
+              ],
+              "notes": "Deterministic captures cover NameDobPage required-field errors and GenderInterestPage required-selection errors after tapping Continue."
             },
             {
               "id": "saved_draft",
@@ -425,20 +442,28 @@
             {
               "id": "save_profile_mutation",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "onboarding_save_profile_pending",
+                "onboarding_save_profile_error"
+              ],
               "tests": [
                 "test/onboarding/onboarding_controller_test.dart"
               ],
-              "notes": "OnboardingController.saveProfileMutation owns profile-save operations while step pages render pending/error feedback; add save pending and save failure previews/captures."
+              "notes": "OnboardingController.saveProfileMutation owns profile-save operations while step pages render pending/error feedback; deterministic captures cover the GenderInterestPage save pending CTA and visible error banner."
             },
             {
               "id": "complete_mutation",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "onboarding_complete_run_prefs_pending",
+                "onboarding_complete_run_prefs_error"
+              ],
               "tests": [
                 "test/onboarding/onboarding_controller_test.dart"
               ],
-              "notes": "OnboardingController.completeMutation owns final completion and controller invalidation once onboarding is done; add completion pending/failure/success-exit captures or focused route tests."
+              "notes": "OnboardingController.completeMutation owns final completion and controller invalidation once onboarding is done; deterministic captures cover the run-preferences completion pending CTA and visible error banner."
             },
             {
               "id": "text_scale_2",
@@ -463,7 +488,7 @@
             {
               "id": "DP-ONBOARDING-001",
               "status": "open",
-              "nextAction": "Add validation-error and disabled-CTA captures/previews, photo count-met/upload pending/upload failure variants, mutation pending/error variants, and state-specific references for captured steps."
+              "nextAction": "Validation-error, photo disabled/count-met/upload-pending, and save/complete mutation pending/error captures now exist. Add upload-failure transition coverage, prompts partial/complete/long-answer variants, Instagram filled/invalid/skipped variants, and state-specific references for captured steps."
             },
             {
               "id": "DP-ONBOARDING-002",
