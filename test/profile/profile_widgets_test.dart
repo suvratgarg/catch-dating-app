@@ -18,6 +18,7 @@ import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -33,6 +34,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../events/events_test_helpers.dart';
@@ -266,6 +268,43 @@ void main() {
       );
     },
   );
+
+  testWidgets('Profile settings button routes to account settings', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final router = GoRouter(
+      initialLocation: Routes.profileScreen.path,
+      routes: [
+        GoRoute(
+          path: Routes.profileScreen.path,
+          name: Routes.profileScreen.name,
+          builder: (context, state) => const _ProfileHeaderHarness(),
+        ),
+        GoRoute(
+          path: Routes.settingsScreen.path,
+          name: Routes.settingsScreen.name,
+          builder: (context, state) =>
+              const Scaffold(body: Text('Settings route reached')),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+      ),
+    );
+    await tester.pump();
+
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Settings route reached'), findsOneWidget);
+  });
 
   testWidgets('ProfileScreen uses native horizontal tab paging', (
     tester,

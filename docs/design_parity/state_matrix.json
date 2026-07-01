@@ -4046,13 +4046,16 @@
               "id": "settings_action",
               "kind": "populated",
               "status": "captured",
-              "notes": "profile_self_edit_tab and profile_self_text_scale_2 capture the Settings affordance placement in normal and large-text route chrome; tap/navigation proof remains a focused widget-test follow-up.",
+              "notes": "profile_self_edit_tab and profile_self_text_scale_2 capture the Settings affordance placement in normal and large-text route chrome; profile_widgets_test covers tapping the action and routing to settingsScreen.",
               "previewIds": [
                 "ProfileScreen/Self section states"
               ],
               "captureIds": [
                 "profile_self_edit_tab",
                 "profile_self_text_scale_2"
+              ],
+              "tests": [
+                "test/profile/profile_widgets_test.dart"
               ]
             },
             {
@@ -4121,7 +4124,7 @@
             {
               "id": "DP-PROFILE-SELF-002",
               "status": "open",
-              "nextAction": "Deterministic full-route captures are now registered for loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, text scale, reduced motion, and paired light/dark. Remaining capture work is delete/reorder, inline save pending/error drawers, settings navigation proof, and advisory pixel comparison."
+              "nextAction": "Deterministic full-route captures are now registered for loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, inline save pending/error drawers, text scale, reduced motion, and paired light/dark. Settings navigation proof is covered by profile_widgets_test. Remaining work is delete/reorder route captures if visually distinct and advisory pixel comparison."
             },
             {
               "id": "DP-PROFILE-SELF-003",

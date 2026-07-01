@@ -7037,7 +7037,10 @@
             "profile_self_edit_tab",
             "profile_self_text_scale_2"
           ],
-          "nextAction": "Affordance placement is captured; add interaction proof for Settings navigation."
+          "tests": [
+            "test/profile/profile_widgets_test.dart"
+          ],
+          "nextAction": "Affordance placement is captured and profile_widgets_test proves tapping Settings routes to settingsScreen."
         },
         {
           "id": "offline",
@@ -7365,7 +7368,7 @@
         {
           "id": "DS-PROFILE-SELF-002",
           "status": "open",
-          "nextAction": "Deterministic route captures now cover loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, text scale, reduced motion, and paired light/dark. Remaining work is delete/reorder, inline save pending/error drawers, settings navigation proof, and advisory pixel comparison."
+          "nextAction": "Deterministic route captures now cover loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, inline save pending/error drawers, text scale, reduced motion, and paired light/dark. Settings navigation proof is covered by profile_widgets_test. Remaining work is delete/reorder route captures if visually distinct and advisory pixel comparison."
         },
         {
           "id": "DS-PROFILE-SELF-003",
