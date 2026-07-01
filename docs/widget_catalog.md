@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.500
+version: 2.5.501
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.501
+
+- Promoted `EventShareMetaRow` and `EventSharePill` as public cataloged visual
+  atoms used by `EventShareCard`, with exact Widgetbook coverage. The
+  classification scanner's private widget review count drops by two without
+  changing share-card rendering or invite-copy behavior.
 
 ### 2.5.500
 
@@ -5574,6 +5581,8 @@ Generated 2026-05-06.
 | `EventLocationMapLoadingBody` | `lib/events/presentation/event_location_map_screen.dart:70` | Location-map route loading body. Composes `EventMapLoadingBody` with bottom location summary and directions-button placeholders while `_ChromelessMapScaffold` keeps the floating map controls visible. |
 | `EventLocationMapScreen` | `lib/events/presentation/event_location_map_screen.dart:156` | Provider-free single-event map body for `screen.event.location_map`. Receives `EventLocationMapState` plus an explicit `onGetDirections` callback, renders one pinned exact starting point through `EventPinsMap`, and composes the bottom location summary/directions card. It no longer owns a direct `Scaffold` or floating route controls; route/capture states that need chrome mount `EventLocationMapRouteScreen`. |
 | `EventShareCard` | `lib/events/presentation/widgets/event_share_card.dart:42` | Shareable event invite card rendered inside `RichShareCardSheet`. Uses the activity visual palette, `EventActivityBackdrop`, tokenized field rows, price/spots pills, and `EventInviteShareCopy` so event detail, payment confirmation, and referral invite surfaces share the same visual card and link payload. |
+| `EventShareMetaRow` | `lib/events/presentation/widgets/event_share_card.dart:222` | Public metadata row renderer used by `EventShareCard`. Shows one icon/label pair with caller-provided accent color and owns only one-line visual truncation. |
+| `EventSharePill` | `lib/events/presentation/widgets/event_share_card.dart:255` | Public compact pill renderer used by `EventShareCard` for price and spots labels. Uses Catch surface/token styling and owns no event or share-copy logic. |
 | `CreateEventStepHeader` | `lib/hosts/presentation/event_management/widgets/create_event_step_header.dart:4` | Header for the host create-event wizard: back action, step title, club name, step count, and progress bar. |
 | `CreateEventFormKeys` | `lib/hosts/presentation/event_management/create/create_event_form_keys.dart:3` | Stable semantic keys for host create/edit event form fields so widget tests target fields by purpose rather than layout order. |
 | `DraftDeleteConfirmationDialog` | `lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart:54` | Provider-free destructive confirmation dialog for deleting a saved create-event draft from the draft picker sheet. It owns only the confirmation copy and action layout; draft deletion remains in `CreateEventDraftController`. |

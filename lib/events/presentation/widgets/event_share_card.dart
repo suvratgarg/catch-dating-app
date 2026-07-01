@@ -6,10 +6,10 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/data/event_invite_share_copy.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:flutter/material.dart';
 
 Future<void> showEventShareCardSheet(
@@ -161,19 +161,19 @@ class EventShareCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _EventShareMetaRow(
+                      EventShareMetaRow(
                         icon: CatchIcons.calendarTodayOutlined,
                         label: event.longDateLabel,
                         accent: visual.accent,
                       ),
                       gapH10,
-                      _EventShareMetaRow(
+                      EventShareMetaRow(
                         icon: CatchIcons.clock,
                         label: event.timeRangeLabel,
                         accent: visual.accent,
                       ),
                       gapH10,
-                      _EventShareMetaRow(
+                      EventShareMetaRow(
                         icon: CatchIcons.locationOnOutlined,
                         label: event.locationName,
                         accent: visual.accent,
@@ -183,8 +183,8 @@ class EventShareCard extends StatelessWidget {
                         spacing: CatchSpacing.micro6,
                         runSpacing: CatchSpacing.micro6,
                         children: [
-                          _EventSharePill(label: priceLabel),
-                          _EventSharePill(label: _spotsLabel(event)),
+                          EventSharePill(label: priceLabel),
+                          EventSharePill(label: _spotsLabel(event)),
                         ],
                       ),
                       gapH14,
@@ -219,8 +219,9 @@ class EventShareCard extends StatelessWidget {
   }
 }
 
-class _EventShareMetaRow extends StatelessWidget {
-  const _EventShareMetaRow({
+class EventShareMetaRow extends StatelessWidget {
+  const EventShareMetaRow({
+    super.key,
     required this.icon,
     required this.label,
     required this.accent,
@@ -251,8 +252,8 @@ class _EventShareMetaRow extends StatelessWidget {
   }
 }
 
-class _EventSharePill extends StatelessWidget {
-  const _EventSharePill({required this.label});
+class EventSharePill extends StatelessWidget {
+  const EventSharePill({super.key, required this.label});
 
   final String label;
 

@@ -24,6 +24,7 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/presentation/event_check_in_celebration_screen.dart';
@@ -652,6 +653,34 @@ Widget eventShareCardStates(BuildContext context) {
         ),
       ),
     ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Share meta row',
+  type: EventShareMetaRow,
+  path: '[Event Detail]/Cards',
+)
+Widget eventShareMetaRowState(BuildContext context) {
+  return Padding(
+    padding: CatchInsets.contentDense,
+    child: EventShareMetaRow(
+      icon: CatchIcons.calendarTodayOutlined,
+      label: _event.longDateLabel,
+      accent: CatchTokens.of(context).accent,
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Share pill',
+  type: EventSharePill,
+  path: '[Event Detail]/Cards',
+)
+Widget eventSharePillState(BuildContext context) {
+  return const Padding(
+    padding: CatchInsets.contentDense,
+    child: EventSharePill(label: '3 spots left'),
   );
 }
 

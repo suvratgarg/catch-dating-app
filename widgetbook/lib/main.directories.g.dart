@@ -2027,6 +2027,26 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventShareMetaRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Share meta row',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventShareMetaRowState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventSharePill',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Share pill',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventSharePillState,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(
