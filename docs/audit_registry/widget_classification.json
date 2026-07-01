@@ -13189,30 +13189,27 @@
       "flags": []
     },
     {
-      "name": "_BookingConflictEventRow",
+      "name": "BookingConflictEventRow",
       "file": "lib/events/presentation/widgets/booking_conflict_sheet.dart",
       "classKind": "widget",
       "baseClass": "StatelessWidget",
-      "visibility": "private",
+      "visibility": "public",
       "role": "composition",
       "canonicalFamily": "catch.booking_conflict_event_row",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-inline",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
+      "flags": []
     },
     {
       "name": "BookingConflictSheet",

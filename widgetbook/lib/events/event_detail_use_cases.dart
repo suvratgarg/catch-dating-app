@@ -878,6 +878,45 @@ Widget eventDetailBookingConflictSheetStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Booking conflict event row states',
+  type: BookingConflictEventRow,
+  path: '[Event Detail]/Sheets',
+)
+Widget eventDetailBookingConflictEventRowStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _CatalogScreen(
+    title: 'BookingConflictEventRow',
+    catalogId: 'row.event.booking_conflict',
+    children: [
+      _StateCard(
+        label: 'activity visual',
+        child: BookingConflictEventRow(
+          tag: 'New',
+          tagColor: t.warning,
+          event: const BookingConflictEvent(
+            title: 'Founder-hosted Singles Dinner',
+            when: 'Fri, Jun 26 · 7:15 PM-9:30 PM',
+            activityKind: ActivityKind.dinner,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'fallback visual',
+        child: BookingConflictEventRow(
+          tag: 'Already booked',
+          tagColor: t.ink3,
+          event: const BookingConflictEvent(
+            title: 'Saved event without activity metadata',
+            when: 'Sun, Jun 28 · 5:00 PM-6:30 PM',
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Prompt states',
   type: EventDetailBody,
   path: '[Event Detail]/Sections',

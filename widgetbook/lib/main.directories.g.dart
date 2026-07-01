@@ -2277,6 +2277,16 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'BookingConflictEventRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Booking conflict event row states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailBookingConflictEventRowStates,
+              ),
+            ],
+          ),
         ],
       ),
     ],

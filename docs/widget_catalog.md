@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.497
+version: 2.5.498
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.498
+
+- Promoted `BookingConflictEventRow` as the public cataloged row renderer used
+  inside `BookingConflictSheet`, including exact Widgetbook coverage for
+  activity-colored and fallback visual states. The classification scanner's
+  private widget review count drops without changing booking-conflict behavior.
 
 ### 2.5.497
 
@@ -5548,6 +5555,7 @@ Generated 2026-05-06.
 | `EventJoinedCelebrationScreen` | `lib/events/presentation/event_joined_celebration_screen.dart:8` | User event-signup celebration surface shared by free bookings and post-payment confirmation. Shows event details, optional payment details, haptics, and View event / Back home actions. |
 | `EventCheckInCelebrationScreen` | `lib/events/presentation/event_check_in_celebration_screen.dart:7` | Participant self-check-in celebration surface. Used only after user self-check-in from Home succeeds; host attendance remains an operational flow. |
 | `BookingConflictSheet` | `lib/events/presentation/widgets/booking_conflict_sheet.dart:32` | Booking handoff conflict-warning sheet. Renders the already-booked and incoming events as activity-colored rows, keeps warning copy and sheet chrome on Catch primitives, and exposes replace / keep-both / keep-existing callbacks for a future overlap-resolution flow. Widgetbook exposes standalone states for default conflict, replacement decision, long event names, and fallback activity visuals; sold-out/full-capacity remains outside this primitive API. |
+| `BookingConflictEventRow` | `lib/events/presentation/widgets/booking_conflict_sheet.dart:151` | Public row renderer for a single event inside `BookingConflictSheet`. Displays the row tag, event title, time copy, and either an activity-colored glyph tile or fallback calendar glyph without owning sheet actions or booking decisions. |
 | `EventCheckInLocationService` | `lib/events/data/event_check_in_location_service.dart:16` | Provider-backed location seam for self-check-in. Production uses Geolocator with high accuracy and a timeout; tests can inject coordinates without invoking platform plugins. |
 | `EventLocationMapLoadingBody` | `lib/events/presentation/event_location_map_screen.dart:70` | Location-map route loading body. Composes `EventMapLoadingBody` with bottom location summary and directions-button placeholders while `_ChromelessMapScaffold` keeps the floating map controls visible. |
 | `EventLocationMapScreen` | `lib/events/presentation/event_location_map_screen.dart:156` | Provider-free single-event map body for `screen.event.location_map`. Receives `EventLocationMapState` plus an explicit `onGetDirections` callback, renders one pinned exact starting point through `EventPinsMap`, and composes the bottom location summary/directions card. It no longer owns a direct `Scaffold` or floating route controls; route/capture states that need chrome mount `EventLocationMapRouteScreen`. |
