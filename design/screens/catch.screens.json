@@ -6068,6 +6068,26 @@
           "notes": "Chat composer ready, image-pending, and disabled states."
         },
         {
+          "id": "match_chat_keyboard_multiline",
+          "status": "captured",
+          "notes": "Match chat keyboard-open multiline safe-area state."
+        },
+        {
+          "id": "match_chat_send_failure_snackbar",
+          "status": "captured",
+          "notes": "Match chat send-failure snackbar state."
+        },
+        {
+          "id": "match_chat_report_failure_snackbar",
+          "status": "captured",
+          "notes": "Match chat report-failure snackbar state."
+        },
+        {
+          "id": "match_chat_block_confirm_dialog",
+          "status": "captured",
+          "notes": "Match chat block-confirmation dialog state."
+        },
+        {
           "id": "match_chat_text_scale_2",
           "status": "captured",
           "notes": "Match chat at text scale 2.0."
@@ -6380,8 +6400,8 @@
           "id": "text_scale_2",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No text-scale 2.0 chat capture exists yet.",
-          "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+          "source": "match_chat_text_scale_2 captures the consumer Match Chat route at TextScaler 2.0.",
+          "nextAction": "Text-scale route coverage is registered; compare only if future text-scale references are exported.",
           "previewIds": [
             "ChatScreen/Route states"
           ],
@@ -6393,8 +6413,8 @@
           "id": "reduced_motion",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No reduced-motion chat capture exists yet.",
-          "nextAction": "Review auto-scroll, share sheet, match celebration, and route transition motion under reduced-motion settings.",
+          "source": "match_chat_reduced_motion captures the consumer Match Chat route with MediaQuery.disableAnimations enabled.",
+          "nextAction": "Reduced-motion route coverage is registered; add focused motion proof only if auto-scroll or sheet animation behavior changes.",
           "previewIds": [
             "ChatScreen/Route states"
           ],
@@ -6406,8 +6426,8 @@
           "id": "light_dark",
           "kind": "theme",
           "status": "captured",
-          "source": "No paired light/dark chat capture exists yet.",
-          "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
+          "source": "match_chat_context emits paired light/dark artifacts through the capture harness for the populated thread baseline.",
+          "nextAction": "Populated light/dark baseline is registered; compare additional theme variants only if design exports them.",
           "previewIds": [
             "ChatScreen/Route states"
           ],
