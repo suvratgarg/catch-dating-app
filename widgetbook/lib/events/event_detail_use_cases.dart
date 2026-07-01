@@ -373,6 +373,33 @@ Widget eventDetailOverviewSectionStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Event description',
+  type: EventDescription,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDescriptionState(BuildContext context) {
+  return const Padding(
+    padding: CatchInsets.contentDense,
+    child: EventDescription(
+      description:
+          'A low-pressure morning plan with a clear route, relaxed pace, and coffee after.',
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'What to expect',
+  type: WhatToExpectSection,
+  path: '[Event Detail]/Sections',
+)
+Widget eventWhatToExpectState(BuildContext context) {
+  return Padding(
+    padding: CatchInsets.contentDense,
+    child: WhatToExpectSection(event: _event),
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Policy summary states',
   type: EventDetailPolicySummary,
   path: '[Event Detail]/Sections',

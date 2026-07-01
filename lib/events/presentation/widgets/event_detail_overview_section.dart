@@ -40,7 +40,7 @@ class EventDetailOverviewSection extends StatelessWidget {
           lead: true,
           first: true,
           dividerColor: style?.dividerColor,
-          child: _EventDescription(
+          child: EventDescription(
             description: description.isEmpty
                 ? _fallbackPlan(event)
                 : description,
@@ -117,7 +117,7 @@ class EventDetailOverviewSection extends StatelessWidget {
             children: [
               if (event.hasRequirements)
                 RequirementsRow(event: event, surfaceStyle: style),
-              _WhatToExpectSection(event: event, surfaceStyle: style),
+              WhatToExpectSection(event: event, surfaceStyle: style),
               EventDetailPolicySummary(event: event, surfaceStyle: style),
             ],
           ),
@@ -127,8 +127,9 @@ class EventDetailOverviewSection extends StatelessWidget {
   }
 }
 
-class _EventDescription extends StatelessWidget {
-  const _EventDescription({
+class EventDescription extends StatelessWidget {
+  const EventDescription({
+    super.key,
     required this.description,
     this.surfaceStyle,
   });
@@ -170,8 +171,9 @@ String _fallbackPlan(Event event) {
   return 'A hosted ${event.eventFormat.label.toLowerCase()} built around a clear arrival, shared activity, and low-pressure follow-up.';
 }
 
-class _WhatToExpectSection extends StatelessWidget {
-  const _WhatToExpectSection({
+class WhatToExpectSection extends StatelessWidget {
+  const WhatToExpectSection({
+    super.key,
     required this.event,
     this.surfaceStyle,
   });

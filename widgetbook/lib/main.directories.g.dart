@@ -2153,6 +2153,26 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventDescription',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Event description',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDescriptionState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'WhatToExpectSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'What to expect',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventWhatToExpectState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventDetailPolicySummary',
             useCases: [
               _widgetbook.WidgetbookUseCase(

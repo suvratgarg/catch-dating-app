@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.502
+version: 2.5.503
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.503
+
+- Promoted `EventDescription` and `WhatToExpectSection` as public cataloged
+  display blocks used by `EventDetailOverviewSection`, with exact Widgetbook
+  coverage. The classification scanner's private widget review count drops by
+  two without changing event-detail overview composition.
 
 ### 2.5.502
 
@@ -5615,6 +5622,8 @@ Generated 2026-05-06.
 | `EventAgendaTileSkeleton` | `lib/events/presentation/widgets/event_agenda_list.dart:200` | Public placeholder row renderer used by `EventAgendaSliverSkeleton`. Mirrors the date rail plus body layout of agenda event tiles with shared skeleton primitives and owns no loading state. |
 | `AgendaDayGroup` | `lib/events/presentation/widgets/event_agenda_list.dart:292` | Public day-group renderer used by `EventAgendaSliverList`. Renders the day label, maps grouped events into `EventAgendaTile`, and applies caller-provided badge, club-name, status, selection, and gap policies without owning sorting or grouping. |
 | `EventDetailOverviewSection` | `lib/events/presentation/widgets/event_detail_overview_section.dart:10` | Handoff-ordered event-detail body stack: The plan, Why you might click, Itinerary, Photos when available, Where, How sign-ups work, and Good to know. Uses `CatchSection` plus event-detail primitives while retaining requirements, expectation, cancellation, and settlement policy copy from the existing event policy model. |
+| `EventDescription` | `lib/events/presentation/widgets/event_detail_overview_section.dart:130` | Public description block used by `EventDetailOverviewSection` for the plan copy. Renders the local heading and body text with optional event-detail surface colors. |
+| `WhatToExpectSection` | `lib/events/presentation/widgets/event_detail_overview_section.dart:174` | Public expectation-summary block used by `EventDetailOverviewSection`. Maps an event into policy summary lines inside a tokenized surface without owning section ordering. |
 | `EventDetailSocialSection` | `lib/events/presentation/widgets/event_detail_social_section.dart:10` | Social context sections for the loaded event detail body: Who's going and Reviews, both composed with `CatchSection`. The roster supports a guest lock prompt and signed-in roster view; review writing requires an attended `EventParticipation` and an event end time that has passed. |
 | `MapOverlayControls` | `lib/events/presentation/widgets/map_overlay_controls.dart:5` | Floating safe-area controls for chromeless map surfaces. Provides rounded back affordance plus optional trailing/below content for map actions such as create-event confirm/search. |
 | `EventDetailsStep` | `lib/hosts/presentation/event_management/widgets/event_details_step.dart:16` | First host create-event step. Renders event photos, activity type, optional custom format/structure, distance, pace, and description with handoff `SelectChip` choices and `CatchField` inputs. Activity type choices carry their own activity pigment; format and pace choices inherit the selected activity accent. |
