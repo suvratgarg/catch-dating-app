@@ -1700,6 +1700,40 @@ Widget eventAgendaSliverListState(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Agenda day group',
+  type: AgendaDayGroup,
+  path: '[Events]/Lists',
+)
+Widget eventAgendaDayGroupState(BuildContext context) {
+  return Padding(
+    padding: CatchInsets.pageBody,
+    child: AgendaDayGroup(
+      date: DateUtils.dateOnly(_event.startTime),
+      today: DateUtils.dateOnly(_now),
+      events: [
+        _event,
+        _eventDetailEvent(
+          id: 'widgetbook-event-agenda-day-dinner',
+          activityKind: ActivityKind.dinner,
+          startTime: _event.startTime.add(const Duration(hours: 2)),
+          capacityLimit: 10,
+          bookedCount: 8,
+          priceInPaise: 180000,
+        ),
+      ],
+      onEventSelected: (_) {},
+      badgeLabel: 'OPEN',
+      badgeLabelBuilder: null,
+      clubNameBuilder: (_) => _club.name,
+      statusBuilder: (_) => EventTileStatus.saved,
+      showClubName: true,
+      dayLabelBottomGap: CatchLayout.agendaDayLabelBottomGap,
+      itemGap: CatchLayout.agendaItemGap,
+    ),
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Agenda skeleton',
   type: EventAgendaSliverSkeleton,
   path: '[Events]/Lists',
@@ -1708,6 +1742,18 @@ Widget eventAgendaSliverSkeletonState(BuildContext context) {
   return const SizedBox(
     height: 520,
     child: CustomScrollView(slivers: [EventAgendaSliverSkeleton()]),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Agenda tile skeleton',
+  type: EventAgendaTileSkeleton,
+  path: '[Events]/Lists',
+)
+Widget eventAgendaTileSkeletonState(BuildContext context) {
+  return const Padding(
+    padding: CatchInsets.pageBody,
+    child: EventAgendaTileSkeleton(),
   );
 }
 

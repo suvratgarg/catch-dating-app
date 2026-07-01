@@ -2353,12 +2353,32 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'AgendaDayGroup',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Agenda day group',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventAgendaDayGroupState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventAgendaSliverSkeleton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Agenda skeleton',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventAgendaSliverSkeletonState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAgendaTileSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Agenda tile skeleton',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventAgendaTileSkeletonState,
               ),
             ],
           ),

@@ -128,7 +128,7 @@ class EventAgendaSliverList extends StatelessWidget {
       for (var groupIndex = 0; groupIndex < entries.length; groupIndex++) ...[
         KeyedSubtree(
           key: dayKeyBuilder?.call(entries[groupIndex].key),
-          child: _AgendaDayGroup(
+          child: AgendaDayGroup(
             date: entries[groupIndex].key,
             events: entries[groupIndex].value,
             today: effectiveToday,
@@ -188,7 +188,7 @@ class EventAgendaSliverSkeleton extends StatelessWidget {
           CatchSkeleton.text(width: CatchLayout.skeletonTextEyebrowWidth),
           SizedBox(height: dayLabelBottomGap),
           for (var i = 0; i < count; i++) ...[
-            const _EventAgendaTileSkeleton(),
+            const EventAgendaTileSkeleton(),
             if (i < count - 1) SizedBox(height: itemGap),
           ],
         ],
@@ -197,8 +197,8 @@ class EventAgendaSliverSkeleton extends StatelessWidget {
   }
 }
 
-class _EventAgendaTileSkeleton extends StatelessWidget {
-  const _EventAgendaTileSkeleton();
+class EventAgendaTileSkeleton extends StatelessWidget {
+  const EventAgendaTileSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -289,8 +289,9 @@ class _EventAgendaTileSkeleton extends StatelessWidget {
   }
 }
 
-class _AgendaDayGroup extends StatelessWidget {
-  const _AgendaDayGroup({
+class AgendaDayGroup extends StatelessWidget {
+  const AgendaDayGroup({
+    super.key,
     required this.date,
     required this.events,
     required this.today,

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.498
+version: 2.5.499
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.499
+
+- Promoted `AgendaDayGroup` and `EventAgendaTileSkeleton` as public cataloged
+  renderers used by the agenda list/sliver skeleton, with exact Widgetbook
+  coverage. The classification scanner's private widget review count drops by
+  two without changing agenda grouping or skeleton behavior.
 
 ### 2.5.498
 
@@ -5578,6 +5585,8 @@ Generated 2026-05-06.
 | `EventDateRailCard` | `lib/events/presentation/widgets/event_tiles/event_date_rail_card.dart:18` | Shared date-rail event card extracted from the Explore mixed-feed row. Renders a clipped ticket silhouette with seam cutouts, activity-colored weekday/day/month tear-off stub, subtle perforation seam, compact activity stamp, optional supporting label, themed event-display title, time/price line, single capacity copy line, optional full-card Hero transition, and optional shared status pill for non-full states across Explore event rows plus agenda surfaces. `stripPosition` lets This week rows join into a continuous ticket strip while preserving the outer notches only on the first/last card, and single tickets paint a custom `CatchElevation.physicalShadow` behind an elevation-zero `PhysicalShape` so debug/golden rendering stays aligned with the intended soft lift rather than showing Flutter's shadow-debug outline. |
 | `EventAgendaTile` | `lib/events/presentation/widgets/event_tiles/event_agenda_tile.dart:6` | Agenda/list adapter for Calendar, Saved events, and club schedules. It maps `EventTileData` into `EventDateRailCard`, preferring club name in global contexts and meeting point in club-local schedules, while suppressing the old redundant `VIEW` and `OPEN` badge language through `eventTileCardStatusLabel`. |
 | `EventAgendaList` | `lib/events/presentation/widgets/event_agenda_list.dart:9` | Box-facing agenda list for events grouped by day. Sorts by start time by default, with `preserveInputOrder` for callers that precompute semantic order plus optional club-name/status builders, and renders `EventAgendaTile` directly. |
+| `EventAgendaTileSkeleton` | `lib/events/presentation/widgets/event_agenda_list.dart:200` | Public placeholder row renderer used by `EventAgendaSliverSkeleton`. Mirrors the date rail plus body layout of agenda event tiles with shared skeleton primitives and owns no loading state. |
+| `AgendaDayGroup` | `lib/events/presentation/widgets/event_agenda_list.dart:292` | Public day-group renderer used by `EventAgendaSliverList`. Renders the day label, maps grouped events into `EventAgendaTile`, and applies caller-provided badge, club-name, status, selection, and gap policies without owning sorting or grouping. |
 | `EventDetailOverviewSection` | `lib/events/presentation/widgets/event_detail_overview_section.dart:10` | Handoff-ordered event-detail body stack: The plan, Why you might click, Itinerary, Photos when available, Where, How sign-ups work, and Good to know. Uses `CatchSection` plus event-detail primitives while retaining requirements, expectation, cancellation, and settlement policy copy from the existing event policy model. |
 | `EventDetailSocialSection` | `lib/events/presentation/widgets/event_detail_social_section.dart:10` | Social context sections for the loaded event detail body: Who's going and Reviews, both composed with `CatchSection`. The roster supports a guest lock prompt and signed-in roster view; review writing requires an attended `EventParticipation` and an event end time that has passed. |
 | `MapOverlayControls` | `lib/events/presentation/widgets/map_overlay_controls.dart:5` | Floating safe-area controls for chromeless map surfaces. Provides rounded back affordance plus optional trailing/below content for map actions such as create-event confirm/search. |
