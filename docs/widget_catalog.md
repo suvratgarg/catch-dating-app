@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.511
+version: 2.5.512
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,15 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.512
+
+- Cataloged the Club Detail loading body subparts (`ClubHeroLoadingSkeleton`,
+  `ClubStatsLoadingSkeleton`, `ClubStatLoadingSkeleton`,
+  `ClubStatsDividerSkeleton`, `ClubHostLoadingSkeleton`,
+  `ClubTextLoadingSkeleton`, `ClubTagLoadingSkeleton`, and
+  `ClubScheduleLoadingSkeleton`) with exact Widgetbook coverage so no-fallback
+  Club Detail route loads can be reviewed at both screen and atom level.
 
 ### 2.5.511
 
@@ -5566,7 +5575,15 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ClubDetailLoadingBody` | `lib/clubs/presentation/detail/club_detail_screen.dart:355` | Club-profile-shaped loading body for no-fallback Club Detail route loads. Mirrors the loaded hero, stats strip, host card, about copy, tag chips, and upcoming event sections while `initialClub` fallback still renders real content when available. |
+| `ClubDetailLoadingBody` | `lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart:9` | Club-profile-shaped loading body for no-fallback Club Detail route loads. Mirrors the loaded hero, stats strip, host card, about copy, tag chips, and upcoming event sections while `initialClub` fallback still renders real content when available. |
+| `ClubHeroLoadingSkeleton` | `lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart:62` | Club Detail loading hero. Reserves the no-cover hero height and bottom-aligned title/location/summary placeholders so loading route transitions do not collapse the visual identity area. |
+| `ClubStatsLoadingSkeleton` | `lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart:98` | Club Detail loading metric strip. Uses the same compact `CatchSurface` padding and four-column/divider rhythm as the loaded club stats row. |
+| `ClubStatLoadingSkeleton` | `lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart:123` | Single Club Detail loading metric cell with value and label placeholders. Used only inside `ClubStatsLoadingSkeleton` so metric spacing remains centralized. |
+| `ClubStatsDividerSkeleton` | `lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart:139` | Hairline divider used between Club Detail loading metric cells. Keeps the loading strip aligned with the loaded metric rail divider treatment. |
+| `ClubHostLoadingSkeleton` | `lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart:155` | Club Detail loading host row. Reserves avatar, host name, and subtitle slots inside the same compact surface treatment as the loaded host card. |
+| `ClubTextLoadingSkeleton` | `lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart:185` | Configurable Club Detail loading text block used for About-style sections. Callers choose the line count while the shared skeleton primitive owns shimmer rendering. |
+| `ClubTagLoadingSkeleton` | `lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart:196` | Club Detail loading chip wrap for activity/tag sections. Uses pill-radius skeleton boxes with stable spacing so the section height matches loaded tag wraps. |
+| `ClubScheduleLoadingSkeleton` | `lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart:225` | Club Detail loading schedule stack. Reserves two compact event-card slots in the Upcoming section while agenda data is loading. |
 | `ExploreScreen` | `lib/explore/presentation/explore_screen.dart:31` | Explore tab route. Owns the persistent sheet-over-map browse surface: `EventMapView` stays mounted behind a draggable sheet and receives its map view model from the same filtered event discovery feed used by the list. The Explore chrome/header/filter rail are part of the primary `CustomScrollView`, so the cover header scrolls away with the feed instead of sitting outside the scroll owner. The screen no longer wraps the scroll view in a top `SafeArea`; the Explore header owns top-inset padding so the hero/background can paint to the viewport edge while row content stays below the status area. The floating `Map` control uses shared `CatchCountPill` and appears only in this full/list state; after opening, users close or resize by dragging the handle. Programmatic map open lands on a higher detent just under the filter strip, fades the top lid/header/filter backgrounds transparent, and keeps the city/search/filter controls floating over the map while the sheet edge rounds and selected map pins render a full-width ticket card unless the selected pin is the feed's actual featured event, in which case the spotlight card remains. User drags use soft settling zones: releases near the shorter bottom extent, map detent, or full/list state animate into those anchors, while the middle range can rest naturally. The peek state renders only aggregate result summary copy. Selecting a map pin stores the selected event id and snaps to the map selected-card state. The screen also listens for map camera-center changes so nearby event ordering can remain spatial, and a distance-ring tap cycles the active distance filter. |
 | `ExploreBody` | `lib/explore/presentation/widgets/explore_body.dart:10` | Sliver-native data body for the Explore tab. Production `ExploreScreen` disables the old personal rail and directory stack, then composes the mixed `ExploreEventsSection` with the bottom-of-page `ExploreEventTypeBrowseGrid` without embedding a vertical `ListView` inside the parent `CustomScrollView`. Legacy callers can still opt into the joined-club rail or club directory through explicit flags. |
 | `ExploreEventsSection` | `lib/explore/presentation/widgets/explore_events_section.dart:101` | Mixed Explore discovery section. Watches the event discovery feed, accepts candidate clubs from `ExploreBody`, removes the feed's featured item from the body list, and renders a handoff result-count line from the remaining visible items (`1 PLAN` / `10 PLANS · JUN 11-17`), skipping that cue for club-only fallback content. It leads the default This week filter with a no-gap ticket strip only when there are at least five day-level `EventDateRailCard` recommendations. Weekly-strip events are excluded from the remaining mixed feed, which interleaves leftover compact event rows, an Instax-like club spotlight, and compact club rows. Event taps route to `Routes.eventDetailScreen`, club taps route to `Routes.clubDetailScreen`, club cards use shared club identity atoms, and event rows use `EventCapacityPresenter` for going/left copy. Skeleton/error/empty states still belong to the event discovery feed; debug builds can opt into non-tappable synthetic visual fill with `ENABLE_EXPLORE_SYNTHETIC_VISUAL_FILL`. |

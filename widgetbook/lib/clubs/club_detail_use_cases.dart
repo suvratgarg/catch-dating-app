@@ -367,6 +367,136 @@ Widget clubDetailLoadingBodyStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Hero skeleton states',
+  type: ClubHeroLoadingSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubHeroLoadingSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubHeroLoadingSkeleton',
+    catalogId: 'loading.club.detail.hero',
+    children: [
+      _StateCard(
+        label: 'default',
+        child: _DeviceFrame(height: 260, child: ClubHeroLoadingSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Stats skeleton states',
+  type: ClubStatsLoadingSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubStatsLoadingSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubStatsLoadingSkeleton',
+    catalogId: 'loading.club.detail.stats',
+    children: [
+      _StateCard(label: 'four metrics', child: ClubStatsLoadingSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Stat skeleton states',
+  type: ClubStatLoadingSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubStatLoadingSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubStatLoadingSkeleton',
+    catalogId: 'loading.club.detail.stat',
+    children: [
+      _StateCard(label: 'value and label', child: ClubStatLoadingSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Stats divider skeleton states',
+  type: ClubStatsDividerSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubStatsDividerSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubStatsDividerSkeleton',
+    catalogId: 'loading.club.detail.stats_divider',
+    children: [
+      _StateCard(
+        label: 'hairline',
+        child: SizedBox(
+          height: 72,
+          child: Center(child: ClubStatsDividerSkeleton()),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Host skeleton states',
+  type: ClubHostLoadingSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubHostLoadingSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubHostLoadingSkeleton',
+    catalogId: 'loading.club.detail.host',
+    children: [_StateCard(label: 'host row', child: ClubHostLoadingSkeleton())],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Text skeleton states',
+  type: ClubTextLoadingSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubTextLoadingSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubTextLoadingSkeleton',
+    catalogId: 'loading.club.detail.text',
+    children: [
+      _StateCard(
+        label: 'three lines',
+        child: ClubTextLoadingSkeleton(lines: 3),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Tag skeleton states',
+  type: ClubTagLoadingSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubTagLoadingSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubTagLoadingSkeleton',
+    catalogId: 'loading.club.detail.tags',
+    children: [
+      _StateCard(label: 'three chips', child: ClubTagLoadingSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Schedule skeleton states',
+  type: ClubScheduleLoadingSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubScheduleLoadingSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubScheduleLoadingSkeleton',
+    catalogId: 'loading.club.detail.schedule',
+    children: [
+      _StateCard(label: 'two cards', child: ClubScheduleLoadingSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Provider dock states',
   type: ClubMembershipDock,
   path: '[Club Detail]/Sections',
