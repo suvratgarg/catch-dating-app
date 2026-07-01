@@ -3809,6 +3809,7 @@
             "profile_self_edit_tab",
             "profile_self_preview_tab",
             "profile_self_photo_upload_pending",
+            "profile_self_photo_upload_error",
             "profile_self_text_scale_2",
             "profile_self_reduced_motion"
           ],
@@ -3893,12 +3894,13 @@
               "tests": [
                 "test/image_uploads/photo_upload_controller_test.dart"
               ],
-              "notes": "profile_self_photo_upload_pending captures the route-level upload-pending photo-grid state. Upload failure snackbar, delete pending, and reorder pending remain future capture variants backed by existing controller tests.",
+              "notes": "profile_self_photo_upload_pending captures the route-level upload-pending photo-grid state, and profile_self_photo_upload_error drives the real PhotoUploadController failure path through the ProfileScreen upload-error snackbar. Delete pending and reorder pending remain future capture variants backed by existing controller tests.",
               "previewIds": [
                 "ProfileScreen/Self route states"
               ],
               "captureIds": [
-                "profile_self_photo_upload_pending"
+                "profile_self_photo_upload_pending",
+                "profile_self_photo_upload_error"
               ]
             },
             {
@@ -4046,7 +4048,7 @@
             {
               "id": "DP-PROFILE-SELF-002",
               "status": "open",
-              "nextAction": "Deterministic full-route captures are now registered for loading, error, offline, unavailable, edit tab, preview tab, upload pending, text scale, reduced motion, and paired light/dark. Remaining capture work is upload failure/delete/reorder, inline save pending/error drawers, settings navigation proof, and advisory pixel comparison."
+              "nextAction": "Deterministic full-route captures are now registered for loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, text scale, reduced motion, and paired light/dark. Remaining capture work is delete/reorder, inline save pending/error drawers, settings navigation proof, and advisory pixel comparison."
             },
             {
               "id": "DP-PROFILE-SELF-003",

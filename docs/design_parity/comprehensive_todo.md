@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.272
+version: 0.2.273
 updated: 2026-07-01
 owner: product_design_parity
 status: active
@@ -37,7 +37,7 @@ ledgers as the source of truth when counts differ:
   queues.
 - Matrix state status spread: 552 captured, 17 implemented, 1 planned, and
   51 tested.
-- Capture coverage registry: 585 capture ids across 37 captured route entries,
+- Capture coverage registry: 586 capture ids across 37 captured route entries,
   5 alias route entries, 0 planned route entries, and 6 excluded route entries.
 - Component contracts: 56 reusable primitive/composite contracts with 349
   contract states.
@@ -607,7 +607,7 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
 - [ ] Finish Matches/Chat: add remaining empty/keyboard/share/report/block
   references, interaction proof for send/report/block flows, and list/chat
   route-state adapters.
-- [ ] Finish Profiles: add upload failure/delete/reorder, inline save
+- [ ] Finish Profiles: add delete/reorder, inline save
   pending/error, settings navigation, selected report reason, snackbar proof,
   and self/public profile adapters.
 - [ ] Finish Event Success Companion: add stage-by-stage captures/references,
@@ -924,7 +924,7 @@ tests, captures, Widgetbook, and audit receipts.
      keyboard/comment sheet regions, and explicit hub offline copy if needed.
    - Matches/Chat: send/report/block mutation proof, keyboard-open snapshots,
      and owner-blocked live Chats QA.
-   - Profiles: upload failure/delete/reorder, inline save pending/error
+   - Profiles: delete/reorder, inline save pending/error
      drawers, settings navigation, selected report reason, and
      success/failure snackbar proof.
    - Host Operations: remaining loading/error/empty/offline/access,
@@ -1252,7 +1252,7 @@ tests, captures, Widgetbook, and audit receipts.
   chat-specific adapters.
 - [ ] `TODO-P1-007` Profile/self and Public Profile: preserve first-pass
   Widgetbook states and deterministic route captures, then add remaining
-  interaction captures for upload failure/delete/reorder, inline save
+  interaction captures for delete/reorder, inline save
   pending/error drawers, settings navigation, selected report reason, mutation
   success/failure snackbars, profile adapters, and visual parity for the
   remaining public-profile top chrome/insight-copy/profile-section deltas.
@@ -1464,7 +1464,7 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
 - [ ] `profile.self` (16 state follow-ups, 1 open gap)
   - tested: `photo_grid`, `inline_text_edit`, `inline_choice_edit`, `inline_save_pending`, `inline_save_error`
   - captured: `profile_loading`, `profile_error`, `profile_unavailable`, `edit_tab_default`, `photo_upload_mutation`, `preview_tab_default`, `settings_action`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-PROFILE-SELF-002: Deterministic full-route captures are now registered for loading, error, offline, unavailable, edit tab, preview tab, upload pending, text scale, reduced motion, and paired light/dark. Remaining capture work is upload failure/delete/reorder, inline save pending/error drawers, settings navigation proof, and advisory pixel comparison.
+  - DP-PROFILE-SELF-002: Deterministic full-route captures are now registered for loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, text scale, reduced motion, and paired light/dark. Remaining capture work is delete/reorder, inline save pending/error drawers, settings navigation proof, and advisory pixel comparison.
   - DP-PROFILE-SELF-003: Closed by SelfProfileScreenState owning profile provider waves, preview projection, upload/save mutation modes, and retry intent; SelfProfileEditTabState owning photo-grid, prompt-slot, basics/about/running/lifestyle row descriptors; SelfProfilePhotoActionController owning photo editor/delete/reorder intents; and SelfProfileInlineEditPatchFactory owning inline edit patch creation.
   - DP-PROFILE-SELF-004: Closed by exported self-profile edit and preview references plus masks in `design/reference_screens/screen.profile.self`.
 - [ ] `profile.public` (14 state follow-ups, 2 open gaps)

@@ -6711,7 +6711,7 @@
           "kind": "repo",
           "status": "available",
           "path": "test/ui_captures/catalog/screen_capture_catalog.dart",
-          "notes": "Self-profile captures now include flagship profile surface plus full-route loading/error/offline/unavailable, edit/preview, upload-pending, text-scale, reduced-motion, and paired light/dark variants."
+          "notes": "Self-profile captures now include flagship profile surface plus full-route loading/error/offline/unavailable, edit/preview, upload-pending, upload-failure snackbar, text-scale, reduced-motion, and paired light/dark variants."
         },
         {
           "id": "claude.profile-self",
@@ -6768,6 +6768,11 @@
           "id": "profile_self_photo_upload_pending",
           "status": "captured",
           "notes": "Deterministic ProfileScreen route capture registered in screen_capture_catalog.dart."
+        },
+        {
+          "id": "profile_self_photo_upload_error",
+          "status": "captured",
+          "notes": "Deterministic ProfileScreen route capture drives the real PhotoUploadController upload failure path and surfaces the route snackbar."
         },
         {
           "id": "profile_self_text_scale_2",
@@ -6862,9 +6867,10 @@
             "ProfileScreen/Self route states"
           ],
           "captureIds": [
-            "profile_self_photo_upload_pending"
+            "profile_self_photo_upload_pending",
+            "profile_self_photo_upload_error"
           ],
-          "nextAction": "Upload pending is captured; add upload failure snackbar, delete pending, and reorder pending route or section captures."
+          "nextAction": "Upload pending and upload-failure snackbar are captured; add delete pending and reorder pending route or section captures."
         },
         {
           "id": "inline_text_edit",
@@ -7272,12 +7278,12 @@
         {
           "id": "DS-PROFILE-SELF-001",
           "status": "closed",
-          "nextAction": "Add Widgetbook states for header, edit tab, photo grid, info sections, inline editors, preview tab, loading, error, empty, upload failure, text scale, reduced motion, and light/dark."
+          "nextAction": "Widgetbook states and captures now cover header, edit tab, photo grid, info sections, inline editors, preview tab, loading, error, empty, upload pending/failure, text scale, reduced motion, and light/dark. Reopen only if a new self-profile section becomes contractual."
         },
         {
           "id": "DS-PROFILE-SELF-002",
           "status": "open",
-          "nextAction": "Deterministic route captures now cover loading, error, offline, unavailable, edit tab, preview tab, upload pending, text scale, reduced motion, and paired light/dark. Remaining work is upload failure/delete/reorder, inline save pending/error drawers, settings navigation proof, and advisory pixel comparison."
+          "nextAction": "Deterministic route captures now cover loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, text scale, reduced motion, and paired light/dark. Remaining work is delete/reorder, inline save pending/error drawers, settings navigation proof, and advisory pixel comparison."
         },
         {
           "id": "DS-PROFILE-SELF-003",

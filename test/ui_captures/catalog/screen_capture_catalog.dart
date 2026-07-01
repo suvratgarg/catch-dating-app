@@ -92,6 +92,7 @@ import 'package:catch_dating_app/events/presentation/location_picker_screen.dart
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
@@ -122,6 +123,7 @@ import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
+import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/labs/design_fixtures/catches_surface_fixtures.dart';
 import 'package:catch_dating_app/labs/design_fixtures/event_success_companion_fixtures.dart';
@@ -1400,6 +1402,7 @@ List<Object> _selfProfileProviderOverrides({
   Stream<UserProfile?>? profileStream,
   UserProfile? profile,
   Set<int> uploadLoadingIndices = const <int>{},
+  bool useRealPhotoUploadController = false,
 }) {
   final effectiveProfile = profile ?? ProfileSurfaceFixtures.viewer;
   return [
@@ -1412,16 +1415,71 @@ List<Object> _selfProfileProviderOverrides({
     userProfileRepositoryProvider.overrideWithValue(
       ProfileFixtureUserProfileRepository(profile: effectiveProfile),
     ),
-    photoUploadControllerProvider.overrideWithValue((
-      loadingIndices: uploadLoadingIndices,
-      uploadError: null,
-    )),
+    if (!useRealPhotoUploadController)
+      photoUploadControllerProvider.overrideWithValue((
+        loadingIndices: uploadLoadingIndices,
+        uploadError: null,
+      )),
     userAnalyticsRepositoryProvider.overrideWithValue(
       ProfileFixtureUserAnalyticsRepository(
         report: ProfileSurfaceFixtures.analyticsReport,
       ),
     ),
   ];
+}
+
+List<Object> _selfProfileUploadFailureProviderOverrides() {
+  return [
+    ..._selfProfileProviderOverrides(useRealPhotoUploadController: true),
+    imageUploadRepositoryProvider.overrideWithValue(
+      _CaptureFailingImageUploadRepository(),
+    ),
+    errorLoggerProvider.overrideWithValue(_CaptureSilentErrorLogger()),
+  ];
+}
+
+class _CaptureFailingImageUploadRepository extends Fake
+    implements ImageUploadRepository {
+  @override
+  Future<XFile?> pickImage({
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    int? imageQuality,
+  }) async {
+    return XFile.fromData(
+      _createClubPngBytes(),
+      name: 'profile-upload-failure.png',
+      mimeType: 'image/png',
+    );
+  }
+
+  @override
+  Future<UploadedImage> uploadUserProfilePhoto({
+    required String uid,
+    required int index,
+    required XFile image,
+  }) async {
+    throw obviousOfflineException(
+      context: const BackendErrorContext(
+        service: BackendService.storage,
+        action: 'upload profile photo',
+        resource: 'profile_photos',
+      ),
+    );
+  }
+}
+
+class _CaptureSilentErrorLogger extends ErrorLogger {
+  _CaptureSilentErrorLogger()
+    : super(crashReporter: null, shouldReportErrors: false);
+
+  @override
+  void log({
+    required LogLevel level,
+    required String message,
+    Object? error,
+    StackTrace? stackTrace,
+    Map<String, String>? context,
+  }) {}
 }
 
 List<Object> _publicProfileProviderOverrides({
@@ -1459,6 +1517,43 @@ List<Object> _publicProfileProviderOverrides({
 
 Widget _selfProfileCapture({int initialTabIndex = 0}) =>
     ProfileScreen(initialTabIndex: initialTabIndex);
+
+class _SelfProfileUploadFailureCapture extends ConsumerStatefulWidget {
+  const _SelfProfileUploadFailureCapture();
+
+  @override
+  ConsumerState<_SelfProfileUploadFailureCapture> createState() =>
+      _SelfProfileUploadFailureCaptureState();
+}
+
+class _SelfProfileUploadFailureCaptureState
+    extends ConsumerState<_SelfProfileUploadFailureCapture> {
+  var _seeded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _seedFailure());
+  }
+
+  void _seedFailure() {
+    if (!mounted || _seeded) return;
+    _seeded = true;
+    PhotoUploadController.uploadPhotoMutation.reset(ref);
+    unawaited(
+      PhotoUploadController.uploadPhotoMutation
+          .run(ref, (tx) async {
+            await tx
+                .get(photoUploadControllerProvider.notifier)
+                .pickAndUpload(1);
+          })
+          .catchError((_) {}),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => _selfProfileCapture();
+}
 
 Widget _publicProfileCapture({
   String uid = ProfileSurfaceFixtures.targetUid,
@@ -6371,6 +6466,13 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       uploadLoadingIndices: const <int>{1},
     ),
     builder: (context) => _selfProfileCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'profile_self_photo_upload_error',
+    routeIds: const <String>['profileScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _selfProfileUploadFailureProviderOverrides(),
+    builder: (context) => const _SelfProfileUploadFailureCapture(),
   ),
   ScreenCaptureEntry(
     id: 'profile_self_text_scale_2',
