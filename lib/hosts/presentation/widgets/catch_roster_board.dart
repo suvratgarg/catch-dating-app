@@ -3,7 +3,9 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 /// Maps a [CatchBadgeTone] to its functional colour for roster tiles.
@@ -98,17 +100,15 @@ class CatchRosterTileCell extends StatelessWidget {
     return Semantics(
       button: true,
       selected: selected,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          constraints: const BoxConstraints(
-            minHeight: CatchLayout.rosterFilterTileMinHeight,
-          ),
-          decoration: BoxDecoration(
-            color: fill,
-            borderRadius: BorderRadius.circular(CatchRadius.md),
-            border: Border.all(color: border),
-          ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          minHeight: CatchLayout.rosterFilterTileMinHeight,
+        ),
+        child: CatchSurface(
+          onTap: onTap,
+          radius: CatchRadius.md,
+          backgroundColor: fill,
+          borderColor: border,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
@@ -385,29 +385,15 @@ class CatchRosterDecideTarget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final enabled = onTap != null;
-    return Semantics(
-      button: true,
-      enabled: enabled,
-      label: label,
-      child: Opacity(
-        opacity: enabled ? 1 : CatchOpacity.disabledControl,
-        child: GestureDetector(
-          onTap: onTap,
-          child: Container(
-            width: CatchLayout.rosterDecideTargetExtent,
-            height: CatchLayout.rosterDecideTargetExtent,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: t.surface,
-              border: Border.all(
-                color: color.withValues(alpha: CatchOpacity.mutedBorderUrgent),
-              ),
-            ),
-            child: Icon(icon, size: CatchIcon.sm, color: color),
-          ),
-        ),
-      ),
+    return CatchIconButton(
+      onTap: onTap,
+      disabled: onTap == null,
+      variant: CatchIconButtonVariant.plain,
+      background: t.surface,
+      borderColor: color.withValues(alpha: CatchOpacity.mutedBorderUrgent),
+      size: CatchLayout.rosterDecideTargetExtent,
+      tooltip: label,
+      child: Icon(icon, size: CatchIcon.sm, color: color),
     );
   }
 }
@@ -439,108 +425,104 @@ class CatchRosterTable extends StatelessWidget {
       color: t.ink3,
     ).copyWith(fontSize: 8.5);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.md),
-        border: Border.all(color: t.line2),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(CatchRadius.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.micro14,
-                CatchSpacing.s3,
-                CatchSpacing.micro14,
-                CatchSpacing.micro10,
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 5,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: CatchLayout.rosterHeaderIdentityInset,
-                      ),
-                      child: Text(
-                        columns.isNotEmpty ? columns[0].toUpperCase() : '',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: headerStyle,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: CatchSpacing.s2),
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      columns.length > 1 ? columns[1].toUpperCase() : '',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: headerStyle,
-                    ),
-                  ),
-                  const SizedBox(width: CatchSpacing.s2),
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      columns.length > 2 ? columns[2].toUpperCase() : '',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.right,
-                      style: headerStyle,
-                    ),
-                  ),
-                ],
-              ),
+    return CatchSurface(
+      radius: CatchRadius.md,
+      backgroundColor: t.surface,
+      borderColor: t.line2,
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.micro14,
+              CatchSpacing.s3,
+              CatchSpacing.micro14,
+              CatchSpacing.micro10,
             ),
-            if (showEmpty)
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border(top: BorderSide(color: t.line)),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    CatchSpacing.micro14,
-                    CatchSpacing.s4,
-                    CatchSpacing.micro14,
-                    CatchSpacing.s5,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: CatchLayout.rosterHeaderIdentityInset,
+                    ),
+                    child: Text(
+                      columns.isNotEmpty ? columns[0].toUpperCase() : '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: headerStyle,
+                    ),
                   ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(CatchIcons.group, size: CatchIcon.md, color: t.ink3),
-                      const SizedBox(width: CatchSpacing.micro10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                ),
+                const SizedBox(width: CatchSpacing.s2),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    columns.length > 1 ? columns[1].toUpperCase() : '',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: headerStyle,
+                  ),
+                ),
+                const SizedBox(width: CatchSpacing.s2),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    columns.length > 2 ? columns[2].toUpperCase() : '',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
+                    style: headerStyle,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (showEmpty)
+            DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border(top: BorderSide(color: t.line)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  CatchSpacing.micro14,
+                  CatchSpacing.s4,
+                  CatchSpacing.micro14,
+                  CatchSpacing.s5,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(CatchIcons.group, size: CatchIcon.md, color: t.ink3),
+                    const SizedBox(width: CatchSpacing.micro10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            emptyTitle ?? '',
+                            style: CatchTextStyles.name(context),
+                          ),
+                          if (emptyMessage != null) ...[
+                            const SizedBox(height: CatchSpacing.s1),
                             Text(
-                              emptyTitle ?? '',
-                              style: CatchTextStyles.name(context),
+                              emptyMessage!,
+                              style: CatchTextStyles.bodyS(context),
                             ),
-                            if (emptyMessage != null) ...[
-                              const SizedBox(height: CatchSpacing.s1),
-                              Text(
-                                emptyMessage!,
-                                style: CatchTextStyles.bodyS(context),
-                              ),
-                            ],
                           ],
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              )
-            else
-              ...rows,
-          ],
-        ),
+              ),
+            )
+          else
+            ...rows,
+        ],
       ),
     );
   }
