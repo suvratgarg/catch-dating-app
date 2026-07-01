@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.501
+version: 2.5.502
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.502
+
+- Promoted `DateRail` and `PerforationLine` as public cataloged renderers used
+  by `EventDateRailCard`, with exact Widgetbook coverage. Private clipper and
+  painter helpers remain private implementation details, while the
+  classification scanner's private widget review count drops by two.
 
 ### 2.5.501
 
@@ -5601,6 +5608,8 @@ Generated 2026-05-06.
 | `WeekMarker` | `lib/events/presentation/widgets/event_tiles/event_date_marker.dart:56` | Public week-strip renderer used by `EventDateMarker`. Renders weekday/day labels, active ink fill, event dot, tappable semantics, and optional label override for calendar week rows without owning date selection. |
 | `MonthMarker` | `lib/events/presentation/widgets/event_tiles/event_date_marker.dart:126` | Public month-grid renderer used by `EventDateMarker`. Renders selected/today/disabled month-cell states, preserves disabled-cell geometry with invisible text, and exposes tappable semantics only when enabled. |
 | `EventDateRailCard` | `lib/events/presentation/widgets/event_tiles/event_date_rail_card.dart:18` | Shared date-rail event card extracted from the Explore mixed-feed row. Renders a clipped ticket silhouette with seam cutouts, activity-colored weekday/day/month tear-off stub, subtle perforation seam, compact activity stamp, optional supporting label, themed event-display title, time/price line, single capacity copy line, optional full-card Hero transition, and optional shared status pill for non-full states across Explore event rows plus agenda surfaces. `stripPosition` lets This week rows join into a continuous ticket strip while preserving the outer notches only on the first/last card, and single tickets paint a custom `CatchElevation.physicalShadow` behind an elevation-zero `PhysicalShape` so debug/golden rendering stays aligned with the intended soft lift rather than showing Flutter's shadow-debug outline. |
+| `PerforationLine` | `lib/events/presentation/widgets/event_tiles/event_date_rail_card.dart:373` | Public perforation renderer used by `EventDateRailCard`. Draws the vertical dashed ticket divider with caller-provided color while the private painter remains an implementation detail. |
+| `DateRail` | `lib/events/presentation/widgets/event_tiles/event_date_rail_card.dart:410` | Public date-rail renderer used by `EventDateRailCard`. Displays weekday, day, and month on a caller-provided activity color with token-derived on-fill text colors. |
 | `EventAgendaTile` | `lib/events/presentation/widgets/event_tiles/event_agenda_tile.dart:6` | Agenda/list adapter for Calendar, Saved events, and club schedules. It maps `EventTileData` into `EventDateRailCard`, preferring club name in global contexts and meeting point in club-local schedules, while suppressing the old redundant `VIEW` and `OPEN` badge language through `eventTileCardStatusLabel`. |
 | `EventAgendaList` | `lib/events/presentation/widgets/event_agenda_list.dart:9` | Box-facing agenda list for events grouped by day. Sorts by start time by default, with `preserveInputOrder` for callers that precompute semantic order plus optional club-name/status builders, and renders `EventAgendaTile` directly. |
 | `EventAgendaTileSkeleton` | `lib/events/presentation/widgets/event_agenda_list.dart:200` | Public placeholder row renderer used by `EventAgendaSliverSkeleton`. Mirrors the date rail plus body layout of agenda event tiles with shared skeleton primitives and owns no loading state. |

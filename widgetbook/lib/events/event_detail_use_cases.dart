@@ -1920,6 +1920,30 @@ Widget eventDateRailCardState(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Date rail',
+  type: DateRail,
+  path: '[Events]/Tiles',
+)
+Widget eventDateRailState(BuildContext context) {
+  return DateRail(
+    startTime: _event.startTime,
+    color: CatchTokens.of(context).accent,
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Perforation line',
+  type: PerforationLine,
+  path: '[Events]/Tiles',
+)
+Widget eventPerforationLineState(BuildContext context) {
+  return SizedBox(
+    height: 120,
+    child: PerforationLine(color: CatchTokens.of(context).ticketPerforationLine),
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Date marker states',
   type: EventDateMarker,
   path: '[Events]/Calendar',

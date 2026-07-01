@@ -5,12 +5,12 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_capacity_presenter.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_capacity_presenter.dart';
 import 'package:flutter/material.dart';
 
 const double _dateRailWidth = CatchLayout.eventDateRailWidth;
@@ -86,7 +86,7 @@ class EventDateRailCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _DateRail(
+                  DateRail(
                     startTime: event.startTime,
                     color: visual.accent,
                   ),
@@ -183,7 +183,7 @@ class EventDateRailCard extends StatelessWidget {
               top: perforationTop,
               bottom: perforationBottom,
               child: IgnorePointer(
-                child: _PerforationLine(color: t.ticketPerforationLine),
+                child: PerforationLine(color: t.ticketPerforationLine),
               ),
             ),
             Positioned.fill(
@@ -370,8 +370,8 @@ class _DateRailTicketBorderPainter extends CustomPainter {
   }
 }
 
-class _PerforationLine extends StatelessWidget {
-  const _PerforationLine({required this.color});
+class PerforationLine extends StatelessWidget {
+  const PerforationLine({super.key, required this.color});
 
   final Color color;
 
@@ -407,8 +407,12 @@ class _PerforationPainter extends CustomPainter {
       oldDelegate.color != color;
 }
 
-class _DateRail extends StatelessWidget {
-  const _DateRail({required this.startTime, required this.color});
+class DateRail extends StatelessWidget {
+  const DateRail({
+    super.key,
+    required this.startTime,
+    required this.color,
+  });
 
   final DateTime startTime;
   final Color color;

@@ -2578,6 +2578,26 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'DateRail',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Date rail',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDateRailState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'PerforationLine',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Perforation line',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventPerforationLineState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventStatusPill',
             useCases: [
               _widgetbook.WidgetbookUseCase(
