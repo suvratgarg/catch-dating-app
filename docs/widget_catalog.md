@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.513
+version: 2.5.514
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,14 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.514
+
+- Cataloged the `UserAnalyticsPanel` child renderers with exact Widgetbook
+  coverage: report view, empty state, loading skeleton, metric grid/tile, trend
+  panel/bar, tips panel/row, data-quality panel/row, section shell, and inline
+  stat. The panel catalog row now matches the current implementation instead of
+  older metric-strip guidance.
 
 ### 2.5.513
 
@@ -5438,12 +5446,25 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `UserAnalyticsPanel` | `lib/user_analytics/presentation/user_analytics_panel.dart:17` | Profile insights panel embedded from the profile Insights tab. Watches the user analytics repository at the route edge and renders the range selector, summary, trend, insight tips, data-quality sections, empty state, error state, and report-shaped loading skeleton through primitive-backed composition. Summary, Suggestions, and Data coverage use `CatchSection` plus `CatchField.read`; trend uses `CatchMetricStrip` and `CatchMiniBarChart`; empty/error/loading states route through shared Catch primitives. Widgetbook catalogs `UserAnalyticsPanel` directly for loaded, empty, loading, and error states. |
+| `UserAnalyticsPanel` | `lib/user_analytics/presentation/user_analytics_panel.dart:17` | Profile insights panel embedded from the profile Insights tab. Watches the user analytics repository at the route edge, owns the range preset selector, and composes loading, error, empty, summary metrics, trend, coaching tips, and data-quality states through public child renderers. Widgetbook catalogs the panel for loaded, empty, loading, and error states, and catalogs the child renderers directly for deterministic visual review. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
+| `UserAnalyticsReportView` | `lib/user_analytics/presentation/user_analytics_panel.dart:84` | Provider-free report renderer for loaded user analytics. Routes all-missing summaries to `UserAnalyticsEmptyState`; otherwise composes metric grid, trend panel, optional coaching tips, and data-quality panel in the profile Insights order. |
+| `UserAnalyticsEmptyState` | `lib/user_analytics/presentation/user_analytics_panel.dart:114` | Profile Insights empty-state surface for reports with no measurable summary cards. Uses shared icon, supporting copy, and `CatchSurface` chrome instead of a feature-local empty card. |
+| `UserAnalyticsReportSkeleton` | `lib/user_analytics/presentation/user_analytics_panel.dart:150` | Report-shaped loading skeleton for profile analytics. Reserves summary cards, trend bars, coaching tips, and data-quality rows while the selected analytics range is loading. |
+| `UserAnalyticsMetricGrid` | `lib/user_analytics/presentation/user_analytics_panel.dart:309` | Responsive two-column summary metric grid. Receives precomputed metric cards and delegates card copy/status rendering to `UserAnalyticsMetricTile`. |
+| `UserAnalyticsMetricTile` | `lib/user_analytics/presentation/user_analytics_panel.dart:335` | Single profile analytics summary card. Maps metric id/unit/status to icon, value formatting, status badge, canonical label/caption copy, and missing-data warning fill. |
+| `UserAnalyticsTrendPanel` | `lib/user_analytics/presentation/user_analytics_panel.dart:399` | Profile analytics trend section. Summarizes caught-you and mutual-catch totals, then renders the caught-you time series through `UserAnalyticsBar` columns. |
+| `UserAnalyticsBar` | `lib/user_analytics/presentation/user_analytics_panel.dart:469` | Single trend bar used by `UserAnalyticsTrendPanel`. Normalizes the value against the maximum and keeps zero-value bars visible with muted styling. |
+| `UserAnalyticsTipsPanel` | `lib/user_analytics/presentation/user_analytics_panel.dart:498` | Coaching-tip section for profile analytics. Wraps ordered tip refs in the shared section/surface chrome and delegates row copy to `UserAnalyticsTipRow`. |
+| `UserAnalyticsTipRow` | `lib/user_analytics/presentation/user_analytics_panel.dart:523` | Single coaching-tip row. Resolves copy from `UserAnalyticsCopy`, then renders the sparkle icon, title, and supporting body without provider access. |
+| `UserAnalyticsDataQualityPanel` | `lib/user_analytics/presentation/user_analytics_panel.dart:558` | Data-quality section for profile analytics. Presents quality rows inside shared section/surface chrome with dividers between rows. |
+| `UserAnalyticsDataQualityRow` | `lib/user_analytics/presentation/user_analytics_panel.dart:583` | Single data-quality row. Maps quality state to icon and renders the repository-provided detail text in supporting copy style. |
+| `UserAnalyticsSection` | `lib/user_analytics/presentation/user_analytics_panel.dart:607` | Small labeled section shell used by analytics trend, tips, data-quality, and skeleton sections. Keeps the label/child spacing consistent across Insights blocks. |
+| `UserAnalyticsInlineStat` | `lib/user_analytics/presentation/user_analytics_panel.dart:630` | Inline numeric stat used by the trend panel. Renders a large numeric value with a supporting label below it. |
 | `SelfProfileTabBody` | `lib/user_profile/presentation/profile_screen.dart:161` | Provider-free self-profile branch renderer for loading, error, unavailable, and ready states inside `ProfileScreen`'s `NestedScrollView.body`. Receives the route-owned `TabController`, preview scroll controller, preview bridge callbacks, and retry callback explicitly. Loading preserves the tab shell with Edit skeleton, Preview skeleton, and Insights body; ready renders Edit, Preview, and Insights through sliver-aware tab scroll views. Widgetbook mounts it inside a `NestedScrollView` preview so the `SliverOverlapInjector` contract is exercised. |
 | `ProfileTabScrollView` | `lib/user_profile/presentation/profile_screen.dart:250` | Shared tab scroll wrapper used by `SelfProfileTabBody`. Installs `CatchPagerFocusBoundary`, starts each tab with the `NestedScrollView` overlap injector, and then appends the tab slivers. |
 | `PreviewTab` | `lib/user_profile/presentation/widgets/preview_tab.dart:5` | Preview tab showing how the user's profile looks to others by rendering the shared handoff `ProfileSurface`, with owner-provided scroll controller, physics, bottom padding, and leading-overscroll callback when mounted inside ProfileScreen. |

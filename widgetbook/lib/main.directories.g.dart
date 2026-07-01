@@ -8318,6 +8318,83 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'User analytics',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'UserAnalyticsBar',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Bar states',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsBarStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'UserAnalyticsDataQualityPanel',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Data quality panel states',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsDataQualityPanelStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'UserAnalyticsDataQualityRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Data quality row states',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsDataQualityRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'UserAnalyticsEmptyState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Empty state',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsEmptyState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'UserAnalyticsInlineStat',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Inline stat states',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsInlineStatStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'UserAnalyticsMetricGrid',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Metric grid states',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsMetricGridStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'UserAnalyticsMetricTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Metric tile states',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsMetricTileStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'UserAnalyticsPanel',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -8325,6 +8402,72 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_user_analytics_user_analytics_use_cases
                         .userAnalyticsPanelStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'UserAnalyticsReportSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Report skeleton',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsReportSkeleton,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'UserAnalyticsReportView',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Report states',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsReportViewStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'UserAnalyticsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Section states',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'UserAnalyticsTipRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Tip row states',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsTipRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'UserAnalyticsTipsPanel',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Tips panel states',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsTipsPanelStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'UserAnalyticsTrendPanel',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Trend panel states',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsTrendPanelStates,
               ),
             ],
           ),
