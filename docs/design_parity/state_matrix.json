@@ -144,7 +144,7 @@
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "Auth phone entry now has a manifest-registered design reference and deterministic capture. Add OTP, validation, mutation, resend, text-scale, and reduced-motion captures/references before promoting beyond captured."
+              "notes": "Auth phone entry now has a manifest-registered design reference and deterministic capture. Widgetbook previews cover OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion; add deterministic captures/references before promoting beyond captured."
             },
             {
               "id": "country_selector",
@@ -153,7 +153,7 @@
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "PhonePage renders a country-code selector bound to AuthController.countryCode; add Widgetbook/capture states for default market, picker-open, and long country names."
+              "notes": "PhonePage renders a country-code selector bound to AuthController.countryCode; Widgetbook covers the default market. Add picker-open and long-country-name variants if design needs them."
             },
             {
               "id": "otp_entry",
@@ -162,15 +162,17 @@
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "After codeSent, AuthScreen renders OtpPage with CatchOtpCodeField, verify CTA, resend cooldown, and change-number action; route capture remains open."
+              "notes": "After codeSent, AuthScreen renders OtpPage with CatchOtpCodeField, verify CTA, resend cooldown, and change-number action; Widgetbook covers OTP cooldown. Route capture remains open."
             },
             {
               "id": "validation_error",
               "kind": "error",
               "status": "tested",
               "tests": [
-                "test/auth/presentation/auth_input_test.dart"
-              ]
+                "test/auth/presentation/auth_input_test.dart",
+                "test/auth/presentation/auth_screen_test.dart"
+              ],
+              "notes": "AuthInput and AuthScreen tests prove invalid phone input blocks OTP send; add branded validation-error route capture."
             },
             {
               "id": "send_code_mutation",
@@ -179,7 +181,7 @@
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "AuthController.sendOtpMutation drives the Send code loading state and CatchErrorBanner failure surface; add deterministic pending and failure captures."
+              "notes": "AuthController.sendOtpMutation drives the Send code loading state and CatchErrorBanner failure surface; Widgetbook covers send and resend pending/error. Add deterministic route captures."
             },
             {
               "id": "verify_otp_mutation",
@@ -188,25 +190,26 @@
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "AuthController.verifyOtpMutation drives Verify loading/error behavior, while sendOtpMutation also covers resend failures on the OTP page; add deterministic verify/resend pending and failure captures."
+              "notes": "AuthController.verifyOtpMutation drives Verify loading/error behavior, while sendOtpMutation also covers resend failures on the OTP page; Widgetbook covers verify/resend pending and failure. Add deterministic route captures."
             },
             {
               "id": "text_scale_2",
               "kind": "accessibility",
-              "status": "planned"
+              "status": "implemented",
+              "notes": "Widgetbook covers phone and OTP text-scale 2 states; add deterministic route captures."
             },
             {
               "id": "reduced_motion",
               "kind": "accessibility",
-              "status": "planned",
-              "notes": "Add reduced-motion preview/capture for phone-to-OTP transition and resend cooldown treatment."
+              "status": "implemented",
+              "notes": "Widgetbook covers OTP reduced-motion treatment; add deterministic route capture."
             }
           ],
           "gaps": [
             {
               "id": "DP-AUTH-001",
               "status": "open",
-              "nextAction": "Add auth OTP, mutation loading, and mutation error captures or previews."
+              "nextAction": "Auth Widgetbook now covers OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion; add deterministic route captures and references for those states."
             },
             {
               "id": "DP-AUTH-002",

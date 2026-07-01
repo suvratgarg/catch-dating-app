@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-01T13:01:19.212Z",
+  "generatedAt": "2026-07-01T13:47:20.654Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
@@ -7,9 +7,9 @@
   "summary": {
     "useCases": 629,
     "components": 613,
-    "stateCards": 1328,
-    "reviewCandidates": 31,
-    "oversizedUseCases": 40,
+    "stateCards": 1345,
+    "reviewCandidates": 32,
+    "oversizedUseCases": 41,
     "multiUseCaseComponents": 16
   },
   "reviewCandidates": [
@@ -2919,6 +2919,87 @@
             {
               "label": "activity-art",
               "normalizedLabel": "activity art"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "AuthScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 10,
+      "paths": [
+        "[P3 utility surfaces]/Auth"
+      ],
+      "labels": [
+        "otp entry cooldown",
+        "otp reduced motion",
+        "phone entry",
+        "phone entry text scale 2",
+        "resend error",
+        "resend pending",
+        "send code error",
+        "send code pending",
+        "verify code error",
+        "verify code pending"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "authScreenStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Screen states",
+          "functionName": "authScreenStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Auth",
+          "stateCardCount": 10,
+          "stateCards": [
+            {
+              "label": "phone entry",
+              "normalizedLabel": "phone entry"
+            },
+            {
+              "label": "otp entry cooldown",
+              "normalizedLabel": "otp entry cooldown"
+            },
+            {
+              "label": "send code pending",
+              "normalizedLabel": "send code pending"
+            },
+            {
+              "label": "send code error",
+              "normalizedLabel": "send code error"
+            },
+            {
+              "label": "verify code pending",
+              "normalizedLabel": "verify code pending"
+            },
+            {
+              "label": "verify code error",
+              "normalizedLabel": "verify code error"
+            },
+            {
+              "label": "resend pending",
+              "normalizedLabel": "resend pending"
+            },
+            {
+              "label": "resend error",
+              "normalizedLabel": "resend error"
+            },
+            {
+              "label": "phone entry text scale 2",
+              "normalizedLabel": "phone entry text scale 2"
+            },
+            {
+              "label": "otp reduced motion",
+              "normalizedLabel": "otp reduced motion"
             }
           ]
         }
@@ -6436,6 +6517,87 @@
       ]
     },
     {
+      "component": "AuthScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 10,
+      "paths": [
+        "[P3 utility surfaces]/Auth"
+      ],
+      "labels": [
+        "otp entry cooldown",
+        "otp reduced motion",
+        "phone entry",
+        "phone entry text scale 2",
+        "resend error",
+        "resend pending",
+        "send code error",
+        "send code pending",
+        "verify code error",
+        "verify code pending"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "authScreenStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Screen states",
+          "functionName": "authScreenStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Auth",
+          "stateCardCount": 10,
+          "stateCards": [
+            {
+              "label": "phone entry",
+              "normalizedLabel": "phone entry"
+            },
+            {
+              "label": "otp entry cooldown",
+              "normalizedLabel": "otp entry cooldown"
+            },
+            {
+              "label": "send code pending",
+              "normalizedLabel": "send code pending"
+            },
+            {
+              "label": "send code error",
+              "normalizedLabel": "send code error"
+            },
+            {
+              "label": "verify code pending",
+              "normalizedLabel": "verify code pending"
+            },
+            {
+              "label": "verify code error",
+              "normalizedLabel": "verify code error"
+            },
+            {
+              "label": "resend pending",
+              "normalizedLabel": "resend pending"
+            },
+            {
+              "label": "resend error",
+              "normalizedLabel": "resend error"
+            },
+            {
+              "label": "phone entry text scale 2",
+              "normalizedLabel": "phone entry text scale 2"
+            },
+            {
+              "label": "otp reduced motion",
+              "normalizedLabel": "otp reduced motion"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "HostSettingsProfileSection",
       "useCaseCount": 1,
       "stateCardCount": 10,
@@ -8075,6 +8237,68 @@
             {
               "label": "text scale 2.0",
               "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "OtpPage",
+      "useCaseCount": 1,
+      "stateCardCount": 7,
+      "paths": [
+        "[P3 utility surfaces]/Auth"
+      ],
+      "labels": [
+        "reduced motion",
+        "resend error",
+        "resend pending",
+        "text scale 2",
+        "verification code cooldown",
+        "verify error",
+        "verify pending"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "OTP entry states",
+          "functionName": "otpPageStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Auth",
+          "stateCardCount": 7,
+          "stateCards": [
+            {
+              "label": "verification code cooldown",
+              "normalizedLabel": "verification code cooldown"
+            },
+            {
+              "label": "verify pending",
+              "normalizedLabel": "verify pending"
+            },
+            {
+              "label": "verify error",
+              "normalizedLabel": "verify error"
+            },
+            {
+              "label": "resend pending",
+              "normalizedLabel": "resend pending"
+            },
+            {
+              "label": "resend error",
+              "normalizedLabel": "resend error"
+            },
+            {
+              "label": "text scale 2",
+              "normalizedLabel": "text scale 2"
             },
             {
               "label": "reduced motion",
@@ -11403,6 +11627,53 @@
       ]
     },
     {
+      "component": "PhonePage",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[P3 utility surfaces]/Auth"
+      ],
+      "labels": [
+        "default country",
+        "send code error",
+        "send code pending",
+        "text scale 2"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Phone entry states",
+          "functionName": "phonePageStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Auth",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "default country",
+              "normalizedLabel": "default country"
+            },
+            {
+              "label": "send code pending",
+              "normalizedLabel": "send code pending"
+            },
+            {
+              "label": "send code error",
+              "normalizedLabel": "send code error"
+            },
+            {
+              "label": "text scale 2",
+              "normalizedLabel": "text scale 2"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "PublicProfileScreenBody",
       "useCaseCount": 1,
       "stateCardCount": 4,
@@ -12882,43 +13153,6 @@
             {
               "label": "full loading",
               "normalizedLabel": "full loading"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "AuthScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P3 utility surfaces]/Auth"
-      ],
-      "labels": [
-        "otp entry",
-        "phone entry"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Screen states",
-          "functionName": "authScreenStates",
-          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "path": "[P3 utility surfaces]/Auth",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "phone entry",
-              "normalizedLabel": "phone entry"
-            },
-            {
-              "label": "otp entry",
-              "normalizedLabel": "otp entry"
             }
           ]
         }
@@ -19740,38 +19974,6 @@
       ]
     },
     {
-      "component": "OtpPage",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P3 utility surfaces]/Auth"
-      ],
-      "labels": [
-        "verification code"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "OTP entry states",
-          "functionName": "otpPageStates",
-          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "path": "[P3 utility surfaces]/Auth",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "verification code",
-              "normalizedLabel": "verification code"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "PaymentReferralBanner",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -19798,38 +20000,6 @@
             {
               "label": "event referral prompt",
               "normalizedLabel": "event referral prompt"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "PhonePage",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P3 utility surfaces]/Auth"
-      ],
-      "labels": [
-        "default country"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Phone entry states",
-          "functionName": "phonePageStates",
-          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "path": "[P3 utility surfaces]/Auth",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "default country",
-              "normalizedLabel": "default country"
             }
           ]
         }

@@ -679,7 +679,7 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.matches.list` | 15 | 6 | 1 | None | `DS-MATCHES-LIST-002` | `HostInboxScreenState` and `ChatsListDisplayState` now live in `chats_list_screen_state.dart` and own visible row derivation, unread filtering, empty-state selection, search affordance, and display-error retry intents. `ChatsListCelebrationController` owns new-match celebration target selection and dialog execution, and `ChatsSearchHeaderController` owns search-open close policy while the route passes query value/callback into the header. No `ChatNewMatchesRail` symbol remains; new matches render through the shared row list with fresh treatment. Continue only additional reference variants and advisory pixel comparison. |
 | P1 | `screen.profile.public` | 14 | 6 | 1 | None | `DS-PROFILE-PUBLIC-002` | `PublicProfileScreenState` owns target-profile branches, initial fallback, viewer context projection, safety action availability, retry intent, and report/block mutation mode. Selected report reason, report success snackbar, and block failure snackbar now have focused widget-test proof; continue visual parity for top chrome/insight copy/profile sections. |
 | P1 | `screen.profile.self` | 16 | 8 | 2 | None | `DS-PROFILE-SELF-002`, `DS-PROFILE-SELF-003` | Close registry gaps with adapters, previews, captures, or component registration. |
-| P2 | `screen.auth.phone_entry` | 8 | 4 | 1 | `auth-handoff` | `DS-AUTH-001`, `DS-AUTH-002`, `DS-AUTH-003` | Export OTP, validation, mutation, resend, text-scale, and reduced-motion references. |
+| P2 | `screen.auth.phone_entry` | 8 | 4 | 1 | `auth-handoff` | `DS-AUTH-001`, `DS-AUTH-002`, `DS-AUTH-003` | Widgetbook now covers phone entry, OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion; export/capture OTP, validation, mutation, resend, text-scale, and reduced-motion references next. |
 | P2 | `screen.calendar.home` | 10 | 5 | 0 | Blocked: no standalone Calendar Home source; only `CalendarPrimitive.html`/`DateRangePicker` | `DS-CALENDAR-001`, `DS-CALENDAR-002`, `DS-CALENDAR-003`, `DS-CALENDAR-004` blocked | Continue adapter/capture/Widgetbook work; reference export waits on canonical screen source. |
 | P2 | `screen.event.recap` | 10 | 5 | 0 | Blocked: no standalone Event Recap source | `DS-EVENT-RECAP-001`, `DS-EVENT-RECAP-002`, `DS-EVENT-RECAP-003`, `DS-EVENT-RECAP-004` blocked | Continue adapter/capture/Widgetbook work; reference export waits on canonical recap source. |
 | P2 | `screen.filters.preferences` | 11 | 5 | 1 | None | `DS-FILTERS-001`, `DS-FILTERS-002`, `DS-FILTERS-003` | Widgetbook now covers route/content states for loading, error/offline, missing, default, dirty/reset, pending, text-scale, and reduced-motion; remaining work is save-error proof, captures, and the fuller adapter. |
@@ -1362,10 +1362,10 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - DP-START-001: Landed direct Start Welcome reference and masks are registered; export animated reel samples, reduced-motion, text-scale, and any alternate theme references before strict visual comparison.
   - DP-START-002: Add a preview/story for animated, skipped, direct, reduced-motion, and text-scale states.
 - [ ] `auth.phone_entry` (5 state follow-ups, 2 open gaps)
-  - planned: `otp_entry`, `submit_mutation`, `text_scale_2`
-  - tested: `validation_error`
+  - implemented: `otp_entry`, `submit_mutation`, `text_scale_2`, `reduced_motion`
+  - tested: `validation_error`, `invalid_phone_blocks_send`
   - captured: `phone_entry`
-  - DP-AUTH-001: Auth phone-entry reference and masks are exported and registered. Add auth OTP, mutation loading, and mutation error captures or previews.
+  - DP-AUTH-001: Auth phone-entry reference and masks are exported and registered. Widgetbook previews now cover OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion. Add deterministic route captures/references for those states.
   - DP-AUTH-002: Verify auth fields and validation banners against component contracts before visual polish.
 - [ ] `onboarding.flow` (5 state follow-ups, 2 open gaps)
   - planned: `text_scale_2`

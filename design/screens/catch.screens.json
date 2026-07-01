@@ -15400,7 +15400,7 @@
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "Auth phone entry now has a manifest-registered design reference and deterministic capture. Add OTP, validation, mutation, resend, text-scale, and reduced-motion captures/references before promoting beyond captured."
+          "nextAction": "Auth phone entry now has a manifest-registered design reference and deterministic capture. Widgetbook previews cover OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion; add deterministic captures/references before promoting beyond captured."
         },
         {
           "id": "country_selector",
@@ -15410,7 +15410,7 @@
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "Add Widgetbook/capture states for default market, host default, picker open, and long country names."
+          "nextAction": "Widgetbook covers the default market. Add picker-open and long-country-name variants if design needs them."
         },
         {
           "id": "validation_error",
@@ -15421,7 +15421,7 @@
             "test/auth/presentation/auth_input_test.dart",
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "Add branded validation-error capture for phone entry and incomplete OTP states."
+          "nextAction": "AuthInput and AuthScreen tests prove invalid phone input blocks OTP send; add branded validation-error route capture for phone entry and incomplete OTP states."
         },
         {
           "id": "send_code_mutation",
@@ -15431,7 +15431,7 @@
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "Add deterministic send-code pending and failure captures."
+          "nextAction": "Widgetbook covers send-code pending and failure; add deterministic route captures."
         },
         {
           "id": "otp_entry",
@@ -15441,7 +15441,7 @@
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "Add route capture and Widgetbook state for OTP entry with active cooldown and complete-code ready state."
+          "nextAction": "Widgetbook covers OTP entry with active cooldown; add deterministic route capture and complete-code ready state if visually distinct."
         },
         {
           "id": "verify_otp_mutation",
@@ -15451,21 +15451,21 @@
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "Add deterministic verify pending/failure, resend pending/failure, and expired verification captures."
+          "nextAction": "Widgetbook covers verify pending/failure and resend pending/failure; add deterministic route captures and expired-verification capture if visually distinct."
         },
         {
           "id": "text_scale_2",
           "kind": "accessibility",
-          "status": "planned",
-          "source": "No text-scale 2.0 Auth capture exists yet.",
-          "nextAction": "Add text-scale capture for phone entry, OTP entry, error banners, country selector, and sticky footers."
+          "status": "implemented",
+          "source": "Widgetbook covers phone and OTP text-scale 2 states; no deterministic route capture exists yet.",
+          "nextAction": "Widgetbook covers phone and OTP text-scale 2 states; add deterministic route captures for phone entry, OTP entry, error banners, country selector, and sticky footers."
         },
         {
           "id": "reduced_motion",
           "kind": "accessibility",
-          "status": "planned",
-          "source": "Auth has no explicit reduced-motion capture yet; route/page transitions and timers need review.",
-          "nextAction": "Add reduced-motion preview/capture for phone-to-OTP transition and resend cooldown treatment."
+          "status": "implemented",
+          "source": "Widgetbook covers OTP reduced-motion treatment; no deterministic route capture exists yet.",
+          "nextAction": "Widgetbook covers OTP reduced-motion treatment; add deterministic route capture for phone-to-OTP transition and resend cooldown treatment."
         }
       ],
       "composition": {
@@ -15581,17 +15581,17 @@
         {
           "id": "DS-AUTH-001",
           "status": "open",
-          "nextAction": "Add Auth Widgetbook states for phone entry, OTP entry, country picker, validation errors, send/verify pending and failure, resend cooldown, text scale, reduced motion, and theme variants."
+          "nextAction": "Auth Widgetbook now covers phone entry, OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion through the existing AuthController and Mutation seams. Remaining work is country-picker edge variants, validation-error preview/capture, theme variants, and deterministic route captures."
         },
         {
           "id": "DS-AUTH-002",
           "status": "open",
-          "nextAction": "Add deterministic OTP, mutation loading, mutation error, resend, and text-scale captures."
+          "nextAction": "Add deterministic route captures for OTP, send/verify/resend mutation loading and errors, validation errors, text scale, and reduced motion."
         },
         {
           "id": "DS-AUTH-003",
           "status": "open",
-          "nextAction": "Introduce an Auth route/display adapter so local text, country, OTP, cooldown, validation, and mutation state can be rendered in Widgetbook without Firebase auth side effects."
+          "nextAction": "Auth Widgetbook previews now seed local phone, OTP, cooldown, mutation, text-scale, and reduced-motion state without Firebase side effects. Remaining adapter work is deciding whether to promote that preview seeder into a production Auth display-state adapter before capture expansion."
         }
       ]
     },

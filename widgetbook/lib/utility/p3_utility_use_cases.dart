@@ -213,12 +213,70 @@ Widget authScreenStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'phone entry',
-        child: const _DeviceFrame(child: _AuthScope(child: AuthScreen())),
+        child: _authFrame(child: const AuthScreen()),
       ),
       _StateCard(
-        label: 'otp entry',
-        child: const _DeviceFrame(
-          child: _AuthScope(step: AuthStep.otp, child: AuthScreen()),
+        label: 'otp entry cooldown',
+        child: _authFrame(
+          mode: _AuthPreviewMode.otpEntry,
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'send code pending',
+        child: _authFrame(
+          mode: _AuthPreviewMode.sendCodePending,
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'send code error',
+        child: _authFrame(
+          mode: _AuthPreviewMode.sendCodeError,
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'verify code pending',
+        child: _authFrame(
+          mode: _AuthPreviewMode.verifyCodePending,
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'verify code error',
+        child: _authFrame(
+          mode: _AuthPreviewMode.verifyCodeError,
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'resend pending',
+        child: _authFrame(
+          mode: _AuthPreviewMode.resendPending,
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'resend error',
+        child: _authFrame(
+          mode: _AuthPreviewMode.resendError,
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'phone entry text scale 2',
+        child: _authFrame(
+          textScaler: const TextScaler.linear(2),
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'otp reduced motion',
+        child: _authFrame(
+          mode: _AuthPreviewMode.otpEntry,
+          disableAnimations: true,
+          child: const AuthScreen(),
         ),
       ),
     ],
@@ -237,7 +295,28 @@ Widget phonePageStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'default country',
-        child: const _DeviceFrame(child: _AuthScope(child: PhonePage())),
+        child: _authFrame(child: const PhonePage()),
+      ),
+      _StateCard(
+        label: 'send code pending',
+        child: _authFrame(
+          mode: _AuthPreviewMode.sendCodePending,
+          child: const PhonePage(),
+        ),
+      ),
+      _StateCard(
+        label: 'send code error',
+        child: _authFrame(
+          mode: _AuthPreviewMode.sendCodeError,
+          child: const PhonePage(),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2',
+        child: _authFrame(
+          textScaler: const TextScaler.linear(2),
+          child: const PhonePage(),
+        ),
       ),
     ],
   );
@@ -254,9 +333,54 @@ Widget otpPageStates(BuildContext context) {
     contractId: 'screen.auth.otp',
     children: [
       _StateCard(
-        label: 'verification code',
-        child: const _DeviceFrame(
-          child: _AuthScope(step: AuthStep.otp, child: OtpPage()),
+        label: 'verification code cooldown',
+        child: _authFrame(
+          mode: _AuthPreviewMode.otpEntry,
+          child: const OtpPage(),
+        ),
+      ),
+      _StateCard(
+        label: 'verify pending',
+        child: _authFrame(
+          mode: _AuthPreviewMode.verifyCodePending,
+          child: const OtpPage(),
+        ),
+      ),
+      _StateCard(
+        label: 'verify error',
+        child: _authFrame(
+          mode: _AuthPreviewMode.verifyCodeError,
+          child: const OtpPage(),
+        ),
+      ),
+      _StateCard(
+        label: 'resend pending',
+        child: _authFrame(
+          mode: _AuthPreviewMode.resendPending,
+          child: const OtpPage(),
+        ),
+      ),
+      _StateCard(
+        label: 'resend error',
+        child: _authFrame(
+          mode: _AuthPreviewMode.resendError,
+          child: const OtpPage(),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2',
+        child: _authFrame(
+          mode: _AuthPreviewMode.otpEntry,
+          textScaler: const TextScaler.linear(2),
+          child: const OtpPage(),
+        ),
+      ),
+      _StateCard(
+        label: 'reduced motion',
+        child: _authFrame(
+          mode: _AuthPreviewMode.otpEntry,
+          disableAnimations: true,
+          child: const OtpPage(),
         ),
       ),
     ],
@@ -2407,60 +2531,222 @@ class _ForceUpdatePassThrough extends StatelessWidget {
   }
 }
 
+Widget _authFrame({
+  required Widget child,
+  _AuthPreviewMode mode = _AuthPreviewMode.phoneEntry,
+  TextScaler? textScaler,
+  bool disableAnimations = false,
+}) {
+  return _DeviceFrame(
+    child: _AuthScope(
+      mode: mode,
+      textScaler: textScaler,
+      disableAnimations: disableAnimations,
+      child: child,
+    ),
+  );
+}
+
+enum _AuthPreviewMode {
+  phoneEntry,
+  otpEntry,
+  sendCodePending,
+  sendCodeError,
+  verifyCodePending,
+  verifyCodeError,
+  resendPending,
+  resendError,
+}
+
 class _AuthScope extends StatelessWidget {
-  const _AuthScope({required this.child, this.step});
+  const _AuthScope({
+    required this.child,
+    this.mode = _AuthPreviewMode.phoneEntry,
+    this.textScaler,
+    this.disableAnimations = false,
+  });
 
   final Widget child;
-  final AuthStep? step;
+  final _AuthPreviewMode mode;
+  final TextScaler? textScaler;
+  final bool disableAnimations;
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
+    Widget scoped = ProviderScope(
       overrides: [
         authRepositoryProvider.overrideWithValue(
           const _WidgetbookAuthRepository(),
         ),
         authInitialCountryDialCodeProvider.overrideWithValue('+91'),
       ],
-      child: step == null ? child : _AuthStepSeeder(step: step!, child: child),
+      child: _AuthPreviewSeeder(mode: mode, child: child),
+    );
+
+    if (textScaler != null || disableAnimations) {
+      scoped = _AuthMediaOverride(
+        textScaler: textScaler,
+        disableAnimations: disableAnimations,
+        child: scoped,
+      );
+    }
+
+    return scoped;
+  }
+}
+
+class _AuthMediaOverride extends StatelessWidget {
+  const _AuthMediaOverride({
+    required this.child,
+    this.textScaler,
+    this.disableAnimations = false,
+  });
+
+  final Widget child;
+  final TextScaler? textScaler;
+  final bool disableAnimations;
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    return MediaQuery(
+      data: media.copyWith(
+        textScaler: textScaler ?? media.textScaler,
+        disableAnimations: disableAnimations || media.disableAnimations,
+      ),
+      child: child,
     );
   }
 }
 
-class _AuthStepSeeder extends ConsumerStatefulWidget {
-  const _AuthStepSeeder({required this.step, required this.child});
+class _AuthPreviewSeeder extends ConsumerStatefulWidget {
+  const _AuthPreviewSeeder({required this.mode, required this.child});
 
-  final AuthStep step;
+  final _AuthPreviewMode mode;
   final Widget child;
 
   @override
-  ConsumerState<_AuthStepSeeder> createState() => _AuthStepSeederState();
+  ConsumerState<_AuthPreviewSeeder> createState() => _AuthPreviewSeederState();
 }
 
-class _AuthStepSeederState extends ConsumerState<_AuthStepSeeder> {
+class _AuthPreviewSeederState extends ConsumerState<_AuthPreviewSeeder> {
+  static const _phoneNumber = '9876543210';
+  static const _countryCode = '+91';
+
+  Completer<void>? _pendingCompleter;
   var _seeded = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _seed());
+    WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_seed()));
   }
 
   @override
-  void didUpdateWidget(covariant _AuthStepSeeder oldWidget) {
+  void didUpdateWidget(covariant _AuthPreviewSeeder oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.step != widget.step) {
+    if (oldWidget.mode != widget.mode) {
       _seeded = false;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _seed());
+      WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_seed()));
     }
   }
 
-  void _seed() {
+  @override
+  void dispose() {
+    final completer = _pendingCompleter;
+    if (completer != null && !completer.isCompleted) {
+      completer.complete();
+    }
+    super.dispose();
+  }
+
+  Future<void> _seed() async {
     if (!mounted || _seeded) return;
     _seeded = true;
     AuthController.sendOtpMutation.reset(ref);
     AuthController.verifyOtpMutation.reset(ref);
-    ref.read(authControllerProvider.notifier).goToStep(widget.step);
+
+    switch (widget.mode) {
+      case _AuthPreviewMode.phoneEntry:
+        ref.read(authControllerProvider.notifier).goToStep(AuthStep.phone);
+        break;
+      case _AuthPreviewMode.otpEntry:
+        await _seedOtpStep();
+        break;
+      case _AuthPreviewMode.sendCodePending:
+        ref.read(authControllerProvider.notifier).goToStep(AuthStep.phone);
+        _runPending(AuthController.sendOtpMutation);
+        break;
+      case _AuthPreviewMode.sendCodeError:
+        ref.read(authControllerProvider.notifier).goToStep(AuthStep.phone);
+        _runError(
+          AuthController.sendOtpMutation,
+          const NetworkException(
+            'widgetbook-send-code-failed',
+            'We could not send the code. Check your connection and try again.',
+            context: BackendErrorContext(
+              service: BackendService.auth,
+              action: 'send verification code',
+              resource: 'phone_auth',
+            ),
+          ),
+        );
+        break;
+      case _AuthPreviewMode.verifyCodePending:
+        await _seedOtpStep();
+        _runPending(AuthController.verifyOtpMutation);
+        break;
+      case _AuthPreviewMode.verifyCodeError:
+        await _seedOtpStep();
+        _runError(
+          AuthController.verifyOtpMutation,
+          const ValidationException(
+            'That code is invalid. Please try again.',
+            code: 'invalid-verification-code',
+            context: BackendErrorContext(
+              service: BackendService.auth,
+              action: 'verify sms code',
+              resource: 'phone_auth',
+            ),
+          ),
+        );
+        break;
+      case _AuthPreviewMode.resendPending:
+        await _seedOtpStep();
+        _runPending(AuthController.sendOtpMutation);
+        break;
+      case _AuthPreviewMode.resendError:
+        await _seedOtpStep();
+        _runError(
+          AuthController.sendOtpMutation,
+          const NetworkException(
+            'widgetbook-resend-code-failed',
+            'We could not resend the code. Please try again.',
+            context: BackendErrorContext(
+              service: BackendService.auth,
+              action: 'resend verification code',
+              resource: 'phone_auth',
+            ),
+          ),
+        );
+        break;
+    }
+  }
+
+  Future<void> _seedOtpStep() async {
+    await ref
+        .read(authControllerProvider.notifier)
+        .sendOtp(_phoneNumber, _countryCode);
+  }
+
+  void _runPending(Mutation<void> mutation) {
+    final completer = Completer<void>();
+    _pendingCompleter = completer;
+    unawaited(mutation.run(ref, (_) => completer.future));
+  }
+
+  void _runError(Mutation<void> mutation, Object error) {
+    unawaited(mutation.run(ref, (_) async => throw error).catchError((_) {}));
   }
 
   @override
