@@ -6123,7 +6123,7 @@
           "tests": [
             "test/chats/chat_screen_test.dart"
           ],
-          "nextAction": "Add Widgetbook state for composer sending spinner and disabled controls.",
+          "nextAction": "Route test now proves pending send spinner, disabled composer controls, duplicate-send guard, success clearing, and retained draft on failure. Continue only capture/reference variants.",
           "previewIds": [
             "ChatScreen/Route states"
           ]

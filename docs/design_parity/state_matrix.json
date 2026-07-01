@@ -3521,7 +3521,7 @@
               "tests": [
                 "test/chats/chat_screen_test.dart"
               ],
-              "notes": "ChatScreen trims message text, runs ChatController.sendMessageMutation, clears only after success, and animates to bottom.",
+              "notes": "ChatScreen trims message text, runs ChatController.sendMessageMutation, disables composer actions while pending, ignores duplicate sends, clears only after success, and animates to bottom.",
               "previewIds": [
                 "ChatScreen/Route states"
               ]

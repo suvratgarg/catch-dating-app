@@ -19,6 +19,7 @@ import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -56,10 +57,15 @@ class FakeMatchRepository implements MatchRepository {
 }
 
 class FakeConversationRepository implements ConversationRepository {
-  FakeConversationRepository({this.failSends = false, this.messageStream});
+  FakeConversationRepository({
+    this.failSends = false,
+    this.messageStream,
+    this.sendCompleter,
+  });
 
   final bool failSends;
   final Stream<List<ChatMessage>>? messageStream;
+  final Completer<void>? sendCompleter;
   final Map<String, List<ChatMessage>> messagesByMatch = {};
   final List<(String matchId, String senderId, String text)> sendCalls = [];
   final List<(String matchId, String uid)> markReadCalls = [];
@@ -71,6 +77,7 @@ class FakeConversationRepository implements ConversationRepository {
     required String text,
   }) async {
     sendCalls.add((conversationId, senderId, text));
+    await sendCompleter?.future;
     if (failSends) {
       throw Exception('send failed');
     }
@@ -1321,29 +1328,58 @@ void main() {
       );
     });
 
-    testWidgets('keeps composed text and surfaces feedback when send fails', (
-      tester,
-    ) async {
-      final conversationRepository = FakeConversationRepository(
-        failSends: true,
-      );
+    testWidgets(
+      'disables composer while sending and retains draft on failure',
+      (tester) async {
+        final sendCompleter = Completer<void>();
+        final conversationRepository = FakeConversationRepository(
+          failSends: true,
+          sendCompleter: sendCompleter,
+        );
+        addTearDown(() {
+          if (!sendCompleter.isCompleted) sendCompleter.complete();
+        });
 
-      await pumpConsumerMatchChat(
-        tester,
-        conversationRepository: conversationRepository,
-      );
+        await pumpConsumerMatchChat(
+          tester,
+          conversationRepository: conversationRepository,
+        );
 
-      await tester.enterText(find.byType(TextField), '  Still here  ');
-      await tester.tap(find.byIcon(CatchIcons.sendRounded));
-      await pumpFeatureUi(tester);
+        await tester.enterText(find.byType(TextField), '  Still here  ');
+        await tester.tap(find.byIcon(CatchIcons.sendRounded));
+        await tester.pump();
 
-      expect(conversationRepository.sendCalls, hasLength(1));
-      expect(
-        tester.widget<TextField>(find.byType(TextField)).controller?.text,
-        '  Still here  ',
-      );
-      expect(find.text('send failed'), findsOneWidget);
-    });
+        expect(conversationRepository.sendCalls, hasLength(1));
+        expect(find.byIcon(CatchIcons.sendRounded), findsNothing);
+        expect(find.byType(CatchLoadingIndicator), findsOneWidget);
+        expect(
+          tester.widget<TextField>(find.byType(TextField)).enabled,
+          isFalse,
+        );
+
+        await tester.tap(find.byTooltip('Send message'));
+        await tester.pump();
+
+        expect(conversationRepository.sendCalls, hasLength(1));
+
+        sendCompleter.complete();
+        await pumpFeatureUi(tester);
+
+        expect(
+          tester.widget<TextField>(find.byType(TextField)).controller?.text,
+          '  Still here  ',
+        );
+        expect(
+          tester.widget<TextField>(find.byType(TextField)).enabled,
+          isTrue,
+        );
+        expect(find.byIcon(CatchIcons.sendRounded), findsOneWidget);
+        expect(
+          find.text('Unable to send text message right now. Please try again.'),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets(
       'keeps multiline composer visible and capped when keyboard is open',
