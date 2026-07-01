@@ -7563,7 +7563,7 @@
             {
               "id": "DP-HOST-INBOX-001",
               "status": "open",
-              "nextAction": "Add remaining deterministic Host Inbox captures for loading, empty, unread filter, no unread, search active, search empty, match stream error, offline, text-scale, reduced-motion, and expanded light/dark variants."
+              "nextAction": "Flutter captures now cover uid loading, matches loading, generic error, offline, empty, populated, unread-filter rows, no-unread empty, search active, search empty, new inquiry, text-scale, reduced-motion, and light/dark. Remaining capture work is only duplicate/grouping, long-count, keyboard, and pixel-reference variants if design requires them."
             },
             {
               "id": "DP-HOST-INBOX-002",
