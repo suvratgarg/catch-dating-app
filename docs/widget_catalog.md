@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.523
+version: 2.5.524
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.524
+
+- Cataloged the Who's Going render leaves directly: provider-free roster
+  content, empty roster message, and swipe-window banner states. This keeps the
+  event-detail roster section reviewable below the provider-backed
+  `WhoIsGoing` wrapper.
 
 ### 2.5.523
 
@@ -5828,6 +5835,9 @@ Generated 2026-05-06.
 | `AttendanceSheetViewModel` | `lib/events/presentation/attendance_sheet_view_model.dart:10` | Attendance data seam. Combines the event stream with `eventParticipations` and derives attendee IDs plus checked-in state from participation statuses. |
 | `EventHypeAvatarStack` | `lib/events/presentation/widgets/event_hype_avatar_stack.dart:68` | Shared attendee-hype avatar stack for event detail and roster surfaces. Obscured mode renders local activity-tinted veiled placeholders without fetching profile photos; revealed mode derives eligible signed-up/attended participants through `eventHypeAvatarsProvider`, applies the viewer gender-preference filter, joins public profile names/thumbnails, and renders `PersonAvatarStack`. |
 | `WhoIsGoing` | `lib/events/presentation/widgets/who_is_going.dart:36` | Event detail social roster. Watches `EventParticipationRoster` for booked counts and renders activity-tinted veiled `EventHypeAvatarStack` placeholders until roster visibility is allowed, using `event.activityKind` for the handoff tint. Standalone callers keep the local title/count header; `EventDetailSocialSection` suppresses it so the design-system section owns the label. |
+| `WhoIsGoingContent` | `lib/events/presentation/widgets/who_is_going.dart:87` | Provider-free Event Detail roster renderer. Receives the event, roster, viewer profile, optional fallback count, surface style, and header visibility, then composes the attendee count, hype avatar stack, empty roster copy, and swipe-window status without reading providers directly. |
+| `EmptyRosterMessage` | `lib/events/presentation/widgets/who_is_going.dart:182` | Event Detail empty roster surface. Renders the no-attendees title/message with optional event-detail surface colors so upcoming and past roster-empty states can be reviewed without the provider wrapper. |
+| `SwipeWindowBanner` | `lib/events/presentation/widgets/who_is_going.dart:239` | Compact Event Detail roster status banner for locked, open, and closed post-event catch windows. Uses explicit icon/message props and optional event-detail surface colors while preserving the shared `CatchSurface` treatment. |
 | `EventMapLoadingBody` | `lib/events/presentation/event_map_screen.dart:115` | Map-shaped skeleton body shared by general event-map loading and the location-map route. Shows a full-bleed map shimmer, centered pin, filter/distance pill placeholder, and floating control placeholder. |
 | `EventPinsMap` | `lib/events/presentation/widgets/event_pins_map.dart:10` | Shared Flutter map canvas for event pins. Used by Explore and `EventLocationMapScreen`; renders only events with exact coordinates and keeps map centering outside the pin widget. It reports camera-center changes on idle, draws optional user-location and distance-ring circles, clusters dense low-zoom pins with app-rendered count markers, and expands clusters by zooming in. Its no-network placeholder lays markers out spatially, exposes meeting-point selection labels so widget tests can exercise selected-pin flows without network map tiles, and keeps the painter boundary to concrete token-derived colors rather than prop-drilling `CatchTokens`. |
 

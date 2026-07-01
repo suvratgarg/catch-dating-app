@@ -2648,6 +2648,131 @@ Widget whoIsGoingStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: "Who's going content",
+  type: WhoIsGoingContent,
+  path: '[Event Detail]/Sections',
+)
+Widget whoIsGoingContentStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'WhoIsGoingContent',
+    catalogId: 'section.event.who_is_going.content',
+    children: [
+      _StateCard(
+        label: 'upcoming roster',
+        child: _EventScope(
+          event: _event,
+          roster: _roster(),
+          avatarItems: _avatarItems,
+          child: WhoIsGoingContent(
+            event: _event,
+            roster: _roster(),
+            userProfile: _viewer,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty roster',
+        child: WhoIsGoingContent(
+          event: _emptyEvent,
+          roster: EventParticipationRoster.empty(),
+          userProfile: _viewer,
+        ),
+      ),
+      _StateCard(
+        label: 'post-event closed window',
+        child: _EventScope(
+          event: _pastEvent,
+          roster: _roster(event: _pastEvent, count: 5),
+          avatarItems: _avatarItems.take(5).toList(growable: false),
+          child: WhoIsGoingContent(
+            event: _pastEvent,
+            roster: _roster(event: _pastEvent, count: 5),
+            userProfile: _viewer,
+            showHeader: false,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Empty roster message',
+  type: EmptyRosterMessage,
+  path: '[Event Detail]/Sections',
+)
+Widget emptyRosterMessageStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'EmptyRosterMessage',
+    catalogId: 'section.event.who_is_going.empty_roster_message',
+    children: [
+      _StateCard(
+        label: 'upcoming',
+        child: const EmptyRosterMessage(
+          title: 'No attendees yet',
+          message: 'Be the first to book this event.',
+        ),
+      ),
+      _StateCard(
+        label: 'surface-styled',
+        child: Builder(
+          builder: (context) {
+            final style = EventDetailSurfaceStyle.dark(CatchTokens.of(context));
+            return EmptyRosterMessage(
+              title: 'No attendees booked',
+              message: 'This event did not have any booked attendees.',
+              surfaceStyle: style,
+            );
+          },
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Swipe window banner',
+  type: SwipeWindowBanner,
+  path: '[Event Detail]/Sections',
+)
+Widget swipeWindowBannerStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'SwipeWindowBanner',
+    catalogId: 'section.event.who_is_going.swipe_window_banner',
+    children: [
+      _StateCard(
+        label: 'locked',
+        child: SwipeWindowBanner(
+          icon: CatchIcons.lockOutlineRounded,
+          message: 'Catches unlock for 24 hours after the event finishes.',
+        ),
+      ),
+      _StateCard(
+        label: 'open',
+        child: SwipeWindowBanner(
+          icon: CatchIcons.favoriteRounded,
+          message:
+              'The catch window is open for 24 hours after the event finishes.',
+        ),
+      ),
+      _StateCard(
+        label: 'surface-styled',
+        child: Builder(
+          builder: (context) {
+            final style = EventDetailSurfaceStyle.dark(CatchTokens.of(context));
+            return SwipeWindowBanner(
+              icon: CatchIcons.scheduleRounded,
+              message: 'The catch window for this event has closed.',
+              surfaceStyle: style,
+            );
+          },
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Price leading',
   type: PriceLeading,
   path: '[Event Detail]/Booking Dock',

@@ -2585,6 +2585,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Sections',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'EmptyRosterMessage',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Empty roster message',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .emptyRosterMessageStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventBookingDock',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2755,6 +2765,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'SwipeWindowBanner',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Swipe window banner',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .swipeWindowBannerStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'WhatToExpectSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2771,6 +2791,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Who\'s going states',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .whoIsGoingStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'WhoIsGoingContent',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Who\'s going content',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .whoIsGoingContentStates,
               ),
             ],
           ),
