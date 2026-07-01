@@ -17079,18 +17079,66 @@
           "id": "event_recap_attendees",
           "status": "captured",
           "notes": "Attended event recap fixture with remembered attendee tiles."
+        },
+        {
+          "id": "event_recap_loading",
+          "status": "captured",
+          "notes": "Route-level loading skeleton for recap hero, attendee grid, and CTA placeholders."
+        },
+        {
+          "id": "event_recap_error",
+          "status": "captured",
+          "notes": "View-model error branch with event-context retry UI."
+        },
+        {
+          "id": "event_recap_missing_event",
+          "status": "captured",
+          "notes": "Deleted or unavailable event branch."
+        },
+        {
+          "id": "event_recap_empty_roster",
+          "status": "captured",
+          "notes": "Ready branch with no other checked-in attendees to tag."
+        },
+        {
+          "id": "event_recap_partial_profiles",
+          "status": "captured",
+          "notes": "Batched profile lookup fallback where missing profiles render Guest tiles."
+        },
+        {
+          "id": "event_recap_selected_tiles",
+          "status": "captured",
+          "notes": "Real route seeded with selected vibe ids to show selected and unselected attendee tiles."
+        },
+        {
+          "id": "event_recap_text_scale_2",
+          "status": "captured",
+          "notes": "Text scale 2.0 route capture for hero stats, intro copy, grid labels, and CTA."
+        },
+        {
+          "id": "event_recap_reduced_motion",
+          "status": "captured",
+          "notes": "Reduced-motion route capture for selection and state animation review."
+        },
+        {
+          "id": "event_recap_light_dark",
+          "status": "captured",
+          "notes": "Explicit populated baseline for paired light/dark output."
         }
       ],
       "states": [
         {
           "id": "recap_loading",
           "kind": "loading",
-          "status": "implemented",
+          "status": "captured",
           "source": "eventRecapViewModelProvider loading renders EventRecapLoadingBody under the Event recap top bar, including recap hero, attendee grid, and CTA placeholders.",
+          "captureIds": [
+            "event_recap_loading"
+          ],
           "tests": [
             "test/swipes/event_recap_screen_test.dart"
           ],
-          "nextAction": "Add deterministic loading capture.",
+          "nextAction": "Compare loading skeleton hierarchy against the canonical recap source once available.",
           "previewIds": [
             "EventRecapScreen/Event recap route states"
           ]
@@ -17098,12 +17146,15 @@
         {
           "id": "recap_error",
           "kind": "error",
-          "status": "tested",
+          "status": "captured",
           "source": "View model errors render CatchErrorState.fromError with AppErrorContext.event and invalidate event, participation, uid, and view-model providers on retry.",
+          "captureIds": [
+            "event_recap_error"
+          ],
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart"
           ],
-          "nextAction": "Add event/participation/uid error and offline captures.",
+          "nextAction": "Compare event error copy against the canonical recap source once available.",
           "previewIds": [
             "EventRecapScreen/Event recap route states"
           ]
@@ -17111,12 +17162,15 @@
         {
           "id": "event_not_found",
           "kind": "empty",
-          "status": "tested",
+          "status": "captured",
           "source": "A null event from the view model renders Event not found through CatchErrorState.",
+          "captureIds": [
+            "event_recap_missing_event"
+          ],
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart"
           ],
-          "nextAction": "Add missing/deleted event capture.",
+          "nextAction": "Compare missing-event treatment against the canonical recap source once available.",
           "previewIds": [
             "EventRecapScreen/Event recap route states"
           ]
@@ -17127,7 +17181,8 @@
           "status": "captured",
           "source": "event_recap_attendees renders the recap hero, checked-in count, batched attendee profile grid, local selection, and Open catches deck CTA.",
           "captureIds": [
-            "event_recap_attendees"
+            "event_recap_attendees",
+            "event_recap_light_dark"
           ],
           "tests": [
             "test/swipes/event_recap_screen_test.dart"
@@ -17140,12 +17195,15 @@
         {
           "id": "empty_roster",
           "kind": "empty",
-          "status": "tested",
+          "status": "captured",
           "source": "No other checked-in attendee ids render the No attendees to tag CatchEmptyState.",
+          "captureIds": [
+            "event_recap_empty_roster"
+          ],
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart"
           ],
-          "nextAction": "Add empty roster capture and test.",
+          "nextAction": "Compare empty-roster copy against the canonical recap source once available.",
           "previewIds": [
             "EventRecapScreen/Event recap route states"
           ]
@@ -17153,12 +17211,15 @@
         {
           "id": "profile_lookup_fallback",
           "kind": "populated",
-          "status": "tested",
+          "status": "captured",
           "source": "Missing public-profile entries render Guest fallback tiles while profile photos use CatchNetworkImage when available.",
+          "captureIds": [
+            "event_recap_partial_profiles"
+          ],
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart"
           ],
-          "nextAction": "Add capture for partial profile lookup and missing photos.",
+          "nextAction": "Compare missing-profile fallback treatment against the canonical recap source once available.",
           "previewIds": [
             "EventRecapScreen/Event recap route states"
           ]
@@ -17166,13 +17227,16 @@
         {
           "id": "vibe_selection",
           "kind": "populated",
-          "status": "tested",
+          "status": "captured",
           "source": "Tapping vibe tiles toggles local selected ids, semantic selected state, selection border, and check badge.",
+          "captureIds": [
+            "event_recap_selected_tiles"
+          ],
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart",
             "test/swipes/event_recap_screen_test.dart"
           ],
-          "nextAction": "Add focused test and capture for selected/unselected grid tiles.",
+          "nextAction": "Compare selected/unselected tile treatment against the canonical recap source once available.",
           "previewIds": [
             "EventRecapScreen/Event recap route states"
           ]
@@ -17185,14 +17249,17 @@
           "tests": [
             "test/swipes/event_recap_screen_test.dart"
           ],
-          "nextAction": "Add capture proving selected ids are visible before opening the Catches deck."
+          "nextAction": "Selected ids are visible in event_recap_selected_tiles; route-extra behavior remains covered by widget tests."
         },
         {
           "id": "text_scale_2",
           "kind": "accessibility",
-          "status": "implemented",
+          "status": "captured",
           "source": "Widgetbook renders the Event Recap route at text scale 2.0 for hero stats, intro copy, grid labels, empty/error states, and CTA review.",
-          "nextAction": "Add deterministic text-scale capture for hero stats, intro copy, grid labels, empty/error states, and CTA.",
+          "captureIds": [
+            "event_recap_text_scale_2"
+          ],
+          "nextAction": "Compare text-scale layout against the canonical recap source once available.",
           "previewIds": [
             "EventRecapScreen/Event recap route states"
           ]
@@ -17200,9 +17267,12 @@
         {
           "id": "reduced_motion",
           "kind": "accessibility",
-          "status": "implemented",
+          "status": "captured",
           "source": "Widgetbook renders Event Recap with MediaQuery.disableAnimations enabled for selection animation and route-state review.",
-          "nextAction": "Add deterministic reduced-motion capture for selection animation and route-state review.",
+          "captureIds": [
+            "event_recap_reduced_motion"
+          ],
+          "nextAction": "Compare reduced-motion behavior against the canonical recap source once available.",
           "previewIds": [
             "EventRecapScreen/Event recap route states"
           ]
@@ -17342,8 +17412,8 @@
         },
         {
           "id": "DS-EVENT-RECAP-002",
-          "status": "open",
-          "nextAction": "Add deterministic Event Recap captures for loading, error, missing event, empty roster, partial profile fallback, selected tiles, keyboard/safe-area if needed, text scale, and reduced motion."
+          "status": "closed",
+          "nextAction": "Closed by deterministic Event Recap captures for loading, error, missing event, empty roster, partial profile fallback, selected tiles, text scale, reduced motion, and paired light/dark output. Keyboard/safe-area has no dedicated recap input state."
         },
         {
           "id": "DS-EVENT-RECAP-003",

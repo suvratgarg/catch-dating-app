@@ -121,6 +121,78 @@ void main() {
     expect(find.byKey(SwipeKeys.vibeTile('runner-4')), findsNothing);
   });
 
+  testWidgets('EventRecapScreen can seed selected vibe ids', (tester) async {
+    final endedAt = DateTime.now().subtract(const Duration(hours: 3));
+    final event = buildEvent(
+      id: 'recap-event',
+      startTime: endedAt.subtract(const Duration(hours: 1)),
+      endTime: endedAt,
+      checkedInCount: 2,
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          watchEventProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(event)),
+          watchEventParticipationsForEventProvider(event.id).overrideWith(
+            (ref) => Stream.value([
+              buildEventParticipation(
+                event: event,
+                uid: 'runner-1',
+                status: EventParticipationStatus.attended,
+              ),
+              buildEventParticipation(
+                event: event,
+                uid: 'runner-2',
+                status: EventParticipationStatus.attended,
+              ),
+              buildEventParticipation(
+                event: event,
+                uid: 'runner-3',
+                status: EventParticipationStatus.attended,
+              ),
+            ]),
+          ),
+          publicProfilesByIdsProvider(
+            PublicProfilesQuery(['runner-2', 'runner-3']),
+          ).overrideWith(
+            (ref) async => {
+              'runner-2': buildPublicProfile(uid: 'runner-2', name: 'Mira'),
+              'runner-3': buildPublicProfile(uid: 'runner-3', name: 'Kabir'),
+            },
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventRecapScreen(
+            eventId: event.id,
+            initialSelectedVibeIds: const {'runner-2'},
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    final selectedTooltip = tester.widget<Tooltip>(
+      find.descendant(
+        of: find.byKey(SwipeKeys.vibeTile('runner-2')),
+        matching: find.byType(Tooltip),
+      ),
+    );
+    final unselectedTooltip = tester.widget<Tooltip>(
+      find.descendant(
+        of: find.byKey(SwipeKeys.vibeTile('runner-3')),
+        matching: find.byType(Tooltip),
+      ),
+    );
+
+    expect(selectedTooltip.message, 'Remove Mira');
+    expect(unselectedTooltip.message, 'Remember Kabir');
+  });
+
   testWidgets('EventRecapScreen passes selected vibe ids to catches deck', (
     tester,
   ) async {

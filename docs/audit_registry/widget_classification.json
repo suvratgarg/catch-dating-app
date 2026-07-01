@@ -10,22 +10,22 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1056,
-    "widgetClasses": 955,
+    "total": 1059,
+    "widgetClasses": 958,
     "stateClasses": 101,
-    "publicClasses": 923,
+    "publicClasses": 926,
     "privateClasses": 133,
     "byRole": {
       "atom": 35,
       "composition": 280,
       "feature-adapter": 305,
       "pattern": 14,
-      "screen": 321,
+      "screen": 324,
       "widget-state": 101
     },
     "byDecision": {
       "keep-canonical-contract": 114,
-      "keep-public-cataloged": 655,
+      "keep-public-cataloged": 658,
       "keep-widget-state": 101,
       "review-catalog-coverage": 150,
       "review-promote-or-consolidate": 4,
@@ -35,7 +35,7 @@
       "cataloged": 587,
       "contracted": 114,
       "not-applicable": 101,
-      "route-covered": 71,
+      "route-covered": 74,
       "uncataloged": 183
     }
   },
@@ -12085,6 +12085,29 @@
       "flags": []
     },
     {
+      "name": "CalendarAgendaSliverSection",
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.calendar_agenda_sliver_section",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "CalendarDateHeader",
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "classKind": "widget",
@@ -22416,6 +22439,29 @@
       "flags": []
     },
     {
+      "name": "EventRecapReadyBody",
+      "file": "lib/swipes/presentation/event_recap_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.event_recap_ready_body",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "EventRecapScreen",
       "file": "lib/swipes/presentation/event_recap_screen.dart",
       "classKind": "widget",
@@ -22538,6 +22584,29 @@
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.recap_stat_skeleton",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "VibeGrid",
+      "file": "lib/swipes/presentation/event_recap_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.vibe_grid",
       "publicApi": true,
       "catalogStatus": "route-covered",
       "contractId": null,

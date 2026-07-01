@@ -9553,7 +9553,16 @@
             "catch.button"
           ],
           "captureIds": [
-            "event_recap_attendees"
+            "event_recap_attendees",
+            "event_recap_loading",
+            "event_recap_error",
+            "event_recap_missing_event",
+            "event_recap_empty_roster",
+            "event_recap_partial_profiles",
+            "event_recap_selected_tiles",
+            "event_recap_text_scale_2",
+            "event_recap_reduced_motion",
+            "event_recap_light_dark"
           ],
           "designRefs": [
             {
@@ -9574,8 +9583,11 @@
             {
               "id": "recap_loading",
               "kind": "loading",
-              "status": "implemented",
+              "status": "captured",
               "notes": "eventRecapViewModelProvider loading renders EventRecapLoadingBody under the Event recap top bar, including recap hero, attendee grid, and CTA placeholders.",
+              "captureIds": [
+                "event_recap_loading"
+              ],
               "tests": [
                 "test/swipes/event_recap_screen_test.dart"
               ],
@@ -9586,7 +9598,10 @@
             {
               "id": "recap_error",
               "kind": "error",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "event_recap_error"
+              ],
               "tests": [
                 "test/swipes/event_recap_screen_state_test.dart"
               ],
@@ -9598,7 +9613,10 @@
             {
               "id": "event_not_found",
               "kind": "empty",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "event_recap_missing_event"
+              ],
               "tests": [
                 "test/swipes/event_recap_screen_state_test.dart"
               ],
@@ -9612,7 +9630,8 @@
               "kind": "populated",
               "status": "captured",
               "captureIds": [
-                "event_recap_attendees"
+                "event_recap_attendees",
+                "event_recap_light_dark"
               ],
               "tests": [
                 "test/swipes/event_recap_screen_test.dart"
@@ -9625,7 +9644,10 @@
             {
               "id": "empty_roster",
               "kind": "empty",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "event_recap_empty_roster"
+              ],
               "tests": [
                 "test/swipes/event_recap_screen_state_test.dart"
               ],
@@ -9637,7 +9659,10 @@
             {
               "id": "profile_lookup_fallback",
               "kind": "populated",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "event_recap_partial_profiles"
+              ],
               "tests": [
                 "test/swipes/event_recap_screen_state_test.dart"
               ],
@@ -9649,7 +9674,10 @@
             {
               "id": "vibe_selection",
               "kind": "populated",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "event_recap_selected_tiles"
+              ],
               "tests": [
                 "test/swipes/event_recap_screen_state_test.dart",
                 "test/swipes/event_recap_screen_test.dart"
@@ -9671,7 +9699,10 @@
             {
               "id": "text_scale_2",
               "kind": "accessibility",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "event_recap_text_scale_2"
+              ],
               "notes": "Widgetbook renders the Event Recap route at text scale 2.0 for hero stats, intro copy, grid labels, empty/error states, and CTA review.",
               "previewIds": [
                 "EventRecapScreen/Event recap route states"
@@ -9680,7 +9711,10 @@
             {
               "id": "reduced_motion",
               "kind": "accessibility",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "event_recap_reduced_motion"
+              ],
               "notes": "Widgetbook renders Event Recap with MediaQuery.disableAnimations enabled for selection animation and route-state review.",
               "previewIds": [
                 "EventRecapScreen/Event recap route states"
@@ -9695,8 +9729,8 @@
             },
             {
               "id": "DP-EVENT-RECAP-002",
-              "status": "open",
-              "nextAction": "Add deterministic Event Recap captures for loading, error, missing event, empty roster, partial profile fallback, selected tiles, keyboard/safe-area if needed, text scale, and reduced motion."
+              "status": "closed",
+              "nextAction": "Closed by deterministic Event Recap captures for loading, error, missing event, empty roster, partial profile fallback, selected tiles, text scale, reduced motion, and paired light/dark output. Keyboard/safe-area has no dedicated recap input state."
             },
             {
               "id": "DP-EVENT-RECAP-003",

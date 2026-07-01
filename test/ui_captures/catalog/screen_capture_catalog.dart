@@ -154,6 +154,7 @@ import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_redesign/profile_view.dart';
@@ -5371,8 +5372,48 @@ final _eventRecapParticipations = [
       createdAt: DateTime(2026, 5, 30, 7, 5),
     ),
 ];
-final _eventRecapParticipationRepository = FakeEventParticipationRepository()
-  ..eventParticipations[_eventRecapEvent.id] = _eventRecapParticipations;
+EventRecapViewModel _eventRecapViewModel({
+  List<String>? attendeeIds,
+  int? checkedInCount,
+}) {
+  return EventRecapViewModel(
+    event: _eventRecapEvent,
+    attendeeIds:
+        attendeeIds ?? [for (final profile in _eventRecapProfiles) profile.uid],
+    checkedInCount: checkedInCount ?? _eventRecapParticipations.length,
+  );
+}
+
+Map<String, PublicProfile> _eventRecapRosterProfiles({
+  Set<String> missingProfileIds = const <String>{},
+}) {
+  return {
+    for (final profile in _eventRecapProfiles)
+      if (!missingProfileIds.contains(profile.uid)) profile.uid: profile,
+  };
+}
+
+List<Object> _eventRecapProviderOverrides({
+  AsyncValue<EventRecapViewModel?>? recapValue,
+  Map<String, PublicProfile>? rosterProfiles,
+}) {
+  final resolvedRecapValue =
+      recapValue ?? AsyncData<EventRecapViewModel?>(_eventRecapViewModel());
+  final attendeeIds = switch (resolvedRecapValue) {
+    AsyncData<EventRecapViewModel?>(:final value) =>
+      value?.attendeeIds ?? const <String>[],
+    _ => const <String>[],
+  };
+
+  return <Object>[
+    eventRecapViewModelProvider(
+      _eventRecapEvent.id,
+    ).overrideWith((ref) => resolvedRecapValue),
+    publicProfilesByIdsProvider(PublicProfilesQuery(attendeeIds)).overrideWith(
+      (ref) async => rosterProfiles ?? _eventRecapRosterProfiles(),
+    ),
+  ];
+}
 
 final _activityScreenNotifications = UtilitySurfaceFixtures.notifications;
 
@@ -10169,19 +10210,99 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_recap_attendees',
     routeIds: const <String>['eventRecapScreen'],
     device: CaptureDevice.reviewPhone,
-    providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
-      watchEventProvider(
-        _eventRecapEvent.id,
-      ).overrideWith((ref) => Stream.value(_eventRecapEvent)),
-      eventParticipationRepositoryProvider.overrideWithValue(
-        _eventRecapParticipationRepository,
+    providerOverrides: _eventRecapProviderOverrides(),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_loading',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _eventRecapProviderOverrides(
+      recapValue: const AsyncLoading<EventRecapViewModel?>(),
+    ),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_error',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _eventRecapProviderOverrides(
+      recapValue: AsyncError<EventRecapViewModel?>(
+        StateError('Capture Event Recap failed'),
+        StackTrace.empty,
       ),
-      for (final profile in _eventRecapProfiles)
-        watchPublicProfileProvider(
-          profile.uid,
-        ).overrideWith((ref) => Stream.value(profile)),
-    ],
+    ),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_missing_event',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _eventRecapProviderOverrides(
+      recapValue: const AsyncData<EventRecapViewModel?>(null),
+    ),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_empty_roster',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _eventRecapProviderOverrides(
+      recapValue: AsyncData<EventRecapViewModel?>(
+        _eventRecapViewModel(attendeeIds: const <String>[], checkedInCount: 1),
+      ),
+      rosterProfiles: const <String, PublicProfile>{},
+    ),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_partial_profiles',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _eventRecapProviderOverrides(
+      rosterProfiles: _eventRecapRosterProfiles(
+        missingProfileIds: {
+          _eventRecapProfiles.last.uid,
+          _eventRecapProfiles[_eventRecapProfiles.length - 2].uid,
+        },
+      ),
+    ),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_selected_tiles',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _eventRecapProviderOverrides(),
+    builder: (context) => EventRecapScreen(
+      eventId: _eventRecapEvent.id,
+      initialSelectedVibeIds: {
+        _eventRecapProfiles.first.uid,
+        _eventRecapProfiles[1].uid,
+      },
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_text_scale_2',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    textScale: 2,
+    providerOverrides: _eventRecapProviderOverrides(),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_reduced_motion',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    disableAnimations: true,
+    providerOverrides: _eventRecapProviderOverrides(),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_light_dark',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _eventRecapProviderOverrides(),
     builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
   ),
   ScreenCaptureEntry(

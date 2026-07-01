@@ -26,16 +26,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class EventRecapScreen extends ConsumerStatefulWidget {
-  const EventRecapScreen({super.key, required this.eventId});
+  const EventRecapScreen({
+    super.key,
+    required this.eventId,
+    this.initialSelectedVibeIds = const <String>{},
+  });
 
   final String eventId;
+  final Set<String> initialSelectedVibeIds;
 
   @override
   ConsumerState<EventRecapScreen> createState() => _EventRecapScreenState();
 }
 
 class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
-  final Set<String> _selectedVibes = {};
+  late final Set<String> _selectedVibes = {...widget.initialSelectedVibeIds};
 
   @override
   Widget build(BuildContext context) {
