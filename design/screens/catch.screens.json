@@ -16716,18 +16716,71 @@
           "id": "filters_preferences",
           "status": "captured",
           "notes": "Profile-backed filter defaults fixture."
+        },
+        {
+          "id": "filters_loading",
+          "status": "captured",
+          "notes": "Profile loading route with top bar, control-shaped body skeleton, and apply dock placeholder."
+        },
+        {
+          "id": "filters_profile_error",
+          "status": "captured",
+          "notes": "Profile provider error branch with retry affordance."
+        },
+        {
+          "id": "filters_missing_profile",
+          "status": "captured",
+          "notes": "Resolved null profile branch, currently a blank body pending product copy decision."
+        },
+        {
+          "id": "filters_dirty_edit",
+          "status": "captured",
+          "notes": "Provider-free FiltersContent dirty edit state with changed age range and gender chips."
+        },
+        {
+          "id": "filters_reset_restored",
+          "status": "captured",
+          "notes": "Provider-free FiltersContent reset-restored defaults state."
+        },
+        {
+          "id": "filters_save_pending",
+          "status": "captured",
+          "notes": "Provider-free FiltersContent save-pending state with loading apply button."
+        },
+        {
+          "id": "filters_save_error",
+          "status": "captured",
+          "notes": "Route-level save failure seeded through FiltersController.saveFiltersMutation and CatchMutationErrorListener."
+        },
+        {
+          "id": "filters_text_scale_2",
+          "status": "captured",
+          "notes": "Text scale 2.0 route capture for top bar, range value, slider, chips, and apply dock."
+        },
+        {
+          "id": "filters_reduced_motion",
+          "status": "captured",
+          "notes": "Reduced-motion route capture for top bar, slider, chips, and apply dock."
+        },
+        {
+          "id": "filters_light_dark",
+          "status": "captured",
+          "notes": "Explicit default preferences baseline for paired light/dark output."
         }
       ],
       "states": [
         {
           "id": "profile_loading",
           "kind": "loading",
-          "status": "implemented",
+          "status": "captured",
           "source": "watchUserProfileProvider loading renders FiltersContentSkeleton under the filters top bar, including age slider, gender chips, and apply-dock placeholders.",
+          "captureIds": [
+            "filters_loading"
+          ],
           "tests": [
             "test/swipes/filters_screen_test.dart"
           ],
-          "nextAction": "Add loading capture with top bar, control-shaped body skeleton, and bottom dock placeholder.",
+          "nextAction": "Compare loading skeleton hierarchy against future loading reference if design adds one.",
           "previewIds": [
             "FiltersScreen/Route states"
           ]
@@ -16735,9 +16788,12 @@
         {
           "id": "profile_error",
           "kind": "error",
-          "status": "implemented",
+          "status": "captured",
           "source": "watchUserProfileProvider errors render CatchErrorState.fromError with AppErrorContext.profile and retry invalidation.",
-          "nextAction": "Add profile error/offline capture.",
+          "captureIds": [
+            "filters_profile_error"
+          ],
+          "nextAction": "Compare profile error copy against future error reference if design adds one.",
           "previewIds": [
             "FiltersScreen/Route states"
           ]
@@ -16745,9 +16801,12 @@
         {
           "id": "profile_missing",
           "kind": "permission",
-          "status": "implemented",
+          "status": "captured",
           "source": "A null profile currently renders an empty SizedBox after data resolves.",
-          "nextAction": "Decide whether missing profile should render branded access/recovery copy instead of an empty body.",
+          "captureIds": [
+            "filters_missing_profile"
+          ],
+          "nextAction": "Product should still decide whether missing profile should render branded access/recovery copy instead of an empty body.",
           "previewIds": [
             "FiltersScreen/Route states"
           ]
@@ -16758,12 +16817,13 @@
           "status": "captured",
           "source": "filters_preferences renders the saved profile defaults for age range and interested-in gender chips.",
           "captureIds": [
-            "filters_preferences"
+            "filters_preferences",
+            "filters_light_dark"
           ],
           "tests": [
             "test/swipes/filters_screen_test.dart"
           ],
-          "nextAction": "Filters default preferences now has a manifest-registered design reference and deterministic capture. Add loading/error, dirty/reset, save mutation, text-scale, reduced-motion, and light/dark captures before promoting beyond captured.",
+          "nextAction": "Filters default preferences has a manifest-registered design reference plus deterministic light/dark captures.",
           "previewIds": [
             "FiltersScreen/Route states",
             "FiltersContent/Content states"
@@ -16772,12 +16832,15 @@
         {
           "id": "edited_preferences",
           "kind": "populated",
-          "status": "tested",
+          "status": "captured",
           "source": "Local draft state updates age range and gender chip selections before persistence.",
+          "captureIds": [
+            "filters_dirty_edit"
+          ],
           "tests": [
             "test/swipes/filters_screen_test.dart"
           ],
-          "nextAction": "Add Widgetbook state for dirty edited filters and disabled/enabled apply behavior.",
+          "nextAction": "Compare dirty edit treatment against future dirty-state reference if design adds one.",
           "previewIds": [
             "FiltersContent/Content states"
           ]
@@ -16785,9 +16848,12 @@
         {
           "id": "reset_preferences",
           "kind": "populated",
-          "status": "implemented",
+          "status": "captured",
           "source": "The top-bar Reset action restores the local draft from the profile while not saving.",
-          "nextAction": "Add focused test/capture for reset after dirty edits.",
+          "captureIds": [
+            "filters_reset_restored"
+          ],
+          "nextAction": "Reset-restored visual state is captured; add interaction proof only if reset policy changes.",
           "previewIds": [
             "FiltersContent/Content states"
           ]
@@ -16795,9 +16861,12 @@
         {
           "id": "save_pending",
           "kind": "mutation",
-          "status": "implemented",
+          "status": "captured",
           "source": "FiltersController.saveFiltersMutation pending drives Apply filters loading and disables reset/apply duplicate work.",
-          "nextAction": "Add save pending capture.",
+          "captureIds": [
+            "filters_save_pending"
+          ],
+          "nextAction": "Compare pending apply treatment against future mutation reference if design adds one.",
           "previewIds": [
             "FiltersContent/Content states"
           ]
@@ -16805,9 +16874,12 @@
         {
           "id": "save_error",
           "kind": "mutation",
-          "status": "implemented",
+          "status": "captured",
           "source": "CatchMutationErrorListener surfaces save failures from FiltersController.saveFiltersMutation.",
-          "nextAction": "Add deterministic save failure capture/snackbar proof.",
+          "captureIds": [
+            "filters_save_error"
+          ],
+          "nextAction": "Save failure snackbar is now seeded through the real mutation listener in deterministic captures.",
           "previewIds": [
             "FiltersScreen/Route states"
           ]
@@ -16825,9 +16897,12 @@
         {
           "id": "text_scale_2",
           "kind": "accessibility",
-          "status": "planned",
-          "source": "No text-scale 2.0 Filters capture exists yet.",
-          "nextAction": "Add text-scale capture for range value, slider, chips, top bar, and bottom dock.",
+          "status": "captured",
+          "source": "Text-scale 2.0 Filters capture covers range value, slider, chips, top bar, and bottom dock.",
+          "captureIds": [
+            "filters_text_scale_2"
+          ],
+          "nextAction": "Compare text-scale layout against future accessibility reference if design adds one.",
           "previewIds": [
             "FiltersScreen/Route states",
             "FiltersContent/Content states"
@@ -16836,9 +16911,12 @@
         {
           "id": "reduced_motion",
           "kind": "accessibility",
-          "status": "implemented",
-          "source": "Widgetbook renders Filters with MediaQuery.disableAnimations enabled; no route capture exists yet.",
-          "nextAction": "Add deterministic reduced-motion capture for top bar, slider, chips, and bottom dock.",
+          "status": "captured",
+          "source": "Widgetbook and deterministic route captures render Filters with MediaQuery.disableAnimations enabled.",
+          "captureIds": [
+            "filters_reduced_motion"
+          ],
+          "nextAction": "Compare reduced-motion behavior against future accessibility reference if design adds one.",
           "previewIds": [
             "FiltersScreen/Route states",
             "FiltersContent/Content states"
@@ -16997,8 +17075,8 @@
         },
         {
           "id": "DS-FILTERS-002",
-          "status": "open",
-          "nextAction": "Add deterministic Filters captures for loading, error, missing profile, dirty edit, reset, save pending/error, text scale, and light/dark."
+          "status": "closed",
+          "nextAction": "Closed by deterministic Filters captures for loading, profile error, missing profile, dirty edit, reset-restored content, save pending, save error, text scale, reduced motion, and paired light/dark output."
         },
         {
           "id": "DS-FILTERS-003",

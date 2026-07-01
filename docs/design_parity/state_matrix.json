@@ -9385,7 +9385,17 @@
             "catch.button"
           ],
           "captureIds": [
-            "filters_preferences"
+            "filters_preferences",
+            "filters_loading",
+            "filters_profile_error",
+            "filters_missing_profile",
+            "filters_dirty_edit",
+            "filters_reset_restored",
+            "filters_save_pending",
+            "filters_save_error",
+            "filters_text_scale_2",
+            "filters_reduced_motion",
+            "filters_light_dark"
           ],
           "designRefs": [
             {
@@ -9407,8 +9417,11 @@
             {
               "id": "profile_loading",
               "kind": "loading",
-              "status": "implemented",
+              "status": "captured",
               "notes": "watchUserProfileProvider loading renders FiltersContentSkeleton under the filters top bar, including age slider, gender chips, and apply-dock placeholders.",
+              "captureIds": [
+                "filters_loading"
+              ],
               "tests": [
                 "test/swipes/filters_screen_test.dart"
               ],
@@ -9419,7 +9432,10 @@
             {
               "id": "profile_error",
               "kind": "error",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "filters_profile_error"
+              ],
               "notes": "watchUserProfileProvider errors render CatchErrorState.fromError with AppErrorContext.profile and retry invalidation.",
               "previewIds": [
                 "FiltersScreen/Route states"
@@ -9428,7 +9444,10 @@
             {
               "id": "profile_missing",
               "kind": "permission",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "filters_missing_profile"
+              ],
               "notes": "A null profile currently renders an empty SizedBox after data resolves.",
               "previewIds": [
                 "FiltersScreen/Route states"
@@ -9439,7 +9458,8 @@
               "kind": "populated",
               "status": "captured",
               "captureIds": [
-                "filters_preferences"
+                "filters_preferences",
+                "filters_light_dark"
               ],
               "tests": [
                 "test/swipes/filters_screen_test.dart"
@@ -9453,7 +9473,10 @@
             {
               "id": "edited_preferences",
               "kind": "populated",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "filters_dirty_edit"
+              ],
               "tests": [
                 "test/swipes/filters_screen_test.dart"
               ],
@@ -9465,7 +9488,10 @@
             {
               "id": "reset_preferences",
               "kind": "populated",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "filters_reset_restored"
+              ],
               "notes": "The top-bar Reset action restores the local draft from the profile while not saving.",
               "previewIds": [
                 "FiltersContent/Content states"
@@ -9474,7 +9500,10 @@
             {
               "id": "save_pending",
               "kind": "mutation",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "filters_save_pending"
+              ],
               "notes": "FiltersController.saveFiltersMutation pending drives Apply filters loading and disables reset/apply duplicate work.",
               "previewIds": [
                 "FiltersContent/Content states"
@@ -9483,7 +9512,10 @@
             {
               "id": "save_error",
               "kind": "mutation",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "filters_save_error"
+              ],
               "notes": "CatchMutationErrorListener surfaces save failures from FiltersController.saveFiltersMutation; the route Widgetbook state seeds the real mutation listener for snackbar review.",
               "previewIds": [
                 "FiltersScreen/Route states"
@@ -9501,8 +9533,11 @@
             {
               "id": "text_scale_2",
               "kind": "accessibility",
-              "status": "planned",
-              "notes": "No text-scale 2.0 Filters capture exists yet.",
+              "status": "captured",
+              "captureIds": [
+                "filters_text_scale_2"
+              ],
+              "notes": "Text-scale 2.0 Filters capture covers range value, slider, chips, top bar, and bottom dock.",
               "previewIds": [
                 "FiltersScreen/Route states",
                 "FiltersContent/Content states"
@@ -9511,8 +9546,11 @@
             {
               "id": "reduced_motion",
               "kind": "accessibility",
-              "status": "implemented",
-              "notes": "Widgetbook renders Filters with MediaQuery.disableAnimations enabled; no route capture exists yet.",
+              "status": "captured",
+              "captureIds": [
+                "filters_reduced_motion"
+              ],
+              "notes": "Widgetbook and deterministic route captures render Filters with MediaQuery.disableAnimations enabled.",
               "previewIds": [
                 "FiltersScreen/Route states",
                 "FiltersContent/Content states"
@@ -9527,8 +9565,8 @@
             },
             {
               "id": "DP-FILTERS-002",
-              "status": "open",
-              "nextAction": "Add deterministic Filters captures for loading, error, missing profile, dirty edit, reset, save pending/error, text scale, and light/dark."
+              "status": "closed",
+              "nextAction": "Closed by deterministic Filters captures for loading, profile error, missing profile, dirty edit, reset-restored content, save pending, save error, text scale, reduced motion, and paired light/dark output."
             },
             {
               "id": "DP-FILTERS-003",

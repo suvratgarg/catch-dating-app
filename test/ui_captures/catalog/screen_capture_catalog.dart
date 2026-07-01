@@ -47,6 +47,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
@@ -155,10 +156,12 @@ import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
+import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_redesign/profile_view.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_notifier.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_controls.dart';
@@ -1093,6 +1096,103 @@ final _captureViewer =
         ),
       ),
     );
+final _filtersCaptureProfile = _captureViewer.copyWith(
+  interestedInGenders: const [Gender.man],
+  minAgePreference: 24,
+  maxAgePreference: 36,
+);
+
+List<Object> _filtersProviderOverrides({Stream<UserProfile?>? profileStream}) {
+  return <Object>[
+    watchUserProfileProvider.overrideWith(
+      (ref) =>
+          profileStream ?? Stream<UserProfile?>.value(_filtersCaptureProfile),
+    ),
+  ];
+}
+
+class _FiltersSaveErrorCapture extends ConsumerStatefulWidget {
+  const _FiltersSaveErrorCapture({required this.child});
+
+  final Widget child;
+
+  @override
+  ConsumerState<_FiltersSaveErrorCapture> createState() =>
+      _FiltersSaveErrorCaptureState();
+}
+
+class _FiltersSaveErrorCaptureState
+    extends ConsumerState<_FiltersSaveErrorCapture> {
+  bool _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _started) return;
+      _started = true;
+      unawaited(
+        Future<void>.delayed(Duration.zero, () async {
+          await FiltersController.saveFiltersMutation
+              .run(ref, (_) async => throw StateError('Filter save failed'))
+              .catchError((_) {});
+        }),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
+class _FiltersContentCapture extends StatelessWidget {
+  const _FiltersContentCapture({
+    required this.ageRange,
+    required this.interestedIn,
+    this.saving = false,
+  });
+
+  final RangeValues ageRange;
+  final Set<Gender> interestedIn;
+  final bool saving;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Scaffold(
+      backgroundColor: t.bg,
+      appBar: CatchTopBar(
+        title: 'Filters',
+        leading: CatchTopBarIconAction(
+          icon: CatchIcons.closeRounded,
+          tooltip: 'Close filters',
+          onPressed: _noopFiltersTap,
+        ),
+        actions: [
+          CatchTopBarTextAction(
+            key: SwipeKeys.resetFiltersButton,
+            label: 'Reset',
+            onPressed: saving ? null : _noopFiltersTap,
+          ),
+        ],
+      ),
+      body: FiltersContent(
+        ageRange: ageRange,
+        interestedIn: interestedIn,
+        saving: saving,
+        onAgeRangeChanged: _ignoreFiltersRange,
+        onGenderToggled: _ignoreFiltersGender,
+        onApply: saving ? null : _noopFiltersTap,
+      ),
+    );
+  }
+}
+
+void _noopFiltersTap() {}
+
+void _ignoreFiltersRange(RangeValues _) {}
+
+void _ignoreFiltersGender(Gender _) {}
 
 ClubMembership _captureMembership({
   required String clubId,
@@ -7660,11 +7760,95 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'filters_preferences',
     routeIds: const <String>['filtersScreen'],
     device: CaptureDevice.reviewPhone,
-    providerOverrides: [
-      watchUserProfileProvider.overrideWith(
-        (ref) => Stream.value(_captureViewer),
+    providerOverrides: _filtersProviderOverrides(),
+    builder: (context) => const FiltersScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'filters_loading',
+    routeIds: const <String>['filtersScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _filtersProviderOverrides(
+      profileStream: ProfileSurfaceFixtures.loadingStream<UserProfile?>(),
+    ),
+    builder: (context) => const FiltersScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'filters_profile_error',
+    routeIds: const <String>['filtersScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _filtersProviderOverrides(
+      profileStream: ProfileSurfaceFixtures.errorStream<UserProfile?>(
+        'Filters profile failed',
       ),
-    ],
+    ),
+    builder: (context) => const FiltersScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'filters_missing_profile',
+    routeIds: const <String>['filtersScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _filtersProviderOverrides(
+      profileStream: Stream<UserProfile?>.value(null),
+    ),
+    builder: (context) => const FiltersScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'filters_dirty_edit',
+    routeIds: const <String>['filtersScreen'],
+    device: CaptureDevice.reviewPhone,
+    builder: (context) => const _FiltersContentCapture(
+      ageRange: RangeValues(20, 60),
+      interestedIn: {Gender.woman, Gender.nonBinary},
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'filters_reset_restored',
+    routeIds: const <String>['filtersScreen'],
+    device: CaptureDevice.reviewPhone,
+    builder: (context) => _FiltersContentCapture(
+      ageRange: filtersAgeRangeValues(_filtersCaptureProfile),
+      interestedIn: _filtersCaptureProfile.interestedInGenders.toSet(),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'filters_save_pending',
+    routeIds: const <String>['filtersScreen'],
+    device: CaptureDevice.reviewPhone,
+    builder: (context) => const _FiltersContentCapture(
+      ageRange: RangeValues(25, 34),
+      interestedIn: {Gender.man, Gender.woman},
+      saving: true,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'filters_save_error',
+    routeIds: const <String>['filtersScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _filtersProviderOverrides(),
+    builder: (context) =>
+        const _FiltersSaveErrorCapture(child: FiltersScreen()),
+  ),
+  ScreenCaptureEntry(
+    id: 'filters_text_scale_2',
+    routeIds: const <String>['filtersScreen'],
+    device: CaptureDevice.reviewPhone,
+    textScale: 2,
+    providerOverrides: _filtersProviderOverrides(),
+    builder: (context) => const FiltersScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'filters_reduced_motion',
+    routeIds: const <String>['filtersScreen'],
+    device: CaptureDevice.reviewPhone,
+    disableAnimations: true,
+    providerOverrides: _filtersProviderOverrides(),
+    builder: (context) => const FiltersScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'filters_light_dark',
+    routeIds: const <String>['filtersScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _filtersProviderOverrides(),
     builder: (context) => const FiltersScreen(),
   ),
   ScreenCaptureEntry(

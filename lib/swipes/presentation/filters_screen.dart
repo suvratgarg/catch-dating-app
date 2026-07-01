@@ -41,7 +41,10 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
     super.didChangeDependencies();
     if (_didResetMutation) return;
     _didResetMutation = true;
-    FiltersController.saveFiltersMutation.reset(ref);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      FiltersController.saveFiltersMutation.reset(ref);
+    });
   }
 
   FiltersPreferencesState? _stateFor({
