@@ -70,9 +70,9 @@ function parseArgs(argv) {
     else if (arg === "--subagent-branch") parsed.subagentBranch = requireValue(argv, ++i, arg);
     else if (arg === "--subagent-commit") parsed.subagentCommit = requireValue(argv, ++i, arg);
     else if (arg === "--elapsed-minutes") parsed.elapsedMinutes = requireValue(argv, ++i, arg);
-    else if (arg === "--files-changed") parsed.filesChanged = requireValue(argv, ++i, arg);
-    else if (arg === "--checks-run") parsed.checksRun = requireValue(argv, ++i, arg);
-    else if (arg === "--checks-failed") parsed.checksFailed = requireValue(argv, ++i, arg);
+    else if (arg === "--files-changed") appendValue(parsed, "filesChanged", requireValue(argv, ++i, arg));
+    else if (arg === "--checks-run") appendValue(parsed, "checksRun", requireValue(argv, ++i, arg));
+    else if (arg === "--checks-failed") appendValue(parsed, "checksFailed", requireValue(argv, ++i, arg));
     else if (arg === "--conflicts-count") parsed.conflictsCount = requireValue(argv, ++i, arg);
     else if (arg === "--parent-edits-required") parsed.parentEditsRequired = requireValue(argv, ++i, arg);
     else if (arg === "--notes") parsed.notes = requireValue(argv, ++i, arg);
@@ -81,6 +81,10 @@ function parseArgs(argv) {
     }
   }
   return parsed;
+}
+
+function appendValue(parsed, key, value) {
+  parsed[key] = [...list(parsed[key]), value];
 }
 
 function requireValue(argv, index, flag) {
@@ -106,8 +110,9 @@ function countDirtyFiles() {
 
 function list(value) {
   if (!value) return [];
-  return String(value)
-    .split(",")
+  const values = Array.isArray(value) ? value : [value];
+  return values
+    .flatMap((item) => String(item).split(","))
     .map((item) => item.trim())
     .filter(Boolean);
 }
@@ -147,9 +152,9 @@ Options:
   --subagent-branch branch
   --subagent-commit sha
   --elapsed-minutes number
-  --files-changed path[,path...]
-  --checks-run command[,command...]
-  --checks-failed command[,command...]
+  --files-changed path[,path...]      Repeatable.
+  --checks-run command[,command...]   Repeatable.
+  --checks-failed command[,command...] Repeatable.
   --conflicts-count number
   --parent-edits-required number
   --notes text
