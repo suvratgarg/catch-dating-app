@@ -11344,7 +11344,7 @@
           "id": "text_scale_2",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No text-scale 2.0 Host Create Event capture exists yet.",
+          "source": "host_create_text_scale_2 captures the first Host Create Event wizard step, header, fields, media picker, and footer at TextScaler 2.0.",
           "nextAction": "Review captured text-scale output against the design references and add per-step variants if issues appear.",
           "previewIds": [
             "HostCreateEventRouteScreen/Route and wizard states"
@@ -11357,7 +11357,7 @@
           "id": "reduced_motion",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No reduced-motion Host Create Event capture exists yet.",
+          "source": "host_create_reduced_motion captures the schedule step with MediaQuery.disableAnimations enabled for PageController and picker-adjacent review.",
           "nextAction": "Review reduced-motion capture for step/picker animation regressions.",
           "previewIds": [
             "HostCreateEventRouteScreen/Route and wizard states"
@@ -11370,7 +11370,7 @@
           "id": "light_dark",
           "kind": "theme",
           "status": "captured",
-          "source": "No paired light/dark Host Create Event capture exists yet.",
+          "source": "host_create_light_dark emits paired light/dark artifacts for the Event Success guide step.",
           "nextAction": "Compare paired light/dark capture against reference variants once exported.",
           "previewIds": [
             "HostCreateEventRouteScreen/Route and wizard states"
