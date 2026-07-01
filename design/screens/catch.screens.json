@@ -16356,6 +16356,11 @@
           "notes": "Current-user calendar fixture with booked and saved events."
         },
         {
+          "id": "calendar_uid_missing",
+          "status": "captured",
+          "notes": "Signed-out Calendar route fallback with empty signed-up and saved event streams."
+        },
+        {
           "id": "calendar_loading",
           "status": "captured",
           "notes": "Route loading skeleton with Calendar top bar, pinned date header, stats strip, and agenda placeholders."
@@ -16410,9 +16415,12 @@
         {
           "id": "uid_missing",
           "kind": "permission",
-          "status": "implemented",
+          "status": "captured",
           "source": "When uid is unavailable, CalendarScreen renders empty signed-up/saved event streams rather than querying user-specific providers.",
-          "nextAction": "Decide whether signed-out calendar should stay shell-hidden or show explicit branded access copy."
+          "captureIds": [
+            "calendar_uid_missing"
+          ],
+          "nextAction": "calendar_uid_missing captures the signed-out empty-stream fallback; decide whether signed-out calendar should show branded access copy only if product policy changes."
         },
         {
           "id": "events_loading",
@@ -16657,7 +16665,7 @@
         {
           "id": "DS-CALENDAR-002",
           "status": "closed",
-          "nextAction": "Closed by deterministic Calendar captures for loading, empty, provider error, club-name loading/error, expanded month, selected day, text scale, reduced motion, and paired light/dark output."
+          "nextAction": "Closed by deterministic Calendar captures for uid-missing fallback, loading, empty, provider error, club-name loading/error, expanded month, selected day, text scale, reduced motion, and paired light/dark output."
         },
         {
           "id": "DS-CALENDAR-003",
@@ -16738,6 +16746,11 @@
           "notes": "Saved events list fixture with deterministic club lookup."
         },
         {
+          "id": "saved_events_uid_missing",
+          "status": "captured",
+          "notes": "Signed-out Saved Events route fallback with an empty event stream."
+        },
+        {
           "id": "saved_events_loading",
           "status": "captured",
           "notes": "Saved-event stream loading skeleton with route top bar and agenda placeholders."
@@ -16782,9 +16795,12 @@
         {
           "id": "uid_missing",
           "kind": "permission",
-          "status": "implemented",
+          "status": "captured",
           "source": "When uid is unavailable, SavedEventsScreen renders an empty event stream instead of querying saved events.",
-          "nextAction": "Decide whether signed-out saved events should show branded access copy."
+          "captureIds": [
+            "saved_events_uid_missing"
+          ],
+          "nextAction": "saved_events_uid_missing captures the signed-out empty-stream fallback; decide whether signed-out saved events should show branded access copy only if product policy changes."
         },
         {
           "id": "saved_events_loading",
@@ -16989,7 +17005,7 @@
         {
           "id": "DS-SAVED-EVENTS-002",
           "status": "closed",
-          "nextAction": "Closed by deterministic Saved Events captures for empty/deleted-doc fallback, loading, error, club-name loading/error, past-only, text scale, and paired light/dark output."
+          "nextAction": "Closed by deterministic Saved Events captures for uid-missing fallback, empty/deleted-doc fallback, loading, error, club-name loading/error, past-only, text scale, and paired light/dark output."
         },
         {
           "id": "DS-SAVED-EVENTS-003",

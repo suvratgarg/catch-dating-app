@@ -9248,6 +9248,7 @@
           ],
           "captureIds": [
             "calendar_planned_events",
+            "calendar_uid_missing",
             "calendar_loading",
             "calendar_events_error",
             "calendar_empty",
@@ -9278,8 +9279,11 @@
             {
               "id": "uid_missing",
               "kind": "permission",
-              "status": "implemented",
-              "notes": "When uid is unavailable, CalendarScreen renders empty signed-up/saved event streams rather than querying user-specific providers."
+              "status": "captured",
+              "notes": "When uid is unavailable, CalendarScreen renders empty signed-up/saved event streams rather than querying user-specific providers; calendar_uid_missing captures that signed-out fallback.",
+              "captureIds": [
+                "calendar_uid_missing"
+              ]
             },
             {
               "id": "events_loading",
@@ -9387,7 +9391,7 @@
             {
               "id": "DP-CALENDAR-002",
               "status": "closed",
-              "nextAction": "Closed by deterministic Calendar captures for loading, empty, provider error, club-name loading/error, expanded month, selected day, text scale, reduced motion, and paired light/dark output."
+              "nextAction": "Closed by deterministic Calendar captures for uid-missing fallback, loading, empty, provider error, club-name loading/error, expanded month, selected day, text scale, reduced motion, and paired light/dark output."
             },
             {
               "id": "DP-CALENDAR-003",
@@ -9416,6 +9420,7 @@
           ],
           "captureIds": [
             "saved_events_list",
+            "saved_events_uid_missing",
             "saved_events_loading",
             "saved_events_error",
             "saved_events_empty",
@@ -9444,8 +9449,11 @@
             {
               "id": "uid_missing",
               "kind": "permission",
-              "status": "implemented",
-              "notes": "When uid is unavailable, SavedEventsScreen renders an empty event stream instead of querying saved events."
+              "status": "captured",
+              "notes": "When uid is unavailable, SavedEventsScreen renders an empty event stream instead of querying saved events; saved_events_uid_missing captures that signed-out fallback.",
+              "captureIds": [
+                "saved_events_uid_missing"
+              ]
             },
             {
               "id": "saved_events_loading",
@@ -9538,7 +9546,7 @@
             {
               "id": "DP-SAVED-EVENTS-002",
               "status": "closed",
-              "nextAction": "Closed by deterministic Saved Events captures for empty/deleted-doc fallback, loading, error, club-name loading/error, past-only, text scale, and paired light/dark output."
+              "nextAction": "Closed by deterministic Saved Events captures for uid-missing fallback, empty/deleted-doc fallback, loading, error, club-name loading/error, past-only, text scale, and paired light/dark output."
             },
             {
               "id": "DP-SAVED-EVENTS-003",

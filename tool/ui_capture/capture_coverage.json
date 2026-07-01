@@ -65,6 +65,7 @@
       "priority": "P2",
       "captureIds": [
         "calendar_planned_events",
+        "calendar_uid_missing",
         "calendar_loading",
         "calendar_events_error",
         "calendar_empty",
@@ -76,7 +77,7 @@
         "calendar_reduced_motion",
         "calendar_light_dark"
       ],
-      "reason": "Calendar captures now cover planned booked/saved events, loading, provider error, empty state, club-name loading/error, expanded month, selected day, text scale 2.0, reduced motion, and paired light/dark output."
+      "reason": "Calendar captures now cover planned booked/saved events, signed-out uid fallback, loading, provider error, empty state, club-name loading/error, expanded month, selected day, text scale 2.0, reduced motion, and paired light/dark output."
     },
     {
       "routeId": "calendarEventDetailScreen",
@@ -91,6 +92,7 @@
       "priority": "P2",
       "captureIds": [
         "saved_events_list",
+        "saved_events_uid_missing",
         "saved_events_loading",
         "saved_events_error",
         "saved_events_empty",
@@ -100,7 +102,7 @@
         "saved_events_text_scale_2",
         "saved_events_light_dark"
       ],
-      "reason": "Saved Events captures now cover populated rows, loading, stream error, empty/deleted-doc fallback, club-name loading/error, past-only rows, text scale 2.0, and paired light/dark output."
+      "reason": "Saved Events captures now cover populated rows, signed-out uid fallback, loading, stream error, empty/deleted-doc fallback, club-name loading/error, past-only rows, text scale 2.0, and paired light/dark output."
     },
     {
       "routeId": "savedEventDetailScreen",

@@ -8738,6 +8738,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => CalendarScreen(referenceNow: _captureNow),
   ),
   ScreenCaptureEntry(
+    id: 'calendar_uid_missing',
+    routeIds: const <String>['calendarScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _calendarProviderOverrides(
+      uid: const AsyncData<String?>(null),
+    ),
+    builder: (context) => CalendarScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
     id: 'calendar_loading',
     routeIds: const <String>['calendarScreen'],
     device: CaptureDevice.reviewTall,
@@ -8835,6 +8844,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['savedEventsScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _savedEventsProviderOverrides(),
+    builder: (context) => SavedEventsScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'saved_events_uid_missing',
+    routeIds: const <String>['savedEventsScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _savedEventsProviderOverrides(
+      uid: const AsyncData<String?>(null),
+    ),
     builder: (context) => SavedEventsScreen(referenceNow: _captureNow),
   ),
   ScreenCaptureEntry(
