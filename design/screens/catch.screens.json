@@ -6783,6 +6783,16 @@
           "notes": "Deterministic ProfileScreen route capture drives the real PhotoUploadController upload failure path and surfaces the route snackbar."
         },
         {
+          "id": "profile_self_inline_save_pending",
+          "status": "captured",
+          "notes": "Deterministic ProfileTab capture opens the Education inline editor, holds the real ProfileEditController save pending, and captures the disabled chip plus loading Done button."
+        },
+        {
+          "id": "profile_self_inline_save_error",
+          "status": "captured",
+          "notes": "Deterministic ProfileTab capture opens a prompt inline editor, drives a failing ProfileEditController save, and captures the retained drawer error state."
+        },
+        {
           "id": "profile_self_text_scale_2",
           "status": "captured",
           "notes": "Deterministic ProfileScreen route capture registered in screen_capture_catalog.dart."
@@ -6909,27 +6919,33 @@
         {
           "id": "inline_save_pending",
           "kind": "mutation",
-          "status": "tested",
+          "status": "captured",
           "source": "Inline editors hold the drawer open and expose pending Done behavior until ProfileEditController save completes.",
           "tests": [
             "test/profile/profile_widgets_test.dart"
           ],
-          "nextAction": "Add visual preview/capture for pending save on text, chips, height, and pace range editors.",
+          "nextAction": "profile_self_inline_save_pending captures a real single-choice inline save held pending through ProfileEditController. Add text, height, and pace range variants only if design review needs them.",
           "previewIds": [
             "ProfileScreen/Self section states"
+          ],
+          "captureIds": [
+            "profile_self_inline_save_pending"
           ]
         },
         {
           "id": "inline_save_error",
           "kind": "mutation",
-          "status": "tested",
+          "status": "captured",
           "source": "Inline save failures keep the editor open and render the shared inline error banner copy.",
           "tests": [
             "test/profile/profile_widgets_test.dart"
           ],
-          "nextAction": "Add visual preview for field-level backend failure copy and retry/edit recovery.",
+          "nextAction": "profile_self_inline_save_error captures a real prompt inline save failure through ProfileEditController. Add retry/edit recovery capture only if design review needs it.",
           "previewIds": [
             "ProfileScreen/Self section states"
+          ],
+          "captureIds": [
+            "profile_self_inline_save_error"
           ]
         },
         {

@@ -41,12 +41,17 @@ import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -175,8 +180,10 @@ import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_controls.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -189,7 +196,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
         AsyncValue,
         ConsumerState,
         ConsumerStatefulWidget;
-import 'package:flutter_test/flutter_test.dart' show Fake;
+import 'package:flutter_test/flutter_test.dart'
+    show Fake, Finder, WidgetTester, find;
 import 'package:image_picker/image_picker.dart';
 
 import '../../clubs/clubs_test_helpers.dart' as club_test;
@@ -208,6 +216,8 @@ class ScreenCaptureEntry {
     this.providerOverrides = const [],
     this.textScale = 1.0,
     this.disableAnimations = false,
+    this.drive,
+    this.cleanup,
   });
 
   final String id;
@@ -219,6 +229,8 @@ class ScreenCaptureEntry {
   final Iterable providerOverrides;
   final double textScale;
   final bool disableAnimations;
+  final Future<void> Function(WidgetTester tester)? drive;
+  final Future<void> Function(WidgetTester tester)? cleanup;
 }
 
 final _profileHeroImage = FileImage(File('test/goldens/fixtures/portrait.jpg'));
@@ -1463,6 +1475,16 @@ final _publicProfileReferenceProfile = ProfileSurfaceFixtures
           photo.copyWith(url: _profilePortraitAssetPath),
       ],
     );
+final _profileInlineSavePendingRepository = _CaptureEditableProfileRepository(
+  profile: ProfileSurfaceFixtures.viewer,
+);
+final _profileInlineSaveErrorRepository = _CaptureEditableProfileRepository(
+  profile: ProfileSurfaceFixtures.viewer,
+  updateError: StateError('Save failed'),
+);
+final _profilePerfectRunPromptTitle = profilePromptDefinition(
+  profilePromptPerfectEventId,
+).title;
 
 List<Object> _selfProfileProviderOverrides({
   Stream<UserProfile?>? profileStream,
@@ -1502,6 +1524,127 @@ List<Object> _selfProfileUploadFailureProviderOverrides() {
     ),
     errorLoggerProvider.overrideWithValue(_CaptureSilentErrorLogger()),
   ];
+}
+
+List<Object> _editableSelfProfileProviderOverrides(
+  _CaptureEditableProfileRepository repository,
+) {
+  return [
+    uidProvider.overrideWithValue(
+      const AsyncData<String?>(ProfileSurfaceFixtures.viewerUid),
+    ),
+    watchUserProfileProvider.overrideWith(
+      (ref) => Stream<UserProfile?>.value(repository.profile),
+    ),
+    userProfileRepositoryProvider.overrideWithValue(repository),
+    photoUploadControllerProvider.overrideWithValue((
+      loadingIndices: <int>{},
+      uploadError: null,
+    )),
+    userAnalyticsRepositoryProvider.overrideWithValue(
+      ProfileFixtureUserAnalyticsRepository(
+        report: ProfileSurfaceFixtures.analyticsReport,
+      ),
+    ),
+    errorLoggerProvider.overrideWithValue(_CaptureSilentErrorLogger()),
+  ];
+}
+
+class _CaptureEditableProfileRepository extends Fake
+    implements UserProfileRepository {
+  _CaptureEditableProfileRepository({required this.profile, this.updateError});
+
+  final UserProfile profile;
+  Object? updateError;
+  Completer<void>? _updateCompleter;
+
+  void holdNextUpdate() {
+    _updateCompleter = Completer<void>();
+  }
+
+  void releaseHeldUpdate() {
+    final completer = _updateCompleter;
+    _updateCompleter = null;
+    if (completer != null && !completer.isCompleted) {
+      completer.complete();
+    }
+  }
+
+  @override
+  Stream<UserProfile?> watchUserProfile({required String? uid}) =>
+      Stream<UserProfile?>.value(uid == null ? null : profile);
+
+  @override
+  Future<UserProfile?> fetchUserProfile({required String? uid}) async =>
+      uid == null ? null : profile;
+
+  @override
+  Future<void> updateUserProfile({
+    required String uid,
+    required UpdateUserProfilePatch patch,
+    String action = 'update profile',
+  }) async {
+    final error = updateError;
+    if (error != null) throw error;
+    final completer = _updateCompleter;
+    if (completer != null) {
+      await completer.future;
+    }
+  }
+}
+
+Future<void> _driveProfileInlineSavePending(WidgetTester tester) async {
+  _profileInlineSavePendingRepository.holdNextUpdate();
+  await _openProfileCaptureField(tester, 'Education');
+  await tester.tap(_profileCaptureChip(EducationLevel.values.first.label));
+  await tester.pump();
+  _tapProfileCaptureDone(tester);
+}
+
+Future<void> _cleanupProfileInlineSavePending(WidgetTester tester) async {
+  _profileInlineSavePendingRepository.releaseHeldUpdate();
+  await tester.pump();
+}
+
+Future<void> _driveProfileInlineSaveError(WidgetTester tester) async {
+  await _openProfileCaptureField(tester, _profilePerfectRunPromptTitle);
+  await tester.enterText(
+    find.descendant(
+      of: _profileCaptureInfoTile(_profilePerfectRunPromptTitle),
+      matching: find.byType(EditableText),
+    ),
+    'Updated bio',
+  );
+  _tapProfileCaptureDone(tester);
+}
+
+Future<void> _openProfileCaptureField(WidgetTester tester, String label) async {
+  final field = _profileCaptureInfoTile(label);
+  await tester.dragUntilVisible(
+    field,
+    find.byKey(ProfileTab.scrollViewKey),
+    const Offset(0, -300),
+  );
+  await tester.ensureVisible(field);
+  await tester.pump();
+  await tester.tap(field);
+  await tester.pump();
+}
+
+Finder _profileCaptureInfoTile(String label) => find.byWidgetPredicate(
+  (widget) =>
+      widget is CatchField &&
+      widget.title == label &&
+      widget.variant == CatchFieldVariant.row,
+);
+
+Finder _profileCaptureChip(String label) => find.byWidgetPredicate(
+  (widget) => widget is CatchChip && widget.label == label,
+);
+
+void _tapProfileCaptureDone(WidgetTester tester) {
+  final doneButton = find.widgetWithText(CatchButton, 'Done');
+  tester.widget<CatchButton>(doneButton).onPressed?.call();
 }
 
 class _CaptureFailingImageUploadRepository extends Fake
@@ -1583,6 +1726,11 @@ List<Object> _publicProfileProviderOverrides({
 
 Widget _selfProfileCapture({int initialTabIndex = 0}) =>
     ProfileScreen(initialTabIndex: initialTabIndex);
+
+Widget _editableSelfProfileCapture() => ProfileTab(
+  user: ProfileSurfaceFixtures.viewer,
+  uploadState: (loadingIndices: <int>{}, uploadError: null),
+);
 
 class _SelfProfileUploadFailureCapture extends ConsumerStatefulWidget {
   const _SelfProfileUploadFailureCapture();
@@ -6555,6 +6703,27 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewTall,
     providerOverrides: _selfProfileUploadFailureProviderOverrides(),
     builder: (context) => const _SelfProfileUploadFailureCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'profile_self_inline_save_pending',
+    routeIds: const <String>['profileScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _editableSelfProfileProviderOverrides(
+      _profileInlineSavePendingRepository,
+    ),
+    builder: (context) => _editableSelfProfileCapture(),
+    drive: _driveProfileInlineSavePending,
+    cleanup: _cleanupProfileInlineSavePending,
+  ),
+  ScreenCaptureEntry(
+    id: 'profile_self_inline_save_error',
+    routeIds: const <String>['profileScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _editableSelfProfileProviderOverrides(
+      _profileInlineSaveErrorRepository,
+    ),
+    builder: (context) => _editableSelfProfileCapture(),
+    drive: _driveProfileInlineSaveError,
   ),
   ScreenCaptureEntry(
     id: 'profile_self_text_scale_2',

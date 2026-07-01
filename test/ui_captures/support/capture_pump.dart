@@ -74,6 +74,8 @@ Future<List<CaptureArtifact>> captureCatchWidget(
   required String id,
   required WidgetBuilder builder,
   required Directory outputDirectory,
+  Future<void> Function(WidgetTester tester)? drive,
+  Future<void> Function(WidgetTester tester)? cleanup,
   CaptureDevice device = CaptureDevice.reviewPhone,
   double pixelRatio = 1.0,
   double textScale = 1.0,
@@ -114,6 +116,10 @@ Future<List<CaptureArtifact>> captureCatchWidget(
       ),
     );
     await _pumpCaptureFrame(tester);
+    if (drive != null) {
+      await drive(tester);
+      await _pumpCaptureFrame(tester);
+    }
 
     final file = _captureFile(
       outputDirectory: outputDirectory,
@@ -125,6 +131,10 @@ Future<List<CaptureArtifact>> captureCatchWidget(
       () => _writeBoundaryPng(boundaryKey, file, pixelRatio: pixelRatio),
     );
     artifacts.add(CaptureArtifact(id: id, theme: theme, file: file));
+    if (cleanup != null) {
+      await cleanup(tester);
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 50));
+    }
   }
 
   await pumpFeatureUiFor(tester, const Duration(milliseconds: 50));

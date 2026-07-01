@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.276
+version: 0.2.277
 updated: 2026-07-01
 owner: product_design_parity
 status: active
@@ -35,9 +35,9 @@ ledgers as the source of truth when counts differ:
 - Design parity matrix: 12 feature groups, 36 screens, 621 matrix states, and
   54 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
-- Matrix state status spread: 555 captured, 16 implemented, 1 planned, and
-  49 tested.
-- Capture coverage registry: 590 capture ids across 37 captured route entries,
+- Matrix state status spread: 557 captured, 16 implemented, 1 planned, and
+  47 tested.
+- Capture coverage registry: 592 capture ids across 37 captured route entries,
   5 alias route entries, 0 planned route entries, and 6 excluded route entries.
 - Component contracts: 56 reusable primitive/composite contracts with 349
   contract states.
@@ -1462,8 +1462,8 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
 
 - [ ] `profile.self` (16 state follow-ups, 1 open gap)
   - tested: `photo_grid`, `inline_text_edit`, `inline_choice_edit`, `inline_save_pending`, `inline_save_error`
-  - captured: `profile_loading`, `profile_error`, `profile_unavailable`, `edit_tab_default`, `photo_upload_mutation`, `preview_tab_default`, `settings_action`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-PROFILE-SELF-002: Deterministic full-route captures are now registered for loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, text scale, reduced motion, and paired light/dark. Remaining capture work is delete/reorder, inline save pending/error drawers, settings navigation proof, and advisory pixel comparison.
+  - captured: `profile_loading`, `profile_error`, `profile_unavailable`, `edit_tab_default`, `photo_upload_mutation`, `inline_save_pending`, `inline_save_error`, `preview_tab_default`, `settings_action`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DP-PROFILE-SELF-002: Deterministic captures are now registered for loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, inline save pending/error drawers, text scale, reduced motion, and paired light/dark. Remaining capture work is delete/reorder, settings navigation proof, and advisory pixel comparison.
   - DP-PROFILE-SELF-003: Closed by SelfProfileScreenState owning profile provider waves, preview projection, upload/save mutation modes, and retry intent; SelfProfileEditTabState owning photo-grid, prompt-slot, basics/about/running/lifestyle row descriptors; SelfProfilePhotoActionController owning photo editor/delete/reorder intents; and SelfProfileInlineEditPatchFactory owning inline edit patch creation.
   - DP-PROFILE-SELF-004: Closed by exported self-profile edit and preview references plus masks in `design/reference_screens/screen.profile.self`.
 - [ ] `profile.public` (14 state follow-ups, 2 open gaps)

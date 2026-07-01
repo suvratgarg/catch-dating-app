@@ -47,6 +47,8 @@ void main() {
         tester,
         id: entry.id,
         builder: entry.builder,
+        drive: entry.drive,
+        cleanup: entry.cleanup,
         device: device,
         pixelRatio: pixelRatio,
         textScale: textScaleOverride ?? entry.textScale,

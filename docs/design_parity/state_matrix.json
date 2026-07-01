@@ -3814,6 +3814,8 @@
             "profile_self_preview_tab",
             "profile_self_photo_upload_pending",
             "profile_self_photo_upload_error",
+            "profile_self_inline_save_pending",
+            "profile_self_inline_save_error",
             "profile_self_text_scale_2",
             "profile_self_reduced_motion"
           ],
@@ -3934,25 +3936,31 @@
             {
               "id": "inline_save_pending",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
               "tests": [
                 "test/profile/profile_widgets_test.dart"
               ],
-              "notes": "Inline editors hold the drawer open and expose pending Done behavior until ProfileEditController save completes. Add visual preview/capture for pending save on text, chips, height, and pace range editors.",
+              "notes": "Inline editors hold the drawer open and expose pending Done behavior until ProfileEditController save completes. profile_self_inline_save_pending captures a real single-choice inline save held pending through ProfileEditController.",
               "previewIds": [
                 "ProfileScreen/Self section states"
+              ],
+              "captureIds": [
+                "profile_self_inline_save_pending"
               ]
             },
             {
               "id": "inline_save_error",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
               "tests": [
                 "test/profile/profile_widgets_test.dart"
               ],
-              "notes": "Inline save failures keep the editor open and render the shared inline error banner copy. Add visual preview for field-level backend failure copy and retry/edit recovery.",
+              "notes": "Inline save failures keep the editor open and render the shared inline error banner copy. profile_self_inline_save_error captures a real prompt inline save failure through ProfileEditController.",
               "previewIds": [
                 "ProfileScreen/Self section states"
+              ],
+              "captureIds": [
+                "profile_self_inline_save_error"
               ]
             },
             {
