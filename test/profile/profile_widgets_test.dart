@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -14,7 +15,9 @@ import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
+import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -30,6 +33,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
@@ -345,6 +349,45 @@ void main() {
       tester.getTopLeft(_profileOptionGroup()).dy,
       greaterThanOrEqualTo(0),
     );
+  });
+
+  testWidgets('ProfileScreen surfaces profile photo upload failures', (
+    tester,
+  ) async {
+    final user = buildUser();
+    final repository = FakeProfileEditUserProfileRepository()
+      ..latestProfile = user;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream<UserProfile?>.value(user),
+          ),
+          userProfileRepositoryProvider.overrideWithValue(repository),
+          imageUploadRepositoryProvider.overrideWithValue(
+            _FailingProfileImageUploadRepository(),
+          ),
+          errorLoggerProvider.overrideWithValue(_SilentErrorLogger()),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const _ProfileUploadFailureSeeder(),
+        ),
+      ),
+    );
+
+    await pumpFeatureUi(tester);
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.text(
+        'No internet connection. Connect to the internet and try again.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(CatchLoadingIndicator), findsNothing);
   });
 
   testWidgets('Profile preview card can scroll back to the top', (
@@ -1626,6 +1669,61 @@ class _ProfileEditProviderPrimer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(uidProvider);
     return child;
+  }
+}
+
+class _ProfileUploadFailureSeeder extends ConsumerStatefulWidget {
+  const _ProfileUploadFailureSeeder();
+
+  @override
+  ConsumerState<_ProfileUploadFailureSeeder> createState() =>
+      _ProfileUploadFailureSeederState();
+}
+
+class _ProfileUploadFailureSeederState
+    extends ConsumerState<_ProfileUploadFailureSeeder> {
+  bool _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _started) return;
+      _started = true;
+      PhotoUploadController.uploadPhotoMutation.reset(ref);
+      unawaited(
+        PhotoUploadController.uploadPhotoMutation
+            .run(ref, (tx) async {
+              await tx
+                  .get(photoUploadControllerProvider.notifier)
+                  .pickAndUpload(1);
+            })
+            .catchError((_) {}),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => const ProfileScreen();
+}
+
+class _FailingProfileImageUploadRepository extends Fake
+    implements ImageUploadRepository {
+  @override
+  Future<XFile?> pickImage({
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    int? imageQuality,
+  }) async {
+    return XFile('picked-profile-photo.jpg');
+  }
+
+  @override
+  Future<UploadedImage> uploadUserProfilePhoto({
+    required String uid,
+    required int index,
+    required XFile image,
+  }) async {
+    throw obviousOfflineException();
   }
 }
 
