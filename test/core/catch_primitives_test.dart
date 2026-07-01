@@ -253,6 +253,7 @@ void main() {
               key: const ValueKey('plain-icon-button'),
               icon: CatchIcons.more,
               variant: CatchIconButtonVariant.plain,
+              borderColor: CatchTokens.sunsetLight.line2,
               disabled: true,
               onTap: () => taps++,
             ),
@@ -297,7 +298,7 @@ void main() {
     expect(floatDecoration.color, isNot(tokens.surface));
     expect(floatDecoration.boxShadow, CatchElevation.iconButtonFloat);
     expect(plainDecoration.color, Colors.transparent);
-    expect(plainDecoration.border, isNull);
+    expect((plainDecoration.border! as Border).top.color, tokens.line2);
     expect(find.byTooltip('Search events'), findsOneWidget);
 
     await tester.tap(find.byIcon(CatchIcons.search));

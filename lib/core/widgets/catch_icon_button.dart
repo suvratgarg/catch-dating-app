@@ -30,6 +30,7 @@ class CatchIconButton extends StatelessWidget {
     this.accent,
     this.disabled = false,
     this.background,
+    this.borderColor,
     this.size = defaultSize,
     this.borderRadius,
     this.tooltip,
@@ -45,6 +46,7 @@ class CatchIconButton extends StatelessWidget {
     Color? accent,
     bool disabled = false,
     Color? background,
+    Color? borderColor,
     double size = defaultSize,
     double? borderRadius,
     String? tooltip,
@@ -58,6 +60,7 @@ class CatchIconButton extends StatelessWidget {
       accent: accent,
       disabled: disabled,
       background: background,
+      borderColor: borderColor,
       size: size,
       borderRadius: borderRadius,
       tooltip: tooltip,
@@ -79,6 +82,9 @@ class CatchIconButton extends StatelessWidget {
   /// Override fill color. Defaults to the variant's handoff surface.
   final Color? background;
 
+  /// Override border color. Defaults to the variant's handoff border.
+  final Color? borderColor;
+
   /// Diameter of the button circle. Defaults to [defaultSize].
   final double size;
 
@@ -98,6 +104,7 @@ class CatchIconButton extends StatelessWidget {
       active: active,
       accent: accent,
       background: background,
+      borderColor: borderColor,
     );
     final enabled = onTap != null && !disabled;
     final filled = fill ?? active;
@@ -136,7 +143,16 @@ class CatchIconButton extends StatelessWidget {
     );
     final message = tooltip;
     if (message == null || message.isEmpty) return button;
-    return Tooltip(message: message, child: button);
+    return Semantics(
+      button: true,
+      enabled: enabled,
+      label: message,
+      child: Tooltip(
+        message: message,
+        excludeFromSemantics: true,
+        child: button,
+      ),
+    );
   }
 }
 
@@ -159,6 +175,7 @@ class _IconBtnPalette {
     required bool active,
     required Color? accent,
     required Color? background,
+    required Color? borderColor,
   }) {
     final activeColor = accent ?? tokens.ink;
 
@@ -167,7 +184,7 @@ class _IconBtnPalette {
         return _IconBtnPalette(
           background: background ?? tokens.surface,
           foreground: active ? activeColor : tokens.ink,
-          borderColor: tokens.line2,
+          borderColor: borderColor ?? tokens.line2,
           shadow: CatchElevation.none,
         );
       case CatchIconButtonVariant.float:
@@ -180,14 +197,14 @@ class _IconBtnPalette {
           foreground: active
               ? activeColor
               : CatchIconButtonColors.floatingForeground,
-          borderColor: null,
+          borderColor: borderColor,
           shadow: CatchElevation.iconButtonFloat,
         );
       case CatchIconButtonVariant.plain:
         return _IconBtnPalette(
           background: background ?? Colors.transparent,
           foreground: active ? activeColor : tokens.ink,
-          borderColor: null,
+          borderColor: borderColor,
           shadow: CatchElevation.none,
         );
     }

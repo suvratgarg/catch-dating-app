@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:flutter/material.dart';
 
 /// Design-system `CoverStory` (`components/explore/CoverStory`): the dark "wow"
@@ -193,28 +194,19 @@ class CoverStoryChrome extends StatelessWidget {
           else
             const SizedBox.shrink(),
           if (story.showSearch)
-            Semantics(
-              button: true,
-              label: 'Search',
-              child: GestureDetector(
-                onTap: story.onSearch,
-                child: Container(
-                  width: CatchLayout.coverStorySearchExtent,
-                  height: CatchLayout.coverStorySearchExtent,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: paper.withValues(
-                        alpha: CatchOpacity.coverStorySearchBorder,
-                      ),
-                    ),
-                  ),
-                  child: Icon(
-                    CatchIcons.searchRounded,
-                    size: CatchIcon.control,
-                    color: paper,
-                  ),
-                ),
+            CatchIconButton(
+              onTap: story.onSearch,
+              variant: CatchIconButtonVariant.plain,
+              background: Colors.transparent,
+              borderColor: paper.withValues(
+                alpha: CatchOpacity.coverStorySearchBorder,
+              ),
+              size: CatchLayout.coverStorySearchExtent,
+              tooltip: 'Search',
+              child: Icon(
+                CatchIcons.searchRounded,
+                size: CatchIcon.control,
+                color: paper,
               ),
             ),
         ],
