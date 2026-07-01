@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,6 +19,7 @@ class FakeProfileRepository extends Fake implements UserProfileRepository {
   UserProfile? latestProfile;
   final updatedUids = <String>[];
   final updatedPatches = <UpdateUserProfilePatch>[];
+  final _updateWaiters = <_ProfileUpdateWaiter>[];
   int fetchCount = 0;
 
   @override
@@ -35,11 +36,33 @@ class FakeProfileRepository extends Fake implements UserProfileRepository {
   }) async {
     updatedUids.add(uid);
     updatedPatches.add(patch);
+    _notifyUpdateWaiters();
     _applyPatch(patch);
     final error = updateError;
     if (error != null) throw error;
     final completer = updateCompleter;
     if (completer != null) await completer.future;
+  }
+
+  Future<void> waitForUpdateCount(int count) {
+    if (updatedPatches.length >= count) return Future<void>.value();
+    final waiter = _ProfileUpdateWaiter(count);
+    _updateWaiters.add(waiter);
+    return waiter.completer.future.timeout(
+      const Duration(seconds: 1),
+      onTimeout: () {
+        _updateWaiters.remove(waiter);
+        fail('Timed out waiting for $count profile update(s).');
+      },
+    );
+  }
+
+  void _notifyUpdateWaiters() {
+    for (final waiter in List<_ProfileUpdateWaiter>.of(_updateWaiters)) {
+      if (updatedPatches.length < waiter.count) continue;
+      _updateWaiters.remove(waiter);
+      if (!waiter.completer.isCompleted) waiter.completer.complete();
+    }
   }
 
   void _applyPatch(UpdateUserProfilePatch patch) {
@@ -66,6 +89,13 @@ class FakeProfileRepository extends Fake implements UserProfileRepository {
     }
     latestProfile = updatedProfile;
   }
+}
+
+class _ProfileUpdateWaiter {
+  _ProfileUpdateWaiter(this.count);
+
+  final int count;
+  final completer = Completer<void>();
 }
 
 /// A [UserProfileRepository] fake for widget tests that use
@@ -112,15 +142,8 @@ class SilentErrorLogger extends ErrorLogger {
   }) {}
 }
 
-/// Polls [repository] until [count] patches have been recorded, or fails
-/// after 20 microtask iterations.
+/// Waits until [repository] records [count] patches.
 Future<void> waitForRepositoryUpdates(
   FakeProfileRepository repository,
   int count,
-) async {
-  for (var attempt = 0; attempt < 20; attempt += 1) {
-    await Future<void>.delayed(Duration.zero);
-    if (repository.updatedPatches.length >= count) return;
-  }
-  fail('Timed out waiting for $count profile update(s).');
-}
+) => repository.waitForUpdateCount(count);
