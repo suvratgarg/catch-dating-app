@@ -556,6 +556,8 @@
       "captureIds": [
         "host_home_dashboard",
         "host_home_events_list",
+        "host_home_switcher_cohost",
+        "host_home_long_club_names",
         "host_home_signed_out",
         "host_home_clubs_loading",
         "host_home_clubs_error",
@@ -569,7 +571,7 @@
         "host_home_reduced_motion",
         "host_home_light_dark"
       ],
-      "reason": "Host operations home is captured for Today/dashboard and Events-list baselines plus signed-out access, club loading/error/offline, empty clubs, nested event loading/error/offline, co-host empty events, text scale 2.0, reduced motion, and paired light/dark output. HostHomeRouteState and HostHomeEventsSectionState now own route/event async branch selection; remaining work is stable reference export for additional variants."
+      "reason": "Host operations home is captured for Today/dashboard and Events-list baselines plus owner/co-host switcher selection, long selected-club/menu labels, signed-out access, club loading/error/offline, empty clubs, nested event loading/error/offline, co-host empty events, text scale 2.0, reduced motion, and paired light/dark output. HostHomeRouteState and HostHomeEventsSectionState now own route/event async branch selection; remaining work is stable reference export for additional variants."
     },
     {
       "routeId": "hostClubsScreen",

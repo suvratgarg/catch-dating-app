@@ -4357,6 +4357,8 @@
           "captureIds": [
             "host_home_dashboard",
             "host_home_events_list",
+            "host_home_switcher_cohost",
+            "host_home_long_club_names",
             "host_home_signed_out",
             "host_home_clubs_loading",
             "host_home_clubs_error",
@@ -4454,13 +4456,17 @@
             {
               "id": "multiple_clubs_switcher",
               "kind": "populated",
-              "status": "tested",
+              "status": "captured",
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "Multiple owned/hosted clubs expose Switch club menu in the top bar and update selected club/event rows. Add Widgetbook and route capture states for owner/co-host switching and long club names.",
+              "notes": "Multiple owned/hosted clubs expose Switch club menu in the top bar and update selected club/event rows. host_home_switcher_cohost captures a co-host selection while owned clubs are present, and host_home_long_club_names captures title/menu pressure with long owner/co-host names.",
               "previewIds": [
                 "HostOperationsHomeScreen/Route states"
+              ],
+              "captureIds": [
+                "host_home_switcher_cohost",
+                "host_home_long_club_names"
               ]
             },
             {

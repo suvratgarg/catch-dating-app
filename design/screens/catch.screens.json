@@ -7939,6 +7939,16 @@
           "notes": "Deterministic Host Home Events capture explicitly uses HostHomeTab.events for comparison against the Claude Host Events tab reference; latest advisory comparison is within threshold at 6.76% mismatch / 12.26 meanDelta."
         },
         {
+          "id": "host_home_switcher_cohost",
+          "status": "captured",
+          "notes": "Deterministic Host Home Events capture selects a co-hosted club while owned clubs are also available in the switcher."
+        },
+        {
+          "id": "host_home_long_club_names",
+          "status": "captured",
+          "notes": "Deterministic Host Home Events capture exercises long selected-club and switcher labels with matching event streams."
+        },
+        {
           "id": "host_home_signed_out",
           "status": "captured",
           "notes": "Deterministic Host Home capture renders the signed-out/access-required state."
@@ -8072,14 +8082,18 @@
         {
           "id": "multiple_clubs_switcher",
           "kind": "populated",
-          "status": "tested",
+          "status": "captured",
           "source": "Multiple owned/hosted clubs expose Switch club menu in the top bar and update selected club/event rows.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
-          "nextAction": "Add Widgetbook and route capture states for owner/co-host switching and long club names.",
+          "nextAction": "Captured by host_home_switcher_cohost and host_home_long_club_names; remaining switcher work is future menu-open or pixel-reference variants if design requires them.",
           "previewIds": [
             "HostOperationsHomeScreen/Route states"
+          ],
+          "captureIds": [
+            "host_home_switcher_cohost",
+            "host_home_long_club_names"
           ]
         },
         {

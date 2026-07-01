@@ -144,6 +144,21 @@ final _selectedLocationEvent = _editableEvent.copyWith(
   startingPointLng: 72.8223,
   locationDetails: 'Meet by the sea-facing steps',
 );
+final _longNameOwnerClub = HostOperationsFixtures.primaryClub.copyWith(
+  id: 'design-host-long-owner-club',
+  name: 'Bandra Sea Face Morning Run Club for New Members',
+  area: 'Bandra West Promenade',
+);
+final _longNameCoHostedClub = HostOperationsFixtures.coHostedClub.copyWith(
+  id: 'design-host-long-cohost-club',
+  name: 'South Mumbai Rooftop Dinner Collective With Guest Hosts',
+  area: 'Fort and Kala Ghoda',
+);
+final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
+  id: 'design-host-long-name-event',
+  clubId: _longNameOwnerClub.id,
+  meetingPoint: 'Bandra West Promenade amphitheatre',
+);
 final _customActivityEventDraft = HostOperationsFixtures.eventDraft.copyWith(
   id: 'design-host-event-custom-activity-draft',
   activityKind: 'openActivity',
@@ -422,6 +437,41 @@ Widget hostHomeRouteStates(BuildContext context) {
         label: 'populated host dashboard',
         child: const _DeviceFrame(
           child: _HostShellScope(child: HostOperationsHomeScreen()),
+        ),
+      ),
+      _StateCard(
+        label: 'owner and co-host switcher',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            hostedClubs: HostOperationsFixtures.clubs,
+            ownedClubs: [
+              HostOperationsFixtures.primaryClub,
+              HostOperationsFixtures.dinnerClub,
+            ],
+            child: const HostOperationsHomeScreen(
+              initialClubId: 'design-host-cohost-club',
+              initialTab: HostHomeTab.events,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'long club names',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            hostedClubs: [_longNameOwnerClub, _longNameCoHostedClub],
+            ownedClubs: [_longNameOwnerClub],
+            clubEventStreams: {
+              _longNameOwnerClub.id: Stream<List<Event>>.value([
+                _longNameEvent,
+              ]),
+              _longNameCoHostedClub.id: Stream<List<Event>>.value(const []),
+            },
+            child: HostOperationsHomeScreen(
+              initialClubId: _longNameOwnerClub.id,
+              initialTab: HostHomeTab.events,
+            ),
+          ),
         ),
       ),
       _StateCard(
@@ -7276,6 +7326,12 @@ class _HostShellScope extends StatelessWidget {
         ownedClubs ??
         [HostOperationsFixtures.primaryClub, HostOperationsFixtures.dinnerClub];
     final effectiveUid = uid ?? _hostUid;
+    final eventClubIds = <String>{
+      for (final club in HostOperationsFixtures.clubs) club.id,
+      for (final club in effectiveHostedClubs) club.id,
+      for (final club in effectiveOwnedClubs) club.id,
+      ...clubEventStreams.keys,
+    };
     final overrides = [
       uidProvider.overrideWithValue(AsyncData<String?>(uid)),
       watchHostProfileProvider(effectiveUid).overrideWith(
@@ -7302,13 +7358,13 @@ class _HostShellScope extends StatelessWidget {
       ),
       hostAnalyticsRepositoryProvider.overrideWithValue(analyticsRepository),
     ];
-    for (final club in HostOperationsFixtures.clubs) {
+    for (final clubId in eventClubIds) {
       overrides.add(
-        watchEventsForClubProvider(club.id).overrideWith(
+        watchEventsForClubProvider(clubId).overrideWith(
           (ref) =>
-              clubEventStreams[club.id] ??
+              clubEventStreams[clubId] ??
               Stream<List<Event>>.value(
-                HostOperationsFixtures.eventsByClub[club.id] ?? const [],
+                HostOperationsFixtures.eventsByClub[clubId] ?? const [],
               ),
         ),
       );

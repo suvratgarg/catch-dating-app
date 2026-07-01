@@ -4950,6 +4950,22 @@ final _hostTodayReferenceEvent = _hostManageReferenceEvent.copyWith(
     customActivityLabel: 'Trivia Night',
   ),
 );
+final _hostHomeLongNameOwnerClub = HostOperationsFixtures.primaryClub.copyWith(
+  id: 'host-home-long-owner-club',
+  name: 'Bandra Sea Face Morning Run Club for New Members',
+  area: 'Bandra West Promenade',
+);
+final _hostHomeLongNameCoHostedClub = HostOperationsFixtures.coHostedClub
+    .copyWith(
+      id: 'host-home-long-cohost-club',
+      name: 'South Mumbai Rooftop Dinner Collective With Guest Hosts',
+      area: 'Fort and Kala Ghoda',
+    );
+final _hostHomeLongNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
+  id: 'host-home-long-name-event',
+  clubId: _hostHomeLongNameOwnerClub.id,
+  meetingPoint: 'Bandra West Promenade amphitheatre',
+);
 final _hostManageFullReferenceEvent = _hostManageReferenceEvent.copyWith(
   id: 'host-manage-reference-trivia-full',
   waitlistedCohortCounts: const {EventCohortIds.womenInterestedInMen: 6},
@@ -7116,6 +7132,47 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
       child: HostOperationsHomeScreen(initialTab: HostHomeTab.events),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_home_switcher_cohost',
+    routeIds: const <String>['hostHomeScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _hostOperationsProviderOverrides(
+      hostedClubs: HostOperationsFixtures.clubs,
+      ownedClubs: [
+        HostOperationsFixtures.primaryClub,
+        HostOperationsFixtures.dinnerClub,
+      ],
+    ),
+    builder: (context) => const _AppRoleCapture(
+      role: AppRole.host,
+      child: HostOperationsHomeScreen(
+        initialClubId: 'design-host-cohost-club',
+        initialTab: HostHomeTab.events,
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_home_long_club_names',
+    routeIds: const <String>['hostHomeScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _hostOperationsProviderOverrides(
+      hostedClubs: [_hostHomeLongNameOwnerClub, _hostHomeLongNameCoHostedClub],
+      ownedClubs: [_hostHomeLongNameOwnerClub],
+      clubEvents: {
+        _hostHomeLongNameOwnerClub.id: AsyncData<List<Event>>([
+          _hostHomeLongNameEvent,
+        ]),
+        _hostHomeLongNameCoHostedClub.id: const AsyncData<List<Event>>([]),
+      },
+    ),
+    builder: (context) => _AppRoleCapture(
+      role: AppRole.host,
+      child: HostOperationsHomeScreen(
+        initialClubId: _hostHomeLongNameOwnerClub.id,
+        initialTab: HostHomeTab.events,
+      ),
     ),
   ),
   ScreenCaptureEntry(
