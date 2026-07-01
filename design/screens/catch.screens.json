@@ -7741,7 +7741,7 @@
           "id": "text_scale_2",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No text-scale 2.0 public profile route capture exists yet.",
+          "source": "public_profile_text_scale_2 captures the full public profile route at TextScaler 2.0.",
           "previewIds": [
             "PublicProfileScreen/Route states"
           ],
@@ -7754,7 +7754,7 @@
           "id": "reduced_motion",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No reduced-motion public profile capture exists yet.",
+          "source": "public_profile_reduced_motion captures the full public profile route with MediaQuery.disableAnimations enabled.",
           "previewIds": [
             "PublicProfileScreen/Route states"
           ],
@@ -7767,7 +7767,7 @@
           "id": "light_dark",
           "kind": "theme",
           "status": "captured",
-          "source": "Profile surface has light/dark tests, but no paired public-profile route capture exists yet.",
+          "source": "The capture harness emits paired light/dark artifacts for the public profile route and safety-action captures.",
           "previewIds": [
             "PublicProfileScreen/Route states"
           ],
