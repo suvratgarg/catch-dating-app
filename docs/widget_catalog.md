@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.494
+version: 2.5.495
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.495
+
+- Promoted the Profile Edit direct-text and prompt row adapters to public
+  cataloged widgets. `ProfileDirectTextEntry` and `ProfilePromptEntry` now have
+  exact Widgetbook coverage, reducing the classification scanner's private
+  widget review count for `profile_tab.dart`.
 
 ### 2.5.494
 
@@ -5280,6 +5287,8 @@ Generated 2026-05-06.
 | `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone signed-in edit tab content. Wraps the edit form in a `ListView` for isolated/non-sliver usage and renders the handoff sections Photos, Prompts, About you, Running, and Lifestyle through `CatchSection`/`ProfileInfoSection` on-surface groups. `ProfileInfoSection` stretches every `CatchField` row to the viewport edge so tap/focus highlights and row trailing controls run full-bleed instead of stopping at the section gutter. Simple text rows, including Display name, Email, Instagram, Job title, and Company, render as direct editable `CatchField.input` rows through `ProfileDirectTextEntryField`; they do not open inline disclosure drawers. `Display name` is the first editable About field and is the only public-facing profile name. Onboarding identity fields such as date of birth and gender are readonly, and last name is not shown publicly. Profile prompt rows use catalog-backed pickers that hide prompt IDs already selected in other rows. Optional/profile-detail fields, including Instagram, remain editable. Running is always visible and owns pace, distances, reasons, and favorite run times. Discovery-only preferences such as interested-in genders and match age range live in Filters, not Edit Profile. Optional single-choice edit sheets open unselected when the underlying field is empty. |
 | `ProfileTabContent` | `lib/user_profile/presentation/widgets/profile_tab.dart:41` | Shared provider-free Profile Edit body used by both the standalone `ProfileTab` list and sliver-native `ProfileTabSliverBody`. It owns the handoff section ordering and receives the scroll/content wrapper as a builder so route and isolated review contexts stay canonical without duplicate adapters. |
 | `ProfileFieldRow` | `lib/user_profile/presentation/widgets/profile_tab.dart:252` | Public descriptor-backed renderer for Edit Profile field rows. Maps `SelfProfileFieldRowDescriptor` variants to the canonical read-only, direct text, height, single-choice, multi-choice, and range row primitives while the parent route owns only expansion state and save/cancel collapse callbacks. Widgetbook covers mixed descriptor rows directly so future descriptor variants do not reintroduce private widget-returning helpers. |
+| `ProfileDirectTextEntry` | `lib/user_profile/presentation/widgets/profile_tab.dart:358` | Public Profile Edit direct-text descriptor adapter. Normalizes descriptor defaults for current value/current field value and delegates rendering, validation, save behavior, keyboard/autofill, and patch conversion to `ProfileDirectTextEntryField` so simple text rows remain cataloged without private wrapper drift. |
+| `ProfilePromptEntry` | `lib/user_profile/presentation/widgets/profile_tab.dart:512` | Public Profile Edit prompt-slot adapter. Converts `SelfProfilePromptSlotState` into `ProfileInlinePromptEntryEditor` inputs, including prompt title, placeholder, selected prompt id, duplicate-filtered prompt ids, expansion state, and save/cancel callbacks supplied by `ProfileTabContent`. |
 | `ProfileTabSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:69` | Sliver-native profile edit body. Reuses the same handoff sections as `ProfileTab` but contributes a padded sliver adapter for parent `CustomScrollView` usage. Uses `profileTabBodyPadding` for the edit body; Preview is full-bleed and no longer shares this inset. |
 | `ProfileTabSkeletonSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:92` | Sliver-native Edit-tab loading skeleton. Reuses `profileTabBodyPadding`, `CatchSection`, the 3x2 profile-photo grid geometry, and profile info-row spacing to mimic Photos, Profile strength, Prompts, About you, Running, and Lifestyle while the signed-in profile stream resolves. |
 

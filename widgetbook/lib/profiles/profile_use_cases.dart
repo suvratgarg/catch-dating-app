@@ -389,6 +389,84 @@ Widget profileFieldRowStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Direct text entry adapter states',
+  type: ProfileDirectTextEntry,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileDirectTextEntryStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileDirectTextEntry',
+    contractId: 'screen.profile.edit_tab.direct_text_entry',
+    children: [
+      _StateCard(
+        label: 'display name row',
+        child: _SectionFrame(
+          height: CatchLayout.activityArtDefaultHeight,
+          child: ProfileDirectTextEntry(
+            icon: CatchIcons.personOutlined,
+            label: 'Display name',
+            value: _viewer.displayName,
+            currentValue: _viewer.displayName,
+            currentFieldValue: _viewer.displayName,
+            fieldName: 'displayName',
+            patchForValue: (value) =>
+                UpdateUserProfilePatch(displayName: value as String),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Prompt entry adapter states',
+  type: ProfilePromptEntry,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profilePromptEntryStates(BuildContext context) {
+  final editState = SelfProfileEditTabState.fromProfile(
+    user: _viewer,
+    uploadState: (loadingIndices: <int>{}, uploadError: null),
+  );
+  final slot = editState.promptSlots.first;
+
+  return _ProfileCatalog(
+    title: 'ProfilePromptEntry',
+    contractId: 'screen.profile.edit_tab.prompt_entry',
+    children: [
+      _StateCard(
+        label: 'collapsed prompt',
+        child: _SectionFrame(
+          height: CatchLayout.activityArtDefaultHeight,
+          child: ProfilePromptEntry(
+            user: _viewer,
+            slot: slot,
+            isExpanded: false,
+            onTap: () {},
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'expanded prompt',
+        child: _SectionFrame(
+          height: CatchLayout.eventDetailHeroTicketWideHeight,
+          child: ProfilePromptEntry(
+            user: _viewer,
+            slot: slot,
+            isExpanded: true,
+            onTap: () {},
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Edit tab sliver body states',
   type: ProfileTabSliverBody,
   path: '[P1 product surfaces]/Profiles/Sections',

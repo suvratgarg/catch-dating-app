@@ -7685,6 +7685,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'ProfileDirectTextEntry',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Direct text entry adapter states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileDirectTextEntryStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfilePromptEntry',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Prompt entry adapter states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profilePromptEntryStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfileTabSkeletonSliverBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

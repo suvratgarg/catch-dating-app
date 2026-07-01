@@ -150,7 +150,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
     const photoActions = SelfProfilePhotoActionController();
     final prompts = [
       for (final slot in editState.promptSlots)
-        _ProfilePromptEntry(
+        ProfilePromptEntry(
           user: user,
           slot: slot,
           isExpanded: _isExpanded(slot.fieldName),
@@ -274,7 +274,7 @@ class ProfileFieldRow extends StatelessWidget {
         body: descriptor.body,
         bodyMaxLines: descriptor.bodyMaxLines,
       ),
-      text: (descriptor) => _ProfileDirectTextEntry(
+      text: (descriptor) => ProfileDirectTextEntry(
         icon: descriptor.icon,
         label: descriptor.label,
         value: descriptor.value,
@@ -355,8 +355,9 @@ class ProfileFieldRow extends StatelessWidget {
   }
 }
 
-class _ProfileDirectTextEntry extends StatelessWidget {
-  const _ProfileDirectTextEntry({
+class ProfileDirectTextEntry extends StatelessWidget {
+  const ProfileDirectTextEntry({
+    super.key,
     required this.icon,
     required this.label,
     required this.value,
@@ -508,8 +509,9 @@ class _ProfileMultiEnumEntry<T extends Labelled> extends StatelessWidget {
   }
 }
 
-class _ProfilePromptEntry extends StatelessWidget {
-  const _ProfilePromptEntry({
+class ProfilePromptEntry extends StatelessWidget {
+  const ProfilePromptEntry({
+    super.key,
     required this.user,
     required this.slot,
     required this.isExpanded,
