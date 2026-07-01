@@ -16657,6 +16657,10 @@
             "symbol": "FiltersScreen"
           },
           {
+            "file": "lib/swipes/presentation/filters_screen_state.dart",
+            "symbol": "FiltersPreferencesState"
+          },
+          {
             "file": "lib/swipes/presentation/filters_controller.dart",
             "symbol": "FiltersController"
           },
@@ -16675,7 +16679,7 @@
             "symbol": "UserProfileRepository"
           }
         ],
-        "notes": "FiltersScreen watches the current profile, initializes local age/gender draft state, resets mutation state on first mount, saves through FiltersController.saveFiltersMutation, and pops on success. A future FiltersPreferencesState should isolate profile loading/error, draft values, reset/apply availability, mutation feedback, and typed close/apply/reset callbacks."
+        "notes": "FiltersScreen watches the current profile, owns route close/pop and mutation listening, resets mutation state on first mount, saves through FiltersController.saveFiltersMutation, and delegates draft values, dirty state, reset/apply availability, and save request fields to FiltersPreferencesState."
       },
       "designRefs": [
         {
@@ -16839,8 +16843,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "FiltersScreen combines profile provider state, local draft state, top-bar reset/close, range/chip controls, save mutation, mutation listener, and pop-on-success behavior.",
-        "targetLayout": "Filters should expose a FiltersPreferencesState adapter that owns profile loading/error, draft values, dirty/reset/apply availability, mutation state, and typed close/reset/apply callbacks before composing provider-free filter sections.",
+        "currentLayout": "FiltersScreen owns profile provider state, top-bar close, mutation listener, and pop-on-success behavior while FiltersPreferencesState owns draft values, saved defaults, dirty/reset/apply availability, pending state, and save request fields before composing provider-free FiltersContent.",
+        "targetLayout": "Filters should keep FiltersPreferencesState as the provider-free adapter for draft values, dirty/reset/apply availability, mutation state, and save request fields while future passes add save-error proof, captures, and visual parity.",
         "sections": [
           {
             "id": "section.filters.preferences_adapter",
@@ -16854,8 +16858,8 @@
               "file": "lib/swipes/presentation/filters_screen.dart",
               "symbol": "FiltersScreen"
             },
-            "currentOwner": "FiltersScreen + local draft state + FiltersController",
-            "targetOwner": "FiltersPreferencesState adapter",
+            "currentOwner": "FiltersScreen + FiltersPreferencesState + FiltersController",
+            "targetOwner": "FiltersScreen + FiltersPreferencesState + FiltersController",
             "dependencies": [
               "catch.surface"
             ],
@@ -16865,7 +16869,7 @@
               "default_preferences",
               "save_pending"
             ],
-            "migration": "FiltersScreen now keeps provider waves, mutation listening, reset, and route close/pop behavior at the route edge while composing provider-free FiltersContent for draft values, saving state, and typed callbacks. A future FiltersPreferencesState should still own dirty/apply availability and save-error display data.",
+            "migration": "FiltersScreen keeps provider waves, mutation listening, and route close/pop behavior at the route edge while FiltersPreferencesState owns saved defaults, draft values, dirty state, reset/apply availability, pending state, and save request fields before composing provider-free FiltersContent.",
             "previewIds": [
               "FiltersScreen/Route states",
               "FiltersContent/Content states"
@@ -16893,7 +16897,7 @@
               "edited_preferences",
               "reset_preferences"
             ],
-            "migration": "Route Widgetbook states now cover the shared CatchTopBar with close/reset actions across loading, default, text-scale, and reduced-motion review; a future adapter should own reset enabled state and close/reset intents explicitly.",
+            "migration": "Route Widgetbook states now cover the shared CatchTopBar with close/reset actions across loading, default, text-scale, and reduced-motion review; FiltersPreferencesState owns reset enabled state while FiltersScreen owns the close/reset route callbacks.",
             "previewIds": [
               "FiltersScreen/Route states"
             ]
@@ -16995,8 +16999,8 @@
         },
         {
           "id": "DS-FILTERS-003",
-          "status": "open",
-          "nextAction": "FiltersContent now separates provider-free draft/body rendering from route provider and mutation ownership. Remaining adapter work: introduce FiltersPreferencesState for dirty/reset/apply availability and save-error display data."
+          "status": "closed",
+          "nextAction": "Closed by FiltersPreferencesState owning saved defaults, draft values, dirty state, reset/apply availability, pending state, and save request fields while FiltersScreen retains provider waves, mutation listening, route close/pop behavior, and controller execution."
         }
       ]
     },

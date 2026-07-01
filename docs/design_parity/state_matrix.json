@@ -9529,8 +9529,8 @@
             },
             {
               "id": "DP-FILTERS-003",
-              "status": "open",
-              "nextAction": "FiltersContent now separates provider-free draft/body rendering from route provider and mutation ownership. Remaining adapter work: introduce FiltersPreferencesState for dirty/reset/apply availability and save-error display data."
+              "status": "closed",
+              "nextAction": "Closed by FiltersPreferencesState owning saved defaults, draft values, dirty state, reset/apply availability, pending state, and save request fields while FiltersScreen retains provider waves, mutation listening, route close/pop behavior, and controller execution."
             }
           ]
         },

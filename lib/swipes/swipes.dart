@@ -29,6 +29,7 @@ export 'presentation/swipe_screen.dart';
 export 'presentation/catches_hub_screen_state.dart';
 export 'presentation/event_recap_view_model.dart';
 export 'presentation/filters_controller.dart';
+export 'presentation/filters_screen_state.dart';
 export 'presentation/swipe_queue_notifier.dart';
 
 // ── Presentation — widgets commonly reused outside the feature ──────────────

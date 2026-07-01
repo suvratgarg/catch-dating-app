@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
+import 'package:catch_dating_app/swipes/presentation/filters_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
@@ -20,6 +21,8 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+export 'package:catch_dating_app/swipes/presentation/filters_screen_state.dart';
 
 class FiltersScreen extends ConsumerStatefulWidget {
   const FiltersScreen({super.key});
@@ -29,8 +32,8 @@ class FiltersScreen extends ConsumerStatefulWidget {
 }
 
 class _FiltersScreenState extends ConsumerState<FiltersScreen> {
-  RangeValues? _ageRange;
-  Set<Gender>? _interestedIn;
+  RangeValues? _draftAgeRange;
+  Set<Gender>? _draftInterestedIn;
   bool _didResetMutation = false;
 
   @override
@@ -41,26 +44,33 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
     FiltersController.saveFiltersMutation.reset(ref);
   }
 
-  void _syncFromProfile(UserProfile user) {
-    _ageRange ??= filtersAgeRangeValues(user);
-    _interestedIn ??= user.interestedInGenders.toSet();
+  FiltersPreferencesState? _stateFor({
+    required UserProfile? user,
+    required bool saving,
+  }) {
+    if (user == null) return null;
+    final state = FiltersPreferencesState.fromProfile(
+      user: user,
+      draftAgeRange: _draftAgeRange,
+      draftInterestedIn: _draftInterestedIn,
+      saving: saving,
+    );
+    _draftAgeRange ??= state.content.ageRange;
+    _draftInterestedIn ??= state.content.interestedIn;
+    return state;
   }
 
-  Future<void> _save(UserProfile user) async {
-    final ageRange = _ageRange!;
+  Future<void> _save(FiltersPreferencesState state) async {
+    final request = state.saveRequest;
     try {
       await FiltersController.saveFiltersMutation.run(ref, (tx) async {
         await tx
             .get(filtersControllerProvider.notifier)
             .saveFilters(
-              uid: user.uid,
-              minAgePreference: ageRange.start.round(),
-              maxAgePreference: preferredMatchAgeStorageValue(
-                ageRange.end.round(),
-              ),
-              interestedInGenders: (_interestedIn ?? {})
-                  .map((e) => e.name)
-                  .toList(),
+              uid: request.uid,
+              minAgePreference: request.minAgePreference,
+              maxAgePreference: request.maxAgePreference,
+              interestedInGenders: request.interestedInGenderNames,
             );
       });
     } catch (_) {
@@ -68,10 +78,10 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
     }
   }
 
-  void _reset(UserProfile user) {
+  void _reset(FiltersPreferencesState state) {
     setState(() {
-      _ageRange = filtersAgeRangeValues(user);
-      _interestedIn = user.interestedInGenders.toSet();
+      _draftAgeRange = state.savedAgeRange;
+      _draftInterestedIn = state.savedInterestedIn;
     });
   }
 
@@ -80,6 +90,15 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
     final profileAsync = ref.watch(watchUserProfileProvider);
     final saveMutation = ref.watch(FiltersController.saveFiltersMutation);
     final saving = saveMutation.isPending;
+    final preferencesState = _stateFor(
+      user: profileAsync.asData?.value,
+      saving: saving,
+    );
+    VoidCallback? onReset;
+    final resetState = preferencesState;
+    if (resetState != null && resetState.resetEnabled) {
+      onReset = () => _reset(resetState);
+    }
     final t = CatchTokens.of(context);
 
     ref.listen(FiltersController.saveFiltersMutation, (prev, next) {
@@ -103,9 +122,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
             CatchTopBarTextAction(
               key: SwipeKeys.resetFiltersButton,
               label: 'Reset',
-              onPressed: profileAsync.asData?.value == null || saving
-                  ? null
-                  : () => _reset(profileAsync.asData!.value!),
+              onPressed: onReset,
             ),
           ],
         ),
@@ -118,41 +135,25 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
           ),
           data: (user) {
             if (user == null) return const SizedBox.shrink();
-            _syncFromProfile(user);
+            final state =
+                _stateFor(user: user, saving: saving) ?? preferencesState!;
 
-            final ageRange = _ageRange!;
-            final interestedIn = _interestedIn!;
-
-            return FiltersContent(
-              ageRange: ageRange,
-              interestedIn: interestedIn,
-              saving: saving,
-              onAgeRangeChanged: (values) => setState(() => _ageRange = values),
+            return FiltersContent.fromState(
+              state: state.content,
+              onAgeRangeChanged: (values) =>
+                  setState(() => _draftAgeRange = values),
               onGenderToggled: (gender) => setState(() {
-                final next = {...interestedIn};
+                final next = {...state.content.interestedIn};
                 if (!next.add(gender)) next.remove(gender);
-                _interestedIn = next;
+                _draftInterestedIn = next;
               }),
-              onApply: () => _save(user),
+              onApply: state.applyEnabled ? () => _save(state) : null,
             );
           },
         ),
       ),
     );
   }
-}
-
-RangeValues filtersAgeRangeValues(UserProfile user) {
-  final range = normalizeAgePreferenceRange(
-    minAgePreference: user.minAgePreference,
-    maxAgePreference: user.maxAgePreference,
-  );
-  return RangeValues(
-    range.minAge.toDouble(),
-    range.maxAge
-        .clamp(minimumProfileAge, preferredMatchAgeOpenEndedDisplayAge)
-        .toDouble(),
-  );
 }
 
 class FiltersContent extends StatelessWidget {
@@ -166,12 +167,22 @@ class FiltersContent extends StatelessWidget {
     required this.onApply,
   });
 
+  FiltersContent.fromState({
+    super.key,
+    required FiltersContentState state,
+    required this.onAgeRangeChanged,
+    required this.onGenderToggled,
+    required this.onApply,
+  }) : ageRange = state.ageRange,
+       interestedIn = state.interestedIn,
+       saving = state.saving;
+
   final RangeValues ageRange;
   final Set<Gender> interestedIn;
   final bool saving;
   final ValueChanged<RangeValues> onAgeRangeChanged;
   final ValueChanged<Gender> onGenderToggled;
-  final VoidCallback onApply;
+  final VoidCallback? onApply;
 
   @override
   Widget build(BuildContext context) {
@@ -263,11 +274,11 @@ class FiltersContentSkeleton extends StatelessWidget {
               CatchSpacing.s5,
               CatchSpacing.s5,
             ),
-            children: [
-              FiltersSection(title: 'Age', child: const AgeFilterSkeleton()),
+            children: const [
+              FiltersSection(title: 'Age', child: AgeFilterSkeleton()),
               FiltersSection(
                 title: 'Interested in',
-                child: const GenderFilterSkeleton(),
+                child: GenderFilterSkeleton(),
               ),
             ],
           ),
@@ -364,7 +375,6 @@ class FiltersSection extends StatelessWidget {
     return CatchSurface(
       padding: CatchInsets.tileVerticalCompact,
       borderColor: t.line,
-      borderWidth: CatchStroke.hairline,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
