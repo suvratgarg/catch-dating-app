@@ -74,12 +74,23 @@ void main() {
           child: Builder(
             builder: (context) {
               styles = [
+                CatchTextStyles.display(context),
+                CatchTextStyles.headline(context),
                 CatchTextStyles.headlineS(context),
+                CatchTextStyles.eventTitle(context),
+                CatchTextStyles.consoleTitle(context),
+                CatchTextStyles.hint(context),
                 CatchTextStyles.titleL(context),
+                CatchTextStyles.name(context),
                 CatchTextStyles.bodyL(context),
                 CatchTextStyles.bodyS(context),
                 CatchTextStyles.labelL(context),
+                CatchTextStyles.kicker(context),
+                CatchTextStyles.kickerLg(context),
+                CatchTextStyles.monoLabel(context),
+                CatchTextStyles.monoLabelS(context),
                 CatchTextStyles.mono(context),
+                CatchTextStyles.badge(context),
               ];
               return const Text('Typography sample');
             },
@@ -91,6 +102,7 @@ void main() {
     expect(styles.map((style) => style.decoration).toSet(), {
       TextDecoration.none,
     });
+    expect(styles.map((style) => style.letterSpacing).toSet(), {0});
   });
 
   testWidgets('CatchKicker renders uppercase mono eyebrow sizes', (

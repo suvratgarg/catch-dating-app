@@ -1011,7 +1011,6 @@ class EventDetailHostCard extends StatelessWidget {
                                   color: nameColor,
                                 ).copyWith(
                                   fontSize: CatchLayout.eventDetailHostNameSize,
-                                  letterSpacing: -0.2,
                                 ),
                           ),
                         ),
