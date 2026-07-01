@@ -4208,7 +4208,7 @@
             {
               "id": "DP-PROFILE-PUBLIC-002",
               "status": "open",
-              "nextAction": "Deterministic captures are now registered for loading, initial-profile fallback, error, offline, unavailable, own profile, shared-event context, pending overlay, report sheet, block confirmation, text scale, reduced motion, and paired light/dark. Advisory comparison is wired and currently above threshold at 36.62% mismatch / 32.76 meanDelta; remaining capture work is selected report reason, mutation success/failure snackbar proof, and visual parity for top chrome/insight copy/profile sections."
+              "nextAction": "Deterministic captures are now registered for loading, initial-profile fallback, error, offline, unavailable, own profile, shared-event context, pending overlay, report sheet, block confirmation, text scale, reduced motion, and paired light/dark. Focused widget tests now prove the selected report reason, report success snackbar, and block failure snackbar. Advisory comparison is wired and currently above threshold at 36.62% mismatch / 32.76 meanDelta; remaining work is visual parity for top chrome/insight copy/profile sections."
             },
             {
               "id": "DP-PROFILE-PUBLIC-003",

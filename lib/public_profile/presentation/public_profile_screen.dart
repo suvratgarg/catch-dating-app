@@ -43,11 +43,15 @@ class PublicProfileScreen extends ConsumerWidget {
     if (confirmed != true) return;
     if (!context.mounted) return;
 
-    await PublicProfileController.blockUserMutation.run(ref, (tx) async {
-      await tx
-          .get(publicProfileControllerProvider.notifier)
-          .blockUser(targetUserId: profile.uid);
-    });
+    try {
+      await PublicProfileController.blockUserMutation.run(ref, (tx) async {
+        await tx
+            .get(publicProfileControllerProvider.notifier)
+            .blockUser(targetUserId: profile.uid);
+      });
+    } catch (_) {
+      return;
+    }
   }
 
   Future<void> _report({
@@ -68,11 +72,15 @@ class PublicProfileScreen extends ConsumerWidget {
     if (reason == null) return;
     if (!context.mounted) return;
 
-    await PublicProfileController.reportUserMutation.run(ref, (tx) async {
-      await tx
-          .get(publicProfileControllerProvider.notifier)
-          .reportUser(targetUserId: profile.uid, reasonCode: reason);
-    });
+    try {
+      await PublicProfileController.reportUserMutation.run(ref, (tx) async {
+        await tx
+            .get(publicProfileControllerProvider.notifier)
+            .reportUser(targetUserId: profile.uid, reasonCode: reason);
+      });
+    } catch (_) {
+      return;
+    }
   }
 
   @override

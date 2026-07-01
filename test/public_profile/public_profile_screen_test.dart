@@ -2,13 +2,16 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
+import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
@@ -105,22 +108,88 @@ void main() {
     expect(find.byType(CatchField), findsNWidgets(4));
     expect(find.text('Harassment or abuse'), findsOneWidget);
   });
+
+  testWidgets(
+    'PublicProfileScreen reports the selected reason with success feedback',
+    (tester) async {
+      final safetyRepository = _FakePublicProfileSafetyRepository();
+      final profile = buildPublicProfile(name: 'Riya');
+      await _pumpPublicProfile(
+        tester,
+        targetStream: Stream<PublicProfile?>.value(profile),
+        safetyRepository: safetyRepository,
+      );
+      await pumpFeatureUi(tester);
+
+      await tester.tap(find.byIcon(CatchIcons.moreHorizRounded));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Report'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Fake or misleading profile'));
+      await pumpFeatureUi(tester);
+
+      expect(safetyRepository.reportCalls, [
+        (targetUserId: 'runner-1', reasonCode: 'fake_or_misleading_profile'),
+      ]);
+      expect(find.text('Report submitted.'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'PublicProfileScreen surfaces block mutation failures after confirmation',
+    (tester) async {
+      final safetyRepository = _FakePublicProfileSafetyRepository(
+        failBlocks: true,
+      );
+      final profile = buildPublicProfile(name: 'Riya');
+      await _pumpPublicProfile(
+        tester,
+        targetStream: Stream<PublicProfile?>.value(profile),
+        safetyRepository: safetyRepository,
+      );
+      await pumpFeatureUi(tester);
+
+      await tester.tap(find.byIcon(CatchIcons.moreHorizRounded));
+      await pumpFeatureUi(tester);
+      await tester.tap(
+        find.ancestor(of: find.text('Block'), matching: find.byType(InkWell)),
+      );
+      await pumpFeatureUi(tester);
+      await tester.tap(find.widgetWithText(CatchButton, 'Block'));
+      await pumpFeatureUi(tester);
+
+      expect(safetyRepository.blockCalls, ['runner-1']);
+      expect(find.text('block failed'), findsOneWidget);
+      expect(find.text('Riya has been blocked.'), findsNothing);
+    },
+  );
 }
 
 Future<void> _pumpPublicProfile(
   WidgetTester tester, {
   required Stream<PublicProfile?> targetStream,
   PublicProfile? initialProfile,
+  SafetyRepository? safetyRepository,
 }) async {
   final viewer = buildUser(uid: 'viewer-1', name: 'Viewer');
+  final container = ProviderContainer(
+    overrides: [
+      watchUserProfileProvider.overrideWith((ref) => Stream.value(viewer)),
+      watchPublicProfileProvider(
+        'runner-1',
+      ).overrideWith((ref) => targetStream),
+      safetyRepositoryProvider.overrideWithValue(
+        safetyRepository ?? _FakePublicProfileSafetyRepository(),
+      ),
+    ],
+  );
+  PublicProfileController.blockUserMutation.reset(container);
+  PublicProfileController.reportUserMutation.reset(container);
+  addTearDown(container.dispose);
+
   await tester.pumpWidget(
-    ProviderScope(
-      overrides: [
-        watchUserProfileProvider.overrideWith((ref) => Stream.value(viewer)),
-        watchPublicProfileProvider(
-          'runner-1',
-        ).overrideWith((ref) => targetStream),
-      ],
+    UncontrolledProviderScope(
+      container: container,
       child: MaterialApp(
         theme: AppTheme.light,
         home: PublicProfileScreen(
@@ -130,4 +199,35 @@ Future<void> _pumpPublicProfile(
       ),
     ),
   );
+}
+
+class _FakePublicProfileSafetyRepository extends Fake
+    implements SafetyRepository {
+  _FakePublicProfileSafetyRepository({this.failBlocks = false});
+
+  final bool failBlocks;
+  final reportCalls = <({String targetUserId, String? reasonCode})>[];
+  final blockCalls = <String>[];
+
+  @override
+  Future<void> reportUser({
+    required String targetUserId,
+    String source = 'profile',
+    String? reasonCode,
+    String? contextId,
+    String? notes,
+  }) async {
+    reportCalls.add((targetUserId: targetUserId, reasonCode: reasonCode));
+  }
+
+  @override
+  Future<void> blockUser({
+    required String targetUserId,
+    String source = 'profile',
+  }) async {
+    blockCalls.add(targetUserId);
+    if (failBlocks) {
+      throw StateError('block failed');
+    }
+  }
 }
