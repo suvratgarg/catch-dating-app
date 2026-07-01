@@ -95,7 +95,7 @@
           "kind": "repo",
           "status": "available",
           "path": "test/ui_captures/catalog/screen_capture_catalog.dart",
-          "notes": "Route capture fakes now cover member, ticket, spotlight, loading, missing, fatal error, guest, host app, offline-looking error, text-scale, reduced-motion, signed-up, waitlist, waitlist offer, full, attended, past, and cancelled Event Detail variants."
+          "notes": "Route capture fakes now cover member, ticket, spotlight, loading, missing, fatal error, guest, host app, offline-looking error, text-scale, reduced-motion, signed-up, booking/cancel mutation feedback, waitlist, waitlist offer, full, attended, past, and cancelled Event Detail variants."
         },
         {
           "id": "repo.event-detail-reference-screens",
@@ -167,6 +167,36 @@
           "id": "event_detail_booking_signed_up",
           "status": "captured",
           "notes": "Signed-up booking dock capture with companion entry."
+        },
+        {
+          "id": "event_detail_booking_pending",
+          "status": "captured",
+          "notes": "Booking mutation pending route capture with disabled loading dock."
+        },
+        {
+          "id": "event_detail_booking_success_snackbar",
+          "status": "captured",
+          "notes": "Booking mutation success snackbar capture; full celebration route remains covered by widget tests."
+        },
+        {
+          "id": "event_detail_booking_failure",
+          "status": "captured",
+          "notes": "Booking mutation failure route capture with branded dock error banner."
+        },
+        {
+          "id": "event_detail_cancel_pending",
+          "status": "captured",
+          "notes": "Cancel-booking mutation pending route capture with disabled loading dock."
+        },
+        {
+          "id": "event_detail_cancel_success_snackbar",
+          "status": "captured",
+          "notes": "Cancel-booking mutation success snackbar route capture."
+        },
+        {
+          "id": "event_detail_cancel_failure",
+          "status": "captured",
+          "notes": "Cancel-booking mutation failure route capture with branded dock error banner."
         },
         {
           "id": "event_detail_booking_waitlist",
@@ -361,7 +391,7 @@
         {
           "id": "booking_pending",
           "kind": "mutation",
-          "status": "tested",
+          "status": "captured",
           "source": "EventDetailCta listens to EventBookingController mutations and maps pending flags into EventDetailBookingDockState; EventDetailBody routes booking/cancel success feedback through the shared Catch snackbar helper.",
           "previewIds": [
             "EventBookingDock/BookingDock states"
@@ -370,12 +400,16 @@
             "test/events/event_detail_screen_state_test.dart",
             "test/events/event_detail_widgets_test.dart"
           ],
-          "nextAction": "Compare pending copy and disabled affordance with the Claude BookingDock contract."
+          "captureIds": [
+            "event_detail_booking_pending",
+            "event_detail_cancel_pending"
+          ],
+          "nextAction": "Booking and cancel pending route captures now prove disabled loading dock affordances; continue waitlist-specific pending variants only if product needs separate visual proof."
         },
         {
           "id": "booking_failed",
           "kind": "mutation",
-          "status": "tested",
+          "status": "captured",
           "source": "Booking/cancel mutation failures are surfaced by the EventDetailBookingDockMutationState and EventDetailCta tests; success feedback uses the shared Catch snackbar helper.",
           "previewIds": [
             "EventBookingDock/BookingDock states"
@@ -384,7 +418,13 @@
             "test/events/event_detail_screen_state_test.dart",
             "test/events/event_detail_widgets_test.dart"
           ],
-          "nextAction": "Confirm failure rendering goes through the consolidated branded error/message surfaces."
+          "captureIds": [
+            "event_detail_booking_failure",
+            "event_detail_cancel_failure",
+            "event_detail_booking_success_snackbar",
+            "event_detail_cancel_success_snackbar"
+          ],
+          "nextAction": "Booking/cancel failure dock banners and success snackbars now have route capture proof; full booking celebration remains covered by focused widget tests."
         },
         {
           "id": "waitlist_sold_out_cancelled_past",
@@ -874,7 +914,7 @@
         {
           "id": "DS-EVENT-DETAIL-004",
           "status": "closed",
-          "nextAction": "Route captures now cover guest, host app, offline-looking error, text-scale, reduced-motion, signed-up, waitlist, waitlist offer, full, attended, past, and cancelled Event Detail states. Mutation pending/failed are backed by EventDetailBookingDockMutationState tests and Widgetbook dock states."
+          "nextAction": "Route captures now cover guest, host app, offline-looking error, text-scale, reduced-motion, signed-up, booking/cancel pending, booking/cancel success snackbars, booking/cancel failures, waitlist, waitlist offer, full, attended, past, and cancelled Event Detail states."
         }
       ]
     },

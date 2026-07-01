@@ -196,7 +196,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
         AsyncLoading,
         AsyncValue,
         ConsumerState,
-        ConsumerStatefulWidget;
+        ConsumerStatefulWidget,
+        ProviderContainer,
+        ProviderScope;
 import 'package:flutter_test/flutter_test.dart'
     show Fake, Finder, WidgetTester, find;
 import 'package:image_picker/image_picker.dart';
@@ -422,6 +424,127 @@ Iterable _eventDetailCaptureProviderOverrides({
       ),
     ),
   ];
+}
+
+class _EventDetailBookingMutationCapture extends ConsumerStatefulWidget {
+  const _EventDetailBookingMutationCapture({required this.mode});
+
+  final _EventDetailBookingMutationCaptureMode mode;
+
+  @override
+  ConsumerState<_EventDetailBookingMutationCapture> createState() =>
+      _EventDetailBookingMutationCaptureState();
+}
+
+class _EventDetailBookingMutationCaptureState
+    extends ConsumerState<_EventDetailBookingMutationCapture> {
+  bool _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _started) return;
+      _started = true;
+      _eventDetailBookingMutationResetContainer = ProviderScope.containerOf(
+        context,
+        listen: false,
+      );
+      _resetEventDetailBookingMutations();
+      switch (widget.mode) {
+        case _EventDetailBookingMutationCaptureMode.bookPending:
+          _runPending(EventBookingController.bookMutation);
+          break;
+        case _EventDetailBookingMutationCaptureMode.bookSuccess:
+          _runSuccess(EventBookingController.bookMutation);
+          break;
+        case _EventDetailBookingMutationCaptureMode.bookError:
+          _runError(EventBookingController.bookMutation, 'booking failed');
+          break;
+        case _EventDetailBookingMutationCaptureMode.cancelPending:
+          _runPending(EventBookingController.cancelMutation);
+          break;
+        case _EventDetailBookingMutationCaptureMode.cancelSuccess:
+          _runSuccess(EventBookingController.cancelMutation);
+          break;
+        case _EventDetailBookingMutationCaptureMode.cancelError:
+          _runError(EventBookingController.cancelMutation, 'cancel failed');
+          break;
+      }
+    });
+  }
+
+  void _resetEventDetailBookingMutations() {
+    EventBookingController.bookMutation.reset(ref);
+    EventBookingController.cancelMutation.reset(ref);
+  }
+
+  void _runPending(Mutation<void> mutation) {
+    final completer = Completer<void>();
+    _eventDetailBookingMutationPendingCompleter = completer;
+    unawaited(mutation.run(ref, (_) => completer.future));
+  }
+
+  void _runSuccess(Mutation<void> mutation) {
+    unawaited(
+      mutation.run(ref, (_) async {
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      }),
+    );
+  }
+
+  void _runError(Mutation<void> mutation, String message) {
+    unawaited(
+      mutation
+          .run(ref, (_) async {
+            await Future<void>.delayed(const Duration(milliseconds: 50));
+            throw StateError(message);
+          })
+          .catchError((_) {}),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return EventDetailScreen(
+      clubId: _eventDetailEvent.clubId,
+      eventId: _eventDetailEvent.id,
+    );
+  }
+}
+
+enum _EventDetailBookingMutationCaptureMode {
+  bookPending,
+  bookSuccess,
+  bookError,
+  cancelPending,
+  cancelSuccess,
+  cancelError,
+}
+
+Completer<void>? _eventDetailBookingMutationPendingCompleter;
+ProviderContainer? _eventDetailBookingMutationResetContainer;
+
+Future<void> _cleanupEventDetailBookingMutationPending(
+  WidgetTester tester,
+) async {
+  final completer = _eventDetailBookingMutationPendingCompleter;
+  _eventDetailBookingMutationPendingCompleter = null;
+  if (completer != null && !completer.isCompleted) {
+    completer.complete();
+    await tester.pump();
+  }
+  await _cleanupEventDetailBookingMutationState(tester);
+}
+
+Future<void> _cleanupEventDetailBookingMutationState(
+  WidgetTester tester,
+) async {
+  final container = _eventDetailBookingMutationResetContainer;
+  _eventDetailBookingMutationResetContainer = null;
+  if (container == null) return;
+  EventBookingController.bookMutation.reset(container);
+  EventBookingController.cancelMutation.reset(container);
 }
 
 EventParticipation _buildEventDetailSignedUpParticipation(Event event) =>
@@ -7193,6 +7316,72 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       clubId: _eventDetailEvent.clubId,
       eventId: _eventDetailEvent.id,
     ),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_detail_booking_pending',
+    routeIds: const <String>['eventDetailScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _eventDetailCaptureProviderOverrides(),
+    builder: (context) => const _EventDetailBookingMutationCapture(
+      mode: _EventDetailBookingMutationCaptureMode.bookPending,
+    ),
+    cleanup: _cleanupEventDetailBookingMutationPending,
+  ),
+  ScreenCaptureEntry(
+    id: 'event_detail_booking_success_snackbar',
+    routeIds: const <String>['eventDetailScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _eventDetailCaptureProviderOverrides(),
+    builder: (context) => const _EventDetailBookingMutationCapture(
+      mode: _EventDetailBookingMutationCaptureMode.bookSuccess,
+    ),
+    cleanup: _cleanupEventDetailBookingMutationState,
+  ),
+  ScreenCaptureEntry(
+    id: 'event_detail_booking_failure',
+    routeIds: const <String>['eventDetailScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _eventDetailCaptureProviderOverrides(),
+    builder: (context) => const _EventDetailBookingMutationCapture(
+      mode: _EventDetailBookingMutationCaptureMode.bookError,
+    ),
+    cleanup: _cleanupEventDetailBookingMutationState,
+  ),
+  ScreenCaptureEntry(
+    id: 'event_detail_cancel_pending',
+    routeIds: const <String>['eventDetailScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _eventDetailCaptureProviderOverrides(
+      viewerParticipation: _eventDetailSignedUpParticipation,
+    ),
+    builder: (context) => const _EventDetailBookingMutationCapture(
+      mode: _EventDetailBookingMutationCaptureMode.cancelPending,
+    ),
+    cleanup: _cleanupEventDetailBookingMutationPending,
+  ),
+  ScreenCaptureEntry(
+    id: 'event_detail_cancel_success_snackbar',
+    routeIds: const <String>['eventDetailScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _eventDetailCaptureProviderOverrides(
+      viewerParticipation: _eventDetailSignedUpParticipation,
+    ),
+    builder: (context) => const _EventDetailBookingMutationCapture(
+      mode: _EventDetailBookingMutationCaptureMode.cancelSuccess,
+    ),
+    cleanup: _cleanupEventDetailBookingMutationState,
+  ),
+  ScreenCaptureEntry(
+    id: 'event_detail_cancel_failure',
+    routeIds: const <String>['eventDetailScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _eventDetailCaptureProviderOverrides(
+      viewerParticipation: _eventDetailSignedUpParticipation,
+    ),
+    builder: (context) => const _EventDetailBookingMutationCapture(
+      mode: _EventDetailBookingMutationCaptureMode.cancelError,
+    ),
+    cleanup: _cleanupEventDetailBookingMutationState,
   ),
   ScreenCaptureEntry(
     id: 'event_detail_booking_waitlist',
