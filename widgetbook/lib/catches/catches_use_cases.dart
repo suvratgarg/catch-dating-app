@@ -508,6 +508,104 @@ Widget eventRecapLoadingBodyStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Ready body states',
+  type: EventRecapReadyBody,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget eventRecapReadyBodyStates(BuildContext context) {
+  final event = CatchesSurfaceFixtures.closedWindowEvent();
+  final attendeeIds = CatchesSurfaceFixtures.candidates
+      .map((profile) => profile.uid)
+      .toList(growable: false);
+
+  return _CatchesCatalog(
+    title: 'EventRecapReadyBody',
+    contractId: 'screen.catches.recap.ready_body',
+    children: [
+      _StateCard(
+        label: 'checked-in roster',
+        child: _DeviceFrame(
+          child: _RecapReadyBodyPreview(
+            event: event,
+            attendeeIds: attendeeIds,
+            selectedVibeIds: const <String>{},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'selected vibe tile',
+        child: _DeviceFrame(
+          child: _RecapReadyBodyPreview(
+            event: event,
+            attendeeIds: attendeeIds,
+            selectedVibeIds: const {CatchesSurfaceFixtures.secondCandidateUid},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty roster',
+        child: _DeviceFrame(
+          child: _RecapReadyBodyPreview(
+            event: event,
+            attendeeIds: const <String>[],
+            selectedVibeIds: const <String>{},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Vibe grid states',
+  type: VibeGrid,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget eventRecapVibeGridStates(BuildContext context) {
+  final event = CatchesSurfaceFixtures.closedWindowEvent();
+  final attendeeIds = CatchesSurfaceFixtures.candidates
+      .map((profile) => profile.uid)
+      .toList(growable: false);
+  final partialAttendeeIds = [
+    CatchesSurfaceFixtures.candidateUid,
+    _missingRecapProfileUid,
+  ];
+  final partialRoster = {
+    CatchesSurfaceFixtures.candidateUid:
+        CatchesSurfaceFixtures.candidates.first,
+  };
+
+  return _CatchesCatalog(
+    title: 'VibeGrid',
+    contractId: 'component.catches.recap.vibe_grid',
+    children: [
+      _StateCard(
+        label: 'profile tiles',
+        child: VibeGrid(
+          rows: _recapReadyState(
+            event: event,
+            attendeeIds: attendeeIds,
+          ).attendeeRows,
+          onToggleVibe: _ignoreString,
+        ),
+      ),
+      _StateCard(
+        label: 'selected and fallback',
+        child: VibeGrid(
+          rows: _recapReadyState(
+            event: event,
+            attendeeIds: partialAttendeeIds,
+            rosterProfiles: partialRoster,
+            selectedVibeIds: const {CatchesSurfaceFixtures.candidateUid},
+          ).attendeeRows,
+          onToggleVibe: _ignoreString,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Filters loading composition',
   type: FiltersContentSkeleton,
   path: '[P1 product surfaces]/Catches/Sections',
@@ -1305,28 +1403,40 @@ class _RecapReadyBodyPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenState = buildEventRecapScreenState(
-      eventId: event.id,
-      viewModel: CatchAsyncState.data(
-        _recapViewModel(event: event, attendeeIds: attendeeIds),
-      ),
-      rosterProfiles: _recapRosterProfiles(),
+    final ready = _recapReadyState(
+      event: event,
+      attendeeIds: attendeeIds,
       selectedVibeIds: selectedVibeIds,
-      now: CatchesSurfaceFixtures.now,
     );
 
     return Scaffold(
       backgroundColor: CatchTokens.of(context).bg,
-      body: switch (screenState) {
-        EventRecapReady ready => EventRecapReadyBody(
-          state: ready,
-          onToggleVibe: _ignoreString,
-          onOpenCatchesDeck: _ignoreRecapOpenDeck,
-        ),
-        _ => const SizedBox.shrink(),
-      },
+      body: EventRecapReadyBody(
+        state: ready,
+        onToggleVibe: _ignoreString,
+        onOpenCatchesDeck: _ignoreRecapOpenDeck,
+      ),
     );
   }
+}
+
+EventRecapReady _recapReadyState({
+  required Event event,
+  required List<String> attendeeIds,
+  Map<String, PublicProfile>? rosterProfiles,
+  Set<String> selectedVibeIds = const <String>{},
+}) {
+  final screenState = buildEventRecapScreenState(
+    eventId: event.id,
+    viewModel: CatchAsyncState.data(
+      _recapViewModel(event: event, attendeeIds: attendeeIds),
+    ),
+    rosterProfiles: rosterProfiles ?? _recapRosterProfiles(),
+    selectedVibeIds: selectedVibeIds,
+    now: CatchesSurfaceFixtures.now,
+  );
+
+  return screenState as EventRecapReady;
 }
 
 const _missingRecapProfileUid = 'design-catches-missing-profile';

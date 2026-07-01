@@ -2929,6 +2929,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'EventRecapReadyBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready body states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .eventRecapReadyBodyStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'FiltersContentSkeleton',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -3015,6 +3025,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Deck empty states',
                     builder: _widgetbook_workspace_catches_catches_use_cases
                         .swipeEmptyStateStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'VibeGrid',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Vibe grid states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .eventRecapVibeGridStates,
                   ),
                 ],
               ),

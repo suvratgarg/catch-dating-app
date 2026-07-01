@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.493
+version: 2.5.494
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.494
+
+- Added exact Widgetbook and catalog coverage for Event Recap's provider-free
+  ready body and vibe grid. `EventRecapReadyBody` now has direct ready,
+  selected, and empty-roster review states, while `VibeGrid` covers profile,
+  selected, and fallback guest tile rows.
 
 ### 2.5.493
 
@@ -5170,6 +5177,8 @@ Generated 2026-05-06.
 | `FiltersSection` | `lib/swipes/presentation/filters_screen.dart:354` | Shared section wrapper for Filters rows. Keeps uppercase kicker labels, tokenized vertical padding, and bottom hairline treatment consistent across the age and interested-in sections. |
 | `FiltersValue` | `lib/swipes/presentation/filters_screen.dart:383` | Display value text for the current Filters range, using the shared title role and the storage/display age formatter boundary from `filtersAgeRangeValues`. |
 | `EventRecapLoadingBody` | `lib/swipes/presentation/event_recap_screen.dart:172` | Recap-shaped loading body with hero/stat placeholders, supporting copy skeleton, attendee-grid placeholders, and a primary CTA placeholder. |
+| `EventRecapReadyBody` | `lib/swipes/presentation/event_recap_screen.dart:129` | Provider-free Event Recap loaded body. Receives `EventRecapReady`, vibe-toggle callback, and open-deck callback from `EventRecapScreen`, renders the recap hero, attendee selection prompt, empty-roster fallback or `VibeGrid`, and the open-catches CTA without reading providers or owning route navigation. |
+| `VibeGrid` | `lib/swipes/presentation/event_recap_screen.dart:193` | Provider-free Event Recap attendee grid. Receives `EventRecapAttendeeRow` display rows and a typed vibe-toggle callback, lays tiles out through the responsive grid count, keys each tile with `SwipeKeys.vibeTile`, and delegates selected/fallback profile rendering to `VibeTile`. |
 | `CardPhotoSection` | `lib/swipes/presentation/widgets/card_photo_section.dart:3` | Photo section inside the shared `ProfileSurface`. The hero photo may be edge-to-edge with the dark gradient and name overlay; additional photos should be inset with consistent margins, rounded corners, and spacing. Shows a branded "Photo coming soon" fallback when the user has no usable image. |
 | `NameOverlay` | `lib/swipes/presentation/widgets/name_overlay.dart:7` | Hero overlay for public display name, age, and optional city. Keep relationship goal, distance, and runner metadata out of the hero and in lower profile sections. |
 | `GoalPill` | `lib/swipes/presentation/widgets/name_overlay.dart:61` | Legacy/specialized goal chip styling retained for profile-card contexts that need a pill, but the default shared card now renders relationship goal as a detail chip rather than hero overlay text. |
