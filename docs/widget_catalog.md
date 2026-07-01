@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.505
+version: 2.5.506
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.506
+
+- Promoted `ShareCardHeader` and `ShareCardBubble` as public cataloged visual
+  atoms used by `ChatShareCard`, with exact Widgetbook coverage. Also added the
+  missing `ChatShareCard` and `ChatShareCardSheet` rows to close markdown
+  catalog drift against the existing Widgetbook components.
 
 ### 2.5.505
 
@@ -5321,6 +5328,10 @@ Generated 2026-05-06.
 |---|---|---|
 | `ChatEventContextHeader` | `lib/chats/presentation/widgets/chat_event_context_header.dart:20` | Handoff `ChatThreadHeader` event-context band. Grounds the thread in the latest shared event with activity soft fill, accent hairline/glyph, mono activity stamp, and event title/date copy; falls back to the neutral "MATCHED THROUGH CATCH" state while event context loads. Widgetbook exposes standalone states for social run, no event, dinner, and long custom event context. |
 | `chat_event_context_copy` helpers | `lib/chats/presentation/widgets/chat_event_context_copy.dart:3` | Shared Messaging copy source for event-context stamps, chat share-card titles, and empty-thread prompts. Keeps thread header, share card, and empty state language aligned with the latest shared event and preserves neutral fallbacks while event context is unavailable. |
+| `ChatShareCardSheet` | `lib/chats/presentation/widgets/chat_share_card.dart:47` | Share-card export bottom sheet for chat excerpts. Captures the anonymized `ChatShareCard` as PNG, hides names/photos/timestamps, owns share-button pending/error state, and delegates platform sharing through `ExternalShareController`. |
+| `ChatShareCard` | `lib/chats/presentation/widgets/chat_share_card.dart:159` | Anonymized visual chat excerpt card. Selects the latest shareable messages, grounds the card in optional event context, renders the header, grouped quote bubbles, and Catch/event stamp, and keeps export details in `ChatShareCardSheet`. |
+| `ShareCardHeader` | `lib/chats/presentation/widgets/chat_share_card.dart:232` | Public header renderer used by `ChatShareCard`. Displays the event-context stamp, title, and activity/chat icon with caller-provided accent and optional activity visual spec. |
+| `ShareCardBubble` | `lib/chats/presentation/widgets/chat_share_card.dart:288` | Public anonymized quote-bubble renderer used by `ChatShareCard`. Applies sender alignment, grouped-corner geometry, width limits, and self/other fills without exposing identities or timestamps. |
 | `ChatMessageList` | `lib/chats/presentation/widgets/chat_message_list.dart:14` | Message-list renderer for loading, error, empty, and populated states. Loading uses date plus alternating message-bubble skeletons through `CatchAsyncValueView`; populated data inserts centered day separators, splits same-sender bubble runs across day boundaries, and uses `CatchEmptyState` for empty threads. It receives the latest shared event so the empty prompt can match the Messaging handoff's event-grounded copy before the `Say hi` CTA, and it keeps variable-height `MessageBubble` rows for individual messages; do not add `prototypeItem`/fixed item extents because chat bubbles can wrap or contain images. |
 | `ChatInputBar` | `lib/chats/presentation/widgets/chat_input_bar.dart:10` | Handoff `ChatComposer`: bottom dock with one contained dialogue pill. The image upload action is the leading slot, the bare message `CatchField.input` is the center slot, and the filled send action is the trailing slot inside the same field outline; disabled opacity, loading indicators, text-only mode, and real send/image callbacks stay owned by the composer. Widgetbook exposes standalone states for ready, sending text, sending image, disabled, and text-only modes. |
 | `SuvbotActionBar` | `lib/chats/presentation/widgets/suvbot_action_bar.dart:27` | Demo-only chat bottom dock for Suvbot conversations. Groups check/refresh, warm-state, reset, help, and match-tester actions without rendering the normal chat composer. Reset actions open a handoff `CatchBottomSheetScaffold` with tokenized `CatchSurface` action rows instead of raw Material list tiles; text-required match tester actions keep their focused input sheet. |

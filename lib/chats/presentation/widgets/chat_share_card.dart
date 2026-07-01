@@ -14,8 +14,8 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -186,14 +186,14 @@ class ChatShareCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ShareCardHeader(event: event, accent: accent, visual: visual),
+            ShareCardHeader(event: event, accent: accent, visual: visual),
             gapH16,
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   for (var i = 0; i < cardMessages.length; i++)
-                    _ShareCardBubble(
+                    ShareCardBubble(
                       text: cardMessages[i].text,
                       isMe: cardMessages[i].senderId == currentUid,
                       isFirstInGroup:
@@ -229,8 +229,9 @@ class ChatShareCard extends StatelessWidget {
   }
 }
 
-class _ShareCardHeader extends StatelessWidget {
-  const _ShareCardHeader({
+class ShareCardHeader extends StatelessWidget {
+  const ShareCardHeader({
+    super.key,
     required this.event,
     required this.accent,
     required this.visual,
@@ -284,8 +285,9 @@ class _ShareCardHeader extends StatelessWidget {
   }
 }
 
-class _ShareCardBubble extends StatelessWidget {
-  const _ShareCardBubble({
+class ShareCardBubble extends StatelessWidget {
+  const ShareCardBubble({
+    super.key,
     required this.text,
     required this.isMe,
     required this.isFirstInGroup,

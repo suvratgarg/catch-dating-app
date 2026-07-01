@@ -667,56 +667,50 @@
       "flags": []
     },
     {
-      "name": "_ShareCardBubble",
+      "name": "ShareCardBubble",
       "file": "lib/chats/presentation/widgets/chat_share_card.dart",
       "classKind": "widget",
       "baseClass": "StatelessWidget",
-      "visibility": "private",
+      "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.chats.share_card_bubble",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
+      "flags": []
     },
     {
-      "name": "_ShareCardHeader",
+      "name": "ShareCardHeader",
       "file": "lib/chats/presentation/widgets/chat_share_card.dart",
       "classKind": "widget",
       "baseClass": "StatelessWidget",
-      "visibility": "private",
+      "visibility": "public",
       "role": "composition",
       "canonicalFamily": "catch.share_card_header",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-inline",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
+      "flags": []
     },
     {
       "name": "ChatShareCard",

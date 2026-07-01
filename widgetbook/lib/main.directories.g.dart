@@ -7398,6 +7398,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'ShareCardHeader',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Share card header',
+                    builder:
+                        _widgetbook_workspace_matches_matches_chat_use_cases
+                            .chatShareCardHeaderState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ShareCardBubble',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Share card bubbles',
+                    builder:
+                        _widgetbook_workspace_matches_matches_chat_use_cases
+                            .chatShareCardBubbleStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ChatShareCardSheet',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

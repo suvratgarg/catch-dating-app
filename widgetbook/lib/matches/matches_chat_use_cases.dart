@@ -783,6 +783,49 @@ Widget chatShareCardStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Share card header',
+  type: ShareCardHeader,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatShareCardHeaderState(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return Padding(
+    padding: CatchInsets.content,
+    child: ShareCardHeader(event: _event, accent: t.primary, visual: null),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Share card bubbles',
+  type: ShareCardBubble,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatShareCardBubbleStates(BuildContext context) {
+  return const Padding(
+    padding: CatchInsets.content,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ShareCardBubble(
+          text: 'That was weirdly easy to say yes to.',
+          isMe: false,
+          isFirstInGroup: true,
+          isLastInGroup: false,
+        ),
+        ShareCardBubble(
+          text: 'Same. Coffee after?',
+          isMe: true,
+          isFirstInGroup: true,
+          isLastInGroup: true,
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Dialog states',
   type: MatchCelebrationDialog,
   path: '[P1 product surfaces]/Matches and chat/Components',
