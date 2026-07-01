@@ -9539,6 +9539,7 @@
           "routeId": "eventRecapScreen",
           "implementationPaths": [
             "lib/swipes/presentation/event_recap_screen.dart",
+            "lib/swipes/presentation/event_recap_screen_state.dart",
             "lib/swipes/presentation/event_recap_view_model.dart",
             "lib/events/data/event_repository.dart",
             "lib/events/data/event_participation_repository.dart",
@@ -9557,7 +9558,7 @@
               "kind": "repo",
               "status": "available",
               "path": "test/swipes/event_recap_screen_test.dart",
-              "notes": "Event recap tests cover roster derivation from participation edges and checked-in attendee rendering."
+              "notes": "Event recap tests cover roster derivation from participation edges, checked-in attendee rendering, selected-vibe navigation extras, and EventRecapScreenState loading/error/missing/ready branches."
             },
             {
               "id": "claude.event-recap",
@@ -9579,14 +9580,20 @@
             {
               "id": "recap_error",
               "kind": "error",
-              "status": "implemented",
-              "notes": "View model errors render CatchErrorState.fromError with AppErrorContext.event and invalidate event, participation, uid, and view-model providers on retry."
+              "status": "tested",
+              "tests": [
+                "test/swipes/event_recap_screen_state_test.dart"
+              ],
+              "notes": "EventRecapScreenState maps view-model errors to retry intents for event, participation, uid, and view-model provider invalidation."
             },
             {
               "id": "event_not_found",
               "kind": "empty",
-              "status": "implemented",
-              "notes": "A null event from the view model renders Event not found through CatchErrorState."
+              "status": "tested",
+              "tests": [
+                "test/swipes/event_recap_screen_state_test.dart"
+              ],
+              "notes": "EventRecapScreenState maps a null event from the view model to the Event not found branch."
             },
             {
               "id": "populated_attendees",
@@ -9603,26 +9610,39 @@
             {
               "id": "empty_roster",
               "kind": "empty",
-              "status": "implemented",
-              "notes": "No other checked-in attendee ids render the No attendees to tag CatchEmptyState."
+              "status": "tested",
+              "tests": [
+                "test/swipes/event_recap_screen_state_test.dart"
+              ],
+              "notes": "No other checked-in attendee ids map to an empty ready state for the No attendees to tag branch."
             },
             {
               "id": "profile_lookup_fallback",
               "kind": "populated",
-              "status": "implemented",
-              "notes": "Missing public-profile entries render Guest fallback tiles while profile photos use CatchNetworkImage when available."
+              "status": "tested",
+              "tests": [
+                "test/swipes/event_recap_screen_state_test.dart"
+              ],
+              "notes": "Missing public-profile entries map to Guest fallback attendee rows while present profiles supply tile names and photos."
             },
             {
               "id": "vibe_selection",
               "kind": "populated",
-              "status": "implemented",
-              "notes": "Tapping vibe tiles toggles local selected ids, semantic selected state, selection border, and check badge."
+              "status": "tested",
+              "tests": [
+                "test/swipes/event_recap_screen_state_test.dart",
+                "test/swipes/event_recap_screen_test.dart"
+              ],
+              "notes": "EventRecapScreenState projects selected ids into row selected state; the route test toggles a tile before opening the Catches deck."
             },
             {
               "id": "open_catches_deck",
               "kind": "populated",
-              "status": "implemented",
-              "notes": "The primary CTA routes to swipeEventScreen with selected vibe ids as route extra."
+              "status": "tested",
+              "tests": [
+                "test/swipes/event_recap_screen_test.dart"
+              ],
+              "notes": "The primary CTA routes to swipeEventScreen with EventRecapOpenDeckIntent selected vibe ids as route extra."
             },
             {
               "id": "text_scale_2",
@@ -9650,8 +9670,8 @@
             },
             {
               "id": "DP-EVENT-RECAP-003",
-              "status": "open",
-              "nextAction": "Introduce EventRecapScreenState or equivalent adapter for event/view-model state, attendee/profile rows, selected ids, hero/window copy, retry intents, and open-deck callback."
+              "status": "closed",
+              "nextAction": "Closed by EventRecapScreenState owning async branch mapping, attendee/profile rows, selected ids, hero/window copy, retry intents, and open-deck intent data while EventRecapScreen retains route-edge side effects."
             },
             {
               "id": "DP-EVENT-RECAP-004",

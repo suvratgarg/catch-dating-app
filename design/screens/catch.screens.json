@@ -17029,6 +17029,10 @@
             "symbol": "EventRecapScreen"
           },
           {
+            "file": "lib/swipes/presentation/event_recap_screen_state.dart",
+            "symbol": "EventRecapScreenState"
+          },
+          {
             "file": "lib/swipes/presentation/event_recap_view_model.dart",
             "symbol": "EventRecapViewModel"
           },
@@ -17050,7 +17054,7 @@
           }
         ],
         "mutationOwners": [],
-        "notes": "EventRecapScreen watches EventRecapViewModel for event, uid, and participation state, then fetches public profiles in one batched lookup for the vibe grid. It owns local selected attendee ids and routes to the Catches deck with those selections. A future EventRecapScreenState should own loading/error/missing event, attendee roster, selected ids, profile lookup state, window copy, and open-deck callbacks."
+        "notes": "EventRecapScreen watches EventRecapViewModel for event, uid, and participation state, then fetches public profiles in one batched lookup for the vibe grid. EventRecapScreenState owns loading/error/missing-event branches, attendee rows, profile fallbacks, selected ids, hero/window copy, retry intents, and open-deck intent construction while the route retains provider invalidation, local selection mutation, and GoRouter execution."
       },
       "designRefs": [
         {
@@ -17058,7 +17062,7 @@
           "kind": "repo",
           "status": "available",
           "path": "test/swipes/event_recap_screen_test.dart",
-          "notes": "Event recap tests cover roster derivation from participation edges and checked-in attendee rendering."
+          "notes": "Event recap tests cover roster derivation from participation edges, checked-in attendee rendering, selected-vibe navigation extras, and EventRecapScreenState loading/error/missing/ready branches."
         },
         {
           "id": "claude.event-recap",
@@ -17088,15 +17092,21 @@
         {
           "id": "recap_error",
           "kind": "error",
-          "status": "implemented",
+          "status": "tested",
           "source": "View model errors render CatchErrorState.fromError with AppErrorContext.event and invalidate event, participation, uid, and view-model providers on retry.",
+          "tests": [
+            "test/swipes/event_recap_screen_state_test.dart"
+          ],
           "nextAction": "Add event/participation/uid error and offline captures."
         },
         {
           "id": "event_not_found",
           "kind": "empty",
-          "status": "implemented",
+          "status": "tested",
           "source": "A null event from the view model renders Event not found through CatchErrorState.",
+          "tests": [
+            "test/swipes/event_recap_screen_state_test.dart"
+          ],
           "nextAction": "Add missing/deleted event capture."
         },
         {
@@ -17115,30 +17125,43 @@
         {
           "id": "empty_roster",
           "kind": "empty",
-          "status": "implemented",
+          "status": "tested",
           "source": "No other checked-in attendee ids render the No attendees to tag CatchEmptyState.",
+          "tests": [
+            "test/swipes/event_recap_screen_state_test.dart"
+          ],
           "nextAction": "Add empty roster capture and test."
         },
         {
           "id": "profile_lookup_fallback",
           "kind": "populated",
-          "status": "implemented",
+          "status": "tested",
           "source": "Missing public-profile entries render Guest fallback tiles while profile photos use CatchNetworkImage when available.",
+          "tests": [
+            "test/swipes/event_recap_screen_state_test.dart"
+          ],
           "nextAction": "Add capture for partial profile lookup and missing photos."
         },
         {
           "id": "vibe_selection",
           "kind": "populated",
-          "status": "implemented",
+          "status": "tested",
           "source": "Tapping vibe tiles toggles local selected ids, semantic selected state, selection border, and check badge.",
+          "tests": [
+            "test/swipes/event_recap_screen_state_test.dart",
+            "test/swipes/event_recap_screen_test.dart"
+          ],
           "nextAction": "Add focused test and capture for selected/unselected grid tiles."
         },
         {
           "id": "open_catches_deck",
           "kind": "populated",
-          "status": "implemented",
+          "status": "tested",
           "source": "The primary CTA routes to swipeEventScreen with selected vibe ids as route extra.",
-          "nextAction": "Add route/navigation test proving selected ids are passed to the Catches deck."
+          "tests": [
+            "test/swipes/event_recap_screen_test.dart"
+          ],
+          "nextAction": "Add capture proving selected ids are visible before opening the Catches deck."
         },
         {
           "id": "text_scale_2",
@@ -17156,8 +17179,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "EventRecapScreen combines route event id, view-model provider waves, public profile lookup, local selected attendee state, recap hero, vibe grid, empty/error states, and Catches deck navigation.",
-        "targetLayout": "Event Recap should expose an EventRecapScreenState adapter that owns event/view-model state, attendee/profile rows, selected ids, hero/window copy, retry intents, and open-deck callback before composing provider-free hero, grid, and action sections.",
+        "currentLayout": "EventRecapScreen keeps provider invalidation, public-profile watching, local selection mutation, and GoRouter execution at the route edge while EventRecapScreenState owns async branch mapping, attendee/profile rows, selected ids, hero/window copy, retry intents, and open-deck intent data.",
+        "targetLayout": "Event Recap should keep provider and router side effects at the route edge while provider-free hero, grid, tile, and CTA sections render only EventRecapScreenState data.",
         "sections": [
           {
             "id": "section.event_recap.adapter",
@@ -17182,7 +17205,7 @@
               "event_not_found",
               "populated_attendees"
             ],
-            "migration": "Move provider waves, attendee/profile rows, selected ids, retry intents, and open-deck route callback into an adapter."
+            "migration": "EventRecapScreenState now owns loading/error/missing-event branches, attendee/profile rows, selected ids, retry intents, hero/window copy, and open-deck intent data; EventRecapScreen still executes provider invalidation, local selection mutation, and GoRouter navigation at the route edge."
           },
           {
             "id": "section.event_recap.hero",
@@ -17205,7 +17228,7 @@
               "populated_attendees",
               "text_scale_2"
             ],
-            "migration": "Move event title, distance, checked-in count, and catch-window copy into adapter display data."
+            "migration": "RecapHero now renders EventRecapHeroState display data for event title, distance, checked-in count, and catch-window copy."
           },
           {
             "id": "section.event_recap.vibe_grid",
@@ -17230,7 +17253,7 @@
               "profile_lookup_fallback",
               "vibe_selection"
             ],
-            "migration": "Expose attendee tile models, profile fallbacks, selected state, and toggle callbacks as section data."
+            "migration": "VibeGrid now renders EventRecapAttendeeRow models with profile fallback, selected state, and typed toggle callbacks."
           },
           {
             "id": "section.event_recap.vibe_tile",
@@ -17277,7 +17300,7 @@
               "open_catches_deck",
               "vibe_selection"
             ],
-            "migration": "Move selected-id extra construction and destination into the adapter, keeping the visible CTA on CatchButton."
+            "migration": "EventRecapOpenDeckIntent now owns selected-id extra construction and destination event id while EventRecapScreen executes the GoRouter call."
           }
         ]
       },
@@ -17294,8 +17317,8 @@
         },
         {
           "id": "DS-EVENT-RECAP-003",
-          "status": "open",
-          "nextAction": "Introduce EventRecapScreenState or equivalent adapter for event/view-model state, attendee/profile rows, selected ids, hero/window copy, retry intents, and open-deck callback."
+          "status": "closed",
+          "nextAction": "Closed by EventRecapScreenState owning async branch mapping, attendee/profile rows, selected ids, hero/window copy, retry intents, and open-deck intent data while EventRecapScreen retains route-edge side effects."
         },
         {
           "id": "DS-EVENT-RECAP-004",
