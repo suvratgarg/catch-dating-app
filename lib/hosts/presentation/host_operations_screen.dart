@@ -2257,7 +2257,7 @@ class HostTodayTaskCard extends StatelessWidget {
                   task.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.titleS(context, color: t.ink),
+                  style: CatchTextStyles.fieldRowTitle(context, color: t.ink),
                 ),
                 gapH4,
                 Text(
@@ -3029,14 +3029,20 @@ class HostOrganizerTeamRow extends StatelessWidget {
                       profile.displayName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.titleS(context, color: t.ink),
+                      style: CatchTextStyles.fieldRowTitle(
+                        context,
+                        color: t.ink,
+                      ),
                     ),
                     gapH2,
                     Text(
                       isCurrentUser ? 'You · $roleLabel' : roleLabel,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(
+                        context,
+                        color: t.ink2,
+                      ),
                     ),
                   ],
                 ),
@@ -3144,7 +3150,7 @@ class HostTrendKpi extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(value, style: CatchTextStyles.titleS(context, color: t.ink)),
+        Text(value, style: CatchTextStyles.statCompact(context, color: t.ink)),
         gapH2,
         Text(label, style: CatchTextStyles.monoLabelS(context, color: t.ink3)),
       ],
@@ -4010,7 +4016,7 @@ class HostAnalyticsMetricTile extends StatelessWidget {
               caption,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.bodyS(context, color: t.ink3),
+              style: CatchTextStyles.supporting(context, color: t.ink3),
             ),
           ],
         ],
@@ -4232,7 +4238,10 @@ class HostAnalyticsEventTile extends StatelessWidget {
                     gapH4,
                     Text(
                       EventFormatters.shortDate(event.startTime),
-                      style: CatchTextStyles.bodyS(context, color: t.ink3),
+                      style: CatchTextStyles.supporting(
+                        context,
+                        color: t.ink3,
+                      ),
                     ),
                     gapH8,
                     Wrap(
@@ -4410,7 +4419,10 @@ class HostAnalyticsDataQualityPanel extends StatelessWidget {
                   Expanded(
                     child: Text(
                       indexedRow.$2.detail,
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(
+                        context,
+                        color: t.ink2,
+                      ),
                     ),
                   ),
                 ],
