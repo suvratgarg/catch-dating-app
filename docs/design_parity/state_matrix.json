@@ -9237,8 +9237,8 @@
             },
             {
               "id": "DP-CALENDAR-003",
-              "status": "open",
-              "nextAction": "CalendarHomeState now covers event summary, selected date, header mode, and club-id lookup input; remaining work is provider-free agenda/state section extraction plus captures."
+              "status": "closed",
+              "nextAction": "Closed by CalendarHomeState and CalendarAgendaSectionState owning event summary, selected date, header mode, club-id lookup input, agenda row display, and empty/loading/error section state while CalendarScreen retains provider waves, retry invalidation, scroll behavior, and route navigation."
             },
             {
               "id": "DP-CALENDAR-004",

@@ -16096,7 +16096,7 @@
           }
         ],
         "mutationOwners": [],
-        "notes": "CalendarScreen owns route provider waves, the route Scaffold, retry invalidation, scroll-to-day behavior, and event-detail routing. CalendarHomeState owns event merge/sort, selected date, expanded/collapsed header mode, and club-id lookup input before provider-free calendar sections render."
+        "notes": "CalendarScreen owns route provider waves, the route Scaffold, retry invalidation, scroll-to-day behavior, and event-detail routing. CalendarHomeState owns event merge/sort, selected date, expanded/collapsed header mode, club-id lookup input, and provider-free agenda section state before calendar sections render."
       },
       "designRefs": [
         {
@@ -16211,8 +16211,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "CalendarScreen owns provider orchestration, route Scaffold, selected date/header input state, club-name lookup, retry invalidation, scroll behavior, and navigation callbacks, then resolves CalendarHomeState for event summary, selected date, header mode, and club-id lookup input before composing provider-free header, stats, agenda, and state sections.",
-        "targetLayout": "Calendar Home should keep CalendarHomeState as the provider-free adapter for event summary, selected date, header mode, and club-id lookup input while future passes extract named provider-free agenda/state sections and deterministic captures.",
+        "currentLayout": "CalendarScreen owns provider orchestration, route Scaffold, selected date/header input state, club-name lookup, retry invalidation, scroll behavior, and navigation callbacks, then resolves CalendarHomeState and CalendarAgendaSectionState for event summary, selected date, header mode, club-id lookup input, agenda row display, and empty/loading/error section state.",
+        "targetLayout": "Calendar Home should keep CalendarHomeState and CalendarAgendaSectionState as the provider-free adapters for event summary, selected date, header mode, club-id lookup input, agenda rows, empty/loading/error section state, and deterministic captures.",
         "sections": [
           {
             "id": "section.calendar.home_adapter",
@@ -16298,8 +16298,8 @@
               "file": "lib/events/presentation/calendar/calendar_screen.dart",
               "symbol": "CalendarScreen"
             },
-            "currentOwner": "CalendarScreen + EventAgendaSliverList",
-            "targetOwner": "provider-free calendar agenda section",
+            "currentOwner": "CalendarAgendaSliverSection + EventAgendaSliverList",
+            "targetOwner": "CalendarAgendaSliverSection + EventAgendaSliverList",
             "dependencies": [
               "catch.badge",
               "catch.surface"
@@ -16309,7 +16309,7 @@
               "club_names_loading_error",
               "event_detail_navigation"
             ],
-            "migration": "Reuse shared EventAgendaSliverList while adapter supplies badge/status/club labels and route callbacks."
+            "migration": "CalendarAgendaSectionState supplies agenda rows, badge labels, tile statuses, club labels, today, and lookup phases while CalendarScreen supplies route callbacks."
           },
           {
             "id": "section.calendar.empty_error",
@@ -16323,8 +16323,8 @@
               "file": "lib/events/presentation/calendar/calendar_screen.dart",
               "symbol": "CalendarMessage"
             },
-            "currentOwner": "CalendarScreen",
-            "targetOwner": "provider-free calendar state section",
+            "currentOwner": "CalendarAgendaSectionState + CalendarAgendaSliverSection",
+            "targetOwner": "CalendarAgendaSectionState + CalendarAgendaSliverSection",
             "dependencies": [
               "catch.surface"
             ],
@@ -16334,7 +16334,7 @@
               "events_error",
               "club_names_loading_error"
             ],
-            "migration": "Name loading/empty/error variants and add deterministic captures before visual comparison."
+            "migration": "CalendarAgendaSectionState names empty, club-name loading, club-name error, and ready variants; remaining work is deterministic capture coverage before visual comparison."
           }
         ]
       },
@@ -16351,8 +16351,8 @@
         },
         {
           "id": "DS-CALENDAR-003",
-          "status": "open",
-          "nextAction": "CalendarHomeState now covers event summary, selected date, header mode, and club-id lookup input; remaining work is provider-free agenda/state section extraction plus captures."
+          "status": "closed",
+          "nextAction": "Closed by CalendarHomeState and CalendarAgendaSectionState owning event summary, selected date, header mode, club-id lookup input, agenda row display, and empty/loading/error section state while CalendarScreen retains provider waves, retry invalidation, scroll behavior, and route navigation."
         },
         {
           "id": "DS-CALENDAR-004",

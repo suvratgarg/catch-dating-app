@@ -42,6 +42,78 @@ void main() {
       expect(state.hasEvents, isFalse);
       expect(state.clubIds, isEmpty);
     });
+
+    test('derives agenda section state from club-name lookup phases', () {
+      final now = DateTime(2026, 6, 30, 12);
+      final event = buildEvent(
+        id: 'calendar-event',
+        startTime: now.add(const Duration(days: 1)),
+      );
+      final state = CalendarHomeState.from(signedUpEvents: [event], now: now);
+
+      expect(
+        state.agendaSection(
+          clubNames: const CalendarClubNameLookupState.loading(),
+        ),
+        isA<CalendarAgendaClubNamesLoadingState>().having(
+          (state) => state.skeletonCount,
+          'skeletonCount',
+          3,
+        ),
+      );
+
+      final error = Exception('club names failed');
+      expect(
+        state.agendaSection(
+          clubNames: CalendarClubNameLookupState.failure(error),
+        ),
+        isA<CalendarAgendaClubNamesErrorState>().having(
+          (state) => state.error,
+          'error',
+          error,
+        ),
+      );
+
+      final ready = state.agendaSection(
+        clubNames: const CalendarClubNameLookupState.ready({
+          'club-1': 'Stride Social',
+        }),
+      );
+
+      expect(
+        ready,
+        isA<CalendarAgendaReadyState>()
+            .having((state) => state.today, 'today', DateUtils.dateOnly(now))
+            .having((state) => state.rows, 'rows', hasLength(1)),
+      );
+      final row = (ready as CalendarAgendaReadyState).rows.single;
+      expect(row.event, event);
+      expect(row.clubName, 'Stride Social');
+      expect(row.status, CalendarAgendaEventStatus.joined);
+      expect(row.badgeLabel, 'JOINED');
+    });
+
+    test('empty agenda state wins before club-name lookup state', () {
+      final state = CalendarHomeState.from(
+        signedUpEvents: const [],
+        now: DateTime(2026, 6, 30, 12),
+      );
+
+      final agenda = state.agendaSection(
+        clubNames: CalendarClubNameLookupState.failure(Exception('ignored')),
+      );
+
+      expect(
+        agenda,
+        isA<CalendarAgendaEmptyState>()
+            .having((state) => state.title, 'title', 'No planned events yet')
+            .having(
+              (state) => state.body,
+              'body',
+              'Events you book or save will show up here by day and time.',
+            ),
+      );
+    });
   });
 
   group('CalendarEventSummary', () {
@@ -102,6 +174,62 @@ void main() {
       expect(summary.nextEvent, savedUpcoming);
       expect(summary.anchorDate, savedUpcoming.startTime);
       expect(summary.totalDistance, 15);
+    });
+
+    test('agenda rows classify saved-only and cancelled events', () {
+      final now = DateTime(2026, 6, 30, 12);
+      final joined = buildEvent(
+        id: 'joined',
+        clubId: 'joined-club',
+        startTime: now.add(const Duration(days: 2)),
+      );
+      final saved = buildEvent(
+        id: 'saved',
+        clubId: 'saved-club',
+        startTime: now.add(const Duration(days: 1)),
+      );
+      final cancelled = buildEvent(
+        id: 'cancelled',
+        clubId: 'cancelled-club',
+        startTime: now.add(const Duration(hours: 6)),
+        status: EventLifecycleStatus.cancelled,
+      );
+      final state = CalendarHomeState.from(
+        signedUpEvents: [joined, cancelled],
+        savedEvents: [saved],
+        now: now,
+      );
+
+      final agenda =
+          state.agendaSection(
+                clubNames: const CalendarClubNameLookupState.ready({
+                  'joined-club': 'Joined Club',
+                  'saved-club': 'Saved Club',
+                  'cancelled-club': 'Cancelled Club',
+                }),
+              )
+              as CalendarAgendaReadyState;
+
+      expect(agenda.rows.map((row) => row.event.id), [
+        'saved',
+        'joined',
+        'cancelled',
+      ]);
+      expect(agenda.rows.map((row) => row.clubName), [
+        'Saved Club',
+        'Joined Club',
+        'Cancelled Club',
+      ]);
+      expect(agenda.rows.map((row) => row.status), [
+        CalendarAgendaEventStatus.saved,
+        CalendarAgendaEventStatus.joined,
+        CalendarAgendaEventStatus.cancelled,
+      ]);
+      expect(agenda.rows.map((row) => row.badgeLabel), [
+        'SAVED',
+        'JOINED',
+        'CANCELLED',
+      ]);
     });
   });
 }

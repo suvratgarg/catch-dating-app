@@ -33,6 +33,119 @@ class CalendarHomeState {
 
   bool get hasEvents => summary.events.isNotEmpty;
   Iterable<String> get clubIds => summary.events.map((event) => event.clubId);
+
+  CalendarAgendaSectionState agendaSection({
+    required CalendarClubNameLookupState clubNames,
+  }) {
+    return CalendarAgendaSectionState.from(
+      summary: summary,
+      clubNames: clubNames,
+    );
+  }
+}
+
+enum CalendarClubNameLookupStatus { loading, failure, ready }
+
+class CalendarClubNameLookupState {
+  const CalendarClubNameLookupState.loading()
+    : status = CalendarClubNameLookupStatus.loading,
+      names = const <String, String>{},
+      error = null;
+
+  const CalendarClubNameLookupState.failure(Object this.error)
+    : status = CalendarClubNameLookupStatus.failure,
+      names = const <String, String>{};
+
+  const CalendarClubNameLookupState.ready(this.names)
+    : status = CalendarClubNameLookupStatus.ready,
+      error = null;
+
+  final CalendarClubNameLookupStatus status;
+  final Map<String, String> names;
+  final Object? error;
+}
+
+sealed class CalendarAgendaSectionState {
+  const CalendarAgendaSectionState();
+
+  factory CalendarAgendaSectionState.from({
+    required CalendarEventSummary summary,
+    required CalendarClubNameLookupState clubNames,
+  }) {
+    if (summary.events.isEmpty) return const CalendarAgendaEmptyState();
+
+    return switch (clubNames.status) {
+      CalendarClubNameLookupStatus.loading =>
+        const CalendarAgendaClubNamesLoadingState(),
+      CalendarClubNameLookupStatus.failure => CalendarAgendaClubNamesErrorState(
+        clubNames.error!,
+      ),
+      CalendarClubNameLookupStatus.ready => CalendarAgendaReadyState(
+        rows: [
+          for (final event in summary.agendaEvents)
+            CalendarAgendaEventRowState(
+              event: event,
+              clubName: clubNames.names[event.clubId],
+              status: event.isCancelled
+                  ? CalendarAgendaEventStatus.cancelled
+                  : summary.isSavedOnly(event)
+                  ? CalendarAgendaEventStatus.saved
+                  : CalendarAgendaEventStatus.joined,
+            ),
+        ],
+        today: summary.today,
+      ),
+    };
+  }
+}
+
+class CalendarAgendaEmptyState extends CalendarAgendaSectionState {
+  const CalendarAgendaEmptyState();
+
+  String get title => 'No planned events yet';
+  String get body =>
+      'Events you book or save will show up here by day and time.';
+}
+
+class CalendarAgendaClubNamesLoadingState extends CalendarAgendaSectionState {
+  const CalendarAgendaClubNamesLoadingState();
+
+  int get skeletonCount => 3;
+}
+
+class CalendarAgendaClubNamesErrorState extends CalendarAgendaSectionState {
+  const CalendarAgendaClubNamesErrorState(this.error);
+
+  final Object error;
+}
+
+class CalendarAgendaReadyState extends CalendarAgendaSectionState {
+  const CalendarAgendaReadyState({required this.rows, required this.today});
+
+  final List<CalendarAgendaEventRowState> rows;
+  final DateTime today;
+}
+
+enum CalendarAgendaEventStatus { joined, saved, cancelled }
+
+class CalendarAgendaEventRowState {
+  const CalendarAgendaEventRowState({
+    required this.event,
+    required this.clubName,
+    required this.status,
+  });
+
+  final Event event;
+  final String? clubName;
+  final CalendarAgendaEventStatus status;
+
+  String get badgeLabel {
+    return switch (status) {
+      CalendarAgendaEventStatus.cancelled => 'CANCELLED',
+      CalendarAgendaEventStatus.saved => 'SAVED',
+      CalendarAgendaEventStatus.joined => 'JOINED',
+    };
+  }
 }
 
 class CalendarEventSummary {

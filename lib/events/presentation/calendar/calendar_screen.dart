@@ -94,6 +94,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     ),
                   )
                 : const AsyncData(<String, String>{});
+            final agendaState = calendarState.agendaSection(
+              clubNames: _calendarClubNameLookupState(clubNamesAsync),
+            );
 
             return NotificationListener<ScrollNotification>(
               onNotification: _handleCalendarScrollNotification,
@@ -120,10 +123,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   SliverToBoxAdapter(
                     child: CalendarStatsHeader(summary: calendarState.summary),
                   ),
-                  ..._buildCalendarEventSlivers(
-                    context: context,
-                    summary: calendarState.summary,
-                    clubNamesAsync: clubNamesAsync,
+                  CalendarAgendaSliverSection(
+                    state: agendaState,
+                    dayKeyBuilder: _agendaDayKey,
+                    onEventSelected: (event) =>
+                        _openEventDetail(context, event),
+                    onRetryClubNames: () =>
+                        ref.invalidate(clubNameLookupProvider),
                   ),
                 ],
               ),
@@ -221,62 +227,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       () => GlobalKey(debugLabel: 'calendar-agenda-day-${_dateKey(day)}'),
     );
   }
+}
 
-  List<Widget> _buildCalendarEventSlivers({
-    required BuildContext context,
-    required CalendarEventSummary summary,
-    required AsyncValue<Map<String, String>> clubNamesAsync,
-  }) {
-    if (summary.events.isEmpty) {
-      return [
-        const SliverFillRemaining(
-          child: CalendarMessage(
-            title: 'No planned events yet',
-            body: 'Events you book or save will show up here by day and time.',
-          ),
-        ),
-      ];
-    }
-
-    final clubNames = clubNamesAsync.asData?.value;
-    if (clubNames == null) {
-      if (!clubNamesAsync.hasError) {
-        return const [EventAgendaSliverSkeleton(count: 3)];
-      }
-      return [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: CatchErrorState.fromError(
-            clubNamesAsync.error!,
-            context: AppErrorContext.event,
-            onRetry: () => ref.invalidate(clubNameLookupProvider),
-          ),
-        ),
-      ];
-    }
-
-    return [
-      EventAgendaSliverList(
-        events: summary.agendaEvents,
-        showClubName: true,
-        clubNameBuilder: (event) => clubNames[event.clubId],
-        badgeLabelBuilder: (event) {
-          if (event.isCancelled) return 'CANCELLED';
-          return summary.isSavedOnly(event) ? 'SAVED' : 'JOINED';
-        },
-        statusBuilder: (event) {
-          if (event.isCancelled) return EventTileStatus.cancelled;
-          return summary.isSavedOnly(event)
-              ? EventTileStatus.saved
-              : EventTileStatus.joined;
-        },
-        today: summary.today,
-        preserveInputOrder: true,
-        dayKeyBuilder: _agendaDayKey,
-        onEventSelected: (event) => _openEventDetail(context, event),
-      ),
-    ];
-  }
+CalendarClubNameLookupState _calendarClubNameLookupState(
+  AsyncValue<Map<String, String>> value,
+) {
+  final names = value.asData?.value;
+  if (names != null) return CalendarClubNameLookupState.ready(names);
+  if (value.hasError) return CalendarClubNameLookupState.failure(value.error!);
+  return const CalendarClubNameLookupState.loading();
 }
 
 String _calendarEventDetailPath(Event event) {
@@ -304,6 +263,65 @@ class CalendarLoadingScreen extends StatelessWidget {
       ],
     );
   }
+}
+
+class CalendarAgendaSliverSection extends StatelessWidget {
+  const CalendarAgendaSliverSection({
+    super.key,
+    required this.state,
+    required this.dayKeyBuilder,
+    required this.onEventSelected,
+    required this.onRetryClubNames,
+  });
+
+  final CalendarAgendaSectionState state;
+  final EventAgendaDayKeyBuilder dayKeyBuilder;
+  final ValueChanged<Event> onEventSelected;
+  final VoidCallback onRetryClubNames;
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (state) {
+      CalendarAgendaEmptyState(:final title, :final body) =>
+        SliverFillRemaining(
+          child: CalendarMessage(title: title, body: body),
+        ),
+      CalendarAgendaClubNamesLoadingState(:final skeletonCount) =>
+        EventAgendaSliverSkeleton(count: skeletonCount),
+      CalendarAgendaClubNamesErrorState(:final error) => SliverFillRemaining(
+        hasScrollBody: false,
+        child: CatchErrorState.fromError(
+          error,
+          context: AppErrorContext.event,
+          onRetry: onRetryClubNames,
+        ),
+      ),
+      CalendarAgendaReadyState(:final rows, :final today) =>
+        EventAgendaSliverList(
+          events: [for (final row in rows) row.event],
+          showClubName: true,
+          clubNameBuilder: (event) =>
+              rows.firstWhere((row) => row.event.id == event.id).clubName,
+          badgeLabelBuilder: (event) =>
+              rows.firstWhere((row) => row.event.id == event.id).badgeLabel,
+          statusBuilder: (event) => _eventTileStatusFor(
+            rows.firstWhere((row) => row.event.id == event.id).status,
+          ),
+          today: today,
+          preserveInputOrder: true,
+          dayKeyBuilder: dayKeyBuilder,
+          onEventSelected: onEventSelected,
+        ),
+    };
+  }
+}
+
+EventTileStatus _eventTileStatusFor(CalendarAgendaEventStatus status) {
+  return switch (status) {
+    CalendarAgendaEventStatus.cancelled => EventTileStatus.cancelled,
+    CalendarAgendaEventStatus.saved => EventTileStatus.saved,
+    CalendarAgendaEventStatus.joined => EventTileStatus.joined,
+  };
 }
 
 double _calendarDateHeaderHeightFor(
