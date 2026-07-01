@@ -882,6 +882,105 @@ Widget calendarLoadingScreenStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Agenda section states',
+  type: CalendarAgendaSliverSection,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarAgendaSliverSectionStates(BuildContext context) {
+  final readyState = CalendarAgendaSectionState.from(
+    summary: _calendarSummary,
+    clubNames: const CalendarClubNameLookupState.ready(_calendarClubNames),
+  );
+  final emptyState = CalendarAgendaSectionState.from(
+    summary: CalendarEventSummary.from(
+      signedUpEvents: const <Event>[],
+      savedEvents: const <Event>[],
+      now: _calendarNow,
+    ),
+    clubNames: const CalendarClubNameLookupState.ready(_calendarClubNames),
+  );
+
+  Key dayKey(DateTime date) {
+    return ValueKey<String>(
+      'widgetbook-calendar-agenda-${date.toIso8601String()}',
+    );
+  }
+
+  return _UtilityCatalog(
+    title: 'CalendarAgendaSliverSection',
+    contractId: 'component.calendar.agenda_section',
+    children: [
+      _StateCard(
+        label: 'ready rows',
+        child: SizedBox(
+          height: _utilitySheetFrameHeight,
+          child: CustomScrollView(
+            slivers: [
+              CalendarAgendaSliverSection(
+                state: readyState,
+                dayKeyBuilder: dayKey,
+                onEventSelected: (_) {},
+                onRetryClubNames: _noop,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'club names loading',
+        child: SizedBox(
+          height: _utilityDialogFrameHeight,
+          child: CustomScrollView(
+            slivers: [
+              CalendarAgendaSliverSection(
+                state: const CalendarAgendaClubNamesLoadingState(),
+                dayKeyBuilder: dayKey,
+                onEventSelected: (_) {},
+                onRetryClubNames: _noop,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'club names error',
+        child: SizedBox(
+          height: _utilityDialogFrameHeight,
+          child: CustomScrollView(
+            slivers: [
+              CalendarAgendaSliverSection(
+                state: CalendarAgendaClubNamesErrorState(
+                  StateError('Club names failed'),
+                ),
+                dayKeyBuilder: dayKey,
+                onEventSelected: (_) {},
+                onRetryClubNames: _noop,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: SizedBox(
+          height: _utilityDialogFrameHeight,
+          child: CustomScrollView(
+            slivers: [
+              CalendarAgendaSliverSection(
+                state: emptyState,
+                dayKeyBuilder: dayKey,
+                onEventSelected: (_) {},
+                onRetryClubNames: _noop,
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Header states',
   type: CalendarDateHeader,
   path: '[P3 utility surfaces]/Calendar/Components',

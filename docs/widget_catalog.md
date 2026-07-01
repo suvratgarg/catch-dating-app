@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.492
+version: 2.5.493
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.493
+
+- Added exact Widgetbook and catalog coverage for
+  `CalendarAgendaSliverSection`, including ready, club-name loading,
+  club-name error, and empty agenda states. Calendar's new public section
+  widget is no longer unresolved inventory debt.
 
 ### 2.5.492
 
@@ -5618,6 +5625,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
+| `CalendarAgendaSliverSection` | `lib/events/presentation/calendar/calendar_screen.dart:284` | Provider-free Calendar agenda branch renderer. Receives `CalendarAgendaSectionState`, day-key builder, event-selection callback, and club-name retry callback from `CalendarScreen`, then switches empty, club-name loading/error, and ready states into sliver-native message, skeleton, error, or `EventAgendaSliverList` rows without reading providers or owning navigation. |
 | `CalendarLoadingScreen` | `lib/events/presentation/calendar/calendar_screen.dart:286` | Route-shaped loading body for Calendar. Keeps the pinned date-header skeleton, stats skeleton, and agenda skeleton inside the same `CustomScrollView` geometry used by loaded content. |
 | `CalendarDateHeader` | `lib/events/presentation/calendar/calendar_screen.dart:345` | Pinned calendar header that owns the draggable week/month switch, title row, selected date, event markers, today action, and date-selection callback while consuming `CalendarEventSummary` display data. |
 | `CalendarDateHeaderSkeleton` | `lib/events/presentation/calendar/calendar_screen.dart:407` | Loading version of the pinned date header, preserving title-row and week-strip shape while event data resolves. |

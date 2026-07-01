@@ -7911,6 +7911,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Components',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'CalendarAgendaSliverSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Agenda section states',
+                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                        .calendarAgendaSliverSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'CalendarDateHeader',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
