@@ -55,9 +55,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void initState() {
     super.initState();
     _textController = TextEditingController(text: widget.initialDraftText);
-    _readMarkerController = ChatReadMarkerController(
+    _readMarkerController = ChatReadMarkerController.fromRef(
       conversationId: widget.matchId,
-      repository: ref.read(conversationRepositoryProvider),
+      ref: ref,
     );
     _scrollCoordinator = ChatScrollCoordinator(isMounted: () => mounted);
     _resetUnread(ref.read(uidProvider).value);

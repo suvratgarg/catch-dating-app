@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_read_marker_state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatReadMarkerController {
   ChatReadMarkerController({
@@ -10,6 +11,18 @@ class ChatReadMarkerController {
     required this.repository,
     ChatReadMarkerState? state,
   }) : _state = state ?? ChatReadMarkerState();
+
+  factory ChatReadMarkerController.fromRef({
+    required String conversationId,
+    required WidgetRef ref,
+    ChatReadMarkerState? state,
+  }) {
+    return ChatReadMarkerController(
+      conversationId: conversationId,
+      repository: ref.read(conversationRepositoryProvider),
+      state: state,
+    );
+  }
 
   final String conversationId;
   final ConversationRepository repository;
