@@ -1040,6 +1040,22 @@ class _SwipeWriteFailureSnackBarCaptureState
   );
 }
 
+Widget _swipeEventPendingActionCapture(
+  CatchesProfileReviewActionState actionState,
+) {
+  return CatchesProfileReview(
+    profile: CatchesSurfaceFixtures.candidates.first,
+    remainingCount: CatchesSurfaceFixtures.candidates.length,
+    viewerProfile: CatchesSurfaceFixtures.viewer,
+    sharedRunTitle: _catchesOpenEvent.title,
+    actionState: actionState,
+    onBack: () {},
+    onFilters: () {},
+    onPass: () {},
+    onReact: (target, comment) {},
+  );
+}
+
 const _catchesReactionTarget = ProfileReactionTarget(
   id: 'prompt-sunday-loop',
   type: SwipeReactionTargetType.profilePrompt,
@@ -11398,6 +11414,22 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => SwipeScreen(
       eventId: _catchesClosedEvent.id,
       now: CatchesSurfaceFixtures.now,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'swipe_event_pass_pending',
+    routeIds: const <String>['swipeEventScreen'],
+    device: CaptureDevice.reviewTall,
+    builder: (context) => _swipeEventPendingActionCapture(
+      const CatchesProfileReviewActionState.passPending(),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'swipe_event_reaction_pending',
+    routeIds: const <String>['swipeEventScreen'],
+    device: CaptureDevice.reviewTall,
+    builder: (context) => _swipeEventPendingActionCapture(
+      const CatchesProfileReviewActionState.reactionPending(),
     ),
   ),
   ScreenCaptureEntry(

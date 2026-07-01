@@ -2749,6 +2749,8 @@
             "swipe_event_in_progress",
             "swipe_event_did_not_attend",
             "swipe_event_window_closed",
+            "swipe_event_pass_pending",
+            "swipe_event_reaction_pending",
             "swipe_event_write_failure_snackbar",
             "swipe_event_text_scale_2",
             "swipe_event_reduced_motion",
@@ -2816,33 +2818,37 @@
             {
               "id": "pass_mutation",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
               "tests": [
                 "test/swipes/swipe_queue_notifier_test.dart",
                 "test/swipes/swipe_action_buttons_test.dart",
                 "test/swipes/swipe_screen_test.dart"
               ],
-              "notes": "Pass writes through SwipeQueueNotifier, disables deck mutation controls while pending, and advances after recordSwipe succeeds.",
+              "notes": "Pass writes through SwipeQueueNotifier, disables deck mutation controls while pending, and advances after recordSwipe succeeds. swipe_event_pass_pending captures the deck-level disabled/loading pass affordance.",
               "previewIds": [
                 "SwipeScreen/Event deck route states",
                 "CatchesPassButton/Pass button states"
+              ],
+              "captureIds": [
+                "swipe_event_pass_pending"
               ]
             },
             {
               "id": "reaction_mutation",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
               "tests": [
                 "test/swipes/swipe_queue_notifier_test.dart",
                 "test/swipes/profile_card_widget_test.dart"
               ],
-              "notes": "Section reactions and comments persist through SwipeQueueNotifier; Widgetbook covers disabled/pending reaction controls and empty/filled comment-sheet states, and route capture covers the empty/filled sheet regions.",
+              "notes": "Section reactions and comments persist through SwipeQueueNotifier; Widgetbook covers disabled/pending reaction controls and empty/filled comment-sheet states, and captures cover reaction-pending deck state plus empty/filled sheet regions.",
               "previewIds": [
                 "SwipeScreen/Event deck route states",
                 "ProfileReactionControls/Reaction control states",
                 "ProfileReactionCommentSheet/Reaction comment sheet states"
               ],
               "captureIds": [
+                "swipe_event_reaction_pending",
                 "swipe_event_comment_sheet_empty",
                 "swipe_event_comment_sheet_filled"
               ]
@@ -2850,14 +2856,18 @@
             {
               "id": "duplicate_pending",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
               "tests": [
                 "test/swipes/swipe_queue_notifier_test.dart",
                 "test/swipes/swipe_screen_test.dart"
               ],
-              "notes": "Duplicate swipe attempts are ignored while a write is pending in the notifier and the route disables repeated deck actions while CatchesProfileReviewActionState is pending.",
+              "notes": "Duplicate swipe attempts are ignored while a write is pending in the notifier and the route disables repeated deck actions while CatchesProfileReviewActionState is pending. The visible duplicate guard is the same disabled pending deck state captured by swipe_event_pass_pending and swipe_event_reaction_pending.",
               "previewIds": [
                 "SwipeScreen/Event deck route states"
+              ],
+              "captureIds": [
+                "swipe_event_pass_pending",
+                "swipe_event_reaction_pending"
               ]
             },
             {

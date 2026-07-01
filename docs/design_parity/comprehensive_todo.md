@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.278
+version: 0.2.279
 updated: 2026-07-01
 owner: product_design_parity
 status: active
@@ -35,9 +35,9 @@ ledgers as the source of truth when counts differ:
 - Design parity matrix: 12 feature groups, 36 screens, 621 matrix states, and
   54 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
-- Matrix state status spread: 559 captured, 14 implemented, 1 planned, and
-  47 tested.
-- Capture coverage registry: 594 capture ids across 37 captured route entries,
+- Matrix state status spread: 562 captured, 14 implemented, 1 planned, and
+  44 tested.
+- Capture coverage registry: 596 capture ids across 37 captured route entries,
   5 alias route entries, 0 planned route entries, and 6 excluded route entries.
 - Component contracts: 56 reusable primitive/composite contracts with 349
   contract states.
@@ -661,7 +661,7 @@ from those ledgers rather than hand-editing counts.
 
 | Priority | Screen | States | Sections | Exported refs | Reference gap | Open registry gaps | Next todo |
 |---|---|---:|---:|---:|---|---|---|
-| P1 | `screen.catches.event` | 19 | 6 | 1 | None | `DS-CATCHES-EVENT-002` blocked, `DS-CATCHES-EVENT-004` blocked | Local Catches Event states, cached-offline deck capture, comment-sheet empty/filled captures, and write-failure snackbar feedback are source-backed. Remaining work is blocked on keyboard-open capture automation and external reference exports for keyboard/comment sheet, empty/offline, accessibility, theme, and optional mutation variants. |
+| P1 | `screen.catches.event` | 19 | 6 | 1 | None | `DS-CATCHES-EVENT-002` blocked, `DS-CATCHES-EVENT-004` blocked | Local Catches Event states, cached-offline deck capture, pass/reaction pending captures, duplicate-pending disabled-control proof, comment-sheet empty/filled captures, and write-failure snackbar feedback are source-backed. Remaining work is blocked on keyboard-open capture automation and external reference exports for keyboard/comment sheet, empty/offline, accessibility, theme, and optional mutation variants. |
 | P1 | `screen.catches.hub` | 12 | 4 | 0 | Blocked: missing canonical design source | `DS-CATCHES-HUB-004` blocked | Hub route adapter and section Widgetbook coverage are closed; local Claude bundle has no distinct hub source, so export waits on design source handoff. |
 | P1 | `screen.club.detail` | 13 | 9 | 1 | None | None | Body policy, direct host/contact/photo section previews, loading captures, initial-fallback capture, empty-schedule capture, and consumer-only dock decisioning are closed. Reopen only if a new host/member dock contract is designed. |
 | P1 | `screen.dashboard.home` | 19 | 9 | 2 | None | None | Keep as the reference-complete baseline; finish remaining full-body display-data cleanup. |
@@ -1435,9 +1435,9 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - captured: `uid_loading`, `uid_error`, `signed_out_hidden`, `attended_events_loading`, `attended_events_error`, `active_windows`, `no_active_windows`, `dark_intro_cta`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
   - DP-CATCHES-HUB-004: Blocked on a canonical Catches Hub design source/export. The local Claude bundle only contains the already-registered Catches Event Deck/post-run catch-window asset; once design provides a hub reference, export the PNG and add masks for dynamic countdown and attendee-count regions.
 - [ ] `catches.event` (19 state follow-ups, 2 open gaps)
-  - tested: `pass_mutation`, `reaction_mutation`, `duplicate_pending`, `cached_offline`
-  - captured: `queue_loading`, `queue_error`, `active_profile`, `empty_queue`, `event_missing`, `sign_in_required`, `event_in_progress`, `did_not_attend`, `window_closed`, `write_failure`, `offline`, `filters_action`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-CATCHES-EVENT-002: Blocked on keyboard-open capture automation and design-reference pixel comparison input. Write-failure snackbar feedback, cached-offline data preservation, comment-sheet regions, queue loading/error/offline, empty, missing event, signed-out, in-progress, did-not-attend, closed-window, text-scale, reduced-motion, and paired light/dark captures are already registered.
+  - tested: None
+  - captured: `queue_loading`, `queue_error`, `active_profile`, `empty_queue`, `event_missing`, `sign_in_required`, `event_in_progress`, `did_not_attend`, `window_closed`, `pass_mutation`, `reaction_mutation`, `duplicate_pending`, `write_failure`, `cached_offline`, `comment_sheet_empty_filled`, `offline`, `filters_action`, `text_scale_2`, `reduced_motion`, `light_dark`
+  - DP-CATCHES-EVENT-002: Blocked on keyboard-open capture automation and design-reference pixel comparison input. Pass/reaction pending, duplicate-pending disabled controls, write-failure snackbar feedback, cached-offline data preservation, comment-sheet regions, queue loading/error/offline, empty, missing event, signed-out, in-progress, did-not-attend, closed-window, text-scale, reduced-motion, and paired light/dark captures are already registered.
   - DP-CATCHES-EVENT-003: Closed by `CatchesEventScreenState`, which maps queue/event/user/participation provider waves through provider-free `CatchAsyncState` before visual deck and empty/access sections receive display data plus typed callbacks.
   - DP-CATCHES-EVENT-004: Blocked on external reference exports for dedicated mutation, keyboard/comment sheet, empty/offline, accessibility, and theme variants; first active-profile deck reference and masks are registered.
 

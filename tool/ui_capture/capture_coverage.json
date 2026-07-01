@@ -363,13 +363,15 @@
         "swipe_event_in_progress",
         "swipe_event_did_not_attend",
         "swipe_event_window_closed",
+        "swipe_event_pass_pending",
+        "swipe_event_reaction_pending",
         "swipe_event_write_failure_snackbar",
         "swipe_event_comment_sheet_empty",
         "swipe_event_comment_sheet_filled",
         "swipe_event_text_scale_2",
         "swipe_event_reduced_motion"
       ],
-      "reason": "Catches event deck captures now cover active deck, queue loading/error/offline/cached-offline, empty queue, missing event, sign-in required, in-progress, did-not-attend, closed-window, write-failure snackbar feedback, comment sheet empty/filled, text-scale, and reduced-motion states."
+      "reason": "Catches event deck captures now cover active deck, queue loading/error/offline/cached-offline, empty queue, missing event, sign-in required, in-progress, did-not-attend, closed-window, pass/reaction pending action states, write-failure snackbar feedback, comment sheet empty/filled, text-scale, and reduced-motion states."
     },
     {
       "routeId": "eventRecapScreen",
