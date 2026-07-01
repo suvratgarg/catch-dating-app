@@ -554,6 +554,8 @@ Widget chatsBrowseHeaderStates(BuildContext context) {
                     children: [
                       ChatsBrowseHeader(
                         showSearchAction: true,
+                        searchValue: '',
+                        onSearchChanged: (_) {},
                         hostFilter: HostInboxFilter.all,
                         hostUnreadCount: 2,
                         onHostFilterChanged: (_) {},
@@ -2076,21 +2078,26 @@ class _ComposerStatesPreview extends StatefulWidget {
 
 class _ComposerStatesPreviewState extends State<_ComposerStatesPreview> {
   late final TextEditingController _readyController;
-  late final TextEditingController _pendingController;
+  late final TextEditingController _sendingController;
+  late final TextEditingController _imagePendingController;
   late final TextEditingController _disabledController;
 
   @override
   void initState() {
     super.initState();
     _readyController = TextEditingController(text: 'That last loop was fun.');
-    _pendingController = TextEditingController(text: 'Uploading a photo...');
+    _sendingController = TextEditingController(text: 'Sending this now...');
+    _imagePendingController = TextEditingController(
+      text: 'Uploading a photo...',
+    );
     _disabledController = TextEditingController();
   }
 
   @override
   void dispose() {
     _readyController.dispose();
-    _pendingController.dispose();
+    _sendingController.dispose();
+    _imagePendingController.dispose();
     _disabledController.dispose();
     super.dispose();
   }
@@ -2110,7 +2117,14 @@ class _ComposerStatesPreviewState extends State<_ComposerStatesPreview> {
             ),
             gapH12,
             ChatInputBar(
-              controller: _pendingController,
+              controller: _sendingController,
+              sending: true,
+              onSend: () {},
+              onSendImage: () {},
+            ),
+            gapH12,
+            ChatInputBar(
+              controller: _imagePendingController,
               sending: false,
               sendingImage: true,
               onSend: () {},
