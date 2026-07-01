@@ -87,6 +87,94 @@ void main() {
   });
 
   test(
+    'SelfProfileEditTabState derives basics and profile section row descriptors',
+    () {
+      final user =
+          buildUser(
+            name: 'Suvrat Garg',
+            displayName: 'S.',
+            phoneNumber: '+919876543210',
+          ).copyWith(
+            height: 178,
+            instagramHandle: 'suvrat_events',
+            occupation: 'Engineer',
+            company: 'Catch',
+          );
+
+      final state = SelfProfileEditTabState.fromProfile(
+        user: user,
+        uploadState: _idleUploadState,
+      );
+
+      expect(state.basicRows.map((row) => row.label), [
+        'Display name',
+        'Date of birth',
+        'Gender',
+        'Phone',
+        'Email',
+        'Instagram',
+        'Height',
+      ]);
+      expect(state.aboutRows.map((row) => row.label), [
+        'City',
+        'Job title',
+        'Company',
+        'Education',
+        'Religion',
+        'Languages',
+        'Looking for',
+      ]);
+      expect(state.runningRows.map((row) => row.label), [
+        'Pace range',
+        'Preferred distances',
+        'Why I event',
+        'Favorite event times',
+      ]);
+      expect(state.lifestyleRows.map((row) => row.label), [
+        'Drinking',
+        'Smoking',
+        'Workout',
+        'Diet',
+        'Children',
+      ]);
+
+      final displayName =
+          state.basicRows.first as SelfProfileTextFieldRowDescriptor;
+      expect(displayName.fieldName, 'displayName');
+      expect(displayName.currentValue, 'S.');
+      expect(displayName.currentFieldValue, 'S.');
+
+      final phone =
+          state.basicRows.singleWhere((row) => row.id == 'phoneNumber')
+              as SelfProfileReadOnlyFieldRowDescriptor;
+      expect(phone.body, '+919876543210');
+
+      final instagram =
+          state.basicRows.singleWhere((row) => row.id == 'instagramHandle')
+              as SelfProfileTextFieldRowDescriptor;
+      expect(instagram.currentValue, '@suvrat_events');
+      expect(instagram.currentFieldValue, 'suvrat_events');
+
+      final height =
+          state.basicRows.singleWhere((row) => row.id == 'height')
+              as SelfProfileHeightFieldRowDescriptor;
+      expect(height.value, '178 cm');
+      expect(height.isAddAffordance, isFalse);
+
+      final paceRange =
+          state.runningRows.first as SelfProfileRangeFieldRowDescriptor;
+      expect(paceRange.id, 'pace-range');
+      expect(paceRange.currentMin, user.paceMinSecsPerKm);
+      expect(paceRange.currentMax, user.paceMaxSecsPerKm);
+
+      expect(
+        state.aboutSectionRows.map((row) => row.label).take(3),
+        orderedEquals(['Display name', 'Date of birth', 'Gender']),
+      );
+    },
+  );
+
+  test(
     'SelfProfilePhotoActionController resolves editor and mutation intents',
     () {
       const controller = SelfProfilePhotoActionController();

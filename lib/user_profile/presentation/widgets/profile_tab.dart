@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
@@ -14,10 +12,8 @@ import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
-import 'package:catch_dating_app/user_profile/presentation/self_profile_inline_edit_patch_factory.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_photo_action_controller.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
@@ -152,302 +148,6 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
       uploadState: uploadState,
     );
     const photoActions = SelfProfilePhotoActionController();
-    const patchFactory = SelfProfileInlineEditPatchFactory();
-    final basics = [
-      _ProfileDirectTextEntry(
-        icon: CatchIcons.personOutlined,
-        label: 'Display name',
-        value: user.publicDisplayName,
-        currentValue: user.publicDisplayName,
-        currentFieldValue: user.displayName.trim().isEmpty
-            ? null
-            : user.displayName.trim(),
-        fieldName: 'displayName',
-        patchForValue: patchFactory.displayName,
-        textCapitalization: TextCapitalization.words,
-        autofillHints: const [AutofillHints.nickname],
-        validator: validateRequiredDisplayName,
-        toFieldValue: (value) => value.trim(),
-      ),
-      CatchField.nav(
-        icon: CatchIcons.cakeOutlined,
-        title: 'Date of birth',
-        body:
-            '${user.dateOfBirth.day.toString().padLeft(2, '0')}/${user.dateOfBirth.month.toString().padLeft(2, '0')}/${user.dateOfBirth.year}  (${user.age} years)',
-        bodyMaxLines: 4,
-      ),
-      CatchField.nav(
-        icon: CatchIcons.wcOutlined,
-        title: 'Gender',
-        body: user.gender.label,
-        bodyMaxLines: 4,
-      ),
-      // Phone is the OTP identity credential. It is display-only here; editing
-      // it inline would let Firestore phoneNumber diverge from the Firebase Auth
-      // identity with no re-verification. Changing it requires an OTP
-      // re-verification flow that updates the Auth credential first.
-      CatchField.nav(
-        icon: CatchIcons.phoneOutlined,
-        title: 'Phone',
-        body: user.phoneNumber,
-        bodyMaxLines: 4,
-      ),
-      _ProfileDirectTextEntry(
-        icon: CatchIcons.emailOutlined,
-        label: 'Email',
-        value: 'Email',
-        currentValue: user.email,
-        fieldName: 'email',
-        patchForValue: patchFactory.email,
-        keyboardType: TextInputType.emailAddress,
-        textCapitalization: TextCapitalization.none,
-        autofillHints: const [AutofillHints.email],
-        validator: validateOptionalEmail,
-      ),
-      _ProfileDirectTextEntry(
-        icon: CatchIcons.alternateEmailOutlined,
-        label: 'Instagram',
-        value: 'Instagram',
-        currentValue: user.instagramHandle?.isNotEmpty == true
-            ? '@${user.instagramHandle}'
-            : '',
-        currentFieldValue: user.instagramHandle,
-        fieldName: 'instagramHandle',
-        patchForValue: patchFactory.instagramHandle,
-        keyboardType: TextInputType.text,
-        textCapitalization: TextCapitalization.none,
-        validator: validateOptionalInstagramHandle,
-        toFieldValue: (value) {
-          final handle = normalizeInstagramHandle(value);
-          return handle.isEmpty ? null : handle;
-        },
-      ),
-      ProfileInlineHeightEditor(
-        key: const ValueKey('inline-height-editor'),
-        icon: CatchIcons.heightOutlined,
-        label: 'Height',
-        value: user.height != null ? '${user.height} cm' : 'Height',
-        currentValue: user.height,
-        isExpanded: _isExpanded('height'),
-        isAddAffordance: user.height == null,
-        patchForValue: patchFactory.height,
-        onTap: () => _toggleField('height'),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-    ];
-    final about = [
-      ...basics,
-      _ProfileSingleEnumEntry<CityOption>(
-        icon: CatchIcons.locationOnOutlined,
-        label: 'City',
-        values: defaultCityOptions
-            .where((city) => city.profileSelectable)
-            .toList(growable: false),
-        value: cityOptionByName(user.city),
-        fieldName: 'city',
-        patchForValue: patchFactory.city,
-        isExpanded: _isExpanded('city'),
-        onTap: () => _toggleField('city'),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      _ProfileDirectTextEntry(
-        icon: CatchIcons.workOutline,
-        label: 'Job title',
-        value: 'Job title',
-        currentValue: user.occupation ?? '',
-        fieldName: 'occupation',
-        patchForValue: patchFactory.occupation,
-        validator: (value) =>
-            validateOptionalProfileShortText(value, label: 'Job title'),
-      ),
-      _ProfileDirectTextEntry(
-        icon: CatchIcons.businessOutlined,
-        label: 'Company',
-        value: 'Company',
-        currentValue: user.company ?? '',
-        fieldName: 'company',
-        patchForValue: patchFactory.company,
-        validator: (value) =>
-            validateOptionalProfileShortText(value, label: 'Company'),
-      ),
-      _ProfileSingleEnumEntry<EducationLevel>(
-        icon: CatchIcons.schoolOutlined,
-        label: 'Education',
-        values: EducationLevel.values,
-        value: user.education,
-        fieldName: 'education',
-        patchForValue: patchFactory.education,
-        isExpanded: _isExpanded('education'),
-        onTap: () => _toggleField('education'),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      _ProfileSingleEnumEntry<Religion>(
-        icon: CatchIcons.volunteerActivismOutlined,
-        label: 'Religion',
-        values: Religion.values,
-        value: user.religion,
-        fieldName: 'religion',
-        patchForValue: patchFactory.religion,
-        isExpanded: _isExpanded('religion'),
-        onTap: () => _toggleField('religion'),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      _ProfileMultiEnumEntry<Language>(
-        icon: CatchIcons.languageOutlined,
-        label: 'Languages',
-        values: Language.values,
-        selected: user.languages,
-        fieldName: 'languages',
-        placeholder: 'Languages',
-        patchForValues: patchFactory.languages,
-        isExpanded: _isExpanded('languages'),
-        onTap: () => _toggleField('languages'),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      _ProfileSingleEnumEntry<RelationshipGoal>(
-        icon: CatchIcons.favoriteOutline,
-        label: 'Looking for',
-        values: RelationshipGoal.values,
-        value: user.relationshipGoal,
-        fieldName: 'relationshipGoal',
-        patchForValue: patchFactory.relationshipGoal,
-        isExpanded: _isExpanded('relationshipGoal'),
-        onTap: () => _toggleField('relationshipGoal'),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-    ];
-    final lifestyle = [
-      _ProfileSingleEnumEntry<DrinkingHabit>(
-        icon: CatchIcons.localBarOutlined,
-        label: 'Drinking',
-        values: DrinkingHabit.values,
-        value: user.drinking,
-        fieldName: 'drinking',
-        patchForValue: patchFactory.drinking,
-        isExpanded: _isExpanded('drinking'),
-        onTap: () => _toggleField('drinking'),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      _ProfileSingleEnumEntry<SmokingHabit>(
-        icon: CatchIcons.smokeFreeOutlined,
-        label: 'Smoking',
-        values: SmokingHabit.values,
-        value: user.smoking,
-        fieldName: 'smoking',
-        patchForValue: patchFactory.smoking,
-        isExpanded: _isExpanded('smoking'),
-        onTap: () => _toggleField('smoking'),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      _ProfileSingleEnumEntry<WorkoutFrequency>(
-        icon: CatchIcons.fitnessCenterOutlined,
-        label: 'Workout',
-        values: WorkoutFrequency.values,
-        value: user.workout,
-        fieldName: 'workout',
-        patchForValue: patchFactory.workout,
-        isExpanded: _isExpanded('workout'),
-        onTap: () => _toggleField('workout'),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      _ProfileSingleEnumEntry<DietaryPreference>(
-        icon: CatchIcons.restaurantOutlined,
-        label: 'Diet',
-        values: DietaryPreference.values,
-        value: user.diet,
-        fieldName: 'diet',
-        patchForValue: patchFactory.diet,
-        isExpanded: _isExpanded('diet'),
-        onTap: () => _toggleField('diet'),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      _ProfileSingleEnumEntry<ChildrenStatus>(
-        icon: CatchIcons.childCareOutlined,
-        label: 'Children',
-        values: ChildrenStatus.values,
-        value: user.children,
-        fieldName: 'children',
-        patchForValue: patchFactory.children,
-        isExpanded: _isExpanded('children'),
-        onTap: () => _toggleField('children'),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-    ];
-    final running = [
-      ProfileInlineRangeEditor(
-        key: const ValueKey('inline-pace-range-editor'),
-        icon: CatchIcons.speedOutlined,
-        title: 'Pace range',
-        value: formatPaceRange(user.paceMinSecsPerKm, user.paceMaxSecsPerKm),
-        currentMin: user.paceMinSecsPerKm,
-        currentMax: user.paceMaxSecsPerKm,
-        isExpanded: _isExpanded('paceRange'),
-        onTap: () => _toggleField('paceRange'),
-        sliderMin: 240,
-        sliderMax: 540,
-        divisions: 20,
-        labelText: (v) => '${formatPace(v.round())}/km',
-        patchForRange: (min, max) => patchFactory.paceRange(user, min, max),
-        patchForLatestProfile: patchFactory.paceRange,
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      _ProfileMultiEnumEntry<PreferredDistance>(
-        icon: CatchIcons.straightenOutlined,
-        label: 'Preferred distances',
-        values: PreferredDistance.values,
-        selected: user.preferredDistances,
-        fieldName: 'preferredDistances',
-        placeholder: 'Preferred distances',
-        patchForValues: (values) =>
-            patchFactory.preferredDistances(user, values),
-        patchForLatestProfile: patchFactory.preferredDistances,
-        isExpanded: _isExpanded('preferredDistances'),
-        onTap: () => _toggleField('preferredDistances'),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      _ProfileMultiEnumEntry<RunReason>(
-        icon: CatchIcons.directionsRunOutlined,
-        label: 'Why I event',
-        values: RunReason.values,
-        selected: user.runningReasons,
-        fieldName: 'runningReasons',
-        placeholder: 'Why I event',
-        patchForValues: (values) => patchFactory.runningReasons(user, values),
-        patchForLatestProfile: patchFactory.runningReasons,
-        isExpanded: _isExpanded('runningReasons'),
-        onTap: () => _toggleField('runningReasons'),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-      _ProfileMultiEnumEntry<PreferredRunTime>(
-        icon: CatchIcons.wbTwilightOutlined,
-        label: 'Favorite event times',
-        values: PreferredRunTime.values,
-        selected: user.preferredRunTimes,
-        fieldName: 'preferredRunTimes',
-        placeholder: 'Favorite event times',
-        patchForValues: (values) =>
-            patchFactory.preferredRunTimes(user, values),
-        patchForLatestProfile: patchFactory.preferredRunTimes,
-        isExpanded: _isExpanded('preferredRunTimes'),
-        onTap: () => _toggleField('preferredRunTimes'),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
-      ),
-    ];
     final prompts = [
       for (final slot in editState.promptSlots)
         _ProfilePromptEntry(
@@ -497,21 +197,21 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           profileInfoSection(
             context: context,
             title: 'About you',
-            children: about,
+            children: _fieldRows(editState.aboutSectionRows),
             grouped: true,
             fullBleedRows: true,
           ),
           profileInfoSection(
             context: context,
             title: 'Running',
-            children: running,
+            children: _fieldRows(editState.runningRows),
             grouped: true,
             fullBleedRows: true,
           ),
           profileInfoSection(
             context: context,
             title: 'Lifestyle',
-            children: lifestyle,
+            children: _fieldRows(editState.lifestyleRows),
             grouped: true,
             fullBleedRows: true,
           ),
@@ -519,6 +219,98 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
       ),
       gapH32,
     ]);
+  }
+
+  List<Widget> _fieldRows(Iterable<SelfProfileFieldRowDescriptor> rows) {
+    return [for (final row in rows) _fieldRow(row)];
+  }
+
+  Widget _fieldRow(SelfProfileFieldRowDescriptor row) {
+    return row.map(
+      readOnly: (descriptor) => CatchField.nav(
+        icon: descriptor.icon,
+        title: descriptor.label,
+        body: descriptor.body,
+        bodyMaxLines: descriptor.bodyMaxLines,
+      ),
+      text: (descriptor) => _ProfileDirectTextEntry(
+        icon: descriptor.icon,
+        label: descriptor.label,
+        value: descriptor.value,
+        currentValue: descriptor.currentValue,
+        currentFieldValue: descriptor.currentFieldValue,
+        fieldName: descriptor.fieldName,
+        patchForValue: descriptor.patchForValue,
+        keyboardType: descriptor.keyboardType,
+        textCapitalization: descriptor.textCapitalization,
+        autofillHints: descriptor.autofillHints,
+        validator: descriptor.validator,
+        toFieldValue: descriptor.toFieldValue,
+      ),
+      height: (descriptor) => ProfileInlineHeightEditor(
+        key: ValueKey('inline-${descriptor.id}-editor'),
+        icon: descriptor.icon,
+        label: descriptor.label,
+        value: descriptor.value,
+        currentValue: descriptor.currentValue,
+        isExpanded: _isExpanded(descriptor.id),
+        isAddAffordance: descriptor.isAddAffordance,
+        patchForValue: descriptor.patchForValue,
+        onTap: () => _toggleField(descriptor.id),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
+      ),
+      singleChoice: <T extends Labelled>(descriptor) =>
+          _ProfileSingleEnumEntry<T>(
+            icon: descriptor.icon,
+            label: descriptor.label,
+            values: descriptor.values,
+            value: descriptor.value,
+            fieldName: descriptor.fieldName,
+            patchForValue: descriptor.patchForValue,
+            placeholder: descriptor.placeholder,
+            isExpanded: _isExpanded(descriptor.fieldName),
+            onTap: () => _toggleField(descriptor.fieldName),
+            onSaved: _collapseField,
+            onCancel: _collapseField,
+          ),
+      multiChoice: <T extends Labelled>(descriptor) =>
+          _ProfileMultiEnumEntry<T>(
+            icon: descriptor.icon,
+            label: descriptor.label,
+            values: descriptor.values,
+            selected: descriptor.selected,
+            fieldName: descriptor.fieldName,
+            placeholder: descriptor.placeholder,
+            patchForValues: descriptor.patchForValues,
+            patchForLatestProfile: descriptor.patchForLatestProfile,
+            isExpanded: _isExpanded(descriptor.fieldName),
+            onTap: () => _toggleField(descriptor.fieldName),
+            onSaved: _collapseField,
+            onCancel: _collapseField,
+            isAddAffordanceWhenEmpty: descriptor.isAddAffordanceWhenEmpty,
+          ),
+      range: (descriptor) => ProfileInlineRangeEditor(
+        key: ValueKey('inline-${descriptor.id}-editor'),
+        icon: descriptor.icon,
+        title: descriptor.label,
+        value: descriptor.value,
+        currentMin: descriptor.currentMin,
+        currentMax: descriptor.currentMax,
+        isExpanded: _isExpanded(descriptor.id),
+        onTap: () => _toggleField(descriptor.id),
+        sliderMin: descriptor.sliderMin,
+        sliderMax: descriptor.sliderMax,
+        divisions: descriptor.divisions,
+        labelText: descriptor.labelText,
+        patchForRange: descriptor.patchForRange,
+        patchForLatestProfile: descriptor.patchForLatestProfile,
+        saveEndValue: descriptor.saveEndValue,
+        savedCurrentMax: descriptor.savedCurrentMax,
+        onSaved: _collapseField,
+        onCancel: _collapseField,
+      ),
+    );
   }
 }
 

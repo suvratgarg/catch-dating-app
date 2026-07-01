@@ -7279,8 +7279,8 @@
         },
         {
           "id": "DS-PROFILE-SELF-003",
-          "status": "open",
-          "nextAction": "SelfProfileScreenState owns provider waves, preview projection, upload/save mutation modes, and retry intent; SelfProfileEditTabState owns photo-grid and prompt-slot view data; SelfProfilePhotoActionController owns photo editor/delete/reorder intents; SelfProfileInlineEditPatchFactory owns inline edit patch creation. Remaining work is basics/about/running/lifestyle row widget descriptors currently owned by ProfileTabContent."
+          "status": "closed",
+          "nextAction": "Closed by SelfProfileScreenState owning provider waves, preview projection, upload/save mutation modes, and retry intent; SelfProfileEditTabState owning photo-grid, prompt-slot, basics/about/running/lifestyle row descriptors; SelfProfilePhotoActionController owning photo editor/delete/reorder intents; and SelfProfileInlineEditPatchFactory owning inline edit patch creation."
         },
         {
           "id": "DS-PROFILE-SELF-004",
