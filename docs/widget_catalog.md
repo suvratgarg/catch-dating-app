@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.491
+version: 2.5.492
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,14 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.492
+
+- Added exact Widgetbook and catalog coverage for Saved Events route-section
+  widgets: `SavedEventsHeaderSliver`, `SavedEventsAgendaSliver`,
+  `SavedEventsError`, and `SavedEventsClubNamesErrorSliver`. The new-entry
+  inventory now treats the Saved Events cluster as covered public surface
+  instead of unresolved widget debt.
 
 ### 2.5.491
 
@@ -5509,6 +5517,10 @@ Generated 2026-05-06.
 | `CreateEventFormKeys` | `lib/hosts/presentation/event_management/create/create_event_form_keys.dart:3` | Stable semantic keys for host create/edit event form fields so widget tests target fields by purpose rather than layout order. |
 | `DraftDeleteConfirmationDialog` | `lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart:54` | Provider-free destructive confirmation dialog for deleting a saved create-event draft from the draft picker sheet. It owns only the confirmation copy and action layout; draft deletion remains in `CreateEventDraftController`. |
 | `SavedEventsScreen` | `lib/events/presentation/saved_events_screen.dart:19` | Saved-events route registered as `screen.saved_events.list` and aligned `ARCH-SCREEN-001` adopter. Watches uid and saved-event provider waves, owns the route `Scaffold`, loading/error/empty states, retry invalidation, club-name lookup, and saved-event detail navigation, then resolves `SavedEventsListState` before rendering shared agenda tiles. |
+| `SavedEventsHeaderSliver` | `lib/events/presentation/saved_events_screen.dart:101` | Provider-free Saved Events page header sliver. Owns only the compact page-header padding and `Events you saved` headline so route and Widgetbook states can reuse the same sliver geometry. |
+| `SavedEventsAgendaSliver` | `lib/events/presentation/saved_events_screen.dart:118` | Provider-free Saved Events agenda section. Receives `SavedEventsListState`, resolved club-name lookup data, and event-selection callback from `SavedEventsScreen`, then delegates saved/past badge and tile status policy to the state while rendering shared `EventAgendaSliverList` rows. |
+| `SavedEventsError` | `lib/events/presentation/saved_events_screen.dart:166` | Route-body Saved Events error renderer. Maps saved-event provider failures through `CatchErrorState.fromError` with event context and optional retry callback supplied by the route. |
+| `SavedEventsClubNamesErrorSliver` | `lib/events/presentation/saved_events_screen.dart:182` | Sliver-shaped club-name lookup error renderer for Saved Events. Keeps club-name provider failures inside the agenda scroll surface through `CatchSliverErrorState.fromError` while the route owns provider invalidation. |
 | `EventTileData` | `lib/events/presentation/widgets/event_tiles/event_tile_data.dart:19` | Shared display model for event tile variants. Wraps an `Event` plus relationship status, optional club name, recommendation reason, and carousel position label, and exposes `EventCapacityPresenter`-backed copy for capacity labels. |
 | `EventActionCard` | `lib/events/presentation/widgets/event_tiles/event_action_card.dart:11` | Shared full-width lifecycle/action event card. Renders status badges, optional carousel position/accessory, title/subtitle, structured `CatchMetaDotRow` lines, and full-width action buttons for attendee focus and host-operation cards without owning routing or mutations. |
 | `EventCompactRow` | `lib/events/presentation/widgets/event_tiles/event_compact_row.dart:14` | Dense tappable event row with date pill, event title, location subtitle, shared meta row, optional status badge, and chevron. Used where an event needs to be represented inside compact activity/notification surfaces. |

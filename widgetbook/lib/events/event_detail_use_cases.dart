@@ -36,6 +36,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
+import 'package:catch_dating_app/events/presentation/saved_events_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart';
 import 'package:catch_dating_app/events/presentation/widgets/booking_conflict_sheet.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
@@ -1321,6 +1322,73 @@ Widget savedEventsScreenStates(BuildContext context) {
         ),
       ),
     ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Header sliver',
+  type: SavedEventsHeaderSliver,
+  path: '[Events]/Sections',
+)
+Widget savedEventsHeaderSliverState(BuildContext context) {
+  return const SizedBox(
+    height: 160,
+    child: CustomScrollView(slivers: [SavedEventsHeaderSliver()]),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Agenda sliver states',
+  type: SavedEventsAgendaSliver,
+  path: '[Events]/Sections',
+)
+Widget savedEventsAgendaSliverStates(BuildContext context) {
+  final events = _agendaEvents();
+  return SizedBox(
+    height: 620,
+    child: CustomScrollView(
+      slivers: [
+        SavedEventsAgendaSliver(
+          state: SavedEventsListState.from(events, now: _now),
+          clubNames: {for (final event in events) event.clubId: _club.name},
+          onEventSelected: (_) {},
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Route error',
+  type: SavedEventsError,
+  path: '[Events]/Sections',
+)
+Widget savedEventsErrorState(BuildContext context) {
+  return SizedBox(
+    height: 360,
+    child: SavedEventsError(
+      error: StateError('Saved events failed'),
+      onRetry: _noop,
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Club names error sliver',
+  type: SavedEventsClubNamesErrorSliver,
+  path: '[Events]/Sections',
+)
+Widget savedEventsClubNamesErrorSliverState(BuildContext context) {
+  return SizedBox(
+    height: 360,
+    child: CustomScrollView(
+      slivers: [
+        SavedEventsClubNamesErrorSliver(
+          error: StateError('Club names failed'),
+          onRetry: _noop,
+        ),
+      ],
+    ),
   );
 }
 

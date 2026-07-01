@@ -2213,6 +2213,46 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'SavedEventsAgendaSliver',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Agenda sliver states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .savedEventsAgendaSliverStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'SavedEventsClubNamesErrorSliver',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Club names error sliver',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .savedEventsClubNamesErrorSliverState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'SavedEventsError',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route error',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .savedEventsErrorState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'SavedEventsHeaderSliver',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Header sliver',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .savedEventsHeaderSliverState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'WhoIsGoing',
             useCases: [
               _widgetbook.WidgetbookUseCase(
