@@ -1421,10 +1421,10 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
 
 ### P1 event_success_companion
 
-- [ ] `event_success.companion` (26 state follow-ups, 3 open gaps)
-  - planned: `light_dark`
-  - tested: `auto_launch`, `shared_live_controls`
-  - captured: `route_loading`, `event_not_found`, `sign_in_required`, `no_booking`, `plan_missing`, `data_load_error`, `default_live_guide`, `pre_arrival_planning`, `self_check_in`, `first_hello_start`, `first_hello_assigned`, `compatibility_questionnaire`, `live_step_context`, `conversation_cues`, `micro_pod_assignment`, `rotation_schedule`, `live_reveal_countdown`, `live_reveal_unlocked`, `wingman_request`, `post_event_afterglow_feedback`, `opt_out_assignments`, `offline`, `text_scale_2`, `reduced_motion`
+- [ ] `event_success.companion` (26 state follow-ups, no open gaps; 1 blocked reference gap)
+  - planned: None
+  - tested: `auto_launch`
+  - captured: `route_loading`, `event_not_found`, `sign_in_required`, `no_booking`, `plan_missing`, `data_load_error`, `default_live_guide`, `pre_arrival_planning`, `self_check_in`, `first_hello_start`, `first_hello_assigned`, `compatibility_questionnaire`, `live_step_context`, `conversation_cues`, `micro_pod_assignment`, `rotation_schedule`, `live_reveal_countdown`, `live_reveal_unlocked`, `wingman_request`, `post_event_afterglow_feedback`, `opt_out_assignments`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
   - DP-EVENT-SUCCESS-COMPANION-002: Closed; companion route loading/error/access/offline states, runtime moments, action pending states, text scale, reduced motion, and paired light/dark captures are registered and linked to first-pass Widgetbook previews. Mutation failure/snackbar variants should be added only if product copy diverges from the shared mutation listener behavior.
   - DP-EVENT-SUCCESS-COMPANION-003: Closed; `EventSuccessCompanionScreenState` owns runtime moment selection, presentation metadata, transition/effect identity, paper-shell selection, reveal kind, module flags, and wingman candidate filtering. Questionnaire, First Hello, self-check-in, micro-pod, rotation, wingman, and feedback sections now receive provider-free action state plus typed callbacks from the companion screen edge.
   - DP-EVENT-SUCCESS-COMPANION-004: Blocked; default live-guide companion reference and masks are registered, but no local canonical exports exist for runtime-stage, reveal, wingman, afterglow, feedback, offline/error, accessibility, or theme variants.
