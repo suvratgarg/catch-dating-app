@@ -6912,7 +6912,7 @@ Future<void> _driveAuthPhoneValidationError(WidgetTester tester) async {
 }
 
 Future<void> _driveAuthCountryPickerOpen(WidgetTester tester) async {
-  await tester.tap(find.text('+91'), warnIfMissed: false);
+  await tester.tap(find.byKey(AuthFormKeys.countryCode));
   await tester.pump();
   await pumpFeatureUiFor(tester, const Duration(milliseconds: 300));
   expect(find.text('Select Country'), findsOneWidget);

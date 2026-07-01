@@ -91,7 +91,7 @@ void main() {
         themeMode: ThemeMode.dark,
       );
 
-      await tester.tap(find.text('+91'));
+      await tester.tap(find.byKey(AuthFormKeys.countryCode));
       await pumpFeatureUi(tester);
 
       expect(find.text('Select Country'), findsOneWidget);

@@ -152,6 +152,7 @@ Widget _countryCodeSelector({
   final t = CatchTokens.of(context);
 
   return SizedBox(
+    key: AuthFormKeys.countryCode,
     width: CatchLayout.countryCodeSelectorWidth,
     height: CatchField.mdControlHeight,
     child: CatchControlShell(
