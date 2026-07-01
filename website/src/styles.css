@@ -1,5 +1,12 @@
 @import "../../packages/web-config/styles/catch-web.css";
-@import "./styles/shared-core.css";
+@import "./styles/base.css";
+@import "./styles/site-shell.css";
+@import "./styles/home.css";
+@import "./styles/organizers.css";
+@import "./styles/site-footer.css";
+@import "./styles/host-foundation.css";
+@import "./styles/reveal.css";
+@import "./styles/responsive.css";
 @import "./styles/organizer-public.css";
 @import "./styles/host.css";
 @import "./styles/flows.css";

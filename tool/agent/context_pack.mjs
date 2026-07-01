@@ -47,7 +47,9 @@ const pack = {
 const rendered = args.json ? `${JSON.stringify(pack, null, 2)}\n` : renderMarkdown(pack);
 
 if (args.output) {
-  fs.writeFileSync(fromRepo(args.output), rendered);
+  const outputPath = path.isAbsolute(args.output) ? args.output : fromRepo(args.output);
+  fs.mkdirSync(path.dirname(outputPath), {recursive: true});
+  fs.writeFileSync(outputPath, rendered);
 }
 
 process.stdout.write(rendered);
@@ -78,11 +80,20 @@ function buildOwnerDocs({task, scopePaths, matchedSkills, docVersions}) {
   if (matchesAny(scopePaths, ["tool/**"])) {
     addDoc(docs, "tool/README.md", "Tool ownership, registration, and validation policy.", null);
   }
+  if (matchesAny(scopePaths, ["website/**", "packages/web-config/**", "tool/marketing/**", "design/website/**", "docs/marketing_website_architecture.md", "docs/web_surface_architecture.md", "docs/marketing_landing_page_research.md", "docs/marketing_app_media_pipeline.md"])) {
+    addDoc(docs, "docs/marketing_website_architecture.md", "Marketing website feature structure and refactor ownership.", docVersions.marketing_website_architecture);
+    addDoc(docs, "docs/web_surface_architecture.md", "Marketing website route, deployment, and public surface ownership.", docVersions.web_surface_architecture);
+    addDoc(docs, "docs/marketing_landing_page_research.md", "Marketing page positioning, content, and redesign guardrails.", docVersions.marketing_landing_page_research);
+    addDoc(docs, "docs/marketing_app_media_pipeline.md", "App-derived marketing media ownership and drift checks.", docVersions.marketing_app_media_pipeline);
+    addDoc(docs, "website/README.md", "Marketing app local workflow and analytics setup.", docVersionForPath("website/README.md", docVersions));
+    addDoc(docs, "packages/web-config/README.md", "Shared React web config and token plumbing.", docVersionForPath("packages/web-config/README.md", docVersions));
+    addDoc(docs, "design/website/routes.json", "Machine-readable marketing website route contract.", docVersionForPath("design/website/routes.json", docVersions));
+  }
   if (matchesAny(scopePaths, ["contracts/**", "functions/src/**", "firestore.rules", "storage.rules", "lib/**/data/**", "lib/**/domain/**"])) {
     addDoc(docs, "docs/data_contracts.md", "Data/schema/rules contract source of truth.", docVersions.data_contracts);
     addDoc(docs, "docs/backend_operation_catalog.md", "Backend write and projection ownership catalog.", docVersions.backend_operation_catalog);
   }
-  if (matchesAny(scopePaths, ["lib/**/presentation/**", "lib/core/widgets/**", "widgetbook/**", "docs/design_parity/**", "design/**", "design_context_pack/**"])) {
+  if (matchesAny(scopePaths, ["lib/**/presentation/**", "lib/core/widgets/**", "widgetbook/**", "docs/design_parity/**", "design/components/**", "design/screens/**", "design/tokens/**", "design_context_pack/**"])) {
     addDoc(docs, "docs/design_parity/README.md", "Design parity workflow and state matrix owner.", docVersions.design_parity_tracker);
     addDoc(docs, "docs/widget_catalog.md", "Widget ownership and catalog update rules.", docVersions.widget_catalog);
     addDoc(docs, "docs/design_language.md", "Visual identity and design language source of truth.", docVersions.design_language);
@@ -116,9 +127,11 @@ function docVersionForPath(docPath, docVersions) {
 }
 
 function selectSkills(skills, task, scopePaths) {
+  const scoped = skills.filter((skill) => matchesAny(scopePaths, skill.applies_to ?? []));
+  if (scoped.length > 0) return scoped;
+
   const taskText = task.toLowerCase();
   const selected = skills.filter((skill) => {
-    if (matchesAny(scopePaths, skill.applies_to ?? [])) return true;
     const id = String(skill.skill_id ?? "").toLowerCase();
     return taskText.split(/[^a-z0-9]+/).some((part) => part.length > 2 && id.includes(part));
   });

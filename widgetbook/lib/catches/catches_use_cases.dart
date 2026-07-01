@@ -294,6 +294,39 @@ Widget catchesEventDeckRouteStates(BuildContext context) {
           ),
         ),
       ),
+      _StateCard(
+        label: 'pass pending',
+        child: _DeviceFrame(
+          child: CatchesProfileReview(
+            profile: CatchesSurfaceFixtures.candidates.first,
+            remainingCount: CatchesSurfaceFixtures.candidates.length,
+            viewerProfile: CatchesSurfaceFixtures.viewer,
+            sharedRunTitle: CatchesSurfaceFixtures.openWindowEvent().title,
+            actionState: const CatchesProfileReviewActionState.passPending(),
+            onBack: _noopTap,
+            onFilters: _noopTap,
+            onPass: _noopTap,
+            onReact: _noopReaction,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reaction pending',
+        child: _DeviceFrame(
+          child: CatchesProfileReview(
+            profile: CatchesSurfaceFixtures.candidates.first,
+            remainingCount: CatchesSurfaceFixtures.candidates.length,
+            viewerProfile: CatchesSurfaceFixtures.viewer,
+            sharedRunTitle: CatchesSurfaceFixtures.openWindowEvent().title,
+            actionState:
+                const CatchesProfileReviewActionState.reactionPending(),
+            onBack: _noopTap,
+            onFilters: _noopTap,
+            onPass: _noopTap,
+            onReact: _noopReaction,
+          ),
+        ),
+      ),
     ],
   );
 }
@@ -739,6 +772,21 @@ Widget catchesProfileSurfaceStates(BuildContext context) {
           ),
         ),
       ),
+      _StateCard(
+        label: 'reaction pending',
+        child: _DeviceFrame(
+          child: ProfileSurface(
+            profile: CatchesSurfaceFixtures.candidates.first,
+            mode: ProfileSurfaceMode.catches,
+            viewerProfile: CatchesSurfaceFixtures.viewer,
+            sharedRunTitle: CatchesSurfaceFixtures.openWindowEvent().title,
+            bottomPadding: CatchLayout.catchesProfileBottomPadding,
+            onReact: _noopReaction,
+            reactionsEnabled: false,
+            reactionsPending: true,
+          ),
+        ),
+      ),
     ],
   );
 }
@@ -803,6 +851,22 @@ Widget catchesPassButtonStates(BuildContext context) {
           child: Center(child: CatchesPassButton(onPressed: _noopTap)),
         ),
       ),
+      _StateCard(
+        label: 'pending',
+        child: _SectionFrame(
+          height: 140,
+          child: Center(
+            child: CatchesPassButton(onPressed: _noopTap, isPending: true),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: _SectionFrame(
+          height: 140,
+          child: Center(child: CatchesPassButton(onPressed: null)),
+        ),
+      ),
     ],
   );
 }
@@ -841,6 +905,16 @@ Widget catchesReactionControlStates(BuildContext context) {
                   onReact: _noopReaction,
                   axis: Axis.vertical,
                 ),
+                ProfileReactionControls(
+                  target: _reactionTarget,
+                  onReact: _noopReaction,
+                  enabled: false,
+                ),
+                ProfileReactionControls(
+                  target: _reactionTarget,
+                  onReact: _noopReaction,
+                  isPending: true,
+                ),
               ],
             ),
           ),
@@ -861,10 +935,20 @@ Widget profileReactionCommentSheetStates(BuildContext context) {
     contractId: 'screen.catches.event.reaction_comment_sheet',
     children: [
       _StateCard(
-        label: 'prompt target',
+        label: 'empty draft',
         child: _SectionFrame(
           height: 440,
           child: ProfileReactionCommentSheet(target: _reactionTarget),
+        ),
+      ),
+      _StateCard(
+        label: 'filled draft',
+        child: _SectionFrame(
+          height: 440,
+          child: ProfileReactionCommentSheet(
+            target: _reactionTarget,
+            initialComment: 'Your sunrise loop sounds like my kind of Sunday.',
+          ),
         ),
       ),
     ],

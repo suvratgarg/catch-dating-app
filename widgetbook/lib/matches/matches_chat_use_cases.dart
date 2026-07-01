@@ -2,9 +2,18 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
-import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_screen_state.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversations_list.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_state.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list_body.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_header.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.dart';
@@ -26,14 +35,6 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/labs/design_fixtures/matches_chat_surface_fixtures.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversations_list.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_state.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list_body.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/match_celebration_dialog.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -60,6 +61,7 @@ final _blockedMatch = MatchesChatSurfaceFixtures.blockedMatch();
 final _suvbotMatch = MatchesChatSurfaceFixtures.suvbotMatch();
 final _event = MatchesChatSurfaceFixtures.event;
 final _club = MatchesChatSurfaceFixtures.club;
+const _chatsListSkeletonPreviewHeight = 360.0;
 
 @widgetbook.UseCase(
   name: 'Consumer route states',
@@ -473,6 +475,56 @@ Widget chatsListSliverStates(BuildContext context) {
         ),
       ],
     ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Skeleton states',
+  type: ChatsListSkeleton,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatsListSkeletonStates(BuildContext context) {
+  return _AppRoleBoundary(
+    role: AppRole.consumer,
+    child: _MatchesCatalog(
+      title: 'ChatsListSkeleton',
+      contractId: 'component.messaging.chats_list_skeleton',
+      children: const [
+        _StateCard(
+          label: 'consumer loading',
+          child: _DeviceFrame(
+            height: _chatsListSkeletonPreviewHeight,
+            child: Scaffold(
+              body: SafeArea(
+                child: CustomScrollView(slivers: [ChatsListSkeleton()]),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Skeleton states',
+  type: ChatPersonRowSkeleton,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatPersonRowSkeletonStates(BuildContext context) {
+  return _MatchesCatalog(
+    title: 'ChatPersonRowSkeleton',
+    contractId: 'component.messaging.chat_person_row_skeleton',
+    children: const [
+      _StateCard(
+        label: 'match row',
+        child: ChatPersonRowSkeleton(divider: false, squareAvatar: false),
+      ),
+      _StateCard(
+        label: 'host inquiry row',
+        child: ChatPersonRowSkeleton(divider: true, squareAvatar: true),
+      ),
+    ],
   );
 }
 

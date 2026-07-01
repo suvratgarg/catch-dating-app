@@ -17,6 +17,7 @@ import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
+import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
@@ -711,6 +712,134 @@ Widget exploreEmptyStateStates(BuildContext context) {
           message:
               'Check your connection and try again to reload clubs and events.',
           action: _secondaryAction('Retry'),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Route empty states',
+  type: ExploreScreenEmptyState,
+  path: '[Explore]/Sections',
+)
+Widget exploreScreenEmptyStateStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreScreenEmptyState',
+    catalogId: 'section.explore.empty_error',
+    children: [
+      _StateCard(
+        label: 'no source clubs',
+        child: ExploreScreenEmptyState(
+          state: const ExploreDiscoveryEmptyState(
+            kind: ExploreDiscoveryEmptyKind.noSourceClubs,
+            cityLabel: 'Mumbai',
+            action: ExploreDiscoveryEmptyAction.none,
+          ),
+          onClearSearch: _noop,
+          onClearFilters: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'search plus filters',
+        child: ExploreScreenEmptyState(
+          state: const ExploreDiscoveryEmptyState(
+            kind: ExploreDiscoveryEmptyKind.noFilteredSearchResults,
+            cityLabel: 'Mumbai',
+            action: ExploreDiscoveryEmptyAction.clearSearchAndFilters,
+          ),
+          onClearSearch: _noop,
+          onClearFilters: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Clear action states',
+  type: ExploreClearAction,
+  path: '[Explore]/Controls',
+)
+Widget exploreClearActionStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreClearAction',
+    catalogId: 'control.explore.clear_action',
+    children: [
+      _StateCard(
+        label: 'clear search',
+        child: ExploreClearAction(
+          clearSearch: true,
+          clearFilters: false,
+          onClearSearch: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'clear filters',
+        child: ExploreClearAction(
+          clearSearch: false,
+          clearFilters: true,
+          onClearFilters: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'clear search and filters',
+        child: ExploreClearAction(
+          clearSearch: true,
+          clearFilters: true,
+          onClearSearch: _noop,
+          onClearFilters: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Feed empty sliver states',
+  type: ExploreEventsEmptySliver,
+  path: '[Explore]/Sections',
+)
+Widget exploreEventsEmptySliverStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreEventsEmptySliver',
+    catalogId: 'section.explore.empty_error',
+    children: [
+      _StateCard(
+        label: 'clear search',
+        child: _SliverFrame(
+          height: 280,
+          child: CustomScrollView(
+            slivers: [
+              ExploreEventsEmptySliver(
+                state: ExploreEventsEmptyState.from(
+                  filters: const ExploreFilterSelection(),
+                  searchQuery: 'pickleball supper',
+                ),
+                onClearSearch: _noop,
+                onClearFilters: _noop,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'broaden time filter',
+        child: _SliverFrame(
+          height: 280,
+          child: CustomScrollView(
+            slivers: [
+              ExploreEventsEmptySliver(
+                state: ExploreEventsEmptyState.from(
+                  filters: const ExploreFilterSelection(
+                    timeFilter: ExploreTimeFilter.tonight,
+                  ),
+                  searchQuery: '',
+                ),
+                onSetTimeFilter: (_) {},
+              ),
+            ],
+          ),
         ),
       ),
     ],

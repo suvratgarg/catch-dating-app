@@ -16,6 +16,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/calendar/calendar_screen_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:flutter/material.dart';
@@ -79,19 +80,20 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 signedUpEventsAsync.asData?.value ?? const <Event>[];
             final savedEvents =
                 savedEventsAsync.asData?.value ?? const <Event>[];
-            final summary = _CalendarEventSummary.from(
+            final calendarState = CalendarHomeState.from(
               signedUpEvents: signedUpEvents,
               savedEvents: savedEvents,
               now: widget.referenceNow ?? DateTime.now(),
+              selectedDate: _selectedDate,
+              expanded: _calendarExpanded,
             );
-            final selectedDate = _selectedDate ?? summary.anchorDate;
-            final clubNamesAsync = ref.watch(
-              clubNameLookupProvider(
-                ClubNameLookupQuery(
-                  summary.events.map((event) => event.clubId),
-                ),
-              ),
-            );
+            final clubNamesAsync = calendarState.hasEvents
+                ? ref.watch(
+                    clubNameLookupProvider(
+                      ClubNameLookupQuery(calendarState.clubIds),
+                    ),
+                  )
+                : const AsyncData(<String, String>{});
 
             return NotificationListener<ScrollNotification>(
               onNotification: _handleCalendarScrollNotification,
@@ -102,24 +104,25 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     delegate: _CalendarDateHeaderDelegate(
                       height: _calendarDateHeaderHeightFor(
                         context,
-                        expanded: _calendarExpanded,
+                        expanded: calendarState.expanded,
                       ),
                       child: CalendarDateHeader(
-                        summary: summary,
-                        selectedDate: selectedDate,
-                        expanded: _calendarExpanded,
+                        summary: calendarState.summary,
+                        selectedDate: calendarState.selectedDate,
+                        expanded: calendarState.expanded,
                         onDateSelected: _selectDate,
-                        onTodayPressed: () => _selectDate(summary.today),
+                        onTodayPressed: () =>
+                            _selectDate(calendarState.summary.today),
                         onVerticalDragDelta: _handleCalendarHeaderDragDelta,
                       ),
                     ),
                   ),
                   SliverToBoxAdapter(
-                    child: CalendarStatsHeader(summary: summary),
+                    child: CalendarStatsHeader(summary: calendarState.summary),
                   ),
                   ..._buildCalendarEventSlivers(
                     context: context,
-                    summary: summary,
+                    summary: calendarState.summary,
                     clubNamesAsync: clubNamesAsync,
                   ),
                 ],
@@ -221,13 +224,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   List<Widget> _buildCalendarEventSlivers({
     required BuildContext context,
-    required _CalendarEventSummary summary,
+    required CalendarEventSummary summary,
     required AsyncValue<Map<String, String>> clubNamesAsync,
   }) {
     if (summary.events.isEmpty) {
       return [
-        SliverFillRemaining(
-          child: const CalendarMessage(
+        const SliverFillRemaining(
+          child: CalendarMessage(
             title: 'No planned events yet',
             body: 'Events you book or save will show up here by day and time.',
           ),
@@ -352,7 +355,7 @@ class CalendarDateHeader extends StatelessWidget {
     required this.onVerticalDragDelta,
   });
 
-  final _CalendarEventSummary summary;
+  final CalendarEventSummary summary;
   final DateTime selectedDate;
   final bool expanded;
   final ValueChanged<DateTime> onDateSelected;
@@ -534,7 +537,7 @@ class _CalendarDateHeaderDelegate extends SliverPersistentHeaderDelegate {
 class CalendarStatsHeader extends StatelessWidget {
   const CalendarStatsHeader({super.key, required this.summary});
 
-  final _CalendarEventSummary summary;
+  final CalendarEventSummary summary;
 
   @override
   Widget build(BuildContext context) {
@@ -615,13 +618,13 @@ class CalendarStatsHeaderSkeleton extends StatelessWidget {
             padding: CatchInsets.tileContentCompact,
             radius: CatchRadius.md,
             borderColor: t.line,
-            child: Row(
+            child: const Row(
               children: [
-                const Expanded(child: CalendarStatSkeleton()),
-                const CalendarStatDivider(),
-                const Expanded(child: CalendarStatSkeleton()),
-                const CalendarStatDivider(),
-                const Expanded(child: CalendarStatSkeleton()),
+                Expanded(child: CalendarStatSkeleton()),
+                CalendarStatDivider(),
+                Expanded(child: CalendarStatSkeleton()),
+                CalendarStatDivider(),
+                Expanded(child: CalendarStatSkeleton()),
               ],
             ),
           ),
@@ -655,7 +658,7 @@ class CalendarWeekStrip extends StatelessWidget {
     required this.onDateSelected,
   });
 
-  final _CalendarEventSummary summary;
+  final CalendarEventSummary summary;
   final DateTime selectedDate;
   final ValueChanged<DateTime> onDateSelected;
 
@@ -699,7 +702,7 @@ class CalendarMonthGrid extends StatelessWidget {
     required this.onDateSelected,
   });
 
-  final _CalendarEventSummary summary;
+  final CalendarEventSummary summary;
   final DateTime selectedDate;
   final ValueChanged<DateTime> onDateSelected;
 
@@ -809,85 +812,6 @@ class CalendarMessage extends StatelessWidget {
           color: CatchTokens.of(context).ink2,
         ),
       ),
-    );
-  }
-}
-
-class _CalendarEventSummary {
-  const _CalendarEventSummary({
-    required this.events,
-    required this.agendaEvents,
-    required this.savedOnlyEventIds,
-    required this.today,
-    required this.anchorDate,
-    required this.totalDistance,
-    this.nextEvent,
-  });
-
-  final List<Event> events;
-  final List<Event> agendaEvents;
-  final Set<String> savedOnlyEventIds;
-  final DateTime today;
-  final DateTime anchorDate;
-  final double totalDistance;
-  final Event? nextEvent;
-
-  bool isSavedOnly(Event event) => savedOnlyEventIds.contains(event.id);
-
-  static _CalendarEventSummary from({
-    required List<Event> signedUpEvents,
-    List<Event> savedEvents = const <Event>[],
-    required DateTime now,
-  }) {
-    final signedUpIds = signedUpEvents.map((event) => event.id).toSet();
-    final savedOnlyEventIds = <String>{};
-    final byId = <String, Event>{};
-
-    for (final event in savedEvents) {
-      if (event.isCancelled || !event.startTime.isAfter(now)) continue;
-      byId[event.id] = event;
-      if (!signedUpIds.contains(event.id)) savedOnlyEventIds.add(event.id);
-    }
-    for (final event in signedUpEvents) {
-      byId[event.id] = event;
-    }
-
-    final sorted = byId.values.toList()
-      ..sort((a, b) => a.startTime.compareTo(b.startTime));
-    final today = DateUtils.dateOnly(now);
-    // Cancelled events stay visible in the agenda (shown with a CANCELLED
-    // badge) but never count toward distance stats and are never the user's
-    // "next" event.
-    final totalDistance = sorted
-        .where((event) => !event.isCancelled)
-        .fold<double>(0, (sum, event) => sum + event.distanceKm);
-
-    final upcoming = <Event>[];
-    final cancelledUpcoming = <Event>[];
-    final past = <Event>[];
-    for (final event in sorted) {
-      if (!event.startTime.isBefore(now) && event.isCancelled) {
-        cancelledUpcoming.add(event);
-      } else if (event.startTime.isBefore(now)) {
-        past.add(event);
-      } else {
-        upcoming.add(event);
-      }
-    }
-
-    final nextEvent = upcoming.isEmpty ? null : upcoming.first;
-    final latestPastFirst = [...past]
-      ..sort((a, b) => b.startTime.compareTo(a.startTime));
-    final anchorDate = nextEvent?.startTime ?? today;
-
-    return _CalendarEventSummary(
-      events: sorted,
-      agendaEvents: [...upcoming, ...cancelledUpcoming, ...latestPastFirst],
-      savedOnlyEventIds: savedOnlyEventIds,
-      today: today,
-      anchorDate: anchorDate,
-      totalDistance: totalDistance,
-      nextEvent: nextEvent,
     );
   }
 }

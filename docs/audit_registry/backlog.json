@@ -1,16 +1,16 @@
 {
-  "version": "2.7.0",
-  "updated": "2026-06-30",
+  "version": "2.7.2",
+  "updated": "2026-07-01",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
-    "updated": "2026-06-15",
+    "updated": "2026-07-01",
     "command": "bash tool/widget_cleanup_scan.sh --summary",
     "counts": {
       "centralized_widget_timing": 0,
-      "async_unit_flush": 0,
-      "positional_widget_finders": 0,
-      "presentation_repository_reaches": 0,
+      "async_unit_flush": 1,
+      "positional_widget_finders": 2,
+      "presentation_repository_reaches": 1,
       "catch_tokens_prop_drilling": 0,
       "raw_material_button_candidates": 0,
       "raw_text_input_candidates": 0,
@@ -22,17 +22,21 @@
       "fixed_white_pill_cta_candidates": 0,
       "raw_range_slider_candidates": 0,
       "raw_number_stepper_candidates": 0,
-      "feature_tappable_candidates": 0,
+      "feature_tappable_candidates": 2,
       "literal_sized_box_spacing_candidates": 0,
-      "raw_decorated_surface_candidates": 0,
+      "raw_decorated_surface_candidates": 9,
       "unstyled_text_candidates": 0,
+      "low_level_typography_role_candidates": 29,
+      "nonzero_letter_spacing_candidates": 14,
+      "raw_text_style_candidates": 0,
       "legacy_spacing_canonical_candidates": 0,
       "fine_grained_spacing_compatibility": 0,
       "presentation_plugin_imports": 0,
       "raw_error_surface_candidates": 0
     },
     "notes": [
-      "2026-06-15 live scanner reports zero matches across all widget cleanup categories.",
+      "2026-07-01 bash tool/widget_cleanup_scan.sh --summary now emits live machine-readable counts; dart tool/audit_registry.dart backlog runs that live summary by default and keeps --stored-scanner for historical comparison.",
+      "2026-06-15 stored scanner snapshot reported zero matches across the then-tracked widget cleanup categories; do not treat that historical note as current without rerunning the live scanner.",
       "2026-06-15 whole-project analyzer hygiene pass applied 65 dart fix changes across import ordering, redundant default arguments, and initializing formals; flutter analyze --no-fatal-infos now reports no issues.",
       "Raw test timing calls now route through shared pumpFeatureUi/pumpFeatureUiFor helpers in manual QA, golden, and UI capture harnesses.",
       "Definition catalog now reports zero consolidation candidates after local private-helper collision renames and centralizing duplicate date formats in AppTimeFormatters. See docs/audit_registry/consolidation_candidates.json."
@@ -55,26 +59,22 @@
         "docs/demo_data_seeding.md"
       ],
       "source": "deep_semantic_audit_2026-06"
-    },
-    {
-      "id": "NEW-WIDGET-INVENTORY-2026-06-30",
-      "title": "Close remaining new-widget Widgetbook/catalog inventory gaps",
-      "status": "pending",
-      "owner": "agent",
-      "area": "widgets,widgetbook,design_catalog",
-      "priority": "high",
-      "summary": "The new-widget scanner for the HEAD^ -> working-tree delta now reports 283 added widget classes: 254 public, 29 private, 9 exact-name Widgetbook matches, 245 missing Widgetbook coverage, 244 missing catalog mentions, and 0 remaining added Widget-returning helpers after the first pruning pass. Continue from docs/audit_registry/new_widget_inventory_scan.json, pruning or promoting the 29 private widget classes first, then registering public survivors in Widgetbook and docs/widget_catalog.md.",
-      "paths": [
-        "docs/audit_registry/new_widget_inventory_scan.json",
-        "tool/design/check_new_widget_inventory.mjs",
-        "docs/widget_catalog.md",
-        "widgetbook/lib/main.directories.g.dart"
-      ],
-      "source": "2026-06-30-new-widget-inventory-scan"
     }
   ],
   "next_up": [],
   "completed": [
+    {
+      "id": "NEW-WIDGET-INVENTORY-2026-06-30-DONE",
+      "title": "Close remaining new-widget Widgetbook/catalog inventory gaps",
+      "completed": "2026-07-01",
+      "rules": [
+        "AUDIT-REGISTRY-001",
+        "DOC-HYGIENE-001",
+        "WIDGET-CATALOG-001"
+      ],
+      "summary": "Closed the current HEAD^ -> working-tree new-widget inventory. The scanner now reports 37 added widget classes, 37 public, 0 private, 37 covered, 0 Widget-returning helpers, and 0 unresolved items. Added exact-name Widgetbook and docs/widget_catalog.md coverage for ExploreScreenEmptyState, ExploreClearAction, and ExploreEventsEmptySliver, regenerated widgetbook/lib/main.directories.g.dart, and refreshed docs/audit_registry/new_widget_inventory_scan.json. The earlier 274-unresolved backlog snapshot was stale after subsequent Widgetbook/catalog work.",
+      "source": "2026-07-01-new-widget-inventory-scan"
+    },
     {
       "id": "PAY-WEBHOOK-001-DONE",
       "title": "Razorpay webhook + reconciliation sweep + pending-order tracking",

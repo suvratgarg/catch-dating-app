@@ -324,6 +324,7 @@ class FakeEventRepository extends Fake implements EventRepository {
   Object? updateEventError;
   Object? joinWaitlistError;
   Object? leaveWaitlistError;
+  Object? recordInviteOpenError;
   Object? createWaitlistOfferError;
   Object? acceptWaitlistOfferError;
   Object? declineWaitlistOfferError;
@@ -510,6 +511,9 @@ class FakeEventRepository extends Fake implements EventRepository {
     required String eventId,
     required String inviteLinkId,
   }) async {
+    if (recordInviteOpenError != null) {
+      throw recordInviteOpenError!;
+    }
     recordedInviteOpenEventId = eventId;
     recordedInviteOpenLinkId = inviteLinkId;
     return RecordEventInviteLinkOpenCallableResponse(

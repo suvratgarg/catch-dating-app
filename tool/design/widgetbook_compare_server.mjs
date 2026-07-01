@@ -1156,7 +1156,7 @@ function buildCandidates() {
       tags: ["forms", "fields"],
       names: [
         "CatchField",
-        "ProfileInlineTextEntryEditor",
+        "ProfileDirectTextEntryField",
         "HostInlineTextEntryEditor",
         "HostInlineAgeRangeEditor",
         "ProfileInlineRangeEditor",

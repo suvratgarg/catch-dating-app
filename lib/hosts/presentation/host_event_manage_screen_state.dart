@@ -1,0 +1,1180 @@
+import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_invite_link.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/routing/app_deep_links.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+enum HostEventManageSection { setup, guests, live, report }
+
+enum HostEventManageActionIntent { editEvent, cancelEvent, deleteEvent }
+
+enum HostEventManageActionDestination {
+  editEventRoute,
+  cancelConfirmation,
+  deleteConfirmation,
+}
+
+class HostEventManageActionEffect {
+  const HostEventManageActionEffect({
+    required this.destination,
+    required this.event,
+    this.pathParameters = const <String, String>{},
+  });
+
+  factory HostEventManageActionEffect.resolve({
+    required HostEventManageActionIntent intent,
+    required Event event,
+  }) {
+    return switch (intent) {
+      HostEventManageActionIntent.editEvent => HostEventManageActionEffect(
+        destination: HostEventManageActionDestination.editEventRoute,
+        event: event,
+        pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+      ),
+      HostEventManageActionIntent.cancelEvent => HostEventManageActionEffect(
+        destination: HostEventManageActionDestination.cancelConfirmation,
+        event: event,
+      ),
+      HostEventManageActionIntent.deleteEvent => HostEventManageActionEffect(
+        destination: HostEventManageActionDestination.deleteConfirmation,
+        event: event,
+      ),
+    };
+  }
+
+  final HostEventManageActionDestination destination;
+  final Event event;
+  final Map<String, String> pathParameters;
+}
+
+class HostEventManageScreenState {
+  const HostEventManageScreenState({
+    required this.selectedSection,
+    required this.eventTitle,
+    required this.collapseHeaderCopy,
+    required this.collapsedTitleSemanticsLabel,
+  });
+
+  factory HostEventManageScreenState.resolve({
+    required Club club,
+    required Event event,
+    required HostEventManageSection selectedSection,
+    required double textScale,
+  }) {
+    final collapseHeaderCopy = textScale >= 1.4;
+    final eventTitle = hostManageEventTitle(event);
+    return HostEventManageScreenState(
+      selectedSection: selectedSection,
+      eventTitle: eventTitle,
+      collapseHeaderCopy: collapseHeaderCopy,
+      collapsedTitleSemanticsLabel: collapseHeaderCopy
+          ? '${club.name}. $eventTitle'
+          : null,
+    );
+  }
+
+  final HostEventManageSection selectedSection;
+  final String eventTitle;
+  final bool collapseHeaderCopy;
+  final String? collapsedTitleSemanticsLabel;
+
+  HostEventManageScreenState selectSection(HostEventManageSection section) {
+    return HostEventManageScreenState(
+      selectedSection: section,
+      eventTitle: eventTitle,
+      collapseHeaderCopy: collapseHeaderCopy,
+      collapsedTitleSemanticsLabel: collapsedTitleSemanticsLabel,
+    );
+  }
+}
+
+class HostEventActionDisplayState {
+  const HostEventActionDisplayState({
+    required this.hasKnownActivity,
+    required this.cancelEventPending,
+    required this.deleteEventPending,
+    required this.isMutating,
+    required this.showEditAction,
+    required this.showCancelledState,
+    required this.showCancelAction,
+    required this.showDeleteAction,
+    required this.cancelDetail,
+    required this.deleteDetail,
+  });
+
+  factory HostEventActionDisplayState.resolve({
+    required Event event,
+    required EventParticipationRoster? roster,
+    required bool cancelEventPending,
+    required bool deleteEventPending,
+  }) {
+    final hasKnownActivity =
+        hostManageBookedCount(event, roster) > 0 ||
+        hostManageCheckedInCount(event, roster) > 0 ||
+        hostManageWaitlistedCount(event, roster) > 0;
+    final isMutating = cancelEventPending || deleteEventPending;
+    final isCancelled = event.isCancelled;
+    return HostEventActionDisplayState(
+      hasKnownActivity: hasKnownActivity,
+      cancelEventPending: cancelEventPending,
+      deleteEventPending: deleteEventPending,
+      isMutating: isMutating,
+      showEditAction: !isCancelled,
+      showCancelledState: isCancelled,
+      showCancelAction: !isCancelled,
+      showDeleteAction: !isCancelled && !hasKnownActivity,
+      cancelDetail: cancelEventPending
+          ? 'Cancelling...'
+          : 'Keeps records · notifies guests',
+      deleteDetail: deleteEventPending ? 'Deleting...' : 'Permanent removal',
+    );
+  }
+
+  final bool hasKnownActivity;
+  final bool cancelEventPending;
+  final bool deleteEventPending;
+  final bool isMutating;
+  final bool showEditAction;
+  final bool showCancelledState;
+  final bool showCancelAction;
+  final bool showDeleteAction;
+  final String cancelDetail;
+  final String deleteDetail;
+}
+
+class HostPrivateLinkActionState {
+  const HostPrivateLinkActionState({
+    required this.inviteCode,
+    required this.inviteLink,
+    required this.shareDetail,
+    required this.canShare,
+  });
+
+  factory HostPrivateLinkActionState.resolve({
+    required Club club,
+    required Event event,
+    required AsyncValue<EventPrivateAccess?>? accessAsync,
+    required AsyncValue<List<EventInviteLink>>? inviteLinksAsync,
+    required bool sharePending,
+  }) {
+    final inviteCode = accessAsync?.asData?.value?.inviteCode.trim();
+    final inviteLink = inviteCode == null || inviteCode.isEmpty
+        ? null
+        : AppDeepLinks.event(
+            clubId: club.id,
+            eventId: event.id,
+            inviteCode: inviteCode,
+          ).toString();
+    return HostPrivateLinkActionState(
+      inviteCode: inviteCode,
+      inviteLink: inviteLink,
+      shareDetail: hostPrivateShareDetail(
+        accessAsync: accessAsync,
+        inviteLinksAsync: inviteLinksAsync,
+        sharePending: sharePending,
+      ),
+      canShare: inviteLink != null && !sharePending,
+    );
+  }
+
+  final String? inviteCode;
+  final String? inviteLink;
+  final String shareDetail;
+  final bool canShare;
+
+  bool get hasInviteCode => inviteCode != null && inviteCode!.isNotEmpty;
+}
+
+class HostPrivateAccessDisplayState {
+  const HostPrivateAccessDisplayState({
+    required this.description,
+    required this.linkAction,
+  });
+
+  factory HostPrivateAccessDisplayState.resolve({
+    required Club club,
+    required Event event,
+    required EventPrivateAccess? access,
+    required AsyncValue<List<EventInviteLink>>? inviteLinksAsync,
+    required bool sharePending,
+  }) {
+    final linkAction = HostPrivateLinkActionState.resolve(
+      club: club,
+      event: event,
+      accessAsync: AsyncData<EventPrivateAccess?>(access),
+      inviteLinksAsync: inviteLinksAsync,
+      sharePending: sharePending,
+    );
+    return HostPrivateAccessDisplayState(
+      description: linkAction.hasInviteCode
+          ? 'This event can stay listed; only people with this code or private link can book.'
+          : 'This event requires an invite, but no host-readable access code was found.',
+      linkAction: linkAction,
+    );
+  }
+
+  final String description;
+  final HostPrivateLinkActionState linkAction;
+
+  bool get hasInviteCode => linkAction.hasInviteCode;
+}
+
+enum HostInviteLinksMutationMode { idle, creating, copying, disabling }
+
+class HostParticipantsMutationDisplayState {
+  const HostParticipantsMutationDisplayState({
+    required this.requestActionPending,
+    required this.waitlistOfferPending,
+    required this.attendanceActionPending,
+    required this.opsReportExportPending,
+    required this.revenueReportExportPending,
+    this.participantActionError,
+    this.reportExportError,
+  });
+
+  factory HostParticipantsMutationDisplayState.resolve({
+    required bool markAttendancePending,
+    required bool approveJoinRequestPending,
+    required bool declineJoinRequestPending,
+    required bool createWaitlistOfferPending,
+    required bool opsReportPending,
+    required bool revenueReportPending,
+    Object? markAttendanceError,
+    Object? approveJoinRequestError,
+    Object? declineJoinRequestError,
+    Object? createWaitlistOfferError,
+    Object? opsReportError,
+    Object? revenueReportError,
+  }) {
+    return HostParticipantsMutationDisplayState(
+      requestActionPending:
+          approveJoinRequestPending || declineJoinRequestPending,
+      waitlistOfferPending: createWaitlistOfferPending,
+      attendanceActionPending: markAttendancePending,
+      opsReportExportPending: opsReportPending,
+      revenueReportExportPending: revenueReportPending,
+      participantActionError:
+          markAttendanceError ??
+          approveJoinRequestError ??
+          declineJoinRequestError ??
+          createWaitlistOfferError,
+      reportExportError: opsReportError ?? revenueReportError,
+    );
+  }
+
+  final bool requestActionPending;
+  final bool waitlistOfferPending;
+  final bool attendanceActionPending;
+  final bool opsReportExportPending;
+  final bool revenueReportExportPending;
+  final Object? participantActionError;
+  final Object? reportExportError;
+}
+
+class HostParticipantLifecycleActions {
+  const HostParticipantLifecycleActions({
+    required this.openProfile,
+    required this.approveJoinRequest,
+    required this.declineJoinRequest,
+    required this.toggleAttendance,
+    required this.createWaitlistOffers,
+    required this.shareOpsReport,
+    required this.shareRevenueReport,
+  });
+
+  final void Function(String uid) openProfile;
+  final void Function(String uid) approveJoinRequest;
+  final void Function(String uid) declineJoinRequest;
+  final void Function(String uid) toggleAttendance;
+  final void Function(List<String> userIds) createWaitlistOffers;
+  final Future<void> Function() shareOpsReport;
+  final Future<void> Function() shareRevenueReport;
+
+  void createWaitlistOffer(String uid) => createWaitlistOffers([uid]);
+}
+
+class HostReportSummaryDisplayState {
+  const HostReportSummaryDisplayState({
+    required this.grossEstimateInPaise,
+    required this.checkedInCount,
+    required this.noShowCount,
+    required this.waitlistCount,
+    required this.summary,
+  });
+
+  factory HostReportSummaryDisplayState.resolve({
+    required int totalCount,
+    required int checkedInCount,
+    required int waitlistCount,
+    required int priceInPaise,
+    required String currencyCode,
+  }) {
+    final noShowCount = totalCount - checkedInCount;
+    final grossEstimateInPaise = totalCount * priceInPaise;
+    return HostReportSummaryDisplayState(
+      grossEstimateInPaise: grossEstimateInPaise,
+      checkedInCount: checkedInCount,
+      noShowCount: noShowCount,
+      waitlistCount: waitlistCount,
+      summary:
+          '${EventFormatters.priceInPaise(grossEstimateInPaise, currencyCode: currencyCode)} gross estimate · $checkedInCount attended · $noShowCount no-shows · $waitlistCount waitlisted.',
+    );
+  }
+
+  final int grossEstimateInPaise;
+  final int checkedInCount;
+  final int noShowCount;
+  final int waitlistCount;
+  final String summary;
+}
+
+enum HostParticipantProfilesLookupStatus { ready, loading, error }
+
+class HostParticipantProfilesLookupState {
+  const HostParticipantProfilesLookupState({
+    required this.status,
+    required this.profileIds,
+    required this.profiles,
+    this.error,
+  });
+
+  factory HostParticipantProfilesLookupState.resolve({
+    required List<String> profileIds,
+    required AsyncValue<Map<String, (String, String?)>>? profilesAsync,
+  }) {
+    if (profileIds.isEmpty) {
+      return const HostParticipantProfilesLookupState(
+        status: HostParticipantProfilesLookupStatus.ready,
+        profileIds: <String>[],
+        profiles: <String, (String, String?)>{},
+      );
+    }
+    final profiles = profilesAsync?.asData?.value;
+    if (profiles != null) {
+      return HostParticipantProfilesLookupState(
+        status: HostParticipantProfilesLookupStatus.ready,
+        profileIds: profileIds,
+        profiles: profiles,
+      );
+    }
+    if (profilesAsync?.hasError ?? false) {
+      return HostParticipantProfilesLookupState(
+        status: HostParticipantProfilesLookupStatus.error,
+        profileIds: profileIds,
+        profiles: const <String, (String, String?)>{},
+        error: profilesAsync!.error,
+      );
+    }
+    return HostParticipantProfilesLookupState(
+      status: HostParticipantProfilesLookupStatus.loading,
+      profileIds: profileIds,
+      profiles: const <String, (String, String?)>{},
+    );
+  }
+
+  final HostParticipantProfilesLookupStatus status;
+  final List<String> profileIds;
+  final Map<String, (String, String?)> profiles;
+  final Object? error;
+
+  bool get shouldWatchProfiles => profileIds.isNotEmpty;
+}
+
+class HostInviteLinksListDisplayState {
+  const HostInviteLinksListDisplayState({
+    required this.mutationMode,
+    required this.emptyCopy,
+  });
+
+  factory HostInviteLinksListDisplayState.resolve({
+    required bool createPending,
+    required bool copyPending,
+    required bool disablePending,
+  }) {
+    final mutationMode = createPending
+        ? HostInviteLinksMutationMode.creating
+        : copyPending
+        ? HostInviteLinksMutationMode.copying
+        : disablePending
+        ? HostInviteLinksMutationMode.disabling
+        : HostInviteLinksMutationMode.idle;
+    return HostInviteLinksListDisplayState(
+      mutationMode: mutationMode,
+      emptyCopy:
+          'Create links for Instagram bio, WhatsApp alumni, venue partners, or any channel you want to compare.',
+    );
+  }
+
+  final HostInviteLinksMutationMode mutationMode;
+  final String emptyCopy;
+
+  bool get isMutating => mutationMode != HostInviteLinksMutationMode.idle;
+
+  bool get createPending =>
+      mutationMode == HostInviteLinksMutationMode.creating;
+}
+
+class HostInviteLinkRowDisplayState {
+  const HostInviteLinkRowDisplayState({
+    required this.label,
+    required this.source,
+    required this.url,
+    required this.stats,
+    required this.actionsDisabled,
+    required this.showDisabledBadge,
+    required this.showDisableAction,
+  });
+
+  factory HostInviteLinkRowDisplayState.resolve({
+    required Event event,
+    required String inviteCode,
+    required EventInviteLink link,
+    required bool actionsDisabled,
+  }) {
+    return HostInviteLinkRowDisplayState(
+      label: link.label,
+      source: link.source,
+      url: AppDeepLinks.event(
+        clubId: event.clubId,
+        eventId: event.id,
+        inviteCode: inviteCode,
+        inviteLinkId: link.id,
+      ).toString(),
+      stats: hostInviteLinkStats(link),
+      actionsDisabled: actionsDisabled,
+      showDisabledBadge: link.isDisabled,
+      showDisableAction: !link.isDisabled,
+    );
+  }
+
+  final String label;
+  final String? source;
+  final String url;
+  final String stats;
+  final bool actionsDisabled;
+  final bool showDisabledBadge;
+  final bool showDisableAction;
+}
+
+enum HostRosterFilter {
+  all,
+  booked,
+  waitlist,
+  slots,
+  requests,
+  due,
+  checkedIn,
+  attended,
+  noShow,
+}
+
+class HostRosterFilterSpec {
+  const HostRosterFilterSpec({
+    required this.filter,
+    required this.label,
+    required this.value,
+    required this.tone,
+  });
+
+  final HostRosterFilter filter;
+  final String label;
+  final int value;
+  final CatchBadgeTone tone;
+}
+
+class HostRosterDisplayState {
+  HostRosterDisplayState._({
+    required List<HostRosterFilterSpec> filters,
+    required this.activeFilter,
+    required List<String> rowIds,
+    required List<String> offerableWaitlistIds,
+    required this.bulkOfferCount,
+    required this.emptyTitle,
+    required this.emptyMessage,
+  }) : filters = List.unmodifiable(filters),
+       rowIds = List.unmodifiable(rowIds),
+       offerableWaitlistIds = List.unmodifiable(offerableWaitlistIds);
+
+  factory HostRosterDisplayState.setup({
+    required bool usesRequestApproval,
+    required List<String> attendeeIds,
+    required List<String> waitlistedIds,
+    required int totalCount,
+    required int capacityLimit,
+    required int waitlistCount,
+    required Map<String, EventParticipation> participationsByUid,
+    required Map<String, (String, String?)> profiles,
+    required String searchQuery,
+    required HostRosterFilter selectedFilter,
+  }) {
+    final requestIds = usesRequestApproval ? waitlistedIds : const <String>[];
+    final bookedIds = attendeeIds;
+    final displayWaitlistedIds = usesRequestApproval
+        ? const <String>[]
+        : waitlistedIds;
+    final allIds = [...requestIds, ...bookedIds, ...displayWaitlistedIds];
+    final remainingSlots = (capacityLimit - totalCount)
+        .clamp(0, capacityLimit)
+        .toInt();
+    final offerableWaitlistIds = _offerableWaitlistIds(
+      displayWaitlistedIds,
+      participationsByUid,
+    );
+    final bulkOfferCount = _bulkOfferCount(
+      offerableWaitlistIds,
+      remainingSlots,
+    );
+    final filters = [
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.all,
+        label: 'All',
+        value: allIds.length,
+        tone: CatchBadgeTone.solid,
+      ),
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.booked,
+        label: 'Booked',
+        value: bookedIds.length,
+        tone: CatchBadgeTone.success,
+      ),
+      HostRosterFilterSpec(
+        filter: usesRequestApproval
+            ? HostRosterFilter.requests
+            : HostRosterFilter.waitlist,
+        label: usesRequestApproval ? 'Requests' : 'Waitlist',
+        value: waitlistCount,
+        tone: usesRequestApproval
+            ? CatchBadgeTone.brand
+            : CatchBadgeTone.warning,
+      ),
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.slots,
+        label: 'Slots',
+        value: remainingSlots,
+        tone: CatchBadgeTone.neutral,
+      ),
+    ];
+    final activeFilter = _effectiveFilter(selectedFilter, filters);
+    final visibleIds = switch (activeFilter) {
+      HostRosterFilter.booked => bookedIds,
+      HostRosterFilter.waitlist => displayWaitlistedIds,
+      HostRosterFilter.requests => requestIds,
+      HostRosterFilter.slots => const <String>[],
+      _ => allIds,
+    };
+    final rowIds = _matchingIds(
+      visibleIds,
+      profiles: profiles,
+      searchQuery: searchQuery,
+    );
+    final hasSearch = searchQuery.trim().isNotEmpty;
+    return HostRosterDisplayState._(
+      filters: filters,
+      activeFilter: activeFilter,
+      rowIds: rowIds,
+      offerableWaitlistIds: offerableWaitlistIds,
+      bulkOfferCount: bulkOfferCount,
+      emptyTitle: hasSearch
+          ? 'No matches'
+          : activeFilter == HostRosterFilter.slots
+          ? 'Open slots are not people'
+          : 'No participants yet',
+      emptyMessage: hasSearch
+          ? 'No people match this search.'
+          : activeFilter == HostRosterFilter.slots
+          ? 'Slots show capacity left after booked people. New people appear here once they book or request access.'
+          : 'Booked and waitlisted people will appear here.',
+    );
+  }
+
+  factory HostRosterDisplayState.live({
+    required bool usesRequestApproval,
+    required List<String> attendeeIds,
+    required Set<String> attendedIds,
+    required List<String> waitlistedIds,
+    required int totalCount,
+    required int capacityLimit,
+    required Map<String, EventParticipation> participationsByUid,
+    required Map<String, (String, String?)> profiles,
+    required String searchQuery,
+    required HostRosterFilter selectedFilter,
+  }) {
+    final checkedInBaseIds = attendeeIds
+        .where(attendedIds.contains)
+        .toList(growable: false);
+    final needsCheckInBaseIds = attendeeIds
+        .where((uid) => !attendedIds.contains(uid))
+        .toList(growable: false);
+    final remainingSlots = (capacityLimit - totalCount)
+        .clamp(0, capacityLimit)
+        .toInt();
+    final offerableWaitlistIds = _offerableWaitlistIds(
+      waitlistedIds,
+      participationsByUid,
+    );
+    final bulkOfferCount = _bulkOfferCount(
+      offerableWaitlistIds,
+      remainingSlots,
+    );
+    final allBaseIds = [
+      ...needsCheckInBaseIds,
+      ...checkedInBaseIds,
+      ...waitlistedIds,
+    ];
+    final filters = [
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.all,
+        label: 'All',
+        value: allBaseIds.length,
+        tone: CatchBadgeTone.solid,
+      ),
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.due,
+        label: 'Due',
+        value: needsCheckInBaseIds.length,
+        tone: CatchBadgeTone.brand,
+      ),
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.checkedIn,
+        label: 'In',
+        value: checkedInBaseIds.length,
+        tone: CatchBadgeTone.success,
+      ),
+      HostRosterFilterSpec(
+        filter: usesRequestApproval
+            ? HostRosterFilter.requests
+            : HostRosterFilter.waitlist,
+        label: usesRequestApproval ? 'Requests' : 'Waitlist',
+        value: waitlistedIds.length,
+        tone: CatchBadgeTone.warning,
+      ),
+    ];
+    final activeFilter = _effectiveFilter(selectedFilter, filters);
+    final visibleIds = switch (activeFilter) {
+      HostRosterFilter.due => needsCheckInBaseIds,
+      HostRosterFilter.checkedIn => checkedInBaseIds,
+      HostRosterFilter.waitlist || HostRosterFilter.requests => waitlistedIds,
+      _ => allBaseIds,
+    };
+    final rowIds = _matchingIds(
+      visibleIds,
+      profiles: profiles,
+      searchQuery: searchQuery,
+    );
+    final hasRoster = totalCount > 0;
+    final hasSearch = searchQuery.trim().isNotEmpty;
+    return HostRosterDisplayState._(
+      filters: filters,
+      activeFilter: activeFilter,
+      rowIds: rowIds,
+      offerableWaitlistIds: offerableWaitlistIds,
+      bulkOfferCount: bulkOfferCount,
+      emptyTitle: hasSearch
+          ? 'No matches'
+          : _liveEmptyTitle(activeFilter, hasRoster),
+      emptyMessage: hasSearch
+          ? 'No live roster rows match this search.'
+          : _liveEmptyMessage(activeFilter, hasRoster),
+    );
+  }
+
+  factory HostRosterDisplayState.report({
+    required List<String> attendeeIds,
+    required Set<String> attendedIds,
+    required List<String> waitlistedIds,
+    required int totalCount,
+    required int waitlistCount,
+    required Map<String, (String, String?)> profiles,
+    required String searchQuery,
+    required HostRosterFilter selectedFilter,
+  }) {
+    final attendedBaseIds = attendeeIds
+        .where(attendedIds.contains)
+        .toList(growable: false);
+    final noShowBaseIds = attendeeIds
+        .where((uid) => !attendedIds.contains(uid))
+        .toList(growable: false);
+    final noShowCount = totalCount - attendedBaseIds.length;
+    final allBaseIds = [...attendedBaseIds, ...noShowBaseIds, ...waitlistedIds];
+    final filters = [
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.all,
+        label: 'All',
+        value: allBaseIds.length,
+        tone: CatchBadgeTone.solid,
+      ),
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.attended,
+        label: 'Attended',
+        value: attendedBaseIds.length,
+        tone: CatchBadgeTone.success,
+      ),
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.noShow,
+        label: 'No-show',
+        value: noShowCount,
+        tone: CatchBadgeTone.neutral,
+      ),
+      HostRosterFilterSpec(
+        filter: HostRosterFilter.waitlist,
+        label: 'Waitlist',
+        value: waitlistCount,
+        tone: CatchBadgeTone.warning,
+      ),
+    ];
+    final activeFilter = _effectiveFilter(selectedFilter, filters);
+    final visibleIds = switch (activeFilter) {
+      HostRosterFilter.attended => attendedBaseIds,
+      HostRosterFilter.noShow => noShowBaseIds,
+      HostRosterFilter.waitlist => waitlistedIds,
+      _ => allBaseIds,
+    };
+    final rowIds = _matchingIds(
+      visibleIds,
+      profiles: profiles,
+      searchQuery: searchQuery,
+    );
+    final hasSearch = searchQuery.trim().isNotEmpty;
+    return HostRosterDisplayState._(
+      filters: filters,
+      activeFilter: activeFilter,
+      rowIds: rowIds,
+      offerableWaitlistIds: const [],
+      bulkOfferCount: 0,
+      emptyTitle: hasSearch ? 'No matches' : _reportEmptyTitle(activeFilter),
+      emptyMessage: hasSearch
+          ? 'No report rows match this search.'
+          : _reportEmptyMessage(activeFilter),
+    );
+  }
+
+  final List<HostRosterFilterSpec> filters;
+  final HostRosterFilter activeFilter;
+  final List<String> rowIds;
+  final List<String> offerableWaitlistIds;
+  final int bulkOfferCount;
+  final String emptyTitle;
+  final String emptyMessage;
+
+  List<String> get bulkOfferIds =>
+      offerableWaitlistIds.take(bulkOfferCount).toList(growable: false);
+
+  bool get showBulkOfferAction => bulkOfferCount > 0;
+}
+
+class HostSetupRosterRowDisplayState {
+  const HostSetupRosterRowDisplayState({
+    required this.meta,
+    required this.signal,
+    required this.tone,
+    required this.showRequestActions,
+    required this.showWaitlistOfferAction,
+  });
+
+  factory HostSetupRosterRowDisplayState.resolve({
+    required EventParticipation? participation,
+    required bool usesRequestApproval,
+  }) {
+    final status = participation?.status;
+    return HostSetupRosterRowDisplayState(
+      meta: _setupMeta(participation, usesRequestApproval),
+      signal: _setupSignal(participation, usesRequestApproval).label,
+      tone: _setupSignal(participation, usesRequestApproval).tone,
+      showRequestActions:
+          usesRequestApproval && status == EventParticipationStatus.waitlisted,
+      showWaitlistOfferAction:
+          !usesRequestApproval && status == EventParticipationStatus.waitlisted,
+    );
+  }
+
+  final String meta;
+  final String signal;
+  final CatchBadgeTone tone;
+  final bool showRequestActions;
+  final bool showWaitlistOfferAction;
+}
+
+class HostLiveRosterRowDisplayState {
+  const HostLiveRosterRowDisplayState({
+    required this.meta,
+    required this.signal,
+    required this.tone,
+    required this.showAttendanceToggle,
+    required this.attendanceButtonLabel,
+    required this.attendanceButtonPrimary,
+    required this.showWaitlistOfferAction,
+  });
+
+  factory HostLiveRosterRowDisplayState.resolve({
+    required EventParticipation? participation,
+    required bool attended,
+    required bool usesRequestApproval,
+  }) {
+    final status = participation?.status;
+    final signal = _liveSignal(participation, attended, usesRequestApproval);
+    final showAttendanceToggle =
+        status == EventParticipationStatus.signedUp ||
+        status == EventParticipationStatus.attended;
+    return HostLiveRosterRowDisplayState(
+      meta: attended
+          ? participation?.attendedAt == null
+                ? 'Checked in'
+                : EventFormatters.time(participation!.attendedAt!)
+          : _reportMeta(participation),
+      signal: signal.label,
+      tone: signal.tone,
+      showAttendanceToggle: showAttendanceToggle,
+      attendanceButtonLabel: attended ? 'Undo' : 'Check in',
+      attendanceButtonPrimary: !attended,
+      showWaitlistOfferAction:
+          status == EventParticipationStatus.waitlisted && !usesRequestApproval,
+    );
+  }
+
+  final String meta;
+  final String signal;
+  final CatchBadgeTone tone;
+  final bool showAttendanceToggle;
+  final String attendanceButtonLabel;
+  final bool attendanceButtonPrimary;
+  final bool showWaitlistOfferAction;
+}
+
+class HostReportRosterRowDisplayState {
+  const HostReportRosterRowDisplayState({
+    required this.meta,
+    required this.signal,
+    required this.tone,
+    required this.payment,
+  });
+
+  factory HostReportRosterRowDisplayState.resolve({
+    required EventParticipation? participation,
+    required bool attended,
+    required int priceInPaise,
+    required String currencyCode,
+  }) {
+    final attendance = _reportAttendance(participation, attended);
+    final status = participation?.status;
+    return HostReportRosterRowDisplayState(
+      meta: _reportMeta(participation),
+      signal: attendance.label,
+      tone: attendance.tone,
+      payment: status == EventParticipationStatus.waitlisted
+          ? '-'
+          : priceInPaise == 0
+          ? 'Free'
+          : EventFormatters.priceInPaise(
+              priceInPaise,
+              currencyCode: currencyCode,
+            ),
+    );
+  }
+
+  final String meta;
+  final String signal;
+  final CatchBadgeTone tone;
+  final String payment;
+}
+
+extension HostEventManageSectionLabel on HostEventManageSection {
+  String get label {
+    return switch (this) {
+      HostEventManageSection.setup => 'Setup',
+      HostEventManageSection.guests => 'Guests',
+      HostEventManageSection.live => 'Live',
+      HostEventManageSection.report => 'Report',
+    };
+  }
+}
+
+String hostManageEventTitle(Event event) {
+  if (event.eventFormat.isDistanceBased) return event.title;
+  final weekday = EventFormatters.longWeekday(event.startTime);
+  return '$weekday ${event.eventFormat.eventTitleLabel}';
+}
+
+int hostManageBookedCount(Event event, EventParticipationRoster? roster) {
+  final rosterCount = roster?.bookedCount;
+  if (rosterCount == null) return event.signedUpCount;
+  return rosterCount > event.signedUpCount ? rosterCount : event.signedUpCount;
+}
+
+int hostManageCheckedInCount(Event event, EventParticipationRoster? roster) {
+  final rosterCount = roster?.checkedInCount;
+  if (rosterCount == null) return event.attendedCount;
+  return rosterCount > event.attendedCount ? rosterCount : event.attendedCount;
+}
+
+int hostManageWaitlistedCount(Event event, EventParticipationRoster? roster) {
+  final rosterCount = roster?.waitlistedCount;
+  if (rosterCount == null) return event.waitlistCount;
+  return rosterCount > event.waitlistCount ? rosterCount : event.waitlistCount;
+}
+
+String hostPrivateShareDetail({
+  required AsyncValue<EventPrivateAccess?>? accessAsync,
+  required AsyncValue<List<EventInviteLink>>? inviteLinksAsync,
+  required bool sharePending,
+}) {
+  if (sharePending) return 'Sharing...';
+  if (accessAsync == null) return 'Public event link';
+  if (accessAsync.isLoading) return 'Loading link';
+  if (accessAsync.hasError || accessAsync.asData?.value == null) {
+    return 'Invite setup unavailable';
+  }
+
+  if (inviteLinksAsync == null || inviteLinksAsync.isLoading) {
+    return 'Private invite link';
+  }
+  if (inviteLinksAsync.hasError) return 'Invite links unavailable';
+  final count = inviteLinksAsync.asData?.value.length ?? 0;
+  if (count == 1) return '1 invite link';
+  return '$count invite links';
+}
+
+String hostInviteLinkStats(EventInviteLink link) {
+  return [
+    '${link.openCount} opens',
+    '${link.requestCount} requests',
+    '${link.confirmedCount} confirmed',
+    '${link.checkedInCount} checked in',
+    '${link.catcherCount} caught',
+    '${link.chatStartedCount} chats',
+  ].join(' | ');
+}
+
+HostRosterFilter _effectiveFilter(
+  HostRosterFilter selected,
+  List<HostRosterFilterSpec> filters,
+) {
+  for (final filter in filters) {
+    if (filter.filter == selected) return selected;
+  }
+  return HostRosterFilter.all;
+}
+
+List<String> _offerableWaitlistIds(
+  List<String> ids,
+  Map<String, EventParticipation> participationsByUid,
+) {
+  return [
+    for (final uid in ids)
+      if (_canCreateWaitlistOffer(participationsByUid[uid])) uid,
+  ];
+}
+
+int _bulkOfferCount(List<String> offerableIds, int remainingSlots) {
+  if (offerableIds.isEmpty || remainingSlots <= 0) return 0;
+  return offerableIds.length < remainingSlots
+      ? offerableIds.length
+      : remainingSlots;
+}
+
+bool _canCreateWaitlistOffer(EventParticipation? participation) {
+  if (participation?.status != EventParticipationStatus.waitlisted) {
+    return false;
+  }
+  final offerStatus = participation?.waitlistOfferStatus;
+  return offerStatus != EventWaitlistOfferStatus.active &&
+      offerStatus != EventWaitlistOfferStatus.accepted;
+}
+
+List<String> _matchingIds(
+  List<String> ids, {
+  required Map<String, (String, String?)> profiles,
+  required String searchQuery,
+}) {
+  final query = searchQuery.trim().toLowerCase();
+  if (query.isEmpty) return ids;
+  return [
+    for (final uid in ids)
+      if (_profileName(profiles, uid).toLowerCase().contains(query) ||
+          uid.toLowerCase().contains(query))
+        uid,
+  ];
+}
+
+String _profileName(Map<String, (String, String?)> profiles, String uid) =>
+    profiles[uid]?.$1 ?? 'Runner';
+
+String _liveEmptyTitle(HostRosterFilter filter, bool hasRoster) {
+  return switch (filter) {
+    HostRosterFilter.due when hasRoster => 'Everyone visible is checked in',
+    HostRosterFilter.checkedIn => 'No checked-in people yet',
+    HostRosterFilter.waitlist ||
+    HostRosterFilter.requests => 'No waitlisted people',
+    _ => 'Roster is empty',
+  };
+}
+
+String _liveEmptyMessage(HostRosterFilter filter, bool hasRoster) {
+  return switch (filter) {
+    HostRosterFilter.due when hasRoster =>
+      'Switch to In to review arrivals or All to see the full roster.',
+    HostRosterFilter.checkedIn =>
+      'Checked-in people will appear here during the event.',
+    HostRosterFilter.waitlist || HostRosterFilter.requests =>
+      'Waitlisted people will appear here for context.',
+    _ => 'Signed-up participants will appear here when they book.',
+  };
+}
+
+String _reportEmptyTitle(HostRosterFilter filter) {
+  return switch (filter) {
+    HostRosterFilter.attended => 'No attended people yet',
+    HostRosterFilter.noShow => 'No no-shows yet',
+    HostRosterFilter.waitlist => 'No waitlisted people',
+    _ => 'No participants yet',
+  };
+}
+
+String _reportEmptyMessage(HostRosterFilter filter) {
+  return switch (filter) {
+    HostRosterFilter.attended =>
+      'Checked-in people will appear here after the event.',
+    HostRosterFilter.noShow =>
+      'Booked people who did not check in will appear here.',
+    HostRosterFilter.waitlist =>
+      'Waitlist history will appear here when people queue for this event.',
+    _ =>
+      'Attendance and waitlist history will appear here once people sign up.',
+  };
+}
+
+({String label, CatchBadgeTone tone}) _liveSignal(
+  EventParticipation? participation,
+  bool attended,
+  bool usesRequestApproval,
+) {
+  final status = participation?.status;
+  return switch (status) {
+    EventParticipationStatus.waitlisted
+        when participation?.waitlistOfferStatus ==
+            EventWaitlistOfferStatus.active =>
+      (label: 'Offered', tone: CatchBadgeTone.brand),
+    EventParticipationStatus.waitlisted
+        when participation?.waitlistOfferStatus ==
+            EventWaitlistOfferStatus.accepted =>
+      (label: 'Accepted', tone: CatchBadgeTone.success),
+    EventParticipationStatus.waitlisted when usesRequestApproval => (
+      label: 'Request',
+      tone: CatchBadgeTone.brand,
+    ),
+    EventParticipationStatus.waitlisted => (
+      label: 'Wait',
+      tone: CatchBadgeTone.warning,
+    ),
+    _ when attended => (label: 'In', tone: CatchBadgeTone.success),
+    _ => (label: 'Due', tone: CatchBadgeTone.neutral),
+  };
+}
+
+({String label, CatchBadgeTone tone}) _reportAttendance(
+  EventParticipation? participation,
+  bool attended,
+) {
+  final status = participation?.status;
+  final offerStatus = participation?.waitlistOfferStatus;
+  return switch (status) {
+    EventParticipationStatus.waitlisted
+        when offerStatus == EventWaitlistOfferStatus.active =>
+      (label: 'Offered', tone: CatchBadgeTone.brand),
+    EventParticipationStatus.waitlisted
+        when offerStatus == EventWaitlistOfferStatus.accepted =>
+      (label: 'Accepted', tone: CatchBadgeTone.success),
+    EventParticipationStatus.waitlisted
+        when offerStatus == EventWaitlistOfferStatus.expired =>
+      (label: 'Expired', tone: CatchBadgeTone.neutral),
+    EventParticipationStatus.waitlisted => (
+      label: 'Wait',
+      tone: CatchBadgeTone.warning,
+    ),
+    _ when attended => (label: 'Attended', tone: CatchBadgeTone.success),
+    _ => (label: 'No-show', tone: CatchBadgeTone.neutral),
+  };
+}
+
+({String label, CatchBadgeTone tone}) _setupSignal(
+  EventParticipation? participation,
+  bool usesRequestApproval,
+) {
+  final offerStatus = participation?.waitlistOfferStatus;
+  if (participation?.status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.active) {
+    return (label: 'Offered', tone: CatchBadgeTone.brand);
+  }
+  if (participation?.status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.accepted) {
+    return (label: 'Accepted', tone: CatchBadgeTone.success);
+  }
+  return switch (participation?.status) {
+    EventParticipationStatus.attended || EventParticipationStatus.signedUp => (
+      label: 'Booked',
+      tone: CatchBadgeTone.success,
+    ),
+    EventParticipationStatus.waitlisted when usesRequestApproval => (
+      label: 'Request',
+      tone: CatchBadgeTone.brand,
+    ),
+    EventParticipationStatus.waitlisted => (
+      label: 'Wait',
+      tone: CatchBadgeTone.warning,
+    ),
+    _ => (label: 'New', tone: CatchBadgeTone.neutral),
+  };
+}
+
+String _setupMeta(EventParticipation? participation, bool usesRequestApproval) {
+  final offerStatus = participation?.waitlistOfferStatus;
+  if (participation?.status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.active) {
+    return 'Offer sent';
+  }
+  if (participation?.status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.accepted) {
+    return 'Accepted offer';
+  }
+  if (participation?.status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.expired) {
+    return 'Offer expired';
+  }
+  return switch (participation?.status) {
+    EventParticipationStatus.attended ||
+    EventParticipationStatus.signedUp => 'Approved',
+    EventParticipationStatus.waitlisted when usesRequestApproval =>
+      'View profile',
+    EventParticipationStatus.waitlisted => 'Waitlisted',
+    _ => 'Profile ready',
+  };
+}
+
+String _reportMeta(EventParticipation? participation) {
+  final status = participation?.status;
+  final offerStatus = participation?.waitlistOfferStatus;
+  if (status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.active) {
+    return 'Offer sent';
+  }
+  if (status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.accepted) {
+    return 'Accepted offer';
+  }
+  if (status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.expired) {
+    return 'Offer expired';
+  }
+  return switch (status) {
+    EventParticipationStatus.waitlisted => 'Waitlisted',
+    EventParticipationStatus.attended ||
+    EventParticipationStatus.signedUp => 'Booked',
+    EventParticipationStatus.cancelled => 'Cancelled',
+    EventParticipationStatus.deleted => 'Deleted',
+    null => 'Participant',
+  };
+}

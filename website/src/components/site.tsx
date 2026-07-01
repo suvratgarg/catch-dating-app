@@ -10,14 +10,8 @@ import {
 import {trackMarketingEvent} from "../analytics";
 import {ButtonLink, InlineInputField, PlainButton, PlainLink} from "../shared/ui/primitives";
 
-export interface SiteNavItem {
-  href: string;
-  label: string;
-}
-
-export interface SiteHeaderAction extends SiteNavItem {
-  variant?: "primary" | "secondary";
-}
+export {SectionHeader, SiteFooter, SiteHeader} from "../shared/site";
+export type {SiteHeaderAction, SiteNavItem} from "../shared/site";
 
 export interface CaptureRecord {
   id: string;
@@ -125,120 +119,6 @@ export interface ProductModuleCardModel {
   body: string;
   facts: string[];
   activityToken?: string;
-}
-
-export function SiteHeader({
-  brandHref,
-  nav,
-  actions,
-  ctaHref,
-  ctaLabel,
-}: {
-  brandHref: string;
-  nav: SiteNavItem[];
-  actions?: SiteHeaderAction[];
-  ctaHref?: string;
-  ctaLabel?: string;
-}) {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const headerActions = actions ?? (
-    ctaHref && ctaLabel ? [{href: ctaHref, label: ctaLabel}] : []
-  );
-
-  useEffect(() => {
-    const syncHeader = () => setIsScrolled(window.scrollY > 18);
-    syncHeader();
-    window.addEventListener("scroll", syncHeader, {passive: true});
-    return () => window.removeEventListener("scroll", syncHeader);
-  }, []);
-
-  return (
-    <header className={`site-header ${isScrolled ? "is-scrolled" : ""}`}>
-      <PlainLink className="brand" href={brandHref} aria-label="Catch home">
-        <span className="brand__mark" aria-hidden="true">C</span>
-        <span className="brand__word">Catch</span>
-      </PlainLink>
-
-      <nav className="site-nav" aria-label="Primary">
-        {nav.map((item) => (
-          <PlainLink
-            href={item.href}
-            key={`${item.href}-${item.label}`}
-            onClick={() => trackCtaClick(`nav_${slugForTracking(item.label)}`, item.href)}
-          >
-            {item.label}
-          </PlainLink>
-        ))}
-      </nav>
-
-      <div className="site-header__actions">
-        {headerActions.map((action) => (
-          <ButtonLink
-            href={action.href}
-            key={`${action.href}-${action.label}`}
-            onClick={() => trackCtaClick(`header_${slugForTracking(action.label)}`, action.href)}
-            size="small"
-            variant={action.variant === "secondary" ? "ghost" : "primary"}
-          >
-            {action.label}
-          </ButtonLink>
-        ))}
-      </div>
-    </header>
-  );
-}
-
-export function SiteFooter({
-  brandHref,
-  body,
-  links,
-}: {
-  brandHref: string;
-  body: string;
-  links: SiteNavItem[];
-}) {
-  return (
-    <footer className="site-footer">
-      <PlainLink className="brand" href={brandHref} aria-label="Catch home">
-        <span className="brand__mark" aria-hidden="true">C</span>
-        <span className="brand__word">Catch</span>
-      </PlainLink>
-      <p>{body}</p>
-      <nav aria-label="Footer">
-        {links.map((link) => (
-          <PlainLink
-            href={link.href}
-            key={`${link.href}-${link.label}`}
-            onClick={() => trackCtaClick(`footer_${slugForTracking(link.label)}`, link.href)}
-          >
-            {link.label}
-          </PlainLink>
-        ))}
-      </nav>
-    </footer>
-  );
-}
-
-export function SectionHeader({
-  eyebrow,
-  title,
-  body,
-  id,
-  wide = false,
-}: {
-  eyebrow?: string;
-  title: ReactNode;
-  body?: ReactNode;
-  id?: string;
-  wide?: boolean;
-}) {
-  return (
-    <div className={`section-heading ${wide ? "section-heading--wide" : ""}`} data-reveal>
-      {eyebrow ? <span className="ui-label">{eyebrow}</span> : null}
-      <h2 id={id}>{title}</h2>
-      {body ? <p>{body}</p> : null}
-    </div>
-  );
 }
 
 export function ActivityMark({
@@ -693,10 +573,6 @@ function trackCtaClick(label: string, href: string) {
     cta_label: label,
     page_path: `${window.location.pathname}${window.location.search}`,
   });
-}
-
-function slugForTracking(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
 }
 
 function fallbackAltForCapture(id: string) {

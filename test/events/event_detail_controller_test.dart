@@ -350,6 +350,48 @@ void main() {
       expect(repository.unsavedEventId, 'event-10');
       expect(repository.savedEventId, isNull);
     });
+
+    test(
+      'records invite-link opens through the event repository seam',
+      () async {
+        final repository = FakeEventRepository();
+        final container = ProviderContainer(
+          overrides: [
+            eventRepositoryProvider.overrideWith((ref) => repository),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        await container
+            .read(eventDetailControllerProvider.notifier)
+            .recordInviteLinkOpenBestEffort(
+              eventId: 'event-11',
+              inviteLinkId: 'invite-11',
+            );
+
+        expect(repository.recordedInviteOpenEventId, 'event-11');
+        expect(repository.recordedInviteOpenLinkId, 'invite-11');
+      },
+    );
+
+    test('does not surface invite-link attribution failures', () async {
+      final repository = FakeEventRepository()
+        ..recordInviteOpenError = StateError('attribution failed');
+      final container = ProviderContainer(
+        overrides: [eventRepositoryProvider.overrideWith((ref) => repository)],
+      );
+      addTearDown(container.dispose);
+
+      await container
+          .read(eventDetailControllerProvider.notifier)
+          .recordInviteLinkOpenBestEffort(
+            eventId: 'event-12',
+            inviteLinkId: 'invite-12',
+          );
+
+      expect(repository.recordedInviteOpenEventId, isNull);
+      expect(repository.recordedInviteOpenLinkId, isNull);
+    });
   });
 }
 

@@ -5,11 +5,15 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/catch_club_dock.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_contact_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_skeleton.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_host_section.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_photo_strip.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart';
@@ -715,6 +719,142 @@ Widget clubDetailBodyComposition(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Host section states',
+  type: ClubHostSection,
+  path: '[Club Detail]/Sections',
+)
+Widget clubHostSectionStates(BuildContext context) {
+  final messageableState = ClubDetailBodyState.fromDomain(
+    club: _club,
+    uid: _viewerUid,
+    isAuthenticated: true,
+  );
+
+  return _CatalogScreen(
+    title: 'ClubHostSection',
+    catalogId: 'section.club.hosts',
+    children: [
+      _StateCard(
+        label: 'messageable hosts',
+        child: ClubHostSection(
+          club: _club,
+          canViewProfile: true,
+          isMessageHostPending: false,
+          messageableHostUids: messageableState.messageableHostUids,
+          onViewProfile: (_) {},
+          onMessageHost: (_, _) async {},
+        ),
+      ),
+      _StateCard(
+        label: 'public preview',
+        child: ClubHostSection(
+          club: _club,
+          canViewProfile: false,
+          isMessageHostPending: false,
+          messageableHostUids: const {},
+          onViewProfile: null,
+          onMessageHost: null,
+        ),
+      ),
+      _StateCard(
+        label: 'message pending',
+        child: ClubHostSection(
+          club: _club,
+          canViewProfile: true,
+          isMessageHostPending: true,
+          messageableHostUids: messageableState.messageableHostUids,
+          onViewProfile: (_) {},
+          onMessageHost: (_, _) async {},
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Host row states',
+  type: ClubHostRow,
+  path: '[Club Detail]/Sections',
+)
+Widget clubHostRowStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubHostRow',
+    catalogId: 'section.club.hosts.row',
+    children: [
+      _StateCard(
+        label: 'owner / message / chevron',
+        child: ClubHostRow(
+          host: _club.displayHostProfiles.first,
+          borderColor: CatchTokens.of(context).primarySoft,
+          showChevron: true,
+          onMessage: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'public profile',
+        child: ClubHostRow(
+          host: _club.displayHostProfiles.last,
+          borderColor: CatchTokens.of(context).primarySoft,
+          showChevron: false,
+          onMessage: null,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contact section states',
+  type: ClubContactSection,
+  path: '[Club Detail]/Sections',
+)
+Widget clubContactSectionStates(BuildContext context) {
+  final contactState = ClubDetailBodyState.fromDomain(club: _club);
+
+  return _CatalogScreen(
+    title: 'ClubContactSection',
+    catalogId: 'section.club.contact',
+    children: [
+      _StateCard(
+        label: 'all channels',
+        child: ClubContactSection(
+          actions: contactState.contactActions,
+          onContactSelected: (_) async {},
+        ),
+      ),
+      const _StateCard(
+        label: 'empty',
+        child: ClubContactSection(actions: []),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Photo strip states',
+  type: ClubPhotoStrip,
+  path: '[Club Detail]/Sections',
+)
+Widget clubPhotoStripStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubPhotoStrip',
+    catalogId: 'section.club.photos',
+    children: [
+      _StateCard(
+        label: 'three photos',
+        child: ClubPhotoStrip(club: _club),
+      ),
+      _StateCard(
+        label: 'single photo',
+        child: ClubPhotoStrip(
+          club: _club.copyWith(clubPhotos: [_club.clubPhotos.first]),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Hero states',
   type: ClubHeroAppBar,
   path: '[Club Detail]/Sections',
@@ -933,17 +1073,17 @@ class _ClubComposedPreview extends StatelessWidget {
             ),
           Expanded(
             child: ClubDetailBody(
-              club: previewClub,
-              upcoming: previewEvents,
-              reviews: previewReviews,
-              userProfile: isAuthenticated ? _viewer : null,
-              uid: isAuthenticated ? _viewerUid : null,
-              isHost: false,
-              isMember: isMember,
-              isMutating: isMutating,
-              clubPushNotificationsEnabled: isMember,
-              isClubPushMutating: false,
-              isAuthenticated: isAuthenticated,
+              state: ClubDetailBodyState.fromDomain(
+                club: previewClub,
+                upcomingEvents: previewEvents,
+                reviews: previewReviews,
+                userProfile: isAuthenticated ? _viewer : null,
+                uid: isAuthenticated ? _viewerUid : null,
+                isMember: isMember,
+                isMutating: isMutating,
+                clubPushNotificationsEnabled: isMember,
+                isAuthenticated: isAuthenticated,
+              ),
             ),
           ),
         ],

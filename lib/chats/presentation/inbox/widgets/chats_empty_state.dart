@@ -18,6 +18,10 @@ class ChatsEmptyState extends StatelessWidget {
     : title = 'No chats match your search',
       message = 'Try another name or clear the search field.';
 
+  const ChatsEmptyState.noHostSearchResults({super.key})
+    : title = 'No attendee queries match your search',
+      message = 'Try another attendee name or clear the search field.';
+
   const ChatsEmptyState.noUnreadQueries({super.key})
     : title = 'No unread queries',
       message =

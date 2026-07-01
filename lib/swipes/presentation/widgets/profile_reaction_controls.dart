@@ -26,27 +26,38 @@ class ProfileReactionControls extends StatelessWidget {
     required this.onReact,
     this.style = ProfileReactionControlsStyle.surface,
     this.axis = Axis.horizontal,
+    this.enabled = true,
+    this.isPending = false,
   });
 
   final ProfileReactionTarget target;
   final ProfileReactionCallback onReact;
   final ProfileReactionControlsStyle style;
   final Axis axis;
+  final bool enabled;
+  final bool isPending;
 
   @override
   Widget build(BuildContext context) {
+    final actionsEnabled = enabled && !isPending;
     final children = [
       ReactionControlButton(
         tooltip: 'Like ${target.label}',
         icon: CatchIcons.favoriteBorderRounded,
-        onPressed: () => unawaited(Future.sync(() => onReact(target, null))),
+        onPressed: actionsEnabled
+            ? () => unawaited(Future.sync(() => onReact(target, null)))
+            : null,
         style: style,
+        isPending: isPending,
       ),
       ReactionControlButton(
         tooltip: 'Comment on ${target.label}',
         icon: CatchIcons.chatBubbleOutlineRounded,
-        onPressed: () => unawaited(_commentThenReact(context)),
+        onPressed: actionsEnabled
+            ? () => unawaited(_commentThenReact(context))
+            : null,
         style: style,
+        isPending: isPending,
       ),
     ];
 
@@ -87,9 +98,14 @@ Future<String?> showProfileReactionCommentSheet({
 }
 
 class ProfileReactionCommentSheet extends StatefulWidget {
-  const ProfileReactionCommentSheet({super.key, required this.target});
+  const ProfileReactionCommentSheet({
+    super.key,
+    required this.target,
+    this.initialComment,
+  });
 
   final ProfileReactionTarget target;
+  final String? initialComment;
 
   @override
   State<ProfileReactionCommentSheet> createState() =>
@@ -106,7 +122,8 @@ class _ProfileReactionCommentSheetState
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController()..addListener(_handleChanged);
+    _controller = TextEditingController(text: widget.initialComment)
+      ..addListener(_handleChanged);
   }
 
   @override
@@ -194,12 +211,14 @@ class ReactionControlButton extends StatelessWidget {
     required this.icon,
     required this.onPressed,
     required this.style,
+    this.isPending = false,
   });
 
   final String tooltip;
   final IconData icon;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final ProfileReactionControlsStyle style;
+  final bool isPending;
 
   @override
   Widget build(BuildContext context) {
@@ -216,24 +235,42 @@ class ReactionControlButton extends StatelessWidget {
             alpha: CatchOpacity.reactionOverlayBorder,
           )
         : palette.chipBorder;
+    final isEnabled = onPressed != null && !isPending;
 
     return Semantics(
       label: tooltip,
       button: true,
+      enabled: isEnabled,
       child: Tooltip(
         message: tooltip,
-        child: Material(
-          color: background,
-          shape: CircleBorder(side: BorderSide(color: border)),
-          child: InkWell(
-            customBorder: const CircleBorder(),
-            onTap: onPressed,
-            child: SizedBox.square(
-              dimension: CatchLayout.reactionControlExtent,
-              child: Icon(
-                icon,
-                color: foreground,
-                size: CatchLayout.reactionControlIconSize,
+        child: AnimatedOpacity(
+          opacity: isEnabled || isPending ? 1 : CatchOpacity.disabledControl,
+          duration: const Duration(milliseconds: 120),
+          child: Material(
+            color: background,
+            shape: CircleBorder(side: BorderSide(color: border)),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: isEnabled ? onPressed : null,
+              child: SizedBox.square(
+                dimension: CatchLayout.reactionControlExtent,
+                child: Center(
+                  child: isPending
+                      ? SizedBox.square(
+                          dimension: CatchLayout.reactionControlIconSize,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              foreground,
+                            ),
+                          ),
+                        )
+                      : Icon(
+                          icon,
+                          color: foreground,
+                          size: CatchLayout.reactionControlIconSize,
+                        ),
+                ),
               ),
             ),
           ),

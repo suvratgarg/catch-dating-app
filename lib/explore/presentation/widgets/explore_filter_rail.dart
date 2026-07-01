@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
+import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,7 +39,7 @@ class ExploreFilterRail extends ConsumerWidget {
     final t = CatchTokens.of(context);
     final filters = ref.watch(exploreFiltersProvider);
     final filterController = ref.read(exploreFiltersProvider.notifier);
-    final activeCount = _activeFilterCount(filters);
+    final state = ExploreFilterRailState.from(filters);
 
     return ColoredBox(
       color: backgroundColor ?? t.bg,
@@ -73,7 +74,8 @@ class ExploreFilterRail extends ConsumerWidget {
               gapW12,
               ExploreFilterGlyphButton(
                 key: const ValueKey('explore-filter-button'),
-                activeCount: activeCount,
+                activeCount: state.activeCount,
+                semanticLabel: state.filterButtonSemanticLabel,
                 onTap: () => _showExploreFilterSheet(context),
               ),
             ],
@@ -137,18 +139,17 @@ class ExploreFilterGlyphButton extends StatelessWidget {
   const ExploreFilterGlyphButton({
     super.key,
     required this.activeCount,
+    required this.semanticLabel,
     required this.onTap,
   });
 
   final int activeCount;
+  final String semanticLabel;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final semanticLabel = activeCount == 0
-        ? 'Open explore filters'
-        : 'Open explore filters, $activeCount active';
 
     return Tooltip(
       message: semanticLabel,
@@ -182,30 +183,24 @@ class ExploreFilterGlyphButton extends StatelessWidget {
 class ExploreFilterSheet extends ConsumerWidget {
   const ExploreFilterSheet({super.key});
 
-  static const List<ExploreDistanceFilter> _distanceFilters = [
-    ExploreDistanceFilter.any,
-    ExploreDistanceFilter.oneKm,
-    ExploreDistanceFilter.threeKm,
-    ExploreDistanceFilter.fiveKm,
-    ExploreDistanceFilter.tenKm,
-  ];
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final filters = ref.watch(exploreFiltersProvider);
     final controller = ref.read(exploreFiltersProvider.notifier);
-    final activeCount = _activeFilterCount(filters);
     final sourceClubs =
         ref.watch(exploreSourceClubsProvider).asData?.value ?? const <Club>[];
-    final areaOptions = _areaOptions(sourceClubs, filters.area);
+    final state = ExploreFilterSheetState.from(
+      filters: filters,
+      sourceClubs: sourceClubs,
+    );
 
     return CatchBottomSheetScaffold(
       title: 'Explore filters',
       subtitle: 'Narrow the map and feed without changing your time scope.',
       action: Row(
         children: [
-          if (activeCount > 0) ...[
+          if (state.activeCount > 0) ...[
             Expanded(
               child: CatchButton(
                 label: 'Clear',
@@ -240,11 +235,11 @@ class ExploreFilterSheet extends ConsumerWidget {
                 spacing: CatchSpacing.s2,
                 runSpacing: CatchSpacing.s2,
                 children: [
-                  for (final distanceFilter in _distanceFilters)
+                  for (final option in state.distanceOptions)
                     CatchSelectChip(
-                      label: _distanceFilterLabel(distanceFilter),
-                      active: filters.distanceFilter == distanceFilter,
-                      onTap: () => controller.setDistanceFilter(distanceFilter),
+                      label: option.label,
+                      active: filters.distanceFilter == option.value,
+                      onTap: () => controller.setDistanceFilter(option.value),
                     ),
                 ],
               ),
@@ -288,7 +283,7 @@ class ExploreFilterSheet extends ConsumerWidget {
                     ),
                 ],
               ),
-              if (areaOptions.isNotEmpty) ...[
+              if (state.areaOptions.isNotEmpty) ...[
                 gapH20,
                 Text(
                   'AREA',
@@ -299,7 +294,7 @@ class ExploreFilterSheet extends ConsumerWidget {
                   spacing: CatchSpacing.s2,
                   runSpacing: CatchSpacing.s2,
                   children: [
-                    for (final area in areaOptions)
+                    for (final area in state.areaOptions)
                       CatchSelectChip(
                         label: area,
                         active: exploreFilterValuesMatch(filters.area, area),
@@ -326,40 +321,7 @@ Future<void> _showExploreFilterSheet(BuildContext context) {
   );
 }
 
-int _activeFilterCount(ExploreFilterSelection filters) {
-  var count = 0;
-  if (filters.timeFilter != defaultExploreTimeFilter) count += 1;
-  if (filters.distanceFilter != ExploreDistanceFilter.any) count += 1;
-  if (filters.highRatedOnly) count += 1;
-  if (filters.joinedOnly) count += 1;
-  if (filters.activityTag != null) count += 1;
-  if (filters.area != null) count += 1;
-  return count;
-}
-
-String _distanceFilterLabel(ExploreDistanceFilter filter) {
-  return switch (filter) {
-    ExploreDistanceFilter.any => 'Any',
-    ExploreDistanceFilter.oneKm => '1 km',
-    ExploreDistanceFilter.threeKm => '3 km',
-    ExploreDistanceFilter.fiveKm => '5 km',
-    ExploreDistanceFilter.tenKm => '10 km',
-  };
-}
-
 bool _activityFilterActive(String? selected, ActivityKind kind) {
   return exploreFilterValuesMatch(selected, kind.name) ||
       exploreFilterValuesMatch(selected, kind.label);
-}
-
-List<String> _areaOptions(Iterable<Club> clubs, String? selectedArea) {
-  final areas = <String>{};
-  for (final club in clubs) {
-    final area = club.area.trim();
-    if (area.isNotEmpty) areas.add(area);
-  }
-  final selected = selectedArea?.trim();
-  if (selected != null && selected.isNotEmpty) areas.add(selected);
-  return areas.toList()
-    ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 }

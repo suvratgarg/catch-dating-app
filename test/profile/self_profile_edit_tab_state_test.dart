@@ -1,0 +1,126 @@
+import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
+import 'package:catch_dating_app/user_profile/presentation/self_profile_photo_action_controller.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import '../events/events_test_helpers.dart';
+
+const PhotoUploadState _idleUploadState = (
+  loadingIndices: <int>{},
+  uploadError: null,
+);
+
+void main() {
+  test('SelfProfileEditTabState maps photo grid delete and loading state', () {
+    final user = buildUser(
+      photoUrls: List.generate(
+        minimumProfilePhotoCount + 1,
+        (index) => 'https://example.com/photo_$index.jpg',
+      ),
+    );
+
+    final state = SelfProfileEditTabState.fromProfile(
+      user: user,
+      uploadState: (loadingIndices: {2}, uploadError: null),
+    );
+
+    expect(
+      state.photoGrid.profilePhotos,
+      hasLength(minimumProfilePhotoCount + 1),
+    );
+    expect(state.photoGrid.loadingIndices, {2});
+    expect(state.photoGrid.canDeletePhotos, isTrue);
+  });
+
+  test('SelfProfileEditTabState disables delete at minimum photo count', () {
+    final user = buildUser(
+      photoUrls: List.generate(
+        minimumProfilePhotoCount,
+        (index) => 'https://example.com/photo_$index.jpg',
+      ),
+    );
+
+    final state = SelfProfileEditTabState.fromProfile(
+      user: user,
+      uploadState: _idleUploadState,
+    );
+
+    expect(state.photoGrid.canDeletePhotos, isFalse);
+  });
+
+  test('SelfProfileEditTabState derives prompt slots and available ids', () {
+    final usedPrompt = profilePromptDefinition('afterEvent');
+    final user = buildUser(
+      profilePrompts: [
+        profilePromptAnswerFor(
+          definition: profilePromptDefinition(profilePromptPerfectEventId),
+          answer: 'Here for the event.',
+        ),
+        profilePromptAnswerFor(
+          definition: usedPrompt,
+          answer: 'Post-run coffee.',
+        ),
+      ],
+    );
+
+    final state = SelfProfileEditTabState.fromProfile(
+      user: user,
+      uploadState: _idleUploadState,
+    );
+
+    expect(state.completedPromptCount, 2);
+    expect(state.promptSlots, hasLength(maxProfilePromptAnswers));
+    expect(state.promptSlots[0].currentPromptId, profilePromptPerfectEventId);
+    expect(state.promptSlots[0].isAddAffordance, isFalse);
+    expect(state.promptSlots[1].currentPromptId, usedPrompt.id);
+    expect(state.promptSlots[1].isAddAffordance, isFalse);
+    expect(
+      state.promptSlots[2].availablePromptIds,
+      isNot(contains(profilePromptPerfectEventId)),
+    );
+    expect(
+      state.promptSlots[2].availablePromptIds,
+      isNot(contains(usedPrompt.id)),
+    );
+  });
+
+  test(
+    'SelfProfilePhotoActionController resolves editor and mutation intents',
+    () {
+      const controller = SelfProfilePhotoActionController();
+      final state = SelfProfileEditTabState.fromProfile(
+        user: buildUser(
+          photoUrls: [
+            'https://example.com/photo_0.jpg',
+            'https://example.com/photo_1.jpg',
+            'https://example.com/photo_2.jpg',
+          ],
+        ),
+        uploadState: _idleUploadState,
+      );
+
+      final existingPhoto = controller.editorRequest(
+        state: state.photoGrid,
+        index: 1,
+      );
+      final emptySlot = controller.editorRequest(
+        state: state.photoGrid,
+        index: 5,
+      );
+      final delete = controller.deleteIntent(2);
+      final reorder = controller.reorderIntent(fromIndex: 2, toIndex: 0);
+
+      expect(existingPhoto.index, 1);
+      expect(existingPhoto.photo?.url, 'https://example.com/photo_1.jpg');
+      expect(existingPhoto.canDelete, isTrue);
+      expect(emptySlot.index, 5);
+      expect(emptySlot.photo, isNull);
+      expect(emptySlot.canDelete, isTrue);
+      expect(delete.index, 2);
+      expect(reorder.fromIndex, 2);
+      expect(reorder.toIndex, 0);
+    },
+  );
+}

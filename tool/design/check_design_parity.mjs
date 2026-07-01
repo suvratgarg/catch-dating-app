@@ -22,6 +22,7 @@ function runGate() {
     "node tool/ui_capture/check_route_inventory.mjs --check",
     "node tool/ui_capture/check_capture_coverage.mjs --check --summary",
     "node tool/design/check_design_parity_matrix.mjs --check",
+    "node tool/design/check_comprehensive_todo_summary.mjs --check",
     "node tool/design/check_screen_coverage.mjs --check --summary",
     "node tool/design/check_screen_contracts.mjs --check --summary",
     "node tool/design/check_widgetbook_contract_refs.mjs --check",
@@ -63,6 +64,7 @@ function printHelp() {
 
 Runs the standard local design parity gate. Blocking checks validate component
 contracts, widget classification, route inventory, capture coverage, screen
-coverage, screen contracts, state matrix, and Widgetbook references. Advisory
-checks print known screen-contract migration debt without failing the gate.`);
+coverage, screen contracts, state matrix, comprehensive todo summaries, and
+Widgetbook references. Advisory checks print known screen-contract migration
+debt without failing the gate.`);
 }

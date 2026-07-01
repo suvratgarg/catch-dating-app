@@ -26,6 +26,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -352,6 +353,98 @@ void main() {
     expect(find.byType(EventSuccessHostSectionSkeleton), findsOneWidget);
     expect(find.byType(CatchSkeleton), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
+
+  test('host section state maps provider waves to status and retry intent', () {
+    final event = buildEvent(id: 'event-host-section-state');
+    final plan = EventSuccessPlan.defaultForEvent(event);
+    const roster = EventParticipationRoster(
+      bookedIds: ['runner-1'],
+      checkedInIds: [],
+      waitlistedIds: [],
+    );
+
+    EventSuccessHostSectionState resolve({
+      AsyncValue<EventSuccessPlan?>? planAsync,
+      AsyncValue<EventParticipationRoster>? rosterAsync,
+      AsyncValue<EventSuccessScorecard?>? scorecardAsync,
+      AsyncValue<List<EventSuccessAssignment>>? assignmentsAsync,
+      AsyncValue<List<PublicProfile>>? assignmentProfilesAsync,
+      AsyncValue<List<EventSuccessAssignment>>? rotationAssignmentsAsync,
+      AsyncValue<List<PublicProfile>>? rotationProfilesAsync,
+      AsyncValue<List<EventSuccessPreference>>? preferencesAsync,
+      AsyncValue<List<EventSuccessWingmanRequest>>? wingmanRequestsAsync,
+      AsyncValue<List<PublicProfile>>? wingmanProfilesAsync,
+    }) {
+      return EventSuccessHostSectionState.resolve(
+        event: event,
+        planAsync: planAsync ?? AsyncData<EventSuccessPlan?>(plan),
+        rosterAsync: rosterAsync ?? const AsyncData(roster),
+        scorecardAsync:
+            scorecardAsync ?? const AsyncData<EventSuccessScorecard?>(null),
+        assignmentsAsync:
+            assignmentsAsync ?? const AsyncData(<EventSuccessAssignment>[]),
+        assignmentParticipantProfilesAsync:
+            assignmentProfilesAsync ?? const AsyncData(<PublicProfile>[]),
+        rotationAssignmentsAsync:
+            rotationAssignmentsAsync ??
+            const AsyncData(<EventSuccessAssignment>[]),
+        rotationParticipantProfilesAsync:
+            rotationProfilesAsync ?? const AsyncData(<PublicProfile>[]),
+        preferencesAsync:
+            preferencesAsync ?? const AsyncData(<EventSuccessPreference>[]),
+        wingmanRequestsAsync:
+            wingmanRequestsAsync ??
+            const AsyncData(<EventSuccessWingmanRequest>[]),
+        wingmanProfilesAsync:
+            wingmanProfilesAsync ?? const AsyncData(<PublicProfile>[]),
+      );
+    }
+
+    expect(
+      resolve(planAsync: const AsyncLoading<EventSuccessPlan?>()).status,
+      EventSuccessHostSectionStatus.loading,
+    );
+
+    final unsaved = resolve(
+      planAsync: const AsyncData<EventSuccessPlan?>(null),
+    );
+    expect(unsaved.status, EventSuccessHostSectionStatus.ready);
+    expect(unsaved.planIsPersisted, isFalse);
+    expect(unsaved.plan.eventId, event.id);
+
+    final rosterError = StateError('roster failed');
+    final rosterState = resolve(
+      rosterAsync: AsyncError<EventParticipationRoster>(
+        rosterError,
+        StackTrace.empty,
+      ),
+    );
+    expect(rosterState.status, EventSuccessHostSectionStatus.error);
+    expect(rosterState.retryIntent, EventSuccessHostRetryIntent.roster);
+    expect(rosterState.error, same(rosterError));
+
+    final profileError = StateError('profiles failed');
+    expect(
+      resolve(
+        assignmentProfilesAsync: AsyncError<List<PublicProfile>>(
+          profileError,
+          StackTrace.empty,
+        ),
+      ).retryIntent,
+      EventSuccessHostRetryIntent.assignmentParticipantProfiles,
+    );
+
+    final scorecardError = StateError('scorecard failed');
+    expect(
+      resolve(
+        scorecardAsync: AsyncError<EventSuccessScorecard?>(
+          scorecardError,
+          StackTrace.empty,
+        ),
+      ).retryIntent,
+      EventSuccessHostRetryIntent.scorecard,
+    );
   });
 
   testWidgets('host report is hidden when host analytics is disabled', (

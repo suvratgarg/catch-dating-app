@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://catch.app/schemas/website.components.schema.json",
+  "title": "Catch marketing website component registry",
+  "type": "object",
+  "required": ["$schema", "version", "updated", "owner", "sourceOfTruth", "coverage", "components"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "const": "./website.components.schema.json"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updated": {
+      "type": "string"
+    },
+    "owner": {
+      "const": "marketing_website"
+    },
+    "sourceOfTruth": {
+      "type": "object",
+      "required": ["architecture", "routes", "storybook"],
+      "additionalProperties": {
+        "type": "string"
+      },
+      "properties": {
+        "architecture": {"type": "string"},
+        "routes": {"type": "string"},
+        "storybook": {"type": "string"}
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "required": ["strategy", "currentFocus", "storyKinds"],
+      "additionalProperties": false,
+      "properties": {
+        "strategy": {"const": "route-plus-sections"},
+        "currentFocus": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "storyKinds": {
+          "type": "array",
+          "items": {"enum": ["route", "section", "flow", "supporting-component"]},
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/component"},
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "required": ["id", "kind", "routeIds", "owner", "source", "exportName", "css", "storybook"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "kind": {"enum": ["route", "section", "flow", "supporting-component"]},
+        "routeIds": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "owner": {"type": "string"},
+        "source": {"type": "string"},
+        "exportName": {"type": "string"},
+        "css": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "notes": {"type": "string"},
+        "storybook": {
+          "type": "object",
+          "required": ["status", "states"],
+          "additionalProperties": false,
+          "properties": {
+            "status": {"enum": ["ready", "planned", "route-only", "not-required"]},
+            "story": {"type": "string"},
+            "exportName": {"type": "string"},
+            "states": {
+              "type": "array",
+              "items": {"type": "string"},
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

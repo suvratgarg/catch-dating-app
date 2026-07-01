@@ -1,10 +1,12 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
+import 'package:catch_dating_app/events/presentation/saved_events_state.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +17,53 @@ import '../clubs/clubs_test_helpers.dart' as club_test;
 import 'events_test_helpers.dart';
 
 void main() {
+  group('SavedEventsListState', () {
+    test('orders upcoming saved events before past saved events', () {
+      final now = DateTime(2026, 7, 1, 12);
+      final laterUpcoming = buildEvent(
+        id: 'later-upcoming',
+        startTime: now.add(const Duration(days: 3)),
+      );
+      final nextUpcoming = buildEvent(
+        id: 'next-upcoming',
+        startTime: now.add(const Duration(hours: 6)),
+      );
+      final recentPast = buildEvent(
+        id: 'recent-past',
+        startTime: now.subtract(const Duration(hours: 4)),
+      );
+      final olderPast = buildEvent(
+        id: 'older-past',
+        startTime: now.subtract(const Duration(days: 4)),
+      );
+
+      final state = SavedEventsListState.from([
+        olderPast,
+        laterUpcoming,
+        recentPast,
+        nextUpcoming,
+      ], now: now);
+
+      expect(state.orderedEvents.map((event) => event.id), [
+        'next-upcoming',
+        'later-upcoming',
+        'recent-past',
+        'older-past',
+      ]);
+      expect(state.today, DateUtils.dateOnly(now));
+      expect(state.clubIds, [
+        nextUpcoming.clubId,
+        laterUpcoming.clubId,
+        recentPast.clubId,
+        olderPast.clubId,
+      ]);
+      expect(state.badgeLabelFor(nextUpcoming), 'SAVED');
+      expect(state.badgeLabelFor(recentPast), 'PAST');
+      expect(state.statusFor(nextUpcoming), EventTileStatus.saved);
+      expect(state.statusFor(recentPast), EventTileStatus.past);
+    });
+  });
+
   group('SavedEventsScreen', () {
     testWidgets('shows an empty state when there are no saved events', (
       tester,

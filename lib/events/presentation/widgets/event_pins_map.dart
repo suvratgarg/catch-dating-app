@@ -100,6 +100,8 @@ class _EventPinsMapState extends State<EventPinsMap> {
         items: pinnedItems,
         selectedEventId: widget.selectedEventId,
         markerIcon: widget.markerIcon ?? CatchIcons.running,
+        userLocation: widget.userLocation,
+        distanceRingRadiusKm: widget.distanceRingRadiusKm,
         onEventSelected: onEventSelected,
       );
     }
@@ -332,9 +334,15 @@ Widget _eventPinsMapPlaceholder(
   required List<EventMapItem> items,
   required String? selectedEventId,
   required IconData markerIcon,
+  required LocationCoordinate? userLocation,
+  required double? distanceRingRadiusKm,
   required ValueChanged<Event>? onEventSelected,
 }) {
   final t = CatchTokens.of(context);
+  final showDistanceRing =
+      userLocation != null &&
+      distanceRingRadiusKm != null &&
+      distanceRingRadiusKm > 0;
   return DecoratedBox(
     decoration: BoxDecoration(color: t.primarySoft),
     child: LayoutBuilder(
@@ -367,6 +375,21 @@ Widget _eventPinsMapPlaceholder(
                 ),
               ),
             ),
+            if (showDistanceRing)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: CustomPaint(
+                    painter: _EventPinsMapDistanceRingPainter(
+                      fillColor: t.primary.withValues(
+                        alpha: CatchOpacity.mapDistanceRingFill,
+                      ),
+                      strokeColor: t.primary.withValues(
+                        alpha: CatchOpacity.mapDistanceRingStroke,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             for (final indexed in items.indexed)
               Positioned(
                 left:
@@ -400,6 +423,37 @@ Widget _eventPinsMapPlaceholder(
       },
     ),
   );
+}
+
+class _EventPinsMapDistanceRingPainter extends CustomPainter {
+  const _EventPinsMapDistanceRingPainter({
+    required this.fillColor,
+    required this.strokeColor,
+  });
+
+  final Color fillColor;
+  final Color strokeColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final radius = math.min(size.width, size.height) * 0.26;
+    final center = Offset(size.width * 0.5, size.height * 0.56);
+    canvas.drawCircle(center, radius, Paint()..color = fillColor);
+    canvas.drawCircle(
+      center,
+      radius,
+      Paint()
+        ..color = strokeColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _EventPinsMapDistanceRingPainter oldDelegate) {
+    return oldDelegate.fillColor != fillColor ||
+        oldDelegate.strokeColor != strokeColor;
+  }
 }
 
 class _EventPinsMapPlaceholderPainter extends CustomPainter {

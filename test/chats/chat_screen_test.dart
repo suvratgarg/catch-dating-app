@@ -5,13 +5,17 @@ import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
+import 'package:catch_dating_app/chats/presentation/chat_read_marker_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_read_marker_state.dart';
 import 'package:catch_dating_app/chats/presentation/chat_route_state.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/chats/presentation/chat_scroll_coordinator.dart';
+import 'package:catch_dating_app/chats/presentation/chat_thread_action_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_thread_lookup_state.dart';
 import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -225,6 +229,34 @@ class FakeSafetyRepository extends Fake implements SafetyRepository {
   }
 }
 
+class FakeChatSafetyActionRunner implements ChatSafetyActionRunner {
+  FakeChatSafetyActionRunner({
+    this.failReports = false,
+    this.failBlocks = false,
+  });
+
+  bool failReports;
+  bool failBlocks;
+  final reportCalls = <String>[];
+  final blockCalls = <String>[];
+
+  @override
+  Future<void> reportUser({required String targetUserId}) async {
+    reportCalls.add(targetUserId);
+    if (failReports) {
+      throw StateError('report failed');
+    }
+  }
+
+  @override
+  Future<void> blockUser({required String targetUserId}) async {
+    blockCalls.add(targetUserId);
+    if (failBlocks) {
+      throw StateError('block failed');
+    }
+  }
+}
+
 Match buildMatch({
   String id = 'match-1',
   String user1Id = 'runner-1',
@@ -269,6 +301,47 @@ ChatMessage buildMessage({
   );
 }
 
+Future<void> pumpConsumerMatchChat(
+  WidgetTester tester, {
+  FakeConversationRepository? conversationRepository,
+  FakeSafetyRepository? safetyRepository,
+  String? initialDraftText,
+}) async {
+  final effectiveConversationRepository =
+      conversationRepository ?? FakeConversationRepository();
+  final otherProfile = buildPublicProfile(uid: 'runner-2', name: 'Taylor');
+
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        matchRepositoryProvider.overrideWithValue(
+          FakeMatchRepository(match: buildMatch()),
+        ),
+        conversationRepositoryProvider.overrideWithValue(
+          effectiveConversationRepository,
+        ),
+        if (safetyRepository != null)
+          safetyRepositoryProvider.overrideWith((ref) => safetyRepository),
+        watchEventProvider('event-1').overrideWith((ref) => Stream.value(null)),
+        watchPublicProfileProvider(
+          'runner-2',
+        ).overrideWith((ref) => Stream.value(otherProfile)),
+      ],
+      child: MaterialApp(
+        theme: AppTheme.light,
+        home: ChatScreen(
+          matchId: 'match-1',
+          otherProfile: otherProfile,
+          initialDraftText: initialDraftText,
+        ),
+      ),
+    ),
+  );
+
+  await pumpFeatureUi(tester);
+}
+
 const _emptyMessagesAsync = AsyncData<List<ChatMessage>>(<ChatMessage>[]);
 const _emptySuvbotActionsAsync = AsyncData<List<SuvbotActionItem>>(
   <SuvbotActionItem>[],
@@ -307,6 +380,268 @@ void main() {
         ),
         'runner-1',
       );
+    });
+  });
+
+  group('ChatReadMarkerController', () {
+    test('executes mark-read decisions through the repository', () {
+      final repository = FakeConversationRepository();
+      final controller = ChatReadMarkerController(
+        conversationId: 'match-1',
+        repository: repository,
+      );
+
+      expect(controller.markForUid(null), isFalse);
+      expect(controller.markForUid('runner-1'), isTrue);
+      expect(controller.markForUid('runner-1'), isFalse);
+      expect(repository.markReadCalls, [('match-1', 'runner-1')]);
+
+      expect(controller.markForUid('runner-1', force: true), isTrue);
+      expect(repository.markReadCalls, [
+        ('match-1', 'runner-1'),
+        ('match-1', 'runner-1'),
+      ]);
+    });
+
+    test('marks incoming latest messages and disposes with last known uid', () {
+      final repository = FakeConversationRepository();
+      final controller = ChatReadMarkerController(
+        conversationId: 'match-1',
+        repository: repository,
+      );
+
+      expect(
+        controller.markForIncomingLatest(
+          uid: 'runner-1',
+          messages: [buildMessage()],
+        ),
+        isFalse,
+      );
+      expect(
+        controller.markForIncomingLatest(
+          uid: 'runner-1',
+          messages: [buildMessage(senderId: 'runner-2')],
+        ),
+        isTrue,
+      );
+      expect(controller.markOnDispose(), isTrue);
+
+      expect(repository.markReadCalls, [
+        ('match-1', 'runner-1'),
+        ('match-1', 'runner-1'),
+      ]);
+    });
+  });
+
+  group('ChatScrollCoordinator', () {
+    testWidgets('tracks initial and appended message batches', (tester) async {
+      final coordinator = ChatScrollCoordinator(isMounted: () => true);
+      addTearDown(coordinator.dispose);
+
+      coordinator.syncWithMessages(messages: const []);
+
+      expect(coordinator.didScrollToLatestMessage, isFalse);
+      expect(coordinator.lastMessageCount, 0);
+
+      final firstBatch = [
+        buildMessage(),
+        buildMessage(id: 'msg-2', senderId: 'runner-2'),
+      ];
+      coordinator.syncWithMessages(messages: firstBatch);
+      await tester.pump();
+
+      expect(coordinator.didScrollToLatestMessage, isTrue);
+      expect(coordinator.lastMessageCount, 2);
+
+      final appendedBatch = [
+        ...firstBatch,
+        buildMessage(id: 'msg-3', senderId: 'runner-2'),
+      ];
+      coordinator.syncWithMessages(
+        messages: appendedBatch,
+        previousMessages: firstBatch,
+      );
+      await tester.pump();
+
+      expect(coordinator.lastMessageCount, 3);
+    });
+
+    test('ignores send-success scroll when unattached', () {
+      final coordinator = ChatScrollCoordinator(isMounted: () => true);
+      addTearDown(coordinator.dispose);
+
+      coordinator.scrollAfterSendSuccess();
+
+      expect(coordinator.lastMessageCount, 0);
+    });
+  });
+
+  group('ChatThreadActionController', () {
+    test('resolves profile navigation requests from chat state', () {
+      final runner = FakeChatSafetyActionRunner();
+      final controller = ChatThreadActionController(safetyRunner: runner);
+      final profile = buildPublicProfile(uid: 'runner-2', name: 'Taylor');
+
+      final state = HostChatScreenState.resolve(
+        matchId: 'match-1',
+        uid: 'runner-1',
+        matchAsync: AsyncData<Match?>(buildMatch()),
+        messagesAsync: _emptyMessagesAsync,
+        suvbotActionsAsync: _emptySuvbotActionsAsync,
+        profile: profile,
+        hostProfile: null,
+      );
+      final hostInquiryState = HostChatScreenState.resolve(
+        matchId: 'host-inquiry-1',
+        uid: 'host-1',
+        matchAsync: AsyncData<Match?>(
+          buildMatch(
+            id: 'host-inquiry-1',
+            user1Id: 'guest-1',
+            user2Id: 'host-1',
+            conversationType: MatchConversationType.clubHostInquiry,
+          ),
+        ),
+        messagesAsync: _emptyMessagesAsync,
+        suvbotActionsAsync: _emptySuvbotActionsAsync,
+        profile: buildPublicProfile(uid: 'guest-1', name: 'Aarav'),
+        hostProfile: null,
+      );
+
+      final request = controller.profileNavigationRequest(state);
+
+      expect(request?.uid, 'runner-2');
+      expect(request?.profile, same(profile));
+      expect(controller.profileNavigationRequest(hostInquiryState), isNull);
+    });
+
+    test(
+      'runs share report and block intents through injected effects',
+      () async {
+        final runner = FakeChatSafetyActionRunner();
+        final controller = ChatThreadActionController(safetyRunner: runner);
+        final state = HostChatScreenState.resolve(
+          matchId: 'match-1',
+          uid: 'runner-1',
+          matchAsync: AsyncData<Match?>(buildMatch()),
+          messagesAsync: _emptyMessagesAsync,
+          suvbotActionsAsync: _emptySuvbotActionsAsync,
+          profile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
+          hostProfile: null,
+        );
+        final share = ExternalShareController((_) async {});
+        final feedback = <String>[];
+        final confirmedBlocks = <String>[];
+        ChatShareCardRequest? shareRequest;
+        var closedAfterBlock = false;
+        final ui = ChatThreadActionUi(
+          showFeedback: feedback.add,
+          showShareCard: (request) => shareRequest = request,
+          confirmBlock: (targetName) async {
+            confirmedBlocks.add(targetName);
+            return true;
+          },
+          closeAfterBlock: () => closedAfterBlock = true,
+        );
+
+        await controller.runThreadAction(
+          action: ChatThreadAction.shareCard,
+          chatState: state,
+          messages: const [],
+          uid: 'runner-1',
+          event: null,
+          share: share,
+          ui: ui,
+        );
+        expect(feedback, ['Send a message before sharing a card.']);
+
+        await controller.runThreadAction(
+          action: ChatThreadAction.shareCard,
+          chatState: state,
+          messages: [buildMessage()],
+          uid: 'runner-1',
+          event: null,
+          share: share,
+          ui: ui,
+        );
+        expect(shareRequest?.currentUid, 'runner-1');
+        expect(shareRequest?.messages, hasLength(1));
+
+        await controller.runThreadAction(
+          action: ChatThreadAction.report,
+          chatState: state,
+          messages: const [],
+          uid: 'runner-1',
+          event: null,
+          share: share,
+          ui: ui,
+        );
+        expect(runner.reportCalls, ['runner-2']);
+        expect(feedback.last, 'Report submitted for Taylor.');
+
+        await controller.runThreadAction(
+          action: ChatThreadAction.block,
+          chatState: state,
+          messages: const [],
+          uid: 'runner-1',
+          event: null,
+          share: share,
+          ui: ui,
+        );
+        expect(confirmedBlocks, ['Taylor']);
+        expect(runner.blockCalls, ['runner-2']);
+        expect(closedAfterBlock, isTrue);
+      },
+    );
+
+    test('suppresses success effects when safety actions fail', () async {
+      final runner = FakeChatSafetyActionRunner(
+        failReports: true,
+        failBlocks: true,
+      );
+      final controller = ChatThreadActionController(safetyRunner: runner);
+      final state = HostChatScreenState.resolve(
+        matchId: 'match-1',
+        uid: 'runner-1',
+        matchAsync: AsyncData<Match?>(buildMatch()),
+        messagesAsync: _emptyMessagesAsync,
+        suvbotActionsAsync: _emptySuvbotActionsAsync,
+        profile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
+        hostProfile: null,
+      );
+      final share = ExternalShareController((_) async {});
+      final feedback = <String>[];
+      var closedAfterBlock = false;
+      final ui = ChatThreadActionUi(
+        showFeedback: feedback.add,
+        showShareCard: (_) {},
+        confirmBlock: (_) async => true,
+        closeAfterBlock: () => closedAfterBlock = true,
+      );
+
+      await controller.runThreadAction(
+        action: ChatThreadAction.report,
+        chatState: state,
+        messages: const [],
+        uid: 'runner-1',
+        event: null,
+        share: share,
+        ui: ui,
+      );
+      await controller.runThreadAction(
+        action: ChatThreadAction.block,
+        chatState: state,
+        messages: const [],
+        uid: 'runner-1',
+        event: null,
+        share: share,
+        ui: ui,
+      );
+
+      expect(runner.reportCalls, ['runner-2']);
+      expect(runner.blockCalls, ['runner-2']);
+      expect(feedback, isEmpty);
+      expect(closedAfterBlock, isFalse);
     });
   });
 
@@ -865,6 +1200,47 @@ void main() {
       );
     });
 
+    testWidgets('seeds an initial draft for deterministic route captures', (
+      tester,
+    ) async {
+      final matchRepository = FakeMatchRepository(match: buildMatch());
+      final conversationRepository = FakeConversationRepository();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            matchRepositoryProvider.overrideWithValue(matchRepository),
+            conversationRepositoryProvider.overrideWithValue(
+              conversationRepository,
+            ),
+            watchEventProvider(
+              'event-1',
+            ).overrideWith((ref) => Stream.value(null)),
+            watchPublicProfileProvider('runner-2').overrideWith(
+              (ref) => Stream.value(
+                buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ChatScreen(
+              matchId: 'match-1',
+              initialDraftText: 'Holding this draft for review.',
+            ),
+          ),
+        ),
+      );
+
+      await pumpFeatureUi(tester);
+
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).controller?.text,
+        'Holding this draft for review.',
+      );
+    });
+
     testWidgets('resets unread once the uid becomes available after mount', (
       tester,
     ) async {
@@ -945,35 +1321,17 @@ void main() {
       );
     });
 
-    testWidgets('keeps composed text when send fails', (tester) async {
-      final matchRepository = FakeMatchRepository(match: buildMatch());
+    testWidgets('keeps composed text and surfaces feedback when send fails', (
+      tester,
+    ) async {
       final conversationRepository = FakeConversationRepository(
         failSends: true,
       );
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            matchRepositoryProvider.overrideWithValue(matchRepository),
-            conversationRepositoryProvider.overrideWithValue(
-              conversationRepository,
-            ),
-            watchEventProvider(
-              'event-1',
-            ).overrideWith((ref) => Stream.value(null)),
-          ],
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: ChatScreen(
-              matchId: 'match-1',
-              otherProfile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
-            ),
-          ),
-        ),
+      await pumpConsumerMatchChat(
+        tester,
+        conversationRepository: conversationRepository,
       );
-
-      await pumpFeatureUi(tester);
 
       await tester.enterText(find.byType(TextField), '  Still here  ');
       await tester.tap(find.byIcon(CatchIcons.sendRounded));
@@ -984,6 +1342,98 @@ void main() {
         tester.widget<TextField>(find.byType(TextField)).controller?.text,
         '  Still here  ',
       );
+      expect(find.text('send failed'), findsOneWidget);
+    });
+
+    testWidgets(
+      'keeps multiline composer visible and capped when keyboard is open',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = const Size(390, 844);
+        tester.view.viewInsets = const FakeViewPadding(bottom: 318);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetViewInsets);
+
+        await pumpConsumerMatchChat(
+          tester,
+          initialDraftText:
+              'First gallery idea\nSecond coffee stop\nThird Thursday run\n'
+              'Fourth plan to compare',
+        );
+
+        final input = tester.widget<TextField>(find.byType(TextField));
+
+        expect(input.controller?.text, contains('\n'));
+        expect(input.minLines, 1);
+        expect(input.maxLines, 4);
+        expect(find.byIcon(CatchIcons.sendRounded), findsOneWidget);
+        expect(
+          tester.getBottomLeft(find.byIcon(CatchIcons.sendRounded)).dy,
+          lessThanOrEqualTo(844 - 318),
+        );
+      },
+    );
+
+    testWidgets('consumer chat reports show success feedback', (tester) async {
+      final safetyRepository = FakeSafetyRepository();
+
+      await pumpConsumerMatchChat(tester, safetyRepository: safetyRepository);
+
+      await tester.tap(find.byTooltip('Chat actions'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Report'));
+      await pumpFeatureUi(tester);
+
+      expect(safetyRepository.reportCalls, [
+        (targetUserId: 'runner-2', contextId: 'match-1'),
+      ]);
+      expect(find.text('Report submitted for Taylor.'), findsOneWidget);
+    });
+
+    testWidgets('consumer chat report failures surface snackbar feedback', (
+      tester,
+    ) async {
+      final safetyRepository = FakeSafetyRepository(failReports: true);
+
+      await pumpConsumerMatchChat(tester, safetyRepository: safetyRepository);
+
+      await tester.tap(find.byTooltip('Chat actions'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Report'));
+      await pumpFeatureUi(tester);
+
+      expect(safetyRepository.reportCalls, [
+        (targetUserId: 'runner-2', contextId: 'match-1'),
+      ]);
+      expect(find.text('report failed'), findsOneWidget);
+      expect(find.text('Report submitted for Taylor.'), findsNothing);
+    });
+
+    testWidgets('consumer chat block action requires confirmation', (
+      tester,
+    ) async {
+      final safetyRepository = FakeSafetyRepository();
+
+      await pumpConsumerMatchChat(tester, safetyRepository: safetyRepository);
+
+      await tester.tap(find.byTooltip('Chat actions'));
+      await pumpFeatureUi(tester);
+      await tester.tap(
+        find.ancestor(of: find.text('Block'), matching: find.byType(InkWell)),
+      );
+      await pumpFeatureUi(tester);
+
+      expect(find.text('Block Taylor?'), findsOneWidget);
+      expect(
+        find.textContaining('You will stop seeing each other'),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.widgetWithText(CatchButton, 'Cancel'));
+      await pumpFeatureUi(tester);
+
+      expect(safetyRepository.blockCalls, isEmpty);
     });
 
     testWidgets('resets unread again for incoming messages while open', (

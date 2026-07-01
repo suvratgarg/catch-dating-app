@@ -4,15 +4,18 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
-import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
@@ -22,9 +25,11 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/catch_club_dock.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
@@ -35,9 +40,13 @@ import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
@@ -50,10 +59,14 @@ import 'package:catch_dating_app/event_success/domain/event_success_assignment.d
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_playbooks/modules.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -66,11 +79,13 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart';
+import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
+import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -95,8 +110,10 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
@@ -112,11 +129,6 @@ import 'package:catch_dating_app/labs/design_fixtures/utility_surface_fixtures.d
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/match_celebration_dialog.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
@@ -148,10 +160,12 @@ import 'package:catch_dating_app/swipes/presentation/profile_redesign/profile_vi
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_notifier.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_controls.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
@@ -563,6 +577,48 @@ final _memberDiscoveryItems = [
       },
     ),
 ];
+final _unclaimedDiscoveryClub = _captureFixtures
+    .captureClub(
+      id: 'club-discovery-unclaimed',
+      name: 'Open Table Collective',
+      description:
+          'Community-hosted suppers with a rotating organizer profile.',
+      area: 'Bandra West',
+      tags: const ['dinner', 'community', 'unclaimed'],
+      memberCount: 42,
+      rating: 4.5,
+      reviewCount: 11,
+      nextEventAt: DateTime(2026, 6, 14, 20),
+      nextEventLabel: 'Sun 8:00 PM',
+    )
+    .copyWith(
+      hostUserId: null,
+      hostName: null,
+      hostUserIds: const <String>[],
+      hostProfiles: const <ClubHostProfile>[],
+    );
+final _unclaimedDiscoveryEvent = _captureFixtures.captureEvent(
+  id: 'event-discovery-unclaimed-supper',
+  club: _unclaimedDiscoveryClub,
+  startTime: DateTime(2026, 6, 14, 20),
+  meetingPoint: 'Bandra community table',
+  startingPointLat: 19.0608,
+  startingPointLng: 72.8365,
+  activityKind: ActivityKind.dinner,
+  distanceKm: 1.7,
+  bookedCount: 10,
+  capacityLimit: 18,
+  priceInPaise: 95000,
+  description:
+      'A rotating host keeps the table moving without a claimed organizer account.',
+);
+final _unclaimedDiscoveryItems = [
+  ExploreEventItem(
+    event: _unclaimedDiscoveryEvent,
+    club: _unclaimedDiscoveryClub,
+    distanceFromUserKm: 1.7,
+  ),
+];
 
 List<Object> _exploreProviderOverrides({
   AsyncValue<List<Club>>? sourceClubs,
@@ -570,6 +626,7 @@ List<Object> _exploreProviderOverrides({
   AsyncValue<ExploreFeedViewModel>? feed,
   String? uid = _captureViewerUid,
   Set<String> joinedClubIds = const <String>{},
+  DeviceLocation Function()? deviceLocationBuilder,
 }) {
   final effectiveSourceClubs =
       sourceClubs ?? AsyncData<List<Club>>(_memberDiscoveryClubs);
@@ -586,7 +643,9 @@ List<Object> _exploreProviderOverrides({
 
   return [
     cityListProvider.overrideWith((ref) async => _memberDiscoveryCities),
-    deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
+    deviceLocationProvider.overrideWith(
+      deviceLocationBuilder ?? _CaptureDeviceLocation.new,
+    ),
     uidProvider.overrideWith((ref) => Stream.value(uid)),
     watchUserProfileProvider.overrideWith(
       (ref) => Stream.value(uid == null ? null : _captureViewer),
@@ -595,6 +654,16 @@ List<Object> _exploreProviderOverrides({
     exploreViewModelProvider.overrideWithValue(effectiveViewModel),
     exploreFeedViewModelProvider.overrideWithValue(effectiveFeed),
   ];
+}
+
+NetworkException _exploreOfflineException({required String action}) {
+  return obviousOfflineException(
+    context: BackendErrorContext(
+      service: BackendService.firestore,
+      action: action,
+      resource: 'explore',
+    ),
+  );
 }
 
 Widget _exploreCapture({
@@ -612,6 +681,12 @@ Widget _exploreCapture({
 class _CaptureDeviceLocation extends DeviceLocation {
   @override
   Future<LocationCoordinate?> build() async => null;
+}
+
+class _CaptureBandraDeviceLocation extends DeviceLocation {
+  @override
+  Future<LocationCoordinate?> build() async =>
+      const LocationCoordinate(19.064, 72.835);
 }
 
 class _CaptureMatchRepository implements MatchRepository {
@@ -872,6 +947,35 @@ List<Object> _swipeDeckProviderOverrides({
     swipeRepositoryProvider.overrideWithValue(swipeRepository),
   ];
 }
+
+class _CatchesReactionCommentSheetCapture extends StatelessWidget {
+  const _CatchesReactionCommentSheetCapture({this.initialComment});
+
+  final String? initialComment;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 390),
+          child: ProfileReactionCommentSheet(
+            target: _catchesReactionTarget,
+            initialComment: initialComment,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+const _catchesReactionTarget = ProfileReactionTarget(
+  id: 'prompt-sunday-loop',
+  type: SwipeReactionTargetType.profilePrompt,
+  label: 'Sunday loop',
+  preview: 'My ideal Sunday starts with a sea-facing loop and ends with dosa.',
+);
 
 class _CaptureNoopSwipeRepository implements SwipeRepository {
   const _CaptureNoopSwipeRepository();
@@ -1587,17 +1691,17 @@ Widget _clubDetailMutationCapture({
           ),
         Expanded(
           child: ClubDetailBody(
-            club: _clubDetailClub,
-            upcoming: _clubDetailEvents,
-            reviews: _clubDetailReviews,
-            userProfile: isAuthenticated ? _captureViewer : null,
-            uid: isAuthenticated ? _captureViewerUid : null,
-            isHost: false,
-            isMember: isMember,
-            isMutating: isMutating,
-            clubPushNotificationsEnabled: isMember,
-            isClubPushMutating: false,
-            isAuthenticated: isAuthenticated,
+            state: ClubDetailBodyState.fromDomain(
+              club: _clubDetailClub,
+              upcomingEvents: _clubDetailEvents,
+              reviews: _clubDetailReviews,
+              userProfile: isAuthenticated ? _captureViewer : null,
+              uid: isAuthenticated ? _captureViewerUid : null,
+              isMember: isMember,
+              isMutating: isMutating,
+              clubPushNotificationsEnabled: isMember,
+              isAuthenticated: isAuthenticated,
+            ),
           ),
         ),
       ],
@@ -2124,6 +2228,7 @@ class _HostCreateClubMutationCaptureState
 enum _HostCreateEventMutationCaptureMode {
   saveDraftPending,
   saveDraftError,
+  saveDraftOffline,
   submitPending,
   submitError,
   submitOffline,
@@ -2165,6 +2270,12 @@ class _HostCreateEventMutationCaptureState
             StateError('Capture event draft save failed'),
           );
           break;
+        case _HostCreateEventMutationCaptureMode.saveDraftOffline:
+          _runError(
+            CreateEventDraftController.saveDraftMutation,
+            obviousOfflineException(),
+          );
+          break;
         case _HostCreateEventMutationCaptureMode.submitPending:
           _runPending(CreateEventController.submitMutation);
           break;
@@ -2201,6 +2312,29 @@ class _HostCreateEventMutationCaptureState
   Widget build(BuildContext context) => widget.child;
 }
 
+class _InlineDialogCapture extends StatelessWidget {
+  const _InlineDialogCapture({required this.child, required this.dialog});
+
+  final Widget child;
+  final Widget dialog;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Stack(
+      children: [
+        child,
+        Positioned.fill(
+          child: ColoredBox(
+            color: t.ink.withValues(alpha: CatchOpacity.confirmDialogScrim),
+          ),
+        ),
+        Center(child: dialog),
+      ],
+    );
+  }
+}
+
 List<Object> _hostEditClubProviderOverrides({
   String? uid,
   AsyncValue<Club?>? clubValue,
@@ -2226,9 +2360,10 @@ List<Object> _hostEditClubProviderOverrides({
 List<Object> _hostCreateEventProviderOverrides({
   AsyncValue<Club?>? clubValue,
   List<EventDraft> drafts = const <EventDraft>[],
+  String? uid = _captureViewerUid,
 }) {
   return [
-    uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+    uidProvider.overrideWithValue(AsyncData<String?>(uid)),
     watchUserProfileProvider.overrideWith(
       (ref) => Stream.value(_captureViewer),
     ),
@@ -2545,6 +2680,15 @@ List<Object> _hostManageRouteProviderOverrides({
   AsyncValue<List<EventInviteLink>>? inviteLinksValue,
   AsyncValue<EventSuccessPlan?>? planValue,
   AsyncValue<EventSuccessScorecard?>? scorecardValue,
+  List<EventSuccessAssignment> assignments = const <EventSuccessAssignment>[],
+  List<EventSuccessAssignment> rotationAssignments =
+      const <EventSuccessAssignment>[],
+  List<EventSuccessPreference> preferences = const <EventSuccessPreference>[],
+  List<EventSuccessWingmanRequest> wingmanRequests =
+      const <EventSuccessWingmanRequest>[],
+  List<PublicProfile> assignmentPeerProfiles = const <PublicProfile>[],
+  List<PublicProfile> rotationPeerProfiles = const <PublicProfile>[],
+  List<PublicProfile> wingmanProfiles = const <PublicProfile>[],
   List<EventParticipation>? participations,
 }) {
   final effectiveUid = uid ?? HostOperationsFixtures.hostUid;
@@ -2612,6 +2756,293 @@ List<Object> _hostManageRouteProviderOverrides({
     watchEventSuccessScorecardProvider(effectiveEvent.id).overrideWithValue(
       scorecardValue ?? const AsyncData<EventSuccessScorecard?>(null),
     ),
+    watchEventSuccessAssignmentsProvider(
+      effectiveEvent.id,
+    ).overrideWith((ref) => Stream.value(assignments)),
+    watchEventSuccessRotationAssignmentsProvider(
+      effectiveEvent.id,
+    ).overrideWith((ref) => Stream.value(rotationAssignments)),
+    watchEventSuccessPreferencesProvider(
+      effectiveEvent.id,
+    ).overrideWith((ref) => Stream.value(preferences)),
+    watchEventSuccessWingmanRequestsProvider(
+      effectiveEvent.id,
+    ).overrideWith((ref) => Stream.value(wingmanRequests)),
+    if (assignments.isNotEmpty)
+      eventSuccessAssignmentPeerProfilesProvider(
+        eventSuccessPeerUidsKey(
+          _hostManageAssignmentParticipantUids(assignments),
+        ),
+      ).overrideWith((ref) async => assignmentPeerProfiles),
+    if (rotationAssignments.isNotEmpty)
+      eventSuccessAssignmentPeerProfilesProvider(
+        eventSuccessPeerUidsKey(
+          _hostManageAssignmentParticipantUids(rotationAssignments),
+        ),
+      ).overrideWith((ref) async => rotationPeerProfiles),
+    if (wingmanRequests.isNotEmpty)
+      eventSuccessAssignmentPeerProfilesProvider(
+        eventSuccessPeerUidsKey(_hostManageWingmanProfileUids(wingmanRequests)),
+      ).overrideWith((ref) async => wingmanProfiles),
+  ];
+}
+
+List<EventSuccessAssignment> _hostManageMicroPodAssignments({
+  required Event event,
+  required DateTime now,
+  String source = 'capture_fixture',
+}) {
+  return [
+    _hostManageAssignment(
+      event: event,
+      uid: HostOperationsFixtures.guestUid,
+      label: 'Pod A',
+      title: 'Pace Pod A',
+      peerUids: const [
+        HostOperationsFixtures.secondGuestUid,
+        HostOperationsFixtures.waitlistUid,
+      ],
+      now: now,
+      source: source,
+    ),
+    _hostManageAssignment(
+      event: event,
+      uid: HostOperationsFixtures.secondGuestUid,
+      label: 'Pod A',
+      title: 'Pace Pod A',
+      peerUids: const [
+        HostOperationsFixtures.guestUid,
+        HostOperationsFixtures.waitlistUid,
+      ],
+      now: now,
+      source: source,
+    ),
+    _hostManageAssignment(
+      event: event,
+      uid: HostOperationsFixtures.waitlistUid,
+      label: 'Pod B',
+      title: 'Pace Pod B',
+      peerUids: const [HostOperationsFixtures.guestUid],
+      now: now,
+      source: source,
+    ),
+  ];
+}
+
+EventSuccessAssignment _hostManageAssignment({
+  required Event event,
+  required String uid,
+  required String label,
+  required String title,
+  required List<String> peerUids,
+  required DateTime now,
+  String source = 'capture_fixture',
+}) {
+  return EventSuccessAssignment(
+    id: eventSuccessAssignmentId(
+      eventId: event.id,
+      moduleId: EventSuccessModuleCatalog.microPods.id,
+      uid: uid,
+    ),
+    eventId: event.id,
+    clubId: event.clubId,
+    uid: uid,
+    moduleId: EventSuccessModuleCatalog.microPods.id,
+    label: label,
+    displayTitle: title,
+    displaySubtitle: 'Start here, then follow the host cue.',
+    peerUids: peerUids,
+    unitKind: 'pods',
+    unitLabel: label,
+    source: source,
+    createdAt: now.subtract(const Duration(minutes: 12)),
+    updatedAt: now,
+  );
+}
+
+List<EventSuccessAssignment> _hostManageRotationAssignments({
+  required Event event,
+  required DateTime now,
+}) {
+  final round0 = event.startTime.add(const Duration(minutes: 15));
+  final round1 = round0.add(const Duration(minutes: 15));
+  return [
+    _hostManageRotationAssignment(
+      event: event,
+      uid: HostOperationsFixtures.guestUid,
+      peerUids: const [
+        HostOperationsFixtures.secondGuestUid,
+        HostOperationsFixtures.waitlistUid,
+      ],
+      slots: [
+        _hostManageRotationSlot(
+          index: 0,
+          startsAt: round0,
+          peerUid: HostOperationsFixtures.secondGuestUid,
+          compatibility: 'mutual_interest',
+        ),
+        _hostManageRotationSlot(
+          index: 1,
+          startsAt: round1,
+          peerUid: HostOperationsFixtures.waitlistUid,
+          compatibility: 'questionnaire_match',
+        ),
+      ],
+      now: now,
+    ),
+    _hostManageRotationAssignment(
+      event: event,
+      uid: HostOperationsFixtures.secondGuestUid,
+      peerUids: const [HostOperationsFixtures.guestUid],
+      slots: [
+        _hostManageRotationSlot(
+          index: 0,
+          startsAt: round0,
+          peerUid: HostOperationsFixtures.guestUid,
+          compatibility: 'mutual_interest',
+        ),
+      ],
+      now: now,
+    ),
+  ];
+}
+
+EventSuccessAssignment _hostManageRotationAssignment({
+  required Event event,
+  required String uid,
+  required List<String> peerUids,
+  required List<EventSuccessRotationSlot> slots,
+  required DateTime now,
+}) {
+  return EventSuccessAssignment(
+    id: eventSuccessAssignmentId(
+      eventId: event.id,
+      moduleId: EventSuccessModuleCatalog.guidedRotations.id,
+      uid: uid,
+    ),
+    eventId: event.id,
+    clubId: event.clubId,
+    uid: uid,
+    moduleId: EventSuccessModuleCatalog.guidedRotations.id,
+    label: 'Rotation schedule',
+    displayTitle: 'Guided rotation schedule',
+    displaySubtitle: 'Host-edited preview schedule.',
+    peerUids: peerUids,
+    rotationSlots: slots,
+    source: 'host_override_v1',
+    createdAt: now.subtract(const Duration(minutes: 12)),
+    updatedAt: now,
+  );
+}
+
+EventSuccessRotationSlot _hostManageRotationSlot({
+  required int index,
+  required DateTime startsAt,
+  required String peerUid,
+  required String compatibility,
+}) {
+  return EventSuccessRotationSlot(
+    roundIndex: index,
+    label: 'Round ${index + 1}',
+    startsAt: startsAt,
+    endsAt: startsAt.add(const Duration(minutes: 15)),
+    peerUid: peerUid,
+    compatibility: compatibility,
+  );
+}
+
+List<EventSuccessPreference> _hostManagePreferences({
+  required Event event,
+  required DateTime now,
+}) {
+  return [
+    EventSuccessPreference(
+      id: eventSuccessPreferenceId(
+        eventId: event.id,
+        uid: HostOperationsFixtures.waitlistUid,
+      ),
+      eventId: event.id,
+      clubId: event.clubId,
+      uid: HostOperationsFixtures.waitlistUid,
+      microPodsOptedOut: false,
+      guidedRotationsOptedOut: false,
+      createdAt: now.subtract(const Duration(minutes: 20)),
+      updatedAt: now.subtract(const Duration(minutes: 3)),
+    ),
+  ];
+}
+
+List<EventSuccessWingmanRequest> _hostManageWingmanRequests({
+  required Event event,
+  required DateTime now,
+}) {
+  return [
+    EventSuccessWingmanRequest(
+      id: eventSuccessWingmanRequestId(
+        eventId: event.id,
+        uid: HostOperationsFixtures.guestUid,
+      ),
+      eventId: event.id,
+      clubId: event.clubId,
+      requesterUid: HostOperationsFixtures.guestUid,
+      targetUid: HostOperationsFixtures.secondGuestUid,
+      status: EventSuccessWingmanRequestStatus.active,
+      hostVisibleConsent: true,
+      note: 'Pair me if it feels natural.',
+      createdAt: now.subtract(const Duration(minutes: 8)),
+      updatedAt: now.subtract(const Duration(minutes: 2)),
+    ),
+    EventSuccessWingmanRequest(
+      id: eventSuccessWingmanRequestId(
+        eventId: event.id,
+        uid: HostOperationsFixtures.waitlistUid,
+      ),
+      eventId: event.id,
+      clubId: event.clubId,
+      requesterUid: HostOperationsFixtures.waitlistUid,
+      targetUid: HostOperationsFixtures.guestUid,
+      status: EventSuccessWingmanRequestStatus.active,
+      hostVisibleConsent: true,
+      note: 'I would like a quick intro near the host table.',
+      createdAt: now.subtract(const Duration(minutes: 5)),
+      updatedAt: now.subtract(const Duration(minutes: 1)),
+    ),
+  ];
+}
+
+List<String> _hostManageAssignmentParticipantUids(
+  List<EventSuccessAssignment> assignments,
+) {
+  final uids = <String>{
+    for (final assignment in assignments) ...[
+      assignment.uid,
+      ...assignment.allPeerUids,
+    ],
+  }.toList()..sort();
+  return uids;
+}
+
+List<String> _hostManageWingmanProfileUids(
+  List<EventSuccessWingmanRequest> requests,
+) {
+  final uids = <String>{
+    for (final request in requests) ...[
+      request.requesterUid,
+      request.targetUid,
+    ],
+  }.toList()..sort();
+  return uids;
+}
+
+List<PublicProfile> _hostManageProfilesFor(List<String> uids) {
+  const names = <String, String>{
+    HostOperationsFixtures.guestUid: 'Aarav Mehta',
+    HostOperationsFixtures.secondGuestUid: 'Rhea Kapoor',
+    HostOperationsFixtures.waitlistUid: 'Kabir Jain',
+  };
+  return [
+    for (final uid in uids.toSet())
+      buildPublicProfile(uid: uid, name: names[uid] ?? 'Guest'),
   ];
 }
 
@@ -2634,6 +3065,49 @@ Widget _hostManageRouteCapture({
       initialParticipantSearchQuery: initialParticipantSearchQuery,
     ),
   );
+}
+
+Widget _hostManageLiveSectionCapture({Event? event, Widget? liveRoster}) {
+  final effectiveEvent = event ?? HostOperationsFixtures.privateEvent;
+  return _AppRoleCapture(
+    role: AppRole.host,
+    child: EventSuccessHostSection(
+      event: effectiveEvent,
+      initialTab: EventSuccessHostTab.live,
+      showTabs: false,
+      liveRoster: liveRoster,
+    ),
+  );
+}
+
+Event _hostManageLiveRevealEvent(Event event) {
+  return event.copyWith(
+    eventFormat: EventFormatSnapshot.custom(
+      label: 'trivia night',
+      interactionModel: EventInteractionModel.teamRotations,
+    ),
+    distanceKm: 0,
+    capacityLimit: 30,
+    bookedCount: 24,
+    checkedInCount: 18,
+  );
+}
+
+EventSuccessPlan _hostManageLivePlanForModule({
+  required Event event,
+  required DateTime now,
+  required String moduleId,
+}) {
+  final basePlan = EventSuccessPlan.defaultForEvent(
+    event,
+    now: now,
+  ).copyWith(status: EventSuccessPlanStatus.live, frozenAt: now);
+  final runtime = EventSuccessRuntime(plan: basePlan, event: event, now: now);
+  final steps = runtime.runOfShowSteps;
+  final activeIndex = steps.indexWhere(
+    (step) => step.moduleIds.contains(moduleId),
+  );
+  return basePlan.copyWith(activeStepIndex: activeIndex < 0 ? 0 : activeIndex);
 }
 
 List<Object> _hostManageLiveWindowProviderOverrides() => [
@@ -3031,6 +3505,39 @@ final _hostInquiryMessages = <ChatMessage>[
     ),
   ),
 ];
+final _hostInquiryImageDayMessages = <ChatMessage>[
+  MatchesChatSurfaceFixtures.message(
+    id: 'host-inquiry-yesterday-1',
+    senderId: MatchesChatSurfaceFixtures.guestUid,
+    text: 'Sharing this before I book - is the route beginner friendly?',
+    sentAt: MatchesChatSurfaceFixtures.now.subtract(const Duration(days: 1)),
+  ),
+  MatchesChatSurfaceFixtures.message(
+    id: 'host-inquiry-yesterday-2',
+    senderId: MatchesChatSurfaceFixtures.hostUid,
+    text: 'Yes. We keep it conversational and regroup at each turn.',
+    sentAt: MatchesChatSurfaceFixtures.now
+        .subtract(const Duration(days: 1))
+        .add(const Duration(minutes: 8)),
+  ),
+  MatchesChatSurfaceFixtures.message(
+    id: 'host-inquiry-image-1',
+    senderId: MatchesChatSurfaceFixtures.hostUid,
+    text: 'This is the meeting landmark at the jetty.',
+    imageUrl: _clubHeroPortraitAssetPath,
+    sentAt: MatchesChatSurfaceFixtures.now.subtract(
+      const Duration(minutes: 34),
+    ),
+  ),
+  MatchesChatSurfaceFixtures.message(
+    id: 'host-inquiry-today-1',
+    senderId: MatchesChatSurfaceFixtures.guestUid,
+    text: 'Perfect. I will arrive ten minutes early for check-in.',
+    sentAt: MatchesChatSurfaceFixtures.now.subtract(
+      const Duration(minutes: 18),
+    ),
+  ),
+];
 
 List<Object> _hostInboxProviderOverrides({
   String? uid = MatchesChatSurfaceFixtures.hostUid,
@@ -3139,13 +3646,153 @@ List<Object> _hostChatProviderOverrides({
   ];
 }
 
-Widget _hostChatCapture({Match? match, String? matchId}) {
+Widget _hostChatCapture({
+  Match? match,
+  String? matchId,
+  String? initialDraftText,
+}) {
   final effectiveMatch = match ?? _hostInquiryMatch;
   final id = matchId ?? effectiveMatch.id;
   return _AppRoleCapture(
     role: AppRole.host,
-    child: ChatScreen(matchId: id),
+    child: ChatScreen(matchId: id, initialDraftText: initialDraftText),
   );
+}
+
+Widget _hostChatKeyboardCapture() {
+  return _HostChatKeyboardInset(
+    child: _hostChatCapture(
+      initialDraftText:
+          'Thanks, Aarav. We will hold the check-in desk near the sea-facing '
+          'steps, then move as a group once everyone has arrived.',
+    ),
+  );
+}
+
+class _HostChatKeyboardInset extends StatelessWidget {
+  const _HostChatKeyboardInset({required this.child});
+
+  static const _keyboardInset = EdgeInsets.only(bottom: 318);
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    return MediaQuery(
+      data: media.copyWith(
+        padding: media.padding.copyWith(bottom: 0),
+        viewInsets: _keyboardInset,
+      ),
+      child: child,
+    );
+  }
+}
+
+class _HostChatBlockDialogCapture extends StatefulWidget {
+  const _HostChatBlockDialogCapture({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_HostChatBlockDialogCapture> createState() =>
+      _HostChatBlockDialogCaptureState();
+}
+
+class _HostChatBlockDialogCaptureState
+    extends State<_HostChatBlockDialogCapture> {
+  bool _shown = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _shown) return;
+      _shown = true;
+      unawaited(showBlockUserDialog(context: context, name: 'Aarav'));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
+class _HostChatReportFailureSnackBarCapture extends StatelessWidget {
+  const _HostChatReportFailureSnackBarCapture();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Stack(
+      children: [
+        _hostChatCapture(),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.all(CatchSpacing.s3),
+              child: CatchSurface(
+                elevation: CatchSurfaceElevation.overlay,
+                radius: CatchRadius.md,
+                borderColor: Colors.transparent,
+                backgroundColor: t.ink,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CatchSpacing.s4,
+                  vertical: CatchSpacing.micro14,
+                ),
+                child: Text(
+                  'Unable to submit report. Please try again.',
+                  style: CatchTextStyles.labelL(context, color: t.bg),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HostChatSafetyPendingMenuCapture extends StatelessWidget {
+  const _HostChatSafetyPendingMenuCapture();
+
+  @override
+  Widget build(BuildContext context) {
+    return _AppRoleCapture(
+      role: AppRole.host,
+      child: Scaffold(
+        body: SafeArea(
+          child: Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: CatchInsets.pageBodyTight,
+              child: CatchMenu<String>(
+                width: CatchLayout.actionMenuWidth,
+                items: [
+                  CatchMenuItem<String>(
+                    value: 'report',
+                    label: 'Report',
+                    sublabel: 'Submitting...',
+                    icon: CatchIcons.flagOutlined,
+                    enabled: false,
+                  ),
+                  CatchMenuItem<String>(
+                    value: 'block',
+                    label: 'Block',
+                    sublabel: 'Blocking...',
+                    icon: CatchIcons.blockRounded,
+                    danger: true,
+                    enabled: false,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 final _matchesCaptureConsumerMatches =
@@ -3515,6 +4162,7 @@ Widget _matchChatCapture({
   Match? match,
   String? matchId,
   PublicProfile? initialProfile,
+  String? initialDraftText,
   AppRole role = AppRole.consumer,
   bool includeInitialProfile = true,
 }) {
@@ -3525,6 +4173,7 @@ Widget _matchChatCapture({
     role: role,
     child: ChatScreen(
       matchId: id,
+      initialDraftText: initialDraftText,
       otherProfile: !includeInitialProfile || role == AppRole.host
           ? null
           : initialProfile ??
@@ -3533,6 +4182,105 @@ Widget _matchChatCapture({
                 ),
     ),
   );
+}
+
+Widget _matchChatKeyboardCapture() {
+  return _MatchChatKeyboardInset(
+    child: _matchChatCapture(
+      initialDraftText:
+          'Gallery shortlist first, then coffee near Carter Road after the '
+          'Thursday evening run if the weather holds.',
+    ),
+  );
+}
+
+class _MatchChatKeyboardInset extends StatelessWidget {
+  const _MatchChatKeyboardInset({required this.child});
+
+  static const _keyboardInset = EdgeInsets.only(bottom: 318);
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    return MediaQuery(
+      data: media.copyWith(
+        padding: media.padding.copyWith(bottom: 0),
+        viewInsets: _keyboardInset,
+      ),
+      child: child,
+    );
+  }
+}
+
+class _MatchChatFeedbackSnackBarCapture extends StatelessWidget {
+  const _MatchChatFeedbackSnackBarCapture({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Stack(
+      children: [
+        _matchChatCapture(
+          initialDraftText: 'Gallery shortlist first, then coffee after.',
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.all(CatchSpacing.s3),
+              child: CatchSurface(
+                elevation: CatchSurfaceElevation.overlay,
+                radius: CatchRadius.md,
+                borderColor: Colors.transparent,
+                backgroundColor: t.ink,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CatchSpacing.s4,
+                  vertical: CatchSpacing.micro14,
+                ),
+                child: Text(
+                  message,
+                  style: CatchTextStyles.labelL(context, color: t.bg),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MatchChatBlockDialogCapture extends StatefulWidget {
+  const _MatchChatBlockDialogCapture({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_MatchChatBlockDialogCapture> createState() =>
+      _MatchChatBlockDialogCaptureState();
+}
+
+class _MatchChatBlockDialogCaptureState
+    extends State<_MatchChatBlockDialogCapture> {
+  bool _shown = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _shown) return;
+      _shown = true;
+      unawaited(showBlockUserDialog(context: context, name: 'Taylor'));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class _ChatShareCardCapture extends StatelessWidget {
@@ -3652,6 +4400,60 @@ final _hostEventSetupDraft = _captureFixtures.hostSetupDraft(
   club: _dashboardHostClub,
   savedAt: _captureNow,
 );
+final _hostEventPastScheduleDraft = _hostEventSetupDraft.copyWith(
+  id: 'host-event-past-schedule-capture-draft',
+  selectedDateMillis: DateTime(
+    _captureNow.year,
+    _captureNow.month,
+    _captureNow.day,
+  ).millisecondsSinceEpoch,
+  selectedStartHour: _captureNow.hour - 1,
+  selectedStartMinute: 30,
+);
+final _hostEventPolicyAgeValidationDraft = _hostEventSetupDraft.copyWith(
+  id: 'host-event-policy-age-validation-capture-draft',
+  admissionPreset: 'requestToJoin',
+  minAge: '40',
+  maxAge: '30',
+  maxMen: null,
+  maxWomen: null,
+  dynamicPricingEnabled: false,
+  dynamicPricingStep: null,
+  dynamicPricingMax: null,
+);
+final _hostEventInviteOnlyDraft = _hostEventSetupDraft.copyWith(
+  id: 'host-event-invite-only-capture-draft',
+  admissionPreset: 'inviteOnly',
+  inviteCode: 'CATCH-DELHI',
+  maxMen: null,
+  maxWomen: null,
+  dynamicPricingEnabled: false,
+  dynamicPricingStep: null,
+  dynamicPricingMax: null,
+);
+final _hostEventCohortCapsDraft = _hostEventSetupDraft.copyWith(
+  id: 'host-event-cohort-caps-capture-draft',
+  admissionPreset: 'fixedCohortCaps',
+  maxMen: '8',
+  maxWomen: '8',
+  dynamicPricingEnabled: false,
+  dynamicPricingStep: null,
+  dynamicPricingMax: null,
+);
+final _hostEventDynamicPricingDisabledDraft = _hostEventSetupDraft.copyWith(
+  id: 'host-event-dynamic-pricing-disabled-capture-draft',
+  admissionPreset: 'balancedSingles',
+  dynamicPricingEnabled: false,
+  dynamicPricingStep: null,
+  dynamicPricingMax: null,
+);
+final _hostEventDynamicPricingValidationDraft = _hostEventSetupDraft.copyWith(
+  id: 'host-event-dynamic-pricing-validation-capture-draft',
+  admissionPreset: 'balancedSingles',
+  dynamicPricingEnabled: true,
+  dynamicPricingStep: '0',
+  dynamicPricingMax: '0',
+);
 final _hostEventCustomActivityDraft = _hostEventSetupDraft.copyWith(
   id: 'host-event-custom-activity-capture-draft',
   activityKind: 'openActivity',
@@ -3715,6 +4517,80 @@ final _hostLivePlan =
       status: EventSuccessPlanStatus.live,
       frozenAt: _captureNow,
     );
+final _hostManageOverrideEvent = HostOperationsFixtures.privateEvent.copyWith(
+  startTime: DateTime(2026, 6, 9, 20),
+  endTime: DateTime(2026, 6, 9, 22),
+  bookedCount: 17,
+  checkedInCount: 7,
+  waitlistedCount: 3,
+);
+final _hostManageCheckInPlan = _hostManageLivePlanForModule(
+  event: _hostEvent,
+  now: _captureNow,
+  moduleId: EventSuccessModuleCatalog.checkIn.id,
+);
+final _hostManageCuePlan = _hostManageLivePlanForModule(
+  event: _hostEvent,
+  now: _captureNow,
+  moduleId: EventSuccessModuleCatalog.socialMissions.id,
+);
+final _hostManageOverridePlan = _hostManageLivePlanForModule(
+  event: _hostManageOverrideEvent,
+  now: _captureNow,
+  moduleId: EventSuccessModuleCatalog.microPods.id,
+);
+final _hostManageRevealEvent = _hostManageLiveRevealEvent(
+  _hostManageOverrideEvent,
+);
+final _hostManageRevealPlan =
+    _hostManageLivePlanForModule(
+      event: _hostManageRevealEvent,
+      now: _captureNow,
+      moduleId: EventSuccessModuleCatalog.liveReveal.id,
+    ).copyWith(
+      revealStatus: EventSuccessRevealStatus.revealed,
+      activeRevealRoundIndex: 0,
+      revealStartedAt: _captureNow.subtract(const Duration(minutes: 2)),
+    );
+final _hostManageRevealAssignments = _hostManageMicroPodAssignments(
+  event: _hostManageRevealEvent,
+  now: _captureNow,
+);
+final _hostManageOverrideAssignments = _hostManageMicroPodAssignments(
+  event: _hostManageOverrideEvent,
+  now: _captureNow,
+  source: 'host_override_v1',
+);
+final _hostManageDisabledInviteLinks = <EventInviteLink>[
+  HostOperationsFixtures.inviteLinks.first.copyWith(
+    id: 'capture-host-link-disabled-edge',
+    label: 'Alumni WhatsApp paused',
+    source: 'whatsapp alumni',
+    openCount: 88,
+    requestCount: 14,
+    confirmedCount: 6,
+    checkedInCount: 3,
+    catcherCount: 2,
+    chatStartedCount: 2,
+    disabledAt: _captureNow.subtract(const Duration(hours: 3)),
+    updatedAt: _captureNow.subtract(const Duration(hours: 3)),
+  ),
+];
+final _hostManageLongLabelInviteLinks = <EventInviteLink>[
+  HostOperationsFixtures.inviteLinks.first.copyWith(
+    id: 'capture-host-link-long-label-source',
+    label: 'Partner newsletter referral with venue concierge follow-up',
+    source: 'partner newsletter / co-working founders circle / June RSVP push',
+    openCount: 214,
+    requestCount: 43,
+    confirmedCount: 18,
+    checkedInCount: 9,
+    catcherCount: 5,
+    chatStartedCount: 7,
+    disabledAt: null,
+    updatedAt: _captureNow.subtract(const Duration(minutes: 25)),
+  ),
+];
 final _hostLiveReferenceClub = _dashboardHostClub.copyWith(
   name: 'Bandra Social',
 );
@@ -4185,6 +5061,17 @@ List<Object> _eventSuccessCompanionProviderOverrides() => [
   ),
 ];
 
+enum _EventSuccessCompanionMutationCaptureMode {
+  selfCheckInPending,
+  firstHelloStartPending,
+  firstHelloCompletePending,
+  compatibilityPending,
+  microPodsOptOutPending,
+  guidedRotationsOptOutPending,
+  wingmanRequestPending,
+  feedbackPending,
+}
+
 Widget _eventSuccessCompanionCapture({
   Event? event,
   EventSuccessPlan? plan,
@@ -4208,9 +5095,10 @@ Widget _eventSuccessCompanionCapture({
   Future<void> Function(EventSuccessArrivalMission mission, String answerId)?
   onCompleteArrivalMission,
   VoidCallback? onSkipArrivalMission,
+  _EventSuccessCompanionMutationCaptureMode? mutationMode,
 }) {
   final resolvedEvent = event ?? EventSuccessCompanionFixtures.socialEvent;
-  return EventSuccessCompanionScreen(
+  final screen = EventSuccessCompanionScreen(
     event: resolvedEvent,
     plan: plan ?? EventSuccessCompanionFixtures.basePlan,
     userProfile: EventSuccessCompanionFixtures.viewer,
@@ -4238,6 +5126,90 @@ Widget _eventSuccessCompanionCapture({
     onCompleteArrivalMission: onCompleteArrivalMission,
     onSkipArrivalMission: onSkipArrivalMission,
   );
+  if (mutationMode == null) return screen;
+  return _EventSuccessCompanionMutationCapture(
+    mode: mutationMode,
+    child: screen,
+  );
+}
+
+class _EventSuccessCompanionMutationCapture extends ConsumerStatefulWidget {
+  const _EventSuccessCompanionMutationCapture({
+    required this.mode,
+    required this.child,
+  });
+
+  final _EventSuccessCompanionMutationCaptureMode mode;
+  final Widget child;
+
+  @override
+  ConsumerState<_EventSuccessCompanionMutationCapture> createState() =>
+      _EventSuccessCompanionMutationCaptureState();
+}
+
+class _EventSuccessCompanionMutationCaptureState
+    extends ConsumerState<_EventSuccessCompanionMutationCapture> {
+  @override
+  void initState() {
+    super.initState();
+    _resetMutations();
+    _seed();
+  }
+
+  @override
+  void dispose() {
+    _resetMutations();
+    super.dispose();
+  }
+
+  void _resetMutations() {
+    EventBookingController.selfCheckInMutation.reset(ref);
+    EventSuccessController.firstHelloStartMutation.reset(ref);
+    EventSuccessController.firstHelloCompleteMutation.reset(ref);
+    EventSuccessController.compatibilityResponseMutation.reset(ref);
+    EventSuccessController.microPodsOptOutMutation.reset(ref);
+    EventSuccessController.guidedRotationsOptOutMutation.reset(ref);
+    EventSuccessController.wingmanRequestMutation.reset(ref);
+    EventSuccessController.feedbackMutation.reset(ref);
+  }
+
+  void _seed() {
+    switch (widget.mode) {
+      case _EventSuccessCompanionMutationCaptureMode.selfCheckInPending:
+        _runPending(EventBookingController.selfCheckInMutation);
+        break;
+      case _EventSuccessCompanionMutationCaptureMode.firstHelloStartPending:
+        _runPending(EventSuccessController.firstHelloStartMutation);
+        break;
+      case _EventSuccessCompanionMutationCaptureMode.firstHelloCompletePending:
+        _runPending(EventSuccessController.firstHelloCompleteMutation);
+        break;
+      case _EventSuccessCompanionMutationCaptureMode.compatibilityPending:
+        _runPending(EventSuccessController.compatibilityResponseMutation);
+        break;
+      case _EventSuccessCompanionMutationCaptureMode.microPodsOptOutPending:
+        _runPending(EventSuccessController.microPodsOptOutMutation);
+        break;
+      case _EventSuccessCompanionMutationCaptureMode
+          .guidedRotationsOptOutPending:
+        _runPending(EventSuccessController.guidedRotationsOptOutMutation);
+        break;
+      case _EventSuccessCompanionMutationCaptureMode.wingmanRequestPending:
+        _runPending(EventSuccessController.wingmanRequestMutation);
+        break;
+      case _EventSuccessCompanionMutationCaptureMode.feedbackPending:
+        _runPending(EventSuccessController.feedbackMutation);
+        break;
+    }
+  }
+
+  void _runPending<T>(Mutation<T> mutation) {
+    final completer = Completer<T>();
+    unawaited(mutation.run(ref, (_) => completer.future));
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 NetworkException _eventSuccessCompanionOfflineException({
@@ -6313,6 +7285,43 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         _AppRoleCapture(role: AppRole.host, child: _clubDetailScreenCapture()),
   ),
   ScreenCaptureEntry(
+    id: 'club_detail_loading',
+    routeIds: const <String>['clubDetailScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _clubDetailProviderOverrides(
+      viewModel: const AsyncLoading<ClubDetailViewModel?>(),
+    ),
+    builder: (context) => _clubDetailScreenCapture(includeInitialClub: false),
+  ),
+  ScreenCaptureEntry(
+    id: 'club_detail_initial_loading',
+    routeIds: const <String>['clubDetailScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _clubDetailProviderOverrides(
+      membership: _captureMembership(
+        clubId: _clubDetailClub.id,
+        uid: _captureViewerUid,
+      ),
+      viewModel: const AsyncLoading<ClubDetailViewModel?>(),
+    ),
+    builder: (context) => _clubDetailScreenCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'club_detail_empty_schedule',
+    routeIds: const <String>['clubDetailScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _clubDetailProviderOverrides(
+      membership: _captureMembership(
+        clubId: _clubDetailClub.id,
+        uid: _captureViewerUid,
+      ),
+      viewModel: AsyncData(
+        _clubDetailViewModel(upcomingEvents: const <Event>[]),
+      ),
+    ),
+    builder: (context) => _clubDetailScreenCapture(),
+  ),
+  ScreenCaptureEntry(
     id: 'host_club_detail_public',
     routeIds: const <String>['hostClubDetailScreen'],
     device: CaptureDevice.reviewTall,
@@ -6621,8 +7630,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_location_map',
     routeIds: const <String>['eventLocationMapScreen'],
     device: CaptureDevice.reviewPhone,
-    builder: (context) => EventLocationMapScreen(
-      event: _eventDetailEvent,
+    providerOverrides: _eventDetailCaptureProviderOverrides(),
+    builder: (context) => EventLocationMapRouteScreen(
+      eventId: _eventDetailEvent.id,
       enableNetworkTiles: false,
     ),
   ),
@@ -6669,12 +7679,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'event_location_map_no_coordinate',
     routeIds: const <String>['eventLocationMapScreen'],
     device: CaptureDevice.reviewPhone,
-    builder: (context) => EventLocationMapScreen(
+    providerOverrides: _eventDetailCaptureProviderOverrides(
       event: buildEvent(
         id: 'event-location-map-no-coordinate',
         meetingPoint: 'Secret start line',
         locationDetails: 'Host will add the exact pin shortly.',
       ),
+    ),
+    builder: (context) => const EventLocationMapRouteScreen(
+      eventId: 'event-location-map-no-coordinate',
       enableNetworkTiles: false,
     ),
   ),
@@ -6683,8 +7696,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['eventLocationMapScreen'],
     device: CaptureDevice.reviewPhone,
     textScale: 2,
-    builder: (context) => EventLocationMapScreen(
-      event: _eventDetailEvent,
+    providerOverrides: _eventDetailCaptureProviderOverrides(),
+    builder: (context) => EventLocationMapRouteScreen(
+      eventId: _eventDetailEvent.id,
       enableNetworkTiles: false,
     ),
   ),
@@ -6693,8 +7707,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['eventLocationMapScreen'],
     device: CaptureDevice.reviewPhone,
     disableAnimations: true,
-    builder: (context) => EventLocationMapScreen(
-      event: _eventDetailEvent,
+    providerOverrides: _eventDetailCaptureProviderOverrides(),
+    builder: (context) => EventLocationMapRouteScreen(
+      eventId: _eventDetailEvent.id,
       enableNetworkTiles: false,
     ),
   ),
@@ -6728,6 +7743,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ],
     builder: (context) =>
         const ExploreScreen(enableEventMapNetworkTiles: false),
+  ),
+  ScreenCaptureEntry(
+    id: 'explore_joined_clubs',
+    routeIds: const <String>['exploreScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _exploreProviderOverrides(
+      joinedClubIds: {_memberDiscoveryClubs.first.id},
+    ),
+    builder: (context) => _exploreCapture(),
   ),
   ScreenCaptureEntry(
     id: 'explore_loading',
@@ -6796,6 +7820,44 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         _exploreCapture(searchQuery: 'supperclub marathoners worli'),
   ),
   ScreenCaptureEntry(
+    id: 'explore_no_filter_results',
+    routeIds: const <String>['exploreScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _exploreProviderOverrides(
+      viewModel: const AsyncData(
+        ExploreViewModel(joinedClubs: [], allClubs: []),
+      ),
+      feed: const AsyncData(ExploreFeedViewModel(items: [])),
+    ),
+    builder: (context) => _exploreCapture(
+      seedFilters: const _ExploreCaptureFilterSeed(
+        time: ExploreTimeFilter.weekend,
+        distance: ExploreDistanceFilter.tenKm,
+        activity: ActivityKind.padel,
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'explore_offline',
+    routeIds: const <String>['exploreScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _exploreProviderOverrides(
+      sourceClubs: AsyncError<List<Club>>(
+        _exploreOfflineException(action: 'load source clubs'),
+        StackTrace.empty,
+      ),
+      viewModel: AsyncError<ExploreViewModel>(
+        _exploreOfflineException(action: 'load Explore'),
+        StackTrace.empty,
+      ),
+      feed: AsyncError<ExploreFeedViewModel>(
+        _exploreOfflineException(action: 'load Explore events'),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => _exploreCapture(),
+  ),
+  ScreenCaptureEntry(
     id: 'explore_search_query',
     routeIds: const <String>['exploreScreen'],
     device: CaptureDevice.reviewTall,
@@ -6815,6 +7877,22 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         highRatedOnly: true,
       ),
     ),
+  ),
+  ScreenCaptureEntry(
+    id: 'explore_unclaimed_host_projection',
+    routeIds: const <String>['exploreScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _exploreProviderOverrides(
+      sourceClubs: AsyncData<List<Club>>([_unclaimedDiscoveryClub]),
+      viewModel: AsyncData(
+        ExploreViewModel.partition(
+          clubs: [_unclaimedDiscoveryClub],
+          joinedClubIds: const <String>{},
+        ),
+      ),
+      feed: AsyncData(ExploreFeedViewModel(items: _unclaimedDiscoveryItems)),
+    ),
+    builder: (context) => _exploreCapture(),
   ),
   ScreenCaptureEntry(
     id: 'explore_text_scale_2',
@@ -6843,6 +7921,32 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ),
     ],
     builder: (context) => const ExploreMapScreen(enableNetworkTiles: false),
+  ),
+  ScreenCaptureEntry(
+    id: 'explore_map_selected_pin',
+    routeIds: const <String>['exploreMapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _exploreProviderOverrides(),
+    builder: (context) => _exploreCapture(
+      child: ExploreMapScreen(
+        enableNetworkTiles: false,
+        initialSelectedEventId: _memberDiscoveryEvents.first.id,
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'explore_map_distance_ring',
+    routeIds: const <String>['exploreMapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _exploreProviderOverrides(
+      deviceLocationBuilder: _CaptureBandraDeviceLocation.new,
+    ),
+    builder: (context) => _exploreCapture(
+      seedFilters: const _ExploreCaptureFilterSeed(
+        distance: ExploreDistanceFilter.threeKm,
+      ),
+      child: const ExploreMapScreen(enableNetworkTiles: false),
+    ),
   ),
   ScreenCaptureEntry(
     id: 'explore_map_loading',
@@ -7213,6 +8317,18 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         HostCreateEventRouteScreen(clubId: _dashboardHostClub.id),
   ),
   ScreenCaptureEntry(
+    id: 'host_create_unauthorized',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(
+      uid: HostOperationsFixtures.guestUid,
+    ),
+    builder: (context) => HostCreateEventRouteScreen(
+      clubId: _dashboardHostClub.id,
+      initialClub: _dashboardHostClub,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'host_create_basics_validation',
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -7259,6 +8375,31 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _createEventCapture(),
   ),
   ScreenCaptureEntry(
+    id: 'host_create_draft_delete_confirmation',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) => _InlineDialogCapture(
+      dialog: DraftDeleteConfirmationDialog(draft: _hostEventSetupDraft),
+      child: DraftPickerSheet(
+        drafts: <EventDraft>[_hostEventSetupDraft],
+        onSelectDraft: (_) {},
+        onStartFresh: () {},
+        onDeleteDraft: (_) async {},
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_unsaved_changes_dialog',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) => _InlineDialogCapture(
+      dialog: const CreateEventUnsavedChangesDialog(),
+      child: _createEventCapture(),
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'host_create_save_draft_pending',
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -7275,6 +8416,16 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => _HostCreateEventMutationCapture(
       mode: _HostCreateEventMutationCaptureMode.saveDraftError,
+      child: _createEventCapture(),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_save_draft_offline',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) => _HostCreateEventMutationCapture(
+      mode: _HostCreateEventMutationCaptureMode.saveDraftOffline,
       child: _createEventCapture(),
     ),
   ),
@@ -7306,6 +8457,16 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _HostCreateEventMutationCapture(
       mode: _HostCreateEventMutationCaptureMode.submitOffline,
       child: _createEventCapture(initialStep: 4),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_photo_upload_offline',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) => _HostCreateEventMutationCapture(
+      mode: _HostCreateEventMutationCaptureMode.submitOffline,
+      child: _createEventCapture(usePickedMedia: true),
     ),
   ),
   ScreenCaptureEntry(
@@ -7368,6 +8529,20 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'host_create_map_picker_offline',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) => LocationPickerScreen(
+      countryIsoCode: 'IN',
+      initialCenter: const LocationCoordinate(19.076, 72.8777),
+      initialSearchQuery: 'Bandra Social',
+      initialSearchError: obviousOfflineException(),
+      usePlatformMapView: false,
+      loadMapTiles: false,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'host_create_schedule',
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -7382,6 +8557,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'host_create_schedule_validation',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) =>
+        _createEventCapture(draft: _hostEventPastScheduleDraft, initialStep: 2),
+  ),
+  ScreenCaptureEntry(
     id: 'host_create_policy',
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -7393,6 +8576,54 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       initialStep: 3,
       loadMapTiles: false,
       now: () => _captureNow,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_policy_age_validation',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) => _createEventCapture(
+      draft: _hostEventPolicyAgeValidationDraft,
+      initialStep: 3,
+      showValidation: true,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_policy_invite_only',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) =>
+        _createEventCapture(draft: _hostEventInviteOnlyDraft, initialStep: 3),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_policy_cohort_caps',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) =>
+        _createEventCapture(draft: _hostEventCohortCapsDraft, initialStep: 3),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_policy_dynamic_pricing_disabled',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) => _createEventCapture(
+      draft: _hostEventDynamicPricingDisabledDraft,
+      initialStep: 3,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_policy_dynamic_pricing_validation',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) => _createEventCapture(
+      draft: _hostEventDynamicPricingValidationDraft,
+      initialStep: 3,
+      showValidation: true,
     ),
   ),
   ScreenCaptureEntry(
@@ -7818,6 +9049,29 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _hostManageRouteCapture(),
   ),
   ScreenCaptureEntry(
+    id: 'host_manage_private_access_offline',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      privateAccessValue: AsyncError<EventPrivateAccess?>(
+        obviousOfflineException(),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => _hostManageRouteCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_private_access_missing_code',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      privateAccessValue: AsyncData<EventPrivateAccess?>(
+        HostOperationsFixtures.privateAccess.copyWith(inviteCode: ''),
+      ),
+    ),
+    builder: (context) => _hostManageRouteCapture(),
+  ),
+  ScreenCaptureEntry(
     id: 'host_manage_invite_links_loading',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.reviewTall,
@@ -7839,12 +9093,46 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _hostManageRouteCapture(),
   ),
   ScreenCaptureEntry(
+    id: 'host_manage_invite_links_offline',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      inviteLinksValue: AsyncError<List<EventInviteLink>>(
+        obviousOfflineException(),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => _hostManageRouteCapture(),
+  ),
+  ScreenCaptureEntry(
     id: 'host_manage_invite_links_empty',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostManageRouteProviderOverrides(
       inviteLinksValue: const AsyncData<List<EventInviteLink>>(
         <EventInviteLink>[],
+      ),
+    ),
+    builder: (context) => _hostManageRouteCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_invite_links_disabled',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      inviteLinksValue: AsyncData<List<EventInviteLink>>(
+        _hostManageDisabledInviteLinks,
+      ),
+    ),
+    builder: (context) => _hostManageRouteCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_invite_links_long_label_source',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      inviteLinksValue: AsyncData<List<EventInviteLink>>(
+        _hostManageLongLabelInviteLinks,
       ),
     ),
     builder: (context) => _hostManageRouteCapture(),
@@ -8105,6 +9393,204 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         _hostManageRouteCapture(initialSection: HostEventManageSection.live),
   ),
   ScreenCaptureEntry(
+    id: 'host_manage_live_plan_loading',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      participations: _hostParticipations,
+      planValue: const AsyncLoading<EventSuccessPlan?>(),
+    ),
+    builder: (context) => _hostManageRouteCapture(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      initialSection: HostEventManageSection.live,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_live_plan_error',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      participations: _hostParticipations,
+      planValue: AsyncError<EventSuccessPlan?>(
+        StateError('Event Success setup failed'),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => _hostManageRouteCapture(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      initialSection: HostEventManageSection.live,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_live_plan_offline',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      participations: _hostParticipations,
+      planValue: AsyncError<EventSuccessPlan?>(
+        obviousOfflineException(),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => _hostManageRouteCapture(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      initialSection: HostEventManageSection.live,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_live_wingman_requests',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      participations: _hostParticipations,
+      planValue: AsyncData<EventSuccessPlan?>(_hostLivePlan),
+      wingmanRequests: _hostManageWingmanRequests(
+        event: _hostEvent,
+        now: _captureNow,
+      ),
+      wingmanProfiles: _hostManageProfilesFor(
+        _hostManageWingmanProfileUids(
+          _hostManageWingmanRequests(event: _hostEvent, now: _captureNow),
+        ),
+      ),
+    ),
+    builder: (context) => _hostManageRouteCapture(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      initialSection: HostEventManageSection.live,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_live_check_in_qr',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      participations: _hostParticipations,
+      planValue: AsyncData<EventSuccessPlan?>(_hostManageCheckInPlan),
+    ),
+    builder: (context) => _hostManageLiveSectionCapture(
+      event: _hostEvent,
+      liveRoster: const SizedBox.shrink(),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_live_conversation_cues',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      participations: _hostParticipations,
+      planValue: AsyncData<EventSuccessPlan?>(_hostManageCuePlan),
+    ),
+    builder: (context) => _hostManageLiveSectionCapture(event: _hostEvent),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_live_micro_pods_assigned',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      participations: _hostParticipations,
+      planValue: AsyncData<EventSuccessPlan?>(_hostLivePlan),
+      assignments: _hostManageMicroPodAssignments(
+        event: _hostEvent,
+        now: _captureNow,
+      ),
+      assignmentPeerProfiles: _hostManageProfilesFor(
+        _hostManageAssignmentParticipantUids(
+          _hostManageMicroPodAssignments(event: _hostEvent, now: _captureNow),
+        ),
+      ),
+      preferences: _hostManagePreferences(event: _hostEvent, now: _captureNow),
+    ),
+    builder: (context) => _hostManageRouteCapture(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      initialSection: HostEventManageSection.live,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_live_reveal_round_revealed',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      club: _dashboardHostClub,
+      event: _hostManageRevealEvent,
+      participations: _hostParticipations,
+      planValue: AsyncData<EventSuccessPlan?>(_hostManageRevealPlan),
+      assignments: _hostManageRevealAssignments,
+      assignmentPeerProfiles: _hostManageProfilesFor(
+        _hostManageAssignmentParticipantUids(_hostManageRevealAssignments),
+      ),
+      preferences: _hostManagePreferences(
+        event: _hostManageRevealEvent,
+        now: _captureNow,
+      ),
+    ),
+    builder: (context) =>
+        _hostManageLiveSectionCapture(event: _hostManageRevealEvent),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_live_host_override_edited',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      event: _hostManageOverrideEvent,
+      planValue: AsyncData<EventSuccessPlan?>(_hostManageOverridePlan),
+      assignments: _hostManageOverrideAssignments,
+      assignmentPeerProfiles: _hostManageProfilesFor(
+        _hostManageAssignmentParticipantUids(_hostManageOverrideAssignments),
+      ),
+      preferences: _hostManagePreferences(
+        event: _hostManageOverrideEvent,
+        now: _captureNow,
+      ),
+    ),
+    builder: (context) =>
+        _hostManageLiveSectionCapture(event: _hostManageOverrideEvent),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_live_guided_rotations_assigned',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      participations: _hostParticipations,
+      planValue: AsyncData<EventSuccessPlan?>(_hostLivePlan),
+      rotationAssignments: _hostManageRotationAssignments(
+        event: _hostEvent,
+        now: _captureNow,
+      ),
+      rotationPeerProfiles: _hostManageProfilesFor(
+        _hostManageAssignmentParticipantUids(
+          _hostManageRotationAssignments(event: _hostEvent, now: _captureNow),
+        ),
+      ),
+      preferences: _hostManagePreferences(event: _hostEvent, now: _captureNow),
+    ),
+    builder: (context) => _hostManageRouteCapture(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      initialSection: HostEventManageSection.live,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'host_live_console',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -8169,6 +9655,63 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       club: _dashboardHostClub,
       event: _hostEvent,
       onBackToSuccess: () {},
+      initialSection: HostEventManageSection.report,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_report_scorecard_loading',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      participations: _hostParticipations,
+      planValue: AsyncData<EventSuccessPlan?>(_hostReportPlan),
+      scorecardValue: const AsyncLoading<EventSuccessScorecard?>(),
+    ),
+    builder: (context) => _hostManageRouteCapture(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      initialSection: HostEventManageSection.report,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_report_scorecard_error',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      participations: _hostParticipations,
+      planValue: AsyncData<EventSuccessPlan?>(_hostReportPlan),
+      scorecardValue: AsyncError<EventSuccessScorecard?>(
+        StateError('Scorecard failed'),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => _hostManageRouteCapture(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      initialSection: HostEventManageSection.report,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_manage_report_scorecard_offline',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostManageRouteProviderOverrides(
+      club: _dashboardHostClub,
+      event: _hostEvent,
+      participations: _hostParticipations,
+      planValue: AsyncData<EventSuccessPlan?>(_hostReportPlan),
+      scorecardValue: AsyncError<EventSuccessScorecard?>(
+        obviousOfflineException(),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => _hostManageRouteCapture(
+      club: _dashboardHostClub,
+      event: _hostEvent,
       initialSection: HostEventManageSection.report,
     ),
   ),
@@ -8337,6 +9880,23 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'swipe_event_cached_offline',
+    routeIds: const <String>['swipeEventScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: [
+      appConnectivityProvider.overrideWith(
+        (ref) => Stream<List<ConnectivityResult>>.value(
+          const <ConnectivityResult>[ConnectivityResult.none],
+        ),
+      ),
+      ..._swipeDeckProviderOverrides(event: _catchesOpenEvent),
+    ],
+    builder: (context) => SwipeScreen(
+      eventId: _catchesOpenEvent.id,
+      now: CatchesSurfaceFixtures.now,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'swipe_event_empty_queue',
     routeIds: const <String>['swipeEventScreen'],
     device: CaptureDevice.reviewTall,
@@ -8446,6 +10006,20 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => SwipeScreen(
       eventId: _catchesOpenEvent.id,
       now: CatchesSurfaceFixtures.now,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'swipe_event_comment_sheet_empty',
+    routeIds: const <String>['swipeEventScreen'],
+    device: CaptureDevice.reviewTall,
+    builder: (context) => const _CatchesReactionCommentSheetCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'swipe_event_comment_sheet_filled',
+    routeIds: const <String>['swipeEventScreen'],
+    device: CaptureDevice.reviewTall,
+    builder: (context) => const _CatchesReactionCommentSheetCapture(
+      initialComment: 'Your sunrise loop sounds like my kind of Sunday.',
     ),
   ),
   ScreenCaptureEntry(
@@ -8809,6 +10383,19 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'event_success_companion_self_check_in_pending',
+    routeIds: const <String>['eventSuccessCompanionScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _eventSuccessCompanionProviderOverrides(),
+    builder: (context) => _eventSuccessCompanionCapture(
+      now: EventSuccessCompanionFixtures.socialStart.subtract(
+        const Duration(minutes: 5),
+      ),
+      mutationMode:
+          _EventSuccessCompanionMutationCaptureMode.selfCheckInPending,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'event_success_companion_pre_arrival_planning',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -8839,6 +10426,22 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'event_success_companion_first_hello_start_pending',
+    routeIds: const <String>['eventSuccessCompanionScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _eventSuccessCompanionProviderOverrides(),
+    builder: (context) => _eventSuccessCompanionCapture(
+      plan: EventSuccessCompanionFixtures.firstHelloPlan,
+      now: EventSuccessCompanionFixtures.socialStart.subtract(
+        const Duration(minutes: 5),
+      ),
+      onStartArrivalMission: () async {},
+      onSkipArrivalMission: () {},
+      mutationMode:
+          _EventSuccessCompanionMutationCaptureMode.firstHelloStartPending,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'event_success_companion_first_hello_assigned',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -8853,6 +10456,22 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'event_success_companion_first_hello_complete_pending',
+    routeIds: const <String>['eventSuccessCompanionScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _eventSuccessCompanionProviderOverrides(),
+    builder: (context) => _eventSuccessCompanionCapture(
+      plan: EventSuccessCompanionFixtures.firstHelloPlan,
+      arrivalMission: EventSuccessCompanionFixtures.arrivalMission,
+      now: EventSuccessCompanionFixtures.socialStart.subtract(
+        const Duration(minutes: 5),
+      ),
+      onCompleteArrivalMission: (_, _) async {},
+      mutationMode:
+          _EventSuccessCompanionMutationCaptureMode.firstHelloCompletePending,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'event_success_companion_compatibility_questionnaire',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -8863,6 +10482,21 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         const Duration(minutes: 30),
       ),
       onSaveCompatibilityAnswers: (_) async {},
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_success_companion_compatibility_pending',
+    routeIds: const <String>['eventSuccessCompanionScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _eventSuccessCompanionProviderOverrides(),
+    builder: (context) => _eventSuccessCompanionCapture(
+      plan: EventSuccessCompanionFixtures.questionnairePlan,
+      now: EventSuccessCompanionFixtures.socialStart.add(
+        const Duration(minutes: 30),
+      ),
+      onSaveCompatibilityAnswers: (_) async {},
+      mutationMode:
+          _EventSuccessCompanionMutationCaptureMode.compatibilityPending,
     ),
   ),
   ScreenCaptureEntry(
@@ -8965,6 +10599,22 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'event_success_companion_micro_pod_opt_out_pending',
+    routeIds: const <String>['eventSuccessCompanionScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _eventSuccessCompanionProviderOverrides(),
+    builder: (context) => _eventSuccessCompanionCapture(
+      participation: EventSuccessCompanionFixtures.attendedParticipation(),
+      assignment: EventSuccessCompanionFixtures.microPodAssignment,
+      assignmentPeerProfiles: EventSuccessCompanionFixtures.peers,
+      now: EventSuccessCompanionFixtures.socialStart.subtract(
+        const Duration(hours: 1),
+      ),
+      mutationMode:
+          _EventSuccessCompanionMutationCaptureMode.microPodsOptOutPending,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'event_success_companion_table_group_rotations',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -9032,6 +10682,26 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'event_success_companion_rotation_opt_out_pending',
+    routeIds: const <String>['eventSuccessCompanionScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _eventSuccessCompanionProviderOverrides(),
+    builder: (context) => _eventSuccessCompanionCapture(
+      event: EventSuccessCompanionFixtures.racketEvent,
+      plan: EventSuccessCompanionFixtures.rotationSchedulePlan,
+      participation: EventSuccessCompanionFixtures.attendedParticipation(
+        event: EventSuccessCompanionFixtures.racketEvent,
+      ),
+      rotationAssignment: EventSuccessCompanionFixtures.rotationAssignment,
+      rotationPeerProfiles: const [EventSuccessCompanionFixtures.peer],
+      now: EventSuccessCompanionFixtures.racketStart.subtract(
+        const Duration(hours: 1),
+      ),
+      mutationMode: _EventSuccessCompanionMutationCaptureMode
+          .guidedRotationsOptOutPending,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'event_success_companion_live_reveal_countdown',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -9082,6 +10752,22 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'event_success_companion_wingman_pending',
+    routeIds: const <String>['eventSuccessCompanionScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _eventSuccessCompanionProviderOverrides(),
+    builder: (context) => _eventSuccessCompanionCapture(
+      plan: EventSuccessCompanionFixtures.wingmanPlan,
+      participation: EventSuccessCompanionFixtures.attendedParticipation(),
+      wingmanRequestCandidates: EventSuccessCompanionFixtures.peers,
+      now: EventSuccessCompanionFixtures.socialStart.add(
+        const Duration(hours: 1),
+      ),
+      mutationMode:
+          _EventSuccessCompanionMutationCaptureMode.wingmanRequestPending,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'event_success_companion_wingman_submitted',
     routeIds: const <String>['eventSuccessCompanionScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -9107,6 +10793,20 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       now: EventSuccessCompanionFixtures.socialEvent.endTime.add(
         const Duration(hours: 2),
       ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_success_companion_feedback_pending',
+    routeIds: const <String>['eventSuccessCompanionScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _eventSuccessCompanionProviderOverrides(),
+    builder: (context) => _eventSuccessCompanionCapture(
+      participation: EventSuccessCompanionFixtures.attendedParticipation(),
+      existingFeedback: EventSuccessCompanionFixtures.feedback,
+      now: EventSuccessCompanionFixtures.socialEvent.endTime.add(
+        const Duration(hours: 2),
+      ),
+      mutationMode: _EventSuccessCompanionMutationCaptureMode.feedbackPending,
     ),
   ),
   ScreenCaptureEntry(
@@ -9139,6 +10839,20 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       rotationAssignment: EventSuccessCompanionFixtures.rotationAssignment,
       rotationPeerProfiles: const [EventSuccessCompanionFixtures.peer],
       now: EventSuccessCompanionFixtures.racketStart.subtract(
+        const Duration(hours: 1),
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_success_companion_light_dark',
+    routeIds: const <String>['eventSuccessCompanionScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _eventSuccessCompanionProviderOverrides(),
+    builder: (context) => _eventSuccessCompanionCapture(
+      participation: EventSuccessCompanionFixtures.attendedParticipation(),
+      assignment: EventSuccessCompanionFixtures.microPodAssignment,
+      assignmentPeerProfiles: EventSuccessCompanionFixtures.peers,
+      now: EventSuccessCompanionFixtures.socialStart.subtract(
         const Duration(hours: 1),
       ),
     ),
@@ -9398,6 +11112,39 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['chatScreen'],
     device: CaptureDevice.reviewPhone,
     builder: (context) => const _ChatComposerStatesCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'match_chat_keyboard_multiline',
+    routeIds: const <String>['chatScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _matchChatProviderOverrides(),
+    builder: (context) => _matchChatKeyboardCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'match_chat_send_failure_snackbar',
+    routeIds: const <String>['chatScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _matchChatProviderOverrides(),
+    builder: (context) => const _MatchChatFeedbackSnackBarCapture(
+      message: 'Unable to send message. Please try again.',
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'match_chat_report_failure_snackbar',
+    routeIds: const <String>['chatScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _matchChatProviderOverrides(),
+    builder: (context) => const _MatchChatFeedbackSnackBarCapture(
+      message: 'Unable to submit report. Please try again.',
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'match_chat_block_confirm_dialog',
+    routeIds: const <String>['chatScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _matchChatProviderOverrides(),
+    builder: (context) =>
+        _MatchChatBlockDialogCapture(child: _matchChatCapture()),
   ),
   ScreenCaptureEntry(
     id: 'match_chat_text_scale_2',
@@ -9697,6 +11444,43 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostChatScreen'],
     device: CaptureDevice.reviewPhone,
     builder: (context) => const _ChatComposerStatesCapture(role: AppRole.host),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_chat_keyboard_multiline',
+    routeIds: const <String>['hostChatScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostChatProviderOverrides(),
+    builder: (context) => _hostChatKeyboardCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_chat_image_day_separator',
+    routeIds: const <String>['hostChatScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostChatProviderOverrides(
+      messages: _hostInquiryImageDayMessages,
+    ),
+    builder: (context) => _hostChatCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_chat_report_failure_snackbar',
+    routeIds: const <String>['hostChatScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostChatProviderOverrides(),
+    builder: (context) => const _HostChatReportFailureSnackBarCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_chat_block_confirm_dialog',
+    routeIds: const <String>['hostChatScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostChatProviderOverrides(),
+    builder: (context) =>
+        _HostChatBlockDialogCapture(child: _hostChatCapture()),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_chat_safety_pending_menu',
+    routeIds: const <String>['hostChatScreen'],
+    device: CaptureDevice.reviewPhone,
+    builder: (context) => const _HostChatSafetyPendingMenuCapture(),
   ),
   ScreenCaptureEntry(
     id: 'public_profile_member',

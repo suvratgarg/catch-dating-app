@@ -17,6 +17,10 @@ export 'data/user_profile_repository.dart';
 /// ## Presentation (screens and shared widgets)
 export 'presentation/profile_edit_controller.dart';
 export 'presentation/profile_screen.dart';
+export 'presentation/self_profile_edit_tab_state.dart';
+export 'presentation/self_profile_inline_edit_patch_factory.dart';
+export 'presentation/self_profile_photo_action_controller.dart';
+export 'presentation/self_profile_screen_state.dart';
 export 'presentation/widgets/preview_tab.dart';
 export 'presentation/widgets/profile_info_section.dart';
 export 'presentation/widgets/profile_inline_editors.dart';

@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/catch_club_dock.dart';
@@ -16,6 +16,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_transition_tags.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
@@ -476,7 +477,8 @@ void main() {
       expect(find.text(event.title), findsOneWidget);
 
       await tester.tap(find.text('Claim a seat'));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(CatchMotion.base);
 
       expect(find.text('Detail event-cover spotlightDark'), findsOneWidget);
     });
@@ -1757,17 +1759,13 @@ void main() {
               ),
               child: Scaffold(
                 body: ClubDetailBody(
-                  club: club,
-                  upcoming: const [],
-                  reviews: const [],
-                  userProfile: buildUser(uid: 'runner-1'),
-                  uid: 'runner-1',
-                  isHost: false,
-                  isMember: true,
-                  isMutating: false,
-                  clubPushNotificationsEnabled: false,
-                  isClubPushMutating: false,
-                  isAuthenticated: true,
+                  state: ClubDetailBodyState.fromDomain(
+                    club: club,
+                    userProfile: buildUser(uid: 'runner-1'),
+                    uid: 'runner-1',
+                    isMember: true,
+                    isAuthenticated: true,
+                  ),
                 ),
               ),
             ),
@@ -1944,17 +1942,16 @@ void main() {
             path: '/',
             builder: (_, _) => Scaffold(
               body: ClubDetailBody(
-                club: club,
-                upcoming: [buildEvent(clubId: club.id)],
-                reviews: const [],
-                userProfile: buildUser(uid: 'host-1'),
-                uid: 'host-1',
-                isHost: true,
-                isMember: true,
-                isMutating: false,
-                clubPushNotificationsEnabled: false,
-                isClubPushMutating: false,
-                isAuthenticated: true,
+                state: ClubDetailBodyState.fromDomain(
+                  club: club,
+                  upcomingEvents: [buildEvent(clubId: club.id)],
+                  userProfile: buildUser(uid: 'host-1'),
+                  uid: 'host-1',
+                  isHost: true,
+                  isMember: true,
+                  isAuthenticated: true,
+                  appRole: AppRole.host,
+                ),
               ),
             ),
           ),
@@ -2017,17 +2014,12 @@ void main() {
               path: '/',
               builder: (_, _) => Scaffold(
                 body: ClubDetailBody(
-                  club: club,
-                  upcoming: const [],
-                  reviews: const [],
-                  userProfile: buildUser(uid: 'runner-1'),
-                  uid: 'runner-1',
-                  isHost: false,
-                  isMember: false,
-                  isMutating: false,
-                  clubPushNotificationsEnabled: false,
-                  isClubPushMutating: false,
-                  isAuthenticated: true,
+                  state: ClubDetailBodyState.fromDomain(
+                    club: club,
+                    userProfile: buildUser(uid: 'runner-1'),
+                    uid: 'runner-1',
+                    isAuthenticated: true,
+                  ),
                 ),
               ),
             ),
@@ -2095,18 +2087,12 @@ void main() {
             path: '/',
             builder: (context, _) => Scaffold(
               body: ClubDetailBody(
-                club: club,
-                upcoming: const [],
-                reviews: const [],
-                userProfile: buildUser(uid: 'runner-1'),
-                uid: 'runner-1',
-                isHost: false,
-                isMember: false,
-                isMutating: false,
-                clubPushNotificationsEnabled: false,
-                isClubPushMutating: false,
-                isAuthenticated: true,
-                canMessageHosts: true,
+                state: ClubDetailBodyState.fromDomain(
+                  club: club,
+                  userProfile: buildUser(uid: 'runner-1'),
+                  uid: 'runner-1',
+                  isAuthenticated: true,
+                ),
                 onMessageHost: (buttonContext, host) async {
                   final matchId = await fakeRepository
                       .startClubHostConversation(
@@ -2212,17 +2198,15 @@ void main() {
               theme: AppTheme.light,
               home: Scaffold(
                 body: ClubDetailBody(
-                  club: club,
-                  upcoming: const [],
-                  reviews: const [],
-                  userProfile: buildUser(uid: 'owner-1'),
-                  uid: 'owner-1',
-                  isHost: true,
-                  isMember: true,
-                  isMutating: false,
-                  clubPushNotificationsEnabled: false,
-                  isClubPushMutating: false,
-                  isAuthenticated: true,
+                  state: ClubDetailBodyState.fromDomain(
+                    club: club,
+                    userProfile: buildUser(uid: 'owner-1'),
+                    uid: 'owner-1',
+                    isHost: true,
+                    isMember: true,
+                    isAuthenticated: true,
+                    appRole: AppRole.host,
+                  ),
                 ),
               ),
             ),
@@ -2268,17 +2252,14 @@ void main() {
               theme: AppTheme.light,
               home: Scaffold(
                 body: ClubDetailBody(
-                  club: club,
-                  upcoming: const [],
-                  reviews: reviews,
-                  userProfile: buildUser(uid: 'runner-1'),
-                  uid: 'runner-1',
-                  isHost: false,
-                  isMember: true,
-                  isMutating: false,
-                  clubPushNotificationsEnabled: false,
-                  isClubPushMutating: false,
-                  isAuthenticated: true,
+                  state: ClubDetailBodyState.fromDomain(
+                    club: club,
+                    reviews: reviews,
+                    userProfile: buildUser(uid: 'runner-1'),
+                    uid: 'runner-1',
+                    isMember: true,
+                    isAuthenticated: true,
+                  ),
                 ),
               ),
             ),
@@ -2323,17 +2304,14 @@ void main() {
             path: '/',
             builder: (context, _) => Scaffold(
               body: ClubDetailBody(
-                club: club,
-                upcoming: [event],
-                reviews: const [],
-                userProfile: buildUser(uid: 'runner-1'),
-                uid: 'runner-1',
-                isHost: false,
-                isMember: true,
-                isMutating: false,
-                clubPushNotificationsEnabled: false,
-                isClubPushMutating: false,
-                isAuthenticated: true,
+                state: ClubDetailBodyState.fromDomain(
+                  club: club,
+                  upcomingEvents: [event],
+                  userProfile: buildUser(uid: 'runner-1'),
+                  uid: 'runner-1',
+                  isMember: true,
+                  isAuthenticated: true,
+                ),
                 onEventSelected: (selectedEvent) => unawaited(
                   context.pushNamed<void>(
                     Routes.eventDetailScreen.name,
@@ -2494,6 +2472,45 @@ void main() {
         expect(find.byType(TextField), findsOneWidget);
       },
     );
+
+    testWidgets('ExploreScreen empty state clears search and filters', (
+      tester,
+    ) async {
+      final sourceClub = buildClub(id: 'source-club', name: 'Bandra Pacers');
+      final container = ProviderContainer(
+        retry: (_, _) => null,
+        overrides: [
+          cityListProvider.overrideWith((ref) async => _testCities),
+          deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+          exploreSourceClubsProvider.overrideWithValue(AsyncData([sourceClub])),
+          exploreViewModelProvider.overrideWithValue(
+            const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+          ),
+          _emptyExploreFeedOverride,
+        ],
+      );
+      addTearDown(container.dispose);
+      container.read(exploreSearchQueryProvider.notifier).setQuery('tempo');
+      container.read(exploreFiltersProvider.notifier).toggleHighRatedOnly();
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ExploreScreen(),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('No clubs match this search'), findsOneWidget);
+      await tester.tap(find.text('Clear search and filters'));
+      await tester.pump();
+
+      expect(container.read(exploreSearchQueryProvider), isEmpty);
+      expect(container.read(exploreFiltersProvider).hasActiveFilters, false);
+    });
 
     testWidgets('ExploreScreen renders internal feed when clubs are empty', (
       tester,
@@ -2801,6 +2818,57 @@ void main() {
       await _pumpClubUi(tester);
 
       expect(find.byType(ExploreMapScreen), findsOneWidget);
+    });
+
+    testWidgets('ExploreMapScreen can seed selected pin for captures', (
+      tester,
+    ) async {
+      final club = buildClub(id: 'club-map-selected', name: 'Bandra Map Club');
+      final selectedEvent = event_test.buildEvent(
+        id: 'event-map-selected',
+        clubId: club.id,
+        meetingPoint: 'Selected Pin Point',
+        startingPointLat: 19.0608,
+        startingPointLng: 72.8365,
+        startTime: DateTime.now().add(const Duration(days: 1)),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            exploreFeedViewModelProvider.overrideWithValue(
+              AsyncData(
+                ExploreFeedViewModel(
+                  items: [
+                    ExploreEventItem(
+                      event: selectedEvent,
+                      club: club,
+                      status: EventTileStatus.open,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ExploreMapScreen(
+              enableNetworkTiles: false,
+              initialSelectedEventId: 'event-map-selected',
+            ),
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is Semantics && widget.properties.selected == true,
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('selected spotlight pin keeps spotlight styling', (

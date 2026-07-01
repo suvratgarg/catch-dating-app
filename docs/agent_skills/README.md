@@ -1,7 +1,7 @@
 ---
 doc_id: agent_skills
-version: 1.0.0
-updated: 2026-06-30
+version: 1.2.0
+updated: 2026-07-01
 owner: agent_operating_model
 status: active
 ---
@@ -23,3 +23,11 @@ node tool/agent/check_agent_readiness.mjs
 
 Do not add broad doctrine here. Add durable architecture decisions to the owner
 docs and reference them from the manifest.
+
+Parallel worktree delegation is a workflow router, not a separate architecture
+system. Use `catch-parallel-delegation.md` only to route agents to the parent-led
+Git/worktree protocol, structured result packet, and metrics recorder.
+
+Marketing website work routes through `catch-marketing-website.md` so public
+routes, generated organizer listings, static metadata, CI, and route-review
+states stay aligned before component-first review begins.

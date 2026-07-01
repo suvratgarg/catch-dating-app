@@ -30,6 +30,8 @@ class CatchProfileView extends StatelessWidget {
     this.scrollPhysics,
     this.onLeadingOverscroll,
     this.bottomPadding = CatchSpacing.s12,
+    this.reactionsEnabled = true,
+    this.reactionsPending = false,
   });
 
   static const scrollViewKey = ValueKey<String>('profile.surface.scroll');
@@ -43,6 +45,8 @@ class CatchProfileView extends StatelessWidget {
   final ScrollPhysics? scrollPhysics;
   final ValueChanged<double>? onLeadingOverscroll;
   final double bottomPadding;
+  final bool reactionsEnabled;
+  final bool reactionsPending;
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +77,8 @@ class CatchProfileView extends StatelessWidget {
                 data: data,
                 accent: accent,
                 onReact: onReact,
+                reactionsEnabled: reactionsEnabled,
+                reactionsPending: reactionsPending,
               ),
             ),
             SliverPadding(
@@ -100,6 +106,8 @@ class CatchProfileView extends StatelessWidget {
           section: data.sections[i],
           accent: accent,
           onReact: onReact,
+          reactionsEnabled: reactionsEnabled,
+          reactionsPending: reactionsPending,
         ),
       );
     }
@@ -118,11 +126,15 @@ class ProfileHeroWidget extends StatelessWidget {
     required this.data,
     this.accent,
     this.onReact,
+    this.reactionsEnabled = true,
+    this.reactionsPending = false,
   });
 
   final ProfileView data;
   final Color? accent;
   final ProfileReactionCallback? onReact;
+  final bool reactionsEnabled;
+  final bool reactionsPending;
 
   @override
   Widget build(BuildContext context) {
@@ -139,10 +151,7 @@ class ProfileHeroWidget extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            ProfilePhoto(
-              image: data.heroPhoto,
-              activity: data.kickerActivity,
-            ),
+            ProfilePhoto(image: data.heroPhoto, activity: data.kickerActivity),
             ProfileHeroScrim(base: dark.bg),
             if (onReact != null && reaction != null)
               Positioned(
@@ -152,6 +161,8 @@ class ProfileHeroWidget extends StatelessWidget {
                   target: reaction,
                   onReact: onReact!,
                   style: ProfileReactionControlsStyle.overlay,
+                  enabled: reactionsEnabled,
+                  isPending: reactionsPending,
                 ),
               ),
             Positioned(
@@ -165,7 +176,10 @@ class ProfileHeroWidget extends StatelessWidget {
                   if (data.kicker != null)
                     Text(
                       data.kicker!.toUpperCase(),
-                      style: CatchTextStyles.kicker(context, color: kickerColor),
+                      style: CatchTextStyles.kicker(
+                        context,
+                        color: kickerColor,
+                      ),
                     ),
                   gapH8,
                   Text(
@@ -221,11 +235,7 @@ class ProfileHeroScrim extends StatelessWidget {
 
 /// Real photo (graded at display time) or the activity-art fallback when absent.
 class ProfilePhoto extends StatelessWidget {
-  const ProfilePhoto({
-    super.key,
-    required this.image,
-    this.activity,
-  });
+  const ProfilePhoto({super.key, required this.image, this.activity});
 
   final ImageProvider<Object>? image;
   final ActivityKind? activity;
@@ -259,17 +269,26 @@ class ProfileSectionView extends StatelessWidget {
     required this.section,
     this.accent,
     this.onReact,
+    this.reactionsEnabled = true,
+    this.reactionsPending = false,
   });
 
   final ProfileSection section;
   final Color? accent;
   final ProfileReactionCallback? onReact;
+  final bool reactionsEnabled;
+  final bool reactionsPending;
 
   @override
   Widget build(BuildContext context) {
     // Photo sections embed their own overlay reaction control over the image.
     if (section case final ProfilePhotoSection photo) {
-      return ProfilePhotoBlock(section: photo, onReact: onReact);
+      return ProfilePhotoBlock(
+        section: photo,
+        onReact: onReact,
+        reactionsEnabled: reactionsEnabled,
+        reactionsPending: reactionsPending,
+      );
     }
 
     final content = switch (section) {
@@ -278,10 +297,7 @@ class ProfileSectionView extends StatelessWidget {
         accent: accent,
       ),
       ProfilePromptSectionData s => ProfilePrompt(section: s),
-      ProfileRunningSection s => ProfileRunning(
-        section: s,
-        accent: accent,
-      ),
+      ProfileRunningSection s => ProfileRunning(section: s, accent: accent),
       ProfileFactsSection s => ProfileFacts(section: s),
       ProfilePhotoSection() => const SizedBox.shrink(),
     };
@@ -295,7 +311,12 @@ class ProfileSectionView extends StatelessWidget {
         gapH3,
         Align(
           alignment: Alignment.centerLeft,
-          child: ProfileReactionControls(target: reaction, onReact: onReact!),
+          child: ProfileReactionControls(
+            target: reaction,
+            onReact: onReact!,
+            enabled: reactionsEnabled,
+            isPending: reactionsPending,
+          ),
         ),
       ],
     );
@@ -303,11 +324,7 @@ class ProfileSectionView extends StatelessWidget {
 }
 
 class ProfileSectionKicker extends StatelessWidget {
-  const ProfileSectionKicker(
-    this.label, {
-    super.key,
-    this.color,
-  });
+  const ProfileSectionKicker(this.label, {super.key, this.color});
 
   final String label;
   final Color? color;
@@ -325,11 +342,7 @@ class ProfileSectionKicker extends StatelessWidget {
 // ── Compatibility ("Why you might click") ─────────────────────────────────────
 
 class ProfileCompatibility extends StatelessWidget {
-  const ProfileCompatibility({
-    super.key,
-    required this.section,
-    this.accent,
-  });
+  const ProfileCompatibility({super.key, required this.section, this.accent});
 
   final ProfileCompatibilitySection section;
   final Color? accent;
@@ -373,7 +386,8 @@ class ProfileCompatibility extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              for (final signal in section.confidence) CatchBadge(label: signal),
+              for (final signal in section.confidence)
+                CatchBadge(label: signal),
             ],
           ),
         ],
@@ -409,11 +423,7 @@ class ProfilePrompt extends StatelessWidget {
 // ── Running identity ──────────────────────────────────────────────────────────
 
 class ProfileRunning extends StatelessWidget {
-  const ProfileRunning({
-    super.key,
-    required this.section,
-    this.accent,
-  });
+  const ProfileRunning({super.key, required this.section, this.accent});
 
   final ProfileRunningSection section;
   final Color? accent;
@@ -429,7 +439,9 @@ class ProfileRunning extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(child: RunningStat(label: 'Pace', value: section.pace)),
+            Expanded(
+              child: RunningStat(label: 'Pace', value: section.pace),
+            ),
             gapW12,
             Expanded(
               child: RunningStat(label: 'Distance', value: section.distance),
@@ -457,11 +469,7 @@ class ProfileRunning extends StatelessWidget {
 }
 
 class RunningStat extends StatelessWidget {
-  const RunningStat({
-    super.key,
-    required this.label,
-    required this.value,
-  });
+  const RunningStat({super.key, required this.label, required this.value});
 
   final String label;
   final String value;
@@ -506,7 +514,11 @@ class ProfileFacts extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: CatchSpacing.micro2),
-                  child: Icon(fact.icon, size: CatchIcon.control, color: t.ink3),
+                  child: Icon(
+                    fact.icon,
+                    size: CatchIcon.control,
+                    color: t.ink3,
+                  ),
                 ),
                 gapW12,
                 Expanded(
@@ -530,10 +542,14 @@ class ProfilePhotoBlock extends StatelessWidget {
     super.key,
     required this.section,
     this.onReact,
+    this.reactionsEnabled = true,
+    this.reactionsPending = false,
   });
 
   final ProfilePhotoSection section;
   final ProfileReactionCallback? onReact;
+  final bool reactionsEnabled;
+  final bool reactionsPending;
 
   @override
   Widget build(BuildContext context) {
@@ -561,6 +577,8 @@ class ProfilePhotoBlock extends StatelessWidget {
                   target: reaction,
                   onReact: onReact!,
                   style: ProfileReactionControlsStyle.overlay,
+                  enabled: reactionsEnabled,
+                  isPending: reactionsPending,
                 ),
               ),
           ],
@@ -583,7 +601,10 @@ class PhotoCaption extends StatelessWidget {
       radius: CatchRadius.sm,
       backgroundColor: dark.darkScrimFill,
       borderWidth: 0,
-      child: Text(text, style: CatchTextStyles.proseM(context, color: dark.ink)),
+      child: Text(
+        text,
+        style: CatchTextStyles.proseM(context, color: dark.ink),
+      ),
     );
   }
 }

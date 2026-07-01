@@ -11,8 +11,8 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/saved_events_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -53,10 +53,13 @@ class SavedEventsScreen extends ConsumerWidget {
             }
 
             final now = DateTime.now();
-            final orderedEvents = _orderSavedEvents(events, now: now);
+            final savedEventsState = SavedEventsListState.from(
+              events,
+              now: now,
+            );
             final clubNamesAsync = ref.watch(
               clubNameLookupProvider(
-                ClubNameLookupQuery(orderedEvents.map((event) => event.clubId)),
+                ClubNameLookupQuery(savedEventsState.clubIds),
               ),
             );
 
@@ -82,16 +85,13 @@ class SavedEventsScreen extends ConsumerWidget {
                         onRetry: () => ref.invalidate(clubNameLookupProvider),
                       ),
                   builder: (context, clubNames) => EventAgendaSliverList(
-                    events: orderedEvents,
+                    events: savedEventsState.orderedEvents,
                     showClubName: true,
                     clubNameBuilder: (event) => clubNames[event.clubId],
-                    today: DateUtils.dateOnly(now),
+                    today: savedEventsState.today,
                     preserveInputOrder: true,
-                    badgeLabelBuilder: (event) =>
-                        event.startTime.isAfter(now) ? 'SAVED' : 'PAST',
-                    statusBuilder: (event) => event.startTime.isAfter(now)
-                        ? EventTileStatus.saved
-                        : EventTileStatus.past,
+                    badgeLabelBuilder: savedEventsState.badgeLabelFor,
+                    statusBuilder: savedEventsState.statusFor,
                     onEventSelected: (event) =>
                         _openEventDetail(context, event),
                   ),
@@ -155,20 +155,4 @@ class SavedEventsMessage extends StatelessWidget {
       ),
     );
   }
-}
-
-List<Event> _orderSavedEvents(List<Event> events, {required DateTime now}) {
-  final upcoming = <Event>[];
-  final past = <Event>[];
-  for (final event in events) {
-    if (event.startTime.isBefore(now)) {
-      past.add(event);
-    } else {
-      upcoming.add(event);
-    }
-  }
-
-  upcoming.sort((a, b) => a.startTime.compareTo(b.startTime));
-  past.sort((a, b) => b.startTime.compareTo(a.startTime));
-  return [...upcoming, ...past];
 }

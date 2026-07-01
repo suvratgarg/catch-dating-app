@@ -1,0 +1,124 @@
+
+.host-hero {
+  padding: calc(var(--header-height) + 54px) 0 80px;
+  background:
+    linear-gradient(135deg, var(--website-host-gradient), transparent 40%),
+    radial-gradient(circle at 80% 0%, var(--website-host-glow), transparent 24%),
+    var(--website-bg);
+}
+
+.host-hero__inner {
+  display: grid;
+  gap: 34px;
+  align-items: center;
+}
+
+.host-hero__copy {
+  width: 100%;
+  max-width: 660px;
+}
+
+.host-console {
+  width: 100%;
+  padding: 18px;
+  background: var(--website-surface);
+}
+
+.host-console__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--website-line);
+}
+
+.host-console__top span {
+  color: var(--website-text-muted);
+}
+
+.host-console__grid {
+  display: grid;
+  gap: 1px;
+  margin-top: 18px;
+  background: var(--website-line);
+}
+
+.host-console__grid > div {
+  padding: 18px;
+  background: var(--website-bg);
+}
+
+.host-console__grid strong {
+  display: block;
+  margin-top: 8px;
+}
+
+.module-stack {
+  display: grid;
+  gap: 14px;
+}
+
+.module-stack article {
+  padding: 20px;
+  background: var(--website-surface);
+}
+
+.host-fill-room {
+  border-top: 1px solid var(--website-line);
+}
+
+.product-module-grid {
+  display: grid;
+  gap: 18px;
+  margin-top: 34px;
+}
+
+.product-module-card {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  padding: 22px;
+  border: 1px solid var(--website-line);
+  border-top: 4px solid var(--activity, var(--website-accent));
+  border-radius: var(--radius);
+  background: var(--website-surface);
+}
+
+.product-module-card h3 {
+  margin-top: 4px;
+  font-size: 28px;
+  line-height: 1.05;
+}
+
+.product-module-card p {
+  margin: 0;
+  color: var(--website-copy-muted);
+  line-height: 1.55;
+}
+
+.product-module-card ul {
+  display: grid;
+  gap: 1px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--website-line);
+  border-radius: var(--catch-radius-sm);
+  background: var(--website-line);
+  list-style: none;
+}
+
+.product-module-card li {
+  padding: 13px;
+  background: var(--website-bg);
+  color: var(--website-copy-muted);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.module-stack strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 22px;
+}

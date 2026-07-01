@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -19,7 +20,6 @@ import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
@@ -38,9 +38,9 @@ import 'package:catch_dating_app/event_success/presentation/event_success_live_r
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_check_in_qr_payload.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
-import 'package:catch_dating_app/events/domain/event_check_in_qr_payload.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -71,6 +71,173 @@ const EdgeInsets _hostWingmanRequestNotePadding = EdgeInsets.only(
 
 enum EventSuccessHostTab { setup, live, report }
 
+enum EventSuccessHostSectionStatus { loading, error, ready }
+
+enum EventSuccessHostRetryIntent {
+  plan,
+  roster,
+  assignments,
+  rotationAssignments,
+  assignmentParticipantProfiles,
+  rotationParticipantProfiles,
+  preferences,
+  wingmanRequests,
+  wingmanProfiles,
+  scorecard,
+}
+
+class EventSuccessHostSectionState {
+  const EventSuccessHostSectionState._({
+    required this.status,
+    required this.plan,
+    required this.planIsPersisted,
+    required this.roster,
+    required this.scorecard,
+    required this.assignments,
+    required this.assignmentParticipantProfiles,
+    required this.rotationAssignments,
+    required this.rotationParticipantProfiles,
+    required this.preferences,
+    required this.wingmanRequests,
+    required this.wingmanProfiles,
+    this.error,
+    this.retryIntent,
+  });
+
+  factory EventSuccessHostSectionState.resolve({
+    required Event event,
+    required AsyncValue<EventSuccessPlan?> planAsync,
+    required AsyncValue<EventParticipationRoster> rosterAsync,
+    required AsyncValue<EventSuccessScorecard?> scorecardAsync,
+    required AsyncValue<List<EventSuccessAssignment>> assignmentsAsync,
+    required AsyncValue<List<PublicProfile>> assignmentParticipantProfilesAsync,
+    required AsyncValue<List<EventSuccessAssignment>> rotationAssignmentsAsync,
+    required AsyncValue<List<PublicProfile>> rotationParticipantProfilesAsync,
+    required AsyncValue<List<EventSuccessPreference>> preferencesAsync,
+    required AsyncValue<List<EventSuccessWingmanRequest>> wingmanRequestsAsync,
+    required AsyncValue<List<PublicProfile>> wingmanProfilesAsync,
+  }) {
+    final persistedPlan = planAsync.asData?.value;
+    final plan = persistedPlan ?? EventSuccessPlan.defaultForEvent(event);
+    final fallback = EventSuccessHostSectionState._(
+      status: EventSuccessHostSectionStatus.ready,
+      plan: plan,
+      planIsPersisted: persistedPlan != null,
+      roster: rosterAsync.asData?.value ?? EventParticipationRoster.empty(),
+      scorecard: scorecardAsync.asData?.value,
+      assignments:
+          assignmentsAsync.asData?.value ?? const <EventSuccessAssignment>[],
+      assignmentParticipantProfiles:
+          assignmentParticipantProfilesAsync.asData?.value ??
+          const <PublicProfile>[],
+      rotationAssignments:
+          rotationAssignmentsAsync.asData?.value ??
+          const <EventSuccessAssignment>[],
+      rotationParticipantProfiles:
+          rotationParticipantProfilesAsync.asData?.value ??
+          const <PublicProfile>[],
+      preferences:
+          preferencesAsync.asData?.value ?? const <EventSuccessPreference>[],
+      wingmanRequests:
+          wingmanRequestsAsync.asData?.value ??
+          const <EventSuccessWingmanRequest>[],
+      wingmanProfiles:
+          wingmanProfilesAsync.asData?.value ?? const <PublicProfile>[],
+    );
+
+    if (planAsync.isLoading ||
+        rosterAsync.isLoading ||
+        scorecardAsync.isLoading ||
+        assignmentsAsync.isLoading ||
+        assignmentParticipantProfilesAsync.isLoading ||
+        rotationAssignmentsAsync.isLoading ||
+        rotationParticipantProfilesAsync.isLoading ||
+        preferencesAsync.isLoading ||
+        wingmanRequestsAsync.isLoading ||
+        wingmanProfilesAsync.isLoading) {
+      return fallback.copyWith(status: EventSuccessHostSectionStatus.loading);
+    }
+
+    final error = _firstEventSuccessHostError([
+      (planAsync, EventSuccessHostRetryIntent.plan),
+      (rosterAsync, EventSuccessHostRetryIntent.roster),
+      (assignmentsAsync, EventSuccessHostRetryIntent.assignments),
+      (
+        rotationAssignmentsAsync,
+        EventSuccessHostRetryIntent.rotationAssignments,
+      ),
+      (
+        assignmentParticipantProfilesAsync,
+        EventSuccessHostRetryIntent.assignmentParticipantProfiles,
+      ),
+      (
+        rotationParticipantProfilesAsync,
+        EventSuccessHostRetryIntent.rotationParticipantProfiles,
+      ),
+      (preferencesAsync, EventSuccessHostRetryIntent.preferences),
+      (wingmanRequestsAsync, EventSuccessHostRetryIntent.wingmanRequests),
+      (wingmanProfilesAsync, EventSuccessHostRetryIntent.wingmanProfiles),
+      (scorecardAsync, EventSuccessHostRetryIntent.scorecard),
+    ]);
+    if (error != null) {
+      return fallback.copyWith(
+        status: EventSuccessHostSectionStatus.error,
+        error: error.$1,
+        retryIntent: error.$2,
+      );
+    }
+
+    return fallback;
+  }
+
+  final EventSuccessHostSectionStatus status;
+  final EventSuccessPlan plan;
+  final bool planIsPersisted;
+  final EventParticipationRoster roster;
+  final EventSuccessScorecard? scorecard;
+  final List<EventSuccessAssignment> assignments;
+  final List<PublicProfile> assignmentParticipantProfiles;
+  final List<EventSuccessAssignment> rotationAssignments;
+  final List<PublicProfile> rotationParticipantProfiles;
+  final List<EventSuccessPreference> preferences;
+  final List<EventSuccessWingmanRequest> wingmanRequests;
+  final List<PublicProfile> wingmanProfiles;
+  final Object? error;
+  final EventSuccessHostRetryIntent? retryIntent;
+
+  EventSuccessHostSectionState copyWith({
+    EventSuccessHostSectionStatus? status,
+    Object? error,
+    EventSuccessHostRetryIntent? retryIntent,
+  }) {
+    return EventSuccessHostSectionState._(
+      status: status ?? this.status,
+      plan: plan,
+      planIsPersisted: planIsPersisted,
+      roster: roster,
+      scorecard: scorecard,
+      assignments: assignments,
+      assignmentParticipantProfiles: assignmentParticipantProfiles,
+      rotationAssignments: rotationAssignments,
+      rotationParticipantProfiles: rotationParticipantProfiles,
+      preferences: preferences,
+      wingmanRequests: wingmanRequests,
+      wingmanProfiles: wingmanProfiles,
+      error: error ?? this.error,
+      retryIntent: retryIntent ?? this.retryIntent,
+    );
+  }
+}
+
+(Object, EventSuccessHostRetryIntent)? _firstEventSuccessHostError(
+  List<(AsyncValue<dynamic>, EventSuccessHostRetryIntent)> values,
+) {
+  for (final (value, intent) in values) {
+    if (value.hasError) return (value.error!, intent);
+  }
+  return null;
+}
+
 class EventSuccessHostSection extends ConsumerWidget {
   const EventSuccessHostSection({
     super.key,
@@ -92,22 +259,7 @@ class EventSuccessHostSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
-    if (planAsync.isLoading) {
-      return EventSuccessHostSectionSkeleton(
-        initialTab: initialTab,
-        showTabs: showTabs,
-      );
-    }
-    if (planAsync.hasError) {
-      return CatchInlineErrorState.fromError(
-        planAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(watchEventSuccessPlanProvider(event.id)),
-      );
-    }
-
     final persistedPlan = planAsync.asData?.value;
-    final plan = persistedPlan ?? EventSuccessPlan.defaultForEvent(event);
     final hasSavedGuide = persistedPlan != null;
     final shouldLoadRoster =
         hasSavedGuide && (showTabs || initialTab == EventSuccessHostTab.live);
@@ -180,142 +332,120 @@ class EventSuccessHostSection extends ConsumerWidget {
           )
         : const AsyncData(<PublicProfile>[]);
 
-    if (rosterAsync.isLoading ||
-        scorecardAsync.isLoading ||
-        assignmentsAsync.isLoading ||
-        assignmentParticipantProfilesAsync.isLoading ||
-        rotationAssignmentsAsync.isLoading ||
-        rotationParticipantProfilesAsync.isLoading ||
-        preferencesAsync.isLoading ||
-        wingmanRequestsAsync.isLoading ||
-        wingmanProfilesAsync.isLoading) {
-      return EventSuccessHostSectionSkeleton(
-        initialTab: initialTab,
-        showTabs: showTabs,
-      );
-    }
-    if (rosterAsync.hasError) {
-      return CatchInlineErrorState.fromError(
-        rosterAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () =>
-            ref.invalidate(watchEventParticipationRosterProvider(event.id)),
-      );
-    }
-    if (assignmentsAsync.hasError) {
-      return CatchInlineErrorState.fromError(
-        assignmentsAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () =>
-            ref.invalidate(watchEventSuccessAssignmentsProvider(event.id)),
-      );
-    }
-    if (rotationAssignmentsAsync.hasError) {
-      return CatchInlineErrorState.fromError(
-        rotationAssignmentsAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
-          watchEventSuccessRotationAssignmentsProvider(event.id),
-        ),
-      );
-    }
-    if (assignmentParticipantProfilesAsync.hasError) {
-      return CatchInlineErrorState.fromError(
-        assignmentParticipantProfilesAsync.error!,
-        context: AppErrorContext.profile,
-        onRetry: () => ref.invalidate(
-          eventSuccessAssignmentPeerProfilesProvider(
-            assignmentParticipantUidsKey,
-          ),
-        ),
-      );
-    }
-    if (rotationParticipantProfilesAsync.hasError) {
-      return CatchInlineErrorState.fromError(
-        rotationParticipantProfilesAsync.error!,
-        context: AppErrorContext.profile,
-        onRetry: () => ref.invalidate(
-          eventSuccessAssignmentPeerProfilesProvider(
-            rotationParticipantUidsKey,
-          ),
-        ),
-      );
-    }
-    if (preferencesAsync.hasError) {
-      return CatchInlineErrorState.fromError(
-        preferencesAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () =>
-            ref.invalidate(watchEventSuccessPreferencesProvider(event.id)),
-      );
-    }
-    if (wingmanRequestsAsync.hasError) {
-      return CatchInlineErrorState.fromError(
-        wingmanRequestsAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () =>
-            ref.invalidate(watchEventSuccessWingmanRequestsProvider(event.id)),
-      );
-    }
-    if (wingmanProfilesAsync.hasError) {
-      return CatchInlineErrorState.fromError(
-        wingmanProfilesAsync.error!,
-        context: AppErrorContext.profile,
-        onRetry: () => ref.invalidate(
-          eventSuccessAssignmentPeerProfilesProvider(wingmanProfilesKey),
-        ),
-      );
-    }
-    if (scorecardAsync.hasError) {
-      return CatchInlineErrorState.fromError(
-        scorecardAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () =>
-            ref.invalidate(watchEventSuccessScorecardProvider(event.id)),
-      );
-    }
+    final state = EventSuccessHostSectionState.resolve(
+      event: event,
+      planAsync: planAsync,
+      rosterAsync: rosterAsync,
+      scorecardAsync: scorecardAsync,
+      assignmentsAsync: assignmentsAsync,
+      assignmentParticipantProfilesAsync: assignmentParticipantProfilesAsync,
+      rotationAssignmentsAsync: rotationAssignmentsAsync,
+      rotationParticipantProfilesAsync: rotationParticipantProfilesAsync,
+      preferencesAsync: preferencesAsync,
+      wingmanRequestsAsync: wingmanRequestsAsync,
+      wingmanProfilesAsync: wingmanProfilesAsync,
+    );
 
-    final roster =
-        rosterAsync.asData?.value ?? EventParticipationRoster.empty();
-    final scorecard = scorecardAsync.asData?.value;
-    final assignments =
-        assignmentsAsync.asData?.value ?? const <EventSuccessAssignment>[];
-    final assignmentParticipantProfiles =
-        assignmentParticipantProfilesAsync.asData?.value ??
-        const <PublicProfile>[];
-    final rotationAssignments =
-        rotationAssignmentsAsync.asData?.value ??
-        const <EventSuccessAssignment>[];
-    final rotationParticipantProfiles =
-        rotationParticipantProfilesAsync.asData?.value ??
-        const <PublicProfile>[];
-    final preferences =
-        preferencesAsync.asData?.value ?? const <EventSuccessPreference>[];
-    final wingmanRequests =
-        wingmanRequestsAsync.asData?.value ??
-        const <EventSuccessWingmanRequest>[];
-    final wingmanProfiles =
-        wingmanProfilesAsync.asData?.value ?? const <PublicProfile>[];
+    switch (state.status) {
+      case EventSuccessHostSectionStatus.loading:
+        return EventSuccessHostSectionSkeleton(
+          initialTab: initialTab,
+          showTabs: showTabs,
+        );
+      case EventSuccessHostSectionStatus.error:
+        final retryIntent = state.retryIntent!;
+        return CatchInlineErrorState.fromError(
+          state.error!,
+          context: _eventSuccessHostRetryContext(retryIntent),
+          onRetry: () => _retryEventSuccessHostSection(
+            ref: ref,
+            eventId: event.id,
+            retryIntent: retryIntent,
+            assignmentParticipantUidsKey: assignmentParticipantUidsKey,
+            rotationParticipantUidsKey: rotationParticipantUidsKey,
+            wingmanProfilesKey: wingmanProfilesKey,
+          ),
+        );
+      case EventSuccessHostSectionStatus.ready:
+        break;
+    }
 
     return EventSuccessHostPanel(
       event: event,
-      plan: plan,
-      planIsPersisted: persistedPlan != null,
-      roster: roster,
-      scorecard: scorecard,
-      assignments: assignments,
-      assignmentParticipantProfiles: assignmentParticipantProfiles,
-      rotationAssignments: rotationAssignments,
-      rotationParticipantProfiles: rotationParticipantProfiles,
-      preferences: preferences,
-      wingmanRequests: wingmanRequests,
-      wingmanProfiles: wingmanProfiles,
+      plan: state.plan,
+      planIsPersisted: state.planIsPersisted,
+      roster: state.roster,
+      scorecard: state.scorecard,
+      assignments: state.assignments,
+      assignmentParticipantProfiles: state.assignmentParticipantProfiles,
+      rotationAssignments: state.rotationAssignments,
+      rotationParticipantProfiles: state.rotationParticipantProfiles,
+      preferences: state.preferences,
+      wingmanRequests: state.wingmanRequests,
+      wingmanProfiles: state.wingmanProfiles,
       initialTab: initialTab,
       showTabs: showTabs,
       liveRoster: liveRoster,
       compactLiveControls: compactLiveControls,
       fixtureActions: fixtureActions,
     );
+  }
+}
+
+AppErrorContext _eventSuccessHostRetryContext(
+  EventSuccessHostRetryIntent intent,
+) {
+  return switch (intent) {
+    EventSuccessHostRetryIntent.assignmentParticipantProfiles ||
+    EventSuccessHostRetryIntent.rotationParticipantProfiles ||
+    EventSuccessHostRetryIntent.wingmanProfiles => AppErrorContext.profile,
+    EventSuccessHostRetryIntent.plan ||
+    EventSuccessHostRetryIntent.roster ||
+    EventSuccessHostRetryIntent.assignments ||
+    EventSuccessHostRetryIntent.rotationAssignments ||
+    EventSuccessHostRetryIntent.preferences ||
+    EventSuccessHostRetryIntent.wingmanRequests ||
+    EventSuccessHostRetryIntent.scorecard => AppErrorContext.event,
+  };
+}
+
+void _retryEventSuccessHostSection({
+  required WidgetRef ref,
+  required String eventId,
+  required EventSuccessHostRetryIntent retryIntent,
+  required String assignmentParticipantUidsKey,
+  required String rotationParticipantUidsKey,
+  required String wingmanProfilesKey,
+}) {
+  switch (retryIntent) {
+    case EventSuccessHostRetryIntent.plan:
+      ref.invalidate(watchEventSuccessPlanProvider(eventId));
+    case EventSuccessHostRetryIntent.roster:
+      ref.invalidate(watchEventParticipationRosterProvider(eventId));
+    case EventSuccessHostRetryIntent.assignments:
+      ref.invalidate(watchEventSuccessAssignmentsProvider(eventId));
+    case EventSuccessHostRetryIntent.rotationAssignments:
+      ref.invalidate(watchEventSuccessRotationAssignmentsProvider(eventId));
+    case EventSuccessHostRetryIntent.assignmentParticipantProfiles:
+      ref.invalidate(
+        eventSuccessAssignmentPeerProfilesProvider(
+          assignmentParticipantUidsKey,
+        ),
+      );
+    case EventSuccessHostRetryIntent.rotationParticipantProfiles:
+      ref.invalidate(
+        eventSuccessAssignmentPeerProfilesProvider(rotationParticipantUidsKey),
+      );
+    case EventSuccessHostRetryIntent.preferences:
+      ref.invalidate(watchEventSuccessPreferencesProvider(eventId));
+    case EventSuccessHostRetryIntent.wingmanRequests:
+      ref.invalidate(watchEventSuccessWingmanRequestsProvider(eventId));
+    case EventSuccessHostRetryIntent.wingmanProfiles:
+      ref.invalidate(
+        eventSuccessAssignmentPeerProfilesProvider(wingmanProfilesKey),
+      );
+    case EventSuccessHostRetryIntent.scorecard:
+      ref.invalidate(watchEventSuccessScorecardProvider(eventId));
   }
 }
 

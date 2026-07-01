@@ -1,6 +1,6 @@
 {
-  "version": "4.2.0",
-  "updated": "2026-06-30",
+  "version": "4.5.0",
+  "updated": "2026-07-01",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -25,6 +25,50 @@
         "Only source refactoring is needed"
       ]
     },
+    "AGENTS.md": {
+      "purpose": "Short AI-agent entrypoint for source-of-truth routing, required starting loop, completion standards, and parent-led parallel worktree delegation.",
+      "read_when": [
+        "Starting AI-assisted repo work",
+        "Choosing the required workflow loop",
+        "Using parallel agents or subagents"
+      ],
+      "skip_when": [
+        "A narrower context pack already identified the exact owner docs"
+      ]
+    },
+    "docs/agent_operating_model.md": {
+      "purpose": "Canonical agent operating model for execution modes, broad cleanup contracts, reference-pattern rollouts, parent-led parallel worktree delegation, regression ledger policy, skill freshness, and workflow-quality measurement.",
+      "read_when": [
+        "Starting broad cleanup, refactor, docs consolidation, design implementation, or workflow-harness changes",
+        "Using subagents, disposable Git worktrees, or parallel branch proposals",
+        "Updating workflow-quality metrics or project-local agent skills"
+      ],
+      "skip_when": [
+        "A trivial one-off command does not touch repo workflow"
+      ]
+    },
+    "docs/agent_regression_ledger.json": {
+      "purpose": "Machine-readable list of hard-won agent regression guards, including audit-loop, design-system, generated-metadata, Widgetbook, nullable organizer data, parallel Flutter test, and parallel delegation ownership failures.",
+      "read_when": [
+        "Generating a context pack",
+        "Touching a scope with known agent regression risks",
+        "Adding a new recurring failure mode"
+      ],
+      "skip_when": [
+        "No repo files or recurring workflows are touched"
+      ]
+    },
+    "docs/agent_skills/README.md": {
+      "purpose": "Project-local Catch workflow router index; machine-readable skill definitions live in skills_manifest.json and include parallel delegation.",
+      "read_when": [
+        "Updating project-local agent skills",
+        "Checking skill freshness or source-doc routing",
+        "Adding a repeated workflow entrypoint"
+      ],
+      "skip_when": [
+        "A context pack already selected the required skill"
+      ]
+    },
     "lib/README.md": {
       "purpose": "Feature code map, feature-level README index, and cross-cutting code-doc routing.",
       "read_when": [
@@ -37,9 +81,12 @@
       ]
     },
     "docs/app_architecture.md": {
-      "purpose": "Canonical Flutter app architecture spec for app-role boundaries, feature/layer/screen/controller/repository/widget ownership, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, realtime stream lifecycle, and enforcement policy.",
+      "purpose": "Canonical Flutter app architecture spec for app-role boundaries, feature/layer/screen/controller/repository/widget ownership, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, realtime stream lifecycle, reference implementation exhibits, and enforcement policy.",
       "read_when": [
         "Changing code organization under lib/",
+        "Starting or continuing an architecture migration rollout",
+        "Updating reference implementation exhibits",
+        "Classifying architecture pattern adopters, variants, or exceptions",
         "Defining or reviewing feature folder structure",
         "Changing host/consumer app-role boundaries or role-specific routing",
         "Moving behavior between widgets, controllers, repositories, services, or domain classes",
@@ -118,7 +165,7 @@
       ]
     },
     "docs/audit_registry/rules.json": {
-      "purpose": "Active/watch/archived recursive audit rules, including provider stream lifecycle constraints and branded error UI requirements.",
+      "purpose": "Active/watch/archived recursive audit rules, including agent-harness workflow proof, parallel worktree delegation ownership, provider stream lifecycle constraints, and branded error UI requirements.",
       "read_when": [
         "Starting an audit or cleanup pass",
         "Adding or updating recurring process rules",
@@ -240,7 +287,7 @@
       ]
     },
     "docs/audit_registry/README.md": {
-      "purpose": "Recursive audit workflow, registry files, pruning policy, and completion criteria.",
+      "purpose": "Recursive audit workflow, registry files, architecture pattern-adoption tracker, pruning policy, and completion criteria.",
       "read_when": [
         "Starting any repeated cleanup/audit pass"
       ],
@@ -260,8 +307,22 @@
         "A closed historical detail is only needed for proof; use passes.jsonl/files.jsonl instead"
       ]
     },
+    "docs/audit_registry/architecture_pattern_adoption.json": {
+      "purpose": "Machine-readable tracker for architecture reference exhibits, prototype files, adopters, variants, exceptions, screen-boundary candidates, and required back-propagation.",
+      "read_when": [
+        "Starting architecture migration work from a reusable pattern",
+        "Changing a reference implementation exhibit",
+        "Classifying files as aligned, needs_update, variant_needed, or exception",
+        "Choosing the next feature screen to compare against ARCH-SCREEN-001",
+        "Checking which files must be revisited after a pattern changes"
+      ],
+      "skip_when": [
+        "The task is a one-off docs edit with no architecture migration pattern",
+        "Only backend schema or deploy behavior is touched"
+      ]
+    },
     "docs/audit_registry/doc_versions.json": {
-      "purpose": "Version metadata and read policies for durable docs.",
+      "purpose": "Version metadata, read policies, and registry routing for durable docs.",
       "read_when": [
         "Adding, deleting, renaming, archiving, or materially changing durable docs",
         "Checking whether markdown front matter and registry metadata agree"

@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.6.0
-updated: 2026-06-30
+version: 0.7.1
+updated: 2026-07-01
 owner: web_platform
 status: active
 ---
@@ -30,6 +30,9 @@ React + TypeScript stack where practical.
 - `packages/web-config/` contains shared Vite, TypeScript, and token/base CSS
   plumbing for React web surfaces.
 - `website/` is a Vite + React + TypeScript marketing app.
+- `website/src/app/App.tsx` uses React Router for the client route shell and
+  `website/src/app/routeRegistry.ts` for runtime route patterns; the route
+  contract and postbuild output remain the public SEO source of truth.
 - `website/public/` contains Vite public assets, including `.well-known/`, fonts,
   app-sourced marketing screenshots, and the favicon.
 - `website/dist/` is the deployable marketing build.
@@ -42,6 +45,31 @@ React + TypeScript stack where practical.
 Design-token CSS and web font copies are generated into
 `packages/web-config/generated/` by `dart run tool/design_tokens.dart`, then
 bundled by Vite through `packages/web-config/styles/catch-web.css`.
+
+## Marketing Route Contract
+
+Public website route ownership starts in `design/website/routes.json`. The
+contract records each route family, page key, source component, metadata key or
+factory, static-output behavior, robots/indexing intent, sitemap inclusion, and
+the review states that need visual coverage.
+
+Run the route gate before component-first or visual-review work:
+
+```sh
+node tool/run.mjs check marketing:website-routes
+```
+
+The checker compares the route contract with `website/src/app/App.tsx`,
+`website/src/app/routeRegistry.ts`, `website/src/app/pageMeta.ts`,
+`website/scripts/postbuild.mjs`, generated organizer listings, and source
+component paths. It is also wired into
+`npm --workspace catch-marketing run typecheck` and the marketing GitHub
+workflow so public-route changes cannot ship as prose-only decisions.
+
+Component-first review is the next layer, not a replacement for route review.
+When the website gets a Storybook/Widgetbook-equivalent workbench, its stories
+should attach state coverage to the route ids in `design/website/routes.json`
+instead of creating a separate website inventory.
 
 ## Firebase Hosting Setup
 

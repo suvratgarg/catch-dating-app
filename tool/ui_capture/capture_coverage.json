@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-06-23",
+  "updated": "2026-07-01",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -153,12 +153,16 @@
         "explore_feed_error",
         "explore_empty_city",
         "explore_no_search_results",
+        "explore_no_filter_results",
+        "explore_offline",
         "explore_search_query",
         "explore_filters_active",
+        "explore_joined_clubs",
+        "explore_unclaimed_host_projection",
         "explore_text_scale_2",
         "explore_reduced_motion"
       ],
-      "reason": "Explore discovery route captures now cover populated, loading, source error, feed error, empty city, no-search, active search, active filters, text-scale, and reduced-motion states."
+      "reason": "Explore discovery route captures now cover populated, signed-in joined clubs, loading, source error, feed error, offline, empty city, no-search, no-filter, active search, active filters, unclaimed host projection, text-scale, and reduced-motion states."
     },
     {
       "routeId": "exploreMapScreen",
@@ -166,10 +170,12 @@
       "priority": "P1",
       "captureIds": [
         "explore_map",
+        "explore_map_selected_pin",
+        "explore_map_distance_ring",
         "explore_map_loading",
         "explore_map_error"
       ],
-      "reason": "Explore map route captures now cover pins-ready, loading, and feed-error states with network tiles disabled."
+      "reason": "Explore map route captures now cover pins-ready, selected-pin, distance-ring, loading, and feed-error states with network tiles disabled."
     },
     {
       "routeId": "clubDetailScreen",
@@ -180,6 +186,9 @@
         "club_detail_visitor",
         "club_detail_guest",
         "club_detail_host_public",
+        "club_detail_loading",
+        "club_detail_initial_loading",
+        "club_detail_empty_schedule",
         "club_detail_missing",
         "club_detail_error",
         "club_detail_join_pending",
@@ -188,7 +197,7 @@
         "club_detail_text_scale_2",
         "club_detail_reduced_motion"
       ],
-      "reason": "Club Detail captured across member, visitor, guest, host public, missing, error, mutation, offline, text-scale, and reduced-motion states."
+      "reason": "Club Detail captured across member, visitor, guest, host public, loading, initial fallback loading, empty schedule, missing, error, mutation, offline, text-scale, and reduced-motion states."
     },
     {
       "routeId": "eventDetailScreen",
@@ -233,11 +242,16 @@
         "event_success_companion_data_error",
         "event_success_companion_offline",
         "event_success_companion",
+        "event_success_companion_light_dark",
         "event_success_companion_self_check_in",
+        "event_success_companion_self_check_in_pending",
         "event_success_companion_pre_arrival_planning",
         "event_success_companion_first_hello_start",
+        "event_success_companion_first_hello_start_pending",
         "event_success_companion_first_hello_assigned",
+        "event_success_companion_first_hello_complete_pending",
         "event_success_companion_compatibility_questionnaire",
+        "event_success_companion_compatibility_pending",
         "event_success_companion_compatibility_saved",
         "event_success_companion_live_step_context",
         "event_success_companion_social_prompt",
@@ -245,19 +259,23 @@
         "event_success_companion_micro_pod_assignment",
         "event_success_companion_micro_pod_loading_peers",
         "event_success_companion_micro_pod_opted_out",
+        "event_success_companion_micro_pod_opt_out_pending",
         "event_success_companion_table_group_rotations",
         "event_success_companion_rotation_schedule",
         "event_success_companion_rotation_loading_peers",
         "event_success_companion_rotation_opted_out",
+        "event_success_companion_rotation_opt_out_pending",
         "event_success_companion_live_reveal_countdown",
         "event_success_companion_live_reveal_unlocked",
         "event_success_companion_wingman_request",
+        "event_success_companion_wingman_pending",
         "event_success_companion_wingman_submitted",
         "event_success_companion_afterglow_feedback",
+        "event_success_companion_feedback_pending",
         "event_success_companion_text_scale_2",
         "event_success_companion_reduced_motion"
       ],
-      "reason": "Deterministic attendee companion captures now cover route loading/error/access/offline states, default live guide, self-check-in, runtime moments, assignment/rotation/reveal/wingman/afterglow variants, text-scale, and reduced-motion states; paired light/dark and stage-specific reference comparisons remain open in the design parity tracker."
+      "reason": "Deterministic attendee companion captures now cover route loading/error/access/offline states, default live guide, paired light/dark, self-check-in, pending actions, runtime moments, assignment/rotation/reveal/wingman/afterglow variants, text-scale, and reduced-motion states; stage-specific reference comparisons remain open in the design parity tracker."
     },
     {
       "routeId": "swipeHubScreen",
@@ -286,16 +304,19 @@
         "swipe_event_queue_loading",
         "swipe_event_queue_error",
         "swipe_event_offline",
+        "swipe_event_cached_offline",
         "swipe_event_empty_queue",
         "swipe_event_missing",
         "swipe_event_sign_in_required",
         "swipe_event_in_progress",
         "swipe_event_did_not_attend",
         "swipe_event_window_closed",
+        "swipe_event_comment_sheet_empty",
+        "swipe_event_comment_sheet_filled",
         "swipe_event_text_scale_2",
         "swipe_event_reduced_motion"
       ],
-      "reason": "Catches event deck captures now cover active deck, queue loading/error/offline, empty queue, missing event, sign-in required, in-progress, did-not-attend, closed-window, text-scale, and reduced-motion states."
+      "reason": "Catches event deck captures now cover active deck, queue loading/error/offline/cached-offline, empty queue, missing event, sign-in required, in-progress, did-not-attend, closed-window, comment sheet empty/filled, text-scale, and reduced-motion states."
     },
     {
       "routeId": "eventRecapScreen",
@@ -343,10 +364,14 @@
         "match_chat_suvbot_action_error",
         "match_chat_share_card",
         "match_chat_composer_states",
+        "match_chat_keyboard_multiline",
+        "match_chat_send_failure_snackbar",
+        "match_chat_report_failure_snackbar",
+        "match_chat_block_confirm_dialog",
         "match_chat_text_scale_2",
         "match_chat_reduced_motion"
       ],
-      "reason": "Consumer match chat captures now cover loading, error, offline, empty, unavailable, blocked, image, Suvbot, share-card, composer, text scale, reduced motion, and populated thread states."
+      "reason": "Consumer match chat captures now cover loading, error, offline, empty, unavailable, blocked, image, Suvbot, share-card, composer, keyboard-open multiline safe-area, send/report failure snackbars, block confirmation, text scale, reduced motion, and populated thread states."
     },
     {
       "routeId": "profileScreen",
@@ -602,12 +627,20 @@
         "host_create_route_error",
         "host_create_route_offline",
         "host_create_not_found",
+        "host_create_unauthorized",
         "host_create_text_scale_2",
         "host_create_reduced_motion",
         "host_create_light_dark",
         "host_create_location",
+        "host_create_map_picker_offline",
         "host_create_schedule",
+        "host_create_schedule_validation",
         "host_create_policy",
+        "host_create_policy_age_validation",
+        "host_create_policy_invite_only",
+        "host_create_policy_cohort_caps",
+        "host_create_policy_dynamic_pricing_disabled",
+        "host_create_policy_dynamic_pricing_validation",
         "host_create_guide",
         "host_create_basics_validation",
         "host_create_custom_activity",
@@ -615,14 +648,18 @@
         "host_create_location_selected",
         "host_create_draft_picker",
         "host_create_draft_restored",
+        "host_create_draft_delete_confirmation",
+        "host_create_unsaved_changes_dialog",
         "host_create_save_draft_pending",
         "host_create_save_draft_error",
+        "host_create_save_draft_offline",
         "host_create_submit_pending",
         "host_create_submit_error",
         "host_create_submit_offline",
+        "host_create_photo_upload_offline",
         "host_create_success_manage"
       ],
-      "reason": "Host app create-event route now has deterministic captures for route loading/error/offline/not-found, basics, validation, custom activity, picked event photos, selected location, draft picker/restored, save-draft pending/error, submit pending/error/offline, success, wizard location/schedule/policy/guide, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are schedule validation, policy variants, draft delete, unsaved changes, unauthorized policy, deeper map/draft/photo offline variants, and reference-specific variants."
+      "reason": "Host app create-event route now has deterministic captures for route loading/error/offline/not-found/unauthorized, basics, validation, custom activity, picked event photos, selected location, map-picker offline search, schedule validation, policy age validation, invite-only policy, cohort caps policy, dynamic-pricing enabled/disabled/validation policy, draft picker/restored/delete confirmation, unsaved-changes dialog, save-draft pending/error/offline, submit pending/error/offline, photo-upload offline, success, wizard location/schedule/policy/guide, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
     },
     {
       "routeId": "hostAppEventDetailScreen",
@@ -652,9 +689,14 @@
         "host_manage_filtered_roster_empty",
         "host_manage_private_access_loading",
         "host_manage_private_access_error",
+        "host_manage_private_access_offline",
+        "host_manage_private_access_missing_code",
         "host_manage_invite_links_loading",
         "host_manage_invite_links_error",
+        "host_manage_invite_links_offline",
         "host_manage_invite_links_empty",
+        "host_manage_invite_links_disabled",
+        "host_manage_invite_links_long_label_source",
         "host_manage_invite_link_mutation_pending",
         "host_manage_invite_link_mutation_error",
         "host_manage_private_link_share_pending",
@@ -671,7 +713,20 @@
         "host_manage_attendance_mutation_error",
         "host_live_console",
         "host_manage_live_unavailable",
+        "host_manage_live_plan_loading",
+        "host_manage_live_plan_error",
+        "host_manage_live_plan_offline",
+        "host_manage_live_wingman_requests",
+        "host_manage_live_micro_pods_assigned",
+        "host_manage_live_guided_rotations_assigned",
+        "host_manage_live_check_in_qr",
+        "host_manage_live_conversation_cues",
+        "host_manage_live_reveal_round_revealed",
+        "host_manage_live_host_override_edited",
         "host_post_event_report",
+        "host_manage_report_scorecard_loading",
+        "host_manage_report_scorecard_error",
+        "host_manage_report_scorecard_offline",
         "host_manage_report_export_pending",
         "host_manage_report_export_error",
         "host_manage_cancelled_event",
@@ -679,7 +734,7 @@
         "host_manage_reduced_motion",
         "host_manage_light_dark"
       ],
-      "reason": "Host app manage route now has deterministic captures for route loading/error/offline/not-found, initial-event fallback, unauthorized access, attendance loading/error/empty, attendee profile loading/error, filtered roster empty, private-access loading/error, invite-link loading/error/empty, invite-link mutation pending/error, private-link share pending/error, edit/cancel/delete host actions, setup/private access, full/waitlist apron, attendance roster, attendance mutation pending/error, live console, live unavailable/no saved guide, report workspace, report export pending/error, cancelled event, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are Event Success live/report substates, deeper section-level offline variants, and reference-specific variants."
+      "reason": "Host app manage route now has deterministic captures for route loading/error/offline/not-found, initial-event fallback, unauthorized access, attendance loading/error/empty, attendee profile loading/error, filtered roster empty, private-access loading/error/offline/missing-code, invite-link loading/error/offline/empty/disabled-row/long-label-source, invite-link mutation pending/error, private-link share pending/error, edit/cancel/delete host actions, setup/private access, full/waitlist apron, attendance roster, attendance mutation pending/error, live console, live unavailable/no saved guide, live Event Success plan loading/error/offline, live wingman requests, assigned micro-pods, assigned guided rotations, check-in QR, conversation cues, revealed partner round, host-edited micro-pod override, report workspace, report scorecard loading/error/offline, report export pending/error, cancelled event, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are invite reference-specific variants, compact step-count semantics if product keeps them, modal Event Success override editor sheets if contractual, and reference-specific variants."
     },
     {
       "routeId": "hostAppEditEventScreen",
@@ -759,9 +814,14 @@
         "host_chat_text_scale_2",
         "host_chat_reduced_motion",
         "host_chat_light_dark",
-        "host_chat_composer_states"
+        "host_chat_composer_states",
+        "host_chat_keyboard_multiline",
+        "host_chat_image_day_separator",
+        "host_chat_report_failure_snackbar",
+        "host_chat_block_confirm_dialog",
+        "host_chat_safety_pending_menu"
       ],
-      "reason": "Host Chat now has deterministic captures for host inquiry baseline, match loading, match error, missing chat, message loading, message error, offline message load, empty thread, event fallback, blocked chat, text scale 2.0, reduced motion, paired light/dark output, and composer ready/send-pending/image-pending/disabled states. Remaining work is keyboard-open safe-area, report/block mutation surfaces, provider-specific offline policy, dedicated references, and pixel comparison."
+      "reason": "Host Chat now has deterministic captures for host inquiry baseline, match loading, match error, missing chat, message loading, message error, offline message load, empty thread, event fallback, blocked chat, text scale 2.0, reduced motion, paired light/dark output, composer ready/send-pending/image-pending/disabled states, keyboard-open multiline safe-area, image/day-separator populated thread, report failure snackbar, block confirmation dialog, and pending safety menu rows. Remaining work is provider-specific offline policy, dedicated references, and pixel comparison."
     },
     {
       "routeId": "hostSettingsScreen",

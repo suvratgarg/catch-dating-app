@@ -62,6 +62,49 @@
         "Five consecutive broad passes include context-pack proof, readiness proof, and no missing regression-ledger updates"
       ]
     },
+    "AGENT-DELEGATION-001": {
+      "title": "Keep parallel agent work parent-integrated and worktree-isolated",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "agent_operating_model",
+        "version": "1.2.0"
+      },
+      "applies_to": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/agent_skills/**",
+        "docs/audit_registry/**",
+        "tool/agent/**",
+        "tool/tools_manifest.json",
+        "lib/**",
+        "test/**"
+      ],
+      "instruction": "When using subagents for speed, isolate their work in short-lived Git worktrees/branches, assign disjoint write scopes, keep canonical docs/generated registries/audit receipts parent-owned by default, review commits before importing, run final verification in the parent branch, and record a delegation outcome metric.",
+      "sunset_when": [
+        "Delegation outcome metrics show five consecutive accepted batches with no file-ownership conflicts",
+        "The readiness gate validates delegation protocol coverage and metrics shape"
+      ]
+    },
+    "WEB-ROUTE-001": {
+      "title": "Keep marketing website route contracts ahead of visual review",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "web_surface_architecture",
+        "version": "0.7.0"
+      },
+      "applies_to": [
+        "website/**",
+        "packages/web-config/**",
+        "design/website/**",
+        "tool/marketing/**",
+        ".github/workflows/marketing-website.yml"
+      ],
+      "instruction": "Before changing public marketing routes, generated organizer route families, SEO metadata, static postbuild output, robots/sitemap behavior, or review states, update design/website/routes.json and pass node tool/run.mjs check marketing:website-routes. Start component-first review only after the route contract is current.",
+      "sunset_when": [
+        "A website component workbench enforces route-linked page/state coverage in CI",
+        "Five consecutive marketing website route changes pass the route contract gate without follow-up fixes"
+      ]
+    },
     "CODEGEN-001": {
       "title": "Keep generated Dart outputs synchronized during iterative work",
       "status": "active",

@@ -7,6 +7,69 @@ cd "$repo_root"
 
 max_lines="${WIDGET_CLEANUP_SCAN_MAX_LINES:-80}"
 
+if [[ "${1:-}" == "--summary" && "${WIDGET_CLEANUP_SCAN_FORCE_FULL:-}" != "1" ]]; then
+  summary_key_for() {
+    case "$1" in
+      "Brittle widget-test timing and missed-tap patterns") echo "centralized_widget_timing" ;;
+      "Async unit-test flush candidates") echo "async_unit_flush" ;;
+      "Brittle positional widget finders") echo "positional_widget_finders" ;;
+      "Presentation widgets reaching directly into repository providers") echo "presentation_repository_reaches" ;;
+      "Feature widgets prop-drilling CatchTokens") echo "catch_tokens_prop_drilling" ;;
+      "Raw Material/Cupertino button candidates that should use CatchButton or CatchTextButton") echo "raw_material_button_candidates" ;;
+      "Raw text input candidates that should use CatchField.input or a field-specific primitive") echo "raw_text_input_candidates" ;;
+      "Profile field editors that still use bottom sheets") echo "profile_bottom_sheet_editor_candidates" ;;
+      "Profile inline chip editors that repeat the expanded tile label") echo "profile_inline_chip_label_candidates" ;;
+      "Profile inline chip editors with separate Clear actions") echo "profile_inline_chip_clear_action_candidates" ;;
+      "Profile text tile editors that stack a separate text field below the row") echo "profile_stacked_text_tile_editor_candidates" ;;
+      "Profile chip tile editors that stack selected chips below the row") echo "profile_stacked_chip_tile_editor_candidates" ;;
+      "Fixed-white pill CTA candidates that should use CatchButtonVariant.light") echo "fixed_white_pill_cta_candidates" ;;
+      "Raw range sliders that should use CatchRangeSlider") echo "raw_range_slider_candidates" ;;
+      "Raw +/- number steppers that should use CatchNumberStepper") echo "raw_number_stepper_candidates" ;;
+      "Feature tappables that may need semantic keys/tooltips") echo "feature_tappable_candidates" ;;
+      "Literal SizedBox spacing candidates that should use gap constants or CatchSpacing") echo "literal_sized_box_spacing_candidates" ;;
+      "Feature-local decorated surface candidates that should consider CatchSurface") echo "raw_decorated_surface_candidates" ;;
+      "App-facing Text candidates without nearby CatchTextStyles") echo "unstyled_text_candidates" ;;
+      "App-facing low-level typography role candidates") echo "low_level_typography_role_candidates" ;;
+      "Nonzero letter-spacing candidates") echo "nonzero_letter_spacing_candidates" ;;
+      "Raw app-facing TextStyle candidates") echo "raw_text_style_candidates" ;;
+      "Legacy 4-point spacing migration candidates") echo "legacy_spacing_canonical_candidates" ;;
+      "Fine-grained spacing compatibility helpers") echo "fine_grained_spacing_compatibility" ;;
+      "Plugin/platform side effects inside presentation code") echo "presentation_plugin_imports" ;;
+      "Raw app-facing error surface migration candidates") echo "raw_error_surface_candidates" ;;
+      *) echo "" ;;
+    esac
+  }
+
+  full_output="$(
+    WIDGET_CLEANUP_SCAN_FORCE_FULL=1 \
+      WIDGET_CLEANUP_SCAN_MAX_LINES=0 \
+      bash "$0"
+  )"
+
+  echo "Widget cleanup candidate scan summary"
+  current_key=""
+  while IFS= read -r line; do
+    if [[ "$line" == "==> "* ]]; then
+      title="${line#==> }"
+      current_key="$(summary_key_for "$title")"
+      continue
+    fi
+    if [[ -z "$current_key" ]]; then
+      continue
+    fi
+    if [[ "$line" == "No matches." ]]; then
+      echo "  $current_key: 0"
+      current_key=""
+      continue
+    fi
+    if [[ "$line" =~ ^([0-9]+)[[:space:]]match\(es\)\. ]]; then
+      echo "  $current_key: ${BASH_REMATCH[1]}"
+      current_key=""
+    fi
+  done <<<"$full_output"
+  exit 0
+fi
+
 common_globs=(
   --glob '!**/*.g.dart'
   --glob '!**/*.freezed.dart'

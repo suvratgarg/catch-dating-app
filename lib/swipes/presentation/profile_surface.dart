@@ -27,6 +27,8 @@ class ProfileSurface extends StatelessWidget {
     this.onReact,
     this.viewerProfile,
     this.sharedRunTitle,
+    this.reactionsEnabled = true,
+    this.reactionsPending = false,
   });
 
   final PublicProfile profile;
@@ -38,6 +40,8 @@ class ProfileSurface extends StatelessWidget {
   final ProfileReactionCallback? onReact;
   final UserProfile? viewerProfile;
   final String? sharedRunTitle;
+  final bool reactionsEnabled;
+  final bool reactionsPending;
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +74,8 @@ class ProfileSurface extends StatelessWidget {
         scrollPhysics: scrollPhysics,
         onLeadingOverscroll: onLeadingOverscroll,
         bottomPadding: bottomPadding,
+        reactionsEnabled: reactionsEnabled,
+        reactionsPending: reactionsPending,
       ),
     );
   }

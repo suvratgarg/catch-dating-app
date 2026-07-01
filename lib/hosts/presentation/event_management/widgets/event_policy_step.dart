@@ -9,43 +9,10 @@ import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-enum EventAdmissionPreset {
-  openCapacity,
-  inviteOnly,
-  requestToJoin,
-  balancedSingles,
-}
-
-extension EventAdmissionPresetX on EventAdmissionPreset {
-  String get label => switch (this) {
-    EventAdmissionPreset.openCapacity => 'OPEN',
-    EventAdmissionPreset.inviteOnly => 'INVITE',
-    EventAdmissionPreset.requestToJoin => 'REQUEST',
-    EventAdmissionPreset.balancedSingles => 'BALANCED',
-  };
-
-  String get title => switch (this) {
-    EventAdmissionPreset.openCapacity => 'Open capacity',
-    EventAdmissionPreset.inviteOnly => 'Invite only',
-    EventAdmissionPreset.requestToJoin => 'Request to join',
-    EventAdmissionPreset.balancedSingles => 'Balanced singles',
-  };
-
-  String get description => switch (this) {
-    EventAdmissionPreset.openCapacity =>
-      'Anyone eligible can book until the event reaches capacity.',
-    EventAdmissionPreset.inviteOnly =>
-      'Only people with the invite code or private link can book. Waitlist is off by default.',
-    EventAdmissionPreset.requestToJoin =>
-      'People request a spot first. The host reviews their public profile before confirming who gets in.',
-    EventAdmissionPreset.balancedSingles =>
-      'Straight men and women are kept within one spot of each other. Queer, open, non-binary, and other attendees can book within total capacity.',
-  };
-}
 
 class EventPolicyStep extends StatelessWidget {
   const EventPolicyStep({
@@ -92,7 +59,6 @@ class EventPolicyStep extends StatelessWidget {
   final ValueChanged<bool> onDynamicPricingChanged;
   final EventCancellationPolicyId cancellationPolicyId;
   final ValueChanged<EventCancellationPolicyId> onCancellationPolicyChanged;
-
 
   @override
   Widget build(BuildContext context) {

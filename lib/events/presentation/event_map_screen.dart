@@ -26,6 +26,7 @@ class EventMapView extends ConsumerStatefulWidget {
     this.viewModel,
     this.onRetry,
     this.distanceRingRadiusKm,
+    this.initialSelectedEventId,
   });
 
   final bool enableNetworkTiles;
@@ -36,6 +37,7 @@ class EventMapView extends ConsumerStatefulWidget {
   final AsyncValue<EventMapViewModel>? viewModel;
   final VoidCallback? onRetry;
   final double? distanceRingRadiusKm;
+  final String? initialSelectedEventId;
 
   @override
   ConsumerState<EventMapView> createState() => _EventMapViewState();
@@ -43,6 +45,21 @@ class EventMapView extends ConsumerStatefulWidget {
 
 class _EventMapViewState extends ConsumerState<EventMapView> {
   String? _selectedEventId;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedEventId = widget.initialSelectedEventId;
+  }
+
+  @override
+  void didUpdateWidget(covariant EventMapView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialSelectedEventId != widget.initialSelectedEventId &&
+        _selectedEventId == oldWidget.initialSelectedEventId) {
+      _selectedEventId = widget.initialSelectedEventId;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

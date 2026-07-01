@@ -106,9 +106,7 @@ class CompanionLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CompanionScaffold(
-      body: const EventSuccessCompanionLoadingBody(),
-    );
+    return CompanionScaffold(body: const EventSuccessCompanionLoadingBody());
   }
 }
 
@@ -705,6 +703,59 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
                 .selfCheckIn(eventId: event.id),
           );
         },
+        onSetMicroPodsIncluded: (include) {
+          EventSuccessController.microPodsOptOutMutation.run(
+            ref,
+            (tx) => tx
+                .get(eventSuccessControllerProvider.notifier)
+                .setMicroPodsOptOut(event: event, optedOut: !include),
+          );
+        },
+        onSetGuidedRotationsIncluded: (include) {
+          EventSuccessController.guidedRotationsOptOutMutation.run(
+            ref,
+            (tx) => tx
+                .get(eventSuccessControllerProvider.notifier)
+                .setGuidedRotationsOptOut(event: event, optedOut: !include),
+          );
+        },
+        onSaveWingmanRequest: (target, note) async {
+          await EventSuccessController.wingmanRequestMutation.run(
+            ref,
+            (tx) => tx
+                .get(eventSuccessControllerProvider.notifier)
+                .saveWingmanRequest(event: event, target: target, note: note),
+          );
+        },
+        onWithdrawWingmanRequest: () async {
+          await EventSuccessController.wingmanRequestMutation.run(
+            ref,
+            (tx) => tx
+                .get(eventSuccessControllerProvider.notifier)
+                .withdrawWingmanRequest(event: event),
+          );
+        },
+        onSubmitFeedback: (feedback) async {
+          await EventSuccessController.feedbackMutation.run(
+            ref,
+            (tx) => tx
+                .get(eventSuccessControllerProvider.notifier)
+                .submitFeedback(feedback),
+          );
+        },
+        onSelfCheckIn: () async {
+          unawaited(
+            ref
+                .read(eventSuccessLiveEffectsControllerProvider)
+                .play(EventSuccessLiveEffectKind.liveEntry),
+          );
+          await EventBookingController.selfCheckInMutation.run(
+            ref,
+            (tx) => tx
+                .get(eventBookingControllerProvider.notifier)
+                .selfCheckIn(eventId: event.id),
+          );
+        },
       ),
     );
   }
@@ -735,6 +786,100 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       );
 }
 
+@immutable
+class EventSuccessCompanionScreenState {
+  const EventSuccessCompanionScreenState({
+    required this.runtime,
+    required this.attendeeMoment,
+    required this.presentation,
+    required this.attended,
+    required this.eventEnded,
+    required this.checkInOpen,
+    required this.wingmanCandidates,
+    required this.revealKind,
+    required this.effectKey,
+    required this.usePaperShell,
+  });
+
+  factory EventSuccessCompanionScreenState.from({
+    required Event event,
+    required EventSuccessPlan plan,
+    required UserProfile userProfile,
+    required EventParticipation participation,
+    required List<PublicProfile> wingmanRequestCandidates,
+    required EventSuccessCompatibilityResponse? compatibilityResponse,
+    required EventSuccessArrivalMission? arrivalMission,
+    required bool arrivalMissionStartAvailable,
+    required DateTime now,
+  }) {
+    final runtime = EventSuccessRuntime(plan: plan, event: event, now: now);
+    final attended = participation.status == EventParticipationStatus.attended;
+    final eventEnded = !event.endTime.isAfter(now);
+    final checkInOpen = isSelfCheckInOpenForParticipationStatus(
+      event: event,
+      status: participation.status,
+      now: now,
+    );
+    final attendeeMoment = runtime.attendeeMoment(
+      participationStatus: participation.status,
+      checkInOpen: checkInOpen,
+      eventEnded: eventEnded,
+      compatibilityResponseSaved: compatibilityResponse != null,
+      arrivalMissionAssigned: arrivalMission != null,
+      arrivalMissionStartAvailable: arrivalMissionStartAvailable,
+    );
+    final presentation = EventSuccessMomentPresentation.forMoment(
+      event: event,
+      plan: plan,
+      moment: attendeeMoment,
+      attended: attended,
+      showSelfCheckIn: attendeeMoment.showSelfCheckIn,
+      eventEnded: eventEnded,
+    );
+    final effectKey = [
+      event.id,
+      attendeeMoment.kind.name,
+      plan.activeStepIndex,
+      plan.revealStatus.name,
+      plan.activeRevealRoundIndex,
+      attendeeMoment.activeStep?.stage.name ?? 'no-stage',
+      attendeeMoment.activeStep?.title ?? 'no-step',
+    ].join(':');
+
+    return EventSuccessCompanionScreenState(
+      runtime: runtime,
+      attendeeMoment: attendeeMoment,
+      presentation: presentation,
+      attended: attended,
+      eventEnded: eventEnded,
+      checkInOpen: checkInOpen,
+      wingmanCandidates: _wingmanCandidatesForViewer(
+        viewer: userProfile,
+        candidates: wingmanRequestCandidates,
+      ),
+      revealKind: _revealKindForAttendeeMoment(attendeeMoment),
+      effectKey: effectKey,
+      usePaperShell: _shouldUsePaperCompanionShell(attendeeMoment.kind),
+    );
+  }
+
+  final EventSuccessRuntime runtime;
+  final EventSuccessAttendeeMoment attendeeMoment;
+  final EventSuccessMomentPresentation presentation;
+  final bool attended;
+  final bool eventEnded;
+  final bool checkInOpen;
+  final List<PublicProfile> wingmanCandidates;
+  final EventSuccessRevealAssignmentKind? revealKind;
+  final String effectKey;
+  final bool usePaperShell;
+
+  String transitionKey(String suffix) =>
+      '${attendeeMoment.kind.name}:$suffix:${runtime.plan.activeStepIndex}:'
+      '${runtime.plan.revealStatus.name}:'
+      '${runtime.plan.activeRevealRoundIndex}';
+}
+
 class EventSuccessCompanionScreen extends ConsumerStatefulWidget {
   const EventSuccessCompanionScreen({
     super.key,
@@ -760,6 +905,12 @@ class EventSuccessCompanionScreen extends ConsumerStatefulWidget {
     this.onStartArrivalMission,
     this.onCompleteArrivalMission,
     this.onSkipArrivalMission,
+    this.onSetMicroPodsIncluded,
+    this.onSetGuidedRotationsIncluded,
+    this.onSaveWingmanRequest,
+    this.onWithdrawWingmanRequest,
+    this.onSubmitFeedback,
+    this.onSelfCheckIn,
   });
 
   final Event event;
@@ -789,6 +940,13 @@ class EventSuccessCompanionScreen extends ConsumerStatefulWidget {
   )?
   onCompleteArrivalMission;
   final VoidCallback? onSkipArrivalMission;
+  final ValueChanged<bool>? onSetMicroPodsIncluded;
+  final ValueChanged<bool>? onSetGuidedRotationsIncluded;
+  final Future<void> Function(PublicProfile target, String note)?
+  onSaveWingmanRequest;
+  final Future<void> Function()? onWithdrawWingmanRequest;
+  final Future<void> Function(EventSuccessFeedback feedback)? onSubmitFeedback;
+  final Future<void> Function()? onSelfCheckIn;
 
   @override
   ConsumerState<EventSuccessCompanionScreen> createState() =>
@@ -804,41 +962,71 @@ class _EventSuccessCompanionScreenState
     final event = widget.event;
     final plan = widget.plan;
     final referenceNow = widget.now ?? DateTime.now();
-    final runtime = EventSuccessRuntime(
-      plan: plan,
+    final screenState = EventSuccessCompanionScreenState.from(
       event: event,
-      now: referenceNow,
-    );
-    final attended =
-        widget.participation.status == EventParticipationStatus.attended;
-    final eventEnded = !widget.event.endTime.isAfter(referenceNow);
-    final checkInOpen = isSelfCheckInOpenForParticipationStatus(
-      event: widget.event,
-      status: widget.participation.status,
-      now: referenceNow,
-    );
-    final attendeeMoment = runtime.attendeeMoment(
-      participationStatus: widget.participation.status,
-      checkInOpen: checkInOpen,
-      eventEnded: eventEnded,
-      compatibilityResponseSaved: widget.compatibilityResponse != null,
-      arrivalMissionAssigned: widget.arrivalMission != null,
+      plan: plan,
+      userProfile: widget.userProfile,
+      participation: widget.participation,
+      wingmanRequestCandidates: widget.wingmanRequestCandidates,
+      compatibilityResponse: widget.compatibilityResponse,
+      arrivalMission: widget.arrivalMission,
       arrivalMissionStartAvailable: widget.onStartArrivalMission != null,
+      now: referenceNow,
     );
-    final momentPresentation = EventSuccessMomentPresentation.forMoment(
-      event: event,
-      plan: plan,
-      moment: attendeeMoment,
-      attended: attended,
-      showSelfCheckIn: attendeeMoment.showSelfCheckIn,
-      eventEnded: eventEnded,
+    final runtime = screenState.runtime;
+    final attendeeMoment = screenState.attendeeMoment;
+    final momentPresentation = screenState.presentation;
+    final compatibilityMutation = ref.watch(
+      EventSuccessController.compatibilityResponseMutation,
     );
-    _playMomentEffectOnce(attendeeMoment, momentPresentation);
-    final wingmanCandidates = _wingmanCandidatesForViewer(
-      viewer: widget.userProfile,
-      candidates: widget.wingmanRequestCandidates,
+    final feedbackMutation = ref.watch(EventSuccessController.feedbackMutation);
+    final wingmanRequestMutation = ref.watch(
+      EventSuccessController.wingmanRequestMutation,
     );
-    final revealKind = _revealKindForAttendeeMoment(attendeeMoment);
+    final compatibilityActionState = CompatibilityQuestionnaireActionState(
+      isSaving: compatibilityMutation.isPending,
+      error: compatibilityMutation.hasError
+          ? (compatibilityMutation as MutationError).error
+          : null,
+    );
+    final firstHelloStartMutation = ref.watch(
+      EventSuccessController.firstHelloStartMutation,
+    );
+    final firstHelloCompleteMutation = ref.watch(
+      EventSuccessController.firstHelloCompleteMutation,
+    );
+    final selfCheckInMutation = ref.watch(
+      EventBookingController.selfCheckInMutation,
+    );
+    final firstHelloActionState = FirstHelloActionState(
+      startPending: firstHelloStartMutation.isPending,
+      completePending: firstHelloCompleteMutation.isPending,
+      skipPending: selfCheckInMutation.isPending,
+    );
+    final selfCheckInActionState = SelfCheckInActionState(
+      isCheckingIn: selfCheckInMutation.isPending,
+    );
+    final microPodsOptOutMutation = ref.watch(
+      EventSuccessController.microPodsOptOutMutation,
+    );
+    final guidedRotationsOptOutMutation = ref.watch(
+      EventSuccessController.guidedRotationsOptOutMutation,
+    );
+    final microPodsActionState = AssignmentOptOutActionState(
+      optedOut: widget.microPodsOptedOut,
+      isSaving: microPodsOptOutMutation.isPending,
+    );
+    final guidedRotationsActionState = AssignmentOptOutActionState(
+      optedOut: widget.guidedRotationsOptedOut,
+      isSaving: guidedRotationsOptOutMutation.isPending,
+    );
+    final wingmanActionState = WingmanRequestActionState(
+      isSaving: wingmanRequestMutation.isPending,
+    );
+    final feedbackActionState = EventSuccessFeedbackActionState(
+      isSaving: feedbackMutation.isPending,
+    );
+    _playMomentEffectOnce(screenState);
 
     final stageTheme = _CompanionStageTheme.forMoment(
       context,
@@ -846,9 +1034,6 @@ class _EventSuccessCompanionScreenState
       plan: plan,
     );
     final momentContents = <Widget>[];
-    String transitionKey(String suffix) =>
-        '${attendeeMoment.kind.name}:$suffix:${plan.activeStepIndex}:'
-        '${plan.revealStatus.name}:${plan.activeRevealRoundIndex}';
 
     void addMomentContent(Widget content, {String? momentKey}) {
       momentContents.add(
@@ -863,19 +1048,28 @@ class _EventSuccessCompanionScreenState
 
     if (attendeeMoment.showSelfCheckIn) {
       addMomentContent(
-        SelfCheckInCard(event: event),
-        momentKey: transitionKey('self-check-in'),
+        SelfCheckInCard(
+          event: event,
+          actionState: selfCheckInActionState,
+          onSelfCheckIn:
+              widget.onSelfCheckIn ?? () => _defaultSelfCheckIn(event),
+        ),
+        momentKey: screenState.transitionKey('self-check-in'),
       );
     }
     if (attendeeMoment.showFirstHelloCheckIn) {
       addMomentContent(
         FirstHelloCheckInCard(
           mission: widget.arrivalMission,
+          actionState: firstHelloActionState,
           onStart: widget.onStartArrivalMission,
           onComplete: widget.onCompleteArrivalMission,
           onSkip: widget.onSkipArrivalMission,
+          onPlayCompleteEffect: () => ref
+              .read(eventSuccessLiveEffectsControllerProvider)
+              .play(EventSuccessLiveEffectKind.guideComplete),
         ),
-        momentKey: transitionKey('first-hello'),
+        momentKey: screenState.transitionKey('first-hello'),
       );
     }
     if (attendeeMoment.showPreCheckInPlanning) {
@@ -887,7 +1081,7 @@ class _EventSuccessCompanionScreenState
           socialMissionsEnabled: runtime.socialMissionsEnabled,
           wingmanRequestsEnabled: runtime.wingmanRequestsEnabled,
         ),
-        momentKey: transitionKey('pre-arrival'),
+        momentKey: screenState.transitionKey('pre-arrival'),
       );
     }
     if (attendeeMoment.showCompatibilityQuestionnaire) {
@@ -896,9 +1090,23 @@ class _EventSuccessCompanionScreenState
           event: event,
           plan: plan,
           response: widget.compatibilityResponse,
-          onSaveAnswers: widget.onSaveCompatibilityAnswers,
+          actionState: compatibilityActionState,
+          onSaveAnswers:
+              widget.onSaveCompatibilityAnswers ??
+              (answerIds) async {
+                await EventSuccessController.compatibilityResponseMutation.run(
+                  ref,
+                  (tx) => tx
+                      .get(eventSuccessControllerProvider.notifier)
+                      .saveCompatibilityResponse(
+                        event: event,
+                        answerIds: answerIds,
+                        questionnaireConfig: plan.questionnaireConfig,
+                      ),
+                );
+              },
         ),
-        momentKey: transitionKey('questionnaire'),
+        momentKey: screenState.transitionKey('questionnaire'),
       );
     }
     if (attendeeMoment.showPrompt) {
@@ -907,7 +1115,7 @@ class _EventSuccessCompanionScreenState
           title: 'Social prompt',
           prompt: plan.attendeePromptFor(event),
         ),
-        momentKey: transitionKey('prompt'),
+        momentKey: screenState.transitionKey('prompt'),
       );
     }
     if (attendeeMoment.kind == EventSuccessAttendeeMomentKind.postEvent) {
@@ -918,7 +1126,7 @@ class _EventSuccessCompanionScreenState
           feedbackEnabled: attendeeMoment.showFeedback,
           feedback: widget.existingFeedback,
         ),
-        momentKey: transitionKey('afterglow-recap'),
+        momentKey: screenState.transitionKey('afterglow-recap'),
       );
     }
     if (attendeeMoment.showConversationCues) {
@@ -939,13 +1147,15 @@ class _EventSuccessCompanionScreenState
                   activeStep: attendeeMoment.activeStep,
                 ),
         ),
-        momentKey: transitionKey(isPostEvent ? 'post-openers' : 'live-cues'),
+        momentKey: screenState.transitionKey(
+          isPostEvent ? 'post-openers' : 'live-cues',
+        ),
       );
     }
     if (attendeeMoment.showLiveStepContext) {
       addMomentContent(
         LiveStepContextCard(step: attendeeMoment.activeStep),
-        momentKey: transitionKey('live-step'),
+        momentKey: screenState.transitionKey('live-step'),
       );
     }
     // `showPodAssignment` and `showRotationSchedule` are mutually exclusive
@@ -959,9 +1169,19 @@ class _EventSuccessCompanionScreenState
           assignment: widget.microPodsOptedOut ? null : widget.assignment,
           peerProfiles: widget.assignmentPeerProfiles,
           peersLoading: widget.assignmentPeersLoading,
-          microPodsOptedOut: widget.microPodsOptedOut,
+          actionState: microPodsActionState,
+          onIncludeChanged:
+              widget.onSetMicroPodsIncluded ??
+              (include) {
+                EventSuccessController.microPodsOptOutMutation.run(
+                  ref,
+                  (tx) => tx
+                      .get(eventSuccessControllerProvider.notifier)
+                      .setMicroPodsOptOut(event: event, optedOut: !include),
+                );
+              },
         ),
-        momentKey: transitionKey('micro-pod'),
+        momentKey: screenState.transitionKey('micro-pod'),
       );
     }
     if (attendeeMoment.showRotationSchedule) {
@@ -973,19 +1193,32 @@ class _EventSuccessCompanionScreenState
               : widget.rotationAssignment,
           peerProfiles: widget.rotationPeerProfiles,
           peersLoading: widget.rotationPeersLoading,
-          guidedRotationsOptedOut: widget.guidedRotationsOptedOut,
+          actionState: guidedRotationsActionState,
+          onIncludeChanged:
+              widget.onSetGuidedRotationsIncluded ??
+              (include) {
+                EventSuccessController.guidedRotationsOptOutMutation.run(
+                  ref,
+                  (tx) => tx
+                      .get(eventSuccessControllerProvider.notifier)
+                      .setGuidedRotationsOptOut(
+                        event: event,
+                        optedOut: !include,
+                      ),
+                );
+              },
         ),
-        momentKey: transitionKey('rotation-schedule'),
+        momentKey: screenState.transitionKey('rotation-schedule'),
       );
     }
-    if (attendeeMoment.showLiveReveal && revealKind != null) {
+    if (attendeeMoment.showLiveReveal && screenState.revealKind != null) {
       final isRotations =
-          revealKind == EventSuccessRevealAssignmentKind.rotations;
+          screenState.revealKind == EventSuccessRevealAssignmentKind.rotations;
       addMomentContent(
         EventSuccessLiveRevealAttendeeCard(
           event: event,
           plan: plan,
-          kind: revealKind,
+          kind: screenState.revealKind!,
           assignment: isRotations
               ? (widget.guidedRotationsOptedOut
                     ? null
@@ -1002,17 +1235,42 @@ class _EventSuccessCompanionScreenState
               : widget.microPodsOptedOut,
           now: widget.now,
         ),
-        momentKey: transitionKey('live-reveal'),
+        momentKey: screenState.transitionKey('live-reveal'),
       );
     }
     if (attendeeMoment.showWingmanRequest) {
       addMomentContent(
         WingmanRequestSection(
           event: event,
-          candidates: wingmanCandidates,
+          candidates: screenState.wingmanCandidates,
           existingRequest: widget.wingmanRequest,
+          actionState: wingmanActionState,
+          onSaveRequest:
+              widget.onSaveWingmanRequest ??
+              (target, note) async {
+                await EventSuccessController.wingmanRequestMutation.run(
+                  ref,
+                  (tx) => tx
+                      .get(eventSuccessControllerProvider.notifier)
+                      .saveWingmanRequest(
+                        event: event,
+                        target: target,
+                        note: note,
+                      ),
+                );
+              },
+          onWithdrawRequest:
+              widget.onWithdrawWingmanRequest ??
+              () async {
+                await EventSuccessController.wingmanRequestMutation.run(
+                  ref,
+                  (tx) => tx
+                      .get(eventSuccessControllerProvider.notifier)
+                      .withdrawWingmanRequest(event: event),
+                );
+              },
         ),
-        momentKey: transitionKey('wingman'),
+        momentKey: screenState.transitionKey('wingman'),
       );
     }
     if (attendeeMoment.showFeedback) {
@@ -1021,24 +1279,37 @@ class _EventSuccessCompanionScreenState
           event: event,
           userProfile: widget.userProfile,
           existingFeedback: widget.existingFeedback,
+          actionState: feedbackActionState,
+          onSubmitFeedback:
+              widget.onSubmitFeedback ??
+              (feedback) async {
+                await EventSuccessController.feedbackMutation.run(
+                  ref,
+                  (tx) => tx
+                      .get(eventSuccessControllerProvider.notifier)
+                      .submitFeedback(feedback),
+                );
+              },
         ),
-        momentKey: transitionKey('feedback'),
+        momentKey: screenState.transitionKey('feedback'),
       );
     }
     if (!attendeeMoment.hasVisibleModule) {
       addMomentContent(
         const NoCompanionActionsCard(),
-        momentKey: transitionKey('empty'),
+        momentKey: screenState.transitionKey('empty'),
       );
     }
 
-    if (_shouldUsePaperCompanionShell(attendeeMoment.kind)) {
+    if (screenState.usePaperShell) {
       return CompanionPaperScaffold(
         event: event,
         plan: plan,
         presentation: momentPresentation,
         showSelfCheckIn: attendeeMoment.showSelfCheckIn,
-        eventEnded: eventEnded,
+        eventEnded: screenState.eventEnded,
+        selfCheckInActionState: selfCheckInActionState,
+        onSelfCheckIn: widget.onSelfCheckIn ?? () => _defaultSelfCheckIn(event),
       );
     }
 
@@ -1047,29 +1318,35 @@ class _EventSuccessCompanionScreenState
       plan: plan,
       presentation: momentPresentation,
       stageTheme: stageTheme,
-      attended: attended,
+      attended: screenState.attended,
       showSelfCheckIn: attendeeMoment.showSelfCheckIn,
-      eventEnded: eventEnded,
-      momentKey: transitionKey('stage'),
+      eventEnded: screenState.eventEnded,
+      momentKey: screenState.transitionKey('stage'),
       momentKind: attendeeMoment.kind,
       referenceNow: referenceNow,
       content: CompanionMomentStageContent(children: momentContents),
     );
   }
 
-  void _playMomentEffectOnce(
-    EventSuccessAttendeeMoment moment,
-    EventSuccessMomentPresentation presentation,
-  ) {
-    final key =
-        '${widget.event.id}:${moment.kind.name}:${widget.plan.activeStepIndex}:'
-        '${widget.plan.revealStatus.name}:${widget.plan.activeRevealRoundIndex}:'
-        '${moment.activeStep?.stage.name ?? 'no-stage'}:'
-        '${moment.activeStep?.title ?? 'no-step'}';
-    if (_lastEffectKey == key) return;
-    _lastEffectKey = key;
-    final effect = presentation.effectKind;
-    final bed = presentation.ambientBed;
+  Future<void> _defaultSelfCheckIn(Event event) async {
+    unawaited(
+      ref
+          .read(eventSuccessLiveEffectsControllerProvider)
+          .play(EventSuccessLiveEffectKind.liveEntry),
+    );
+    await EventBookingController.selfCheckInMutation.run(
+      ref,
+      (tx) => tx
+          .get(eventBookingControllerProvider.notifier)
+          .selfCheckIn(eventId: event.id),
+    );
+  }
+
+  void _playMomentEffectOnce(EventSuccessCompanionScreenState screenState) {
+    if (_lastEffectKey == screenState.effectKey) return;
+    _lastEffectKey = screenState.effectKey;
+    final effect = screenState.presentation.effectKind;
+    final bed = screenState.presentation.ambientBed;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final controller = ref.read(eventSuccessLiveEffectsControllerProvider);

@@ -13,21 +13,21 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_action_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -140,32 +140,6 @@ class HostEventParticipantsList extends ConsumerStatefulWidget {
       _HostEventParticipantsListState();
 }
 
-enum HostRosterFilter {
-  all,
-  booked,
-  waitlist,
-  slots,
-  requests,
-  due,
-  checkedIn,
-  attended,
-  noShow,
-}
-
-class HostRosterFilterSpec {
-  const HostRosterFilterSpec({
-    required this.filter,
-    required this.label,
-    required this.value,
-    required this.tone,
-  });
-
-  final HostRosterFilter filter;
-  final String label;
-  final int value;
-  final CatchBadgeTone tone;
-}
-
 class _HostEventParticipantsListState
     extends ConsumerState<HostEventParticipantsList> {
   late var _searchQuery = widget.initialSearchQuery;
@@ -196,16 +170,26 @@ class _HostEventParticipantsListState
     final offerMutation = ref.watch(
       EventBookingController.createWaitlistOfferMutation,
     );
-    final errorMutation =
-        [
-          markAttendanceMutation,
-          approveMutation,
-          declineMutation,
-          offerMutation,
-        ].firstWhere(
-          (mutation) => mutation.hasError,
-          orElse: () => markAttendanceMutation,
-        );
+    final opsExportMutation = ref.watch(
+      HostEventManageController.shareOpsReportMutation,
+    );
+    final revenueExportMutation = ref.watch(
+      HostEventManageController.shareRevenueReportMutation,
+    );
+    final mutationState = HostParticipantsMutationDisplayState.resolve(
+      markAttendancePending: markAttendanceMutation.isPending,
+      approveJoinRequestPending: approveMutation.isPending,
+      declineJoinRequestPending: declineMutation.isPending,
+      createWaitlistOfferPending: offerMutation.isPending,
+      opsReportPending: opsExportMutation.isPending,
+      revenueReportPending: revenueExportMutation.isPending,
+      markAttendanceError: _mutationError(markAttendanceMutation),
+      approveJoinRequestError: _mutationError(approveMutation),
+      declineJoinRequestError: _mutationError(declineMutation),
+      createWaitlistOfferError: _mutationError(offerMutation),
+      opsReportError: _mutationError(opsExportMutation),
+      revenueReportError: _mutationError(revenueExportMutation),
+    );
     final usesRequestApproval = widget
         .viewModel
         .event
@@ -217,14 +201,29 @@ class _HostEventParticipantsListState
     final profilesAsync = profileIds.isEmpty
         ? null
         : ref.watch(attendeeProfilesProvider(profileIds));
-    Widget buildBoard(Map<String, (String, String?)> profiles) {
+    final profileLookupState = HostParticipantProfilesLookupState.resolve(
+      profileIds: profileIds,
+      profilesAsync: profilesAsync,
+    );
+    Widget buildBoard() {
       return HostParticipationLifecycleBoard(
         viewModel: widget.viewModel,
         mode: widget.mode,
-        profiles: profiles,
+        profiles: profileLookupState.profiles,
         scrollable: widget.scrollable,
         showHeader: widget.showSummaryHeader,
         usesRequestApproval: usesRequestApproval,
+        mutationState: mutationState,
+        actions: HostParticipantLifecycleActions(
+          openProfile: _openPublicProfile,
+          approveJoinRequest: _approveJoinRequest,
+          declineJoinRequest: _declineJoinRequest,
+          toggleAttendance: _toggleAttendance,
+          createWaitlistOffers: _createWaitlistOffers,
+          shareOpsReport: () => _shareOpsReport(profileLookupState.profiles),
+          shareRevenueReport: () =>
+              _shareRevenueReport(profileLookupState.profiles),
+        ),
         searchQuery: _searchQuery,
         selectedFilter: _selectedFilter,
         onSearchChanged: (value) => setState(() => _searchQuery = value),
@@ -232,35 +231,159 @@ class _HostEventParticipantsListState
       );
     }
 
-    final Widget rows = profilesAsync == null
-        ? buildBoard(const <String, (String, String?)>{})
-        : CatchAsyncValueView<Map<String, (String, String?)>>(
-            value: profilesAsync,
-            loadingBuilder: (_) => const HostRosterSkeleton(),
-            errorBuilder: (_, error, _) => Padding(
-              padding: CatchInsets.content,
-              child: CatchInlineErrorState.fromError(
-                error,
-                context: AppErrorContext.event,
-                onRetry: () =>
-                    ref.invalidate(attendeeProfilesProvider(profileIds)),
-              ),
-            ),
-            builder: (context, profiles) => buildBoard(profiles),
-          );
+    final rows = switch (profileLookupState.status) {
+      HostParticipantProfilesLookupStatus.ready => buildBoard(),
+      HostParticipantProfilesLookupStatus.loading => const HostRosterSkeleton(),
+      HostParticipantProfilesLookupStatus.error => Padding(
+        padding: CatchInsets.content,
+        child: CatchInlineErrorState.fromError(
+          profileLookupState.error!,
+          context: AppErrorContext.event,
+          onRetry: () => ref.invalidate(
+            attendeeProfilesProvider(profileLookupState.profileIds),
+          ),
+        ),
+      ),
+    };
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (errorMutation.hasError)
-          CatchErrorBanner(message: mutationErrorMessage(errorMutation)),
+        if (mutationState.participantActionError != null)
+          CatchErrorBanner.fromError(
+            mutationState.participantActionError!,
+            context: AppErrorContext.event,
+          ),
         if (widget.scrollable) Expanded(child: rows) else rows,
       ],
     );
   }
+
+  void _toggleAttendance(String uid) {
+    final mutation = ref.read(EventBookingController.markAttendanceMutation);
+    if (mutation.isPending) return;
+    EventBookingController.markAttendanceMutation.run(
+      ref,
+      (tx) async => tx
+          .get(eventBookingControllerProvider.notifier)
+          .markAttendance(eventId: widget.viewModel.event.id, userId: uid),
+    );
+  }
+
+  void _approveJoinRequest(String uid) {
+    final mutation = ref.read(
+      EventBookingController.approveJoinRequestMutation,
+    );
+    if (mutation.isPending) return;
+    EventBookingController.approveJoinRequestMutation.run(
+      ref,
+      (tx) async => tx
+          .get(eventBookingControllerProvider.notifier)
+          .approveJoinRequest(eventId: widget.viewModel.event.id, userId: uid),
+    );
+  }
+
+  void _declineJoinRequest(String uid) {
+    final mutation = ref.read(
+      EventBookingController.declineJoinRequestMutation,
+    );
+    if (mutation.isPending) return;
+    EventBookingController.declineJoinRequestMutation.run(
+      ref,
+      (tx) async => tx
+          .get(eventBookingControllerProvider.notifier)
+          .declineJoinRequest(eventId: widget.viewModel.event.id, userId: uid),
+    );
+  }
+
+  void _createWaitlistOffers(List<String> userIds) {
+    if (userIds.isEmpty) return;
+    final mutation = ref.read(
+      EventBookingController.createWaitlistOfferMutation,
+    );
+    if (mutation.isPending) return;
+    EventBookingController.createWaitlistOfferMutation.run(
+      ref,
+      (tx) async => tx
+          .get(eventBookingControllerProvider.notifier)
+          .createWaitlistOffers(
+            eventId: widget.viewModel.event.id,
+            userIds: userIds,
+          ),
+    );
+  }
+
+  Future<void> _shareRevenueReport(
+    Map<String, (String, String?)> profiles,
+  ) async {
+    final origin = _shareOrigin(context);
+    try {
+      await HostEventManageController.shareRevenueReportMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostEventManageActionsProvider)
+            .shareRevenueReport(
+              viewModel: widget.viewModel,
+              profiles: profiles,
+              origin: origin,
+            ),
+      );
+      if (!mounted) return;
+      showCatchSnackBar(context, 'Revenue CSV ready.');
+    } catch (error, stackTrace) {
+      ref
+          .read(errorLoggerProvider)
+          .logError(
+            error,
+            stackTrace,
+            reason:
+                '_HostEventParticipantsListState._shareRevenueReport failed',
+          );
+    }
+  }
+
+  Future<void> _shareOpsReport(Map<String, (String, String?)> profiles) async {
+    final origin = _shareOrigin(context);
+    try {
+      await HostEventManageController.shareOpsReportMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostEventManageActionsProvider)
+            .shareOpsReport(
+              viewModel: widget.viewModel,
+              profiles: profiles,
+              origin: origin,
+            ),
+      );
+      if (!mounted) return;
+      showCatchSnackBar(context, 'Ops CSV ready.');
+    } catch (error, stackTrace) {
+      ref
+          .read(errorLoggerProvider)
+          .logError(
+            error,
+            stackTrace,
+            reason: '_HostEventParticipantsListState._shareOpsReport failed',
+          );
+    }
+  }
+
+  Rect? _shareOrigin(BuildContext context) {
+    final box = context.findRenderObject() as RenderBox?;
+    return box == null ? null : box.localToGlobal(Offset.zero) & box.size;
+  }
+
+  void _openPublicProfile(String uid) {
+    final router = GoRouter.maybeOf(context);
+    if (router == null) return;
+    router.pushNamed(
+      Routes.publicProfileScreen.name,
+      pathParameters: {'uid': uid},
+    );
+  }
 }
 
-class HostParticipationLifecycleBoard extends ConsumerWidget {
+class HostParticipationLifecycleBoard extends StatelessWidget {
   const HostParticipationLifecycleBoard({
     super.key,
     required this.viewModel,
@@ -269,6 +392,8 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
     required this.scrollable,
     required this.showHeader,
     required this.usesRequestApproval,
+    required this.mutationState,
+    required this.actions,
     required this.searchQuery,
     required this.selectedFilter,
     required this.onSearchChanged,
@@ -281,17 +406,19 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
   final bool scrollable;
   final bool showHeader;
   final bool usesRequestApproval;
+  final HostParticipantsMutationDisplayState mutationState;
+  final HostParticipantLifecycleActions actions;
   final String searchQuery;
   final HostRosterFilter selectedFilter;
   final ValueChanged<String> onSearchChanged;
   final ValueChanged<HostRosterFilter> onFilterChanged;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final children = switch (mode) {
-      HostEventParticipantsMode.setup => _setupChildren(context, ref),
-      HostEventParticipantsMode.live => _liveChildren(context, ref),
-      HostEventParticipantsMode.report => _reportChildren(context, ref),
+      HostEventParticipantsMode.setup => _setupChildren(context),
+      HostEventParticipantsMode.live => _liveChildren(context),
+      HostEventParticipantsMode.report => _reportChildren(context),
     };
 
     return ListView(
@@ -305,72 +432,19 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
     );
   }
 
-  List<Widget> _setupChildren(BuildContext context, WidgetRef ref) {
-    final requestActionPending =
-        ref
-            .watch(EventBookingController.approveJoinRequestMutation)
-            .isPending ||
-        ref.watch(EventBookingController.declineJoinRequestMutation).isPending;
-    final offerActionPending = ref
-        .watch(EventBookingController.createWaitlistOfferMutation)
-        .isPending;
-    final requestIds = usesRequestApproval
-        ? viewModel.waitlistedIds
-        : const <String>[];
-    final bookedIds = viewModel.attendeeIds;
-    final waitlistedIds = usesRequestApproval
-        ? const <String>[]
-        : viewModel.waitlistedIds;
-    final allIds = [...requestIds, ...bookedIds, ...waitlistedIds];
-    final remainingSlots =
-        (viewModel.event.capacityLimit - viewModel.totalCount)
-            .clamp(0, viewModel.event.capacityLimit)
-            .toInt();
-    final offerableWaitlistIds = _offerableWaitlistIds(waitlistedIds);
-    final bulkOfferCount = _bulkOfferCount(
-      offerableWaitlistIds,
-      remainingSlots,
+  List<Widget> _setupChildren(BuildContext context) {
+    final rosterState = HostRosterDisplayState.setup(
+      usesRequestApproval: usesRequestApproval,
+      attendeeIds: viewModel.attendeeIds,
+      waitlistedIds: viewModel.waitlistedIds,
+      totalCount: viewModel.totalCount,
+      capacityLimit: viewModel.event.capacityLimit,
+      waitlistCount: viewModel.waitlistCount,
+      participationsByUid: viewModel.participationsByUid,
+      profiles: profiles,
+      searchQuery: searchQuery,
+      selectedFilter: selectedFilter,
     );
-    final filters = [
-      HostRosterFilterSpec(
-        filter: HostRosterFilter.all,
-        label: 'All',
-        value: allIds.length,
-        tone: CatchBadgeTone.solid,
-      ),
-      HostRosterFilterSpec(
-        filter: HostRosterFilter.booked,
-        label: 'Booked',
-        value: bookedIds.length,
-        tone: CatchBadgeTone.success,
-      ),
-      HostRosterFilterSpec(
-        filter: usesRequestApproval
-            ? HostRosterFilter.requests
-            : HostRosterFilter.waitlist,
-        label: usesRequestApproval ? 'Requests' : 'Waitlist',
-        value: viewModel.waitlistCount,
-        tone: usesRequestApproval
-            ? CatchBadgeTone.brand
-            : CatchBadgeTone.warning,
-      ),
-      HostRosterFilterSpec(
-        filter: HostRosterFilter.slots,
-        label: 'Slots',
-        value: remainingSlots,
-        tone: CatchBadgeTone.neutral,
-      ),
-    ];
-    final activeFilter = _effectiveFilter(selectedFilter, filters);
-    final visibleIds = switch (activeFilter) {
-      HostRosterFilter.booked => bookedIds,
-      HostRosterFilter.waitlist => waitlistedIds,
-      HostRosterFilter.requests => requestIds,
-      HostRosterFilter.slots => const <String>[],
-      _ => allIds,
-    };
-    final rowIds = _matchingIds(visibleIds);
-    final hasSearch = searchQuery.trim().isNotEmpty;
 
     return [
       if (showHeader) ...[
@@ -379,21 +453,18 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
           subtitle: usesRequestApproval
               ? 'Review profiles and approve requests before launch.'
               : 'Review booking status before launch.',
-          filters: filters,
-          selectedFilter: activeFilter,
+          filters: rosterState.filters,
+          selectedFilter: rosterState.activeFilter,
           onFilterChanged: onFilterChanged,
         ),
         gapH12,
       ],
-      if (bulkOfferCount > 0) ...[
+      if (rosterState.showBulkOfferAction) ...[
         HostWaitlistBulkOfferAction(
-          count: bulkOfferCount,
-          candidateCount: offerableWaitlistIds.length,
-          isPending: offerActionPending,
-          onOffer: () => _createWaitlistOffers(
-            ref,
-            offerableWaitlistIds.take(bulkOfferCount).toList(growable: false),
-          ),
+          count: rosterState.bulkOfferCount,
+          candidateCount: rosterState.offerableWaitlistIds.length,
+          isPending: mutationState.waitlistOfferPending,
+          onOffer: () => actions.createWaitlistOffers(rosterState.bulkOfferIds),
         ),
         gapH12,
       ],
@@ -405,96 +476,35 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
       gapH14,
       CatchRosterTable(
         columns: const ['Guest', 'Signal', 'Host action'],
-        showEmpty: rowIds.isEmpty,
-        emptyTitle: hasSearch
-            ? 'No matches'
-            : activeFilter == HostRosterFilter.slots
-            ? 'Open slots are not people'
-            : mode.emptyTitle,
-        emptyMessage: hasSearch
-            ? 'No people match this search.'
-            : activeFilter == HostRosterFilter.slots
-            ? 'Slots show capacity left after booked people. New people appear here once they book or request access.'
-            : mode.emptyMessage,
+        showEmpty: rosterState.rowIds.isEmpty,
+        emptyTitle: rosterState.emptyTitle,
+        emptyMessage: rosterState.emptyMessage,
         rows: [
-          for (final uid in rowIds)
+          for (final uid in rosterState.rowIds)
             _setupRow(
-              context,
-              ref,
               uid,
               usesRequestApproval: usesRequestApproval,
-              requestActionPending: requestActionPending,
-              offerActionPending: offerActionPending,
+              requestActionPending: mutationState.requestActionPending,
+              offerActionPending: mutationState.waitlistOfferPending,
             ),
         ],
       ),
     ];
   }
 
-  List<Widget> _liveChildren(BuildContext context, WidgetRef ref) {
-    final offerActionPending = ref
-        .watch(EventBookingController.createWaitlistOfferMutation)
-        .isPending;
-    final checkedInBaseIds = viewModel.attendeeIds
-        .where(viewModel.attendedIds.contains)
-        .toList(growable: false);
-    final needsCheckInBaseIds = viewModel.attendeeIds
-        .where((uid) => !viewModel.attendedIds.contains(uid))
-        .toList(growable: false);
-    final waitlistedBaseIds = viewModel.waitlistedIds;
-    final remainingSlots =
-        (viewModel.event.capacityLimit - viewModel.totalCount)
-            .clamp(0, viewModel.event.capacityLimit)
-            .toInt();
-    final offerableWaitlistIds = _offerableWaitlistIds(waitlistedBaseIds);
-    final bulkOfferCount = _bulkOfferCount(
-      offerableWaitlistIds,
-      remainingSlots,
+  List<Widget> _liveChildren(BuildContext context) {
+    final rosterState = HostRosterDisplayState.live(
+      usesRequestApproval: usesRequestApproval,
+      attendeeIds: viewModel.attendeeIds,
+      attendedIds: viewModel.attendedIds,
+      waitlistedIds: viewModel.waitlistedIds,
+      totalCount: viewModel.totalCount,
+      capacityLimit: viewModel.event.capacityLimit,
+      participationsByUid: viewModel.participationsByUid,
+      profiles: profiles,
+      searchQuery: searchQuery,
+      selectedFilter: selectedFilter,
     );
-    final allBaseIds = [
-      ...needsCheckInBaseIds,
-      ...checkedInBaseIds,
-      ...waitlistedBaseIds,
-    ];
-    final filters = [
-      HostRosterFilterSpec(
-        filter: HostRosterFilter.all,
-        label: 'All',
-        value: allBaseIds.length,
-        tone: CatchBadgeTone.solid,
-      ),
-      HostRosterFilterSpec(
-        filter: HostRosterFilter.due,
-        label: 'Due',
-        value: needsCheckInBaseIds.length,
-        tone: CatchBadgeTone.brand,
-      ),
-      HostRosterFilterSpec(
-        filter: HostRosterFilter.checkedIn,
-        label: 'In',
-        value: checkedInBaseIds.length,
-        tone: CatchBadgeTone.success,
-      ),
-      HostRosterFilterSpec(
-        filter: usesRequestApproval
-            ? HostRosterFilter.requests
-            : HostRosterFilter.waitlist,
-        label: usesRequestApproval ? 'Requests' : 'Waitlist',
-        value: waitlistedBaseIds.length,
-        tone: CatchBadgeTone.warning,
-      ),
-    ];
-    final activeFilter = _effectiveFilter(selectedFilter, filters);
-    final visibleIds = switch (activeFilter) {
-      HostRosterFilter.due => needsCheckInBaseIds,
-      HostRosterFilter.checkedIn => checkedInBaseIds,
-      HostRosterFilter.waitlist ||
-      HostRosterFilter.requests => waitlistedBaseIds,
-      _ => allBaseIds,
-    };
-    final rowIds = _matchingIds(visibleIds);
-    final hasRoster = viewModel.totalCount > 0;
-    final hasSearch = searchQuery.trim().isNotEmpty;
 
     return [
       HostRosterFilterHeader(
@@ -502,20 +512,17 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
         subtitle: showHeader
             ? 'Use the status tiles to focus the roster as people arrive.'
             : null,
-        filters: filters,
-        selectedFilter: activeFilter,
+        filters: rosterState.filters,
+        selectedFilter: rosterState.activeFilter,
         onFilterChanged: onFilterChanged,
       ),
       gapH12,
-      if (bulkOfferCount > 0) ...[
+      if (rosterState.showBulkOfferAction) ...[
         HostWaitlistBulkOfferAction(
-          count: bulkOfferCount,
-          candidateCount: offerableWaitlistIds.length,
-          isPending: offerActionPending,
-          onOffer: () => _createWaitlistOffers(
-            ref,
-            offerableWaitlistIds.take(bulkOfferCount).toList(growable: false),
-          ),
+          count: rosterState.bulkOfferCount,
+          candidateCount: rosterState.offerableWaitlistIds.length,
+          isPending: mutationState.waitlistOfferPending,
+          onOffer: () => actions.createWaitlistOffers(rosterState.bulkOfferIds),
         ),
         gapH12,
       ],
@@ -527,98 +534,49 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
       gapH14,
       CatchRosterTable(
         columns: const ['Guest', 'Status', 'Host action'],
-        showEmpty: rowIds.isEmpty,
-        emptyTitle: hasSearch
-            ? 'No matches'
-            : _liveEmptyTitle(activeFilter, hasRoster),
-        emptyMessage: hasSearch
-            ? 'No live roster rows match this search.'
-            : _liveEmptyMessage(activeFilter, hasRoster),
+        showEmpty: rosterState.rowIds.isEmpty,
+        emptyTitle: rosterState.emptyTitle,
+        emptyMessage: rosterState.emptyMessage,
         rows: [
-          for (final uid in rowIds)
+          for (final uid in rosterState.rowIds)
             _liveRow(
-              context,
-              ref,
               uid,
               usesRequestApproval: usesRequestApproval,
-              offerActionPending: offerActionPending,
+              attendanceActionPending: mutationState.attendanceActionPending,
+              offerActionPending: mutationState.waitlistOfferPending,
             ),
         ],
       ),
     ];
   }
 
-  List<Widget> _reportChildren(BuildContext context, WidgetRef ref) {
+  List<Widget> _reportChildren(BuildContext context) {
     final t = CatchTokens.of(context);
-    final opsExportMutation = ref.watch(
-      HostEventManageController.shareOpsReportMutation,
+    final reportSummary = HostReportSummaryDisplayState.resolve(
+      totalCount: viewModel.totalCount,
+      checkedInCount: viewModel.checkedInCount,
+      waitlistCount: viewModel.waitlistCount,
+      priceInPaise: viewModel.event.priceInPaise,
+      currencyCode: viewModel.event.currency,
     );
-    final revenueExportMutation = ref.watch(
-      HostEventManageController.shareRevenueReportMutation,
+    final rosterState = HostRosterDisplayState.report(
+      attendeeIds: viewModel.attendeeIds,
+      attendedIds: viewModel.attendedIds,
+      waitlistedIds: viewModel.waitlistedIds,
+      totalCount: viewModel.totalCount,
+      waitlistCount: viewModel.waitlistCount,
+      profiles: profiles,
+      searchQuery: searchQuery,
+      selectedFilter: selectedFilter,
     );
-    final exportErrorMutation = [opsExportMutation, revenueExportMutation]
-        .firstWhere(
-          (mutation) => mutation.hasError,
-          orElse: () => opsExportMutation,
-        );
-    final checkedInCount = viewModel.checkedInCount;
-    final noShowCount = viewModel.totalCount - checkedInCount;
-    final grossEstimate = viewModel.totalCount * viewModel.event.priceInPaise;
-    final attendedBaseIds = viewModel.attendeeIds
-        .where(viewModel.attendedIds.contains)
-        .toList(growable: false);
-    final noShowBaseIds = viewModel.attendeeIds
-        .where((uid) => !viewModel.attendedIds.contains(uid))
-        .toList(growable: false);
-    final waitlistedBaseIds = viewModel.waitlistedIds;
-    final allBaseIds = [
-      ...attendedBaseIds,
-      ...noShowBaseIds,
-      ...waitlistedBaseIds,
-    ];
-    final filters = [
-      HostRosterFilterSpec(
-        filter: HostRosterFilter.all,
-        label: 'All',
-        value: allBaseIds.length,
-        tone: CatchBadgeTone.solid,
-      ),
-      HostRosterFilterSpec(
-        filter: HostRosterFilter.attended,
-        label: 'Attended',
-        value: checkedInCount,
-        tone: CatchBadgeTone.success,
-      ),
-      HostRosterFilterSpec(
-        filter: HostRosterFilter.noShow,
-        label: 'No-show',
-        value: noShowCount,
-        tone: CatchBadgeTone.neutral,
-      ),
-      HostRosterFilterSpec(
-        filter: HostRosterFilter.waitlist,
-        label: 'Waitlist',
-        value: viewModel.waitlistCount,
-        tone: CatchBadgeTone.warning,
-      ),
-    ];
-    final activeFilter = _effectiveFilter(selectedFilter, filters);
-    final visibleIds = switch (activeFilter) {
-      HostRosterFilter.attended => attendedBaseIds,
-      HostRosterFilter.noShow => noShowBaseIds,
-      HostRosterFilter.waitlist => waitlistedBaseIds,
-      _ => allBaseIds,
-    };
-    final rowIds = _matchingIds(visibleIds);
-    final hasSearch = searchQuery.trim().isNotEmpty;
 
     return [
       if (showHeader) ...[
         HostRosterFilterHeader(
           title: 'Event report',
           subtitle: 'Attendance, payout, and export-ready roster history.',
-          filters: filters,
-          selectedFilter: activeFilter,
+          filters: rosterState.filters,
+          selectedFilter: rosterState.activeFilter,
           onFilterChanged: onFilterChanged,
         ),
         gapH12,
@@ -631,12 +589,10 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
       gapH14,
       CatchRosterTable(
         columns: const ['Name', 'Attendance', 'Payment'],
-        showEmpty: rowIds.isEmpty,
-        emptyTitle: hasSearch ? 'No matches' : _reportEmptyTitle(activeFilter),
-        emptyMessage: hasSearch
-            ? 'No report rows match this search.'
-            : _reportEmptyMessage(activeFilter),
-        rows: [for (final uid in rowIds) _reportRow(uid)],
+        showEmpty: rosterState.rowIds.isEmpty,
+        emptyTitle: rosterState.emptyTitle,
+        emptyMessage: rosterState.emptyMessage,
+        rows: [for (final uid in rosterState.rowIds) _reportRow(uid)],
       ),
       gapH12,
       CatchSurface(
@@ -645,15 +601,15 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
         radius: CatchRadius.md,
         backgroundColor: t.raised,
         child: Text(
-          '${EventFormatters.priceInPaise(grossEstimate, currencyCode: viewModel.event.currency)} gross estimate · $checkedInCount attended · $noShowCount no-shows · ${viewModel.waitlistCount} waitlisted.',
+          reportSummary.summary,
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
       ),
       gapH12,
-      if (exportErrorMutation.hasError) ...[
-        CatchMutationErrorBanner(
-          mutation: exportErrorMutation,
-          errorContext: AppErrorContext.event,
+      if (mutationState.reportExportError != null) ...[
+        CatchErrorBanner.fromError(
+          mutationState.reportExportError!,
+          context: AppErrorContext.event,
         ),
         gapH12,
       ],
@@ -662,8 +618,8 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
           Expanded(
             child: HostExportReportButton(
               label: 'Ops CSV',
-              isExporting: opsExportMutation.isPending,
-              onExport: () => _shareOpsReport(context, ref),
+              isExporting: mutationState.opsReportExportPending,
+              onExport: actions.shareOpsReport,
             ),
           ),
           gapW10,
@@ -671,8 +627,8 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
             child: HostExportReportButton(
               label: 'Revenue CSV',
               primary: true,
-              isExporting: revenueExportMutation.isPending,
-              onExport: () => _shareRevenueReport(context, ref),
+              isExporting: mutationState.revenueReportExportPending,
+              onExport: actions.shareRevenueReport,
             ),
           ),
         ],
@@ -681,93 +637,85 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
   }
 
   CatchRosterRow _setupRow(
-    BuildContext context,
-    WidgetRef ref,
     String uid, {
     required bool usesRequestApproval,
     required bool requestActionPending,
     required bool offerActionPending,
   }) {
     final participation = viewModel.participationFor(uid);
-    final signal = _setupSignal(participation, usesRequestApproval);
-    final isRequest =
-        usesRequestApproval &&
-        participation?.status == EventParticipationStatus.waitlisted;
+    final rowState = HostSetupRosterRowDisplayState.resolve(
+      participation: participation,
+      usesRequestApproval: usesRequestApproval,
+    );
     final CatchRosterAction action;
-    if (isRequest) {
+    if (rowState.showRequestActions) {
       action = CatchRosterDecideAction(
-        onProfile: () => _openPublicProfile(context, uid),
+        onProfile: () => actions.openProfile(uid),
         onApprove: requestActionPending
             ? null
-            : () => _approveJoinRequest(ref, uid),
+            : () => actions.approveJoinRequest(uid),
         onDecline: requestActionPending
             ? null
-            : () => _declineJoinRequest(ref, uid),
+            : () => actions.declineJoinRequest(uid),
       );
-    } else if (participation?.status == EventParticipationStatus.waitlisted) {
+    } else if (rowState.showWaitlistOfferAction) {
       action = _waitlistOfferAction(
-        ref,
         uid,
         participation,
         offerActionPending: offerActionPending,
       );
     } else {
-      action = _profileAction(context, uid);
+      action = _profileAction(uid);
     }
     return CatchRosterRow(
       person: _nameFor(uid),
       imageUrl: _photoFor(uid),
-      meta: _setupMeta(participation, usesRequestApproval),
-      signal: signal.label,
-      tone: signal.tone,
+      meta: rowState.meta,
+      signal: rowState.signal,
+      tone: rowState.tone,
       action: action,
     );
   }
 
   CatchRosterRow _liveRow(
-    BuildContext context,
-    WidgetRef ref,
     String uid, {
     required bool usesRequestApproval,
+    required bool attendanceActionPending,
     required bool offerActionPending,
   }) {
     final participation = viewModel.participationFor(uid);
     final attended = viewModel.attendedIds.contains(uid);
-    final status = participation?.status;
-    final signal = _liveSignal(participation, attended, usesRequestApproval);
-    final meta = attended
-        ? participation?.attendedAt == null
-              ? 'Checked in'
-              : EventFormatters.time(participation!.attendedAt!)
-        : _reportMeta(participation);
-    final canToggle =
-        status == EventParticipationStatus.signedUp ||
-        status == EventParticipationStatus.attended;
+    final rowState = HostLiveRosterRowDisplayState.resolve(
+      participation: participation,
+      attended: attended,
+      usesRequestApproval: usesRequestApproval,
+    );
     final CatchRosterAction action;
-    if (canToggle) {
+    if (rowState.showAttendanceToggle) {
       action = CatchRosterButtonAction(
         buttonKey: HostEventActionKeys.attendeeCheckInButton(uid),
-        label: attended ? 'Undo' : 'Check in',
-        primary: !attended,
-        onPressed: () => _toggleAttendance(ref, uid),
+        label: rowState.attendanceButtonLabel,
+        primary: rowState.attendanceButtonPrimary,
+        onPressed: attendanceActionPending
+            ? null
+            : () => actions.toggleAttendance(uid),
+        disabled: attendanceActionPending,
       );
-    } else if (status == EventParticipationStatus.waitlisted &&
-        !usesRequestApproval) {
+    } else if (rowState.showWaitlistOfferAction) {
       action = _waitlistOfferAction(
-        ref,
         uid,
         participation,
         offerActionPending: offerActionPending,
       );
     } else {
-      action = _profileAction(context, uid);
+      action = _profileAction(uid);
     }
     return CatchRosterRow(
       person: _nameFor(uid),
       imageUrl: _photoFor(uid),
-      meta: meta,
-      signal: signal.label,
-      tone: signal.tone,
+      meta: rowState.meta,
+      signal: rowState.signal,
+      tone: rowState.tone,
       action: action,
     );
   }
@@ -775,30 +723,25 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
   CatchRosterRow _reportRow(String uid) {
     final participation = viewModel.participationFor(uid);
     final attended = viewModel.attendedIds.contains(uid);
-    final status = participation?.status;
-    final attendance = _reportAttendance(participation, attended);
-    final payment = status == EventParticipationStatus.waitlisted
-        ? '-'
-        : viewModel.event.priceInPaise == 0
-        ? 'Free'
-        : EventFormatters.priceInPaise(
-            viewModel.event.priceInPaise,
-            currencyCode: viewModel.event.currency,
-          );
+    final rowState = HostReportRosterRowDisplayState.resolve(
+      participation: participation,
+      attended: attended,
+      priceInPaise: viewModel.event.priceInPaise,
+      currencyCode: viewModel.event.currency,
+    );
     return CatchRosterRow(
       person: _nameFor(uid),
       imageUrl: _photoFor(uid),
-      meta: _reportMeta(participation),
-      signal: attendance.label,
-      tone: attendance.tone,
-      action: CatchRosterTextAction(payment),
+      meta: rowState.meta,
+      signal: rowState.signal,
+      tone: rowState.tone,
+      action: CatchRosterTextAction(rowState.payment),
     );
   }
 
   /// Shared waitlist action — a settled offer reads as an outcome [CatchBadge],
   /// otherwise an "Offer" button (disabled while a send is in flight).
   CatchRosterAction _waitlistOfferAction(
-    WidgetRef ref,
     String uid,
     EventParticipation? participation, {
     required bool offerActionPending,
@@ -816,193 +759,26 @@ class HostParticipationLifecycleBoard extends ConsumerWidget {
       label: 'Offer',
       onPressed: offerActionPending
           ? null
-          : () => _createWaitlistOffer(ref, uid),
+          : () => actions.createWaitlistOffer(uid),
       disabled: offerActionPending,
     );
   }
 
-  CatchRosterAction _profileAction(BuildContext context, String uid) {
+  CatchRosterAction _profileAction(String uid) {
     return CatchRosterButtonAction(
       label: 'Profile',
-      onPressed: () => _openPublicProfile(context, uid),
+      onPressed: () => actions.openProfile(uid),
     );
   }
 
   String _nameFor(String uid) => profiles[uid]?.$1 ?? 'Runner';
 
   String? _photoFor(String uid) => profiles[uid]?.$2;
-
-  List<String> _offerableWaitlistIds(List<String> ids) {
-    return [
-      for (final uid in ids)
-        if (_canCreateWaitlistOffer(viewModel.participationFor(uid))) uid,
-    ];
-  }
-
-  List<String> _matchingIds(List<String> ids) {
-    final query = searchQuery.trim().toLowerCase();
-    if (query.isEmpty) return ids;
-    return [
-      for (final uid in ids)
-        if (_nameFor(uid).toLowerCase().contains(query) ||
-            uid.toLowerCase().contains(query))
-          uid,
-    ];
-  }
-
-  void _toggleAttendance(WidgetRef ref, String uid) {
-    final mutation = ref.read(EventBookingController.markAttendanceMutation);
-    if (mutation.isPending) return;
-    EventBookingController.markAttendanceMutation.run(
-      ref,
-      (tx) async => tx
-          .get(eventBookingControllerProvider.notifier)
-          .markAttendance(eventId: viewModel.event.id, userId: uid),
-    );
-  }
-
-  void _approveJoinRequest(WidgetRef ref, String uid) {
-    final mutation = ref.read(
-      EventBookingController.approveJoinRequestMutation,
-    );
-    if (mutation.isPending) return;
-    EventBookingController.approveJoinRequestMutation.run(
-      ref,
-      (tx) async => tx
-          .get(eventBookingControllerProvider.notifier)
-          .approveJoinRequest(eventId: viewModel.event.id, userId: uid),
-    );
-  }
-
-  void _declineJoinRequest(WidgetRef ref, String uid) {
-    final mutation = ref.read(
-      EventBookingController.declineJoinRequestMutation,
-    );
-    if (mutation.isPending) return;
-    EventBookingController.declineJoinRequestMutation.run(
-      ref,
-      (tx) async => tx
-          .get(eventBookingControllerProvider.notifier)
-          .declineJoinRequest(eventId: viewModel.event.id, userId: uid),
-    );
-  }
-
-  void _createWaitlistOffer(WidgetRef ref, String uid) {
-    _createWaitlistOffers(ref, [uid]);
-  }
-
-  void _createWaitlistOffers(WidgetRef ref, List<String> userIds) {
-    if (userIds.isEmpty) return;
-    final mutation = ref.read(
-      EventBookingController.createWaitlistOfferMutation,
-    );
-    if (mutation.isPending) return;
-    EventBookingController.createWaitlistOfferMutation.run(
-      ref,
-      (tx) async => tx
-          .get(eventBookingControllerProvider.notifier)
-          .createWaitlistOffers(eventId: viewModel.event.id, userIds: userIds),
-    );
-  }
-
-  Future<void> _shareRevenueReport(BuildContext context, WidgetRef ref) async {
-    final origin = _shareOrigin(context);
-    try {
-      await HostEventManageController.shareRevenueReportMutation.run(
-        ref,
-        (tx) => tx
-            .get(hostEventManageActionsProvider)
-            .shareRevenueReport(
-              viewModel: viewModel,
-              profiles: profiles,
-              origin: origin,
-            ),
-      );
-      if (!context.mounted) return;
-      showCatchSnackBar(context, 'Revenue CSV ready.');
-    } catch (error, stackTrace) {
-      ref.read(errorLoggerProvider).logError(error, stackTrace, reason: '_HostEventParticipantsListState._shareRevenueReport failed');
-    }
-  }
-
-  Future<void> _shareOpsReport(BuildContext context, WidgetRef ref) async {
-    final origin = _shareOrigin(context);
-    try {
-      await HostEventManageController.shareOpsReportMutation.run(
-        ref,
-        (tx) => tx
-            .get(hostEventManageActionsProvider)
-            .shareOpsReport(
-              viewModel: viewModel,
-              profiles: profiles,
-              origin: origin,
-            ),
-      );
-      if (!context.mounted) return;
-      showCatchSnackBar(context, 'Ops CSV ready.');
-    } catch (error, stackTrace) {
-      ref.read(errorLoggerProvider).logError(error, stackTrace, reason: '_HostEventParticipantsListState._shareOpsReport failed');
-    }
-  }
-
-  Rect? _shareOrigin(BuildContext context) {
-    final box = context.findRenderObject() as RenderBox?;
-    return box == null ? null : box.localToGlobal(Offset.zero) & box.size;
-  }
 }
 
-HostRosterFilter _effectiveFilter(
-  HostRosterFilter selected,
-  List<HostRosterFilterSpec> filters,
-) {
-  for (final filter in filters) {
-    if (filter.filter == selected) return selected;
-  }
-  return HostRosterFilter.all;
-}
-
-String _liveEmptyTitle(HostRosterFilter filter, bool hasRoster) {
-  return switch (filter) {
-    HostRosterFilter.due when hasRoster => 'Everyone visible is checked in',
-    HostRosterFilter.checkedIn => 'No checked-in people yet',
-    HostRosterFilter.waitlist ||
-    HostRosterFilter.requests => 'No waitlisted people',
-    _ => 'Roster is empty',
-  };
-}
-
-String _liveEmptyMessage(HostRosterFilter filter, bool hasRoster) {
-  return switch (filter) {
-    HostRosterFilter.due when hasRoster =>
-      'Switch to In to review arrivals or All to see the full roster.',
-    HostRosterFilter.checkedIn =>
-      'Checked-in people will appear here during the event.',
-    HostRosterFilter.waitlist || HostRosterFilter.requests =>
-      'Waitlisted people will appear here for context.',
-    _ => 'Signed-up participants will appear here when they book.',
-  };
-}
-
-String _reportEmptyTitle(HostRosterFilter filter) {
-  return switch (filter) {
-    HostRosterFilter.attended => 'No attended people yet',
-    HostRosterFilter.noShow => 'No no-shows yet',
-    HostRosterFilter.waitlist => 'No waitlisted people',
-    _ => 'No participants yet',
-  };
-}
-
-String _reportEmptyMessage(HostRosterFilter filter) {
-  return switch (filter) {
-    HostRosterFilter.attended =>
-      'Checked-in people will appear here after the event.',
-    HostRosterFilter.noShow =>
-      'Booked people who did not check in will appear here.',
-    HostRosterFilter.waitlist =>
-      'Waitlist history will appear here when people queue for this event.',
-    _ =>
-      'Attendance and waitlist history will appear here once people sign up.',
-  };
+Object? _mutationError(MutationState<dynamic> mutation) {
+  if (!mutation.hasError) return null;
+  return (mutation as MutationError).error;
 }
 
 class HostRosterSearchBar extends StatelessWidget {
@@ -1177,155 +953,7 @@ class HostWaitlistBulkOfferAction extends StatelessWidget {
   }
 }
 
-int _bulkOfferCount(List<String> offerableIds, int remainingSlots) {
-  if (offerableIds.isEmpty || remainingSlots <= 0) return 0;
-  return offerableIds.length < remainingSlots
-      ? offerableIds.length
-      : remainingSlots;
-}
-
-bool _canCreateWaitlistOffer(EventParticipation? participation) {
-  if (participation?.status != EventParticipationStatus.waitlisted) {
-    return false;
-  }
-  final offerStatus = participation?.waitlistOfferStatus;
-  return offerStatus != EventWaitlistOfferStatus.active &&
-      offerStatus != EventWaitlistOfferStatus.accepted;
-}
-
 String _personNoun(int count) => count == 1 ? 'person' : 'people';
-
-({String label, CatchBadgeTone tone}) _liveSignal(
-  EventParticipation? participation,
-  bool attended,
-  bool usesRequestApproval,
-) {
-  final status = participation?.status;
-  return switch (status) {
-    EventParticipationStatus.waitlisted
-        when participation?.waitlistOfferStatus ==
-            EventWaitlistOfferStatus.active =>
-      (label: 'Offered', tone: CatchBadgeTone.brand),
-    EventParticipationStatus.waitlisted
-        when participation?.waitlistOfferStatus ==
-            EventWaitlistOfferStatus.accepted =>
-      (label: 'Accepted', tone: CatchBadgeTone.success),
-    EventParticipationStatus.waitlisted when usesRequestApproval => (
-      label: 'Request',
-      tone: CatchBadgeTone.brand,
-    ),
-    EventParticipationStatus.waitlisted => (
-      label: 'Wait',
-      tone: CatchBadgeTone.warning,
-    ),
-    _ when attended => (label: 'In', tone: CatchBadgeTone.success),
-    _ => (label: 'Due', tone: CatchBadgeTone.neutral),
-  };
-}
-
-({String label, CatchBadgeTone tone}) _reportAttendance(
-  EventParticipation? participation,
-  bool attended,
-) {
-  final status = participation?.status;
-  final offerStatus = participation?.waitlistOfferStatus;
-  return switch (status) {
-    EventParticipationStatus.waitlisted
-        when offerStatus == EventWaitlistOfferStatus.active =>
-      (label: 'Offered', tone: CatchBadgeTone.brand),
-    EventParticipationStatus.waitlisted
-        when offerStatus == EventWaitlistOfferStatus.accepted =>
-      (label: 'Accepted', tone: CatchBadgeTone.success),
-    EventParticipationStatus.waitlisted
-        when offerStatus == EventWaitlistOfferStatus.expired =>
-      (label: 'Expired', tone: CatchBadgeTone.neutral),
-    EventParticipationStatus.waitlisted => (
-      label: 'Wait',
-      tone: CatchBadgeTone.warning,
-    ),
-    _ when attended => (label: 'Attended', tone: CatchBadgeTone.success),
-    _ => (label: 'No-show', tone: CatchBadgeTone.neutral),
-  };
-}
-
-({String label, CatchBadgeTone tone}) _setupSignal(
-  EventParticipation? participation,
-  bool usesRequestApproval,
-) {
-  final offerStatus = participation?.waitlistOfferStatus;
-  if (participation?.status == EventParticipationStatus.waitlisted &&
-      offerStatus == EventWaitlistOfferStatus.active) {
-    return (label: 'Offered', tone: CatchBadgeTone.brand);
-  }
-  if (participation?.status == EventParticipationStatus.waitlisted &&
-      offerStatus == EventWaitlistOfferStatus.accepted) {
-    return (label: 'Accepted', tone: CatchBadgeTone.success);
-  }
-  return switch (participation?.status) {
-    EventParticipationStatus.attended || EventParticipationStatus.signedUp => (
-      label: 'Booked',
-      tone: CatchBadgeTone.success,
-    ),
-    EventParticipationStatus.waitlisted when usesRequestApproval => (
-      label: 'Request',
-      tone: CatchBadgeTone.brand,
-    ),
-    EventParticipationStatus.waitlisted => (
-      label: 'Wait',
-      tone: CatchBadgeTone.warning,
-    ),
-    _ => (label: 'New', tone: CatchBadgeTone.neutral),
-  };
-}
-
-String _setupMeta(EventParticipation? participation, bool usesRequestApproval) {
-  final offerStatus = participation?.waitlistOfferStatus;
-  if (participation?.status == EventParticipationStatus.waitlisted &&
-      offerStatus == EventWaitlistOfferStatus.active) {
-    return 'Offer sent';
-  }
-  if (participation?.status == EventParticipationStatus.waitlisted &&
-      offerStatus == EventWaitlistOfferStatus.accepted) {
-    return 'Accepted offer';
-  }
-  if (participation?.status == EventParticipationStatus.waitlisted &&
-      offerStatus == EventWaitlistOfferStatus.expired) {
-    return 'Offer expired';
-  }
-  return switch (participation?.status) {
-    EventParticipationStatus.attended ||
-    EventParticipationStatus.signedUp => 'Approved',
-    EventParticipationStatus.waitlisted when usesRequestApproval =>
-      'View profile',
-    EventParticipationStatus.waitlisted => 'Waitlisted',
-    _ => 'Profile ready',
-  };
-}
-
-String _reportMeta(EventParticipation? participation) {
-  final status = participation?.status;
-  final offerStatus = participation?.waitlistOfferStatus;
-  if (status == EventParticipationStatus.waitlisted &&
-      offerStatus == EventWaitlistOfferStatus.active) {
-    return 'Offer sent';
-  }
-  if (status == EventParticipationStatus.waitlisted &&
-      offerStatus == EventWaitlistOfferStatus.accepted) {
-    return 'Accepted offer';
-  }
-  if (status == EventParticipationStatus.waitlisted &&
-      offerStatus == EventWaitlistOfferStatus.expired) {
-    return 'Offer expired';
-  }
-  return switch (status) {
-    EventParticipationStatus.waitlisted => 'Waitlisted',
-    EventParticipationStatus.attended ||
-    EventParticipationStatus.signedUp => 'Booked',
-    EventParticipationStatus.cancelled => 'Cancelled',
-    EventParticipationStatus.deleted => 'Deleted',
-    null => 'Participant',
-  };
-}
 
 class HostExportReportButton extends StatelessWidget {
   const HostExportReportButton({
@@ -1355,35 +983,5 @@ class HostExportReportButton extends StatelessWidget {
       ),
       fullWidth: true,
     );
-  }
-}
-
-void _openPublicProfile(BuildContext context, String uid) {
-  final router = GoRouter.maybeOf(context);
-  if (router == null) return;
-  router.pushNamed(
-    Routes.publicProfileScreen.name,
-    pathParameters: {'uid': uid},
-  );
-}
-
-extension on HostEventParticipantsMode {
-  String get emptyTitle {
-    return switch (this) {
-      HostEventParticipantsMode.live => 'No attendees yet',
-      HostEventParticipantsMode.setup ||
-      HostEventParticipantsMode.report => 'No participants yet',
-    };
-  }
-
-  String get emptyMessage {
-    return switch (this) {
-      HostEventParticipantsMode.live =>
-        'No one has signed up for this event yet.',
-      HostEventParticipantsMode.setup =>
-        'Booked and waitlisted people will appear here.',
-      HostEventParticipantsMode.report =>
-        'Attendance and waitlist history will appear here once people sign up.',
-    };
   }
 }

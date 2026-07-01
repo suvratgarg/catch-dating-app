@@ -1,23 +1,25 @@
 {
-  "version": 1,
-  "updated": "2026-06-30",
+  "version": 2,
+  "updated": "2026-07-01",
   "owner": "agent_operating_model",
   "skills": [
     {
       "skill_id": "catch-architecture-refactor",
       "path": "docs/agent_skills/catch-architecture-refactor.md",
-      "version": "1.0.0",
-      "updated": "2026-06-30",
+      "version": "1.1.0",
+      "updated": "2026-07-01",
       "applies_to": [
         "lib/**",
         "test/**",
         "docs/app_architecture.md",
+        "docs/audit_registry/architecture_pattern_adoption.json",
         "lib/README.md"
       ],
       "source_docs": [
         "AGENTS.md",
         "docs/agent_operating_model.md",
         "docs/app_architecture.md",
+        "docs/audit_registry/architecture_pattern_adoption.json",
         "lib/README.md",
         "docs/audit_registry/README.md",
         "docs/agent_regression_ledger.json"
@@ -28,7 +30,7 @@
         "audit:registry"
       ],
       "required_commands": [
-        "node tool/agent/context_pack.mjs --task architecture-refactor --paths lib",
+        "node tool/agent/context_pack.mjs --task architecture-refactor --paths lib,docs/app_architecture.md,docs/audit_registry/architecture_pattern_adoption.json",
         "dart tool/audit_registry.dart refresh",
         "flutter analyze --no-fatal-infos",
         "node tool/agent/check_agent_readiness.mjs"
@@ -37,7 +39,107 @@
       "known_failure_modes": [
         "Refactor starts from ad hoc files instead of registry/scanner output.",
         "Generated Dart, design, Widgetbook, or tool metadata is left stale.",
-        "Feature boundaries are moved without updating app architecture docs."
+        "Feature boundaries are moved without updating app architecture docs.",
+        "Repeated migration work proceeds without a reference exhibit and pattern-adoption tracker update."
+      ]
+    },
+    {
+      "skill_id": "catch-parallel-delegation",
+      "path": "docs/agent_skills/catch-parallel-delegation.md",
+      "version": "1.0.0",
+      "updated": "2026-07-01",
+      "applies_to": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/agent_skills/**",
+        "docs/audit_registry/**",
+        "tool/agent/**",
+        "tool/tools_manifest.json"
+      ],
+      "source_docs": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/audit_registry/README.md",
+        "docs/agent_regression_ledger.json",
+        "tool/README.md"
+      ],
+      "required_tools": [
+        "agent:context-pack",
+        "agent:readiness",
+        "agent:record-delegation",
+        "audit:registry"
+      ],
+      "required_commands": [
+        "node tool/agent/context_pack.mjs --task parallel-delegation --paths AGENTS.md,docs/agent_operating_model.md,tool/agent",
+        "git worktree list",
+        "node tool/agent/record_delegation_outcome.mjs --help",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "success_receipt": "Subagent work is isolated in disposable Git branches/worktrees, parent-reviewed before import, final docs/registries/stamps stay parent-owned, and a delegation outcome metric is recorded.",
+      "known_failure_modes": [
+        "Two agents edit the same file in one loop.",
+        "A subagent updates canonical docs, generated registries, or pass receipts without parent integration.",
+        "Long-lived subagent branches drift behind the parent branch.",
+        "Flutter tests or analyzer are parallelized and fail due toolchain/build-output races.",
+        "A patch is accepted without reviewing its pattern_delta."
+      ]
+    },
+    {
+      "skill_id": "catch-marketing-website",
+      "path": "docs/agent_skills/catch-marketing-website.md",
+      "version": "1.1.0",
+      "updated": "2026-07-01",
+      "applies_to": [
+        "website/**",
+        "packages/web-config/**",
+        "tool/marketing/**",
+        "design/website/**",
+        ".github/workflows/marketing-website.yml",
+        "docs/marketing_website_architecture.md",
+        "docs/web_surface_architecture.md",
+        "docs/marketing_app_media_pipeline.md",
+        "docs/marketing_landing_page_research.md"
+      ],
+      "source_docs": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/marketing_website_architecture.md",
+        "docs/web_surface_architecture.md",
+        "docs/marketing_landing_page_research.md",
+        "docs/marketing_app_media_pipeline.md",
+        "website/README.md",
+        "packages/web-config/README.md",
+        "design/website/routes.json",
+        "design/website/components.json",
+        "docs/audit_registry/README.md",
+        "docs/agent_regression_ledger.json"
+      ],
+      "required_tools": [
+        "agent:context-pack",
+        "agent:readiness",
+        "marketing:website-routes",
+        "marketing:website-components",
+        "marketing:website-build",
+        "marketing:app-media-sync",
+        "design:tokens"
+      ],
+      "required_commands": [
+        "node tool/agent/context_pack.mjs --task marketing-website --paths website,packages/web-config,tool/marketing,design/website,.github/workflows/marketing-website.yml",
+        "node tool/run.mjs check marketing:website-routes",
+        "node tool/run.mjs check marketing:website-components",
+        "npm --workspace catch-marketing run typecheck",
+        "npm --workspace catch-marketing run build",
+        "npm --workspace catch-marketing run build:storybook",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "success_receipt": "Website architecture, route contract, component registry, generated listings, static metadata, marketing docs, Storybook coverage, CI path filters, and website build/typecheck proof stay aligned.",
+      "known_failure_modes": [
+        "Public routes change without updating design/website/routes.json.",
+        "Static postbuild metadata and hydrated page metadata diverge.",
+        "Generated organizer paths drift from the checked route family.",
+        "Marketing CI builds after silently rewriting checked-in generated listings.",
+        "Component review starts before route ownership and review states are stable.",
+        "Storybook route or section stories drift from design/website/components.json."
       ]
     },
     {
@@ -85,7 +187,9 @@
       "updated": "2026-06-30",
       "applies_to": [
         "docs/design_parity/**",
-        "design/**",
+        "design/components/**",
+        "design/screens/**",
+        "design/tokens/**",
         "design_context_pack/**",
         "widgetbook/**",
         "lib/core/widgets/**"

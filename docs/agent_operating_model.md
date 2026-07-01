@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 1.0.0
-updated: 2026-06-30
+version: 1.2.0
+updated: 2026-07-01
 owner: agent_operating_model
 status: active
 ---
@@ -36,6 +36,7 @@ If a rule is only a paragraph in a long doc, expect it to drift.
 | `broad-cleanup` | The user asks for cleanup, migration, consolidation, or refactor | Generate a context pack, declare scope, classify findings, fix a coherent batch, stamp proof. |
 | `design-implementation` | The user gives a design/handoff/screenshot | Convert intent into component contracts and Widgetbook states before or alongside Flutter implementation. |
 | `release-operation` | The task affects deploy, release, CI, Firebase, App Store, or production data | Use documented runbooks and verify live/workflow state when the answer depends on it. |
+| `parallel-delegation` | The user authorizes parallel agents or the current batch has independent sidecar work | Use short-lived Git worktrees, assign disjoint scopes, review branch commits before importing, keep canonical docs/stamps parent-owned, and record a delegation outcome metric. |
 | `strategy` | The user asks what to do | Separate current-state facts from recommendations and propose an executable next pass. |
 
 ## Broad Cleanup Contract
@@ -52,6 +53,133 @@ Before editing in `broad-cleanup`, the agent must be able to state:
 
 Use `node tool/agent/context_pack.mjs` to assemble this packet. If the packet is
 too broad, split the work into numbered batches and record remaining debt.
+For autonomous refactor loops, prefer
+`dart tool/audit_registry.dart next --code-only --screen-limit <n>` after each
+pass so reference-only or future-design gaps stay tracked without blocking code
+work.
+
+## Reference Pattern Contract
+
+Architecture refactors must not begin as prose-only rollouts. When a batch is
+implementing a repeated app architecture pattern, the agent must:
+
+- create or reuse a pattern id from
+  `docs/audit_registry/architecture_pattern_adoption.json`;
+- build one high-quality prototype before migrating sibling files;
+- copy the reference code excerpt into `docs/app_architecture.md` as an exhibit;
+- record prototype files, candidate files, adopters, variants, exceptions, and
+  required checks in the tracker;
+- if a later candidate improves or changes the pattern, update the exhibit first
+  and revisit all existing adopters in the tracker; and
+- stamp the pass with the pattern id and adopter list.
+
+This makes migration quality ratchet forward: the file edited at the start of a
+round must remain comparable to the file edited at the end of the round.
+
+## Parallel Worktree Delegation Contract
+
+Parallel agents may speed up Catch work only when they preserve a single
+integration owner. The parent agent owns architecture decisions, final diffs,
+canonical docs, generated registries, audit receipts, and verification. A
+subagent owns only its assigned branch/worktree task.
+
+Use delegation for sidecar work that can run while the parent continues the
+critical path:
+
+- read-only inventory, candidate selection, or risk review;
+- isolated patch proposals in disjoint files;
+- test-gap discovery or scanner interpretation; and
+- alternative implementation sketches for a named pattern.
+
+Do not delegate final architecture decisions, shared primitive API decisions,
+app-wide naming, docs consolidation, audit stamping, or generated registry
+updates unless the parent explicitly makes that subagent the owner for that
+single file set and later reviews the result.
+
+### Git Protocol
+
+Use Git worktrees as the isolation boundary:
+
+1. Parent records the current branch and HEAD before delegation.
+2. Parent creates or asks for a disposable subagent branch from that HEAD.
+3. Each subagent receives a task id, owned paths, excluded paths, required owner
+   docs, allowed checks, and the structured result format.
+4. Subagent commits its proposal on its branch and reports the commit SHA,
+   changed files, checks run, blockers, and quality risks.
+5. Parent reviews with `git show`, `git diff`, or `cherry-pick -n`, then imports
+   only the accepted changes into the parent branch.
+6. Parent runs final checks, updates canonical docs/registries, stamps the audit
+   pass, commits the integrated loop, and records the delegation outcome.
+7. Disposable worktrees/branches may be removed after the parent has accepted or
+   rejected the proposal.
+
+If the parent branch advances while a subagent is still working, either rebase
+the subagent branch onto the new parent HEAD or discard/recreate the worktree.
+Long-lived subagent branches are not part of the operating model.
+
+### Ownership Rules
+
+- One file has one writer per loop. If two agents need the same file, make that
+  file parent-owned.
+- Parent-owned by default: `AGENTS.md`, `docs/agent_operating_model.md`,
+  `docs/app_architecture.md`, `docs/README.md`, `docs/audit_registry/**`,
+  `docs/design_parity/**`, `docs/widget_catalog.md`, `tool/tools_manifest.json`,
+  generated files, and pass receipts.
+- Subagent patch branches should avoid generated artifacts unless generation is
+  the explicit task.
+- Flutter tests, Flutter analyzer, emulator-backed checks, and native builds run
+  sequentially in the parent unless the parent explicitly assigns one isolated
+  verification task to a subagent.
+
+### Required Subagent Result
+
+Subagents must return a structured packet:
+
+```text
+task_id:
+agent_role:
+base_branch:
+base_sha:
+worktree_path:
+branch:
+commit_sha:
+owned_paths:
+excluded_paths:
+files_changed:
+canonical_rules_applied:
+checks_run:
+checks_failed:
+proposed_change_summary:
+pattern_delta:
+scanner_risks:
+open_blockers:
+do_not_merge_if:
+```
+
+`pattern_delta` is required. If the current architecture pattern is sufficient,
+write `none`. If the subagent found a better pattern, it must describe the
+candidate change instead of silently inventing a variant.
+
+### Metrics
+
+After every delegated task that informs the parent branch, record an outcome:
+
+```sh
+node tool/agent/record_delegation_outcome.mjs \
+  --task-id <task-id> \
+  --mode worker-patch \
+  --status integrated \
+  --parent-review-outcome accepted-with-edits \
+  --subagent-branch <branch> \
+  --subagent-commit <sha> \
+  --files-changed path/one.dart,path/two.dart \
+  --checks-run "flutter test test/example_test.dart"
+```
+
+Use these measurements to decide whether delegation is actually faster and
+higher quality than parent-only execution. If a delegated path creates repeated
+merge conflicts, parent rewrites, or scanner regressions, update this operating
+model or the relevant skill before repeating it.
 
 ## UI And Design Implementation Contract
 
@@ -124,6 +252,9 @@ meaningful broad passes. Useful metrics:
 - scanner count deltas;
 - regressions added, moved to watch, or archived;
 - user-reported rework after the pass.
+- delegation outcomes, including mode, base SHA, branch/commit, files changed,
+  checks run, parent review outcome, conflicts, and whether the parent accepted,
+  edited, rejected, or used the result as information only.
 
 Over time, workflows with higher pass rates and lower rework should become the
 default recommended path in `AGENTS.md` and the relevant skill.
@@ -136,4 +267,6 @@ This operating model is active only if:
 - `docs/README.md` and `docs/audit_registry/doc_versions.json` index this doc;
 - `tool/agent/context_pack.mjs` can build scoped packets;
 - `tool/agent/check_agent_readiness.mjs` validates the harness; and
+- `tool/agent/record_delegation_outcome.mjs` records parseable delegation
+  outcomes when parallel agents are used; and
 - `node tool/run.mjs check --category agent` passes.

@@ -17,10 +17,14 @@ checkPath("docs/agent_skills/skills_manifest.json", "Skill manifest exists.");
 checkPath("docs/audit_registry/agent_metrics.jsonl", "Agent metrics ledger exists.");
 checkPath("tool/agent/context_pack.mjs", "Context pack tool exists.");
 checkPath("tool/agent/check_agent_readiness.mjs", "Readiness tool exists.");
+checkPath("tool/agent/record_delegation_outcome.mjs", "Delegation outcome recorder exists.");
 
 checkContains("AGENTS.md", "docs/agent_operating_model.md", "AGENTS.md routes to the operating model.");
 checkContains("AGENTS.md", "tool/agent/context_pack.mjs", "AGENTS.md names the context-pack tool.");
 checkContains("AGENTS.md", "tool/agent/check_agent_readiness.mjs", "AGENTS.md names the readiness tool.");
+checkContains("AGENTS.md", "tool/agent/record_delegation_outcome.mjs", "AGENTS.md names the delegation recorder.");
+checkContains("docs/agent_operating_model.md", "Parallel Worktree Delegation Contract", "Operating model defines parallel worktree delegation.");
+checkContains("docs/agent_operating_model.md", "pattern_delta", "Operating model requires pattern_delta in subagent results.");
 checkContains("docs/README.md", "agent_operating_model.md", "Docs index includes the operating model.");
 checkContains("docs/README.md", "agent_skills/", "Docs index includes project-local skills.");
 
@@ -39,6 +43,7 @@ const toolIds = new Set((toolsManifest?.tools ?? []).map((tool) => tool.id));
 for (const id of ["agent:context-pack", "agent:readiness"]) {
   check(toolIds.has(id), `Tool manifest includes ${id}.`);
 }
+check(toolIds.has("agent:record-delegation"), "Tool manifest includes agent:record-delegation.");
 
 validateRegressionLedger(regressionLedger);
 validateSkills(skillsManifest, toolIds);
@@ -132,12 +137,25 @@ function validateMetrics(relativePath) {
   const lines = fs.readFileSync(fullPath, "utf8").split(/\r?\n/).filter(Boolean);
   for (const [index, line] of lines.entries()) {
     try {
-      JSON.parse(line);
+      const entry = JSON.parse(line);
       check(true, `${relativePath}:${index + 1} is valid JSON.`);
+      validateMetricEntry(entry, `${relativePath}:${index + 1}`);
     } catch {
       check(false, `${relativePath}:${index + 1} is valid JSON.`);
     }
   }
+}
+
+function validateMetricEntry(entry, label) {
+  if (entry?.event !== "agent_delegation_outcome") return;
+  for (const field of ["task_id", "mode", "status", "parent_review_outcome", "timestamp"]) {
+    check(Boolean(entry[field]), `${label} delegation metric declares ${field}.`);
+  }
+  check(Array.isArray(entry.files_changed), `${label} delegation metric files_changed is an array.`);
+  check(Array.isArray(entry.checks_run), `${label} delegation metric checks_run is an array.`);
+  check(Array.isArray(entry.checks_failed), `${label} delegation metric checks_failed is an array.`);
+  check(Number.isFinite(entry.conflicts_count), `${label} delegation metric conflicts_count is numeric.`);
+  check(Number.isFinite(entry.parent_edits_required), `${label} delegation metric parent_edits_required is numeric.`);
 }
 
 function extractCommandPaths(command) {
@@ -148,7 +166,7 @@ function extractCommandPaths(command) {
     .map((token) => token.replace(/^\.\//, ""))
     .filter((token) => {
       if (!token || token.includes("*")) return false;
-      return /^(AGENTS\.md|docs\/|tool\/|lib\/|test\/|functions\/|contracts\/|widgetbook\/|\.github\/|ios\/|android\/|firebase\.json|\.firebaserc|firestore\.rules|storage\.rules)/.test(token);
+      return /^(AGENTS\.md|docs\/|tool\/|lib\/|test\/|functions\/|contracts\/|widgetbook\/|website\/|packages\/web-config\/|design\/website\/|\.github\/|ios\/|android\/|firebase\.json|\.firebaserc|firestore\.rules|storage\.rules)/.test(token);
     });
 }
 

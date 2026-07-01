@@ -141,6 +141,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Sections',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'ClubContactSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contact section states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .clubContactSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ClubDetailBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -171,12 +181,42 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'ClubHostRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Host row states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .clubHostRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ClubHostSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Host section states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .clubHostSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ClubMembershipDock',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Provider dock states',
                 builder: _widgetbook_workspace_clubs_club_detail_use_cases
                     .clubMembershipDockStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ClubPhotoStrip',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Photo strip states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .clubPhotoStripStates,
               ),
             ],
           ),
@@ -381,16 +421,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchMiniBarChart',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchMiniBarChartCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchStatColumn',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -432,6 +462,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .eventVisualAtomsCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventHeroSurface',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .eventHeroSurfaceCatalogStates,
               ),
             ],
           ),
@@ -2053,12 +2093,32 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventCompanionEntry',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Companion entry states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailCompanionEntryStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventDetailBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Prompt states',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventDetailPromptBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventDetailHostsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Host section states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailHostSectionStates,
               ),
             ],
           ),
@@ -2408,6 +2468,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'ExploreClearAction',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Clear action states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreClearActionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ExploreFilterSheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2498,6 +2568,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'ExploreEventsEmptySliver',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Feed empty sliver states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreEventsEmptySliverStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ExploreEventsSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2544,6 +2624,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Peek rail states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .explorePeekRailContentStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ExploreScreenEmptyState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route empty states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreScreenEmptyStateStates,
               ),
             ],
           ),
@@ -5513,6 +5603,26 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CreateEventUnsavedChangesDialog',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Dialog states',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .createEventUnsavedChangesDialogCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'DraftDeleteConfirmationDialog',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Delete confirmation',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .draftDeleteConfirmationDialogCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'DraftPickerSheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -5549,6 +5659,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Event success step states',
                 builder: _widgetbook_workspace_hosts_host_operations_use_cases
                     .eventSuccessStepCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostCreateEventRouteStateView',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route state renderer',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .hostCreateEventRouteStateViewCatalogStates,
               ),
             ],
           ),
@@ -6943,6 +7063,21 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Host shared',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'StepperFooter',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Footer states',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .stepperFooterCatalogStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Matches and chat',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -6997,6 +7132,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_matches_matches_chat_use_cases
                             .chatMessageListRendererStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ChatPersonRowSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Skeleton states',
+                    builder:
+                        _widgetbook_workspace_matches_matches_chat_use_cases
+                            .chatPersonRowSkeletonStates,
                   ),
                 ],
               ),
@@ -7063,6 +7209,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_matches_matches_chat_use_cases
                             .chatsListBodyStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ChatsListSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Skeleton states',
+                    builder:
+                        _widgetbook_workspace_matches_matches_chat_use_cases
+                            .chatsListSkeletonStates,
                   ),
                 ],
               ),
@@ -7303,7 +7460,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'ProfileInlineMultiChoiceEntryEditor<Labelled>',
+                name: 'ProfileInlineLanguageMultiChoiceEntryEditor',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Inline multi choice editor states',
@@ -7333,7 +7490,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'ProfileInlineSingleChoiceEntryEditor<Labelled>',
+                name: 'ProfileInlineRelationshipGoalChoiceEntryEditor',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Inline single choice editor states',
@@ -7464,6 +7621,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Edit tab sliver body states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .profileTabSliverBodyStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'PublicProfileScreenBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Route body states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .publicProfileScreenBodyStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'SelfProfileTabBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Self tab body states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileScreenSelfTabBodyStates,
                   ),
                 ],
               ),
@@ -7667,6 +7844,131 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder: _widgetbook_workspace_utility_p3_utility_use_cases
                     .calendarScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Components',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'CalendarDateHeader',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Header states',
+                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                        .calendarDateHeaderStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CalendarDateHeaderSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Skeleton state',
+                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                        .calendarDateHeaderSkeletonStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CalendarLoadingScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Loading state',
+                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                        .calendarLoadingScreenStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CalendarMessage',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Empty message state',
+                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                        .calendarMessageStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CalendarMonthGrid',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Month grid state',
+                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                        .calendarMonthGridStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CalendarStatDivider',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Divider state',
+                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                        .calendarStatDividerStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CalendarStatSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Skeleton state',
+                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                        .calendarStatSkeletonStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CalendarStatsHeader',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Stats state',
+                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                        .calendarStatsHeaderStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CalendarStatsHeaderSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Skeleton state',
+                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                        .calendarStatsHeaderSkeletonStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CalendarTitleRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Title row state',
+                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                        .calendarTitleRowStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CalendarWeekStrip',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Week strip state',
+                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                        .calendarWeekStripStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CalendarWeekStripSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Skeleton state',
+                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                        .calendarWeekStripSkeletonStates,
+                  ),
+                ],
               ),
             ],
           ),

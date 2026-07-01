@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-06-25",
+  "updated": "2026-07-01",
   "tools": [
     {
       "id": "tool:runner",
@@ -36,6 +36,19 @@
       "checks": [
         "node --check tool/agent/check_agent_readiness.mjs",
         "node tool/agent/check_agent_readiness.mjs"
+      ]
+    },
+    {
+      "id": "agent:record-delegation",
+      "category": "agent",
+      "path": "tool/agent/record_delegation_outcome.mjs",
+      "command": "node tool/agent/record_delegation_outcome.mjs",
+      "safety": "local-writes-audit-jsonl",
+      "status": "active",
+      "description": "Records parent-reviewed parallel agent/worktree delegation outcomes in the agent metrics ledger.",
+      "checks": [
+        "node --check tool/agent/record_delegation_outcome.mjs",
+        "node tool/agent/record_delegation_outcome.mjs --help"
       ]
     },
     {
@@ -90,6 +103,19 @@
       "status": "active",
       "description": "Scans async-state handling, repository error wrapping, controller mutations, and structural widget overlap.",
       "checks": ["python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/scan_architecture.py').read_text())\""]
+    },
+    {
+      "id": "audit:adopted-architecture-boundaries",
+      "category": "audit",
+      "path": "tool/architecture/check_adopted_architecture_boundaries.mjs",
+      "command": "node tool/architecture/check_adopted_architecture_boundaries.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Enforces provider/routing-free imports and API usage for aligned provider-free adopters tracked in the architecture pattern registry.",
+      "checks": [
+        "node --check tool/architecture/check_adopted_architecture_boundaries.mjs",
+        "node tool/architecture/check_adopted_architecture_boundaries.mjs"
+      ]
     },
     {
       "id": "audit:widget-antipatterns",
@@ -1524,6 +1550,32 @@
       ]
     },
     {
+      "id": "marketing:website-routes",
+      "category": "marketing",
+      "path": "tool/marketing/check_website_routes.mjs",
+      "command": "node tool/marketing/check_website_routes.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates marketing website route contracts against React route, metadata, postbuild, and generated organizer-listing sources.",
+      "checks": [
+        "node --check tool/marketing/check_website_routes.mjs",
+        "node tool/marketing/check_website_routes.mjs --check"
+      ]
+    },
+    {
+      "id": "marketing:website-components",
+      "category": "marketing",
+      "path": "tool/marketing/check_website_components.mjs",
+      "command": "node tool/marketing/check_website_components.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates marketing website component ownership contracts against React source files, route ids, CSS ownership, and Storybook coverage.",
+      "checks": [
+        "node --check tool/marketing/check_website_components.mjs",
+        "node tool/marketing/check_website_components.mjs --check"
+      ]
+    },
+    {
       "id": "marketing:device-frame",
       "category": "marketing",
       "path": "tool/marketing/frame_device_capture.dart",
@@ -1562,6 +1614,18 @@
         "node --test website/scripts/checkOrganizerBuildOutputs.test.mjs",
         "node --test website/scripts/postbuild.test.mjs",
         "npm --prefix website run build"
+      ]
+    },
+    {
+      "id": "marketing:website-storybook",
+      "category": "marketing",
+      "path": "website/.storybook/main.ts",
+      "command": "npm --workspace catch-marketing run build:storybook",
+      "safety": "local-build",
+      "status": "active",
+      "description": "Builds the Storybook workbench for route-linked marketing website component and page-state review.",
+      "checks": [
+        "npm --workspace catch-marketing run build:storybook"
       ]
     },
     {
@@ -1777,6 +1841,19 @@
       ]
     },
     {
+      "id": "design:comprehensive-todo-summary",
+      "category": "design",
+      "path": "tool/design/check_comprehensive_todo_summary.mjs",
+      "command": "node tool/design/check_comprehensive_todo_summary.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates the comprehensive design parity todo snapshot and priority summary table against the screen-contract and state-matrix ledgers.",
+      "checks": [
+        "node --check tool/design/check_comprehensive_todo_summary.mjs",
+        "node tool/design/check_comprehensive_todo_summary.mjs --check"
+      ]
+    },
+    {
       "id": "design:screen-coverage",
       "category": "design",
       "path": "tool/design/check_screen_coverage.mjs",
@@ -1878,7 +1955,7 @@
       "command": "node tool/design/check_design_parity.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Runs the standard local design parity gate across component contracts, widget classification, routes, captures, screen contracts, Widgetbook refs, and advisory hygiene scanners.",
+      "description": "Runs the standard local design parity gate across component contracts, widget classification, routes, captures, screen contracts, todo summaries, Widgetbook refs, and advisory hygiene scanners.",
       "checks": [
         "node --check tool/design/check_design_parity.mjs",
         "node tool/design/check_design_parity.mjs --check"

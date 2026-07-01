@@ -30,6 +30,8 @@ export const organizerSortOptions: OrganizerSort[] = [
 
 const organizerSearchTextCache = new Map<string, string>();
 
+type OrganizerFilterSearchSource = string | URLSearchParams;
+
 export function defaultOrganizerDirectoryFilters(): OrganizerDirectoryFilters {
   return {
     query: "",
@@ -45,9 +47,9 @@ export function defaultOrganizerDirectoryFilters(): OrganizerDirectoryFilters {
 export function readOrganizerFiltersFromUrl(
   cityOptions: string[],
   formatOptions: string[],
-  search: string = window.location.search
+  search: OrganizerFilterSearchSource = ""
 ): OrganizerDirectoryFilters {
-  const params = new URLSearchParams(search);
+  const params = typeof search === "string" ? new URLSearchParams(search) : search;
   const status = params.get("status");
   const sort = params.get("sort");
   const city = params.get("city");
@@ -64,7 +66,7 @@ export function readOrganizerFiltersFromUrl(
   };
 }
 
-export function replaceOrganizerDirectoryUrl(filters: OrganizerDirectoryFilters) {
+export function organizerDirectorySearchParams(filters: OrganizerDirectoryFilters) {
   const params = new URLSearchParams();
   const normalizedQuery = filters.query.trim();
   if (normalizedQuery) params.set("q", normalizedQuery);
@@ -74,12 +76,7 @@ export function replaceOrganizerDirectoryUrl(filters: OrganizerDirectoryFilters)
   if (filters.upcomingOnly) params.set("upcoming", "true");
   if (filters.minRating > 0) params.set("rating", String(filters.minRating));
   if (filters.sort !== "relevance") params.set("sort", filters.sort);
-
-  const nextPath = params.toString() ? `/organizers/?${params}` : "/organizers/";
-  const currentPath = `${window.location.pathname}${window.location.search}`;
-  if (currentPath !== nextPath) {
-    window.history.replaceState(null, "", nextPath);
-  }
+  return params;
 }
 
 export function organizerAppearanceContext(filters: OrganizerDirectoryFilters) {

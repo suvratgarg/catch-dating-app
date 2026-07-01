@@ -1,5 +1,5 @@
 import {type CSSProperties, useEffect} from "react";
-import {SiteFooter, SiteHeader} from "../../components/site";
+import {SiteFooter, SiteHeader} from "../../shared/site";
 import {
   Button,
   PlainLink,

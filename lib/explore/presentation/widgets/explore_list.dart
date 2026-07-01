@@ -84,18 +84,38 @@ class ExploreListEmptyState extends ConsumerWidget {
     final hasFilters = filters.hasActiveFilters;
     if (hasSearch && hasFilters) {
       return ExploreEmptyState.noFilteredSearchResults(
-        action: ExploreClearAction(clearSearch: true, clearFilters: true, icon: CatchIcons.closeRounded),
+        action: ExploreClearAction(
+          clearSearch: true,
+          clearFilters: true,
+          icon: CatchIcons.closeRounded,
+          onClearSearch: () =>
+              ref.read(exploreSearchQueryProvider.notifier).clear(),
+          onClearFilters: () =>
+              ref.read(exploreFiltersProvider.notifier).clear(),
+        ),
       );
     }
     if (hasSearch) {
       return ExploreEmptyState.noSearchResults(
         hasFilters: false,
-        action: ExploreClearAction(clearSearch: true, clearFilters: false, icon: CatchIcons.closeRounded),
+        action: ExploreClearAction(
+          clearSearch: true,
+          clearFilters: false,
+          icon: CatchIcons.closeRounded,
+          onClearSearch: () =>
+              ref.read(exploreSearchQueryProvider.notifier).clear(),
+        ),
       );
     }
     if (hasFilters) {
       return ExploreEmptyState.noFilterResults(
-        action: ExploreClearAction(clearSearch: false, clearFilters: true, icon: CatchIcons.closeRounded),
+        action: ExploreClearAction(
+          clearSearch: false,
+          clearFilters: true,
+          icon: CatchIcons.closeRounded,
+          onClearFilters: () =>
+              ref.read(exploreFiltersProvider.notifier).clear(),
+        ),
       );
     }
     return ExploreEmptyState(cityLabel: cityLabel);
@@ -107,13 +127,13 @@ class ClubDirectorySkeletonList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
-        const ClubDirectorySkeletonCard(),
+        ClubDirectorySkeletonCard(),
         gapH14,
-        const ClubDirectorySkeletonCard(),
+        ClubDirectorySkeletonCard(),
         gapH14,
-        const ClubDirectorySkeletonCard(),
+        ClubDirectorySkeletonCard(),
       ],
     );
   }

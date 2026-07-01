@@ -29,6 +29,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -471,7 +472,13 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
             }
           })
           .catchError((error, stackTrace) {
-            ref.read(errorLoggerProvider).logError(error, stackTrace, reason: 'CreateClubScreen._submit failed');
+            ref
+                .read(errorLoggerProvider)
+                .logError(
+                  error,
+                  stackTrace,
+                  reason: 'CreateClubScreen._submit failed',
+                );
           }),
     );
   }
@@ -603,10 +610,10 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
               ),
             ),
             if (mutationError != null) CatchErrorBanner(message: mutationError),
-            _buildStepperFooter(
+            StepperFooter(
               isLastStep: screenState.currentStep == activeSteps.length - 1,
               isLoading: screenState.isLoading,
-              onNext: _next,
+              onPrimary: _next,
               onSaveDraft: screenState.canSaveDraft ? _saveDraft : null,
               lastStepLabel: screenState.lastStepLabel,
             ),
@@ -792,56 +799,6 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
           ),
           if (mutationError != null) CatchErrorBanner(message: mutationError),
           _buildEditClubFooter(isLoading: isSubmitting, onSave: _submitEdit),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStepperFooter({
-    required bool isLastStep,
-    required bool isLoading,
-    required VoidCallback onNext,
-    required VoidCallback? onSaveDraft,
-    required String lastStepLabel,
-  }) {
-    final t = CatchTokens.of(context);
-    return CatchBottomDock(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s4,
-        CatchSpacing.s3,
-        CatchSpacing.s4,
-        CatchSpacing.s3,
-      ),
-      child: Row(
-        children: [
-          if (onSaveDraft != null) ...[
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: CatchButton(
-                  label: 'Save Draft',
-                  onPressed: isLoading ? null : onSaveDraft,
-                  variant: CatchButtonVariant.ghost,
-                  size: CatchButtonSize.lg,
-                  icon: Icon(CatchIcons.saveOutlined),
-                  foregroundColor: t.primary,
-                ),
-              ),
-            ),
-            const SizedBox(width: CatchSpacing.s3),
-          ],
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: CatchButton(
-                label: isLastStep ? lastStepLabel : 'Next',
-                onPressed: onNext,
-                isLoading: isLoading,
-                fullWidth: true,
-                icon: isLastStep ? null : Icon(CatchIcons.arrowForwardRounded),
-              ),
-            ),
-          ),
         ],
       ),
     );

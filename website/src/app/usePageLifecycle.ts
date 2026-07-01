@@ -33,14 +33,14 @@ export function useDocumentMeta(meta: PageMeta) {
   }, [meta]);
 }
 
-export function useMarketingAnalytics(page: PageKey) {
+export function useMarketingAnalytics(page: PageKey, routeKey?: string) {
   useEffect(() => {
     initializeMarketingAnalytics();
     trackPageView(page);
-  }, [page]);
+  }, [page, routeKey]);
 }
 
-export function useRevealAnimations(page: PageKey) {
+export function useRevealAnimations(page: PageKey, routeKey?: string) {
   useEffect(() => {
     const revealItems = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
     revealItems.forEach((item, index) => {
@@ -66,18 +66,20 @@ export function useRevealAnimations(page: PageKey) {
 
     revealItems.forEach((item) => observer.observe(item));
     return () => observer.disconnect();
-  }, [page]);
+  }, [page, routeKey]);
 }
 
-export function useHashScroll(page: PageKey) {
+export function useHashScroll(page: PageKey, hash?: string) {
   useEffect(() => {
-    if (!window.location.hash) return undefined;
+    const currentHash = hash ?? window.location.hash;
+    if (!currentHash) return undefined;
     const frameIds: number[] = [];
     const timeoutIds: number[] = [];
     const scrollToHash = () => {
-      if (!window.location.hash) return;
-      const hash = decodeURIComponent(window.location.hash.slice(1));
-      document.getElementById(hash)?.scrollIntoView({block: "start"});
+      const nextHash = hash ?? window.location.hash;
+      if (!nextHash) return;
+      const targetId = decodeURIComponent(nextHash.slice(1));
+      document.getElementById(targetId)?.scrollIntoView({block: "start"});
     };
     const scheduleScroll = () => {
       frameIds.push(window.requestAnimationFrame(scrollToHash));
@@ -94,7 +96,7 @@ export function useHashScroll(page: PageKey) {
       timeoutIds.forEach((timeout) => window.clearTimeout(timeout));
       window.removeEventListener("hashchange", scheduleScroll);
     };
-  }, [page]);
+  }, [page, hash]);
 }
 
 export function useMarketingCaptures() {

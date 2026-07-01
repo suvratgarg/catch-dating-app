@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-06-28T19:08:20.058Z",
+  "generatedAt": "2026-07-01T13:01:19.212Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 599,
-    "components": 583,
-    "stateCards": 1252,
+    "useCases": 629,
+    "components": 613,
+    "stateCards": 1328,
     "reviewCandidates": 31,
     "oversizedUseCases": 40,
     "multiUseCaseComponents": 16
@@ -16,7 +16,7 @@
     {
       "component": "HostEventManageScreen",
       "useCaseCount": 1,
-      "stateCardCount": 38,
+      "stateCardCount": 56,
       "paths": [
         "[P1 product surfaces]/Host operations/Composed sections"
       ],
@@ -40,18 +40,36 @@
         "initial event fallback",
         "invite link action error",
         "invite link action pending",
+        "invite links disabled row",
         "invite links empty",
         "invite links error",
         "invite links loading",
+        "invite links long label source",
+        "invite links offline",
+        "live check-in QR",
         "live console",
+        "live conversation cues",
+        "live guided rotations assigned",
+        "live host override edited",
+        "live micro-pods assigned",
+        "live plan error",
+        "live plan loading",
+        "live plan offline",
+        "live reveal round revealed",
         "live unavailable",
+        "live wingman requests",
         "private access error",
         "private access loading",
+        "private access missing code",
+        "private access offline",
         "private link share error",
         "private link share pending",
         "reduced motion",
         "report export error",
         "report export pending",
+        "report scorecard error",
+        "report scorecard loading",
+        "report scorecard offline",
         "report workspace",
         "route error",
         "route loading",
@@ -76,7 +94,7 @@
           "functionName": "hostEventManageRouteAndSectionStates",
           "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
           "path": "[P1 product surfaces]/Host operations/Composed sections",
-          "stateCardCount": 38,
+          "stateCardCount": 56,
           "stateCards": [
             {
               "label": "route loading",
@@ -127,8 +145,60 @@
               "normalizedLabel": "live unavailable"
             },
             {
+              "label": "live plan loading",
+              "normalizedLabel": "live plan loading"
+            },
+            {
+              "label": "live plan error",
+              "normalizedLabel": "live plan error"
+            },
+            {
+              "label": "live plan offline",
+              "normalizedLabel": "live plan offline"
+            },
+            {
+              "label": "live wingman requests",
+              "normalizedLabel": "live wingman requests"
+            },
+            {
+              "label": "live check-in QR",
+              "normalizedLabel": "live check in qr"
+            },
+            {
+              "label": "live conversation cues",
+              "normalizedLabel": "live conversation cues"
+            },
+            {
+              "label": "live micro-pods assigned",
+              "normalizedLabel": "live micro pods assigned"
+            },
+            {
+              "label": "live reveal round revealed",
+              "normalizedLabel": "live reveal round revealed"
+            },
+            {
+              "label": "live host override edited",
+              "normalizedLabel": "live host override edited"
+            },
+            {
+              "label": "live guided rotations assigned",
+              "normalizedLabel": "live guided rotations assigned"
+            },
+            {
               "label": "report workspace",
               "normalizedLabel": "report workspace"
+            },
+            {
+              "label": "report scorecard loading",
+              "normalizedLabel": "report scorecard loading"
+            },
+            {
+              "label": "report scorecard error",
+              "normalizedLabel": "report scorecard error"
+            },
+            {
+              "label": "report scorecard offline",
+              "normalizedLabel": "report scorecard offline"
             },
             {
               "label": "report export pending",
@@ -171,6 +241,14 @@
               "normalizedLabel": "private access error"
             },
             {
+              "label": "private access offline",
+              "normalizedLabel": "private access offline"
+            },
+            {
+              "label": "private access missing code",
+              "normalizedLabel": "private access missing code"
+            },
+            {
               "label": "invite links loading",
               "normalizedLabel": "invite links loading"
             },
@@ -179,8 +257,20 @@
               "normalizedLabel": "invite links error"
             },
             {
+              "label": "invite links offline",
+              "normalizedLabel": "invite links offline"
+            },
+            {
               "label": "invite links empty",
               "normalizedLabel": "invite links empty"
+            },
+            {
+              "label": "invite links disabled row",
+              "normalizedLabel": "invite links disabled row"
+            },
+            {
+              "label": "invite links long label source",
+              "normalizedLabel": "invite links long label source"
             },
             {
               "label": "invite link action pending",
@@ -1498,6 +1588,117 @@
       ]
     },
     {
+      "component": "SwipeScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 16,
+      "paths": [
+        "[P1 product surfaces]/Catches"
+      ],
+      "labels": [
+        "catch window closed",
+        "did not attend",
+        "empty queue",
+        "event in progress",
+        "event missing",
+        "mutation failure on interaction",
+        "offline queue error",
+        "pass pending",
+        "profile deck with reactions",
+        "queue error",
+        "queue loading",
+        "reaction pending",
+        "reduced motion",
+        "signed out",
+        "text scale 2.0",
+        "vibe-prioritized deck"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "catchesEventDeckRouteStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Event deck route states",
+          "functionName": "catchesEventDeckRouteStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches",
+          "stateCardCount": 16,
+          "stateCards": [
+            {
+              "label": "queue loading",
+              "normalizedLabel": "queue loading"
+            },
+            {
+              "label": "queue error",
+              "normalizedLabel": "queue error"
+            },
+            {
+              "label": "offline queue error",
+              "normalizedLabel": "offline queue error"
+            },
+            {
+              "label": "profile deck with reactions",
+              "normalizedLabel": "profile deck with reactions"
+            },
+            {
+              "label": "vibe-prioritized deck",
+              "normalizedLabel": "vibe prioritized deck"
+            },
+            {
+              "label": "empty queue",
+              "normalizedLabel": "empty queue"
+            },
+            {
+              "label": "event missing",
+              "normalizedLabel": "event missing"
+            },
+            {
+              "label": "signed out",
+              "normalizedLabel": "signed out"
+            },
+            {
+              "label": "event in progress",
+              "normalizedLabel": "event in progress"
+            },
+            {
+              "label": "did not attend",
+              "normalizedLabel": "did not attend"
+            },
+            {
+              "label": "catch window closed",
+              "normalizedLabel": "catch window closed"
+            },
+            {
+              "label": "mutation failure on interaction",
+              "normalizedLabel": "mutation failure on interaction"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "pass pending",
+              "normalizedLabel": "pass pending"
+            },
+            {
+              "label": "reaction pending",
+              "normalizedLabel": "reaction pending"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "DashboardScreen",
       "useCaseCount": 1,
       "stateCardCount": 15,
@@ -1800,107 +2001,6 @@
             {
               "label": "dark theme",
               "normalizedLabel": "dark theme"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "SwipeScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 14,
-      "paths": [
-        "[P1 product surfaces]/Catches"
-      ],
-      "labels": [
-        "catch window closed",
-        "did not attend",
-        "empty queue",
-        "event in progress",
-        "event missing",
-        "mutation failure on interaction",
-        "offline queue error",
-        "profile deck with reactions",
-        "queue error",
-        "queue loading",
-        "reduced motion",
-        "signed out",
-        "text scale 2.0",
-        "vibe-prioritized deck"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "catchesEventDeckRouteStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Event deck route states",
-          "functionName": "catchesEventDeckRouteStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches",
-          "stateCardCount": 14,
-          "stateCards": [
-            {
-              "label": "queue loading",
-              "normalizedLabel": "queue loading"
-            },
-            {
-              "label": "queue error",
-              "normalizedLabel": "queue error"
-            },
-            {
-              "label": "offline queue error",
-              "normalizedLabel": "offline queue error"
-            },
-            {
-              "label": "profile deck with reactions",
-              "normalizedLabel": "profile deck with reactions"
-            },
-            {
-              "label": "vibe-prioritized deck",
-              "normalizedLabel": "vibe prioritized deck"
-            },
-            {
-              "label": "empty queue",
-              "normalizedLabel": "empty queue"
-            },
-            {
-              "label": "event missing",
-              "normalizedLabel": "event missing"
-            },
-            {
-              "label": "signed out",
-              "normalizedLabel": "signed out"
-            },
-            {
-              "label": "event in progress",
-              "normalizedLabel": "event in progress"
-            },
-            {
-              "label": "did not attend",
-              "normalizedLabel": "did not attend"
-            },
-            {
-              "label": "catch window closed",
-              "normalizedLabel": "catch window closed"
-            },
-            {
-              "label": "mutation failure on interaction",
-              "normalizedLabel": "mutation failure on interaction"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            },
-            {
-              "label": "reduced motion",
-              "normalizedLabel": "reduced motion"
             }
           ]
         }
@@ -3427,7 +3527,7 @@
     {
       "component": "HostEventManageScreen",
       "useCaseCount": 1,
-      "stateCardCount": 38,
+      "stateCardCount": 56,
       "paths": [
         "[P1 product surfaces]/Host operations/Composed sections"
       ],
@@ -3451,18 +3551,36 @@
         "initial event fallback",
         "invite link action error",
         "invite link action pending",
+        "invite links disabled row",
         "invite links empty",
         "invite links error",
         "invite links loading",
+        "invite links long label source",
+        "invite links offline",
+        "live check-in QR",
         "live console",
+        "live conversation cues",
+        "live guided rotations assigned",
+        "live host override edited",
+        "live micro-pods assigned",
+        "live plan error",
+        "live plan loading",
+        "live plan offline",
+        "live reveal round revealed",
         "live unavailable",
+        "live wingman requests",
         "private access error",
         "private access loading",
+        "private access missing code",
+        "private access offline",
         "private link share error",
         "private link share pending",
         "reduced motion",
         "report export error",
         "report export pending",
+        "report scorecard error",
+        "report scorecard loading",
+        "report scorecard offline",
         "report workspace",
         "route error",
         "route loading",
@@ -3487,7 +3605,7 @@
           "functionName": "hostEventManageRouteAndSectionStates",
           "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
           "path": "[P1 product surfaces]/Host operations/Composed sections",
-          "stateCardCount": 38,
+          "stateCardCount": 56,
           "stateCards": [
             {
               "label": "route loading",
@@ -3538,8 +3656,60 @@
               "normalizedLabel": "live unavailable"
             },
             {
+              "label": "live plan loading",
+              "normalizedLabel": "live plan loading"
+            },
+            {
+              "label": "live plan error",
+              "normalizedLabel": "live plan error"
+            },
+            {
+              "label": "live plan offline",
+              "normalizedLabel": "live plan offline"
+            },
+            {
+              "label": "live wingman requests",
+              "normalizedLabel": "live wingman requests"
+            },
+            {
+              "label": "live check-in QR",
+              "normalizedLabel": "live check in qr"
+            },
+            {
+              "label": "live conversation cues",
+              "normalizedLabel": "live conversation cues"
+            },
+            {
+              "label": "live micro-pods assigned",
+              "normalizedLabel": "live micro pods assigned"
+            },
+            {
+              "label": "live reveal round revealed",
+              "normalizedLabel": "live reveal round revealed"
+            },
+            {
+              "label": "live host override edited",
+              "normalizedLabel": "live host override edited"
+            },
+            {
+              "label": "live guided rotations assigned",
+              "normalizedLabel": "live guided rotations assigned"
+            },
+            {
               "label": "report workspace",
               "normalizedLabel": "report workspace"
+            },
+            {
+              "label": "report scorecard loading",
+              "normalizedLabel": "report scorecard loading"
+            },
+            {
+              "label": "report scorecard error",
+              "normalizedLabel": "report scorecard error"
+            },
+            {
+              "label": "report scorecard offline",
+              "normalizedLabel": "report scorecard offline"
             },
             {
               "label": "report export pending",
@@ -3582,6 +3752,14 @@
               "normalizedLabel": "private access error"
             },
             {
+              "label": "private access offline",
+              "normalizedLabel": "private access offline"
+            },
+            {
+              "label": "private access missing code",
+              "normalizedLabel": "private access missing code"
+            },
+            {
               "label": "invite links loading",
               "normalizedLabel": "invite links loading"
             },
@@ -3590,8 +3768,20 @@
               "normalizedLabel": "invite links error"
             },
             {
+              "label": "invite links offline",
+              "normalizedLabel": "invite links offline"
+            },
+            {
               "label": "invite links empty",
               "normalizedLabel": "invite links empty"
+            },
+            {
+              "label": "invite links disabled row",
+              "normalizedLabel": "invite links disabled row"
+            },
+            {
+              "label": "invite links long label source",
+              "normalizedLabel": "invite links long label source"
             },
             {
               "label": "invite link action pending",
@@ -4909,6 +5099,117 @@
       ]
     },
     {
+      "component": "SwipeScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 16,
+      "paths": [
+        "[P1 product surfaces]/Catches"
+      ],
+      "labels": [
+        "catch window closed",
+        "did not attend",
+        "empty queue",
+        "event in progress",
+        "event missing",
+        "mutation failure on interaction",
+        "offline queue error",
+        "pass pending",
+        "profile deck with reactions",
+        "queue error",
+        "queue loading",
+        "reaction pending",
+        "reduced motion",
+        "signed out",
+        "text scale 2.0",
+        "vibe-prioritized deck"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "catchesEventDeckRouteStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Event deck route states",
+          "functionName": "catchesEventDeckRouteStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches",
+          "stateCardCount": 16,
+          "stateCards": [
+            {
+              "label": "queue loading",
+              "normalizedLabel": "queue loading"
+            },
+            {
+              "label": "queue error",
+              "normalizedLabel": "queue error"
+            },
+            {
+              "label": "offline queue error",
+              "normalizedLabel": "offline queue error"
+            },
+            {
+              "label": "profile deck with reactions",
+              "normalizedLabel": "profile deck with reactions"
+            },
+            {
+              "label": "vibe-prioritized deck",
+              "normalizedLabel": "vibe prioritized deck"
+            },
+            {
+              "label": "empty queue",
+              "normalizedLabel": "empty queue"
+            },
+            {
+              "label": "event missing",
+              "normalizedLabel": "event missing"
+            },
+            {
+              "label": "signed out",
+              "normalizedLabel": "signed out"
+            },
+            {
+              "label": "event in progress",
+              "normalizedLabel": "event in progress"
+            },
+            {
+              "label": "did not attend",
+              "normalizedLabel": "did not attend"
+            },
+            {
+              "label": "catch window closed",
+              "normalizedLabel": "catch window closed"
+            },
+            {
+              "label": "mutation failure on interaction",
+              "normalizedLabel": "mutation failure on interaction"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "pass pending",
+              "normalizedLabel": "pass pending"
+            },
+            {
+              "label": "reaction pending",
+              "normalizedLabel": "reaction pending"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "DashboardScreen",
       "useCaseCount": 1,
       "stateCardCount": 15,
@@ -5211,107 +5512,6 @@
             {
               "label": "dark theme",
               "normalizedLabel": "dark theme"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "SwipeScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 14,
-      "paths": [
-        "[P1 product surfaces]/Catches"
-      ],
-      "labels": [
-        "catch window closed",
-        "did not attend",
-        "empty queue",
-        "event in progress",
-        "event missing",
-        "mutation failure on interaction",
-        "offline queue error",
-        "profile deck with reactions",
-        "queue error",
-        "queue loading",
-        "reduced motion",
-        "signed out",
-        "text scale 2.0",
-        "vibe-prioritized deck"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "catchesEventDeckRouteStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Event deck route states",
-          "functionName": "catchesEventDeckRouteStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches",
-          "stateCardCount": 14,
-          "stateCards": [
-            {
-              "label": "queue loading",
-              "normalizedLabel": "queue loading"
-            },
-            {
-              "label": "queue error",
-              "normalizedLabel": "queue error"
-            },
-            {
-              "label": "offline queue error",
-              "normalizedLabel": "offline queue error"
-            },
-            {
-              "label": "profile deck with reactions",
-              "normalizedLabel": "profile deck with reactions"
-            },
-            {
-              "label": "vibe-prioritized deck",
-              "normalizedLabel": "vibe prioritized deck"
-            },
-            {
-              "label": "empty queue",
-              "normalizedLabel": "empty queue"
-            },
-            {
-              "label": "event missing",
-              "normalizedLabel": "event missing"
-            },
-            {
-              "label": "signed out",
-              "normalizedLabel": "signed out"
-            },
-            {
-              "label": "event in progress",
-              "normalizedLabel": "event in progress"
-            },
-            {
-              "label": "did not attend",
-              "normalizedLabel": "did not attend"
-            },
-            {
-              "label": "catch window closed",
-              "normalizedLabel": "catch window closed"
-            },
-            {
-              "label": "mutation failure on interaction",
-              "normalizedLabel": "mutation failure on interaction"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            },
-            {
-              "label": "reduced motion",
-              "normalizedLabel": "reduced motion"
             }
           ]
         }
@@ -10639,6 +10839,100 @@
       ]
     },
     {
+      "component": "EventCompanionEntry",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[Event Detail]/Sections"
+      ],
+      "labels": [
+        "available",
+        "error",
+        "hidden",
+        "loading"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Companion entry states",
+          "functionName": "eventDetailCompanionEntryStates",
+          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
+          "path": "[Event Detail]/Sections",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "hidden",
+              "normalizedLabel": "hidden"
+            },
+            {
+              "label": "loading",
+              "normalizedLabel": "loading"
+            },
+            {
+              "label": "available",
+              "normalizedLabel": "available"
+            },
+            {
+              "label": "error",
+              "normalizedLabel": "error"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "EventDetailHostsSection",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[Event Detail]/Sections"
+      ],
+      "labels": [
+        "content",
+        "error",
+        "hidden",
+        "loading"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Host section states",
+          "functionName": "eventDetailHostSectionStates",
+          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
+          "path": "[Event Detail]/Sections",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "hidden",
+              "normalizedLabel": "hidden"
+            },
+            {
+              "label": "loading",
+              "normalizedLabel": "loading"
+            },
+            {
+              "label": "content",
+              "normalizedLabel": "content"
+            },
+            {
+              "label": "error",
+              "normalizedLabel": "error"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventDetailSocialSection",
       "useCaseCount": 1,
       "stateCardCount": 4,
@@ -11109,6 +11403,100 @@
       ]
     },
     {
+      "component": "PublicProfileScreenBody",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[P1 product surfaces]/Profiles/Sections"
+      ],
+      "labels": [
+        "cold loading",
+        "load error",
+        "loaded with viewer context",
+        "profile unavailable"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Route body states",
+          "functionName": "publicProfileScreenBodyStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Sections",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "cold loading",
+              "normalizedLabel": "cold loading"
+            },
+            {
+              "label": "load error",
+              "normalizedLabel": "load error"
+            },
+            {
+              "label": "profile unavailable",
+              "normalizedLabel": "profile unavailable"
+            },
+            {
+              "label": "loaded with viewer context",
+              "normalizedLabel": "loaded with viewer context"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "SelfProfileTabBody",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[P1 product surfaces]/Profiles/Sections"
+      ],
+      "labels": [
+        "load error",
+        "loading tab shell",
+        "profile unavailable",
+        "ready edit tab"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Self tab body states",
+          "functionName": "profileScreenSelfTabBodyStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Sections",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "loading tab shell",
+              "normalizedLabel": "loading tab shell"
+            },
+            {
+              "label": "load error",
+              "normalizedLabel": "load error"
+            },
+            {
+              "label": "profile unavailable",
+              "normalizedLabel": "profile unavailable"
+            },
+            {
+              "label": "ready edit tab",
+              "normalizedLabel": "ready edit tab"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "SuvbotActionBar",
       "useCaseCount": 1,
       "stateCardCount": 4,
@@ -11239,6 +11627,48 @@
             {
               "label": "compact",
               "normalizedLabel": "compact"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchesPassButton",
+      "useCaseCount": 1,
+      "stateCardCount": 3,
+      "paths": [
+        "[P1 product surfaces]/Catches/Sections"
+      ],
+      "labels": [
+        "default",
+        "disabled",
+        "pending"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Pass button states",
+          "functionName": "catchesPassButtonStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches/Sections",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "default",
+              "normalizedLabel": "default"
+            },
+            {
+              "label": "pending",
+              "normalizedLabel": "pending"
+            },
+            {
+              "label": "disabled",
+              "normalizedLabel": "disabled"
             }
           ]
         }
@@ -11581,6 +12011,48 @@
       ]
     },
     {
+      "component": "ClubHostSection",
+      "useCaseCount": 1,
+      "stateCardCount": 3,
+      "paths": [
+        "[Club Detail]/Sections"
+      ],
+      "labels": [
+        "message pending",
+        "messageable hosts",
+        "public preview"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Host section states",
+          "functionName": "clubHostSectionStates",
+          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
+          "path": "[Club Detail]/Sections",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "messageable hosts",
+              "normalizedLabel": "messageable hosts"
+            },
+            {
+              "label": "public preview",
+              "normalizedLabel": "public preview"
+            },
+            {
+              "label": "message pending",
+              "normalizedLabel": "message pending"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "ClubScheduleSection",
       "useCaseCount": 1,
       "stateCardCount": 3,
@@ -11911,6 +12383,48 @@
             {
               "label": "divider",
               "normalizedLabel": "divider"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "ExploreClearAction",
+      "useCaseCount": 1,
+      "stateCardCount": 3,
+      "paths": [
+        "[Explore]/Controls"
+      ],
+      "labels": [
+        "clear filters",
+        "clear search",
+        "clear search and filters"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Clear action states",
+          "functionName": "exploreClearActionStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Controls",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "clear search",
+              "normalizedLabel": "clear search"
+            },
+            {
+              "label": "clear filters",
+              "normalizedLabel": "clear filters"
+            },
+            {
+              "label": "clear search and filters",
+              "normalizedLabel": "clear search and filters"
             }
           ]
         }
@@ -12411,6 +12925,43 @@
       ]
     },
     {
+      "component": "CalendarDateHeader",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P3 utility surfaces]/Calendar/Components"
+      ],
+      "labels": [
+        "month grid",
+        "week strip"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Header states",
+          "functionName": "calendarDateHeaderStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Calendar/Components",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "week strip",
+              "normalizedLabel": "week strip"
+            },
+            {
+              "label": "month grid",
+              "normalizedLabel": "month grid"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchActionMenu",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -12781,6 +13332,43 @@
       ]
     },
     {
+      "component": "ChatPersonRowSkeleton",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P1 product surfaces]/Matches and chat/Components"
+      ],
+      "labels": [
+        "host inquiry row",
+        "match row"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Skeleton states",
+          "functionName": "chatPersonRowSkeletonStates",
+          "file": "widgetbook/lib/matches/matches_chat_use_cases.dart",
+          "path": "[P1 product surfaces]/Matches and chat/Components",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "match row",
+              "normalizedLabel": "match row"
+            },
+            {
+              "label": "host inquiry row",
+              "normalizedLabel": "host inquiry row"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "ChatsEmptyState",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -12886,6 +13474,43 @@
             {
               "label": "validation",
               "normalizedLabel": "validation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "ClubContactSection",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Club Detail]/Sections"
+      ],
+      "labels": [
+        "all channels",
+        "empty"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contact section states",
+          "functionName": "clubContactSectionStates",
+          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
+          "path": "[Club Detail]/Sections",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "all channels",
+              "normalizedLabel": "all channels"
+            },
+            {
+              "label": "empty",
+              "normalizedLabel": "empty"
             }
           ]
         }
@@ -13003,6 +13628,43 @@
       ]
     },
     {
+      "component": "ClubHostRow",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Club Detail]/Sections"
+      ],
+      "labels": [
+        "owner / message / chevron",
+        "public profile"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Host row states",
+          "functionName": "clubHostRowStates",
+          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
+          "path": "[Club Detail]/Sections",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "owner / message / chevron",
+              "normalizedLabel": "owner message chevron"
+            },
+            {
+              "label": "public profile",
+              "normalizedLabel": "public profile"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "ClubListTile",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -13108,6 +13770,43 @@
             {
               "label": "member pending push",
               "normalizedLabel": "member pending push"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "ClubPhotoStrip",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Club Detail]/Sections"
+      ],
+      "labels": [
+        "single photo",
+        "three photos"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Photo strip states",
+          "functionName": "clubPhotoStripStates",
+          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
+          "path": "[Club Detail]/Sections",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "three photos",
+              "normalizedLabel": "three photos"
+            },
+            {
+              "label": "single photo",
+              "normalizedLabel": "single photo"
             }
           ]
         }
@@ -14113,6 +14812,43 @@
       ]
     },
     {
+      "component": "ExploreEventsEmptySliver",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Explore]/Sections"
+      ],
+      "labels": [
+        "broaden time filter",
+        "clear search"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Feed empty sliver states",
+          "functionName": "exploreEventsEmptySliverStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Sections",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "clear search",
+              "normalizedLabel": "clear search"
+            },
+            {
+              "label": "broaden time filter",
+              "normalizedLabel": "broaden time filter"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "ExploreFilterSheet",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -14218,6 +14954,43 @@
             {
               "label": "selected event",
               "normalizedLabel": "selected event"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "ExploreScreenEmptyState",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Explore]/Sections"
+      ],
+      "labels": [
+        "no source clubs",
+        "search plus filters"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Route empty states",
+          "functionName": "exploreScreenEmptyStateStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Sections",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "no source clubs",
+              "normalizedLabel": "no source clubs"
+            },
+            {
+              "label": "search plus filters",
+              "normalizedLabel": "search plus filters"
             }
           ]
         }
@@ -14668,6 +15441,80 @@
       ]
     },
     {
+      "component": "ProfileReactionCommentSheet",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P1 product surfaces]/Catches/Sections"
+      ],
+      "labels": [
+        "empty draft",
+        "filled draft"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Reaction comment sheet states",
+          "functionName": "profileReactionCommentSheetStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches/Sections",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "empty draft",
+              "normalizedLabel": "empty draft"
+            },
+            {
+              "label": "filled draft",
+              "normalizedLabel": "filled draft"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "ProfileSurface",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P1 product surfaces]/Catches/Sections"
+      ],
+      "labels": [
+        "reactable catches mode",
+        "reaction pending"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catches profile states",
+          "functionName": "catchesProfileSurfaceStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches/Sections",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "reactable catches mode",
+              "normalizedLabel": "reactable catches mode"
+            },
+            {
+              "label": "reaction pending",
+              "normalizedLabel": "reaction pending"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "PublicProfileBody",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -14884,6 +15731,43 @@
             {
               "label": "saved list",
               "normalizedLabel": "saved list"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "StepperFooter",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P1 product surfaces]/Host shared"
+      ],
+      "labels": [
+        "last step loading",
+        "save and next"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Footer states",
+          "functionName": "stepperFooterCatalogStates",
+          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "path": "[P1 product surfaces]/Host shared",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "save and next",
+              "normalizedLabel": "save and next"
+            },
+            {
+              "label": "last step loading",
+              "normalizedLabel": "last step loading"
             }
           ]
         }
@@ -15170,6 +16054,294 @@
             {
               "label": "open and closing soon",
               "normalizedLabel": "open and closing soon"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CalendarDateHeaderSkeleton",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P3 utility surfaces]/Calendar/Components"
+      ],
+      "labels": [
+        "loading"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Skeleton state",
+          "functionName": "calendarDateHeaderSkeletonStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Calendar/Components",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "loading",
+              "normalizedLabel": "loading"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CalendarMonthGrid",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P3 utility surfaces]/Calendar/Components"
+      ],
+      "labels": [
+        "event markers"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Month grid state",
+          "functionName": "calendarMonthGridStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Calendar/Components",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "event markers",
+              "normalizedLabel": "event markers"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CalendarStatDivider",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P3 utility surfaces]/Calendar/Components"
+      ],
+      "labels": [
+        "vertical rule"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Divider state",
+          "functionName": "calendarStatDividerStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Calendar/Components",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "vertical rule",
+              "normalizedLabel": "vertical rule"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CalendarStatsHeader",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P3 utility surfaces]/Calendar/Components"
+      ],
+      "labels": [
+        "joined saved cancelled"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Stats state",
+          "functionName": "calendarStatsHeaderStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Calendar/Components",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "joined saved cancelled",
+              "normalizedLabel": "joined saved cancelled"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CalendarStatsHeaderSkeleton",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P3 utility surfaces]/Calendar/Components"
+      ],
+      "labels": [
+        "loading"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Skeleton state",
+          "functionName": "calendarStatsHeaderSkeletonStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Calendar/Components",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "loading",
+              "normalizedLabel": "loading"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CalendarStatSkeleton",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P3 utility surfaces]/Calendar/Components"
+      ],
+      "labels": [
+        "single stat"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Skeleton state",
+          "functionName": "calendarStatSkeletonStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Calendar/Components",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "single stat",
+              "normalizedLabel": "single stat"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CalendarTitleRow",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P3 utility surfaces]/Calendar/Components"
+      ],
+      "labels": [
+        "current month"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Title row state",
+          "functionName": "calendarTitleRowStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Calendar/Components",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "current month",
+              "normalizedLabel": "current month"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CalendarWeekStrip",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P3 utility surfaces]/Calendar/Components"
+      ],
+      "labels": [
+        "event markers"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Week strip state",
+          "functionName": "calendarWeekStripStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Calendar/Components",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "event markers",
+              "normalizedLabel": "event markers"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CalendarWeekStripSkeleton",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P3 utility surfaces]/Calendar/Components"
+      ],
+      "labels": [
+        "loading"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Skeleton state",
+          "functionName": "calendarWeekStripSkeletonStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Calendar/Components",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "loading",
+              "normalizedLabel": "loading"
             }
           ]
         }
@@ -15579,38 +16751,6 @@
         {
           "name": "Header states",
           "functionName": "catchesHubHeaderStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches/Sections",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "default",
-              "normalizedLabel": "default"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchesPassButton",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Catches/Sections"
-      ],
-      "labels": [
-        "default"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Pass button states",
-          "functionName": "catchesPassButtonStates",
           "file": "widgetbook/lib/catches/catches_use_cases.dart",
           "path": "[P1 product surfaces]/Catches/Sections",
           "stateCardCount": 1,
@@ -17032,6 +18172,38 @@
       ]
     },
     {
+      "component": "ChatsListSkeleton",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/Matches and chat/Components"
+      ],
+      "labels": [
+        "consumer loading"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Skeleton states",
+          "functionName": "chatsListSkeletonStates",
+          "file": "widgetbook/lib/matches/matches_chat_use_cases.dart",
+          "path": "[P1 product surfaces]/Matches and chat/Components",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "consumer loading",
+              "normalizedLabel": "consumer loading"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "ClubAvatarRail",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -17320,6 +18492,38 @@
       ]
     },
     {
+      "component": "CreateEventUnsavedChangesDialog",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/Host create event"
+      ],
+      "labels": [
+        "save or discard"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Dialog states",
+          "functionName": "createEventUnsavedChangesDialogCatalogStates",
+          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "path": "[P1 product surfaces]/Host create event",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "save or discard",
+              "normalizedLabel": "save or discard"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "DashboardEmptySliverBody",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -17410,6 +18614,38 @@
             {
               "label": "body content",
               "normalizedLabel": "body content"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "DraftDeleteConfirmationDialog",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/Host create event"
+      ],
+      "labels": [
+        "saved draft"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Delete confirmation",
+          "functionName": "draftDeleteConfirmationDialogCatalogStates",
+          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "path": "[P1 product surfaces]/Host create event",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "saved draft",
+              "normalizedLabel": "saved draft"
             }
           ]
         }
@@ -17730,6 +18966,38 @@
             {
               "label": "band / three cells / dark notch",
               "normalizedLabel": "band three cells dark notch"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "EventHeroSurface",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Core catalog]/Event cards"
+      ],
+      "labels": [
+        "shared hero wrapper"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "eventHeroSurfaceCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Event cards",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "shared hero wrapper",
+              "normalizedLabel": "shared hero wrapper"
             }
           ]
         }
@@ -18216,6 +19484,38 @@
       ]
     },
     {
+      "component": "HostCreateEventRouteStateView",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/Host create event"
+      ],
+      "labels": [
+        "ready"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Route state renderer",
+          "functionName": "hostCreateEventRouteStateViewCatalogStates",
+          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "path": "[P1 product surfaces]/Host create event",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "ready",
+              "normalizedLabel": "ready"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "HostInboxBroadcastCard",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -18568,6 +19868,38 @@
       ]
     },
     {
+      "component": "ProfileDirectTextEntryField",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/Profiles/Inline Editors"
+      ],
+      "labels": [
+        "focused direct input"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Direct text entry states",
+          "functionName": "profileDirectTextEntryFieldStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "focused direct input",
+              "normalizedLabel": "focused direct input"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "ProfileInfoChip",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -18632,7 +19964,7 @@
       ]
     },
     {
-      "component": "ProfileInlineMultiChoiceEntryEditor",
+      "component": "ProfileInlineLanguageMultiChoiceEntryEditor",
       "useCaseCount": 1,
       "stateCardCount": 1,
       "paths": [
@@ -18728,7 +20060,7 @@
       ]
     },
     {
-      "component": "ProfileInlineSingleChoiceEntryEditor",
+      "component": "ProfileInlineRelationshipGoalChoiceEntryEditor",
       "useCaseCount": 1,
       "stateCardCount": 1,
       "paths": [
@@ -18754,38 +20086,6 @@
             {
               "label": "expanded choice set",
               "normalizedLabel": "expanded choice set"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ProfileInlineTextEntryEditor",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Profiles/Inline Editors"
-      ],
-      "labels": [
-        "expanded text entry"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Inline text editor states",
-          "functionName": "profileInlineTextEntryEditorStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Inline Editors",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "expanded text entry",
-              "normalizedLabel": "expanded text entry"
             }
           ]
         }
@@ -18856,38 +20156,6 @@
       ]
     },
     {
-      "component": "ProfileReactionCommentSheet",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Catches/Sections"
-      ],
-      "labels": [
-        "prompt target"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Reaction comment sheet states",
-          "functionName": "profileReactionCommentSheetStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches/Sections",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "prompt target",
-              "normalizedLabel": "prompt target"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ProfileReactionControls",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -18914,38 +20182,6 @@
             {
               "label": "surface and overlay",
               "normalizedLabel": "surface and overlay"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ProfileSurface",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Catches/Sections"
-      ],
-      "labels": [
-        "reactable catches mode"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Catches profile states",
-          "functionName": "catchesProfileSurfaceStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches/Sections",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "reactable catches mode",
-              "normalizedLabel": "reactable catches mode"
             }
           ]
         }
@@ -19858,6 +21094,56 @@
           "functionName": "bookedLeadingState",
           "file": "widgetbook/lib/events/event_detail_use_cases.dart",
           "path": "[Event Detail]/Booking Dock",
+          "stateCardCount": 0,
+          "stateCards": []
+        }
+      ]
+    },
+    {
+      "component": "CalendarLoadingScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 0,
+      "paths": [
+        "[P3 utility surfaces]/Calendar/Components"
+      ],
+      "labels": [],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Loading state",
+          "functionName": "calendarLoadingScreenStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Calendar/Components",
+          "stateCardCount": 0,
+          "stateCards": []
+        }
+      ]
+    },
+    {
+      "component": "CalendarMessage",
+      "useCaseCount": 1,
+      "stateCardCount": 0,
+      "paths": [
+        "[P3 utility surfaces]/Calendar/Components"
+      ],
+      "labels": [],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Empty message state",
+          "functionName": "calendarMessageStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Calendar/Components",
           "stateCardCount": 0,
           "stateCards": []
         }

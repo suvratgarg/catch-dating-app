@@ -1,0 +1,162 @@
+{
+  "$schema": "./website.components.schema.json",
+  "version": 1,
+  "updated": "2026-07-01",
+  "owner": "marketing_website",
+  "sourceOfTruth": {
+    "architecture": "docs/marketing_website_architecture.md",
+    "routes": "design/website/routes.json",
+    "storybook": "website/src/stories"
+  },
+  "coverage": {
+    "strategy": "route-plus-sections",
+    "currentFocus": ["home", "host", "host_preview"],
+    "storyKinds": ["route", "section", "flow"]
+  },
+  "components": [
+    {
+      "id": "route_home",
+      "kind": "route",
+      "routeIds": ["home"],
+      "owner": "features/home",
+      "source": "website/src/features/home/HomePage.tsx",
+      "exportName": "HomePage",
+      "css": [
+        "website/src/styles/site-shell.css",
+        "website/src/styles/home.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/MarketingRoutes.stories.tsx",
+        "exportName": "Home",
+        "states": ["default", "app-download-pending", "waitlist-form"]
+      },
+      "notes": "Route-level story coverage only; section extraction is not the current focus."
+    },
+    {
+      "id": "route_host",
+      "kind": "route",
+      "routeIds": ["host"],
+      "owner": "features/host",
+      "source": "website/src/features/host/HostPage.tsx",
+      "exportName": "HostPage",
+      "css": [
+        "website/src/styles/site-shell.css",
+        "website/src/styles/host-foundation.css",
+        "website/src/styles/host.css",
+        "website/src/styles/flows.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/MarketingRoutes.stories.tsx",
+        "exportName": "Host",
+        "states": ["default", "host-application", "capture-placeholders"]
+      },
+      "notes": "Reference route-first host page composition."
+    },
+    {
+      "id": "route_host_preview",
+      "kind": "route",
+      "routeIds": ["host_preview"],
+      "owner": "features/host",
+      "source": "website/src/features/host/HostPreviewPage.tsx",
+      "exportName": "HostPreviewPage",
+      "css": [
+        "website/src/styles/site-shell.css",
+        "website/src/styles/host-foundation.css",
+        "website/src/styles/host.css",
+        "website/src/styles/flows.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/MarketingRoutes.stories.tsx",
+        "exportName": "HostPreview",
+        "states": ["default", "founding-host-offer", "create-flow"]
+      },
+      "notes": "Client-only preview route uses the same host section registry."
+    },
+    {
+      "id": "host_create_event_walkthrough",
+      "kind": "section",
+      "routeIds": ["host", "host_preview"],
+      "owner": "features/host/sections",
+      "source": "website/src/features/host/sections/CreateEventWalkthrough.tsx",
+      "exportName": "CreateEventWalkthrough",
+      "css": [
+        "website/src/styles/host-foundation.css",
+        "website/src/styles/host.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostSections.stories.tsx",
+        "exportName": "CreateEventWalkthroughSection",
+        "states": ["default", "interactive-steps", "capture-fallback"]
+      },
+      "notes": "Interactive host create-flow section shared by /host/ and /host/preview/."
+    },
+    {
+      "id": "host_event_success_showcase",
+      "kind": "section",
+      "routeIds": ["host"],
+      "owner": "features/host/sections",
+      "source": "website/src/features/host/sections/EventSuccessShowcase.tsx",
+      "exportName": "EventSuccessShowcase",
+      "css": [
+        "website/src/styles/host-foundation.css",
+        "website/src/styles/host.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostSections.stories.tsx",
+        "exportName": "EventSuccessShowcaseSection",
+        "states": ["default", "activity", "after", "debrief"]
+      },
+      "notes": "Host route section for Event Success module review."
+    },
+    {
+      "id": "host_comparison_section",
+      "kind": "section",
+      "routeIds": ["host", "host_preview"],
+      "owner": "features/host/sections",
+      "source": "website/src/features/host/sections/HostComparisonSection.tsx",
+      "exportName": "HostComparisonSection",
+      "css": [
+        "website/src/styles/host-foundation.css",
+        "website/src/styles/host.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostSections.stories.tsx",
+        "exportName": "HostComparisonSectionStory",
+        "states": ["collapsed", "expanded-interaction"]
+      },
+      "notes": "Interactive comparison table section shared by both host routes."
+    },
+    {
+      "id": "host_application_flow",
+      "kind": "flow",
+      "routeIds": ["host", "host_preview"],
+      "owner": "features/host/application",
+      "source": "website/src/features/host/application/HostApplicationFlow.tsx",
+      "exportName": "HostApplicationFlow",
+      "css": [
+        "website/src/styles/flows.css",
+        "website/src/styles/host.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HostSections.stories.tsx",
+        "exportName": "HostApplicationFlowInitial",
+        "states": ["initial", "interactive-steps"]
+      },
+      "notes": "Initial flow coverage only; fixed submitted/error states need a later controller seam."
+    }
+  ]
+}

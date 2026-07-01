@@ -1,13 +1,11 @@
-import 'dart:math' as math;
-
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
@@ -43,9 +41,13 @@ class ExploreBrowseHeaderContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final query = ref.watch(exploreSearchQueryProvider);
+    final chrome = ExploreChromeState.browse(
+      query: query,
+      showSearchAction: showSearchAction,
+    );
     final t = CatchTokens.of(context);
 
-    if (!showSearchAction) {
+    if (!chrome.showSearchAction) {
       return Padding(
         padding: CatchInsets.screenTitleBlock,
         child: Row(
@@ -57,10 +59,10 @@ class ExploreBrowseHeaderContent extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Explore', style: CatchTextStyles.headline(context)),
+                  Text(chrome.title, style: CatchTextStyles.headline(context)),
                   const SizedBox(height: CatchGaps.headerTitleToSubtitle),
                   Text(
-                    'Find an event worth showing up for.',
+                    chrome.subtitle,
                     style: CatchTextStyles.supporting(context),
                   ),
                 ],
@@ -73,17 +75,17 @@ class ExploreBrowseHeaderContent extends ConsumerWidget {
 
     return CatchTopBar(
       leading: const ExploreCityPicker(),
-      title: 'Explore',
-      subtitle: 'Find an event worth showing up for.',
+      title: chrome.title,
+      subtitle: chrome.subtitle,
       backgroundColor: backgroundColor ?? t.bg,
       applySafeArea: false,
       searchEnabled: true,
-      searchValue: query,
+      searchValue: chrome.searchValue,
       onSearch: (value) =>
           ref.read(exploreSearchQueryProvider.notifier).setQuery(value),
-      searchPlaceholder: 'Search events or clubs',
-      searchTooltip: 'Search events or clubs',
-      searchSemanticLabel: 'Search events or clubs',
+      searchPlaceholder: chrome.searchPlaceholder,
+      searchTooltip: chrome.searchTooltip,
+      searchSemanticLabel: chrome.searchSemanticLabel,
     );
   }
 }
@@ -103,14 +105,19 @@ class _ExploreDiscoveryCoverHeaderState
   @override
   Widget build(BuildContext context) {
     final query = ref.watch(exploreSearchQueryProvider);
-    final searchActive = query.trim().isNotEmpty;
     final featuredItem = ref
         .watch(exploreFeedViewModelProvider)
         .asData
         ?.value
         .featuredItem;
+    final chrome = ExploreChromeState.discovery(
+      query: query,
+      searchRequested: _searchRequested,
+      hasFeaturedItem: featuredItem != null,
+    );
+    final coverItem = featuredItem;
 
-    if (_searchRequested || searchActive || featuredItem == null) {
+    if (!chrome.showCoverStory || coverItem == null) {
       final t = CatchTokens.of(context);
       final topInset = MediaQuery.paddingOf(context).top;
       return ColoredBox(
@@ -124,39 +131,38 @@ class _ExploreDiscoveryCoverHeaderState
           ),
           child: CatchTopBar(
             leading: const ExploreCityPicker(),
-            title: 'Explore',
-            subtitle: 'Find an event worth showing up for.',
+            title: chrome.title,
+            subtitle: chrome.subtitle,
             backgroundColor: t.bg,
             gutter: false,
             applySafeArea: false,
             searchEnabled: true,
-            searchExpanded: _searchRequested || searchActive,
-            searchValue: query,
-            searchAutofocus: _searchRequested,
+            searchExpanded: chrome.searchExpanded,
+            searchValue: chrome.searchValue,
+            searchAutofocus: chrome.searchAutofocus,
             onSearchExpandedChanged: (expanded) {
               if (_searchRequested == expanded) return;
               setState(() => _searchRequested = expanded);
             },
             onSearch: (value) =>
                 ref.read(exploreSearchQueryProvider.notifier).setQuery(value),
-            searchPlaceholder: 'Search events or clubs',
-            searchTooltip: 'Search events or clubs',
-            searchSemanticLabel: 'Search events or clubs',
+            searchPlaceholder: chrome.searchPlaceholder,
+            searchTooltip: chrome.searchTooltip,
+            searchSemanticLabel: chrome.searchSemanticLabel,
           ),
         ),
       );
     }
 
+    final coverState = ExploreCoverStoryState.from(coverItem);
     return CatchCoverStory(
-      activityKind: featuredItem.event.activityKind,
-      kicker: _coverKicker(featuredItem),
-      title: featuredItem.event.title,
-      cta: 'Claim a seat',
-      onCta: () => _openFeaturedEvent(context, ref, featuredItem),
-      data:
-          '${EventFormatters.time(featuredItem.event.startTime)} - ${featuredItem.priceLabel}',
-      data2:
-          '${featuredItem.event.signedUpCount} going - ${_coverSpotsLabel(featuredItem)}',
+      activityKind: coverItem.event.activityKind,
+      kicker: coverState.kicker,
+      title: coverState.title,
+      cta: coverState.ctaLabel,
+      onCta: () => _openFeaturedEvent(context, ref, coverItem),
+      data: coverState.timePriceLabel,
+      data2: coverState.attendanceLabel,
       showSearch: true,
       onSearch: () => setState(() => _searchRequested = true),
     );
@@ -186,27 +192,4 @@ void _openFeaturedEvent(
       presentationMode: EventDetailPresentationMode.spotlightDark,
     ),
   );
-}
-
-String _coverKicker(ExploreEventItem item) {
-  return '${_coverTimeScope(item.event.startTime)} - '
-      '${item.club.name} - ${item.event.locationName}';
-}
-
-String _coverTimeScope(DateTime start) {
-  final now = DateTime.now();
-  final today = DateUtils.dateOnly(now);
-  final eventDay = DateUtils.dateOnly(start);
-  final dayOffset = eventDay.difference(today).inDays;
-  return switch (dayOffset) {
-    0 => 'Tonight',
-    1 => 'Tomorrow',
-    _ when dayOffset >= 0 && dayOffset < DateTime.daysPerWeek => 'This week',
-    _ => EventFormatters.shortWeekday(start),
-  };
-}
-
-String _coverSpotsLabel(ExploreEventItem item) {
-  final spots = math.max(0, item.event.spotsRemaining);
-  return spots == 1 ? '1 left' : '$spots left';
 }

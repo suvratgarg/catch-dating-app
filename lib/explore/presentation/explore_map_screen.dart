@@ -20,16 +20,23 @@ import 'package:go_router/go_router.dart';
 /// same nearby events as pins. Tapping a pin opens that event; the distance ring
 /// cycles the shared Explore distance filter.
 class ExploreMapScreen extends ConsumerWidget {
-  const ExploreMapScreen({super.key, this.enableNetworkTiles = true});
+  const ExploreMapScreen({
+    super.key,
+    this.enableNetworkTiles = true,
+    this.initialSelectedEventId,
+  });
 
   final bool enableNetworkTiles;
+  final String? initialSelectedEventId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
     final filters = ref.watch(exploreFiltersProvider);
-    final distanceRingRadiusKm = exploreDistanceFilterKm(filters.distanceFilter);
+    final distanceRingRadiusKm = exploreDistanceFilterKm(
+      filters.distanceFilter,
+    );
     final mapViewModel = feedAsync.whenData(exploreMapViewModelFromFeed);
 
     return Scaffold(
@@ -41,6 +48,7 @@ class ExploreMapScreen extends ConsumerWidget {
               enableNetworkTiles: enableNetworkTiles,
               viewModel: mapViewModel,
               distanceRingRadiusKm: distanceRingRadiusKm,
+              initialSelectedEventId: initialSelectedEventId,
               onRetry: () => ref.invalidate(exploreFeedViewModelProvider),
               onEventSelected: (event) => _openEvent(context, event),
               onDistanceRingTapped: () => _cycleDistanceFilter(ref),

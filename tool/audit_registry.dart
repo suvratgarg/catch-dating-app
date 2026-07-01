@@ -8,6 +8,7 @@ const docVersionsPath = '$registryDir/doc_versions.json';
 const backlogPath = '$registryDir/backlog.json';
 const docSummariesPath = '$registryDir/doc_summaries.json';
 const rulesPath = '$registryDir/rules.json';
+const screenContractsPath = 'design/screens/catch.screens.json';
 
 const trackedPaths = [
   '.github/workflows',
@@ -53,7 +54,7 @@ void main(List<String> args) {
     case 'report':
       _report();
     case 'backlog':
-      _backlog();
+      _backlog(args.skip(1).toList());
     case 'docs':
       _docs(args.skip(1).toList());
     case 'rules':
@@ -76,10 +77,13 @@ Usage: dart tool/audit_registry.dart <command>
 Commands:
   refresh                 Regenerate tracked file inventory while preserving stamps.
   report                  Print compact counts by status, kind, and area.
-  backlog                 Print active backlog, next-up queue, and scanner counts.
+  backlog [--stored-scanner]
+                          Print active backlog, next-up queue, and live scanner counts.
   docs [--path p]         Print compact doc summaries/read policies.
   rules [--status active] Print rules, optionally filtered by lifecycle status.
-  next [--limit n]        Print highest-priority unstamped or follow-up files.
+  next [--limit n] [--screen-limit n] [--code-only]
+                          Print actionable screen gaps, then unstamped/follow-up files.
+                          --code-only skips reference-only/future-design gaps.
   stale --doc id --version x.y.z [--limit n]
                           Print files reviewed before a doc version.
   mark-pass --pass id --rules A,B --paths p1,p2 [--proof "..."] [--status clean]
@@ -126,7 +130,7 @@ void _report() {
   _printCounts('Area', entries, (entry) => entry['area'] as String?);
 }
 
-void _backlog() {
+void _backlog(List<String> args) {
   final data = _readJsonFile(backlogPath);
   if (data.isEmpty) {
     stdout.writeln('No backlog file found at $backlogPath.');
@@ -138,12 +142,26 @@ void _backlog() {
   );
   final scanner = data['scanner_snapshot'];
   if (scanner is Map) {
-    stdout.writeln('\nScanner: ${scanner['command'] ?? ''}');
-    final counts = scanner['counts'];
-    if (counts is Map) {
-      for (final entry in counts.entries) {
-        stdout.writeln('  ${entry.key}: ${entry.value}');
+    final command = scanner['command'];
+    if (!args.contains('--stored-scanner') && command is String) {
+      final liveSummary = _liveScannerSummary(command);
+      if (liveSummary != null) {
+        stdout.writeln('\nScanner live: $command');
+        for (final line in LineSplitter.split(liveSummary)) {
+          if (line.startsWith('Widget cleanup candidate scan summary')) {
+            continue;
+          }
+          stdout.writeln(line);
+        }
+      } else {
+        stdout.writeln(
+          '\nScanner live failed; stored snapshot follows '
+          '(${scanner['updated'] ?? 'unknown'}).',
+        );
+        _printStoredScanner(scanner);
       }
+    } else {
+      _printStoredScanner(scanner);
     }
   }
 
@@ -160,6 +178,34 @@ void _backlog() {
         '  ${item['id']} | ${item['status']} | ${item['priority']} | '
         '${item['title']}',
       );
+    }
+  }
+}
+
+String? _liveScannerSummary(String command) {
+  if (command != 'bash tool/widget_cleanup_scan.sh --summary') {
+    return null;
+  }
+
+  final result = Process.runSync('bash', [
+    'tool/widget_cleanup_scan.sh',
+    '--summary',
+  ]);
+  if (result.exitCode != 0) {
+    return null;
+  }
+  return result.stdout as String;
+}
+
+void _printStoredScanner(Map scanner) {
+  stdout.writeln(
+    '\nScanner snapshot (${scanner['updated'] ?? 'unknown'}): '
+    '${scanner['command'] ?? ''}',
+  );
+  final counts = scanner['counts'];
+  if (counts is Map) {
+    for (final entry in counts.entries) {
+      stdout.writeln('  ${entry.key}: ${entry.value}');
     }
   }
 }
@@ -218,6 +264,36 @@ void _rules(List<String> args) {
 
 void _next(List<String> args) {
   final limit = _intOption(args, '--limit') ?? 40;
+  final screenLimit = _intOption(args, '--screen-limit') ?? 12;
+  final codeOnly = args.contains('--code-only');
+  final screenGaps = _actionableScreenGaps(codeOnly: codeOnly);
+  if (screenLimit > 0) {
+    stdout.writeln(
+      codeOnly
+          ? 'Engineering-actionable screen gaps:'
+          : 'Actionable screen gaps:',
+    );
+    if (screenGaps.isEmpty) {
+      stdout.writeln('  none');
+    } else {
+      for (final gap in screenGaps.take(screenLimit)) {
+        stdout.writeln(
+          '  ${gap.priority} | ${gap.screenId} | ${gap.gapId} | '
+          '${gap.status} | ${gap.actionKind} | '
+          '${_truncate(gap.nextAction, 180)}',
+        );
+      }
+      if (screenGaps.length > screenLimit) {
+        stdout.writeln(
+          '  ... ${screenGaps.length - screenLimit} more; rerun with '
+          '--screen-limit ${screenGaps.length} to show all.',
+        );
+      }
+    }
+    stdout.writeln();
+  }
+
+  stdout.writeln('Unreviewed/follow-up files:');
   final entries = _readFileEntries().values.toList()
     ..sort((a, b) {
       final statusCompare = _statusRank(a).compareTo(_statusRank(b));
@@ -231,6 +307,145 @@ void _next(List<String> args) {
       '${entry['path']} | last=${entry['last_pass_id'] ?? 'never'}',
     );
   }
+}
+
+List<_ScreenGap> _actionableScreenGaps({bool codeOnly = false}) {
+  final data = _readJsonFile(screenContractsPath);
+  final screens = data['screens'];
+  if (screens is! List) return const <_ScreenGap>[];
+
+  final gaps = <_ScreenGap>[];
+  for (final screen in screens.whereType<Map>()) {
+    final screenStatus = '${screen['status'] ?? ''}';
+    if (_isBlockedStatus(screenStatus)) continue;
+    final priority = '${screen['priority'] ?? 'P4'}';
+    final screenId = '${screen['id'] ?? 'screen.unknown'}';
+    final openGaps = screen['openGaps'];
+    if (openGaps is! List) continue;
+    for (final gap in openGaps.whereType<Map>()) {
+      final status = '${gap['status'] ?? ''}';
+      final nextAction = '${gap['nextAction'] ?? ''}';
+      if (!_isActionableGap(status, nextAction)) continue;
+      final actionKind = _gapActionKind(nextAction);
+      if (codeOnly && actionKind == 'reference-only') continue;
+      gaps.add(
+        _ScreenGap(
+          priority: priority,
+          screenId: screenId,
+          gapId: '${gap['id'] ?? 'unknown'}',
+          status: status,
+          nextAction: nextAction,
+          actionKind: actionKind,
+        ),
+      );
+    }
+  }
+
+  gaps.sort((a, b) {
+    final priorityCompare = _priorityRank(
+      a.priority,
+    ).compareTo(_priorityRank(b.priority));
+    if (priorityCompare != 0) return priorityCompare;
+    final screenCompare = a.screenId.compareTo(b.screenId);
+    if (screenCompare != 0) return screenCompare;
+    return a.gapId.compareTo(b.gapId);
+  });
+  return gaps;
+}
+
+bool _isActionableGap(String status, String nextAction) {
+  if (status == 'closed') return false;
+  if (_isBlockedStatus(status)) return false;
+  final lowerAction = nextAction.toLowerCase();
+  if (lowerAction.contains('owner-blocked')) return false;
+  if (lowerAction.contains('blocked until')) return false;
+  if (lowerAction.contains('blocked:')) return false;
+  return true;
+}
+
+String _gapActionKind(String nextAction) {
+  final lowerAction = nextAction.toLowerCase();
+  final hasReferenceOnlySignal = _containsAny(lowerAction, const [
+    'additional pixel-reference',
+    'continue only',
+    'future variant',
+    'if backend data can',
+    'if design exports',
+    'if design requires',
+    'if visually distinct',
+    'keyboard-safe',
+    'manual pass',
+    'missing reference',
+    'pixel comparison',
+    'pixel-reference',
+    'references and masks',
+    'references are',
+    'reference masks',
+    'reference export',
+    'reference variant',
+    'remaining references',
+    'simulator/manual',
+  ]);
+  final hasEngineeringSignal = _containsAny(lowerAction, const [
+    'adapter',
+    'backend',
+    'callback',
+    'controller',
+    'copy',
+    'extract',
+    'implement',
+    'mutation',
+    'provider',
+    'repository',
+    'retry',
+    'route',
+    'scanner',
+    'test',
+    'tool',
+    'widgetbook',
+    'wire',
+    'wiring',
+  ]);
+
+  if (hasReferenceOnlySignal && !hasEngineeringSignal) {
+    return 'reference-only';
+  }
+  if (hasReferenceOnlySignal && hasEngineeringSignal) {
+    return 'mixed';
+  }
+  if (hasEngineeringSignal) {
+    return 'engineering';
+  }
+  return 'engineering';
+}
+
+bool _containsAny(String value, List<String> needles) {
+  for (final needle in needles) {
+    if (value.contains(needle)) return true;
+  }
+  return false;
+}
+
+bool _isBlockedStatus(String status) => status.toLowerCase().contains('block');
+
+int _priorityRank(String priority) {
+  switch (priority) {
+    case 'P1':
+      return 0;
+    case 'P2':
+      return 1;
+    case 'P3':
+      return 2;
+    case 'P4':
+      return 3;
+    default:
+      return 4;
+  }
+}
+
+String _truncate(String value, int maxLength) {
+  if (value.length <= maxLength) return value;
+  return '${value.substring(0, maxLength - 3)}...';
 }
 
 void _stale(List<String> args) {
@@ -435,6 +650,24 @@ void _printCounts(
   for (final key in keys) {
     stdout.writeln('  $key: ${counts[key]}');
   }
+}
+
+class _ScreenGap {
+  const _ScreenGap({
+    required this.priority,
+    required this.screenId,
+    required this.gapId,
+    required this.status,
+    required this.nextAction,
+    required this.actionKind,
+  });
+
+  final String priority;
+  final String screenId;
+  final String gapId;
+  final String status;
+  final String nextAction;
+  final String actionKind;
 }
 
 int _statusRank(Map<String, dynamic> entry) {

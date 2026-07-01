@@ -1,0 +1,42 @@
+
+.site-footer {
+  display: grid;
+  gap: 22px;
+  padding: 34px 0 44px;
+  border-top: 1px solid var(--website-line);
+  color: var(--website-copy-muted);
+}
+
+.site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  font-size: 14px;
+}
+
+.consent-banner {
+  position: fixed;
+  right: var(--gutter);
+  bottom: calc(var(--gutter) + env(safe-area-inset-bottom, 0px));
+  z-index: 80;
+  display: grid;
+  width: min(420px, calc(100vw - (var(--gutter) * 2)));
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--website-line);
+  border-radius: var(--radius);
+  background: var(--website-surface);
+  box-shadow: var(--website-shadow-soft);
+}
+
+.consent-banner p {
+  color: var(--website-copy-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.consent-banner div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}

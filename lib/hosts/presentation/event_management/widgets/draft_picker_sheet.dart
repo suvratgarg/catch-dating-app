@@ -41,6 +41,43 @@ Future<EventDraft?> showDraftPickerSheet({
   return completer.future;
 }
 
+const draftDeleteConfirmationDialogTitle = 'Delete draft?';
+const draftDeleteConfirmationDialogActions = <CatchDialogAction<bool>>[
+  CatchDialogAction(label: 'Cancel', value: false),
+  CatchDialogAction(label: 'Delete', value: true, isDestructive: true),
+];
+
+String draftDeleteConfirmationDialogMessage(EventDraft draft) {
+  return 'This will permanently delete "${draft.summary}".';
+}
+
+class DraftDeleteConfirmationDialog extends StatelessWidget {
+  const DraftDeleteConfirmationDialog({super.key, required this.draft});
+
+  final EventDraft draft;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchConfirmDialog<bool>(
+      title: draftDeleteConfirmationDialogTitle,
+      message: draftDeleteConfirmationDialogMessage(draft),
+      actions: draftDeleteConfirmationDialogActions,
+    );
+  }
+}
+
+Future<bool?> showDraftDeleteConfirmationDialog({
+  required BuildContext context,
+  required EventDraft draft,
+}) {
+  return showCatchAdaptiveDialog<bool>(
+    context: context,
+    title: draftDeleteConfirmationDialogTitle,
+    message: draftDeleteConfirmationDialogMessage(draft),
+    actions: draftDeleteConfirmationDialogActions,
+  );
+}
+
 class DraftPickerSheet extends StatefulWidget {
   const DraftPickerSheet({
     super.key,
@@ -80,14 +117,9 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
   }
 
   Future<void> _onDelete(EventDraft draft) async {
-    final confirmed = await showCatchAdaptiveDialog<bool>(
+    final confirmed = await showDraftDeleteConfirmationDialog(
       context: context,
-      title: 'Delete draft?',
-      message: 'This will permanently delete "${draft.summary}".',
-      actions: const [
-        CatchDialogAction(label: 'Cancel', value: false),
-        CatchDialogAction(label: 'Delete', value: true, isDestructive: true),
-      ],
+      draft: draft,
     );
     if (confirmed != true || !mounted) return;
 
@@ -162,7 +194,6 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
       ),
     );
   }
-
 }
 
 class DraftCard extends StatelessWidget {

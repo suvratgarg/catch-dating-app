@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-06-25",
+  "updated": "2026-07-01",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -456,6 +456,13 @@
               "status": "available",
               "path": "design/reference_screens/manifest.json",
               "notes": "Event Detail member-default Claude reference is exported, masked, and registered for advisory pixel comparison."
+            },
+            {
+              "id": "event-detail-section-contract",
+              "kind": "repo",
+              "status": "available",
+              "path": "design/components/catch.components.json",
+              "notes": "`catch.event_detail_sections` groups Event Detail hero, ticket facts, overview primitives, host/social sections, companion prompt, booking dock, and avatar stack."
             }
           ],
           "states": [
@@ -596,9 +603,10 @@
                 "EventDetailBody/Prompt states"
               ],
               "tests": [
+                "test/events/event_detail_screen_state_test.dart",
                 "test/events/event_detail_widgets_test.dart"
               ],
-              "notes": "Signed-up route capture covers cancel booking dock plus companion/invite prompts. Booking and cancel success feedback use the shared Catch snackbar helper."
+              "notes": "Signed-up route capture covers cancel booking dock plus companion/invite prompts. EventDetailBookingDockState owns signed-up/self-check-in dock derivation; booking and cancel success feedback use the shared Catch snackbar helper."
             },
             {
               "id": "booking_pending",
@@ -608,9 +616,10 @@
                 "EventBookingDock/BookingDock states"
               ],
               "tests": [
+                "test/events/event_detail_screen_state_test.dart",
                 "test/events/event_detail_widgets_test.dart"
               ],
-              "notes": "Event Detail booking/cancel mutation listeners route success feedback through the shared Catch snackbar helper while EventDetailCta owns pending affordances."
+              "notes": "Event Detail booking/cancel mutation listeners route success feedback through the shared Catch snackbar helper while EventDetailCta maps mutation pending flags through EventDetailBookingDockState."
             },
             {
               "id": "booking_failed",
@@ -620,9 +629,10 @@
                 "EventBookingDock/BookingDock states"
               ],
               "tests": [
+                "test/events/event_detail_screen_state_test.dart",
                 "test/events/event_detail_widgets_test.dart"
               ],
-              "notes": "Booking/cancel failures stay on the branded EventDetailCta error surface; success feedback is handled by the shared Catch snackbar helper."
+              "notes": "Booking/cancel failures stay on the branded dock error surface through EventDetailBookingDockMutationState; success feedback is handled by the shared Catch snackbar helper."
             },
             {
               "id": "waitlist_sold_out_cancelled_past",
@@ -640,9 +650,10 @@
                 "EventBookingDock/BookingDock states"
               ],
               "tests": [
+                "test/events/event_detail_screen_state_test.dart",
                 "test/events/event_detail_widgets_test.dart"
               ],
-              "notes": "Route captures cover waitlist, waitlist offer, full, attended, past, and cancelled booking dock modes."
+              "notes": "Route captures cover waitlist, waitlist offer, full, attended, past, and cancelled booking dock modes; EventDetailBookingDockState owns the mode derivation."
             },
             {
               "id": "offline",
@@ -682,18 +693,18 @@
           "gaps": [
             {
               "id": "DP-EVENT-DETAIL-001",
-              "status": "open",
-              "nextAction": "Event Detail route and section Widgetbook states are registered for loading, not-found, fatal error, member, guest, host app, offline, text-scale, reduced-motion, ticket, spotlight, booking, and prompt states. Remaining work is formal component/section registry coverage for Event Detail compounds."
+              "status": "closed",
+              "nextAction": "`catch.event_detail_sections` is the canonical Event Detail screen-contract registry entry; event-only compounds remain members of that contract while reusable primitives stay in shared component contracts."
             },
             {
               "id": "DP-EVENT-DETAIL-002",
-              "status": "open",
-              "nextAction": "Move visibility and section-data derivation out of EventDetailBody into adapter/controller state."
+              "status": "closed",
+              "nextAction": "Booking dock mode, companion availability, host lookup, body visibility, invite-loop visibility, host-app bottom navigation, and social/review access now map through provider-free Event Detail display states."
             },
             {
               "id": "DP-EVENT-DETAIL-003",
               "status": "closed",
-              "nextAction": "Route captures now cover guest, host app, offline-looking error, text-scale, reduced-motion, signed-up, waitlist, waitlist offer, full, attended, past, and cancelled Event Detail states. Mutation pending/failed remain covered in Widgetbook until EventDetailCta has a provider-free adapter or stable mutation override seam."
+              "nextAction": "Route captures now cover guest, host app, offline-looking error, text-scale, reduced-motion, signed-up, waitlist, waitlist offer, full, attended, past, and cancelled Event Detail states. Mutation pending/failed are backed by EventDetailBookingDockMutationState tests and Widgetbook dock states."
             }
           ]
         }
@@ -725,6 +736,7 @@
           "routeId": "exploreScreen",
           "implementationPaths": [
             "lib/explore/presentation/explore_screen.dart",
+            "lib/explore/presentation/explore_screen_state.dart",
             "lib/explore/presentation/explore_view_model.dart",
             "lib/explore/presentation/explore_feed_view_model.dart",
             "lib/explore/presentation/widgets/explore_header.dart",
@@ -738,6 +750,10 @@
           "componentIds": [
             "catch.button",
             "catch.chip",
+            "catch.count_pill",
+            "catch.cover_story",
+            "catch.cross_paths_card",
+            "catch.event_card",
             "catch.field",
             "catch.icon_button",
             "catch.surface",
@@ -745,16 +761,22 @@
           ],
           "captureIds": [
             "member_event_discovery",
+            "explore_joined_clubs",
             "explore_loading",
             "explore_club_source_error",
             "explore_feed_error",
             "explore_empty_city",
             "explore_no_search_results",
+            "explore_no_filter_results",
+            "explore_offline",
             "explore_search_query",
             "explore_filters_active",
+            "explore_unclaimed_host_projection",
             "explore_text_scale_2",
             "explore_reduced_motion",
             "explore_map",
+            "explore_map_selected_pin",
+            "explore_map_distance_ring",
             "explore_map_loading",
             "explore_map_error"
           ],
@@ -861,16 +883,18 @@
                 "test/explore/explore_widgets_test.dart"
               ],
               "captureIds": [
-                "explore_no_search_results"
+                "explore_no_search_results",
+                "explore_no_filter_results"
               ],
-              "notes": "Captured search-empty copy with source clubs available but no matching view-model items."
+              "notes": "Captured search-empty and filter-empty copy with source clubs available but no matching view-model items."
             },
             {
               "id": "discovery_feed",
               "kind": "populated",
               "status": "captured",
               "captureIds": [
-                "member_event_discovery"
+                "member_event_discovery",
+                "explore_joined_clubs"
               ],
               "previewIds": [
                 "ExploreScreen/Screen states",
@@ -881,7 +905,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "Captured mixed event/club discovery feed with deterministic provider overrides. 2026-06-25 cover-header pass added the production cover-story header and aligned the capture fixture to the Claude Bandra/Khar pub-quiz scenario, improving the advisory comparison from 61.62% mismatch / 90.26 meanDelta to 41.87% mismatch / 36.74 meanDelta. Remaining divergence is concentrated in generated event-title copy, ticket/card rhythm, map interleave, status chrome, and bottom dock treatment."
+              "notes": "Captured guest and signed-in joined-club mixed event/club discovery feeds with deterministic provider overrides. 2026-06-25 cover-header pass added the production cover-story header and aligned the capture fixture to the Claude Bandra/Khar pub-quiz scenario, improving the advisory comparison from 61.62% mismatch / 90.26 meanDelta to 41.87% mismatch / 36.74 meanDelta. Remaining divergence is concentrated in generated event-title copy, ticket/card rhythm, map interleave, status chrome, and bottom dock treatment."
             },
             {
               "id": "search_query",
@@ -915,16 +939,19 @@
                 "test/explore/explore_widgets_test.dart"
               ],
               "captureIds": [
-                "explore_filters_active"
+                "explore_filters_active",
+                "explore_joined_clubs",
+                "explore_no_filter_results"
               ],
-              "notes": "Captured active time, distance, activity, and high-rated filter chrome."
+              "notes": "Captured active time, distance, activity, high-rated filter chrome, joined-club feed behavior, and filter-empty results."
             },
             {
               "id": "anonymous_guest",
               "kind": "permission",
               "status": "captured",
               "captureIds": [
-                "member_event_discovery"
+                "member_event_discovery",
+                "explore_joined_clubs"
               ],
               "previewIds": [
                 "ExploreScreen/Screen states"
@@ -936,7 +963,10 @@
             {
               "id": "unclaimed_host_projection",
               "kind": "populated",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "explore_unclaimed_host_projection"
+              ],
               "previewIds": [
                 "ExploreEventsSection/Feed states",
                 "ExploreScreen/Screen states"
@@ -945,14 +975,16 @@
                 "test/clubs/clubs_repository_test.dart",
                 "test/explore/explore_view_model_test.dart"
               ],
-              "notes": "Explore search/display paths must stay null-tolerant for unclaimed organizer profiles."
+              "notes": "Captured a null hostUserId/hostName organizer record; Explore search/display paths must stay null-tolerant for unclaimed organizer profiles."
             },
             {
               "id": "map_route",
               "kind": "populated",
               "status": "captured",
               "captureIds": [
-                "explore_map"
+                "explore_map",
+                "explore_map_selected_pin",
+                "explore_map_distance_ring"
               ],
               "previewIds": [
                 "ExploreMapScreen/Map route states"
@@ -960,7 +992,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "Captured the Explore map route with deterministic feed pins and network tiles disabled."
+              "notes": "Captured the Explore map route with deterministic feed pins, selected-pin seed, distance-ring seed, and network tiles disabled."
             },
             {
               "id": "map_loading",
@@ -995,11 +1027,14 @@
             {
               "id": "offline",
               "kind": "offline",
-              "status": "planned",
+              "status": "captured",
+              "captureIds": [
+                "explore_offline"
+              ],
               "previewIds": [
                 "ExploreEmptyState/Empty states"
               ],
-              "notes": "Widgetbook shows an offline copy candidate; explicit offline copy and retry behavior are not defined yet."
+              "notes": "Captured offline-mapped source-club and feed failures through the shared Explore retry branch."
             },
             {
               "id": "text_scale_2",
@@ -1030,13 +1065,13 @@
           "gaps": [
             {
               "id": "DP-EXPLORE-001",
-              "status": "open",
-              "nextAction": "Register Explore compound/section contracts; Widgetbook states now cover browse chrome, filters, mixed feed, map pill, map route, activity grid, and empty/error states."
+              "status": "closed",
+              "nextAction": "Closed by the screen-local Explore section registry plus formal component mappings: catch.cover_story for CoverStory, catch.count_pill for CountPill/map launcher, catch.cross_paths_card for the catalog-only CrossPathsCard contract, and catch.event_card for DateTicket/EventTicket-style ticket/card roles. ClubPolaroid remains section-local through ExploreClubPolaroidCard and ClubPolaroidArtwork until reuse justifies a global component contract."
             },
             {
               "id": "DP-EXPLORE-002",
-              "status": "open",
-              "nextAction": "Remaining capture work: signed-in joined clubs, filter-empty/no-filter results, explicit offline copy, unclaimed host projection, and selected-pin/distance-ring map variants. Loading, error, empty, search, filters-active, text-scale, reduced-motion, and map loading/error captures are registered; the canonical Explore feed reference is exported and compared."
+              "status": "closed",
+              "nextAction": "Closed by deterministic captures for signed-in joined clubs, filter-empty/no-filter results, explicit offline copy, unclaimed host projection, selected-pin map, and distance-ring map variants. The canonical Explore feed reference is exported and compared; map masks and provider-wave cleanup remain tracked separately."
             },
             {
               "id": "DP-EXPLORE-003",
@@ -1050,9 +1085,13 @@
           "routeId": "clubDetailScreen",
           "implementationPaths": [
             "lib/clubs/presentation/detail/club_detail_screen.dart",
+            "lib/clubs/presentation/detail/club_detail_screen_state.dart",
             "lib/clubs/presentation/detail/club_detail_view_model.dart",
             "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
+            "lib/clubs/presentation/detail/widgets/club_contact_section.dart",
             "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+            "lib/clubs/presentation/detail/widgets/club_host_section.dart",
+            "lib/clubs/presentation/detail/widgets/club_photo_strip.dart",
             "lib/clubs/presentation/detail/widgets/club_schedule_section.dart",
             "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
             "lib/reviews/presentation/reviews_section.dart"
@@ -1068,6 +1107,9 @@
             "club_detail_visitor",
             "club_detail_guest",
             "club_detail_host_public",
+            "club_detail_loading",
+            "club_detail_initial_loading",
+            "club_detail_empty_schedule",
             "club_detail_missing",
             "club_detail_error",
             "club_detail_join_pending",
@@ -1103,7 +1145,11 @@
             {
               "id": "loading",
               "kind": "loading",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "club_detail_loading",
+                "club_detail_initial_loading"
+              ],
               "previewIds": [
                 "ClubDetailScreen/Screen states"
               ],
@@ -1111,7 +1157,7 @@
                 "test/clubs/clubs_controllers_test.dart",
                 "test/clubs/clubs_flow_test.dart"
               ],
-              "notes": "Core club/events/auth loading renders ClubDetailLoadingBody with hero, stats, host, about, tag, and upcoming-section skeletons unless initialClub placeholder data is available."
+              "notes": "Core club/events/auth loading renders ClubDetailLoadingBody with hero, stats, host, about, tag, and upcoming-section skeletons unless initialClub placeholder data is available; club_detail_loading and club_detail_initial_loading capture both branches."
             },
             {
               "id": "not_found",
@@ -1207,11 +1253,14 @@
             {
               "id": "empty_schedule",
               "kind": "empty",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "club_detail_empty_schedule"
+              ],
               "previewIds": [
                 "ClubScheduleSection/Schedule states"
               ],
-              "notes": "ClubScheduleSection renders CatchEmptyState when no upcoming events exist; Widgetbook covers consumer and host empty copy."
+              "notes": "ClubScheduleSection renders CatchEmptyState when no upcoming events exist; Widgetbook covers consumer and host empty copy, and club_detail_empty_schedule captures the consumer route."
             },
             {
               "id": "join_leave_pending",
@@ -1280,18 +1329,18 @@
           "gaps": [
             {
               "id": "DP-CLUB-DETAIL-001",
-              "status": "open",
-              "nextAction": "Keep Club Detail sections screen-local until another product screen proves reuse; revisit provider-free CatchClubDock when hostClubDetailScreen is contracted."
+              "status": "closed",
+              "nextAction": "Closed by the consumer-only dock decision: shared public Club Detail sections are reused by Host Club Detail, while provider-backed ClubMembershipDock stays screen-local and CatchClubDock promotion is deferred until another host/member action-dock contract exists."
             },
             {
               "id": "DP-CLUB-DETAIL-002",
-              "status": "open",
-              "nextAction": "Move host messaging, contact launching, route selection, review visibility, and dock mode derivation into adapter/controller state."
+              "status": "closed",
+              "nextAction": "Closed by ClubDetailBodyState: route async/loading/error/not-found, initial-club fallback, next-event selection, host-message eligibility, contact actions, event-route target, review visibility, and membership dock state are derived outside visual sections."
             },
             {
               "id": "DP-CLUB-DETAIL-003",
-              "status": "open",
-              "nextAction": "Remaining work is loading and empty-schedule captures; the canonical Club Detail member-default reference is exported, masked, and compared."
+              "status": "closed",
+              "nextAction": "Closed by club_detail_loading, club_detail_initial_loading, and club_detail_empty_schedule captures; the canonical Club Detail member-default reference is exported, masked, and compared."
             },
             {
               "id": "DP-CLUB-DETAIL-004",
@@ -1311,11 +1360,17 @@
             "lib/events/presentation/event_map_view_model.dart"
           ],
           "componentIds": [
+            "catch.count_pill",
+            "catch.event_card",
             "catch.icon_button",
             "catch.surface"
           ],
           "captureIds": [
-            "explore_map"
+            "explore_map",
+            "explore_map_selected_pin",
+            "explore_map_distance_ring",
+            "explore_map_loading",
+            "explore_map_error"
           ],
           "designRefs": [
             {
@@ -1330,9 +1385,11 @@
             {
               "id": "pins_ready",
               "kind": "populated",
-              "status": "tested",
+              "status": "captured",
               "captureIds": [
-                "explore_map"
+                "explore_map",
+                "explore_map_selected_pin",
+                "explore_map_distance_ring"
               ],
               "previewIds": [
                 "ExploreMapScreen/Map route states"
@@ -1340,41 +1397,55 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "ExploreMapScreen derives pins from ExploreFeedViewModel."
+              "notes": "ExploreMapScreen derives pins from ExploreFeedViewModel and has deterministic ready, selected-pin, and distance-ring captures."
             },
             {
               "id": "selected_pin",
               "kind": "populated",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "explore_map_selected_pin"
+              ],
               "tests": [
                 "test/explore/explore_widgets_test.dart"
-              ]
+              ],
+              "notes": "ExploreMapScreen seeds an initial selected event id for deterministic map capture while production pin taps still route to Event Detail."
             },
             {
               "id": "large_pan_scope",
               "kind": "populated",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "explore_map_distance_ring"
+              ],
               "tests": [
                 "test/explore/explore_widgets_test.dart"
-              ]
+              ],
+              "notes": "Distance-ring capture seeds user location plus an active distance filter in the deterministic map placeholder."
             },
             {
               "id": "map_loading",
               "kind": "loading",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "explore_map_loading"
+              ],
               "previewIds": [
                 "ExploreMapScreen/Map route states"
               ],
-              "notes": "Map view can render loading from the feed async value, but no route capture exists yet."
+              "notes": "Captured the map route while exploreFeedViewModelProvider is loading."
             },
             {
               "id": "map_error",
               "kind": "error",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "explore_map_error"
+              ],
               "previewIds": [
                 "ExploreMapScreen/Map route states"
               ],
-              "notes": "Map view uses the EventMapView retry path, but no focused capture exists yet."
+              "notes": "Captured the map route feed-error branch with retry routed through EventMapView."
             }
           ],
           "gaps": [
@@ -1865,10 +1936,14 @@
             "event_success_companion_offline",
             "event_success_companion",
             "event_success_companion_self_check_in",
+            "event_success_companion_self_check_in_pending",
             "event_success_companion_pre_arrival_planning",
             "event_success_companion_first_hello_start",
+            "event_success_companion_first_hello_start_pending",
             "event_success_companion_first_hello_assigned",
+            "event_success_companion_first_hello_complete_pending",
             "event_success_companion_compatibility_questionnaire",
+            "event_success_companion_compatibility_pending",
             "event_success_companion_compatibility_saved",
             "event_success_companion_live_step_context",
             "event_success_companion_social_prompt",
@@ -1876,17 +1951,22 @@
             "event_success_companion_micro_pod_assignment",
             "event_success_companion_micro_pod_loading_peers",
             "event_success_companion_micro_pod_opted_out",
+            "event_success_companion_micro_pod_opt_out_pending",
             "event_success_companion_table_group_rotations",
             "event_success_companion_rotation_schedule",
             "event_success_companion_rotation_loading_peers",
             "event_success_companion_rotation_opted_out",
+            "event_success_companion_rotation_opt_out_pending",
             "event_success_companion_live_reveal_countdown",
             "event_success_companion_live_reveal_unlocked",
             "event_success_companion_wingman_request",
+            "event_success_companion_wingman_pending",
             "event_success_companion_wingman_submitted",
             "event_success_companion_afterglow_feedback",
+            "event_success_companion_feedback_pending",
             "event_success_companion_text_scale_2",
-            "event_success_companion_reduced_motion"
+            "event_success_companion_reduced_motion",
+            "event_success_companion_light_dark"
           ],
           "designRefs": [
             {
@@ -2026,12 +2106,13 @@
               "id": "self_check_in",
               "kind": "mutation",
               "status": "captured",
-              "notes": "Self-check-in moment is captured inside the normal check-in window with deterministic fixture data.",
+              "notes": "Self-check-in moment and pending attendance mutation are captured inside the normal check-in window with deterministic fixture data.",
               "previewIds": [
                 "EventSuccessCompanionScreen/Screen states"
               ],
               "captureIds": [
-                "event_success_companion_self_check_in"
+                "event_success_companion_self_check_in",
+                "event_success_companion_self_check_in_pending"
               ]
             },
             {
@@ -2041,12 +2122,13 @@
               "tests": [
                 "test/event_success/event_success_live_screens_test.dart"
               ],
-              "notes": "First Hello start state is captured with mission-start and normal check-in actions available.",
+              "notes": "First Hello start and start-pending states are captured with mission-start and normal check-in actions available.",
               "previewIds": [
                 "EventSuccessCompanionScreen/Screen states"
               ],
               "captureIds": [
-                "event_success_companion_first_hello_start"
+                "event_success_companion_first_hello_start",
+                "event_success_companion_first_hello_start_pending"
               ]
             },
             {
@@ -2056,12 +2138,13 @@
               "tests": [
                 "test/event_success/event_success_live_screens_test.dart"
               ],
-              "notes": "Assigned First Hello mission is captured with target context, answer options, and completion action.",
+              "notes": "Assigned First Hello and completion-pending states are captured with target context, answer options, and completion action.",
               "previewIds": [
                 "EventSuccessCompanionScreen/Screen states"
               ],
               "captureIds": [
-                "event_success_companion_first_hello_assigned"
+                "event_success_companion_first_hello_assigned",
+                "event_success_companion_first_hello_complete_pending"
               ]
             },
             {
@@ -2071,12 +2154,13 @@
               "tests": [
                 "test/event_success/event_success_live_screens_test.dart"
               ],
-              "notes": "Compatibility questionnaire and saved-response states are captured from the shared companion fixtures.",
+              "notes": "Compatibility questionnaire, save-pending, and saved-response states are captured from the shared companion fixtures.",
               "previewIds": [
                 "EventSuccessCompanionScreen/Screen states"
               ],
               "captureIds": [
                 "event_success_companion_compatibility_questionnaire",
+                "event_success_companion_compatibility_pending",
                 "event_success_companion_compatibility_saved"
               ]
             },
@@ -2181,12 +2265,13 @@
               "tests": [
                 "test/event_success/event_success_live_screens_test.dart"
               ],
-              "notes": "Wingman candidate-selection and submitted states are captured.",
+              "notes": "Wingman candidate-selection, save-pending, and submitted states are captured.",
               "previewIds": [
                 "EventSuccessCompanionScreen/Screen states"
               ],
               "captureIds": [
                 "event_success_companion_wingman_request",
+                "event_success_companion_wingman_pending",
                 "event_success_companion_wingman_submitted"
               ]
             },
@@ -2197,12 +2282,13 @@
               "tests": [
                 "test/event_success/event_success_live_screens_test.dart"
               ],
-              "notes": "Post-event afterglow feedback state is captured after the social event ends.",
+              "notes": "Post-event afterglow feedback and submit-pending states are captured after the social event ends.",
               "previewIds": [
                 "EventSuccessCompanionScreen/Screen states"
               ],
               "captureIds": [
-                "event_success_companion_afterglow_feedback"
+                "event_success_companion_afterglow_feedback",
+                "event_success_companion_feedback_pending"
               ]
             },
             {
@@ -2212,12 +2298,14 @@
               "tests": [
                 "test/event_success/event_success_live_screens_test.dart"
               ],
-              "notes": "Micro-pod and guided-rotation opted-out recovery states are captured.",
+              "notes": "Micro-pod and guided-rotation opted-out recovery plus preference-pending states are captured.",
               "previewIds": [
                 "EventSuccessCompanionScreen/Screen states"
               ],
               "captureIds": [
                 "event_success_companion_micro_pod_opted_out",
+                "event_success_companion_micro_pod_opt_out_pending",
+                "event_success_companion_rotation_opt_out_pending",
                 "event_success_companion_rotation_opted_out"
               ]
             },
@@ -2269,10 +2357,13 @@
             {
               "id": "light_dark",
               "kind": "theme",
-              "status": "planned",
-              "notes": "Widgetbook addon-driven light/dark review is available; paired route captures still need canonical design references.",
+              "status": "captured",
+              "notes": "The capture runner emits paired light/dark output for the companion assignment fixture.",
               "previewIds": [
                 "EventSuccessCompanionScreen/Screen states"
+              ],
+              "captureIds": [
+                "event_success_companion_light_dark"
               ]
             }
           ],
@@ -2284,18 +2375,18 @@
             },
             {
               "id": "DP-EVENT-SUCCESS-COMPANION-002",
-              "status": "open",
-              "nextAction": "Companion route loading/error/access/offline states, runtime moments, self-check-in, text scale, and reduced motion are captured. Remaining capture work is paired light/dark plus deeper mutation pending/failure variants after provider-free adapters land."
+              "status": "closed",
+              "nextAction": "Closed by companion route loading/error/access/offline, runtime moment, action pending, text-scale, reduced-motion, and paired light/dark captures. Mutation failure/snackbar variants should be added only if product copy diverges from the shared mutation listener behavior."
             },
             {
               "id": "DP-EVENT-SUCCESS-COMPANION-003",
-              "status": "open",
-              "nextAction": "Move moment widget data derivation, effects, local form state, and mutation display into provider-free adapters before visual refactors."
+              "status": "closed",
+              "nextAction": "Closed by EventSuccessCompanionScreenState plus provider-free companion action sections. CompatibilityQuestionnaireSection, FirstHelloCheckInCard, SelfCheckInCard, PaperSelfCheckInBar, MicroPodCard, RotationScheduleCard, WingmanRequestSection, and EventSuccessFeedbackForm now receive explicit action state and typed callbacks from EventSuccessCompanionScreen/EventSuccessCompanionRouteScreen."
             },
             {
               "id": "DP-EVENT-SUCCESS-COMPANION-004",
-              "status": "open",
-              "nextAction": "Default live-guide companion reference and masks are registered; export remaining runtime-stage references and mask dynamic countdown, animation, profile, copied-opener, reveal, afterglow, feedback, accessibility, and theme regions."
+              "status": "blocked",
+              "nextAction": "Blocked on missing canonical design exports for runtime-stage, reveal, wingman, afterglow, feedback, offline/error, accessibility, and theme variants. The only local Event Success Companion reference is design/reference_screens/screen.event_success.companion/default_live_guide.png with masks.json."
             }
           ]
         }
@@ -2536,6 +2627,7 @@
           "routeId": "swipeEventScreen",
           "implementationPaths": [
             "lib/swipes/presentation/swipe_screen.dart",
+            "lib/swipes/presentation/catches_event_screen_state.dart",
             "lib/swipes/presentation/swipe_queue_notifier.dart",
             "lib/swipes/presentation/swipe_empty_content.dart",
             "lib/swipes/presentation/profile_surface.dart",
@@ -2554,6 +2646,7 @@
             "swipe_event_queue_loading",
             "swipe_event_queue_error",
             "swipe_event_offline",
+            "swipe_event_cached_offline",
             "swipe_event_empty_queue",
             "swipe_event_missing",
             "swipe_event_sign_in_required",
@@ -2561,7 +2654,9 @@
             "swipe_event_did_not_attend",
             "swipe_event_window_closed",
             "swipe_event_text_scale_2",
-            "swipe_event_reduced_motion"
+            "swipe_event_reduced_motion",
+            "swipe_event_comment_sheet_empty",
+            "swipe_event_comment_sheet_filled"
           ],
           "designRefs": [
             {
@@ -2610,7 +2705,7 @@
               "captureIds": [
                 "post_run_catch_window"
               ],
-              "notes": "Non-empty queue renders profile deck, top overlay, reaction controls, and pass control; post_run_catch_window now has a manifest-registered active-profile design reference.",
+              "notes": "CatchesEventScreenState maps non-empty queue data to active deck display data; SwipeScreen renders profile deck, top overlay, reaction controls, pass control, and route-owned CatchesProfileReviewActionState for write-pending display. post_run_catch_window now has a manifest-registered active-profile design reference.",
               "previewIds": [
                 "SwipeScreen/Event deck route states",
                 "CatchesProfileReview/Deck composition",
@@ -2627,9 +2722,10 @@
               "status": "tested",
               "tests": [
                 "test/swipes/swipe_queue_notifier_test.dart",
-                "test/swipes/swipe_action_buttons_test.dart"
+                "test/swipes/swipe_action_buttons_test.dart",
+                "test/swipes/swipe_screen_test.dart"
               ],
-              "notes": "Pass writes through SwipeQueueNotifier and advances after recordSwipe succeeds.",
+              "notes": "Pass writes through SwipeQueueNotifier, disables deck mutation controls while pending, and advances after recordSwipe succeeds.",
               "previewIds": [
                 "SwipeScreen/Event deck route states",
                 "CatchesPassButton/Pass button states"
@@ -2640,12 +2736,18 @@
               "kind": "mutation",
               "status": "tested",
               "tests": [
-                "test/swipes/swipe_queue_notifier_test.dart"
+                "test/swipes/swipe_queue_notifier_test.dart",
+                "test/swipes/profile_card_widget_test.dart"
               ],
-              "notes": "Section reactions and comments persist through SwipeQueueNotifier.",
+              "notes": "Section reactions and comments persist through SwipeQueueNotifier; Widgetbook covers disabled/pending reaction controls and empty/filled comment-sheet states, and route capture covers the empty/filled sheet regions.",
               "previewIds": [
                 "SwipeScreen/Event deck route states",
-                "ProfileReactionControls/Reaction control states"
+                "ProfileReactionControls/Reaction control states",
+                "ProfileReactionCommentSheet/Reaction comment sheet states"
+              ],
+              "captureIds": [
+                "swipe_event_comment_sheet_empty",
+                "swipe_event_comment_sheet_filled"
               ]
             },
             {
@@ -2653,9 +2755,10 @@
               "kind": "mutation",
               "status": "tested",
               "tests": [
-                "test/swipes/swipe_queue_notifier_test.dart"
+                "test/swipes/swipe_queue_notifier_test.dart",
+                "test/swipes/swipe_screen_test.dart"
               ],
-              "notes": "Duplicate swipe attempts are ignored while a write is pending.",
+              "notes": "Duplicate swipe attempts are ignored while a write is pending in the notifier and the route disables repeated deck actions while CatchesProfileReviewActionState is pending.",
               "previewIds": [
                 "SwipeScreen/Event deck route states"
               ]
@@ -2663,8 +2766,11 @@
             {
               "id": "write_failure",
               "kind": "mutation",
-              "status": "implemented",
-              "notes": "SwipeScreen catches write failures and surfaces showCatchErrorSnackBar while keeping the current profile.",
+              "status": "tested",
+              "tests": [
+                "test/swipes/swipe_screen_test.dart"
+              ],
+              "notes": "SwipeScreen catches write failures, surfaces showCatchErrorSnackBar, and keeps the current profile.",
               "previewIds": [
                 "SwipeScreen/Event deck route states"
               ]
@@ -2779,13 +2885,16 @@
             {
               "id": "cached_offline",
               "kind": "offline",
-              "status": "tested",
+              "status": "captured",
               "tests": [
                 "test/swipes/swipe_queue_notifier_test.dart"
               ],
-              "notes": "Cached queue data is preserved when connectivity drops offline.",
+              "notes": "Cached queue data is preserved when connectivity drops offline; swipe_event_cached_offline captures the active deck with offline connectivity and no visible banner.",
               "previewIds": [
                 "SwipeScreen/Event deck route states"
+              ],
+              "captureIds": [
+                "swipe_event_cached_offline"
               ]
             },
             {
@@ -2846,18 +2955,18 @@
             },
             {
               "id": "DP-CATCHES-EVENT-002",
-              "status": "open",
-              "nextAction": "Remaining deck capture work: mutation failure/interactions, cached-offline data preservation, keyboard/comment sheet regions, and design-reference pixel comparison. Queue loading/error/offline, empty, missing event, signed-out, in-progress, did-not-attend, closed-window, text-scale, reduced-motion, and paired light/dark captures are now registered."
+              "status": "blocked",
+              "nextAction": "Blocked: remaining deck capture work needs keyboard-open capture automation and design-reference pixel comparison input. Mutation failure/interactions, cached-offline data preservation, comment-sheet regions, queue loading/error/offline, empty, missing event, signed-out, in-progress, did-not-attend, closed-window, text-scale, reduced-motion, and paired light/dark captures are already registered."
             },
             {
               "id": "DP-CATCHES-EVENT-003",
-              "status": "open",
-              "nextAction": "Move queue/event/user/participation derivation into CatchesEventScreenState and keep visual sections provider-free."
+              "status": "closed",
+              "nextAction": "Closed by CatchesEventScreenState, which maps queue/event/user/participation provider waves through provider-free CatchAsyncState before visual deck and empty/access sections receive display data plus typed callbacks."
             },
             {
               "id": "DP-CATCHES-EVENT-004",
-              "status": "open",
-              "nextAction": "First active-profile Catches deck reference and masks are registered; export dedicated mutation, keyboard/comment sheet, empty/offline, accessibility, and theme references and refine masks for profile imagery, queue counts, and dynamic copy."
+              "status": "blocked",
+              "nextAction": "Blocked: first active-profile deck reference and masks are registered, but dedicated mutation, keyboard/comment sheet, empty/offline, accessibility, and theme references require external design exports before masks can be refined."
             }
           ]
         }
@@ -2883,6 +2992,9 @@
           "routeId": "matchesListScreen",
           "implementationPaths": [
             "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+            "lib/chats/presentation/inbox/chats_list_celebration_controller.dart",
+            "lib/chats/presentation/inbox/chats_list_screen_state.dart",
+            "lib/chats/presentation/inbox/chats_search_header_controller.dart",
             "lib/chats/presentation/inbox/chats_list_view_model.dart",
             "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
             "lib/chats/presentation/inbox/widgets/chats_list.dart",
@@ -3143,13 +3255,13 @@
             },
             {
               "id": "DP-MATCHES-LIST-003",
-              "status": "open",
-              "nextAction": "Move search/filter/celebration side effects and visible thread derivation into a route adapter."
+              "status": "closed",
+              "nextAction": "Closed. HostInboxScreenState and ChatsListDisplayState own host filter projection, unread count, search affordance, loading/error/content/empty mapping, unread filtering, visible row derivation, empty-state selection, and display-error retry intents before ChatsList renders sections. ChatsListCelebrationController owns new-match celebration target selection and dialog execution. ChatsSearchHeaderController owns search-open close policy, and ChatsListScreen passes chatSearchQueryProvider value/callback into the header. Reopen only if future product policy adds a new search, filter, or celebration interaction seam."
             },
             {
               "id": "DP-MATCHES-LIST-004",
-              "status": "open",
-              "nextAction": "Resolve the unused ChatNewMatchesRail against the desired new-match design language."
+              "status": "closed",
+              "nextAction": "Closed. No ChatNewMatchesRail symbol exists in lib, test, or Widgetbook; new matches render through ChatConversationsList with row-level CatchPersonRow fresh treatment. Reopen only if product designs a dedicated new-match rail or section."
             }
           ]
         },
@@ -3158,6 +3270,14 @@
           "routeId": "chatScreen",
           "implementationPaths": [
             "lib/chats/presentation/chat_screen.dart",
+            "lib/chats/presentation/chat_route_state.dart",
+            "lib/chats/presentation/host_chat_screen_state.dart",
+            "lib/chats/presentation/chat_thread_lookup_state.dart",
+            "lib/chats/presentation/chat_read_marker_state.dart",
+            "lib/chats/presentation/chat_read_marker_controller.dart",
+            "lib/chats/presentation/chat_scroll_coordinator.dart",
+            "lib/chats/presentation/chat_thread_action_controller.dart",
+            "lib/chats/presentation/chat_retry_controller.dart",
             "lib/chats/presentation/chat_controller.dart",
             "lib/chats/presentation/suvbot_controller.dart",
             "lib/core/widgets/catch_top_bar.dart",
@@ -3189,6 +3309,10 @@
             "match_chat_suvbot_action_error",
             "match_chat_share_card",
             "match_chat_composer_states",
+            "match_chat_keyboard_multiline",
+            "match_chat_send_failure_snackbar",
+            "match_chat_report_failure_snackbar",
+            "match_chat_block_confirm_dialog",
             "match_chat_text_scale_2",
             "match_chat_reduced_motion"
           ],
@@ -3309,9 +3433,12 @@
               "tests": [
                 "test/chats/chat_screen_test.dart"
               ],
-              "notes": "Failed text send keeps composed text and CatchMutationErrorListener surfaces mutation errors.",
+              "notes": "Failed text send keeps composed text and surfaces shared snackbar feedback.",
               "previewIds": [
                 "ChatScreen/Route states"
+              ],
+              "captureIds": [
+                "match_chat_send_failure_snackbar"
               ]
             },
             {
@@ -3408,10 +3535,17 @@
             {
               "id": "safety_report_block",
               "kind": "mutation",
-              "status": "implemented",
-              "notes": "ChatScreen routes report/block actions through ChatController mutations and CatchMutationErrorListener.",
+              "status": "captured",
+              "tests": [
+                "test/chats/chat_screen_test.dart"
+              ],
+              "notes": "ChatScreen routes report/block actions through typed safety effects, surfaces report failure feedback, and confirms block before executing.",
               "previewIds": [
                 "ChatScreen/Route states"
+              ],
+              "captureIds": [
+                "match_chat_report_failure_snackbar",
+                "match_chat_block_confirm_dialog"
               ]
             },
             {
@@ -3453,7 +3587,8 @@
                 "ChatScreen/Route states"
               ],
               "captureIds": [
-                "match_chat_composer_states"
+                "match_chat_composer_states",
+                "match_chat_keyboard_multiline"
               ]
             },
             {
@@ -3514,12 +3649,12 @@
             {
               "id": "DP-MATCHES-CHAT-002",
               "status": "open",
-              "nextAction": "Add deterministic captures for loading, errors, empty, missing/blocked chat, mutation failures, share/report/block, Suvbot, offline, keyboard, text scale, reduced motion, and light/dark."
+              "nextAction": "Deterministic captures now cover loading, errors, empty, missing/blocked chat, send/report mutation failure snackbars, block confirmation, share card, Suvbot, offline, keyboard-open multiline, text scale, reduced motion, and light/dark. Remaining work is design-reference pixel comparison and additional reference variants."
             },
             {
               "id": "DP-MATCHES-CHAT-003",
-              "status": "open",
-              "nextAction": "Move provider waves, read-marker effects, action availability, and disabled composer copy into a MatchChatScreenState/effect adapter."
+              "status": "closed",
+              "nextAction": "Closed by shared ChatScreen adapters. ChatRouteState performs uid, match, messages, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before rendering. HostChatScreenState owns consumer match identity, action availability, retry intents, safety target copy, message peer name, and disabled composer copy. ChatThreadLookupState owns lookup keys; ChatReadMarkerController executes read-marker side effects; ChatScrollCoordinator owns auto-scroll; ChatThreadActionController executes profile/share/report/block typed actions; and ChatRetryController executes typed retry invalidation. Reopen only if consumer Match Chat splits from the shared chat adapter."
             },
             {
               "id": "DP-MATCHES-CHAT-004",
@@ -3820,7 +3955,7 @@
             {
               "id": "DP-PROFILE-SELF-003",
               "status": "open",
-              "nextAction": "Move profile provider waves, row derivation, preview projection, upload/save mutation modes, and route callbacks into SelfProfileScreenState."
+              "nextAction": "SelfProfileScreenState owns profile provider waves, preview projection, upload/save mutation modes, and retry intent; SelfProfileEditTabState owns photo-grid and prompt-slot view data; SelfProfilePhotoActionController owns photo editor/delete/reorder intents; SelfProfileInlineEditPatchFactory owns inline edit patch creation. Remaining work is moving basics/about/running/lifestyle row widget descriptors out of ProfileTabContent."
             },
             {
               "id": "DP-PROFILE-SELF-004",
@@ -4077,8 +4212,8 @@
             },
             {
               "id": "DP-PROFILE-PUBLIC-003",
-              "status": "open",
-              "nextAction": "Move target-profile, viewer-context, initial-data fallback, safety action availability, retry, and mutation overlay state into PublicProfileScreenState."
+              "status": "closed",
+              "nextAction": "Closed by PublicProfileScreenState, which owns target-profile branches, initial-profile fallback, viewer context projection, safety action availability, retry intent, and report/block mutation mode."
             },
             {
               "id": "DP-PROFILE-PUBLIC-004",
@@ -4109,6 +4244,7 @@
           "routeId": "hostHomeScreen",
           "implementationPaths": [
             "lib/hosts/presentation/host_operations_screen.dart",
+            "lib/hosts/presentation/host_home_screen_state.dart",
             "lib/clubs/data/clubs_repository.dart",
             "lib/events/data/event_repository.dart"
           ],
@@ -4845,6 +4981,7 @@
           "routeId": "hostClubDetailScreen",
           "implementationPaths": [
             "lib/clubs/presentation/detail/club_detail_screen.dart",
+            "lib/clubs/presentation/detail/club_detail_screen_state.dart",
             "lib/clubs/presentation/detail/club_detail_view_model.dart",
             "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
             "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
@@ -5147,8 +5284,8 @@
           "gaps": [
             {
               "id": "DS-HOST-CLUB-DETAIL-001",
-              "status": "open",
-              "nextAction": "Flutter captures now cover public preview, initial fallback loading, full loading, generic error, offline, not-found, non-host-team preview, signed-out preview, empty schedule, text-scale, reduced-motion, and light/dark. Remaining capture work is only distinct hosted schedule/share/contact/review variants and pixel-reference variants if design requires them."
+              "status": "closed",
+              "nextAction": "Closed for the current public-preview contract. Flutter captures cover public preview, initial fallback loading, full loading, generic error, offline, not-found, non-host-team preview, signed-out preview, empty schedule, text-scale, reduced-motion, and light/dark; the registered public-view reference comparison is within threshold. Reopen only if design adds distinct hosted schedule/share/contact/review or host-control variants."
             },
             {
               "id": "DS-HOST-CLUB-DETAIL-002",
@@ -5175,11 +5312,15 @@
             "lib/hosts/presentation/event_management/create/create_event_screen.dart",
             "lib/hosts/presentation/event_management/create/create_event_controller.dart",
             "lib/hosts/presentation/event_management/create/create_event_draft_controller.dart",
+            "lib/hosts/presentation/event_management/create/create_event_policy_state.dart",
             "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
             "lib/hosts/presentation/event_management/widgets/where_step.dart",
+            "lib/events/presentation/location_picker_screen.dart",
             "lib/hosts/presentation/event_management/widgets/when_step.dart",
             "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
-            "lib/hosts/presentation/event_management/widgets/event_success_step.dart"
+            "lib/hosts/presentation/event_management/widgets/event_success_step.dart",
+            "lib/hosts/presentation/event_management/create/create_event_draft_restore_state.dart",
+            "lib/hosts/presentation/event_management/create/create_event_wizard_state.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -5195,12 +5336,20 @@
             "host_create_route_error",
             "host_create_route_offline",
             "host_create_not_found",
+            "host_create_unauthorized",
             "host_create_text_scale_2",
             "host_create_reduced_motion",
             "host_create_light_dark",
             "host_create_location",
+            "host_create_map_picker_offline",
             "host_create_schedule",
+            "host_create_schedule_validation",
             "host_create_policy",
+            "host_create_policy_age_validation",
+            "host_create_policy_invite_only",
+            "host_create_policy_cohort_caps",
+            "host_create_policy_dynamic_pricing_disabled",
+            "host_create_policy_dynamic_pricing_validation",
             "host_create_guide",
             "host_create_basics_validation",
             "host_create_custom_activity",
@@ -5208,11 +5357,15 @@
             "host_create_location_selected",
             "host_create_draft_picker",
             "host_create_draft_restored",
+            "host_create_draft_delete_confirmation",
+            "host_create_unsaved_changes_dialog",
             "host_create_save_draft_pending",
             "host_create_save_draft_error",
+            "host_create_save_draft_offline",
             "host_create_submit_pending",
             "host_create_submit_error",
             "host_create_submit_offline",
+            "host_create_photo_upload_offline",
             "host_create_success_manage"
           ],
           "designRefs": [
@@ -5407,13 +5560,25 @@
               ]
             },
             {
+              "id": "location_picker_offline_search",
+              "kind": "offline",
+              "status": "captured",
+              "tests": [
+                "test/events/location_picker_screen_test.dart"
+              ],
+              "notes": "LocationPickerScreen maps Places autocomplete failures through appErrorDescriptor so network failures use shared offline copy. Host Create now has a deterministic map-picker offline-search capture with map tiles disabled.",
+              "captureIds": [
+                "host_create_map_picker_offline"
+              ]
+            },
+            {
               "id": "when_step_default",
               "kind": "populated",
               "status": "captured",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
-              "notes": "When step collects date, start time, and duration using shared date/time pickers and bounded duration controls. Host Create Event schedule has a manifest-registered design reference and deterministic capture; add date selected, time selected, duration min/max, and picker-open variants where practical. Advisory comparison against design/reference_screens/screen.host.event.create/when_step_default.png is within threshold: mismatch 4.02%, meanDelta 5.01, maxDelta 233.",
+              "notes": "When step collects date, start time, and duration using shared date/time pickers and bounded duration controls. CreateEventScheduleState now owns selected start datetime, initial picker time, future-start validation, and duration bounds/transitions. Host Create Event schedule has a manifest-registered design reference and deterministic capture; add date selected, time selected, duration min/max, and picker-open variants where practical. Advisory comparison against design/reference_screens/screen.host.event.create/when_step_default.png is within threshold: mismatch 4.02%, meanDelta 5.01, maxDelta 233.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
               ],
@@ -5424,10 +5589,16 @@
             {
               "id": "same_day_time_error",
               "kind": "mutation",
-              "status": "implemented",
-              "notes": "Same-day start times at or before the injected now source set Choose a start time later than now. Add focused widget test and capture for schedule validation error.",
+              "status": "captured",
+              "tests": [
+                "test/hosts/host_create_event_screen_test.dart"
+              ],
+              "notes": "Restored same-day drafts now initialize the future-start validation error when their selected start time is before the injected now source. The focused widget test and host_create_schedule_validation capture cover this branch.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
+              ],
+              "captureIds": [
+                "host_create_schedule_validation"
               ]
             },
             {
@@ -5435,9 +5606,10 @@
               "kind": "populated",
               "status": "captured",
               "tests": [
+                "test/hosts/host_create_event_state_test.dart",
                 "test/hosts/host_create_event_screen_test.dart"
               ],
-              "notes": "Event policy step renders capacity, price, admission preset, age range, cancellation policy, and default open-capacity settings. Host Create Event policy has a manifest-registered design reference and deterministic capture; add admission preset, cancellation policy, and validation variants. Advisory comparison against design/reference_screens/screen.host.event.create/policy_default.png is within threshold: mismatch 13.45%, meanDelta 16.56, maxDelta 240.",
+              "notes": "Event policy step renders capacity, price, admission preset, age range, cancellation policy, and default open-capacity settings. CreateEventPolicyState now owns policy defaults, admission preset copy, draft admission names, incompatible toggle resets, invite-code hints, policy currency parsing, and EventPolicyBundle construction. Host Create Event policy has a manifest-registered design reference and deterministic capture; add admission preset, cancellation policy, and validation variants. Advisory comparison against design/reference_screens/screen.host.event.create/policy_default.png is within threshold: mismatch 13.45%, meanDelta 16.56, maxDelta 240.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
               ],
@@ -5448,43 +5620,65 @@
             {
               "id": "policy_age_validation",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
-              "notes": "Policy step blocks progression when min/max age validation fails. Catalog numeric validation states for capacity, price, age, cohort caps, and dynamic pricing.",
+              "notes": "Policy step blocks progression when min/max age validation fails. Policy age-range validation now has deterministic capture coverage; catalog remaining numeric validation states for capacity, price, cohort caps, and dynamic pricing.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
+              ],
+              "captureIds": [
+                "host_create_policy_age_validation"
               ]
             },
             {
               "id": "invite_only_policy",
               "kind": "populated",
-              "status": "implemented",
-              "notes": "Invite-only admission reveals invite code input and submit validation in CreateEventController. Add tests and previews for short code, valid code, private link, and success invite details.",
+              "status": "captured",
+              "tests": [
+                "test/hosts/host_create_event_state_test.dart",
+                "test/hosts/host_create_event_screen_test.dart"
+              ],
+              "notes": "Invite-only admission reveals invite code input and submit validation in CreateEventController. CreateEventPolicyState now maps invite-only policy bundles and masked invite-code hints, and deterministic capture coverage shows valid-code state. Add short-code, private-link, and success invite details variants if design requires them.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
+              ],
+              "captureIds": [
+                "host_create_policy_invite_only"
               ]
             },
             {
               "id": "cohort_caps_policy",
               "kind": "populated",
-              "status": "tested",
+              "status": "captured",
               "tests": [
+                "test/hosts/host_create_event_state_test.dart",
                 "test/hosts/host_create_event_screen_test.dart"
               ],
-              "notes": "Cohort caps toggle exposes max men/max women inputs for fixed cohort capacity policies. Add visual states for cap toggle off/on, partial caps, invalid caps, and balanced singles variants.",
+              "notes": "Cohort caps toggle exposes max men/max women inputs for fixed cohort capacity policies and now has deterministic capture coverage for enabled max-men/max-women fields. Add partial/invalid cap variants if design requires them.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
+              ],
+              "captureIds": [
+                "host_create_policy_cohort_caps"
               ]
             },
             {
               "id": "dynamic_pricing_policy",
               "kind": "populated",
-              "status": "implemented",
-              "notes": "Balanced singles policy can expose dynamic pricing step/max inputs and disables dynamic pricing for incompatible presets. Add tests and previews for enabled, disabled, invalid, and max-less-than-step states.",
+              "status": "captured",
+              "tests": [
+                "test/hosts/host_create_event_state_test.dart"
+              ],
+              "notes": "Balanced singles policy can expose dynamic pricing step/max inputs and disables dynamic pricing for incompatible presets. CreateEventPolicyState maps dynamic-pricing defaults and incompatible preset resets; deterministic captures now cover enabled baseline, disabled state, and invalid step/max values. Add max-less-than-step variant if design requires distinct copy.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
+              ],
+              "captureIds": [
+                "host_create_policy",
+                "host_create_policy_dynamic_pricing_disabled",
+                "host_create_policy_dynamic_pricing_validation"
               ]
             },
             {
@@ -5568,59 +5762,75 @@
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
-              "notes": "Save draft persists non-empty drafts, tracks active draft id/signature, and shows Draft saved or Draft updated feedback through the shared Catch snackbar. Captures now cover save-draft pending and error surfaces through CreateEventDraftController.saveDraftMutation.",
+              "notes": "Save draft persists non-empty drafts with ids and savedAt timestamps from the injected now source, tracks active draft id/signature, and shows Draft saved or Draft updated feedback through the shared Catch snackbar. Focused widget coverage asserts the repository payload uses the injected clock; captures now cover save-draft pending, error, and offline surfaces through CreateEventDraftController.saveDraftMutation.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
               ],
               "captureIds": [
                 "host_create_save_draft_pending",
-                "host_create_save_draft_error"
+                "host_create_save_draft_error",
+                "host_create_save_draft_offline"
               ]
             },
             {
               "id": "draft_delete",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
-              "notes": "Draft picker and submit cleanup delete drafts through CreateEventDraftController.deleteDraftMutation. Add delete pending/error previews and capture destructive confirmation if design adds one.",
+              "notes": "Draft picker and submit cleanup delete drafts through CreateEventDraftController.deleteDraftMutation. Draft picker destructive confirmation now has deterministic capture coverage; add delete pending/error previews if design requires them.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
+              ],
+              "captureIds": [
+                "host_create_draft_delete_confirmation"
               ]
             },
             {
               "id": "unsaved_changes",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
-              "notes": "Back from the first step with unsaved changes opens a Save draft or Discard adaptive dialog. Focused tests now cover the Save draft branch and shared Draft saved snackbar. Add captures for the dialog, save failure, and discard path.",
+              "notes": "Back from the first step with unsaved changes opens a Save draft or Discard adaptive dialog. The dialog now has deterministic capture coverage, and focused tests cover the Save draft branch plus shared Draft saved snackbar. Add save-failure and discard captures if design requires them.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
+              ],
+              "captureIds": [
+                "host_create_unsaved_changes_dialog"
               ]
             },
             {
               "id": "unauthorized_host",
               "kind": "permission",
-              "status": "planned",
-              "notes": "HostCreateEventRouteScreen fetches a club but does not currently render a route-level unauthorized state before CreateEventScreen. Decide whether non-host-team users should see a host-specific access error before relying on repository/rules failures.",
+              "status": "tested",
+              "notes": "HostCreateEventRouteState watches uid state and returns forbidden when the signed-in user is missing or is not on the club host team, before CreateEventScreen is built. State and widget tests cover the route authorization branch.",
+              "tests": [
+                "test/hosts/host_create_event_state_test.dart",
+                "test/hosts/host_create_event_screen_test.dart"
+              ],
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
+              ],
+              "captureIds": [
+                "host_create_unauthorized"
               ]
             },
             {
               "id": "offline",
               "kind": "offline",
               "status": "captured",
-              "notes": "Route club-fetch offline failures and submit offline failures now render through shared offline copy in deterministic captures. Map picker, draft, and photo-upload offline branches still need deeper variants if design requires them.",
+              "notes": "Route club-fetch, draft-save, submit, and photo-upload offline failures now render through shared offline copy in deterministic captures. Map picker offline remains a deeper variant if design requires it.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
               ],
               "captureIds": [
                 "host_create_route_offline",
-                "host_create_submit_offline"
+                "host_create_save_draft_offline",
+                "host_create_submit_offline",
+                "host_create_photo_upload_offline"
               ]
             },
             {
@@ -5663,13 +5873,13 @@
           "gaps": [
             {
               "id": "DS-HOST-EVENT-CREATE-001",
-              "status": "open",
-              "nextAction": "Create remaining deterministic captures for schedule validation, policy age/invite/cohort/dynamic-pricing variants, draft delete, unsaved changes, unauthorized policy, deeper map/draft/photo offline variants, and reference-specific variants."
+              "status": "blocked",
+              "nextAction": "Blocked on missing exported draft/validation/submit references and masks. Map-picker offline search is captured; remaining deterministic capture variants are reference-specific and need exported Claude/Figma references plus masks for maps, dates/times, generated draft timestamps, photo previews, celebration effects, snackbars, and dynamic event ids."
             },
             {
               "id": "DS-HOST-EVENT-CREATE-002",
-              "status": "open",
-              "nextAction": "Introduce HostCreateEventScreenState/CreateEventWizardState so local form draft, validation, mutations, pickers, and navigation callbacks are explicit outside visual sections."
+              "status": "closed",
+              "nextAction": "Closed. HostCreateEventRouteState owns route branches/retry; CreateEventWizardStep owns step order/titles/form-key specs/schedule-validation metadata; CreateEventWizardValidationPlan owns form-key selection and schedule validation policy; CreateEventWizardState owns wizard display/mutation/success state plus typed back/primary/save-draft intents; CreateEventSuccessNavigationEffect owns success destination and manage-event route payload; CreateEventDraftSnapshot, CreateEventDraftActionState, CreateEventDraftRestoreState, and CreateEventDraftSideEffectState own draft serialization, dirty/save policy, restore mapping, and load/delete intent policy. CreateEventScreen is left with allowed form-controller assignment, PageController movement, platform picker execution, controller mutation triggers, and Navigator/context side effects."
             },
             {
               "id": "DS-HOST-EVENT-CREATE-003",
@@ -5678,13 +5888,13 @@
             },
             {
               "id": "DS-HOST-EVENT-CREATE-004",
-              "status": "open",
-              "nextAction": "Export Claude/Figma Host Create Event references and define masks for maps, dates/times, generated draft timestamps, photo previews, celebration effects, snackbars, and dynamic event ids."
+              "status": "blocked",
+              "nextAction": "Blocked on missing exported draft/validation/submit references and masks. Existing basics, location, schedule, policy, Event Success guide, and success/manage references are registered and within advisory thresholds; remaining reference work needs exported source designs and masks before implementation can proceed."
             },
             {
               "id": "DS-HOST-EVENT-CREATE-005",
-              "status": "open",
-              "nextAction": "Decide whether HostCreateEventRouteScreen needs a host-team unauthorized state before CreateEventScreen renders, instead of relying only on repository/security-rule failures."
+              "status": "closed",
+              "nextAction": "Closed. HostCreateEventRouteState now watches signed-in uid state and renders a host-access error before CreateEventScreen for signed-out or non-host-team users, with state and widget coverage."
             }
           ]
         },
@@ -5726,8 +5936,11 @@
             "host_manage_filtered_roster_empty",
             "host_manage_private_access_loading",
             "host_manage_private_access_error",
+            "host_manage_private_access_offline",
+            "host_manage_private_access_missing_code",
             "host_manage_invite_links_loading",
             "host_manage_invite_links_error",
+            "host_manage_invite_links_offline",
             "host_manage_invite_links_empty",
             "host_manage_invite_link_mutation_pending",
             "host_manage_invite_link_mutation_error",
@@ -5745,13 +5958,28 @@
             "host_manage_attendance_mutation_error",
             "host_live_console",
             "host_manage_live_unavailable",
+            "host_manage_live_plan_loading",
+            "host_manage_live_plan_error",
+            "host_manage_live_plan_offline",
+            "host_manage_live_wingman_requests",
+            "host_manage_live_micro_pods_assigned",
+            "host_manage_live_guided_rotations_assigned",
+            "host_manage_live_host_override_edited",
+            "host_manage_live_reveal_round_revealed",
+            "host_manage_live_conversation_cues",
+            "host_manage_live_check_in_qr",
             "host_post_event_report",
+            "host_manage_report_scorecard_loading",
+            "host_manage_report_scorecard_error",
+            "host_manage_report_scorecard_offline",
             "host_manage_report_export_pending",
             "host_manage_report_export_error",
             "host_manage_cancelled_event",
             "host_manage_text_scale_2",
             "host_manage_reduced_motion",
-            "host_manage_light_dark"
+            "host_manage_light_dark",
+            "host_manage_invite_links_disabled",
+            "host_manage_invite_links_long_label_source"
           ],
           "designRefs": [
             {
@@ -6130,7 +6358,7 @@
               "id": "live_event_success_ready",
               "kind": "populated",
               "status": "captured",
-              "notes": "Saved live plans load roster, assignments, preferences, rotation assignments, wingman requests, reveal, and override states through EventSuccessHostSection. The host_live_console capture now covers a compact saved live plan with Host Manage-specific first-viewport controls; deeper host override, reveal, QR, cue, wingman, assignment, and compact step-count substates remain follow-up variants.",
+              "notes": "Saved live plans load roster, assignments, preferences, rotation assignments, wingman requests, reveal, and override states through EventSuccessHostSection. The host_live_console capture covers the compact saved live baseline; dedicated captures now cover active wingman requests, assigned micro-pods, guided rotations, check-in QR, conversation cues, revealed partner round, and host-edited micro-pod overrides. Compact step-count semantics remain a product-model follow-up only if kept.",
               "tests": [
                 "test/event_success/event_success_live_screens_test.dart"
               ],
@@ -6138,7 +6366,194 @@
                 "HostEventManageRouteScreen/Route and section states"
               ],
               "captureIds": [
-                "host_live_console"
+                "host_live_console",
+                "host_manage_live_wingman_requests",
+                "host_manage_live_micro_pods_assigned",
+                "host_manage_live_guided_rotations_assigned",
+                "host_manage_live_check_in_qr",
+                "host_manage_live_conversation_cues",
+                "host_manage_live_reveal_round_revealed",
+                "host_manage_live_host_override_edited"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "live_event_success_wingman_requests",
+              "kind": "populated",
+              "status": "captured",
+              "notes": "Host Manage live Event Success renders host-visible wingman requests with requester/target peer profile context.",
+              "tests": [
+                "test/event_success/event_success_live_screens_test.dart"
+              ],
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_live_wingman_requests"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "live_event_success_micro_pods_assigned",
+              "kind": "populated",
+              "status": "captured",
+              "notes": "Host Manage live Event Success renders assigned micro-pods with peer lookup and opt-out preference fixtures.",
+              "tests": [
+                "test/event_success/event_success_live_screens_test.dart"
+              ],
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_live_micro_pods_assigned"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "live_event_success_guided_rotations_assigned",
+              "kind": "populated",
+              "status": "captured",
+              "notes": "Host Manage live Event Success renders assigned guided rotations with peer lookup and rotation schedule fixtures.",
+              "tests": [
+                "test/event_success/event_success_live_screens_test.dart"
+              ],
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_live_guided_rotations_assigned"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "live_event_success_check_in_qr",
+              "kind": "populated",
+              "status": "captured",
+              "notes": "Host Manage live Event Success check-in QR now has deterministic direct section capture coverage with the QR card visible in current-step controls.",
+              "tests": [
+                "test/event_success/event_success_live_screens_test.dart"
+              ],
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_live_check_in_qr"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "live_event_success_conversation_cues",
+              "kind": "populated",
+              "status": "captured",
+              "notes": "Host Manage live Event Success conversation cues now have deterministic direct section capture coverage with live prompt content visible.",
+              "tests": [
+                "test/event_success/event_success_live_screens_test.dart"
+              ],
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_live_conversation_cues"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "live_event_success_reveal_round_revealed",
+              "kind": "populated",
+              "status": "captured",
+              "notes": "Host Manage live Event Success revealed-round state now has deterministic tall direct section capture coverage with the revealed partner card visible.",
+              "tests": [
+                "test/event_success/event_success_live_screens_test.dart"
+              ],
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_live_reveal_round_revealed"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "live_event_success_host_override_edited",
+              "kind": "mutation",
+              "status": "captured",
+              "notes": "Host Manage live Event Success host-edited micro-pod override now has deterministic tall direct section capture coverage with the Host edited badge visible.",
+              "tests": [
+                "test/event_success/event_success_live_screens_test.dart"
+              ],
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_live_host_override_edited"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "live_event_success_plan_loading",
+              "kind": "loading",
+              "status": "captured",
+              "notes": "EventSuccessHostSectionState maps the saved-plan provider wave to a content-shaped Host Manage live skeleton before live-only streams are watched.",
+              "tests": [
+                "test/event_success/event_success_live_screens_test.dart"
+              ],
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_live_plan_loading"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "live_event_success_plan_error",
+              "kind": "error",
+              "status": "captured",
+              "notes": "EventSuccessHostSectionState maps saved-plan failures to CatchInlineErrorState with Event Success plan retry intent.",
+              "tests": [
+                "test/event_success/event_success_live_screens_test.dart"
+              ],
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_live_plan_error"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "live_event_success_plan_offline",
+              "kind": "offline",
+              "status": "captured",
+              "notes": "EventSuccessHostSectionState maps offline saved-plan failures through the shared branded inline error surface with Event Success plan retry intent.",
+              "tests": [
+                "test/event_success/event_success_live_screens_test.dart"
+              ],
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_live_plan_offline"
               ],
               "widgetbook": [
                 "HostEventManageRouteScreen/Route and section states"
@@ -6148,7 +6563,7 @@
               "id": "report_workspace",
               "kind": "populated",
               "status": "captured",
-              "notes": "Host Manage report workspace renders post-event scorecards and export actions. Report workspace now has a manifest-registered Claude reference and deterministic capture within advisory threshold: mismatch 12.61%, meanDelta 15.52, maxDelta 240. Add report loading/error/empty/export variants.",
+              "notes": "Host Manage report workspace renders post-event scorecards and export actions. Report workspace now has a manifest-registered Claude reference and deterministic capture within advisory threshold: mismatch 12.61%, meanDelta 15.52, maxDelta 240. Continue hidden analytics, signal quality, sparse feedback, long recommendation copy, deeper offline, and reference-specific variants if the contract needs them.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -6183,7 +6598,7 @@
               "id": "report_scorecard",
               "kind": "populated",
               "status": "captured",
-              "notes": "EventSuccessHostSection report mode renders post-event scorecard/report states when host analytics are available. The host_post_event_report capture covers the scorecard surface; scorecard loading, hidden analytics, signal quality, sparse feedback, and long recommendation copy remain follow-up variants.",
+              "notes": "EventSuccessHostSection report mode renders post-event scorecard/report states when host analytics are available. The host_post_event_report capture covers the scorecard surface; hidden analytics, signal quality, sparse feedback, and long recommendation copy remain follow-up variants.",
               "tests": [
                 "test/event_success/event_success_live_screens_test.dart"
               ],
@@ -6192,6 +6607,60 @@
               ],
               "captureIds": [
                 "host_post_event_report"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "report_scorecard_loading",
+              "kind": "loading",
+              "status": "captured",
+              "notes": "EventSuccessHostSectionState maps scorecard loading to the report-shaped skeleton while the saved Event Success plan remains available.",
+              "tests": [
+                "test/event_success/event_success_live_screens_test.dart"
+              ],
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_report_scorecard_loading"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "report_scorecard_error",
+              "kind": "error",
+              "status": "captured",
+              "notes": "EventSuccessHostSectionState maps scorecard failures to CatchInlineErrorState with scorecard retry intent.",
+              "tests": [
+                "test/event_success/event_success_live_screens_test.dart"
+              ],
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_report_scorecard_error"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "report_scorecard_offline",
+              "kind": "offline",
+              "status": "captured",
+              "notes": "EventSuccessHostSectionState maps offline scorecard failures through CatchInlineErrorState with scorecard retry intent while the saved Event Success plan remains available.",
+              "tests": [
+                "test/event_success/event_success_live_screens_test.dart"
+              ],
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_report_scorecard_offline"
               ],
               "widgetbook": [
                 "HostEventManageRouteScreen/Route and section states"
@@ -6222,6 +6691,39 @@
               ],
               "captureIds": [
                 "host_manage_private_access_error"
+              ]
+            },
+            {
+              "id": "private_access_offline",
+              "kind": "offline",
+              "status": "captured",
+              "notes": "Private-access offline failure now has the deterministic host_manage_private_access_offline capture in setup mode.",
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_private_access_offline"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "private_access_missing_code",
+              "kind": "empty",
+              "status": "captured",
+              "notes": "Invite-only Host Manage private access missing-code state now has deterministic tall route capture coverage showing disabled share-private-link action and the no host-readable access-code copy.",
+              "tests": [
+                "test/hosts/host_event_manage_screen_state_test.dart"
+              ],
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_private_access_missing_code"
+              ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
               ]
             },
             {
@@ -6269,16 +6771,62 @@
               ]
             },
             {
+              "id": "invite_links_offline",
+              "kind": "offline",
+              "status": "captured",
+              "captureIds": [
+                "host_manage_invite_links_offline"
+              ],
+              "notes": "Named invite-link offline failure now has the deterministic host_manage_invite_links_offline tall capture with branded inline retry.",
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
               "id": "invite_links_empty",
               "kind": "empty",
               "status": "captured",
-              "notes": "Named invite-link empty state now has the deterministic host_manage_invite_links_empty tall capture with channel guidance visible.",
+              "notes": "Named invite-link empty state now has the deterministic host_manage_invite_links_empty tall capture with channel guidance visible; disabled and long label/source row variants are captured separately.",
               "previewIds": [
                 "HostEventManageRouteScreen/Route and section states"
               ],
               "captureIds": [
                 "host_manage_invite_links_empty"
               ],
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "invite_links_disabled",
+              "kind": "populated",
+              "status": "captured",
+              "source": "HostInviteLinkRowDisplayState renders disabled named invite links with disabled badge visibility, disabled action removal, and preserved historical metrics.",
+              "nextAction": "Captured by host_manage_invite_links_disabled on a tall review device; continue only if disabled-link action semantics or canonical masks change.",
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_invite_links_disabled"
+              ],
+              "notes": "Named invite-link disabled-row state now has deterministic tall route capture coverage showing the Disabled badge, copy-only action row, and wrapped historical metrics.",
+              "widgetbook": [
+                "HostEventManageRouteScreen/Route and section states"
+              ]
+            },
+            {
+              "id": "invite_links_long_label_source",
+              "kind": "populated",
+              "status": "captured",
+              "source": "HostInviteLinkRowDisplayState renders long named invite-link labels and source names through the real row layout with title wrapping and source truncation.",
+              "nextAction": "Captured by host_manage_invite_links_long_label_source on a tall review device; continue only if canonical reference masks expose a different dynamic text layout.",
+              "previewIds": [
+                "HostEventManageRouteScreen/Route and section states"
+              ],
+              "captureIds": [
+                "host_manage_invite_links_long_label_source"
+              ],
+              "notes": "Named invite-link long-label/source state now has deterministic tall route capture coverage showing wrapped label copy, truncated source copy, metrics, and both row actions.",
               "widgetbook": [
                 "HostEventManageRouteScreen/Route and section states"
               ]
@@ -6417,12 +6965,12 @@
             {
               "id": "DP-HOST-EVENT-MANAGE-001",
               "status": "open",
-              "nextAction": "Add remaining deterministic Host Event Manage captures for Event Success live/report substates, deeper section-level offline variants, and reference-specific variants."
+              "nextAction": "Create remaining deterministic Host Event Manage captures only for reference-specific variants, compact step-count semantics if product keeps them, and modal Event Success override editor sheets if that surface becomes contractual. Private-access missing-code, invite-link disabled-row, invite-link long-label/source, Event Success plan/scorecard offline, wingman request, micro-pod assignment, guided-rotation assignment, check-in QR, conversation cue, revealed-round, and host-edited override variants are captured."
             },
             {
               "id": "DP-HOST-EVENT-MANAGE-002",
-              "status": "open",
-              "nextAction": "Introduce HostEventManageScreenState or equivalent adapters for selected section, roster display data, private access/link state, Event Success host state, host action display state, retry intents, and typed callbacks now that route loading/access/error states have capture coverage. The host action card itself is now provider-free and receives edit/cancel/delete callbacks plus mutation state from HostEventManageScreen."
+              "status": "closed",
+              "nextAction": "Closed for the current Host Manage workspace contract. HostEventManageScreenState owns selected section, section labels, title copy, collapsed-header semantics, and section-change transitions; HostEventManageActionEffect owns edit/cancel/delete action destinations, edit route parameters, and event payload; HostEventActionDisplayState, HostPrivateLinkActionState, HostPrivateAccessDisplayState, HostInviteLinksListDisplayState, HostInviteLinkRowDisplayState, HostRosterDisplayState, HostSetupRosterRowDisplayState, HostLiveRosterRowDisplayState, HostReportRosterRowDisplayState, HostParticipantsMutationDisplayState, HostParticipantLifecycleActions, HostReportSummaryDisplayState, and HostParticipantProfilesLookupState own their existing display policies. EventSuccessHostSectionState now owns Event Success plan/roster/assignment/preference/wingman/scorecard provider-wave status and retry intents before Host Manage composes the provider-free Event Success panel. Route loading/access/error stays in HostEventManageRouteScreen under ARCH-SCREEN-001C."
             },
             {
               "id": "DP-HOST-EVENT-MANAGE-003",
@@ -6432,12 +6980,12 @@
             {
               "id": "DP-HOST-EVENT-MANAGE-004",
               "status": "open",
-              "nextAction": "Private invite-link create/copy/disable/share effects and cancel/delete writes plus invalidation now route through controller seams with mutation capture coverage. HostEventManageScreen now owns edit navigation, cancel/delete confirmation dialogs, shared Catch dialog/snackbar feedback, and action mutation state while _HostEventActionsSection renders compact action rows. Remaining side-effect work is any future typed action adapter that centralizes display policy."
+              "nextAction": "Private invite-link create/copy/disable/share effects and cancel/delete writes now route through controller seams with mutation capture coverage. HostEventManageActionEffect owns edit/cancel/delete action destinations and edit route parameters; HostEventActionsSection receives HostPrivateLinkActionState and a typed share callback; HostParticipantsMutationDisplayState owns participant/report mutation display policy; HostParticipationLifecycleBoard receives HostParticipantLifecycleActions instead of reading Riverpod mutations/routes directly; HostEventManageScreen and HostEventParticipantsList execute Navigator/dialog/controller/private-link/participant/report side effects. Remaining side-effect work is Event Success callbacks if that surface keeps growing."
             },
             {
               "id": "DP-HOST-EVENT-MANAGE-005",
               "status": "open",
-              "nextAction": "Setup/private-access, attendance roster, live console, and post-event report references are exported, masked, and manifest-registered; remaining work is private-access edge variants and masks for additional dynamic host data."
+              "nextAction": "Setup/private-access, attendance roster, live console, post-event report, private-access missing-code, invite-link disabled-row, and invite-link long-label/source states have deterministic captures; remaining work is masks for additional dynamic host data once canonical exports exist."
             }
           ]
         },
@@ -6446,6 +6994,9 @@
           "routeId": "hostInboxScreen",
           "implementationPaths": [
             "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+            "lib/chats/presentation/inbox/chats_list_celebration_controller.dart",
+            "lib/chats/presentation/inbox/chats_list_screen_state.dart",
+            "lib/chats/presentation/inbox/chats_search_header_controller.dart",
             "lib/chats/presentation/inbox/chats_list_view_model.dart",
             "lib/chats/presentation/inbox/host_inbox_filter.dart",
             "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
@@ -6658,7 +7209,7 @@
               "id": "search_empty",
               "kind": "empty",
               "status": "captured",
-              "notes": "Search with no matching names renders No chats match your search copy instead of the generic empty state. Add host inbox search-empty capture and decide whether copy should say attendee queries instead of chats. Decide whether search-empty copy should say attendee queries instead of chats before final reference comparison.",
+              "notes": "Host search with no matching names renders No attendee queries match your search copy instead of the generic consumer chat empty state. HostInboxScreenState and ChatsListDisplayState choose the host-specific empty kind, and route tests preserve the copy.",
               "tests": [
                 "test/chats/chat_inbox_screen_test.dart"
               ],
@@ -6837,6 +7388,13 @@
           "routeId": "hostChatScreen",
           "implementationPaths": [
             "lib/chats/presentation/chat_screen.dart",
+            "lib/chats/presentation/chat_route_state.dart",
+            "lib/chats/presentation/host_chat_screen_state.dart",
+            "lib/chats/presentation/chat_thread_lookup_state.dart",
+            "lib/chats/presentation/chat_read_marker_controller.dart",
+            "lib/chats/presentation/chat_scroll_coordinator.dart",
+            "lib/chats/presentation/chat_thread_action_controller.dart",
+            "lib/chats/presentation/chat_retry_controller.dart",
             "lib/chats/presentation/chat_controller.dart",
             "lib/chats/data/conversation_repository.dart",
             "lib/matches/data/match_repository.dart",
@@ -6870,7 +7428,12 @@
             "host_chat_text_scale_2",
             "host_chat_reduced_motion",
             "host_chat_light_dark",
-            "host_chat_composer_states"
+            "host_chat_composer_states",
+            "host_chat_keyboard_multiline",
+            "host_chat_image_day_separator",
+            "host_chat_report_failure_snackbar",
+            "host_chat_block_confirm_dialog",
+            "host_chat_safety_pending_menu"
           ],
           "designRefs": [
             {
@@ -7036,19 +7599,20 @@
               "id": "populated_thread",
               "kind": "populated",
               "status": "captured",
-              "notes": "Host Chat populated inquiry thread has a deterministic capture and a manifest-registered shared Messaging-thread Claude reference. Host Chat populated thread now has a manifest-registered baseline reference and advisory comparison within threshold: mismatch 12.71%, meanDelta 5.28, maxDelta 240. Add dedicated professional host-chat variants for missing/offline, keyboard, mutation, safety, text-scale, reduced-motion, and dark mode before promoting this screen beyond captured.",
+              "notes": "Host Chat populated inquiry thread has a deterministic capture and a manifest-registered shared Messaging-thread Claude reference. Host Chat populated thread now has a manifest-registered baseline reference and advisory comparison within threshold: mismatch 12.71%, meanDelta 5.28, maxDelta 240. Dedicated capture variants now cover image/day separators, keyboard, mutation feedback, safety dialog/menu, text-scale, reduced-motion, and dark mode. Add provider-specific offline variants and dedicated reference masks before promotion.",
               "previewIds": [
                 "ChatScreen/Host chat states"
               ],
               "captureIds": [
-                "host_chat_inquiry"
+                "host_chat_inquiry",
+                "host_chat_image_day_separator"
               ]
             },
             {
               "id": "auto_scroll_read_marker",
               "kind": "populated",
               "status": "tested",
-              "notes": "ChatScreen marks conversations read on uid availability, open, incoming messages, and dispose, while scrolling to the latest message. ChatReadMarkerState now owns duplicate/forced/incoming-latest/dispose read-marker decisions; _ChatContent still executes the ConversationReadMarker.markRead side effect and scroll behavior.",
+              "notes": "ChatScreen delegates read-marker execution to ChatReadMarkerController for uid availability, incoming latest messages, and dispose. ChatScrollCoordinator owns initial, appended, and send-success message list auto-scroll state. ChatThreadActionController owns profile/share/report/block typed action execution, and ChatRetryController owns typed retry invalidation. ChatReadMarkerState owns duplicate/forced/incoming-latest/dispose read-marker decisions.",
               "tests": [
                 "test/chats/chat_screen_test.dart"
               ],
@@ -7060,7 +7624,7 @@
               "id": "composer_enabled",
               "kind": "populated",
               "status": "captured",
-              "notes": "ChatInputBar enabled state is covered by shared send tests and the Host Chat composer-state capture.",
+              "notes": "ChatInputBar enabled state is covered by shared send tests plus Host Chat composer-state and keyboard-open multiline captures.",
               "tests": [
                 "test/chats/chat_screen_test.dart"
               ],
@@ -7068,7 +7632,8 @@
                 "ChatScreen/Host chat states"
               ],
               "captureIds": [
-                "host_chat_composer_states"
+                "host_chat_composer_states",
+                "host_chat_keyboard_multiline"
               ]
             },
             {
@@ -7136,49 +7701,66 @@
             {
               "id": "top_bar_safety_actions",
               "kind": "populated",
-              "status": "tested",
-              "notes": "CatchTopBar.identity exposes Report and Block actions for non-Suvbot host inquiries while profile navigation and Share card are disabled; focused widget coverage verifies the menu.",
+              "status": "captured",
+              "notes": "CatchTopBar.identity exposes Report and Block actions for non-Suvbot host inquiries while profile navigation and Share card are disabled; focused widget coverage verifies the menu and deterministic capture covers the pending safety menu rows.",
               "previewIds": [
                 "ChatScreen/Host chat states"
               ],
               "tests": [
                 "test/chats/chat_screen_test.dart"
+              ],
+              "captureIds": [
+                "host_chat_safety_pending_menu"
               ]
             },
             {
               "id": "report_user_mutation",
               "kind": "mutation",
-              "status": "implemented",
-              "notes": "Report action is selected through typed ChatThreadAction.report, disables while ChatController.reportUserMutation is pending, runs the mutation through ChatController, shows Report submitted snackbar on success, and surfaces failures through the shared chat mutation listener. Focused widget coverage verifies success, pending disabled state, and failure feedback; add host chat report pending/failure captures.",
+              "status": "captured",
+              "notes": "Report action is selected through typed ChatThreadAction.report, disables while ChatController.reportUserMutation is pending, runs the mutation through ChatController, shows Report submitted snackbar on success, and surfaces failures through the shared chat mutation listener. Focused widget coverage verifies success, pending disabled state, and failure feedback; deterministic captures cover report failure snackbar and pending safety menu rows.",
               "previewIds": [
                 "ChatScreen/Host chat states"
+              ],
+              "captureIds": [
+                "host_chat_report_failure_snackbar",
+                "host_chat_safety_pending_menu"
               ]
             },
             {
               "id": "block_user_mutation",
               "kind": "mutation",
-              "status": "implemented",
-              "notes": "Block action is selected through typed ChatThreadAction.block, disables while ChatController.blockUserMutation is pending, confirms with showBlockUserDialog, runs the mutation through ChatController, and pops the route on success. Focused widget coverage verifies confirmation, success, pending disabled state, and failure feedback; add host chat block pending/failure captures.",
+              "status": "captured",
+              "notes": "Block action is selected through typed ChatThreadAction.block, disables while ChatController.blockUserMutation is pending, confirms with showBlockUserDialog, runs the mutation through ChatController, and pops the route on success. Focused widget coverage verifies confirmation, success, pending disabled state, and failure feedback; deterministic captures cover block confirmation dialog and pending safety menu rows.",
               "previewIds": [
                 "ChatScreen/Host chat states"
+              ],
+              "captureIds": [
+                "host_chat_block_confirm_dialog",
+                "host_chat_safety_pending_menu"
               ]
             },
             {
               "id": "mutation_error_listener",
               "kind": "mutation",
-              "status": "implemented",
-              "notes": "_ChatMutationListeners wraps send, image, report, block, and Suvbot mutation failures in the shared CatchMutationErrorListeners boundary with chat error context. Focused Host Chat tests verify report/block failure feedback; add Widgetbook/capture states for mutation snackbar/error surfaces relevant to host chat.",
+              "status": "captured",
+              "notes": "_ChatMutationListeners wraps send, image, report, block, and Suvbot mutation failures in the shared CatchMutationErrorListeners boundary with chat error context. Focused Host Chat tests verify report/block failure feedback; deterministic capture covers report failure snackbar feedback.",
               "previewIds": [
                 "ChatScreen/Host chat states"
+              ],
+              "captureIds": [
+                "host_chat_report_failure_snackbar"
               ]
             },
             {
               "id": "keyboard_composer",
               "kind": "accessibility",
-              "status": "planned",
-              "notes": "No deterministic host chat keyboard-open capture exists yet. Add keyboard-open capture with safe-area mask and multiline composer text.",
+              "status": "captured",
+              "notes": "Host Chat has a deterministic keyboard-open capture with seeded multiline professional reply text and safe-area resizing.",
               "previewIds": [
                 "ChatScreen/Host chat states"
+              ],
+              "captureIds": [
+                "host_chat_keyboard_multiline"
               ]
             },
             {
@@ -7233,13 +7815,13 @@
           "gaps": [
             {
               "id": "DP-HOST-CHAT-001",
-              "status": "open",
-              "nextAction": "Host Chat captures now cover match loading/error/missing, message loading/error/offline, empty, populated, event fallback, blocked, composer pending/disabled, text-scale, reduced-motion, and light/dark states. Remaining deterministic captures are keyboard-open safe-area, report/block mutation snackbar/dialog surfaces, provider-specific profile/club/event offline branches, image/day-separator variants, and pixel-reference variants."
+              "status": "blocked",
+              "nextAction": "Blocked. Host Chat captures now cover match loading/error/missing, message loading/error/offline, empty, populated, event fallback, blocked, composer pending/disabled, keyboard-open multiline safe-area, image/day-separator populated thread, report failure snackbar, block confirmation dialog, safety pending menu, text-scale, reduced-motion, and light/dark states. Provider-specific profile/club/event offline copy still needs product policy, and pixel-reference variants still need dedicated Host Chat masks."
             },
             {
               "id": "DP-HOST-CHAT-002",
-              "status": "open",
-              "nextAction": "ChatRouteState now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState owns host inquiry identity, typed top-bar action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks, while _ChatContent still executes the ConversationReadMarker.markRead side effect. ChatThreadLookupState owns other-participant, host-inquiry club, host profile, public-profile, event, and Suvbot lookup decisions before ChatRouteState performs the provider watches. Match-stream failures render the shared branded chat error state and execute HostChatRetryIntent.reloadMatch; message-list and Suvbot-control errors route through typed retry targets before invalidating their providers. CatchTopBar.identity is router/provider-free and supports disabled menu actions, and Host Chat report/share/sheet-export transient feedback routes through showCatchSnackBar. _ChatContent still owns profile navigation, share-card presentation, scroll behavior, and report/block/share effect execution from typed intents. Continue moving remaining mark-read execution, scroll effects, and side-effect execution into this adapter/controller seam."
+              "status": "closed",
+              "nextAction": "Closed. ChatRouteState performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState owns host inquiry identity, typed top-bar action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks; ChatReadMarkerController executes ConversationRepository.markRead side effects; ChatScrollCoordinator owns initial/appended/send-success message list auto-scroll state; ChatThreadActionController executes profile/share/report/block typed action intents through injected UI and safety runners; ChatRetryController executes typed retry invalidation; and ChatThreadLookupState owns other-participant, host-inquiry club, host profile, public-profile, event, and Suvbot lookup decisions before ChatRouteState performs the provider watches. CatchTopBar.identity is router/provider-free and supports disabled menu actions. Reopen only for future product-specific action policies."
             },
             {
               "id": "DP-HOST-CHAT-003",
@@ -7253,8 +7835,8 @@
             },
             {
               "id": "DP-HOST-CHAT-005",
-              "status": "open",
-              "nextAction": "Baseline shared Messaging-thread Host Chat reference and masks are registered; add dedicated Host Chat references for keyboard/safe-area, timestamps, remote photos, generated share-card rasterization if retained, dynamic message times, unread/read markers, host-shell chrome, accessibility, and theme states."
+              "status": "blocked",
+              "nextAction": "Blocked. Baseline shared Messaging-thread Host Chat reference and masks are registered; dedicated Host Chat references are still needed for keyboard/safe-area, timestamps, remote photos, generated share-card rasterization if retained, dynamic message times, unread/read markers, host-shell chrome, accessibility, and theme states."
             }
           ]
         }
@@ -8653,7 +9235,7 @@
             {
               "id": "DP-CALENDAR-003",
               "status": "open",
-              "nextAction": "Introduce CalendarHomeState or equivalent adapter for provider waves, event summary, selected date, header mode, retry intents, and route callbacks."
+              "nextAction": "CalendarHomeState now covers event summary, selected date, header mode, and club-id lookup input; remaining work is provider-free agenda/state section extraction plus captures."
             },
             {
               "id": "DP-CALENDAR-004",
@@ -8775,7 +9357,7 @@
             {
               "id": "DP-SAVED-EVENTS-003",
               "status": "open",
-              "nextAction": "Introduce SavedEventsListState or equivalent adapter for uid, stream state, event ordering, club names, retry intents, and detail navigation callbacks."
+              "nextAction": "SavedEventsListState now covers ordering, saved/past labels, tile statuses, today, and club-id lookup input; remaining work is provider-free header/agenda/state section extraction plus captures."
             },
             {
               "id": "DP-SAVED-EVENTS-004",
@@ -9295,7 +9877,7 @@
             {
               "id": "DP-EVENT-MAP-003",
               "status": "open",
-              "nextAction": "Introduce EventLocationMapState and exported map masks before advisory pixel comparison."
+              "nextAction": "Add exported map masks before advisory pixel comparison; EventLocationMapState is implemented."
             },
             {
               "id": "DP-EVENT-MAP-004",

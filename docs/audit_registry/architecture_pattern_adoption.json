@@ -1,0 +1,291 @@
+{
+  "version": "1.5.22",
+  "updated": "2026-07-01",
+  "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
+  "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
+  "patterns": [
+    {
+      "id": "ARCH-SCREEN-001",
+      "name": "Feature screen route boundary",
+      "status": "reference",
+      "screenInventory": "design/screens/catch.screens.json",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-screen-001-feature-screen-boundary",
+      "prototypeFiles": [
+        "lib/events/presentation/event_detail_screen.dart",
+        "lib/events/presentation/event_detail_screen_state.dart",
+        "lib/events/presentation/event_detail_controller.dart",
+        "lib/events/presentation/widgets/event_detail_cta.dart",
+        "lib/events/presentation/widgets/event_detail_body.dart",
+        "test/events/event_detail_screen_state_test.dart",
+        "test/events/event_detail_controller_test.dart",
+        "test/events/event_detail_widgets_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/events/presentation/event_detail_screen.dart",
+          "role": "reference route screen: provider watch, async/error branches, loaded Scaffold, bottom navigation, route callbacks, mutation listeners, EventDetailScreenState host/companion/booking derivation, and route side effects",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-event-detail-host-companion-state-adapter"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_screen_state.dart",
+          "role": "provider-free EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState adapters for club lookup display data, host message availability, companion plan availability, booking dock modes, mutation display flags, and consumer-action visibility",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-event-detail-booking-dock-state"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_controller.dart",
+          "role": "reference controller seam for event-detail side effects and save mutation",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-event-detail-screen-reference"
+        },
+        {
+          "path": "lib/events/presentation/widgets/event_detail_body.dart",
+          "role": "embedded scroll body for reference route path; requires explicit save/share/calendar/back callbacks, companion state, host state, route-intent callbacks, and has no direct Scaffold, bottom navigation, provider reads, mutation listeners, or route side effects",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-event-detail-body-provider-lift"
+        },
+        {
+          "path": "test/events/event_detail_screen_state_test.dart",
+          "role": "provider-free host, companion, and booking dock display-state behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-event-detail-booking-dock-state"
+        },
+        {
+          "path": "design/screens/catch.screens.json",
+          "role": "canonical feature-screen inventory and screen composition map",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-event-detail-screen-reference"
+        },
+        {
+          "path": "widgetbook/lib/events/event_detail_use_cases.dart",
+          "role": "route-state and body-state review coverage for the reference screen",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-event-detail-screen-reference"
+        },
+        {
+          "path": "lib/events/presentation/event_location_map_screen.dart",
+          "role": "adopter route screen: EventDetailViewModel watch, chromeless route Scaffold, coordinate gate, provider-free map body, and external directions callback owned by the route",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-event-location-map-screen-boundary"
+        },
+        {
+          "path": "lib/events/presentation/event_location_map_state.dart",
+          "role": "provider-free display-state adapter for exact coordinate availability, map tile mode, location copy, and directions URI",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-event-location-map-screen-boundary"
+        },
+        {
+          "path": "test/events/events_widgets_test.dart",
+          "role": "focused route/body/state tests for Event Location Map screen-boundary adoption",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-event-location-map-screen-boundary"
+        },
+        {
+          "path": "test/ui_captures/catalog/screen_capture_catalog.dart",
+          "role": "screen-capture entries mount EventLocationMapRouteScreen for route chrome states instead of body-owned scaffold compatibility",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-direct-scaffold-compatibility"
+        },
+        {
+          "path": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "role": "Widgetbook route and body states use route provider overrides or explicit EventLocationMapState/callback fixtures",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-event-location-map-screen-boundary"
+        },
+        {
+          "path": "lib/events/presentation/calendar/calendar_screen.dart",
+          "role": "adopter route screen: uid/event provider waves, CalendarHomeState construction, route Scaffold, sliver scroll state, retry invalidation, and event-detail navigation callbacks",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-calendar-screen-boundary"
+        },
+        {
+          "path": "lib/events/presentation/calendar/calendar_screen_state.dart",
+          "role": "provider-free CalendarHomeState and CalendarEventSummary adapters for selected date, header mode, event merge/sort, and club-id lookup input",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-calendar-screen-boundary"
+        },
+        {
+          "path": "test/calendar/calendar_screen_test.dart",
+          "role": "route shell, async/error, scroll, date selection, summary, and event-detail navigation coverage for Calendar",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-calendar-screen-boundary"
+        },
+        {
+          "path": "test/calendar/calendar_screen_state_test.dart",
+          "role": "CalendarHomeState and CalendarEventSummary behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-calendar-screen-boundary"
+        },
+        {
+          "path": "lib/events/presentation/saved_events_screen.dart",
+          "role": "adopter route screen: uid/saved-event provider wave, route Scaffold, async/error/empty states, retry invalidation, SavedEventsListState construction, club-name lookup, and saved-event detail navigation",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-saved-events-screen-boundary"
+        },
+        {
+          "path": "lib/events/presentation/saved_events_state.dart",
+          "role": "provider-free SavedEventsListState adapter for event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-saved-events-screen-boundary"
+        },
+        {
+          "path": "test/events/saved_events_screen_test.dart",
+          "role": "SavedEventsListState plus Saved Events route empty, ordering, and navigation coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-saved-events-screen-boundary"
+        },
+        {
+          "path": "lib/hosts/presentation/host_event_manage_screen.dart",
+          "role": "defined host workspace variant: canonical route aliases, uid/club/event provider wave, access gate, loaded Setup/Guests/Live/Report workspace, roster/private-access/Event Success/report/action section composition",
+          "status": "variant_needed",
+          "lastReviewedPass": "2026-07-01-host-event-manage-workspace-variant"
+        }
+      ],
+      "variantPatterns": [
+        {
+          "id": "ARCH-SCREEN-001C",
+          "name": "Host workspace route boundary",
+          "status": "defined",
+          "paths": [
+            "lib/hosts/presentation/host_event_manage_screen.dart",
+            "lib/hosts/presentation/host_event_manage_controller.dart",
+            "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+            "lib/event_success/presentation/event_success_host_screen.dart",
+            "test/hosts/host_create_event_screen_test.dart",
+            "test/hosts/host_event_manage_controller_test.dart",
+            "test/ui_captures/catalog/screen_capture_catalog.dart",
+            "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          ],
+          "exitCriteria": "Promote Host Event Manage from defined variant to aligned adopter only when HostEventManageScreenState, or split route/workspace adapters, makes the loaded workspace provider-free for selected section, roster, private access, invite links, Event Success, report, host action display data, mutation display state, retry intents, navigation, and typed callbacks while HostEventManageRouteScreen keeps canonical route aliases plus route loading, missing-resource, error, and access gates."
+        }
+      ],
+      "candidateQueue": [],
+      "requiredBackPropagation": "When this exhibit changes, inspect each aligned adopter and every variant path above; update EventDetailScreen/EventDetailBody first, then EventLocationMapRouteScreen/EventLocationMapState/EventLocationMapScreen, CalendarScreen/CalendarHomeState, SavedEventsScreen/SavedEventsListState, and HostEventManageRouteScreen/ARCH-SCREEN-001C before migrating any later screen from this pattern.",
+      "requiredChecks": [
+        "flutter test test/events/event_detail_screen_state_test.dart",
+        "flutter test test/events/event_detail_controller_test.dart test/events/event_detail_widgets_test.dart",
+        "flutter analyze --no-fatal-infos lib/events/presentation/event_detail_screen.dart lib/events/presentation/event_detail_screen_state.dart lib/events/presentation/widgets/event_detail_body.dart lib/events/presentation/event_detail_controller.dart test/events/event_detail_screen_state_test.dart test/events/event_detail_controller_test.dart test/events/events_test_helpers.dart",
+        "flutter test test/events/events_widgets_test.dart",
+        "flutter analyze --no-fatal-infos lib/events/presentation/event_location_map_screen.dart lib/events/presentation/event_location_map_state.dart test/events/events_widgets_test.dart test/ui_captures/catalog/screen_capture_catalog.dart widgetbook/lib/utility/p3_utility_use_cases.dart",
+        "flutter test test/calendar/calendar_screen_state_test.dart test/calendar/calendar_screen_test.dart",
+        "flutter analyze --no-fatal-infos lib/events/presentation/calendar/calendar_screen.dart lib/events/presentation/calendar/calendar_screen_state.dart test/calendar/calendar_screen_state_test.dart test/calendar/calendar_screen_test.dart",
+        "flutter test test/events/saved_events_screen_test.dart",
+        "flutter analyze --no-fatal-infos lib/events/presentation/saved_events_screen.dart lib/events/presentation/saved_events_state.dart test/events/saved_events_screen_test.dart",
+        "flutter test test/hosts/host_create_event_screen_test.dart test/hosts/host_event_manage_controller_test.dart",
+        "flutter analyze --no-fatal-infos lib/hosts/presentation/host_event_manage_screen.dart lib/hosts/presentation/host_event_manage_controller.dart lib/hosts/presentation/widgets/host_event_attendance_panel.dart test/hosts/host_create_event_screen_test.dart test/hosts/host_event_manage_controller_test.dart test/ui_captures/catalog/screen_capture_catalog.dart",
+        "node tool/design/check_new_widget_inventory.mjs --no-write",
+        "node tool/architecture/check_adopted_architecture_boundaries.mjs",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "This pattern defines the feature-screen boundary. EventDetailBody and EventLocationMapScreen no longer expose direct Scaffold compatibility; route chrome, bottom navigation, mutation listeners, provider reads, save/share/calendar/back side effects, companion/host/booking display state, and navigation side effects belong to their route screens. EventDetailScreen now delegates host, companion, and booking dock display-state derivation to EventDetailScreenState while EventDetailCta remains the mutation/router edge for booking actions. EventLocationMapRouteScreen, CalendarScreen, and SavedEventsScreen are aligned adopters outside Event Detail and use provider-free state adapters for their loaded body data. tool/architecture/check_adopted_architecture_boundaries.mjs enforces provider/routing-free imports for aligned adopter roles that explicitly declare provider-free behavior. HostEventManageRouteScreen is intentionally tracked as ARCH-SCREEN-001C because its loaded surface is a host workspace with canonical route aliases and lifecycle sections; do not force it through the Event Detail body shape before the host workspace adapter exists."
+    },
+    {
+      "id": "ARCH-UI-STATE-001",
+      "name": "Provider-free presentation state model",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-ui-state-001-provider-free-presentation-state-model",
+      "prototypeFiles": [
+        "lib/events/presentation/calendar/calendar_screen_state.dart",
+        "test/calendar/calendar_screen_state_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/events/presentation/calendar/calendar_screen.dart",
+          "role": "route-edge provider reads and CalendarHomeState construction",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-calendar-screen-boundary"
+        },
+        {
+          "path": "lib/events/presentation/calendar/calendar_screen_state.dart",
+          "role": "reference CalendarHomeState and CalendarEventSummary implementation",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-calendar-screen-boundary"
+        },
+        {
+          "path": "test/calendar/calendar_screen_state_test.dart",
+          "role": "reference behavior test",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-calendar-screen-boundary"
+        },
+        {
+          "path": "lib/core/presentation/catch_async_state.dart",
+          "role": "provider-free async snapshot primitive used by route-edge Riverpod adapters before display-state builders consume loading/data/error branches",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-catches-event-screen-state-adapter"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_screen_state.dart",
+          "role": "provider-free EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState adapters using CatchAsyncState plus explicit mutation display flags for host card display data, host message availability, companion loading/available/error/hidden state, booking dock modes, and consumer-action visibility",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-event-detail-booking-dock-state"
+        },
+        {
+          "path": "test/events/event_detail_screen_state_test.dart",
+          "role": "EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-event-detail-booking-dock-state"
+        },
+        {
+          "path": "lib/swipes/presentation/catches_event_screen_state.dart",
+          "role": "provider-free CatchesEventScreenState adapter for queue loading/error/data branches, empty/access copy, active deck profile selection, remaining-count display data, viewer enrichment, and shared event title enrichment",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-catches-event-screen-state-adapter"
+        },
+        {
+          "path": "test/swipes/catches_event_screen_state_test.dart",
+          "role": "CatchesEventScreenState behavior coverage for queue branches, empty/access copy, and active deck display data",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-catches-event-screen-state-adapter"
+        },
+        {
+          "path": "lib/clubs/presentation/detail/club_detail_screen_state.dart",
+          "role": "provider-free Club Detail route/body adapter for live view-model data, initial-club fallback, loading/error/not-found branches, next-event selection, contact actions, host-message eligibility, event-route target, review visibility, membership dock state, host public-preview mode, and retry intent typing",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-club-detail-body-state-policy-extraction"
+        },
+        {
+          "path": "test/clubs/clubs_controllers_test.dart",
+          "role": "HostClubDetailScreenState and ClubDetailBodyState behavior coverage for live content, initial fallback, loading, error, not-found branches, contact actions, next-event selection, host-message eligibility, event route target, review visibility, and dock state",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-club-detail-body-state-policy-extraction"
+        },
+        {
+          "path": "lib/explore/presentation/explore_screen_state.dart",
+          "role": "provider-free ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityTriggerState, ExploreFilterRailState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState adapters for mixed-feed card planning, cover-story/search-open/event-row/external-row/club-card/map-sheet/filter/chrome display labels, map-count label, route body branch precedence, source-club/feed empty copy, clear-action cardinality, and broaden-time-filter intent",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-explore-chrome-state-adapter"
+        },
+        {
+          "path": "test/explore/explore_view_model_test.dart",
+          "role": "provider-free ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityTriggerState, ExploreFilterRailState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-explore-chrome-state-adapter"
+        },
+        {
+          "path": "test/explore/explore_widgets_test.dart",
+          "role": "ExploreScreen and ExploreEventsSection route-owned clear-search/filter/time-filter callback coverage for empty-state adapters",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-01-explore-events-empty-state-adapter"
+        }
+      ],
+      "variantPatterns": [],
+      "candidateQueue": [],
+      "requiredBackPropagation": "When this exhibit changes, inspect every adopter above and either update it in the same pass or mark it variant_needed/exception with a stable debt id.",
+      "requiredChecks": [
+        "flutter test test/calendar/calendar_screen_state_test.dart",
+        "flutter test test/events/event_detail_screen_state_test.dart",
+        "flutter test test/swipes/catches_event_screen_state_test.dart",
+        "flutter test test/swipes/swipe_screen_test.dart",
+        "flutter test test/clubs/clubs_controllers_test.dart --plain-name 'HostClubDetailScreenState'",
+        "flutter test test/explore/explore_widgets_test.dart --plain-name 'ClubDetailBody'",
+        "flutter test test/calendar/calendar_screen_test.dart",
+        "flutter test test/explore/explore_view_model_test.dart test/explore/explore_widgets_test.dart",
+        "flutter analyze --no-fatal-infos",
+        "node tool/architecture/check_adopted_architecture_boundaries.mjs",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "This is a narrow display-state reference. CalendarHomeState remains the reference. CatchAsyncState is the provider-free async branch primitive for route-edge translations. EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState are aligned small adapters for host-card, companion entry, and booking dock display data; EventDetailCta keeps provider mutations and router side effects at the edge. CatchesEventScreenState is aligned for queue provider-wave mapping, empty/access copy, and active deck display data; SwipeScreen now owns CatchesProfileReviewActionState for write-pending/failure display while the remaining Catches Event work is capture/reference coverage. HostClubDetailScreenState and ClubDetailBodyState are aligned for Club Detail route async branch mapping, live data, initial route fallback, host public-preview mode, next-event selection, contact actions, host-message eligibility, event-route target, review visibility, membership dock state, and retry typing; capture work remains open under the Club Detail screen contract. ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityTriggerState, ExploreFilterRailState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState are aligned small adopters for mixed-feed planning, cover-story/search-open/event-row/external-row/club-card/map-sheet/filter/chrome display data, route/body branch, map launcher, and empty-state actions only; the full Explore route/feed body still needs a separate screen-boundary migration before it can be marked aligned under ARCH-SCREEN-001."
+    }
+  ]
+}

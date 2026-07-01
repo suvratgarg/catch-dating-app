@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +53,8 @@ class _ExploreCityPickerState extends ConsumerState<ExploreCityPicker> {
     });
 
     return citiesAsync.when(
-      data: (cities) => CityTrigger(city: selectedCity,
+      data: (cities) => CityTrigger(
+        city: selectedCity,
         focused: _isSheetOpen,
         presentation: widget.presentation,
         foregroundColor: widget.foregroundColor,
@@ -64,7 +66,8 @@ class _ExploreCityPickerState extends ConsumerState<ExploreCityPicker> {
   }
 
   Widget _disabledTrigger(CityData city) {
-    return CityTrigger(city: city,
+    return CityTrigger(
+      city: city,
       enabled: false,
       focused: false,
       presentation: widget.presentation,
@@ -134,76 +137,65 @@ class CityTrigger extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  final t = CatchTokens.of(context);
-  final effectiveForeground = foregroundColor ?? t.ink;
+    final t = CatchTokens.of(context);
+    final effectiveForeground = foregroundColor ?? t.ink;
+    final state = ExploreCityTriggerState.from(city: city, focused: focused);
 
-  if (presentation == ExploreCityPickerPresentation.scopeLabel) {
-    final labelColor = enabled ? effectiveForeground : t.ink3;
+    if (presentation == ExploreCityPickerPresentation.scopeLabel) {
+      final labelColor = enabled ? effectiveForeground : t.ink3;
+      return Tooltip(
+        message: state.tooltipLabel,
+        child: Semantics(
+          button: true,
+          enabled: enabled,
+          label: state.semanticLabel,
+          child: InkWell(
+            onTap: enabled ? onTap : null,
+            borderRadius: BorderRadius.circular(CatchRadius.sm),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(
+                      state.scopeLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.kicker(context, color: labelColor),
+                    ),
+                  ),
+                  gapW4,
+                  Icon(state.icon, color: labelColor, size: CatchIcon.sm),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return Tooltip(
-      message: 'Choose city: ${city.label}',
+      message: state.tooltipLabel,
       child: Semantics(
         button: true,
         enabled: enabled,
-        label: 'Choose city: ${city.label}',
-        child: InkWell(
+        label: state.semanticLabel,
+        child: CatchControlShell(
+          size: CatchControlSize.compact,
+          shape: CatchControlShape.pill,
+          tone: CatchControlTone.raised,
+          enabled: enabled,
+          focused: focused,
           onTap: enabled ? onTap : null,
-          borderRadius: BorderRadius.circular(CatchRadius.sm),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Text(
-                    'EXPLORE · ${city.label}'.toUpperCase(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.kicker(context, color: labelColor),
-                  ),
-                ),
-                gapW4,
-                Icon(
-                  focused
-                      ? CatchIcons.locationOnRounded
-                      : CatchIcons.locationOnOutlined,
-                  color: labelColor,
-                  size: CatchIcon.sm,
-                ),
-              ],
-            ),
+          padding: EdgeInsets.zero,
+          child: SizedBox.square(
+            dimension: CatchControlMetrics.compactIconExtent,
+            child: Icon(state.icon, size: 22, color: enabled ? t.ink : t.ink3),
           ),
         ),
       ),
     );
-  }
-
-  return Tooltip(
-    message: 'Choose city: ${city.label}',
-    child: Semantics(
-      button: true,
-      enabled: enabled,
-      label: 'Choose city: ${city.label}',
-      child: CatchControlShell(
-        size: CatchControlSize.compact,
-        shape: CatchControlShape.pill,
-        tone: CatchControlTone.raised,
-        enabled: enabled,
-        focused: focused,
-        onTap: enabled ? onTap : null,
-        padding: EdgeInsets.zero,
-        child: SizedBox.square(
-          dimension: CatchControlMetrics.compactIconExtent,
-          child: Icon(
-            focused
-                ? CatchIcons.locationOnRounded
-                : CatchIcons.locationOnOutlined,
-            size: 22,
-            color: enabled ? t.ink : t.ink3,
-          ),
-        ),
-      ),
-    ),
-  );
   }
 }
 

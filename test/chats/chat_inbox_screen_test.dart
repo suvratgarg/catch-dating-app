@@ -2,6 +2,13 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_celebration_controller.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_screen_state.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chats_search_header_controller.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -10,11 +17,6 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -191,7 +193,7 @@ void main() {
       );
       expect(
         (searchEmpty.displayState as ChatsListEmpty).kind,
-        ChatsListEmptyKind.noSearchResults,
+        ChatsListEmptyKind.noHostSearchResults,
       );
 
       final noUnread = HostInboxScreenState.fromAsync(
@@ -243,6 +245,68 @@ void main() {
     });
   });
 
+  group('ChatsListCelebrationController', () {
+    test('selects newly arrived consumer matches only', () {
+      const controller = ChatsListCelebrationController();
+      final existing = _buildMatch(id: 'existing');
+      final arrived = _buildMatch(id: 'arrived');
+
+      expect(
+        controller.newMatchesToCelebrate(
+          previous: AsyncData<List<Match>>([existing]),
+          next: AsyncData<List<Match>>([existing, arrived]),
+          isHostApp: false,
+        ),
+        [arrived],
+      );
+      expect(
+        controller.newMatchesToCelebrate(
+          previous: AsyncData<List<Match>>([existing]),
+          next: AsyncData<List<Match>>([existing, arrived]),
+          isHostApp: true,
+        ),
+        isEmpty,
+      );
+      expect(
+        controller.newMatchesToCelebrate(
+          previous: null,
+          next: AsyncData<List<Match>>([arrived]),
+          isHostApp: false,
+        ),
+        isEmpty,
+      );
+    });
+  });
+
+  group('ChatsSearchHeaderController', () {
+    test('tracks active search and closes only when empty', () {
+      final controller = ChatsSearchHeaderController();
+
+      expect(controller.isSearchActive(''), isFalse);
+      controller.setExpanded(true);
+      expect(controller.searchOpen, isTrue);
+      expect(controller.isSearchActive(''), isTrue);
+
+      expect(controller.closeAfterSubmitted('taylor'), isFalse);
+      expect(controller.searchOpen, isTrue);
+      expect(
+        controller.closeAfterFocusChanged(focused: false, query: 'mira'),
+        isFalse,
+      );
+      expect(controller.searchOpen, isTrue);
+
+      expect(controller.closeAfterSubmitted(''), isTrue);
+      expect(controller.searchOpen, isFalse);
+
+      controller.setExpanded(true);
+      expect(
+        controller.closeAfterFocusChanged(focused: false, query: ''),
+        isTrue,
+      );
+      expect(controller.searchOpen, isFalse);
+    });
+  });
+
   testWidgets('chat sliver header search expands while pinned and editable', (
     tester,
   ) async {
@@ -255,13 +319,20 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: Builder(
-              builder: (context) => CustomScrollView(
-                slivers: [
-                  ...ChatsSliverHeader().buildSlivers(context),
-                  const SliverToBoxAdapter(child: SizedBox(height: 700)),
-                ],
-              ),
+            body: Consumer(
+              builder: (context, ref, child) {
+                return CustomScrollView(
+                  slivers: [
+                    ...ChatsSliverHeader(
+                      searchValue: ref.watch(chatSearchQueryProvider),
+                      onSearchChanged: ref
+                          .read(chatSearchQueryProvider.notifier)
+                          .setQuery,
+                    ).buildSlivers(context),
+                    const SliverToBoxAdapter(child: SizedBox(height: 700)),
+                  ],
+                );
+              },
             ),
           ),
         ),
@@ -552,6 +623,56 @@ void main() {
 
     expect(find.text('Is there parking near the start?'), findsOneWidget);
     expect(find.text('Do I need ID at check-in?'), findsNothing);
+  });
+
+  testWidgets('host inbox search empty uses attendee-query copy', (
+    tester,
+  ) async {
+    AppConfig.configureEntrypointRole(AppRole.host);
+    final hostInquiry = _buildMatch(
+      id: 'host-inquiry',
+      user1Id: 'guest-1',
+      user2Id: 'host-1',
+      lastMessageAt: DateTime(2026, 4, 23, 12),
+      lastMessagePreview: 'Is there parking near the start?',
+      lastMessageSenderId: 'guest-1',
+      conversationType: MatchConversationType.clubHostInquiry,
+    );
+    final matchRepository = _FakeMatchRepository(matches: [hostInquiry]);
+    final conversationRepository = _FakeConversationRepository();
+    final container = ProviderContainer(
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        matchRepositoryProvider.overrideWithValue(matchRepository),
+        conversationRepositoryProvider.overrideWithValue(
+          conversationRepository,
+        ),
+        watchMatchesForUserProvider(
+          'host-1',
+        ).overrideWith((ref) => Stream.value([hostInquiry])),
+      ],
+    );
+    addTearDown(container.dispose);
+    container.read(chatSearchQueryProvider.notifier).setQuery('zara');
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const ChatsListScreen(),
+        ),
+      ),
+    );
+
+    await pumpFeatureUi(tester);
+
+    expect(find.text('No attendee queries match your search'), findsOneWidget);
+    expect(
+      find.text('Try another attendee name or clear the search field.'),
+      findsOneWidget,
+    );
+    expect(find.text('No chats match your search'), findsNothing);
   });
 
   testWidgets('host inbox rows navigate to host chat route', (tester) async {

@@ -13,12 +13,12 @@ import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
+import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
@@ -28,9 +28,12 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.da
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_optimistic_body.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -1057,11 +1060,10 @@ void main() {
       final event = buildEvent(
         constraints: const EventConstraints(minAge: 21, maxAge: 35),
       );
-      final plan = EventSuccessPlan.defaultForEvent(event);
 
       await pumpEventsTestApp(
         tester,
-        EventDetailBody(
+        _eventDetailBody(
           event: event,
           userProfile: user,
           clubId: 'club-1',
@@ -1072,13 +1074,11 @@ void main() {
           participation: _participation(
             status: EventParticipationStatus.attended,
           ),
+          companionState: const EventDetailCompanionState.available(),
         ),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
-          watchEventSuccessPlanProvider(
-            event.id,
-          ).overrideWith((ref) => Stream.value(plan)),
         ],
       );
 
@@ -1097,7 +1097,7 @@ void main() {
 
       await pumpEventsTestApp(
         tester,
-        EventDetailBody(
+        _eventDetailBody(
           event: event,
           userProfile: buildUser(),
           clubId: 'club-1',
@@ -1132,7 +1132,7 @@ void main() {
 
       await pumpEventsTestApp(
         tester,
-        EventDetailBody(
+        _eventDetailBody(
           event: event,
           userProfile: buildUser(),
           clubId: 'club-1',
@@ -1161,22 +1161,31 @@ void main() {
       expect(find.text('Edit your review'), findsNothing);
     });
 
-    testWidgets('renders guest roster prompt and sign-in CTA', (tester) async {
+    testWidgets('route renders guest roster prompt and sign-in CTA', (
+      tester,
+    ) async {
       final event = buildEvent();
 
       await pumpEventsTestApp(
         tester,
-        EventDetailBody(
-          event: event,
-          userProfile: null,
-          clubId: 'club-1',
-          isHost: false,
-          reviews: const [],
-          isAuthenticated: false,
-          isSaved: false,
-          participation: null,
-        ),
+        EventDetailScreen(clubId: event.clubId, eventId: event.id),
         signedInUid: null,
+        overrides: [
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          eventDetailViewModelProvider(event.id).overrideWith(
+            (ref) => AsyncData(
+              EventDetailViewModel(
+                event: event,
+                userProfile: null,
+                reviews: const [],
+                isAuthenticated: false,
+                isHost: false,
+                isSaved: false,
+                participation: null,
+              ),
+            ),
+          ),
+        ],
       );
 
       await _scrollEventDetailUntilVisible(
@@ -1199,7 +1208,7 @@ void main() {
 
       await pumpEventsTestApp(
         tester,
-        EventDetailBody(
+        _eventDetailBody(
           event: event,
           userProfile: buildUser(uid: 'host-1'),
           clubId: 'club-1',
@@ -1222,23 +1231,27 @@ void main() {
       expect(find.text('Join event — 20 spots left'), findsNothing);
     });
 
-    testWidgets('shows a full-screen celebration after a successful booking', (
+    testWidgets('route shows a full-screen celebration after booking', (
       tester,
     ) async {
       await pumpEventsTestApp(
         tester,
-        EventDetailBody(
-          event: buildEvent(),
-          userProfile: buildUser(),
-          clubId: 'club-1',
-          isHost: false,
-          reviews: const [],
-          isAuthenticated: true,
-          isSaved: false,
-          participation: null,
-        ),
+        const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          eventDetailViewModelProvider('event-1').overrideWith(
+            (ref) => AsyncData(
+              EventDetailViewModel(
+                event: buildEvent(),
+                userProfile: buildUser(),
+                reviews: const [],
+                isAuthenticated: true,
+                isHost: false,
+                isSaved: false,
+                participation: null,
+              ),
+            ),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -1251,24 +1264,30 @@ void main() {
       expect(find.text('View event'), findsOneWidget);
     });
 
-    testWidgets('shows a snackbar after cancelling a booking', (tester) async {
+    testWidgets('route shows a snackbar after cancelling a booking', (
+      tester,
+    ) async {
       final fakeEventRepository = FakeEventRepository();
 
       await pumpEventsTestApp(
         tester,
-        EventDetailBody(
-          event: buildEvent(bookedCount: 1),
-          userProfile: buildUser(),
-          clubId: 'club-1',
-          isHost: false,
-          reviews: const [],
-          isAuthenticated: true,
-          isSaved: false,
-          participation: _participation(),
-        ),
+        const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+          eventDetailViewModelProvider('event-1').overrideWith(
+            (ref) => AsyncData(
+              EventDetailViewModel(
+                event: buildEvent(bookedCount: 1),
+                userProfile: buildUser(),
+                reviews: const [],
+                isAuthenticated: true,
+                isHost: false,
+                isSaved: false,
+                participation: _participation(),
+              ),
+            ),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
           watchEventSuccessPlanProvider(
             'event-1',
@@ -1285,10 +1304,10 @@ void main() {
     testWidgets('top action buttons are tappable and the back button pops', (
       tester,
     ) async {
-      final fakeSavedEventRepository = FakeSavedEventRepository();
       final event = buildEvent();
       var sharedEventId = '';
       CalendarEventPayload? calendarEvent;
+      var saveTapped = false;
 
       await tester.pumpWidget(
         ProviderScope(
@@ -1297,16 +1316,9 @@ void main() {
             paymentRepositoryProvider.overrideWithValue(
               FakePaymentRepository(),
             ),
-            savedEventRepositoryProvider.overrideWithValue(
-              fakeSavedEventRepository,
-            ),
             watchEventSuccessPlanProvider(
               'event-1',
             ).overrideWith((ref) => Stream.value(null)),
-            nativeCalendarLauncherProvider.overrideWithValue((event) async {
-              calendarEvent = event;
-              return true;
-            }),
           ],
           child: MaterialApp(
             theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
@@ -1314,7 +1326,7 @@ void main() {
             routes: {
               '/': (context) =>
                   const Scaffold(body: Center(child: Text('Home'))),
-              '/detail': (context) => EventDetailBody(
+              '/detail': (context) => _eventDetailBody(
                 event: event,
                 userProfile: buildUser(),
                 clubId: 'club-1',
@@ -1323,8 +1335,16 @@ void main() {
                 isAuthenticated: true,
                 isSaved: false,
                 participation: _participation(),
-                onShareEvent: (_, event) async {
+                showAddToCalendar: true,
+                onBack: () => Navigator.of(context).pop(),
+                onShare: (_) {
                   sharedEventId = event.id;
+                },
+                onAddToCalendar: (_) {
+                  calendarEvent = calendarEventPayloadForEvent(event);
+                },
+                onToggleSaved: () {
+                  saveTapped = true;
                 },
               ),
             },
@@ -1361,7 +1381,7 @@ void main() {
 
       expect(sharedEventId, 'event-1');
       expect(calendarEvent?.title, event.title);
-      expect(fakeSavedEventRepository.savedEventId, 'event-1');
+      expect(saveTapped, isTrue);
       expect(find.text('Home'), findsOneWidget);
     });
 
@@ -1381,7 +1401,7 @@ void main() {
 
       await pumpEventsTestApp(
         tester,
-        EventDetailBody(
+        _eventDetailBody(
           event: event,
           userProfile: buildUser(),
           clubId: 'club-1',
@@ -1392,6 +1412,18 @@ void main() {
           participation: _participation(),
           inviteCode: 'VIP42',
           inviteLinkId: 'invite-link-1',
+          onShare: (buttonContext) => unawaited(
+            showEventShareCardSheet(
+              buttonContext,
+              event: event,
+              share: ProviderScope.containerOf(
+                buttonContext,
+                listen: false,
+              ).read(externalShareControllerProvider),
+              inviteCode: 'VIP42',
+              inviteLinkId: 'invite-link-1',
+            ),
+          ),
           now: DateTime(2026, 5, 25),
         ),
         overrides: [
@@ -1436,25 +1468,29 @@ void main() {
       expect(sharedParams?.fileNameOverrides, ['catch-event-invite.png']);
     });
 
-    testWidgets('saved event button renders selected and unsaves', (
+    testWidgets('route saved event button renders selected and unsaves', (
       tester,
     ) async {
       final fakeSavedEventRepository = FakeSavedEventRepository();
 
       await pumpEventsTestApp(
         tester,
-        EventDetailBody(
-          event: buildEvent(),
-          userProfile: buildUser(),
-          clubId: 'club-1',
-          isHost: false,
-          reviews: const [],
-          isAuthenticated: true,
-          isSaved: true,
-          participation: null,
-        ),
+        const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          eventDetailViewModelProvider('event-1').overrideWith(
+            (ref) => AsyncData(
+              EventDetailViewModel(
+                event: buildEvent(),
+                userProfile: buildUser(),
+                reviews: const [],
+                isAuthenticated: true,
+                isHost: false,
+                isSaved: true,
+                participation: null,
+              ),
+            ),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
           savedEventRepositoryProvider.overrideWithValue(
             fakeSavedEventRepository,
@@ -1483,7 +1519,7 @@ void main() {
         routes: [
           GoRoute(
             path: '/detail',
-            builder: (context, state) => EventDetailBody(
+            builder: (context, state) => _eventDetailBody(
               event: event,
               userProfile: buildUser(),
               clubId: 'club-1',
@@ -1492,6 +1528,10 @@ void main() {
               isAuthenticated: true,
               isSaved: false,
               participation: null,
+              onLocationTap: () => context.pushNamed(
+                Routes.eventLocationMapScreen.name,
+                pathParameters: {'eventId': event.id},
+              ),
             ),
           ),
           GoRoute(
@@ -1544,6 +1584,97 @@ void main() {
       expect(find.text('Get directions'), findsOneWidget);
     });
   });
+}
+
+Widget _eventDetailBody({
+  required Event event,
+  required UserProfile? userProfile,
+  required String clubId,
+  required List<Review> reviews,
+  required bool isAuthenticated,
+  required bool isHost,
+  required bool isSaved,
+  required EventParticipation? participation,
+  EventDetailSectionVisibilityState? sectionVisibility,
+  bool savePending = false,
+  VoidCallback? onBack,
+  ValueChanged<BuildContext>? onShare,
+  bool showAddToCalendar = false,
+  ValueChanged<BuildContext>? onAddToCalendar,
+  VoidCallback? onToggleSaved,
+  EventDetailCompanionState companionState =
+      const EventDetailCompanionState.hidden(),
+  EventDetailHostState hostState = const EventDetailHostState.hidden(),
+  EventDetailSocialState? socialState,
+  VoidCallback? onLocationTap,
+  VoidCallback? onOpenCompanion,
+  VoidCallback? onRetryCompanion,
+  ValueChanged<String>? onViewClub,
+  EventDetailMessageHostCallback? onMessageHost,
+  VoidCallback? onRetryHosts,
+  String? inviteCode,
+  String? inviteLinkId,
+  DateTime? now,
+  EventDetailPresentationMode presentationMode =
+      EventDetailPresentationMode.standard,
+  Object? heroTag,
+}) {
+  return EventDetailBody(
+    event: event,
+    userProfile: userProfile,
+    clubId: clubId,
+    reviews: reviews,
+    isAuthenticated: isAuthenticated,
+    sectionVisibility:
+        sectionVisibility ??
+        eventDetailSectionVisibilityStateFrom(
+          event: event,
+          participation: participation,
+          isHostApp: false,
+          isHost: isHost,
+          now: now ?? DateTime.now(),
+        ),
+    isSaved: isSaved,
+    participation: participation,
+    savePending: savePending,
+    onBack: onBack ?? () {},
+    onShare: onShare ?? (_) {},
+    showAddToCalendar: showAddToCalendar,
+    onAddToCalendar: onAddToCalendar ?? (_) {},
+    onToggleSaved: onToggleSaved ?? () {},
+    companionState: companionState,
+    hostState: hostState,
+    socialState:
+        socialState ??
+        eventDetailSocialStateFrom(
+          event: event,
+          userProfile: userProfile,
+          isAuthenticated: isAuthenticated,
+          renderAsHost:
+              (sectionVisibility ??
+                      eventDetailSectionVisibilityStateFrom(
+                        event: event,
+                        participation: participation,
+                        isHostApp: false,
+                        isHost: isHost,
+                        now: now ?? DateTime.now(),
+                      ))
+                  .renderSocialAsHost,
+          participation: participation,
+          now: now ?? DateTime.now(),
+        ),
+    onLocationTap: onLocationTap,
+    onOpenCompanion: onOpenCompanion ?? () {},
+    onRetryCompanion: onRetryCompanion ?? () {},
+    onViewClub: onViewClub ?? (_) {},
+    onMessageHost: onMessageHost ?? (_, _) {},
+    onRetryHosts: onRetryHosts ?? () {},
+    inviteCode: inviteCode,
+    inviteLinkId: inviteLinkId,
+    now: now,
+    presentationMode: presentationMode,
+    heroTag: heroTag,
+  );
 }
 
 Future<void> _pumpUntilFound(

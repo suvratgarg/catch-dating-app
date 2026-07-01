@@ -124,6 +124,8 @@ class CompanionPaperScaffold extends StatelessWidget {
     required this.presentation,
     required this.showSelfCheckIn,
     required this.eventEnded,
+    required this.selfCheckInActionState,
+    required this.onSelfCheckIn,
   });
 
   final Event event;
@@ -131,6 +133,8 @@ class CompanionPaperScaffold extends StatelessWidget {
   final EventSuccessMomentPresentation presentation;
   final bool showSelfCheckIn;
   final bool eventEnded;
+  final SelfCheckInActionState selfCheckInActionState;
+  final Future<void> Function() onSelfCheckIn;
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +150,11 @@ class CompanionPaperScaffold extends StatelessWidget {
                 CatchSpacing.screenPx,
                 CatchSpacing.s3,
               ),
-              child: PaperSelfCheckInBar(event: event),
+              child: PaperSelfCheckInBar(
+                event: event,
+                actionState: selfCheckInActionState,
+                onSelfCheckIn: onSelfCheckIn,
+              ),
             )
           : null,
       body: SafeArea(
@@ -716,21 +724,26 @@ class PaperPrivacyCard extends StatelessWidget {
   }
 }
 
-class PaperSelfCheckInBar extends ConsumerWidget {
-  const PaperSelfCheckInBar({required this.event});
+class PaperSelfCheckInBar extends StatelessWidget {
+  const PaperSelfCheckInBar({
+    required this.event,
+    required this.actionState,
+    required this.onSelfCheckIn,
+  });
 
   final Event event;
+  final SelfCheckInActionState actionState;
+  final Future<void> Function() onSelfCheckIn;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final mutation = ref.watch(EventBookingController.selfCheckInMutation);
+  Widget build(BuildContext context) {
     return CatchButton(
       label: "I'm here - check me in",
       icon: Icon(CatchIcons.locationOnOutlined),
-      isLoading: mutation.isPending,
-      onPressed: mutation.isPending
+      isLoading: actionState.isCheckingIn,
+      onPressed: actionState.isCheckingIn
           ? null
-          : () => _performSelfCheckIn(ref, event),
+          : () => unawaited(onSelfCheckIn()),
       fullWidth: true,
       size: CatchButtonSize.lg,
     );
@@ -806,20 +819,6 @@ String _paperTicketCode(Event event) {
       .toUpperCase()
       .padRight(7, 'X');
   return 'CTH-${compactId.substring(0, 4)}-${compactId.substring(4, 7)}';
-}
-
-void _performSelfCheckIn(WidgetRef ref, Event event) {
-  unawaited(
-    ref
-        .read(eventSuccessLiveEffectsControllerProvider)
-        .play(EventSuccessLiveEffectKind.liveEntry),
-  );
-  EventBookingController.selfCheckInMutation.run(
-    ref,
-    (tx) => tx
-        .get(eventBookingControllerProvider.notifier)
-        .selfCheckIn(eventId: event.id),
-  );
 }
 
 class CompanionMomentStage extends StatelessWidget {

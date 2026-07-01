@@ -39,8 +39,10 @@ import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.d
 import 'package:catch_dating_app/events/presentation/widgets/booking_conflict_sheet.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
@@ -432,10 +434,14 @@ Widget eventDetailSocialSectionStates(BuildContext context) {
             clubId: _clubId,
             reviews: const [],
             userProfile: null,
-            isAuthenticated: false,
-            isHost: false,
-            participation: null,
-            now: _now,
+            state: eventDetailSocialStateFrom(
+              event: _event,
+              userProfile: null,
+              isAuthenticated: false,
+              renderAsHost: false,
+              participation: null,
+              now: _now,
+            ),
           ),
         ),
       ),
@@ -449,10 +455,14 @@ Widget eventDetailSocialSectionStates(BuildContext context) {
             clubId: _clubId,
             reviews: const [],
             userProfile: _viewer,
-            isAuthenticated: true,
-            isHost: false,
-            participation: _signedUp,
-            now: _now,
+            state: eventDetailSocialStateFrom(
+              event: _event,
+              userProfile: _viewer,
+              isAuthenticated: true,
+              renderAsHost: false,
+              participation: _signedUp,
+              now: _now,
+            ),
           ),
         ),
       ),
@@ -466,10 +476,14 @@ Widget eventDetailSocialSectionStates(BuildContext context) {
             clubId: _clubId,
             reviews: const [],
             userProfile: _viewer,
-            isAuthenticated: true,
-            isHost: false,
-            participation: null,
-            now: _now,
+            state: eventDetailSocialStateFrom(
+              event: _emptyEvent,
+              userProfile: _viewer,
+              isAuthenticated: true,
+              renderAsHost: false,
+              participation: null,
+              now: _now,
+            ),
           ),
         ),
       ),
@@ -484,10 +498,14 @@ Widget eventDetailSocialSectionStates(BuildContext context) {
             clubId: _clubId,
             reviews: _reviews,
             userProfile: _viewer,
-            isAuthenticated: true,
-            isHost: false,
-            participation: _attended,
-            now: _now,
+            state: eventDetailSocialStateFrom(
+              event: _pastEvent,
+              userProfile: _viewer,
+              isAuthenticated: true,
+              renderAsHost: false,
+              participation: _attended,
+              now: _now,
+            ),
           ),
         ),
       ),
@@ -879,9 +897,37 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
               clubId: _clubId,
               reviews: const [],
               isAuthenticated: true,
-              isHost: false,
+              sectionVisibility: eventDetailSectionVisibilityStateFrom(
+                event: _event,
+                participation: null,
+                isHostApp: false,
+                isHost: false,
+                now: _now,
+              ),
               isSaved: false,
               participation: null,
+              savePending: false,
+              onBack: _noop,
+              onShare: _noopContext,
+              showAddToCalendar: false,
+              onAddToCalendar: _noopContext,
+              onToggleSaved: _noop,
+              companionState: const EventDetailCompanionState.hidden(),
+              hostState: const EventDetailHostState.hidden(),
+              socialState: eventDetailSocialStateFrom(
+                event: _event,
+                userProfile: _viewer,
+                isAuthenticated: true,
+                renderAsHost: false,
+                participation: null,
+                now: _now,
+              ),
+              onLocationTap: null,
+              onOpenCompanion: _noop,
+              onRetryCompanion: _noop,
+              onViewClub: _noopString,
+              onMessageHost: _noopMessageHost,
+              onRetryHosts: _noop,
               now: _now,
             ),
           ),
@@ -899,9 +945,37 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
               clubId: _clubId,
               reviews: _reviews,
               isAuthenticated: true,
-              isHost: false,
+              sectionVisibility: eventDetailSectionVisibilityStateFrom(
+                event: _event,
+                participation: _signedUp,
+                isHostApp: false,
+                isHost: false,
+                now: _now,
+              ),
               isSaved: true,
               participation: _signedUp,
+              savePending: false,
+              onBack: _noop,
+              onShare: _noopContext,
+              showAddToCalendar: false,
+              onAddToCalendar: _noopContext,
+              onToggleSaved: _noop,
+              companionState: const EventDetailCompanionState.available(),
+              hostState: const EventDetailHostState.hidden(),
+              socialState: eventDetailSocialStateFrom(
+                event: _event,
+                userProfile: _viewer,
+                isAuthenticated: true,
+                renderAsHost: false,
+                participation: _signedUp,
+                now: _now,
+              ),
+              onLocationTap: null,
+              onOpenCompanion: _noop,
+              onRetryCompanion: _noop,
+              onViewClub: _noopString,
+              onMessageHost: _noopMessageHost,
+              onRetryHosts: _noop,
               now: _now,
             ),
           ),
@@ -919,12 +993,191 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
               clubId: _clubId,
               reviews: _reviews,
               isAuthenticated: true,
-              isHost: false,
+              sectionVisibility: eventDetailSectionVisibilityStateFrom(
+                event: _event,
+                participation: _signedUp,
+                isHostApp: false,
+                isHost: false,
+                now: _now,
+              ),
               isSaved: true,
               participation: _signedUp,
+              savePending: false,
+              onBack: _noop,
+              onShare: _noopContext,
+              showAddToCalendar: false,
+              onAddToCalendar: _noopContext,
+              onToggleSaved: _noop,
+              companionState: const EventDetailCompanionState.hidden(),
+              hostState: const EventDetailHostState.hidden(),
+              socialState: eventDetailSocialStateFrom(
+                event: _event,
+                userProfile: _viewer,
+                isAuthenticated: true,
+                renderAsHost: false,
+                participation: _signedUp,
+                now: _now,
+              ),
+              onLocationTap: null,
+              onOpenCompanion: _noop,
+              onRetryCompanion: _noop,
+              onViewClub: _noopString,
+              onMessageHost: _noopMessageHost,
+              onRetryHosts: _noop,
               now: _now,
               presentationMode: EventDetailPresentationMode.ticket,
             ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Companion entry states',
+  type: EventCompanionEntry,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailCompanionEntryStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'EventCompanionEntry',
+    catalogId: 'section.event.companion_entry',
+    children: [
+      _StateCard(
+        label: 'hidden',
+        child: _DeviceFrame(
+          child: EventCompanionEntry(
+            state: const EventDetailCompanionState.hidden(),
+            surfaceStyle: EventDetailSurfaceStyle.light(
+              CatchTokens.of(context),
+            ),
+            onOpen: _noop,
+            onRetry: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'loading',
+        child: _DeviceFrame(
+          child: EventCompanionEntry(
+            state: const EventDetailCompanionState.loading(),
+            surfaceStyle: EventDetailSurfaceStyle.light(
+              CatchTokens.of(context),
+            ),
+            onOpen: _noop,
+            onRetry: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'available',
+        child: _DeviceFrame(
+          child: EventCompanionEntry(
+            state: const EventDetailCompanionState.available(),
+            surfaceStyle: EventDetailSurfaceStyle.light(
+              CatchTokens.of(context),
+            ),
+            onOpen: _noop,
+            onRetry: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'error',
+        child: _DeviceFrame(
+          child: EventCompanionEntry(
+            state: EventDetailCompanionState.error(
+              StateError('Could not load event companion.'),
+            ),
+            surfaceStyle: EventDetailSurfaceStyle.light(
+              CatchTokens.of(context),
+            ),
+            onOpen: _noop,
+            onRetry: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Host section states',
+  type: EventDetailHostsSection,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailHostSectionStates(BuildContext context) {
+  final style = EventDetailSurfaceStyle.light(CatchTokens.of(context));
+  return _CatalogScreen(
+    title: 'EventDetailHostsSection',
+    catalogId: 'section.event.hosts',
+    children: [
+      _StateCard(
+        label: 'hidden',
+        child: _DeviceFrame(
+          child: EventDetailHostsSection(
+            event: _event,
+            state: const EventDetailHostState.hidden(),
+            onViewClub: _noopString,
+            onMessageHost: _noopMessageHost,
+            onRetry: _noop,
+            surfaceStyle: style,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'loading',
+        child: _DeviceFrame(
+          child: EventDetailHostsSection(
+            event: _event,
+            state: const EventDetailHostState.loading(),
+            onViewClub: _noopString,
+            onMessageHost: _noopMessageHost,
+            onRetry: _noop,
+            surfaceStyle: style,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'content',
+        child: _DeviceFrame(
+          child: EventDetailHostsSection(
+            event: _event,
+            state: const EventDetailHostState.content(
+              clubId: _clubId,
+              hostUid: 'host-mira',
+              hostName: 'Mira Shah',
+              photoUrl:
+                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&q=80',
+              meta: 'HOSTING SINCE JAN 2025 · BANDRA',
+              verified: true,
+              stats: [
+                EventDetailHostStat(value: '128', label: 'Members'),
+                EventDetailHostStat(value: '4.9', label: 'Rating'),
+                EventDetailHostStat(value: '42', label: 'Reviews'),
+              ],
+              canMessage: true,
+            ),
+            onViewClub: _noopString,
+            onMessageHost: _noopMessageHost,
+            onRetry: _noop,
+            surfaceStyle: style,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'error',
+        child: _DeviceFrame(
+          child: EventDetailHostsSection(
+            event: _event,
+            state: EventDetailHostState.error(
+              StateError('Could not load host details.'),
+            ),
+            onViewClub: _noopString,
+            onMessageHost: _noopMessageHost,
+            onRetry: _noop,
+            surfaceStyle: style,
           ),
         ),
       ),
@@ -1996,3 +2249,9 @@ const _avatarItems = [
 ];
 
 void _noop() {}
+
+void _noopContext(BuildContext context) {}
+
+void _noopString(String value) {}
+
+void _noopMessageHost(String clubId, String hostUid) {}

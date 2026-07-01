@@ -8,6 +8,7 @@ import 'package:catch_dating_app/auth/presentation/otp_page.dart';
 import 'package:catch_dating_app/auth/presentation/phone_page.dart';
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
+import 'package:catch_dating_app/events/presentation/calendar/calendar_screen_state.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
@@ -26,6 +27,7 @@ import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
+import 'package:catch_dating_app/events/presentation/event_location_map_state.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
@@ -118,7 +120,20 @@ final _calendarSavedEvents = <Event>[
     priceInPaise: 120000,
   ),
 ];
+final _calendarSummary = CalendarEventSummary.from(
+  signedUpEvents: _calendarJoinedEvents,
+  savedEvents: _calendarSavedEvents,
+  now: _calendarNow,
+);
+const _calendarWeekHeaderPreviewHeight = 150.0;
+const _calendarMonthHeaderPreviewHeight = 360.0;
 const _calendarClubNames = {'design-club': 'Sea Face Social'};
+const double _utilityDeviceFrameMaxWidth = 390;
+const double _utilityDeviceFrameHeight = 720;
+const double _utilitySheetFrameHeight = 560;
+const double _utilityDialogFrameHeight = 360;
+const double _utilityPhotoSlotWidth = 168;
+const double _utilityPhotoSlotHeight = 224;
 const _forceUpdateConfig = AppVersionConfig(
   minVersion: '4.2.0',
   minBuildAndroid: 420,
@@ -700,6 +715,231 @@ Widget calendarScreenStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Loading state',
+  type: CalendarLoadingScreen,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarLoadingScreenStates(BuildContext context) {
+  return const _DeviceFrame(child: Scaffold(body: CalendarLoadingScreen()));
+}
+
+@widgetbook.UseCase(
+  name: 'Header states',
+  type: CalendarDateHeader,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarDateHeaderStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarDateHeader',
+    contractId: 'component.calendar.date_header',
+    children: [
+      _StateCard(
+        label: 'week strip',
+        child: SizedBox(
+          height: _calendarWeekHeaderPreviewHeight,
+          child: CalendarDateHeader(
+            summary: _calendarSummary,
+            selectedDate: _calendarSummary.anchorDate,
+            expanded: false,
+            onDateSelected: (_) {},
+            onTodayPressed: _noop,
+            onVerticalDragDelta: (_) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'month grid',
+        child: SizedBox(
+          height: _calendarMonthHeaderPreviewHeight,
+          child: CalendarDateHeader(
+            summary: _calendarSummary,
+            selectedDate: _calendarSummary.anchorDate,
+            expanded: true,
+            onDateSelected: (_) {},
+            onTodayPressed: _noop,
+            onVerticalDragDelta: (_) {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Skeleton state',
+  type: CalendarDateHeaderSkeleton,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarDateHeaderSkeletonStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarDateHeaderSkeleton',
+    contractId: 'component.calendar.date_header_skeleton',
+    children: const [
+      _StateCard(label: 'loading', child: CalendarDateHeaderSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Skeleton state',
+  type: CalendarWeekStripSkeleton,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarWeekStripSkeletonStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarWeekStripSkeleton',
+    contractId: 'component.calendar.week_strip_skeleton',
+    children: const [
+      _StateCard(label: 'loading', child: CalendarWeekStripSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Title row state',
+  type: CalendarTitleRow,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarTitleRowStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarTitleRow',
+    contractId: 'component.calendar.title_row',
+    children: [
+      _StateCard(
+        label: 'current month',
+        child: CalendarTitleRow(title: 'July 2026', onTodayPressed: _noop),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Stats state',
+  type: CalendarStatsHeader,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarStatsHeaderStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarStatsHeader',
+    contractId: 'component.calendar.stats_header',
+    children: [
+      _StateCard(
+        label: 'joined saved cancelled',
+        child: CalendarStatsHeader(summary: _calendarSummary),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Skeleton state',
+  type: CalendarStatsHeaderSkeleton,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarStatsHeaderSkeletonStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarStatsHeaderSkeleton',
+    contractId: 'component.calendar.stats_header_skeleton',
+    children: const [
+      _StateCard(label: 'loading', child: CalendarStatsHeaderSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Skeleton state',
+  type: CalendarStatSkeleton,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarStatSkeletonStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarStatSkeleton',
+    contractId: 'component.calendar.stat_skeleton',
+    children: const [
+      _StateCard(label: 'single stat', child: CalendarStatSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Week strip state',
+  type: CalendarWeekStrip,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarWeekStripStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarWeekStrip',
+    contractId: 'component.calendar.week_strip',
+    children: [
+      _StateCard(
+        label: 'event markers',
+        child: CalendarWeekStrip(
+          summary: _calendarSummary,
+          selectedDate: _calendarSummary.anchorDate,
+          onDateSelected: (_) {},
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Month grid state',
+  type: CalendarMonthGrid,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarMonthGridStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarMonthGrid',
+    contractId: 'component.calendar.month_grid',
+    children: [
+      _StateCard(
+        label: 'event markers',
+        child: CalendarMonthGrid(
+          summary: _calendarSummary,
+          selectedDate: _calendarSummary.anchorDate,
+          onDateSelected: (_) {},
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Divider state',
+  type: CalendarStatDivider,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarStatDividerStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarStatDivider',
+    contractId: 'component.calendar.stat_divider',
+    children: const [
+      _StateCard(
+        label: 'vertical rule',
+        child: Center(child: CalendarStatDivider()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Empty message state',
+  type: CalendarMessage,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarMessageStates(BuildContext context) {
+  return const _DeviceFrame(
+    child: Scaffold(
+      body: CalendarMessage(
+        title: 'No planned events yet',
+        body: 'Events you book or save will show up here by day and time.',
+      ),
+    ),
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Scenario states',
   type: EventPolicyLabScreen,
   path: '[P3 utility surfaces]/Event policy lab',
@@ -1046,11 +1286,12 @@ Widget eventLocationMapScreenStates(BuildContext context) {
       _StateCard(
         label: 'network tiles disabled',
         child: _DeviceFrame(
-          child: _ExternalLinkScope(
-            child: EventLocationMapScreen(
-              event: _event,
+          child: EventLocationMapScreen(
+            state: EventLocationMapState.fromEvent(
+              _event,
               enableNetworkTiles: false,
             ),
+            onGetDirections: () {},
           ),
         ),
       ),
@@ -1058,8 +1299,11 @@ Widget eventLocationMapScreenStates(BuildContext context) {
         label: 'no exact coordinate',
         child: _DeviceFrame(
           child: EventLocationMapScreen(
-            event: _eventWithoutCoordinate,
-            enableNetworkTiles: false,
+            state: EventLocationMapState.fromEvent(
+              _eventWithoutCoordinate,
+              enableNetworkTiles: false,
+            ),
+            onGetDirections: () {},
           ),
         ),
       ),
@@ -2469,20 +2713,6 @@ class _MapRouteScope extends StatelessWidget {
   }
 }
 
-class _ExternalLinkScope extends StatelessWidget {
-  const _ExternalLinkScope({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return ProviderScope(
-      overrides: [externalUrlLauncherProvider.overrideWithValue(_noopLauncher)],
-      child: child,
-    );
-  }
-}
-
 class _ActivityScreenScope extends StatelessWidget {
   const _ActivityScreenScope({
     required this.child,
@@ -2737,7 +2967,9 @@ class _DeviceFrame extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 390),
+        constraints: const BoxConstraints(
+          maxWidth: _utilityDeviceFrameMaxWidth,
+        ),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: t.surface,
@@ -2746,7 +2978,7 @@ class _DeviceFrame extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.lg),
-            child: SizedBox(height: 720, child: child),
+            child: SizedBox(height: _utilityDeviceFrameHeight, child: child),
           ),
         ),
       ),
@@ -2764,7 +2996,9 @@ class _SheetFrame extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 390),
+        constraints: const BoxConstraints(
+          maxWidth: _utilityDeviceFrameMaxWidth,
+        ),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: t.bg,
@@ -2774,7 +3008,7 @@ class _SheetFrame extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.lg),
             child: SizedBox(
-              height: 560,
+              height: _utilitySheetFrameHeight,
               child: Align(alignment: Alignment.bottomCenter, child: child),
             ),
           ),
@@ -2794,7 +3028,10 @@ class _DialogFrame extends StatelessWidget {
     final t = CatchTokens.of(context);
     return ColoredBox(
       color: t.ink.withValues(alpha: CatchOpacity.confirmDialogScrim),
-      child: SizedBox(height: 360, child: Center(child: child)),
+      child: SizedBox(
+        height: _utilityDialogFrameHeight,
+        child: Center(child: child),
+      ),
     );
   }
 }
@@ -2908,7 +3145,13 @@ Future<bool> _noopLauncher(Uri uri, {Object? mode}) async {
 }
 
 Widget _photoSlotFrame({required Widget child}) {
-  return Center(child: SizedBox(width: 168, height: 224, child: child));
+  return Center(
+    child: SizedBox(
+      width: _utilityPhotoSlotWidth,
+      height: _utilityPhotoSlotHeight,
+      child: child,
+    ),
+  );
 }
 
 void _noop() {}

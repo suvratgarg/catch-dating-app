@@ -128,6 +128,17 @@ node tool/marketing/export_app_screenshots.mjs --check-design-json
 node tool/marketing/export_app_screenshots.mjs --update-design-json
 ```
 
+## Marketing Website Route Contracts
+
+Public marketing website routes are tracked in `design/website/routes.json` and
+validated against the React route shell, metadata registry, postbuild static
+output, and generated organizer listings.
+
+```sh
+node tool/marketing/check_website_routes.mjs --check
+node tool/run.mjs check marketing:website-routes
+```
+
 ## Host Discovery
 
 Organizer discovery starts with a machine-readable candidate backlog, not public
@@ -181,6 +192,7 @@ node tool/agent/context_pack.mjs --task architecture-refactor --paths lib/events
 node tool/agent/context_pack.mjs --task doc-hygiene --paths docs --json
 node tool/agent/check_agent_readiness.mjs
 node tool/agent/check_agent_readiness.mjs --record-metric
+node tool/agent/record_delegation_outcome.mjs --task-id example --mode worker-patch --status integrated --parent-review-outcome accepted --dry-run
 node tool/run.mjs check --category agent
 ```
 
@@ -189,6 +201,9 @@ node tool/run.mjs check --category agent
 `docs/agent_regression_ledger.json`, project-local skill routers in
 `docs/agent_skills/`, and trendable measurements in
 `docs/audit_registry/agent_metrics.jsonl`.
+When using parallel agents, keep subagent work in disposable Git worktrees and
+record the parent-reviewed result with
+`tool/agent/record_delegation_outcome.mjs`.
 
 ## Design Tokens
 

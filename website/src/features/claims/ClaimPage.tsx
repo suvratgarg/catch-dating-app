@@ -1,5 +1,6 @@
 import type {CSSProperties} from "react";
-import {ProcessStatusPanel, SiteFooter, SiteHeader} from "../../components/site";
+import {ProcessStatusPanel} from "../../components/site";
+import {SiteFooter, SiteHeader} from "../../shared/site";
 import {
   AuthStatusRow,
   Button,

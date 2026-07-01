@@ -12,6 +12,7 @@ on:
       - "website/**"
       - "packages/web-config/**"
       - "design/tokens/**"
+      - "design/website/**"
       - "tool/ci/toolchain.env"
       - "tool/design_tokens.dart"
       - "tool/env/check_web_hosting_env.mjs"
@@ -29,6 +30,7 @@ on:
       - "website/**"
       - "packages/web-config/**"
       - "design/tokens/**"
+      - "design/website/**"
       - "tool/ci/toolchain.env"
       - "tool/design_tokens.dart"
       - "tool/env/check_web_hosting_env.mjs"
@@ -78,6 +80,9 @@ jobs:
 
       - name: Check generated organizer listings
         run: npm --workspace catch-marketing run check:organizer-listings
+
+      - name: Check marketing route contracts
+        run: npm --workspace catch-marketing run check:routes
 
       - name: Build marketing website
         run: npm run web:marketing:build

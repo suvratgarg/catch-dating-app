@@ -1,49 +1,145 @@
-import 'dart:async';
-
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';
-import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
-import 'package:catch_dating_app/events/data/event_calendar_links.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
-import 'package:catch_dating_app/routing/app_deep_links.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-typedef EventShareHandler =
-    Future<void> Function(BuildContext context, Event event);
+typedef EventDetailMessageHostCallback =
+    void Function(String clubId, String hostUid);
 
-class EventDetailBody extends ConsumerWidget {
+enum EventDetailCompanionStatus { hidden, loading, available, error }
+
+@immutable
+class EventDetailCompanionState {
+  const EventDetailCompanionState._({required this.status, this.error});
+
+  const EventDetailCompanionState.hidden()
+    : this._(status: EventDetailCompanionStatus.hidden);
+
+  const EventDetailCompanionState.loading()
+    : this._(status: EventDetailCompanionStatus.loading);
+
+  const EventDetailCompanionState.available()
+    : this._(status: EventDetailCompanionStatus.available);
+
+  const EventDetailCompanionState.error(Object error)
+    : this._(status: EventDetailCompanionStatus.error, error: error);
+
+  final EventDetailCompanionStatus status;
+  final Object? error;
+}
+
+enum EventDetailHostStatus { hidden, loading, content, error }
+
+@immutable
+class EventDetailHostState {
+  const EventDetailHostState._({
+    required this.status,
+    this.error,
+    this.clubId,
+    this.hostUid,
+    this.hostName,
+    this.photoUrl,
+    this.meta,
+    this.verified = false,
+    this.stats = const <EventDetailHostStat>[],
+    this.canMessage = false,
+  });
+
+  const EventDetailHostState.hidden()
+    : this._(status: EventDetailHostStatus.hidden);
+
+  const EventDetailHostState.loading()
+    : this._(status: EventDetailHostStatus.loading);
+
+  const EventDetailHostState.error(Object error)
+    : this._(status: EventDetailHostStatus.error, error: error);
+
+  const EventDetailHostState.content({
+    required String clubId,
+    required String hostName,
+    String? hostUid,
+    String? photoUrl,
+    String? meta,
+    bool verified = false,
+    List<EventDetailHostStat> stats = const <EventDetailHostStat>[],
+    bool canMessage = false,
+  }) : this._(
+         status: EventDetailHostStatus.content,
+         clubId: clubId,
+         hostUid: hostUid,
+         hostName: hostName,
+         photoUrl: photoUrl,
+         meta: meta,
+         verified: verified,
+         stats: stats,
+         canMessage: canMessage,
+       );
+
+  final EventDetailHostStatus status;
+  final Object? error;
+  final String? clubId;
+  final String? hostUid;
+  final String? hostName;
+  final String? photoUrl;
+  final String? meta;
+  final bool verified;
+  final List<EventDetailHostStat> stats;
+  final bool canMessage;
+}
+
+@immutable
+class EventDetailSectionVisibilityState {
+  const EventDetailSectionVisibilityState({
+    required this.showConsumerActions,
+    required this.renderSocialAsHost,
+    required this.showInviteLoop,
+    required this.showBottomNavigation,
+  });
+
+  final bool showConsumerActions;
+  final bool renderSocialAsHost;
+  final bool showInviteLoop;
+  final bool showBottomNavigation;
+}
+
+EventDetailSectionVisibilityState eventDetailSectionVisibilityStateFrom({
+  required Event event,
+  required EventParticipation? participation,
+  required bool isHostApp,
+  required bool isHost,
+  required DateTime now,
+}) {
+  final showConsumerActions = !isHostApp && !isHost;
+  return EventDetailSectionVisibilityState(
+    showConsumerActions: showConsumerActions,
+    renderSocialAsHost: isHostApp || isHost,
+    showInviteLoop: eventDetailCanShowInviteLoop(
+      event: event,
+      participation: participation,
+      showConsumerActions: showConsumerActions,
+      now: now,
+    ),
+    showBottomNavigation: !isHostApp,
+  );
+}
+
+class EventDetailBody extends StatelessWidget {
   const EventDetailBody({
     super.key,
     required this.event,
@@ -51,12 +147,27 @@ class EventDetailBody extends ConsumerWidget {
     required this.clubId,
     required this.reviews,
     required this.isAuthenticated,
-    required this.isHost,
+    required this.sectionVisibility,
     required this.isSaved,
     required this.participation,
+    required this.savePending,
+    required this.onBack,
+    required this.onShare,
+    required this.showAddToCalendar,
+    required this.onAddToCalendar,
+    required this.onToggleSaved,
+    required this.companionState,
+    required this.hostState,
+    required this.socialState,
+    required this.onLocationTap,
+    required this.onOpenCompanion,
+    required this.onRetryCompanion,
+    required this.onViewClub,
+    required this.onMessageHost,
+    required this.onRetryHosts,
+    this.surfaceStyle,
     this.inviteCode,
     this.inviteLinkId,
-    this.onShareEvent,
     this.now,
     this.presentationMode = EventDetailPresentationMode.standard,
     this.heroTag,
@@ -67,181 +178,114 @@ class EventDetailBody extends ConsumerWidget {
   final String clubId;
   final List<Review> reviews;
   final bool isAuthenticated;
-  final bool isHost;
+  final EventDetailSectionVisibilityState sectionVisibility;
   final bool isSaved;
   final EventParticipation? participation;
+  final EventDetailSurfaceStyle? surfaceStyle;
+  final bool savePending;
+  final VoidCallback onBack;
+  final ValueChanged<BuildContext> onShare;
+  final bool showAddToCalendar;
+  final ValueChanged<BuildContext> onAddToCalendar;
+  final VoidCallback onToggleSaved;
+  final EventDetailCompanionState companionState;
+  final EventDetailHostState hostState;
+  final EventDetailSocialState socialState;
+  final VoidCallback? onLocationTap;
+  final VoidCallback onOpenCompanion;
+  final VoidCallback onRetryCompanion;
+  final ValueChanged<String> onViewClub;
+  final EventDetailMessageHostCallback onMessageHost;
+  final VoidCallback onRetryHosts;
   final String? inviteCode;
   final String? inviteLinkId;
-  final EventShareHandler? onShareEvent;
   final DateTime? now;
   final EventDetailPresentationMode presentationMode;
   final Object? heroTag;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final event = this.event;
     final userProfile = this.userProfile;
-    final saveMutation = ref.watch(
-      EventDetailController.toggleSavedEventMutation,
-    );
-    final share = ref.watch(externalShareControllerProvider);
-    final calendar = ref.watch(eventCalendarControllerProvider);
-    final now = this.now ?? DateTime.now();
-    final isHostApp = AppConfig.appRole.isHost;
-    final showConsumerActions = !isHostApp && !isHost;
     final isSpotlightDark =
         presentationMode == EventDetailPresentationMode.spotlightDark;
-    final style = isSpotlightDark
-        ? EventDetailSurfaceStyle.dark(t)
-        : EventDetailSurfaceStyle.light(
-            t,
-            useWhite: presentationMode == EventDetailPresentationMode.ticket,
-          );
-    final Widget? bottomNavigationBar;
-    void shareEvent(BuildContext buttonContext) => unawaited(
-      onShareEvent != null
-          ? onShareEvent!(buttonContext, event)
-          : _shareEvent(buttonContext, event, share, inviteCode, inviteLinkId),
-    );
+    final style =
+        surfaceStyle ??
+        (isSpotlightDark
+            ? EventDetailSurfaceStyle.dark(t)
+            : EventDetailSurfaceStyle.light(
+                t,
+                useWhite:
+                    presentationMode == EventDetailPresentationMode.ticket,
+              ));
 
-    if (isAuthenticated) {
-      ref.listen(EventBookingController.bookMutation, (prev, next) {
-        if (prev?.isPending == true && next.isSuccess) {
-          showCatchSnackBar(context, 'Booking confirmed!');
-        }
-      });
-      ref.listen(EventBookingController.cancelMutation, (prev, next) {
-        if (prev?.isPending == true && next.isSuccess) {
-          showCatchSnackBar(context, 'Booking cancelled.');
-        }
-      });
-    }
-
-    if (isHostApp) {
-      bottomNavigationBar = null;
-    } else if (!isAuthenticated) {
-      bottomNavigationBar = GuestBookCta(
-        clubId: clubId,
-        eventId: event.id,
-        inviteCode: inviteCode,
-        inviteLinkId: inviteLinkId,
-        darkSurface: isSpotlightDark,
-      );
-    } else if (userProfile != null && showConsumerActions) {
-      bottomNavigationBar = EventDetailCta(
-        event: event,
-        userProfile: userProfile,
-        clubId: clubId,
-        participation: participation,
-        inviteCode: inviteCode,
-        inviteLinkId: inviteLinkId,
-        now: now,
-        darkSurface: isSpotlightDark,
-      );
-    } else {
-      bottomNavigationBar = null;
-    }
-
-    return Scaffold(
-      backgroundColor: style.pageBackground,
-      body: CustomScrollView(
-        slivers: [
-          EventDetailHeroAppBar(
+    return CustomScrollView(
+      slivers: [
+        EventDetailHeroAppBar(
+          event: event,
+          isSaved: isSaved,
+          savePending: savePending,
+          onBack: onBack,
+          onShare: onShare,
+          showAddToCalendar: showAddToCalendar,
+          onAddToCalendar: onAddToCalendar,
+          presentationMode: presentationMode,
+          heroTag: heroTag,
+          onToggleSaved: onToggleSaved,
+        ),
+        SliverToBoxAdapter(
+          child: EventDetailTicketStubBand(
             event: event,
-            isSaved: isSaved,
-            savePending: saveMutation.isPending,
-            onBack: () => Navigator.of(context).pop(),
-            onShare: shareEvent,
-            showAddToCalendar: _canAddEventToCalendar(
+            notchBackgroundColor: style.pageBackground,
+          ),
+        ),
+        CatchDetailSliverSectionList(
+          topPadding: CatchSpacing.screenPt,
+          bottomPadding: CatchSpacing.screenPb,
+          sections: [
+            EventDetailOverviewSection(
               event: event,
-              participation: participation,
-              isHost: isHost || isHostApp,
-              now: now,
+              surfaceStyle: style,
+              onLocationTap: onLocationTap,
             ),
-            onAddToCalendar: (buttonContext) =>
-                unawaited(_addEventToCalendar(buttonContext, event, calendar)),
-            presentationMode: presentationMode,
-            heroTag: heroTag,
-            onToggleSaved: () => _toggleSavedEvent(
-              context,
-              ref,
+            EventCompanionEntry(
+              state: companionState,
+              surfaceStyle: style,
+              onOpen: onOpenCompanion,
+              onRetry: onRetryCompanion,
+            ),
+            if (sectionVisibility.showInviteLoop)
+              EventInviteLoopCard(
+                event: event,
+                onShare: onShare,
+                surfaceStyle: style,
+              ),
+            Divider(color: style.dividerColor, height: 1),
+            EventDetailHostsSection(
+              event: event,
+              state: hostState,
+              onViewClub: onViewClub,
+              onMessageHost: onMessageHost,
+              onRetry: onRetryHosts,
+              surfaceStyle: style,
+            ),
+            EventDetailSocialSection(
               event: event,
               clubId: clubId,
+              reviews: reviews,
               userProfile: userProfile,
-              isAuthenticated: isAuthenticated,
-              isSaved: isSaved,
+              state: socialState,
+              surfaceStyle: style,
             ),
-          ),
-          SliverToBoxAdapter(
-            child: EventDetailTicketStubBand(
-              event: event,
-              notchBackgroundColor: style.pageBackground,
-            ),
-          ),
-          CatchDetailSliverSectionList(
-            topPadding: CatchSpacing.screenPt,
-            bottomPadding: CatchSpacing.screenPb,
-            sections: [
-              EventDetailOverviewSection(
-                event: event,
-                surfaceStyle: style,
-                onLocationTap: event.hasExactStartingPoint
-                    ? () => context.pushNamed(
-                        Routes.eventLocationMapScreen.name,
-                        pathParameters: {'eventId': event.id},
-                      )
-                    : null,
-              ),
-              if (_canOpenCompanion(
-                participation: participation,
-                showConsumerActions: showConsumerActions,
-              ))
-                EventCompanionEntry(
-                  event: event,
-                  clubId: clubId,
-                  surfaceStyle: style,
-                ),
-              if (_canShowInviteLoop(
-                event: event,
-                participation: participation,
-                showConsumerActions: showConsumerActions,
-                now: now,
-              ))
-                EventInviteLoopCard(
-                  event: event,
-                  onShare: shareEvent,
-                  surfaceStyle: style,
-                ),
-              Divider(color: style.dividerColor, height: 1),
-              EventDetailHostsSection(
-                event: event,
-                clubId: clubId,
-                currentUid: userProfile?.uid,
-                canMessageHost: showConsumerActions && isAuthenticated,
-                surfaceStyle: style,
-              ),
-              EventDetailSocialSection(
-                event: event,
-                clubId: clubId,
-                reviews: reviews,
-                userProfile: userProfile,
-                isAuthenticated: isAuthenticated,
-                isHost: isHost || isHostApp,
-                participation: participation,
-                now: now,
-                surfaceStyle: style,
-              ),
-            ],
-          ),
-        ],
-      ),
-      bottomNavigationBar: bottomNavigationBar,
+          ],
+        ),
+      ],
     );
   }
 }
 
-bool _canShowInviteLoop({
+bool eventDetailCanShowInviteLoop({
   required Event event,
   required EventParticipation? participation,
   required bool showConsumerActions,
@@ -322,68 +366,50 @@ class EventInviteLoopCard extends StatelessWidget {
   }
 }
 
-bool _canOpenCompanion({
-  required EventParticipation? participation,
-  required bool showConsumerActions,
-}) {
-  if (!showConsumerActions) return false;
-  return switch (participation?.status) {
-    EventParticipationStatus.signedUp ||
-    EventParticipationStatus.attended => true,
-    EventParticipationStatus.waitlisted ||
-    EventParticipationStatus.cancelled ||
-    EventParticipationStatus.deleted ||
-    null => false,
-  };
-}
-
-class EventCompanionEntry extends ConsumerWidget {
+class EventCompanionEntry extends StatelessWidget {
   const EventCompanionEntry({
     super.key,
-    required this.event,
-    required this.clubId,
+    required this.state,
     required this.surfaceStyle,
+    required this.onOpen,
+    required this.onRetry,
   });
 
-  final Event event;
-  final String clubId;
+  final EventDetailCompanionState state;
   final EventDetailSurfaceStyle surfaceStyle;
+  final VoidCallback onOpen;
+  final VoidCallback onRetry;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
-    return planAsync.when(
-      data: (plan) => plan == null
-          ? const SizedBox.shrink()
-          : EventCompanionCard(
-              event: event,
-              clubId: clubId,
-              surfaceStyle: surfaceStyle,
-            ),
-      loading: () => const Padding(
+  Widget build(BuildContext context) {
+    return switch (state.status) {
+      EventDetailCompanionStatus.hidden => const SizedBox.shrink(),
+      EventDetailCompanionStatus.loading => const Padding(
         padding: EdgeInsets.all(CatchSpacing.s4),
         child: Center(child: CatchLoadingIndicator()),
       ),
-      error: (e, st) => CatchInlineErrorState.fromError(
-        e,
-        onRetry: () => ref.invalidate(watchEventSuccessPlanProvider(event.id)),
+      EventDetailCompanionStatus.error => CatchInlineErrorState.fromError(
+        state.error!,
+        onRetry: onRetry,
         compact: true,
       ),
-    );
+      EventDetailCompanionStatus.available => EventCompanionCard(
+        surfaceStyle: surfaceStyle,
+        onOpen: onOpen,
+      ),
+    };
   }
 }
 
 class EventCompanionCard extends StatelessWidget {
   const EventCompanionCard({
     super.key,
-    required this.event,
-    required this.clubId,
     required this.surfaceStyle,
+    required this.onOpen,
   });
 
-  final Event event;
-  final String clubId;
   final EventDetailSurfaceStyle surfaceStyle;
+  final VoidCallback onOpen;
 
   @override
   Widget build(BuildContext context) {
@@ -421,11 +447,7 @@ class EventCompanionCard extends StatelessWidget {
                   label: 'Open companion',
                   variant: CatchButtonVariant.secondary,
                   icon: Icon(CatchIcons.phoneIphoneRounded),
-                  onPressed: () => context.pushNamed(
-                    Routes.eventSuccessCompanionScreen.name,
-                    pathParameters: {'clubId': clubId, 'eventId': event.id},
-                    extra: event,
-                  ),
+                  onPressed: onOpen,
                   fullWidth: true,
                 ),
               ],
@@ -437,116 +459,14 @@ class EventCompanionCard extends StatelessWidget {
   }
 }
 
-void _toggleSavedEvent(
-  BuildContext context,
-  WidgetRef ref, {
-  required Event event,
-  required String clubId,
-  required UserProfile? userProfile,
-  required bool isAuthenticated,
-  required bool isSaved,
-}) {
-  if (!isAuthenticated || userProfile == null) {
-    context.go(
-      Uri(
-        path: Routes.authScreen.path,
-        queryParameters: {'from': '/clubs/$clubId/events/${event.id}'},
-      ).toString(),
-    );
-    return;
-  }
-
-  EventDetailController.toggleSavedEventMutation.run(ref, (tx) async {
-    final nowSaved = await tx
-        .get(eventDetailControllerProvider.notifier)
-        .toggleSavedEvent(
-          event: event,
-          userProfile: userProfile,
-          isSaved: isSaved,
-        );
-    if (!context.mounted) return nowSaved;
-    showCatchSnackBar(context, nowSaved ? 'Event saved.' : 'Event removed.');
-    return nowSaved;
-  });
-}
-
-Future<void> _shareEvent(
-  BuildContext context,
-  Event event,
-  ExternalShareController share,
-  String? inviteCode,
-  String? inviteLinkId,
-) async {
-  await showEventShareCardSheet(
-    context,
-    event: event,
-    share: share,
-    inviteCode: inviteCode,
-    inviteLinkId: inviteLinkId,
-  );
-}
-
-Future<void> _addEventToCalendar(
-  BuildContext context,
-  Event event,
-  EventCalendarController calendar,
-) async {
-  try {
-    final opened = await calendar.addToCalendar(event);
-    if (!context.mounted || opened) return;
-    showCatchSnackBar(context, 'Could not open calendar.');
-  } on Object catch (error, stackTrace) {
-    final actionError = ExternalActionException(
-      'Failed to add event to calendar',
-      cause: error,
-      stackTrace: stackTrace,
-    );
-
-    if (context.mounted) {
-      ProviderScope.containerOf(context, listen: false)
-          .read(errorLoggerProvider)
-          .logAppException(
-            normalizeBackendError(
-              actionError,
-              stackTrace: stackTrace,
-              context: const BackendErrorContext(
-                service: BackendService.external,
-                action: 'add event to calendar',
-                resource: 'calendar_link',
-              ),
-            ),
-          );
-
-      showCatchSnackBar(context, 'Could not open calendar.');
-    }
-  }
-}
-
-bool _canAddEventToCalendar({
-  required Event event,
-  required EventParticipation? participation,
-  required bool isHost,
-  required DateTime now,
-}) {
-  if (event.isCancelled || !event.startTime.isAfter(now)) return false;
-  if (isHost) return true;
-  return participation?.status == EventParticipationStatus.signedUp;
-}
-
 class GuestBookCta extends StatelessWidget {
   const GuestBookCta({
     super.key,
-    required this.clubId,
-    required this.eventId,
-    this.inviteCode,
-    this.inviteLinkId,
+    required this.onPressed,
     this.darkSurface = false,
   });
 
-  final String clubId;
-  final String eventId;
-  final String? inviteCode;
-  final String? inviteLinkId;
+  final VoidCallback onPressed;
   final bool darkSurface;
 
   @override
@@ -559,19 +479,7 @@ class GuestBookCta extends StatelessWidget {
           padding: CatchInsets.contentBlock,
           child: CatchButton(
             label: 'Sign in to book this event',
-            onPressed: () => context.go(
-              Uri(
-                path: Routes.authScreen.path,
-                queryParameters: {
-                  'from': AppDeepLinks.inAppEventPath(
-                    clubId: clubId,
-                    eventId: eventId,
-                    inviteCode: inviteCode,
-                    inviteLinkId: inviteLinkId,
-                  ),
-                },
-              ).toString(),
-            ),
+            onPressed: onPressed,
             icon: Icon(
               CatchIcons.lockOutlineRounded,
               size: CatchIcon.md,
@@ -585,41 +493,47 @@ class GuestBookCta extends StatelessWidget {
   }
 }
 
-/// "Your hosts" section — watches the event's club and renders the design-system
-/// [EventDetailHostCard] from it, wiring View club (→ club detail) and, for
-/// signed-in consumers, Message host (→ host inquiry chat).
-class EventDetailHostsSection extends ConsumerWidget {
+/// "Your hosts" section renders the design-system [EventDetailHostCard] from
+/// explicit route-provided host state.
+class EventDetailHostsSection extends StatelessWidget {
   const EventDetailHostsSection({
     super.key,
     required this.event,
-    required this.clubId,
-    required this.currentUid,
-    required this.canMessageHost,
+    required this.state,
+    required this.onViewClub,
+    required this.onMessageHost,
+    required this.onRetry,
     this.surfaceStyle,
   });
 
   final Event event;
-  final String clubId;
-  final String? currentUid;
-  final bool canMessageHost;
+  final EventDetailHostState state;
+  final ValueChanged<String> onViewClub;
+  final EventDetailMessageHostCallback onMessageHost;
+  final VoidCallback onRetry;
   final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final clubAsync = ref.watch(fetchClubProvider(clubId));
-    return clubAsync.when(
-      data: (club) {
-        if (club == null) return const SizedBox.shrink();
-
-        final hostProfiles = club.displayHostProfiles;
-        final hostProfile = hostProfiles.isEmpty ? null : hostProfiles.first;
-        final hostUid = hostProfile?.uid ?? club.ownerOrPrimaryHostUserId;
+  Widget build(BuildContext context) {
+    switch (state.status) {
+      case EventDetailHostStatus.hidden:
+        return const SizedBox.shrink();
+      case EventDetailHostStatus.loading:
+        return const Padding(
+          padding: EdgeInsets.all(CatchSpacing.s4),
+          child: Center(child: CatchLoadingIndicator()),
+        );
+      case EventDetailHostStatus.error:
+        return CatchInlineErrorState.fromError(
+          state.error!,
+          onRetry: onRetry,
+          compact: true,
+        );
+      case EventDetailHostStatus.content:
         final style = surfaceStyle;
-        final canMessage =
-            canMessageHost &&
-            hostUid != null &&
-            currentUid != null &&
-            currentUid != hostUid;
+        final clubId = state.clubId!;
+        final hostUid = state.hostUid;
+        final canMessage = state.canMessage && hostUid != null;
 
         return CatchSection.divided(
           title: 'Your hosts',
@@ -627,11 +541,11 @@ class EventDetailHostsSection extends ConsumerWidget {
           titleColor: style?.headingColor,
           child: EventDetailHostCard(
             activityKind: event.activityKind,
-            hostName: club.displayHostName,
-            photoUrl: hostProfile?.avatarUrl ?? club.logoPhotoUrl,
-            meta: _hostMeta(club),
-            verified: club.ownerOrPrimaryHostUserId != null,
-            stats: _hostStats(club),
+            hostName: state.hostName!,
+            photoUrl: state.photoUrl,
+            meta: state.meta,
+            verified: state.verified,
+            stats: state.stats,
             surfaceColor: style?.surfaceBackground,
             borderColor: style?.borderColor,
             nameColor: style?.headingColor,
@@ -639,98 +553,10 @@ class EventDetailHostsSection extends ConsumerWidget {
             statValueColor: style?.headingColor,
             statLabelColor: style?.mutedColor,
             dividerColor: style?.dividerColor,
-            onViewClub: () => context.pushNamed(
-              Routes.clubDetailScreen.name,
-              pathParameters: {'clubId': club.id},
-            ),
-            onMessage: canMessage
-                ? () => unawaited(
-                    _messageHost(
-                      context,
-                      ref,
-                      clubId: club.id,
-                      hostUid: hostUid,
-                    ),
-                  )
-                : null,
+            onViewClub: () => onViewClub(clubId),
+            onMessage: canMessage ? () => onMessageHost(clubId, hostUid) : null,
           ),
         );
-      },
-      loading: () => const Padding(
-        padding: EdgeInsets.all(CatchSpacing.s4),
-        child: Center(child: CatchLoadingIndicator()),
-      ),
-      error: (e, st) => CatchInlineErrorState.fromError(
-        e,
-        onRetry: () => ref.invalidate(fetchClubProvider(clubId)),
-        compact: true,
-      ),
-    );
+    }
   }
-}
-
-const List<String> _monthAbbrevs = <String>[
-  'JAN',
-  'FEB',
-  'MAR',
-  'APR',
-  'MAY',
-  'JUN',
-  'JUL',
-  'AUG',
-  'SEP',
-  'OCT',
-  'NOV',
-  'DEC',
-];
-
-String _hostMeta(Club club) {
-  final month = _monthAbbrevs[(club.createdAt.month - 1).clamp(0, 11)];
-  final parts = <String>['HOSTING SINCE $month ${club.createdAt.year}'];
-  final area = club.area.trim();
-  if (area.isNotEmpty) parts.add(area.toUpperCase());
-  return parts.join(' · ');
-}
-
-List<EventDetailHostStat> _hostStats(Club club) {
-  final stats = <EventDetailHostStat>[];
-  if (club.memberCount > 0) {
-    stats.add(
-      EventDetailHostStat(value: '${club.memberCount}', label: 'Members'),
-    );
-  }
-  if (club.reviewCount > 0) {
-    stats
-      ..add(
-        EventDetailHostStat(
-          value: club.rating.toStringAsFixed(1),
-          label: 'Rating',
-        ),
-      )
-      ..add(
-        EventDetailHostStat(value: '${club.reviewCount}', label: 'Reviews'),
-      );
-  }
-  return stats;
-}
-
-Future<void> _messageHost(
-  BuildContext context,
-  WidgetRef ref, {
-  required String clubId,
-  required String hostUid,
-}) async {
-  final matchId = await ClubHostContactController.startConversationMutation.run(
-    ref,
-    (tx) => tx
-        .get(clubHostContactControllerProvider.notifier)
-        .startConversation(clubId: clubId, hostUid: hostUid),
-  );
-  if (!context.mounted) return;
-  unawaited(
-    context.pushNamed(
-      Routes.chatScreen.name,
-      pathParameters: {'matchId': matchId},
-    ),
-  );
 }

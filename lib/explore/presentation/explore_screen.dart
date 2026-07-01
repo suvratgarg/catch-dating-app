@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_empty_state.dart';
@@ -37,20 +38,29 @@ class ExploreScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
-    final feedCount = feedAsync.asData?.value.count;
-    final mapLabel = feedCount == null || feedCount == 0
-        ? 'Map'
-        : 'Map · $feedCount';
-
     final viewModelAsync = ref.watch(exploreViewModelProvider);
     final city = ref.watch(selectedExploreCityProvider);
     final query = ref.watch(exploreSearchQueryProvider).trim();
     final filters = ref.watch(exploreFiltersProvider);
     final hasSourceClubs =
         (ref.watch(exploreSourceClubsProvider).asData?.value.length ?? 0) > 0;
+    final screenState = ExploreDiscoveryScreenState.from(
+      cityLabel: city.label,
+      query: query,
+      filters: filters,
+      hasSourceClubs: hasSourceClubs,
+      eventFeedCount: feedAsync.asData?.value.count,
+      viewModelLoading: viewModelAsync.isLoading,
+      viewModelError: viewModelAsync.hasError ? viewModelAsync.error : null,
+      viewModel: viewModelAsync.asData?.value,
+      eventFeedLoading: feedAsync.isLoading,
+      eventFeedError: feedAsync.hasError ? feedAsync.error : null,
+      eventFeedHasContent: feedAsync.asData?.value.isEmpty == false,
+    );
+    final bodyState = screenState.bodyState;
 
-    final bodySlivers = switch (viewModelAsync) {
-      AsyncLoading() => <Widget>[
+    final bodySlivers = switch (bodyState.kind) {
+      ExploreScreenBodyKind.loading => <Widget>[
         const SliverToBoxAdapter(
           child: Padding(
             padding: CatchInsets.pageBody,
@@ -58,52 +68,33 @@ class ExploreScreen extends ConsumerWidget {
           ),
         ),
       ],
-      AsyncError(:final error) => [
+      ExploreScreenBodyKind.error => [
         CatchSliverErrorState.fromError(
-          error,
-          context: AppErrorContext.explore,
-          onRetry: () {
-            ref.invalidate(exploreViewModelProvider);
-            ref.invalidate(exploreSourceClubsProvider);
-          },
+          bodyState.error!,
+          context: bodyState.retryTarget == ExploreScreenRetryTarget.eventFeed
+              ? AppErrorContext.event
+              : AppErrorContext.explore,
+          onRetry: () => _retryBodyState(ref, bodyState.retryTarget),
         ),
       ],
-      AsyncData(:final value)
-          when !value.isEmpty || feedAsync.asData?.value.isEmpty == false =>
-        buildExploreBodySlivers(
-          context: context,
-          ref: ref,
-          viewModel: value,
-          includeJoinedClubsRail: false,
-          includeClubDirectory: false,
+      ExploreScreenBodyKind.content => buildExploreBodySlivers(
+        context: context,
+        ref: ref,
+        viewModel: bodyState.viewModel!,
+        includeJoinedClubsRail: false,
+        includeClubDirectory: false,
+      ),
+      ExploreScreenBodyKind.empty => [
+        SliverFillRemaining(
+          child: ExploreScreenEmptyState(
+            state: bodyState.emptyState!,
+            onClearSearch: () =>
+                ref.read(exploreSearchQueryProvider.notifier).clear(),
+            onClearFilters: () =>
+                ref.read(exploreFiltersProvider.notifier).clear(),
+          ),
         ),
-      AsyncData() => switch (feedAsync) {
-        AsyncLoading() => <Widget>[
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: CatchInsets.pageBody,
-              child: ExploreSkeletonList(),
-            ),
-          ),
-        ],
-        AsyncError(:final error) => [
-          CatchSliverErrorState.fromError(
-            error,
-            context: AppErrorContext.event,
-            onRetry: () => ref.invalidate(exploreFeedViewModelProvider),
-          ),
-        ],
-        AsyncData() => [
-          SliverFillRemaining(
-            child: ExploreScreenEmptyState(
-              cityLabel: city.label,
-              hasSourceClubs: hasSourceClubs,
-              hasSearch: query.isNotEmpty,
-              filters: filters,
-            ),
-          ),
-        ],
-      },
+      ],
     };
 
     return Scaffold(
@@ -126,9 +117,9 @@ class ExploreScreen extends ConsumerWidget {
             child: SafeArea(
               top: false,
               child: CatchCountPill(
-                label: mapLabel,
+                label: screenState.mapLauncherState.label,
                 icon: CatchIcons.map,
-                semanticLabel: mapLabel,
+                semanticLabel: screenState.mapLauncherState.label,
                 onPressed: () {
                   catchSelectionHaptic();
                   context.pushNamed(Routes.exploreMapScreen.name);
@@ -139,6 +130,17 @@ class ExploreScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  void _retryBodyState(WidgetRef ref, ExploreScreenRetryTarget? retryTarget) {
+    switch (retryTarget) {
+      case ExploreScreenRetryTarget.eventFeed:
+        ref.invalidate(exploreFeedViewModelProvider);
+      case ExploreScreenRetryTarget.explore:
+      case null:
+        ref.invalidate(exploreViewModelProvider);
+        ref.invalidate(exploreSourceClubsProvider);
+    }
   }
 }
 
@@ -154,62 +156,66 @@ class ExploreChrome extends StatelessWidget {
   }
 }
 
-class ExploreScreenEmptyState extends ConsumerWidget {
+class ExploreScreenEmptyState extends StatelessWidget {
   const ExploreScreenEmptyState({
     super.key,
-    required this.cityLabel,
-    required this.hasSourceClubs,
-    required this.hasSearch,
-    required this.filters,
+    required this.state,
+    this.onClearSearch,
+    this.onClearFilters,
   });
 
-  final String cityLabel;
-  final bool hasSourceClubs;
-  final bool hasSearch;
-  final ExploreFilterSelection filters;
+  final ExploreDiscoveryEmptyState state;
+  final VoidCallback? onClearSearch;
+  final VoidCallback? onClearFilters;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final hasFilters = filters.hasActiveFilters;
-    if (!hasSourceClubs) {
-      return ExploreEmptyState(cityLabel: cityLabel);
-    }
-    if (hasSearch && hasFilters) {
-      return const ExploreEmptyState.noFilteredSearchResults(
-        action: ExploreClearAction(clearSearch: true, clearFilters: true),
-      );
-    }
-    if (hasSearch) {
-      return const ExploreEmptyState.noSearchResults(
-        hasFilters: false,
-        action: ExploreClearAction(clearSearch: true, clearFilters: false),
-      );
-    }
-    if (hasFilters) {
-      return const ExploreEmptyState.noFilterResults(
-        action: ExploreClearAction(clearSearch: false, clearFilters: true),
-      );
-    }
-    return ExploreEmptyState(cityLabel: cityLabel);
+  Widget build(BuildContext context) {
+    final action = _actionForState();
+    return switch (state.kind) {
+      ExploreDiscoveryEmptyKind.noSourceClubs => ExploreEmptyState(
+        cityLabel: state.cityLabel,
+        action: action,
+      ),
+      ExploreDiscoveryEmptyKind.noFilteredSearchResults =>
+        ExploreEmptyState.noFilteredSearchResults(action: action),
+      ExploreDiscoveryEmptyKind.noSearchResults =>
+        ExploreEmptyState.noSearchResults(hasFilters: false, action: action),
+      ExploreDiscoveryEmptyKind.noFilterResults =>
+        ExploreEmptyState.noFilterResults(action: action),
+    };
+  }
+
+  Widget? _actionForState() {
+    if (state.action == ExploreDiscoveryEmptyAction.none) return null;
+    return ExploreClearAction(
+      clearSearch: state.clearSearch,
+      clearFilters: state.clearFilters,
+      onClearSearch: onClearSearch,
+      onClearFilters: onClearFilters,
+    );
   }
 }
 
-class ExploreClearAction extends ConsumerWidget {
+class ExploreClearAction extends StatelessWidget {
   const ExploreClearAction({
     super.key,
     required this.clearSearch,
     required this.clearFilters,
+    this.onClearSearch,
+    this.onClearFilters,
     this.icon,
   });
 
   final bool clearSearch;
   final bool clearFilters;
+  final VoidCallback? onClearSearch;
+  final VoidCallback? onClearFilters;
 
   /// Optional override for the action icon. Defaults to [CatchIcons.clear].
   final IconData? icon;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final label = switch ((clearSearch, clearFilters)) {
       (true, true) => 'Clear search and filters',
       (true, false) => 'Clear search',
@@ -220,10 +226,10 @@ class ExploreClearAction extends ConsumerWidget {
       label: label,
       onPressed: () {
         if (clearSearch) {
-          ref.read(exploreSearchQueryProvider.notifier).clear();
+          onClearSearch?.call();
         }
         if (clearFilters) {
-          ref.read(exploreFiltersProvider.notifier).clear();
+          onClearFilters?.call();
         }
       },
       variant: CatchButtonVariant.secondary,

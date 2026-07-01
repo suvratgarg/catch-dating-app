@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -29,5 +30,18 @@ class EventDetailController extends _$EventDetailController {
 
     await repository.saveEvent(uid: userProfile.uid, eventId: event.id);
     return true;
+  }
+
+  Future<void> recordInviteLinkOpenBestEffort({
+    required String eventId,
+    required String inviteLinkId,
+  }) async {
+    try {
+      await ref
+          .read(eventRepositoryProvider)
+          .recordInviteLinkOpen(eventId: eventId, inviteLinkId: inviteLinkId);
+    } catch (_) {
+      // Invite attribution must never block event detail rendering.
+    }
   }
 }

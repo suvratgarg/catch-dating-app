@@ -1,13 +1,14 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_screen_state.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,7 +31,8 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
 
     final uid = ref.watch(uidProvider).asData?.value;
     final viewModelAsync = ref.watch(chatsListViewModelProvider);
-    final query = ref.watch(chatSearchQueryProvider).trim();
+    final searchValue = ref.watch(chatSearchQueryProvider);
+    final query = searchValue.trim();
     final screenState = HostInboxScreenState.fromAsync(
       viewModel: viewModelAsync,
       uid: uid,
@@ -46,6 +48,10 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
           slivers: [
             ...ChatsSliverHeader(
               showSearchAction: screenState.showSearchAction,
+              searchValue: searchValue,
+              onSearchChanged: ref
+                  .read(chatSearchQueryProvider.notifier)
+                  .setQuery,
               hostFilter: screenState.hostFilter,
               hostUnreadCount: screenState.unreadThreadCount,
               onHostFilterChanged: _handleHostFilterChanged,
@@ -83,53 +89,6 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => const HostBroadcastComposerSheet(),
     );
-  }
-}
-
-class HostInboxScreenState {
-  const HostInboxScreenState({
-    required this.hostFilter,
-    required this.unreadThreadCount,
-    required this.showSearchAction,
-    required this.displayState,
-  });
-
-  factory HostInboxScreenState.fromAsync({
-    required AsyncValue<ChatsListViewModel> viewModel,
-    required String? uid,
-    required String query,
-    required HostInboxFilter selectedFilter,
-    required bool isHostApp,
-  }) {
-    final source = viewModel.asData?.value;
-    final normalizedQuery = query.trim();
-    final hostFilter = isHostApp ? selectedFilter : null;
-
-    return HostInboxScreenState(
-      hostFilter: hostFilter,
-      unreadThreadCount: _unreadThreadCount(source),
-      showSearchAction:
-          (source?.totalThreadCount ?? 0) > 0 || normalizedQuery.isNotEmpty,
-      displayState: ChatsListDisplayState.fromAsync(
-        viewModel: viewModel,
-        uid: uid,
-        query: normalizedQuery,
-        hostFilter: hostFilter,
-      ),
-    );
-  }
-
-  final HostInboxFilter? hostFilter;
-  final int unreadThreadCount;
-  final bool showSearchAction;
-  final ChatsListDisplayState displayState;
-
-  static int _unreadThreadCount(ChatsListViewModel? vm) {
-    if (vm == null) return 0;
-    return [
-      ...vm.newMatches,
-      ...vm.conversations,
-    ].where((preview) => preview.unreadCount > 0).length;
   }
 }
 
@@ -175,16 +134,46 @@ class HostBroadcastComposerSheet extends StatelessWidget {
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
               const SizedBox(height: CatchSpacing.s4),
-              _buildTemplateRow(
-                context,
-                label: 'Reminder',
-                body: 'See you tonight at 8. Doors open at 7:45.',
+              CatchSurface(
+                tone: CatchSurfaceTone.raised,
+                borderColor: t.line,
+                radius: CatchRadius.md,
+                padding: const EdgeInsets.all(CatchSpacing.s3),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Reminder',
+                      style: CatchTextStyles.fieldRowTitle(context),
+                    ),
+                    const SizedBox(height: CatchSpacing.micro2),
+                    Text(
+                      'See you tonight at 8. Doors open at 7:45.',
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: CatchSpacing.s2),
-              _buildTemplateRow(
-                context,
-                label: 'Meeting point',
-                body: 'Share arrival notes, parking, or table details.',
+              CatchSurface(
+                tone: CatchSurfaceTone.raised,
+                borderColor: t.line,
+                radius: CatchRadius.md,
+                padding: const EdgeInsets.all(CatchSpacing.s3),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Meeting point',
+                      style: CatchTextStyles.fieldRowTitle(context),
+                    ),
+                    const SizedBox(height: CatchSpacing.micro2),
+                    Text(
+                      'Share arrival notes, parking, or table details.',
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: CatchSpacing.s4),
               const CatchButton(
@@ -195,29 +184,6 @@ class HostBroadcastComposerSheet extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTemplateRow(
-    BuildContext context, {
-    required String label,
-    required String body,
-  }) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      tone: CatchSurfaceTone.raised,
-      borderColor: t.line,
-      radius: CatchRadius.md,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: CatchTextStyles.fieldRowTitle(context)),
-          const SizedBox(height: CatchSpacing.micro2),
-          Text(body, style: CatchTextStyles.supporting(context, color: t.ink2)),
-        ],
       ),
     );
   }

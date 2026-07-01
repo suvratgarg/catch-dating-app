@@ -74,8 +74,10 @@ function checkRefs({summary = false} = {}) {
   const primitiveContractSource = fs.readFileSync(widgetbookPrimitiveContractsPath, "utf8");
   const widgetbook = parseWidgetbookDirectories(widgetbookSource);
   const primitiveContracts = parsePrimitiveContractUseCases(primitiveContractSource);
+  const widgetbookSources = collectWidgetbookUseCaseSources();
 
   const errors = [
+    ...validateGeneratedWidgetbookUseCases(widgetbook, widgetbookSources),
     ...validateComponentPreviews(componentRegistry, widgetbook),
     ...validatePrimitiveContractUseCases(componentRegistry, primitiveContracts),
     ...validateFoundationSpecimens(widgetbook),
@@ -92,6 +94,8 @@ function checkRefs({summary = false} = {}) {
         `Widgetbook contract refs: ${relativeToRepo(widgetbookDirectoriesPath)}`,
         `Components: ${widgetbook.componentNames.size}`,
         `Use case builders: ${widgetbook.builderNames.size}`,
+        `Generated builder refs: ${widgetbook.builderRefs.length}`,
+        `Annotated Widgetbook use cases: ${widgetbookSources.useCases.length}`,
         `Formal primitive contract previews: ${primitiveContracts.contractIds.size}`,
         `Required foundation specimens: ${requiredFoundationSpecimens.length}`,
         `Referenced preview ids: ${collectPreviewRefs(stateMatrix, screenContracts).length}`,
@@ -104,6 +108,39 @@ function checkRefs({summary = false} = {}) {
     for (const error of errors) console.error(`- ${error}`);
     process.exit(1);
   }
+}
+
+function validateGeneratedWidgetbookUseCases(widgetbook, widgetbookSources) {
+  const errors = [];
+
+  for (const ref of widgetbook.builderRefs) {
+    if (!ref.sourcePath) {
+      errors.push(
+        `${relativeToRepo(widgetbookDirectoriesPath)}: generated builder ${ref.alias}.${ref.builder} has no matching widgetbook_workspace import.`
+      );
+      continue;
+    }
+
+    const sourceKey = `${ref.sourcePath}:${ref.builder}`;
+    if (widgetbookSources.useCaseKeys.has(sourceKey)) continue;
+
+    const sourceState = widgetbookSources.functionKeys.has(sourceKey)
+      ? "the function exists but is not annotated with @widgetbook.UseCase"
+      : "the function is missing";
+    errors.push(
+      `${relativeToRepo(widgetbookDirectoriesPath)}: generated builder ${ref.alias}.${ref.builder} is stale; ${sourceState} in ${ref.sourcePath}.`
+    );
+  }
+
+  for (const useCase of widgetbookSources.useCases) {
+    const generatedKey = `${useCase.sourcePath}:${useCase.builder}`;
+    if (widgetbook.generatedUseCaseKeys.has(generatedKey)) continue;
+    errors.push(
+      `${useCase.sourcePath}:${useCase.builder}: annotated @widgetbook.UseCase is missing from ${relativeToRepo(widgetbookDirectoriesPath)}. Run Widgetbook build_runner and fix any generator errors.`
+    );
+  }
+
+  return errors;
 }
 
 function validateComponentPreviews(componentRegistry, widgetbook) {
@@ -169,12 +206,13 @@ function validatePrimitiveContractUseCases(componentRegistry, primitiveContracts
 function collectComponentContractEntries(componentRegistry) {
   const entries = [];
   for (const component of componentRegistry.components ?? []) {
+    const requiresPrimitiveContractPreview = component.kind !== "screen-contract";
     entries.push({
       id: component.id,
       symbol: component.dart?.symbol,
       states: component.contract?.states ?? [],
       parentId: component.id,
-      primary: true,
+      primary: requiresPrimitiveContractPreview,
     });
     for (const member of component.contract?.members ?? []) {
       entries.push({
@@ -251,6 +289,19 @@ function collectPreviewRefs(stateMatrix, screenContracts) {
 }
 
 function parseWidgetbookDirectories(source) {
+  const importAliases = parseWidgetbookWorkspaceImports(source);
+  const builderRefs = [
+    ...source.matchAll(/builder:\s*([A-Za-z0-9_]+)\s*\.\s*([A-Za-z0-9_]+),/gu),
+  ].map((match) => ({
+    alias: match[1],
+    builder: match[2],
+    sourcePath: importAliases.get(match[1]) ?? null,
+  }));
+  const generatedUseCaseKeys = new Set(
+    builderRefs
+      .filter((ref) => ref.sourcePath)
+      .map((ref) => `${ref.sourcePath}:${ref.builder}`)
+  );
   const componentNames = new Set(
     [...source.matchAll(/WidgetbookComponent\(\s*name: '([^']+)'/gu)].map(
       (match) => match[1]
@@ -261,11 +312,7 @@ function parseWidgetbookDirectories(source) {
       (match) => match[1]
     )
   );
-  const builderNames = new Set(
-    [...source.matchAll(/builder:\s*[\s\S]*?\.([A-Za-z0-9_]+),/gu)].map(
-      (match) => match[1]
-    )
-  );
+  const builderNames = new Set(builderRefs.map((ref) => ref.builder));
   const acceptedPreviewIds = new Set(builderNames);
 
   for (const componentName of componentNames) {
@@ -277,7 +324,65 @@ function parseWidgetbookDirectories(source) {
     }
   }
 
-  return {componentNames, useCaseNames, builderNames, acceptedPreviewIds};
+  return {
+    componentNames,
+    useCaseNames,
+    builderNames,
+    builderRefs,
+    generatedUseCaseKeys,
+    acceptedPreviewIds,
+  };
+}
+
+function parseWidgetbookWorkspaceImports(source) {
+  const imports = new Map();
+  for (const match of source.matchAll(
+    /import\s+'package:widgetbook_workspace\/([^']+)'\s+as\s+([A-Za-z0-9_]+);/gu
+  )) {
+    imports.set(match[2], `widgetbook/lib/${match[1]}`);
+  }
+  return imports;
+}
+
+function collectWidgetbookUseCaseSources() {
+  const useCases = [];
+  const useCaseKeys = new Set();
+  const functionKeys = new Set();
+
+  for (const file of collectDartFiles(fromRepo("widgetbook/lib"))) {
+    const source = fs.readFileSync(file, "utf8");
+    const sourcePath = relativeToRepo(file);
+
+    for (const match of source.matchAll(/(?:^|\n)Widget\s+([A-Za-z0-9_]+)\s*\(/gu)) {
+      functionKeys.add(`${sourcePath}:${match[1]}`);
+    }
+
+    for (const match of source.matchAll(
+      /@widgetbook\.UseCase\([\s\S]*?\)\s*Widget\s+([A-Za-z0-9_]+)\s*\(/gu
+    )) {
+      const builder = match[1];
+      useCases.push({sourcePath, builder});
+      useCaseKeys.add(`${sourcePath}:${builder}`);
+    }
+  }
+
+  return {useCases, useCaseKeys, functionKeys};
+}
+
+function collectDartFiles(dir) {
+  const files = [];
+  for (const entry of fs.readdirSync(dir, {withFileTypes: true})) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...collectDartFiles(fullPath));
+      continue;
+    }
+    if (!entry.isFile()) continue;
+    if (!entry.name.endsWith(".dart")) continue;
+    if (entry.name.endsWith(".g.dart")) continue;
+    files.push(fullPath);
+  }
+  return files;
 }
 
 function parsePrimitiveContractUseCases(source) {

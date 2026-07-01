@@ -718,6 +718,8 @@ Widget _feedbackFormPreview({EventSuccessFeedback? existingFeedback}) {
                 child: EventSuccessFeedbackForm(
                   event: EventSuccessCompanionFixtures.socialEvent,
                   userProfile: EventSuccessCompanionFixtures.viewer,
+                  actionState: const EventSuccessFeedbackActionState(),
+                  onSubmitFeedback: (_) async {},
                   existingFeedback: existingFeedback,
                 ),
               ),

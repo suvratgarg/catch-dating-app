@@ -16,9 +16,10 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
+import 'package:catch_dating_app/events/presentation/event_location_map_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
@@ -268,11 +269,16 @@ void main() {
 
       await pumpEventsTestApp(
         tester,
-        EventLocationMapScreen(event: event, enableNetworkTiles: false),
+        EventLocationMapScreen(
+          state: EventLocationMapState.fromEvent(
+            event,
+            enableNetworkTiles: false,
+          ),
+          onGetDirections: () {},
+        ),
       );
 
       expect(find.text('Event location'), findsNothing);
-      expect(find.byTooltip('Back'), findsOneWidget);
       expect(find.byIcon(CatchIcons.locationOnRounded), findsOneWidget);
       expect(find.text('Race Course Road main gate'), findsOneWidget);
       expect(
@@ -311,15 +317,17 @@ void main() {
       await pumpEventsTestApp(
         tester,
         EventLocationMapScreen(
-          event: buildEvent(
-            meetingPoint: 'Secret start line',
-            locationDetails: 'Host will add the exact pin shortly.',
+          state: EventLocationMapState.fromEvent(
+            buildEvent(
+              meetingPoint: 'Secret start line',
+              locationDetails: 'Host will add the exact pin shortly.',
+            ),
+            enableNetworkTiles: false,
           ),
-          enableNetworkTiles: false,
+          onGetDirections: () {},
         ),
       );
 
-      expect(find.byTooltip('Back'), findsOneWidget);
       expect(find.text('Location unavailable'), findsOneWidget);
       expect(
         find.text(
@@ -333,8 +341,7 @@ void main() {
     testWidgets('event location map keeps directions as an explicit action', (
       tester,
     ) async {
-      Uri? openedUri;
-      LaunchMode? openedMode;
+      var openedDirections = false;
       final event = buildEvent(
         meetingPoint: 'Race Course Road main gate',
         startingPointLat: 22.7196,
@@ -343,8 +350,53 @@ void main() {
 
       await pumpEventsTestApp(
         tester,
-        EventLocationMapScreen(event: event, enableNetworkTiles: false),
+        EventLocationMapScreen(
+          state: EventLocationMapState.fromEvent(
+            event,
+            enableNetworkTiles: false,
+          ),
+          onGetDirections: () => openedDirections = true,
+        ),
+      );
+
+      await tester.tap(find.text('Get directions'));
+      await tester.pump();
+
+      expect(openedDirections, isTrue);
+    });
+
+    testWidgets('event location route opens directions externally', (
+      tester,
+    ) async {
+      Uri? openedUri;
+      LaunchMode? openedMode;
+      final event = buildEvent(
+        id: 'directions-event',
+        meetingPoint: 'Race Course Road main gate',
+        startingPointLat: 22.7196,
+        startingPointLng: 75.8577,
+      );
+
+      await pumpEventsTestApp(
+        tester,
+        EventLocationMapRouteScreen(
+          eventId: event.id,
+          enableNetworkTiles: false,
+        ),
         overrides: [
+          eventDetailViewModelProvider(event.id).overrideWithValue(
+            AsyncData<EventDetailViewModel?>(
+              EventDetailViewModel(
+                event: event,
+                userProfile: null,
+                reviews: const [],
+                isAuthenticated: false,
+                isHost: false,
+                isSaved: false,
+                participation: null,
+              ),
+            ),
+          ),
           externalUrlLauncherProvider.overrideWithValue((
             uri, {
             mode = LaunchMode.platformDefault,
@@ -364,6 +416,90 @@ void main() {
         openedUri.toString(),
         'https://www.google.com/maps/dir/?api=1&destination=22.7196%2C75.8577&travelmode=walking',
       );
+    });
+
+    testWidgets('event location route owns unavailable coordinate state', (
+      tester,
+    ) async {
+      final event = buildEvent(
+        id: 'missing-coordinate-event',
+        meetingPoint: 'Secret start line',
+        locationDetails: 'Host will add the exact pin shortly.',
+      );
+
+      await pumpEventsTestApp(
+        tester,
+        EventLocationMapRouteScreen(
+          eventId: event.id,
+          enableNetworkTiles: false,
+        ),
+        overrides: [
+          eventDetailViewModelProvider(event.id).overrideWithValue(
+            AsyncData<EventDetailViewModel?>(
+              EventDetailViewModel(
+                event: event,
+                userProfile: null,
+                reviews: const [],
+                isAuthenticated: false,
+                isHost: false,
+                isSaved: false,
+                participation: null,
+              ),
+            ),
+          ),
+        ],
+      );
+
+      expect(find.byTooltip('Back'), findsOneWidget);
+      expect(find.text('Location unavailable'), findsOneWidget);
+      expect(
+        find.text(
+          'This event does not have an exact pinned starting point yet.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Get directions'), findsNothing);
+    });
+
+    test('event location state derives map and directions data', () {
+      final event = buildEvent(
+        meetingPoint: 'Race Course Road main gate',
+        locationDetails: 'Look for the Catch demo pacer near the entrance.',
+        startingPointLat: 22.7196,
+        startingPointLng: 75.8577,
+      );
+
+      final state = EventLocationMapState.fromEvent(
+        event,
+        enableNetworkTiles: false,
+      );
+
+      expect(state.event, event);
+      expect(state.enableNetworkTiles, isFalse);
+      expect(state.startingPoint?.latitude, 22.7196);
+      expect(state.startingPoint?.longitude, 75.8577);
+      expect(state.locationName, 'Race Course Road main gate');
+      expect(
+        state.locationNotes,
+        'Look for the Catch demo pacer near the entrance.',
+      );
+      expect(
+        state.directionsUri.toString(),
+        'https://www.google.com/maps/dir/?api=1&destination=22.7196%2C75.8577&travelmode=walking',
+      );
+    });
+
+    test('event location state records missing coordinate separately', () {
+      final state = EventLocationMapState.fromEvent(
+        buildEvent(
+          meetingPoint: 'Secret start line',
+          locationDetails: 'Host will add the exact pin shortly.',
+        ),
+        enableNetworkTiles: false,
+      );
+
+      expect(state.startingPoint, isNull);
+      expect(state.hasExactStartingPoint, isFalse);
     });
 
     testWidgets('requirements row hides itself when there are no constraints', (

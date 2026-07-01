@@ -2,11 +2,9 @@ import {
   CaptureCard,
   PublicEventCard,
   PublicSearchBar,
-  SectionHeader,
-  SiteFooter,
-  SiteHeader,
 } from "../../components/site";
 import type {CaptureRecord} from "../../app/usePageLifecycle";
+import {SectionHeader, SiteFooter, SiteHeader} from "../../shared/site";
 import {ButtonLink} from "../../shared/ui/primitives";
 import {WaitlistForm} from "../waitlist/WaitlistForm";
 import {AppDownloadCtas} from "../marketing/AppDownloadCtas";
