@@ -2902,6 +2902,196 @@ Widget catchCelebrationScreenCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
+  type: PaperCelebrationScaffold,
+  path: '[Core catalog]/Moments',
+)
+Widget paperCelebrationScaffoldCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'PaperCelebrationScaffold',
+    catalogId: 'core.celebration.paper_scaffold',
+    children: [
+      _StateCard(
+        label: 'confirmation shell',
+        child: _PhoneFrame(
+          height: 720,
+          child: PaperCelebrationScaffold(
+            screen: CatchCelebrationScreen(
+              kind: CelebrationMomentKind.eventCreated,
+              playEffects: false,
+              appearance: CatchCelebrationAppearance.paper,
+              showCloseButton: false,
+              icon: CatchIcons.verifiedRounded,
+              eyebrow: 'Event created',
+              title: 'Your event is live.',
+              message:
+                  'Sundowner 5K, Bandra seafront is now listed on Sunday sea-face crew.',
+              details: _celebrationDetails,
+              note:
+                  'Bookings, waitlist, and attendance are tracked from Manage event.',
+              primaryAction: CelebrationAction(
+                label: 'Manage event',
+                onPressed: _noop,
+              ),
+              secondaryAction: CelebrationAction(
+                label: 'Back to club',
+                onPressed: _noop,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: PaperCelebrationIcon,
+  path: '[Core catalog]/Moments',
+)
+Widget paperCelebrationIconCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'PaperCelebrationIcon',
+    catalogId: 'core.celebration.paper_icon',
+    children: [
+      _StateCard(
+        label: 'paper mark',
+        child: Center(
+          child: PaperCelebrationIcon(icon: CatchIcons.verifiedRounded),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: PaperCelebrationDetailsCard,
+  path: '[Core catalog]/Moments',
+)
+Widget paperCelebrationDetailsCardCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'PaperCelebrationDetailsCard',
+    catalogId: 'core.celebration.paper_details_card',
+    children: [
+      _StateCard(
+        label: 'event details',
+        child: PaperCelebrationDetailsCard(details: _celebrationDetails),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: PaperCelebrationDetailRow,
+  path: '[Core catalog]/Moments',
+)
+Widget paperCelebrationDetailRowCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'PaperCelebrationDetailRow',
+    catalogId: 'core.celebration.paper_detail_row',
+    children: [
+      _StateCard(
+        label: 'icon detail',
+        child: PaperCelebrationDetailRow(detail: _whenCelebrationDetail),
+      ),
+      _StateCard(
+        label: 'text detail',
+        child: PaperCelebrationDetailRow(detail: _hostCelebrationDetail),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CelebrationIcon,
+  path: '[Core catalog]/Moments',
+)
+Widget celebrationIconCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CelebrationIcon',
+    catalogId: 'core.celebration.immersive_icon',
+    children: [
+      _StateCard(
+        label: 'immersive mark',
+        child: _ImmersiveCelebrationFrame(
+          child: CelebrationIcon(icon: CatchIcons.checkRounded),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CelebrationDetailsCard,
+  path: '[Core catalog]/Moments',
+)
+Widget celebrationDetailsCardCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CelebrationDetailsCard',
+    catalogId: 'core.celebration.immersive_details_card',
+    children: [
+      _StateCard(
+        label: 'full-screen details',
+        child: _ImmersiveCelebrationFrame(
+          child: CelebrationDetailsCard(details: _celebrationDetails),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CelebrationDetailRow,
+  path: '[Core catalog]/Moments',
+)
+Widget celebrationDetailRowCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CelebrationDetailRow',
+    catalogId: 'core.celebration.immersive_detail_row',
+    children: [
+      _StateCard(
+        label: 'icon detail',
+        child: _ImmersiveCelebrationFrame(
+          child: CelebrationDetailRow(detail: _whenCelebrationDetail),
+        ),
+      ),
+      _StateCard(
+        label: 'text detail',
+        child: _ImmersiveCelebrationFrame(
+          child: CelebrationDetailRow(detail: _hostCelebrationDetail),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CelebrationNote,
+  path: '[Core catalog]/Moments',
+)
+Widget celebrationNoteCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CelebrationNote',
+    catalogId: 'core.celebration.immersive_note',
+    children: [
+      _StateCard(
+        label: 'supporting note',
+        child: _ImmersiveCelebrationFrame(
+          child: CelebrationNote(note: 'Matching opens after check-in.'),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
   type: ResponsiveBuilder,
   path: '[Core catalog]/Layout',
 )
@@ -3041,6 +3231,24 @@ class _PhoneFrame extends StatelessWidget {
           ),
           child: SizedBox(width: 390, height: height, child: child),
         ),
+      ),
+    );
+  }
+}
+
+class _ImmersiveCelebrationFrame extends StatelessWidget {
+  const _ImmersiveCelebrationFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(gradient: t.heroGrad),
+      child: Padding(
+        padding: const EdgeInsets.all(CatchSpacing.s4),
+        child: child,
       ),
     );
   }
@@ -3389,3 +3597,24 @@ Widget _sliverTextData(String value) => SliverToBoxAdapter(
 void _noop() {}
 
 void _ignoreString(String _) {}
+
+final _whenCelebrationDetail = CelebrationDetail(
+  label: 'When',
+  value: 'Sun, 22 Jun - 6:30 AM',
+  icon: CatchIcons.calendarMonthOutlined,
+);
+
+const _hostCelebrationDetail = CelebrationDetail(
+  label: 'Host',
+  value: 'Sunday sea-face crew',
+);
+
+final _celebrationDetails = [
+  _whenCelebrationDetail,
+  CelebrationDetail(
+    label: 'Where',
+    value: 'Carter Road jetty',
+    icon: CatchIcons.locationOnOutlined,
+  ),
+  _hostCelebrationDetail,
+];

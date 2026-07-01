@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.516
+version: 2.5.517
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.517
+
+- Cataloged the `CatchCelebrationScreen` subpart family directly: immersive and
+  paper detail rows/cards, icons, note surface, and the paper scaffold. This
+  keeps high-emotion confirmation moments reviewable below the full-screen
+  composition and clears the celebration Widgetbook coverage cluster.
 
 ### 2.5.516
 
@@ -5116,6 +5123,14 @@ Generated 2026-05-06.
 | `CatchShareCardSheet` | `lib/core/widgets/catch_share_card_sheet.dart:20` | Shared visual-card share sheet. Renders a keyboard-safe bottom sheet with `CatchBottomSheetGrabber`, a bounded `RepaintBoundary` card preview, footnote copy, and a full-width platform-share `CatchButton` that exports the captured card through `ExternalShareController`. `RichShareCardSheetKeys.cardPreview` and `.shareButton` are the stable hooks for tests and future automation. |
 | `CatchDraggableSheetShell` | `lib/core/widgets/catch_draggable_sheet_shell.dart:6` | Shared shell for persistent `DraggableScrollableSheet` surfaces. Owns the rounded top edge, border, optional raised shadow, and grabber slot while leaving snap state and scroll content to feature screens. Callers can tune handle opacity and top radius for sheet reveal animations without forking the shell. |
 | `CatchCelebrationScreen` | `lib/core/celebration/catch_celebration_screen.dart:37` | Shared full-screen celebration surface for high-emotion completion moments. Feature screens provide moment kind, copy, details, optional supplemental children, and primary/secondary actions; the primitive dispatches celebration effects once after first frame. The default immersive appearance owns the orange full-screen celebration, while the paper appearance provides the Claude-style host confirmation surface with tokenized paper insets, message spacing, detail-row rhythm, lighter separators, and action gap. Solid-white primary actions use `CatchButtonVariant.light` instead of per-screen white/foreground overrides. |
+| `PaperCelebrationScaffold` | `lib/core/celebration/catch_celebration_screen.dart:244` | Paper-style celebration layout used by host confirmations. Renders centered icon/title/message content, optional close affordance, tokenized paper insets, `PaperCelebrationDetailsCard`, supporting note text, supplemental children, and primary/secondary actions without playing effects itself. |
+| `PaperCelebrationIcon` | `lib/core/celebration/catch_celebration_screen.dart:374` | Circular token-colored icon mark for paper celebration moments. Keeps paper confirmations distinct from the immersive orange celebration icon treatment. |
+| `PaperCelebrationDetailsCard` | `lib/core/celebration/catch_celebration_screen.dart:392` | Tokenized white detail card for paper celebrations. Owns row dividers and horizontal padding while delegating each entry to `PaperCelebrationDetailRow`. |
+| `PaperCelebrationDetailRow` | `lib/core/celebration/catch_celebration_screen.dart:423` | Paper celebration detail row with optional icon, fixed-width uppercase label, and right-aligned value. Used for event-created confirmation metadata. |
+| `CelebrationIcon` | `lib/core/celebration/catch_celebration_screen.dart:461` | Immersive orange celebration icon mark. Uses translucent cream fill/border and dark celebration ink so it remains legible over the hero gradient. |
+| `CelebrationDetailsCard` | `lib/core/celebration/catch_celebration_screen.dart:481` | Immersive celebration detail card. Groups `CelebrationDetailRow` entries inside a translucent cream surface with darker separators for full-screen orange moments. |
+| `CelebrationDetailRow` | `lib/core/celebration/catch_celebration_screen.dart:513` | Immersive celebration detail row with optional icon, label, and lead-value copy tuned for the orange celebration surface. |
+| `CelebrationNote` | `lib/core/celebration/catch_celebration_screen.dart:553` | Immersive celebration note surface. Shows a bolt mark and supporting copy inside a translucent cream bordered panel below the detail card. |
 | `CelebrationEffectsController` | `lib/core/celebration/celebration_effects_controller.dart:10` | Central haptic/sound boundary for celebration moments. Currently dispatches haptics by `CelebrationMomentKind`; future sound work should be added here instead of directly in feature widgets. |
 | `CatchEmptyState` | `lib/core/widgets/catch_empty_state.dart:9` | Handoff `EmptyState`: centered cardless placeholder with optional quiet 34px ink3 glyph, section-title headline, body-small message, 24px horizontal padding, and optional action. It still supports explicit surface/bubble presentation and compact inline layout for embedded contexts, and expands to bounded parent widths before centering content. |
 | `CatchDaySectionHeader` | `lib/core/widgets/catch_day_section_header.dart:11` | Sticky day-section header for chronological feeds. Use `CatchDaySectionHeaderDelegate` when the parent owns a flat `CustomScrollView` and pinned day headers are needed; the delegate binds the child height to its sliver extent so pinned geometry stays valid under constrained sheets. |
