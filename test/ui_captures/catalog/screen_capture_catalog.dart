@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
@@ -171,6 +172,7 @@ import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart'
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
@@ -5946,6 +5948,181 @@ class _SettingsMutationCaptureState
   Widget build(BuildContext context) => const SettingsScreen();
 }
 
+enum _AuthCaptureMode {
+  phoneEntry,
+  otpEntry,
+  sendCodePending,
+  sendCodeError,
+  verifyCodePending,
+  verifyCodeError,
+  resendPending,
+  resendError,
+}
+
+class _AuthCapture extends StatelessWidget {
+  const _AuthCapture({this.mode = _AuthCaptureMode.phoneEntry});
+
+  final _AuthCaptureMode mode;
+
+  @override
+  Widget build(BuildContext context) {
+    return _AuthCaptureSeeder(mode: mode, child: const AuthScreen());
+  }
+}
+
+final _authProviderOverrides = <Object>[
+  authRepositoryProvider.overrideWithValue(const _CaptureAuthRepository()),
+  authInitialCountryDialCodeProvider.overrideWithValue('+91'),
+];
+
+class _AuthCaptureSeeder extends ConsumerStatefulWidget {
+  const _AuthCaptureSeeder({required this.mode, required this.child});
+
+  final _AuthCaptureMode mode;
+  final Widget child;
+
+  @override
+  ConsumerState<_AuthCaptureSeeder> createState() => _AuthCaptureSeederState();
+}
+
+class _AuthCaptureSeederState extends ConsumerState<_AuthCaptureSeeder> {
+  static const _phoneNumber = '9876543210';
+  static const _countryCode = '+91';
+
+  var _seeded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_seed()));
+  }
+
+  Future<void> _seed() async {
+    if (!mounted || _seeded) return;
+    _seeded = true;
+    AuthController.sendOtpMutation.reset(ref);
+    AuthController.verifyOtpMutation.reset(ref);
+
+    switch (widget.mode) {
+      case _AuthCaptureMode.phoneEntry:
+        ref.read(authControllerProvider.notifier).goToStep(AuthStep.phone);
+        break;
+      case _AuthCaptureMode.otpEntry:
+        await _seedOtpStep();
+        break;
+      case _AuthCaptureMode.sendCodePending:
+        ref.read(authControllerProvider.notifier).goToStep(AuthStep.phone);
+        _runPending(AuthController.sendOtpMutation);
+        break;
+      case _AuthCaptureMode.sendCodeError:
+        ref.read(authControllerProvider.notifier).goToStep(AuthStep.phone);
+        _runError(
+          AuthController.sendOtpMutation,
+          const NetworkException(
+            'capture-send-code-failed',
+            'We could not send the code. Check your connection and try again.',
+            context: BackendErrorContext(
+              service: BackendService.auth,
+              action: 'send verification code',
+              resource: 'phone_auth',
+            ),
+          ),
+        );
+        break;
+      case _AuthCaptureMode.verifyCodePending:
+        await _seedOtpStep();
+        _runPending(AuthController.verifyOtpMutation);
+        break;
+      case _AuthCaptureMode.verifyCodeError:
+        await _seedOtpStep();
+        _runError(
+          AuthController.verifyOtpMutation,
+          const ValidationException(
+            'That code is invalid. Please try again.',
+            code: 'invalid-verification-code',
+            context: BackendErrorContext(
+              service: BackendService.auth,
+              action: 'verify sms code',
+              resource: 'phone_auth',
+            ),
+          ),
+        );
+        break;
+      case _AuthCaptureMode.resendPending:
+        await _seedOtpStep();
+        _runPending(AuthController.sendOtpMutation);
+        break;
+      case _AuthCaptureMode.resendError:
+        await _seedOtpStep();
+        _runError(
+          AuthController.sendOtpMutation,
+          const NetworkException(
+            'capture-resend-code-failed',
+            'We could not resend the code. Please try again.',
+            context: BackendErrorContext(
+              service: BackendService.auth,
+              action: 'resend verification code',
+              resource: 'phone_auth',
+            ),
+          ),
+        );
+        break;
+    }
+  }
+
+  Future<void> _seedOtpStep() {
+    return ref
+        .read(authControllerProvider.notifier)
+        .sendOtp(_phoneNumber, _countryCode);
+  }
+
+  void _runPending(Mutation<void> mutation) {
+    final completer = Completer<void>();
+    unawaited(mutation.run(ref, (_) => completer.future));
+  }
+
+  void _runError(Mutation<void> mutation, Object error) {
+    unawaited(mutation.run(ref, (_) async => throw error).catchError((_) {}));
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
+class _CaptureAuthRepository implements AuthRepository {
+  const _CaptureAuthRepository();
+
+  @override
+  User? get currentUser => null;
+
+  @override
+  Stream<User?> authStateChanges() => Stream<User?>.value(null);
+
+  @override
+  Future<void> verifyPhoneNumber({
+    required String phoneNumber,
+    int? forceResendingToken,
+    required void Function(String verificationId, int? resendToken) codeSent,
+    required void Function(AppException e) verificationFailed,
+    required void Function(PhoneAuthCredential credential)
+    verificationCompleted,
+  }) async {
+    codeSent('capture-verification-id', null);
+  }
+
+  @override
+  Future<void> signInWithOtp({
+    required String verificationId,
+    required String smsCode,
+  }) async {}
+
+  @override
+  Future<void> signInWithCredential(AuthCredential credential) async {}
+
+  @override
+  Future<void> signOut() async {}
+}
+
 final screenCaptureCatalog = <ScreenCaptureEntry>[
   ScreenCaptureEntry(
     id: 'profile_self',
@@ -6071,7 +6248,87 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'auth_phone_entry',
     routeIds: const <String>['authScreen'],
     device: CaptureDevice.reviewPhone,
-    builder: (context) => const AuthScreen(),
+    providerOverrides: _authProviderOverrides,
+    builder: (context) => const _AuthCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_otp_entry',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _authProviderOverrides,
+    builder: (context) => const _AuthCapture(mode: _AuthCaptureMode.otpEntry),
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_send_code_pending',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _authProviderOverrides,
+    builder: (context) =>
+        const _AuthCapture(mode: _AuthCaptureMode.sendCodePending),
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_send_code_error',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _authProviderOverrides,
+    builder: (context) =>
+        const _AuthCapture(mode: _AuthCaptureMode.sendCodeError),
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_verify_code_pending',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _authProviderOverrides,
+    builder: (context) =>
+        const _AuthCapture(mode: _AuthCaptureMode.verifyCodePending),
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_verify_code_error',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _authProviderOverrides,
+    builder: (context) =>
+        const _AuthCapture(mode: _AuthCaptureMode.verifyCodeError),
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_resend_pending',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _authProviderOverrides,
+    builder: (context) =>
+        const _AuthCapture(mode: _AuthCaptureMode.resendPending),
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_resend_error',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _authProviderOverrides,
+    builder: (context) =>
+        const _AuthCapture(mode: _AuthCaptureMode.resendError),
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_phone_text_scale_2',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    textScale: 2,
+    providerOverrides: _authProviderOverrides,
+    builder: (context) => const _AuthCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_otp_text_scale_2',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    textScale: 2,
+    providerOverrides: _authProviderOverrides,
+    builder: (context) => const _AuthCapture(mode: _AuthCaptureMode.otpEntry),
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_otp_reduced_motion',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    disableAnimations: true,
+    providerOverrides: _authProviderOverrides,
+    builder: (context) => const _AuthCapture(mode: _AuthCaptureMode.otpEntry),
   ),
   ScreenCaptureEntry(
     id: 'onboarding_welcome',

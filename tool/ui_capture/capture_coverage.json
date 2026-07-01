@@ -27,9 +27,19 @@
       "status": "captured",
       "priority": "P2",
       "captureIds": [
-        "auth_phone_entry"
+        "auth_phone_entry",
+        "auth_otp_entry",
+        "auth_send_code_pending",
+        "auth_send_code_error",
+        "auth_verify_code_pending",
+        "auth_verify_code_error",
+        "auth_resend_pending",
+        "auth_resend_error",
+        "auth_phone_text_scale_2",
+        "auth_otp_text_scale_2",
+        "auth_otp_reduced_motion"
       ],
-      "reason": "Baseline phone-entry auth capture; OTP state can be added as a variant."
+      "reason": "Auth captures cover phone entry, OTP entry, send/verify/resend pending and error states, phone and OTP text scale 2.0, and OTP reduced motion. Validation-error UI remains test-backed until an interaction-capable capture path or explicit form-state seam exists."
     },
     {
       "routeId": "onboardingScreen",

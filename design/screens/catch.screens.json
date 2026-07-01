@@ -15418,6 +15418,56 @@
           "id": "auth_phone_entry",
           "status": "captured",
           "notes": "Baseline phone-entry auth capture; OTP and mutation variants remain planned."
+        },
+        {
+          "id": "auth_otp_entry",
+          "status": "captured",
+          "notes": "OTP entry capture with seeded verification id and resend cooldown."
+        },
+        {
+          "id": "auth_send_code_pending",
+          "status": "captured",
+          "notes": "Phone-entry send-code pending mutation capture."
+        },
+        {
+          "id": "auth_send_code_error",
+          "status": "captured",
+          "notes": "Phone-entry send-code failure banner capture."
+        },
+        {
+          "id": "auth_verify_code_pending",
+          "status": "captured",
+          "notes": "OTP verify pending mutation capture."
+        },
+        {
+          "id": "auth_verify_code_error",
+          "status": "captured",
+          "notes": "OTP verify failure banner capture."
+        },
+        {
+          "id": "auth_resend_pending",
+          "status": "captured",
+          "notes": "OTP resend pending mutation capture."
+        },
+        {
+          "id": "auth_resend_error",
+          "status": "captured",
+          "notes": "OTP resend failure banner capture."
+        },
+        {
+          "id": "auth_phone_text_scale_2",
+          "status": "captured",
+          "notes": "Phone-entry text scale 2.0 capture."
+        },
+        {
+          "id": "auth_otp_text_scale_2",
+          "status": "captured",
+          "notes": "OTP-entry text scale 2.0 capture."
+        },
+        {
+          "id": "auth_otp_reduced_motion",
+          "status": "captured",
+          "notes": "OTP-entry reduced-motion capture."
         }
       ],
       "states": [
@@ -15427,7 +15477,8 @@
           "status": "captured",
           "source": "AuthScreen renders PhonePage while AuthController.step is AuthStep.phone, using OnboardingStepFrame and CatchField/CatchButton primitives.",
           "captureIds": [
-            "auth_phone_entry"
+            "auth_phone_entry",
+            "auth_phone_text_scale_2"
           ],
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
@@ -15458,46 +15509,68 @@
         {
           "id": "send_code_mutation",
           "kind": "mutation",
-          "status": "tested",
+          "status": "captured",
           "source": "AuthController.sendOtpMutation drives the Send code loading state and CatchErrorBanner failure surface.",
+          "captureIds": [
+            "auth_send_code_pending",
+            "auth_send_code_error"
+          ],
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "Widgetbook covers send-code pending and failure; add deterministic route captures."
+          "nextAction": "Compare send-code pending/error states against future mutation references if design exports them."
         },
         {
           "id": "otp_entry",
           "kind": "populated",
-          "status": "tested",
+          "status": "captured",
           "source": "After codeSent, AuthScreen renders OtpPage with CatchOtpCodeField, verify CTA, resend cooldown, and change-number action.",
+          "captureIds": [
+            "auth_otp_entry",
+            "auth_otp_text_scale_2",
+            "auth_otp_reduced_motion"
+          ],
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "Widgetbook covers OTP entry with active cooldown; add deterministic route capture and complete-code ready state if visually distinct."
+          "nextAction": "Add complete-code ready state if product treats it as visually distinct."
         },
         {
           "id": "verify_otp_mutation",
           "kind": "mutation",
-          "status": "tested",
+          "status": "captured",
           "source": "AuthController.verifyOtpMutation drives Verify loading/error behavior, while sendOtpMutation also covers resend failures on the OTP page.",
+          "captureIds": [
+            "auth_verify_code_pending",
+            "auth_verify_code_error",
+            "auth_resend_pending",
+            "auth_resend_error"
+          ],
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "Widgetbook covers verify pending/failure and resend pending/failure; add deterministic route captures and expired-verification capture if visually distinct."
+          "nextAction": "Add expired-verification capture if product treats it as visually distinct."
         },
         {
           "id": "text_scale_2",
           "kind": "accessibility",
-          "status": "implemented",
-          "source": "Widgetbook covers phone and OTP text-scale 2 states; no deterministic route capture exists yet.",
-          "nextAction": "Widgetbook covers phone and OTP text-scale 2 states; add deterministic route captures for phone entry, OTP entry, error banners, country selector, and sticky footers."
+          "status": "captured",
+          "source": "Widgetbook and deterministic captures cover phone and OTP text-scale 2 states.",
+          "captureIds": [
+            "auth_phone_text_scale_2",
+            "auth_otp_text_scale_2"
+          ],
+          "nextAction": "Add validation-error text-scale capture once validation capture has a deterministic seam."
         },
         {
           "id": "reduced_motion",
           "kind": "accessibility",
-          "status": "implemented",
-          "source": "Widgetbook covers OTP reduced-motion treatment; no deterministic route capture exists yet.",
-          "nextAction": "Widgetbook covers OTP reduced-motion treatment; add deterministic route capture for phone-to-OTP transition and resend cooldown treatment."
+          "status": "captured",
+          "source": "Widgetbook and deterministic captures cover OTP reduced-motion treatment.",
+          "captureIds": [
+            "auth_otp_reduced_motion"
+          ],
+          "nextAction": "Add phone-to-OTP transition capture if an interaction-capable capture path is added."
         }
       ],
       "composition": {
@@ -15613,17 +15686,17 @@
         {
           "id": "DS-AUTH-001",
           "status": "open",
-          "nextAction": "Auth Widgetbook now covers phone entry, OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion through the existing AuthController and Mutation seams. Remaining work is country-picker edge variants, validation-error preview/capture, theme variants, and deterministic route captures."
+          "nextAction": "Auth Widgetbook and deterministic captures now cover phone entry, OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion through AuthController and Mutation seams. Remaining work is country-picker edge variants, validation-error preview/capture, theme variants, and state-specific references."
         },
         {
           "id": "DS-AUTH-002",
           "status": "open",
-          "nextAction": "Add deterministic route captures for OTP, send/verify/resend mutation loading and errors, validation errors, text scale, and reduced motion."
+          "nextAction": "Add deterministic validation-error route capture once an interaction-capable capture path or explicit form-state seam exists."
         },
         {
           "id": "DS-AUTH-003",
           "status": "open",
-          "nextAction": "Auth Widgetbook previews now seed local phone, OTP, cooldown, mutation, text-scale, and reduced-motion state without Firebase side effects. Remaining adapter work is deciding whether to promote that preview seeder into a production Auth display-state adapter before capture expansion."
+          "nextAction": "Auth Widgetbook and capture previews now seed local phone, OTP, cooldown, mutation, text-scale, and reduced-motion state without Firebase side effects. Remaining adapter work is deciding whether to promote that seeder into a production Auth display-state adapter for validation and country-picker edge states."
         }
       ]
     },

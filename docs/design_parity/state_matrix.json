@@ -143,7 +143,17 @@
             "catch.field"
           ],
           "captureIds": [
-            "auth_phone_entry"
+            "auth_phone_entry",
+            "auth_otp_entry",
+            "auth_send_code_pending",
+            "auth_send_code_error",
+            "auth_verify_code_pending",
+            "auth_verify_code_error",
+            "auth_resend_pending",
+            "auth_resend_error",
+            "auth_phone_text_scale_2",
+            "auth_otp_text_scale_2",
+            "auth_otp_reduced_motion"
           ],
           "designRefs": [
             {
@@ -160,7 +170,8 @@
               "kind": "populated",
               "status": "captured",
               "captureIds": [
-                "auth_phone_entry"
+                "auth_phone_entry",
+                "auth_phone_text_scale_2"
               ],
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
@@ -179,11 +190,16 @@
             {
               "id": "otp_entry",
               "kind": "populated",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "auth_otp_entry",
+                "auth_otp_text_scale_2",
+                "auth_otp_reduced_motion"
+              ],
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "After codeSent, AuthScreen renders OtpPage with CatchOtpCodeField, verify CTA, resend cooldown, and change-number action; Widgetbook covers OTP cooldown. Route capture remains open."
+              "notes": "After codeSent, AuthScreen renders OtpPage with CatchOtpCodeField, verify CTA, resend cooldown, and change-number action; Widgetbook and deterministic route captures cover OTP cooldown."
             },
             {
               "id": "validation_error",
@@ -198,39 +214,56 @@
             {
               "id": "send_code_mutation",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "auth_send_code_pending",
+                "auth_send_code_error"
+              ],
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "AuthController.sendOtpMutation drives the Send code loading state and CatchErrorBanner failure surface; Widgetbook covers send and resend pending/error. Add deterministic route captures."
+              "notes": "AuthController.sendOtpMutation drives the Send code loading state and CatchErrorBanner failure surface; Widgetbook and deterministic route captures cover send pending/error."
             },
             {
               "id": "verify_otp_mutation",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "auth_verify_code_pending",
+                "auth_verify_code_error",
+                "auth_resend_pending",
+                "auth_resend_error"
+              ],
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "AuthController.verifyOtpMutation drives Verify loading/error behavior, while sendOtpMutation also covers resend failures on the OTP page; Widgetbook covers verify/resend pending and failure. Add deterministic route captures."
+              "notes": "AuthController.verifyOtpMutation drives Verify loading/error behavior, while sendOtpMutation also covers resend failures on the OTP page; Widgetbook and deterministic route captures cover verify/resend pending and failure."
             },
             {
               "id": "text_scale_2",
               "kind": "accessibility",
-              "status": "implemented",
-              "notes": "Widgetbook covers phone and OTP text-scale 2 states; add deterministic route captures."
+              "status": "captured",
+              "captureIds": [
+                "auth_phone_text_scale_2",
+                "auth_otp_text_scale_2"
+              ],
+              "notes": "Widgetbook and deterministic captures cover phone and OTP text-scale 2 states."
             },
             {
               "id": "reduced_motion",
               "kind": "accessibility",
-              "status": "implemented",
-              "notes": "Widgetbook covers OTP reduced-motion treatment; add deterministic route capture."
+              "status": "captured",
+              "captureIds": [
+                "auth_otp_reduced_motion"
+              ],
+              "notes": "Widgetbook and deterministic captures cover OTP reduced-motion treatment."
             }
           ],
           "gaps": [
             {
               "id": "DP-AUTH-001",
               "status": "open",
-              "nextAction": "Auth Widgetbook now covers OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion; add deterministic route captures and references for those states."
+              "nextAction": "Auth Widgetbook and deterministic captures now cover OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion. Add validation-error capture, country-picker variants, and state-specific references."
             },
             {
               "id": "DP-AUTH-002",
