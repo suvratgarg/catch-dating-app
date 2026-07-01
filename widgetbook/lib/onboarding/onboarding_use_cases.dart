@@ -54,9 +54,13 @@ Widget onboardingScreenRouteStates(BuildContext context) {
   path: '[P1 product surfaces]/Onboarding/Pages',
 )
 Widget welcomePageStates(BuildContext context) {
-  return const _OnboardingCatalog(
+  return _OnboardingCatalog(
     title: 'WelcomePage',
-    children: [
+    children: const [
+      _StateCard(
+        label: 'animated reel',
+        child: _DeviceFrame(child: WelcomePage()),
+      ),
       _StateCard(
         label: 'landed',
         child: _DeviceFrame(child: WelcomePage(playIntro: false)),
@@ -65,6 +69,15 @@ Widget welcomePageStates(BuildContext context) {
         label: 'reduced motion',
         child: _DeviceFrame(
           child: _MediaOverride(disableAnimations: true, child: WelcomePage()),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2',
+        child: _DeviceFrame(
+          child: _MediaOverride(
+            textScale: 2,
+            child: WelcomePage(playIntro: false),
+          ),
         ),
       ),
     ],
@@ -286,16 +299,24 @@ class _DeviceFrame extends StatelessWidget {
 }
 
 class _MediaOverride extends StatelessWidget {
-  const _MediaOverride({required this.child, this.disableAnimations = false});
+  const _MediaOverride({
+    required this.child,
+    this.disableAnimations = false,
+    this.textScale,
+  });
 
   final Widget child;
   final bool disableAnimations;
+  final double? textScale;
 
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
     return MediaQuery(
-      data: media.copyWith(disableAnimations: disableAnimations),
+      data: media.copyWith(
+        disableAnimations: disableAnimations,
+        textScaler: textScale == null ? null : TextScaler.linear(textScale!),
+      ),
       child: child,
     );
   }

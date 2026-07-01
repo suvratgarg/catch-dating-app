@@ -368,7 +368,8 @@ class ReelBand extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final offset = _welcomeTrackOffset(spinValue: spinValue, landed: landed);
-    final trackHeight = _welcomePhrases.length * CatchLayout.welcomeReelRowHeight;
+    final trackHeight =
+        _welcomePhrases.length * CatchLayout.welcomeReelRowHeight;
 
     return ShaderMask(
       blendMode: BlendMode.dstIn,
@@ -436,7 +437,7 @@ class ReelRow extends StatelessWidget {
     required this.landed,
   });
 
-  final _WelcomePhrase phrase;
+  final WelcomePhrase phrase;
   final int phraseIndex;
   final int rowIndex;
   final double trackOffset;
@@ -577,8 +578,8 @@ double _revealProgress(double value, int order) {
   return CatchMotion.welcomeRevealCurve.transform(raw);
 }
 
-class _WelcomePhrase {
-  const _WelcomePhrase(this.object, this.activityKind);
+class WelcomePhrase {
+  const WelcomePhrase(this.object, this.activityKind);
 
   final String object;
   final ActivityKind activityKind;
@@ -607,19 +608,19 @@ double _durationProgress(double value, Duration duration) {
   return (value / end).clamp(0, 1).toDouble();
 }
 
-const _welcomePhrases = <_WelcomePhrase>[
-  _WelcomePhrase('the 6:30 run', ActivityKind.socialRun),
-  _WelcomePhrase('the long table', ActivityKind.dinner),
-  _WelcomePhrase('Tuesday trivia', ActivityKind.pubQuiz),
-  _WelcomePhrase('Sunday doubles', ActivityKind.padel),
-  _WelcomePhrase('the sunset 5K', ActivityKind.running),
-  _WelcomePhrase('the climb', ActivityKind.strengthTraining),
-  _WelcomePhrase('the record fair', ActivityKind.barCrawl),
-  _WelcomePhrase('the gallery', ActivityKind.yoga),
-  _WelcomePhrase('morning swim', ActivityKind.cycling),
-  _WelcomePhrase('the supper club', ActivityKind.dinner),
-  _WelcomePhrase('someone\'s eye', ActivityKind.singlesMixer),
-  _WelcomePhrase('someone real', ActivityKind.socialRun),
+const _welcomePhrases = <WelcomePhrase>[
+  WelcomePhrase('the 6:30 run', ActivityKind.socialRun),
+  WelcomePhrase('the long table', ActivityKind.dinner),
+  WelcomePhrase('Tuesday trivia', ActivityKind.pubQuiz),
+  WelcomePhrase('Sunday doubles', ActivityKind.padel),
+  WelcomePhrase('the sunset 5K', ActivityKind.running),
+  WelcomePhrase('the climb', ActivityKind.strengthTraining),
+  WelcomePhrase('the record fair', ActivityKind.barCrawl),
+  WelcomePhrase('the gallery', ActivityKind.yoga),
+  WelcomePhrase('morning swim', ActivityKind.cycling),
+  WelcomePhrase('the supper club', ActivityKind.dinner),
+  WelcomePhrase('someone\'s eye', ActivityKind.singlesMixer),
+  WelcomePhrase('someone real', ActivityKind.socialRun),
 ];
 
 const _landingIndex = 11;

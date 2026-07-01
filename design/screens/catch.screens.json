@@ -15125,18 +15125,36 @@
           "id": "start_welcome",
           "status": "captured",
           "notes": "Deterministic WelcomePage(playIntro: false) capture for the landed start state."
+        },
+        {
+          "id": "start_welcome_animated_reel",
+          "status": "captured",
+          "notes": "Deterministic capture-runner sample of the animated object reel before the landed CTA state."
+        },
+        {
+          "id": "start_welcome_reduced_motion",
+          "status": "captured",
+          "notes": "Reduced-motion capture proving WelcomePage lands immediately when animations are disabled."
+        },
+        {
+          "id": "start_welcome_text_scale_2",
+          "status": "captured",
+          "notes": "Text scale 2.0 capture for landed headline/body/CTA layout."
         }
       ],
       "states": [
         {
           "id": "animated_reel",
           "kind": "populated",
-          "status": "implemented",
+          "status": "captured",
           "source": "Production WelcomePage starts the object reel and lands on the final welcome composition unless playIntro is false or reduced motion is active.",
+          "captureIds": [
+            "start_welcome_animated_reel"
+          ],
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Add sampled visual captures if animation timing or object sequencing becomes a regression risk."
+          "nextAction": "Export animated-reel reference samples before strict visual comparison if animation timing becomes a regression risk."
         },
         {
           "id": "landed_direct",
@@ -15144,7 +15162,8 @@
           "status": "captured",
           "source": "WelcomePage(playIntro: false) renders the final Catch welcome state immediately for deterministic captures.",
           "captureIds": [
-            "start_welcome"
+            "start_welcome",
+            "start_welcome_text_scale_2"
           ],
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
@@ -15154,29 +15173,40 @@
         {
           "id": "cta_navigation",
           "kind": "populated",
-          "status": "tested",
+          "status": "captured",
           "source": "The primary CTA routes to auth with the current location as from=, while the secondary CTA routes to the clubs surface.",
+          "captureIds": [
+            "start_welcome",
+            "start_welcome_reduced_motion",
+            "start_welcome_text_scale_2"
+          ],
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Add Widgetbook state proving both CTA treatments in landed, text-scale, and reduced-motion modes."
+          "nextAction": "Keep route test coverage while future visual work compares CTA treatment against state-specific references."
         },
         {
           "id": "reduced_motion",
           "kind": "accessibility",
-          "status": "tested",
+          "status": "captured",
           "source": "WelcomePage lands immediately when MediaQuery.disableAnimations is true.",
+          "captureIds": [
+            "start_welcome_reduced_motion"
+          ],
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Add a deterministic reduced-motion capture and mask any safe-area variance."
+          "nextAction": "Export a reduced-motion reference if design requires a state-specific comparison."
         },
         {
           "id": "text_scale_2",
           "kind": "accessibility",
-          "status": "planned",
-          "source": "No text-scale 2.0 Start capture exists yet.",
-          "nextAction": "Add text-scale capture for title, reel label, body copy, and bottom CTAs."
+          "status": "captured",
+          "source": "Start Welcome text scale 2.0 capture covers title, body copy, and bottom CTAs.",
+          "captureIds": [
+            "start_welcome_text_scale_2"
+          ],
+          "nextAction": "Export a text-scale reference if design requires a state-specific comparison."
         },
         {
           "id": "light_dark",
@@ -15184,9 +15214,11 @@
           "status": "captured",
           "source": "The start route intentionally uses the sunset dark landing palette; the current capture covers that dark branded state.",
           "captureIds": [
-            "start_welcome"
+            "start_welcome",
+            "start_welcome_reduced_motion",
+            "start_welcome_text_scale_2"
           ],
-          "nextAction": "Decide whether a separate light-mode start treatment is needed or whether the dark landing palette is the canonical theme state."
+          "nextAction": "No separate light-mode treatment is currently required; the fixed sunset dark palette is canonical for Start."
         }
       ],
       "composition": {
@@ -15277,13 +15309,13 @@
         },
         {
           "id": "DS-START-002",
-          "status": "open",
-          "nextAction": "Add Widgetbook states for animated, skipped, direct, reduced-motion, text-scale, CTA, and canonical theme variants."
+          "status": "closed",
+          "nextAction": "Closed by Widgetbook states for animated reel, landed direct, reduced motion, text scale, CTA, and canonical fixed-dark theme treatment."
         },
         {
           "id": "DS-START-003",
-          "status": "open",
-          "nextAction": "Add deterministic captures for reduced motion and text scale, and decide whether the start route has a canonical light-mode treatment."
+          "status": "closed",
+          "nextAction": "Closed by deterministic Start Welcome captures for animated reel, landed direct, reduced motion, text scale, and the documented fixed sunset dark palette."
         }
       ]
     },

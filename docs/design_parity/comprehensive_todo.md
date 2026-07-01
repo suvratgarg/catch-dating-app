@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.271
+version: 0.2.272
 updated: 2026-07-01
 owner: product_design_parity
 status: active
@@ -27,17 +27,17 @@ ledgers as the source of truth when counts differ:
 - Screen priority spread: 18 P1, 12 P2, and 5 P3 contracted screens.
 - Contracted screen states: 619.
 - Contracted screen sections: 241.
-- Screen registry migration gaps: 40 open, 15 blocked, and 84 closed. These are
+- Screen registry migration gaps: 38 open, 15 blocked, and 86 closed. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,110.
 - Open screen-contract validation gaps: 0.
 - Design parity matrix: 12 feature groups, 36 screens, 621 matrix states, and
-  56 open matrix gaps across screen-state, lint-candidate, and preview-plan
+  55 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
-- Matrix state status spread: 534 captured, 22 implemented, 4 planned, and
-  61 tested.
-- Capture coverage registry: 563 capture ids across 37 captured route entries,
+- Matrix state status spread: 538 captured, 21 implemented, 3 planned, and
+  59 tested.
+- Capture coverage registry: 566 capture ids across 37 captured route entries,
   5 alias route entries, 0 planned route entries, and 6 excluded route entries.
 - Component contracts: 56 reusable primitive/composite contracts with 349
   contract states.
@@ -690,7 +690,7 @@ from those ledgers rather than hand-editing counts.
 | P2 | `screen.host.settings` | 18 | 5 | 0 | Source found but exporter-blocked: `explorations/archived-templates/host-account/HostAccount.dc.html` | `DS-HOST-SETTINGS-001`, `DS-HOST-SETTINGS-002`, `DS-HOST-SETTINGS-003`, `DS-HOST-SETTINGS-004` | Widgetbook now covers route, profile summary, create-pending row, clubs section, tab rail, accessibility, and theme states; `HostSettingsState` adapts profile/club display state and `HostProfileController` owns profile create/save mutations with tested snackbar failure proof plus deterministic editor-sheet, mutation, sign-out, and offline captures. Host Settings create/save success feedback now uses the shared Catch snackbar helper. 2026-06-25 stable temp bundle, current runtime, CDP, and original-source Chrome attempts did not produce a valid PNG. Remaining work is source/runtime repair or alternate export path, payout/admin ownership, sign-out/account action policy, and pixel comparison. |
 | P2 | `screen.onboarding.flow` | 13 | 7 | 1 | `onboarding-handoff` | `DS-ONBOARDING-001`, `DS-ONBOARDING-002`, `DS-ONBOARDING-003`, `DS-ONBOARDING-004` | Photos upload-failure feedback now uses the shared Catch snackbar helper while preserving clear-before-show behavior. Export remaining onboarding steps, validation, upload, mutation, text-scale, and reduced-motion references. |
 | P2 | `screen.saved_events.list` | 9 | 4 | 0 | Blocked: no standalone Saved Events source | `DS-SAVED-EVENTS-004` blocked | SavedEventsListState owns ordering, saved/past labels, statuses, today, and club-id lookup input, while SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage own provider-free UI sections. Widgetbook and deterministic captures cover populated rows, empty/deleted-doc fallback, loading, stream error, club-name loading/error, past-only, text-scale, and paired light/dark states; reference export waits on a canonical Saved Events source. |
-| P2 | `screen.start.welcome` | 6 | 3 | 1 | None | `DS-START-001`, `DS-START-002`, `DS-START-003` | Add animated reel, reduced-motion, text-scale, theme, preview, and adapter coverage. |
+| P2 | `screen.start.welcome` | 6 | 3 | 1 | None | `DS-START-001` | Widgetbook and deterministic captures now cover animated reel, landed direct, CTA, reduced motion, text scale, and canonical fixed-dark theme treatment; continue state-specific reference exports and visual comparison. |
 | P3 | `screen.event.location_map` | 11 | 4 | 0 | Blocked: no standalone full-screen map source; map primitives only | `DP-EVENT-MAP-003`, `DP-EVENT-MAP-004` blocked | Continue route-state adapter and map-mask planning; reference export waits on canonical map route source. |
 | P3 | `screen.notifications.list` | 13 | 4 | 1 | None | None | Use the complete Notifications state/capture/adapter set during pixel comparison and future visual polish. |
 | P3 | `screen.payments.history` | 15 | 4 | 0 | Blocked: no standalone Payment History source; Booking moments only | `DP-PAYMENT-HISTORY-002`, `DP-PAYMENT-HISTORY-004` blocked | Preserve current capture/Widgetbook coverage; reference export waits on canonical payment-history source. |
@@ -1356,13 +1356,13 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
 
 ### P2 start_auth_onboarding
 
-- [ ] `start.welcome` (4 state follow-ups, 2 open gaps)
-  - planned: `text_scale_2`
-  - implemented: `animated_reel`
-  - tested: `reduced_motion`
-  - captured: `landed_direct`, `light_dark`
+- [ ] `start.welcome` (6 state follow-ups, 1 open gap)
+  - planned: None
+  - implemented: None
+  - tested: None
+  - captured: `animated_reel`, `landed_direct`, `cta_navigation`, `reduced_motion`, `text_scale_2`, `light_dark`
   - DP-START-001: Landed direct Start Welcome reference and masks are registered; export animated reel samples, reduced-motion, text-scale, and any alternate theme references before strict visual comparison.
-  - DP-START-002: Add a preview/story for animated, skipped, direct, reduced-motion, and text-scale states.
+  - DP-START-002: Closed by Widgetbook states for animated reel, landed direct, reduced motion, text scale, CTA, and canonical fixed-dark theme treatment.
 - [ ] `auth.phone_entry` (5 state follow-ups, 2 open gaps)
   - implemented: `otp_entry`, `submit_mutation`, `text_scale_2`, `reduced_motion`
   - tested: `validation_error`, `invalid_phone_blocks_send`

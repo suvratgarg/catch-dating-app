@@ -31,7 +31,10 @@
             "catch.button"
           ],
           "captureIds": [
-            "start_welcome"
+            "start_welcome",
+            "start_welcome_animated_reel",
+            "start_welcome_reduced_motion",
+            "start_welcome_text_scale_2"
           ],
           "designRefs": [
             {
@@ -46,18 +49,22 @@
             {
               "id": "animated_reel",
               "kind": "populated",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "start_welcome_animated_reel"
+              ],
               "tests": [
                 "test/onboarding/onboarding_widgets_test.dart"
               ],
-              "notes": "The reel animates in production; add sampled visual captures if animation timing becomes a regression risk."
+              "notes": "The reel animates in production; start_welcome_animated_reel provides a deterministic capture-runner sample before the landed CTA state."
             },
             {
               "id": "landed_direct",
               "kind": "populated",
               "status": "captured",
               "captureIds": [
-                "start_welcome"
+                "start_welcome",
+                "start_welcome_text_scale_2"
               ],
               "tests": [
                 "test/onboarding/onboarding_widgets_test.dart"
@@ -67,16 +74,24 @@
             {
               "id": "cta_navigation",
               "kind": "populated",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "start_welcome",
+                "start_welcome_reduced_motion",
+                "start_welcome_text_scale_2"
+              ],
               "tests": [
                 "test/onboarding/onboarding_widgets_test.dart"
               ],
-              "notes": "Primary and secondary CTA navigation paths are tested; add Widgetbook states for landed, text-scale, and reduced-motion CTA treatments."
+              "notes": "Primary and secondary CTA navigation paths are tested; Widgetbook and captures now cover landed, text-scale, and reduced-motion CTA treatments."
             },
             {
               "id": "reduced_motion",
               "kind": "accessibility",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "start_welcome_reduced_motion"
+              ],
               "tests": [
                 "test/onboarding/onboarding_widgets_test.dart"
               ]
@@ -84,16 +99,22 @@
             {
               "id": "text_scale_2",
               "kind": "accessibility",
-              "status": "planned",
-              "notes": "Add to the text-scale UI capture batch."
+              "status": "captured",
+              "captureIds": [
+                "start_welcome_text_scale_2"
+              ],
+              "notes": "Start Welcome text scale 2.0 capture covers title, body copy, and bottom CTAs."
             },
             {
               "id": "light_dark",
               "kind": "theme",
               "status": "captured",
               "captureIds": [
-                "start_welcome"
-              ]
+                "start_welcome",
+                "start_welcome_reduced_motion",
+                "start_welcome_text_scale_2"
+              ],
+              "notes": "The fixed sunset dark palette is canonical for Start; no separate light-mode treatment is currently required."
             }
           ],
           "gaps": [
@@ -104,8 +125,8 @@
             },
             {
               "id": "DP-START-002",
-              "status": "open",
-              "nextAction": "Add a preview/story for animated, skipped, direct, reduced-motion, and text-scale states."
+              "status": "closed",
+              "nextAction": "Closed by Widgetbook states for animated reel, landed direct, reduced motion, text scale, CTA, and canonical fixed-dark theme treatment."
             }
           ]
         },
