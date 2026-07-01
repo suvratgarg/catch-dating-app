@@ -80,6 +80,7 @@ Future<List<CaptureArtifact>> captureCatchWidget(
   double pixelRatio = 1.0,
   double textScale = 1.0,
   bool disableAnimations = false,
+  bool includeOverlays = false,
   CaptureOutputLayout outputLayout = CaptureOutputLayout.captureFirst,
   List<CaptureTheme> themes = CaptureTheme.all,
   List<ImageProvider<Object>> precache = const <ImageProvider<Object>>[],
@@ -110,12 +111,16 @@ Future<List<CaptureArtifact>> captureCatchWidget(
         brightness: theme.brightness,
         textScale: textScale,
         disableAnimations: disableAnimations,
+        includeOverlays: includeOverlays,
         device: device,
         builder: builder,
         providerOverrides: providerOverrides,
       ),
     );
     await _pumpCaptureFrame(tester);
+    if (includeOverlays) {
+      await tester.pumpAndSettle();
+    }
     if (drive != null) {
       await drive(tester);
       await _pumpCaptureFrame(tester);
@@ -187,11 +192,12 @@ Widget _frame({
   required Brightness brightness,
   required double textScale,
   required bool disableAnimations,
+  required bool includeOverlays,
   required CaptureDevice device,
   required WidgetBuilder builder,
   required Iterable providerOverrides,
 }) {
-  return ProviderScope(
+  final app = ProviderScope(
     overrides: [...providerOverrides],
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -200,23 +206,44 @@ Widget _frame({
       themeMode: brightness == Brightness.dark
           ? ThemeMode.dark
           : ThemeMode.light,
-      home: RepaintBoundary(
-        key: boundaryKey,
-        child: Builder(
-          builder: (context) => MediaQuery(
-            data: _captureMediaQuery(
-              MediaQuery.of(context),
-              device: device,
-              textScale: textScale,
-              disableAnimations: disableAnimations,
+      builder: includeOverlays
+          ? (context, child) => MediaQuery(
+              data: _captureMediaQuery(
+                MediaQuery.of(context),
+                device: device,
+                textScale: textScale,
+                disableAnimations: disableAnimations,
+              ),
+              child: child ?? const SizedBox.shrink(),
+            )
+          : null,
+      home: includeOverlays
+          ? _captureScaffold(builder)
+          : RepaintBoundary(
+              key: boundaryKey,
+              child: Builder(
+                builder: (context) => MediaQuery(
+                  data: _captureMediaQuery(
+                    MediaQuery.of(context),
+                    device: device,
+                    textScale: textScale,
+                    disableAnimations: disableAnimations,
+                  ),
+                  child: _captureScaffold(builder),
+                ),
+              ),
             ),
-            child: Scaffold(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              body: Builder(builder: builder),
-            ),
-          ),
-        ),
-      ),
+    ),
+  );
+
+  return includeOverlays ? RepaintBoundary(key: boundaryKey, child: app) : app;
+}
+
+Widget _captureScaffold(WidgetBuilder builder) {
+  return Builder(
+    builder: (context) => Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Builder(builder: builder),
     ),
   );
 }

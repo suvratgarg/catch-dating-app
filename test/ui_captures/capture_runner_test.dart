@@ -53,6 +53,7 @@ void main() {
         pixelRatio: pixelRatio,
         textScale: textScaleOverride ?? entry.textScale,
         disableAnimations: entry.disableAnimations,
+        includeOverlays: entry.includeOverlays,
         outputLayout: outputLayout,
         outputDirectory: outputDirectory,
         precache: entry.precache,

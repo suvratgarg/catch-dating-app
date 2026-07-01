@@ -15556,12 +15556,27 @@
         {
           "id": "auth_phone_entry",
           "status": "captured",
-          "notes": "Baseline phone-entry auth capture; OTP and mutation variants remain planned."
+          "notes": "Baseline phone-entry auth capture."
         },
         {
           "id": "auth_otp_entry",
           "status": "captured",
           "notes": "OTP entry capture with seeded verification id and resend cooldown."
+        },
+        {
+          "id": "auth_phone_validation_error",
+          "status": "captured",
+          "notes": "Phone-entry validation-error capture driven through the test harness before Firebase submission."
+        },
+        {
+          "id": "auth_country_picker_open",
+          "status": "captured",
+          "notes": "Country picker dialog capture opened through the test harness."
+        },
+        {
+          "id": "auth_country_code_australia",
+          "status": "captured",
+          "notes": "Phone-entry capture with a non-default +61 country code."
         },
         {
           "id": "auth_send_code_pending",
@@ -15627,23 +15642,30 @@
         {
           "id": "country_selector",
           "kind": "populated",
-          "status": "implemented",
+          "status": "captured",
           "source": "PhonePage renders a country-code selector bound to AuthController.countryCode and resets sendOtpMutation on change.",
+          "captureIds": [
+            "auth_country_picker_open",
+            "auth_country_code_australia"
+          ],
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "Widgetbook covers the default market. Add picker-open and long-country-name variants if design needs them."
+          "nextAction": "Deterministic captures cover the picker dialog and a non-default +61 market; add country-specific references only if design exports them."
         },
         {
           "id": "validation_error",
           "kind": "error",
-          "status": "tested",
+          "status": "captured",
           "source": "AuthInput validators drive phone/OTP validation copy before send or verify mutations run.",
+          "captureIds": [
+            "auth_phone_validation_error"
+          ],
           "tests": [
             "test/auth/presentation/auth_input_test.dart",
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "AuthInput and AuthScreen tests prove invalid phone input blocks OTP send; add branded validation-error route capture for phone entry and incomplete OTP states."
+          "nextAction": "Phone validation-error UI is captured; add incomplete-OTP validation capture only if product treats it as visually distinct."
         },
         {
           "id": "send_code_mutation",
@@ -15825,17 +15847,17 @@
         {
           "id": "DS-AUTH-001",
           "status": "open",
-          "nextAction": "Auth Widgetbook and deterministic captures now cover phone entry, OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion through AuthController and Mutation seams. Remaining work is country-picker edge variants, validation-error preview/capture, theme variants, and state-specific references."
+          "nextAction": "Auth Widgetbook and deterministic captures now cover phone entry, OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, reduced motion, and light/dark through AuthController, Mutation, and capture-drive seams. Remaining work is state-specific design references."
         },
         {
           "id": "DS-AUTH-002",
-          "status": "open",
-          "nextAction": "Add deterministic validation-error route capture once an interaction-capable capture path or explicit form-state seam exists."
+          "status": "closed",
+          "nextAction": "Closed by auth_phone_validation_error, which drives invalid phone input and submit through the capture harness."
         },
         {
           "id": "DS-AUTH-003",
           "status": "open",
-          "nextAction": "Auth Widgetbook and capture previews now seed local phone, OTP, cooldown, mutation, text-scale, and reduced-motion state without Firebase side effects. Remaining adapter work is deciding whether to promote that seeder into a production Auth display-state adapter for validation and country-picker edge states."
+          "nextAction": "Auth Widgetbook and capture previews now seed local phone, OTP, cooldown, mutation, validation, country-picker, text-scale, and reduced-motion state without Firebase side effects. Remaining adapter work is deciding whether a production Auth display-state adapter is still needed before larger auth refactors."
         }
       ]
     },

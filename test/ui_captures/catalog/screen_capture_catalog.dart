@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
+import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
@@ -200,7 +201,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
         ProviderContainer,
         ProviderScope;
 import 'package:flutter_test/flutter_test.dart'
-    show Fake, Finder, WidgetTester, find;
+    show Fake, Finder, WidgetTester, expect, find, findsOneWidget;
 import 'package:image_picker/image_picker.dart';
 
 import '../../clubs/clubs_test_helpers.dart' as club_test;
@@ -219,6 +220,7 @@ class ScreenCaptureEntry {
     this.providerOverrides = const [],
     this.textScale = 1.0,
     this.disableAnimations = false,
+    this.includeOverlays = false,
     this.drive,
     this.cleanup,
   });
@@ -232,6 +234,7 @@ class ScreenCaptureEntry {
   final Iterable providerOverrides;
   final double textScale;
   final bool disableAnimations;
+  final bool includeOverlays;
   final Future<void> Function(WidgetTester tester)? drive;
   final Future<void> Function(WidgetTester tester)? cleanup;
 }
@@ -6497,6 +6500,7 @@ class _SettingsMutationCaptureState
 enum _AuthCaptureMode {
   phoneEntry,
   otpEntry,
+  countryCodeAustralia,
   sendCodePending,
   sendCodeError,
   verifyCodePending,
@@ -6519,6 +6523,11 @@ class _AuthCapture extends StatelessWidget {
 final _authProviderOverrides = <Object>[
   authRepositoryProvider.overrideWithValue(const _CaptureAuthRepository()),
   authInitialCountryDialCodeProvider.overrideWithValue('+91'),
+];
+
+final _authAustraliaProviderOverrides = <Object>[
+  authRepositoryProvider.overrideWithValue(const _CaptureAuthRepository()),
+  authInitialCountryDialCodeProvider.overrideWithValue('+61'),
 ];
 
 final _onboardingCaptureProfileNoPhotos = ProfileSurfaceFixtures.viewer
@@ -6688,6 +6697,7 @@ class _AuthCaptureSeederState extends ConsumerState<_AuthCaptureSeeder> {
 
     switch (widget.mode) {
       case _AuthCaptureMode.phoneEntry:
+      case _AuthCaptureMode.countryCodeAustralia:
         ref.read(authControllerProvider.notifier).goToStep(AuthStep.phone);
         break;
       case _AuthCaptureMode.otpEntry:
@@ -6770,6 +6780,32 @@ class _AuthCaptureSeederState extends ConsumerState<_AuthCaptureSeeder> {
 
   @override
   Widget build(BuildContext context) => widget.child;
+}
+
+Future<void> _driveAuthPhoneValidationError(WidgetTester tester) async {
+  await tester.enterText(
+    find.descendant(
+      of: find.byKey(AuthFormKeys.phoneField),
+      matching: find.byType(EditableText),
+    ),
+    '123',
+  );
+  await tester.tap(find.byKey(AuthFormKeys.sendCode));
+  await tester.pump();
+}
+
+Future<void> _driveAuthCountryPickerOpen(WidgetTester tester) async {
+  await tester.tap(find.text('+91'), warnIfMissed: false);
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 300));
+  expect(find.text('Select Country'), findsOneWidget);
+}
+
+Future<void> _cleanupAuthCountryPickerOpen(WidgetTester tester) async {
+  final dialogs = find.byType(Dialog).evaluate();
+  if (dialogs.isEmpty) return;
+  Navigator.of(dialogs.first, rootNavigator: true).pop();
+  await tester.pumpAndSettle();
 }
 
 class _CaptureAuthRepository implements AuthRepository {
@@ -7000,6 +7036,32 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewPhone,
     providerOverrides: _authProviderOverrides,
     builder: (context) => const _AuthCapture(mode: _AuthCaptureMode.otpEntry),
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_phone_validation_error',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _authProviderOverrides,
+    builder: (context) => const _AuthCapture(),
+    drive: _driveAuthPhoneValidationError,
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_country_picker_open',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _authProviderOverrides,
+    builder: (context) => const _AuthCapture(),
+    includeOverlays: true,
+    drive: _driveAuthCountryPickerOpen,
+    cleanup: _cleanupAuthCountryPickerOpen,
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_country_code_australia',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _authAustraliaProviderOverrides,
+    builder: (context) =>
+        const _AuthCapture(mode: _AuthCaptureMode.countryCodeAustralia),
   ),
   ScreenCaptureEntry(
     id: 'auth_send_code_pending',

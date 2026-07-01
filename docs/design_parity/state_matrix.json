@@ -145,6 +145,9 @@
           "captureIds": [
             "auth_phone_entry",
             "auth_otp_entry",
+            "auth_phone_validation_error",
+            "auth_country_picker_open",
+            "auth_country_code_australia",
             "auth_send_code_pending",
             "auth_send_code_error",
             "auth_verify_code_pending",
@@ -181,11 +184,15 @@
             {
               "id": "country_selector",
               "kind": "populated",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "auth_country_picker_open",
+                "auth_country_code_australia"
+              ],
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "PhonePage renders a country-code selector bound to AuthController.countryCode; Widgetbook covers the default market. Add picker-open and long-country-name variants if design needs them."
+              "notes": "PhonePage renders a country-code selector bound to AuthController.countryCode; deterministic captures cover the picker dialog and a non-default +61 market."
             },
             {
               "id": "otp_entry",
@@ -204,12 +211,15 @@
             {
               "id": "validation_error",
               "kind": "error",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "auth_phone_validation_error"
+              ],
               "tests": [
                 "test/auth/presentation/auth_input_test.dart",
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "AuthInput and AuthScreen tests prove invalid phone input blocks OTP send; add branded validation-error route capture."
+              "notes": "AuthInput and AuthScreen tests prove invalid phone input blocks OTP send; deterministic captures now cover the branded phone validation-error state."
             },
             {
               "id": "send_code_mutation",
@@ -263,12 +273,12 @@
             {
               "id": "DP-AUTH-001",
               "status": "open",
-              "nextAction": "Auth Widgetbook and deterministic captures now cover OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion. Add validation-error capture, country-picker variants, and state-specific references."
+              "nextAction": "Auth Widgetbook and deterministic captures now cover OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, and reduced motion. Add state-specific references before strict visual comparison."
             },
             {
               "id": "DP-AUTH-002",
-              "status": "open",
-              "nextAction": "Verify auth fields and validation banners against component contracts before visual polish."
+              "status": "closed",
+              "nextAction": "Closed by auth_phone_validation_error plus existing AuthInput and AuthScreen validation tests."
             }
           ]
         },

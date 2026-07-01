@@ -27,17 +27,17 @@ ledgers as the source of truth when counts differ:
 - Screen priority spread: 18 P1, 12 P2, and 5 P3 contracted screens.
 - Contracted screen states: 619.
 - Contracted screen sections: 241.
-- Screen registry migration gaps: 38 open, 15 blocked, and 86 closed. These are
+- Screen registry migration gaps: 37 open, 15 blocked, and 87 closed. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,110.
 - Open screen-contract validation gaps: 0.
 - Design parity matrix: 12 feature groups, 36 screens, 621 matrix states, and
-  54 open matrix gaps across screen-state, lint-candidate, and preview-plan
+  53 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
-- Matrix state status spread: 562 captured, 14 implemented, 1 planned, and
-  44 tested.
-- Capture coverage registry: 596 capture ids across 37 captured route entries,
+- Matrix state status spread: 567 captured, 13 implemented, 1 planned, and
+  40 tested.
+- Capture coverage registry: 608 capture ids across 37 captured route entries,
   5 alias route entries, 0 planned route entries, and 6 excluded route entries.
 - Component contracts: 56 reusable primitive/composite contracts with 349
   contract states.
@@ -679,7 +679,7 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.matches.list` | 15 | 6 | 1 | None | `DS-MATCHES-LIST-002` | `HostInboxScreenState` and `ChatsListDisplayState` now live in `chats_list_screen_state.dart` and own visible row derivation, unread filtering, empty-state selection, search affordance, and display-error retry intents. `ChatsListCelebrationController` owns new-match celebration target selection and dialog execution, and `ChatsSearchHeaderController` owns search-open close policy while the route passes query value/callback into the header. No `ChatNewMatchesRail` symbol remains; new matches render through the shared row list with fresh treatment. Continue only additional reference variants and advisory pixel comparison. |
 | P1 | `screen.profile.public` | 17 | 6 | 1 | None | `DS-PROFILE-PUBLIC-002` | `PublicProfileScreenState` owns target-profile branches, initial fallback, viewer context projection, safety action availability, retry intent, and report/block mutation mode. Selected report reason, report pending overlay, report success snackbar, report failure snackbar, and block failure snackbar now have focused test or capture proof; continue visual parity for top chrome/insight copy/profile sections. |
 | P1 | `screen.profile.self` | 16 | 8 | 1 | None | `DS-PROFILE-SELF-002` | SelfProfileScreenState, SelfProfileEditTabState, SelfProfilePhotoActionController, and SelfProfileInlineEditPatchFactory now own the route, row descriptor, photo intent, and patch seams; continue only remaining capture and advisory pixel work. |
-| P2 | `screen.auth.phone_entry` | 8 | 4 | 1 | `auth-handoff` | `DS-AUTH-001`, `DS-AUTH-002`, `DS-AUTH-003` | Widgetbook and deterministic captures now cover phone entry, OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion. Continue validation-error capture, country-picker variants, and state-specific references. |
+| P2 | `screen.auth.phone_entry` | 8 | 4 | 1 | `auth-handoff` | `DS-AUTH-001`, `DS-AUTH-003` | Widgetbook and deterministic captures now cover phone entry, OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, reduced motion, and light/dark. Continue state-specific references and decide whether Auth still needs a production display-state adapter before larger refactors. |
 | P2 | `screen.calendar.home` | 10 | 5 | 0 | Blocked: no standalone Calendar Home source; only `CalendarPrimitive.html`/`DateRangePicker` | `DS-CALENDAR-004` blocked | CalendarHomeState and CalendarAgendaSectionState own summary/header/agenda/state adapters. Widgetbook and deterministic captures cover uid-missing signed-out fallback, planned events, loading, provider error, empty, club-name loading/error, expanded month, selected day, text-scale, reduced-motion, and paired light/dark states; reference export waits on a canonical Calendar Home source. |
 | P2 | `screen.event.recap` | 10 | 5 | 2 | Blocked: no standalone Event Recap source | `DS-EVENT-RECAP-004` blocked | EventRecapScreenState owns async branch mapping, attendee/profile rows, selected ids, hero/window copy, retry intents, and open-deck intent data. Widgetbook and deterministic captures cover loading, error, missing, empty roster, partial profile, selected tile, text-scale, reduced-motion, and paired light/dark states; reference export waits on a canonical recap source. |
 | P2 | `screen.filters.preferences` | 11 | 5 | 2 | None | None | FiltersPreferencesState owns saved defaults, draft values, dirty state, reset/apply availability, pending state, and save request fields. Widgetbook and deterministic captures now cover loading, profile error, missing profile, dirty edit, reset, save pending/error, text scale, reduced motion, and light/dark; continue only visual parity/reference-specific variants. |
@@ -1363,12 +1363,12 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - captured: `animated_reel`, `landed_direct`, `cta_navigation`, `reduced_motion`, `text_scale_2`, `light_dark`
   - DP-START-001: Landed direct Start Welcome reference and masks are registered; export animated reel samples, reduced-motion, text-scale, and any alternate theme references before strict visual comparison.
   - DP-START-002: Closed by Widgetbook states for animated reel, landed direct, reduced motion, text scale, CTA, and canonical fixed-dark theme treatment.
-- [ ] `auth.phone_entry` (8 state follow-ups, 2 open gaps)
-  - implemented: `country_selector`
+- [ ] `auth.phone_entry` (8 state follow-ups, 1 open gap)
+  - implemented: None
   - tested: `validation_error`
-  - captured: `phone_entry`, `otp_entry`, `send_code_mutation`, `verify_otp_mutation`, `text_scale_2`, `reduced_motion`
-  - DP-AUTH-001: Auth phone-entry reference and masks are exported and registered. Widgetbook and deterministic captures now cover OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion. Add validation-error capture, country-picker variants, and state-specific references.
-  - DP-AUTH-002: Verify auth fields and validation banners against component contracts before visual polish.
+  - captured: `phone_entry`, `country_selector`, `otp_entry`, `validation_error`, `send_code_mutation`, `verify_otp_mutation`, `text_scale_2`, `reduced_motion`
+  - DP-AUTH-001: Auth phone-entry reference and masks are exported and registered. Widgetbook and deterministic captures now cover OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, reduced motion, and light/dark. Add state-specific references before strict visual comparison.
+  - DP-AUTH-002: Closed by `auth_phone_validation_error`, which drives invalid phone input and submit through the capture harness.
 - [ ] `onboarding.flow` (13 state follow-ups, 2 open gaps)
   - planned: None
   - implemented: None

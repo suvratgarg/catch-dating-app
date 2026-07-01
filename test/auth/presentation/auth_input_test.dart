@@ -18,6 +18,19 @@ void main() {
       );
     });
 
+    test('rejects malformed country codes with shared UI message', () {
+      expect(
+        () => AuthInput.normalizeCountryCode('91'),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            AuthInput.invalidCountryCodeMessage,
+          ),
+        ),
+      );
+    });
+
     test('normalizes a six digit OTP code', () {
       expect(AuthInput.normalizeOtpCode(' 123456 '), '123456');
     });
