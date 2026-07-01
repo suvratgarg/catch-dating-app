@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-01T14:27:27.034Z",
+  "generatedAt": "2026-07-01T14:45:11.431Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
@@ -7,9 +7,9 @@
   "summary": {
     "useCases": 629,
     "components": 613,
-    "stateCards": 1348,
-    "reviewCandidates": 32,
-    "oversizedUseCases": 41,
+    "stateCards": 1351,
+    "reviewCandidates": 33,
+    "oversizedUseCases": 42,
     "multiUseCaseComponents": 16
   },
   "reviewCandidates": [
@@ -3400,6 +3400,82 @@
             {
               "label": "host hidden",
               "normalizedLabel": "host hidden"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "FiltersScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 9,
+      "paths": [
+        "[P2 consumer surfaces]/Filters"
+      ],
+      "labels": [
+        "dark theme",
+        "default preferences",
+        "missing profile",
+        "offline profile error",
+        "profile error",
+        "profile loading",
+        "reduced motion",
+        "save error snackbar",
+        "text scale 2.0"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "filtersRouteStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Route states",
+          "functionName": "filtersRouteStates",
+          "file": "widgetbook/lib/consumer/p2_consumer_use_cases.dart",
+          "path": "[P2 consumer surfaces]/Filters",
+          "stateCardCount": 9,
+          "stateCards": [
+            {
+              "label": "default preferences",
+              "normalizedLabel": "default preferences"
+            },
+            {
+              "label": "profile loading",
+              "normalizedLabel": "profile loading"
+            },
+            {
+              "label": "profile error",
+              "normalizedLabel": "profile error"
+            },
+            {
+              "label": "offline profile error",
+              "normalizedLabel": "offline profile error"
+            },
+            {
+              "label": "missing profile",
+              "normalizedLabel": "missing profile"
+            },
+            {
+              "label": "save error snackbar",
+              "normalizedLabel": "save error snackbar"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "dark theme",
+              "normalizedLabel": "dark theme"
             }
           ]
         }
@@ -7013,6 +7089,82 @@
       ]
     },
     {
+      "component": "FiltersScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 9,
+      "paths": [
+        "[P2 consumer surfaces]/Filters"
+      ],
+      "labels": [
+        "dark theme",
+        "default preferences",
+        "missing profile",
+        "offline profile error",
+        "profile error",
+        "profile loading",
+        "reduced motion",
+        "save error snackbar",
+        "text scale 2.0"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "filtersRouteStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Route states",
+          "functionName": "filtersRouteStates",
+          "file": "widgetbook/lib/consumer/p2_consumer_use_cases.dart",
+          "path": "[P2 consumer surfaces]/Filters",
+          "stateCardCount": 9,
+          "stateCards": [
+            {
+              "label": "default preferences",
+              "normalizedLabel": "default preferences"
+            },
+            {
+              "label": "profile loading",
+              "normalizedLabel": "profile loading"
+            },
+            {
+              "label": "profile error",
+              "normalizedLabel": "profile error"
+            },
+            {
+              "label": "offline profile error",
+              "normalizedLabel": "offline profile error"
+            },
+            {
+              "label": "missing profile",
+              "normalizedLabel": "missing profile"
+            },
+            {
+              "label": "save error snackbar",
+              "normalizedLabel": "save error snackbar"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "dark theme",
+              "normalizedLabel": "dark theme"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "HostProfileForm",
       "useCaseCount": 1,
       "stateCardCount": 8,
@@ -8215,19 +8367,19 @@
       ]
     },
     {
-      "component": "FiltersScreen",
+      "component": "FiltersContent",
       "useCaseCount": 1,
       "stateCardCount": 7,
       "paths": [
         "[P2 consumer surfaces]/Filters"
       ],
       "labels": [
+        "dark theme",
         "default preferences",
-        "missing profile",
-        "offline profile error",
-        "profile error",
-        "profile loading",
+        "dirty edits",
         "reduced motion",
+        "reset restored",
+        "save pending",
         "text scale 2.0"
       ],
       "review": {
@@ -8238,8 +8390,8 @@
       },
       "useCases": [
         {
-          "name": "Route states",
-          "functionName": "filtersRouteStates",
+          "name": "Content states",
+          "functionName": "filtersContentStates",
           "file": "widgetbook/lib/consumer/p2_consumer_use_cases.dart",
           "path": "[P2 consumer surfaces]/Filters",
           "stateCardCount": 7,
@@ -8249,20 +8401,16 @@
               "normalizedLabel": "default preferences"
             },
             {
-              "label": "profile loading",
-              "normalizedLabel": "profile loading"
+              "label": "dirty edits",
+              "normalizedLabel": "dirty edits"
             },
             {
-              "label": "profile error",
-              "normalizedLabel": "profile error"
+              "label": "reset restored",
+              "normalizedLabel": "reset restored"
             },
             {
-              "label": "offline profile error",
-              "normalizedLabel": "offline profile error"
-            },
-            {
-              "label": "missing profile",
-              "normalizedLabel": "missing profile"
+              "label": "save pending",
+              "normalizedLabel": "save pending"
             },
             {
               "label": "text scale 2.0",
@@ -8271,6 +8419,10 @@
             {
               "label": "reduced motion",
               "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "dark theme",
+              "normalizedLabel": "dark theme"
             }
           ]
         }
@@ -8903,63 +9055,6 @@
             {
               "label": "combined empty",
               "normalizedLabel": "combined empty"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "FiltersContent",
-      "useCaseCount": 1,
-      "stateCardCount": 6,
-      "paths": [
-        "[P2 consumer surfaces]/Filters"
-      ],
-      "labels": [
-        "default preferences",
-        "dirty edits",
-        "reduced motion",
-        "reset restored",
-        "save pending",
-        "text scale 2.0"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Content states",
-          "functionName": "filtersContentStates",
-          "file": "widgetbook/lib/consumer/p2_consumer_use_cases.dart",
-          "path": "[P2 consumer surfaces]/Filters",
-          "stateCardCount": 6,
-          "stateCards": [
-            {
-              "label": "default preferences",
-              "normalizedLabel": "default preferences"
-            },
-            {
-              "label": "dirty edits",
-              "normalizedLabel": "dirty edits"
-            },
-            {
-              "label": "reset restored",
-              "normalizedLabel": "reset restored"
-            },
-            {
-              "label": "save pending",
-              "normalizedLabel": "save pending"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            },
-            {
-              "label": "reduced motion",
-              "normalizedLabel": "reduced motion"
             }
           ]
         }

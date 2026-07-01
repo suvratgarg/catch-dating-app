@@ -16807,7 +16807,10 @@
           "kind": "mutation",
           "status": "implemented",
           "source": "CatchMutationErrorListener surfaces save failures from FiltersController.saveFiltersMutation.",
-          "nextAction": "Add deterministic save failure capture/snackbar proof."
+          "nextAction": "Add deterministic save failure capture/snackbar proof.",
+          "previewIds": [
+            "FiltersScreen/Route states"
+          ]
         },
         {
           "id": "save_success_exit",
@@ -16897,7 +16900,7 @@
               "edited_preferences",
               "reset_preferences"
             ],
-            "migration": "Route Widgetbook states now cover the shared CatchTopBar with close/reset actions across loading, default, text-scale, and reduced-motion review; FiltersPreferencesState owns reset enabled state while FiltersScreen owns the close/reset route callbacks.",
+            "migration": "Route Widgetbook states now cover the shared CatchTopBar with close/reset actions across loading, default, text-scale, reduced-motion, save-error, and dark-theme review; FiltersPreferencesState owns reset enabled state while FiltersScreen owns the close/reset route callbacks.",
             "previewIds": [
               "FiltersScreen/Route states"
             ]
@@ -16924,7 +16927,7 @@
               "edited_preferences",
               "text_scale_2"
             ],
-            "migration": "FiltersContent exposes range display and changed callbacks through provider-free content state while preserving CatchRangeSlider treatment; Widgetbook covers default, dirty, reset, pending, text-scale, and reduced-motion bodies.",
+            "migration": "FiltersContent exposes range display and changed callbacks through provider-free content state while preserving CatchRangeSlider treatment; Widgetbook covers default, dirty, reset, pending, text-scale, reduced-motion, and dark-theme bodies.",
             "previewIds": [
               "FiltersContent/Content states"
             ]
@@ -16951,7 +16954,7 @@
               "edited_preferences",
               "text_scale_2"
             ],
-            "migration": "FiltersContent exposes selected chip set and toggles through provider-free content state while preserving CatchSelectChip treatment; Widgetbook covers default, dirty, reset, pending, text-scale, and reduced-motion bodies.",
+            "migration": "FiltersContent exposes selected chip set and toggles through provider-free content state while preserving CatchSelectChip treatment; Widgetbook covers default, dirty, reset, pending, text-scale, reduced-motion, and dark-theme bodies.",
             "previewIds": [
               "FiltersContent/Content states"
             ]
@@ -16979,7 +16982,7 @@
               "save_error",
               "save_success_exit"
             ],
-            "migration": "FiltersContent now renders the apply dock from explicit saving state and typed apply callback; save-error snackbar proof remains a route/mutation fixture follow-up.",
+            "migration": "FiltersContent now renders the apply dock from explicit saving state and typed apply callback; the route Widgetbook state seeds FiltersController.saveFiltersMutation failure to exercise the real snackbar listener.",
             "previewIds": [
               "FiltersContent/Content states"
             ]
@@ -16989,8 +16992,8 @@
       "openGaps": [
         {
           "id": "DS-FILTERS-001",
-          "status": "open",
-          "nextAction": "Widgetbook now covers route loading/error/offline/missing, default preferences, dirty edits, reset-restored content, save pending, text scale, and reduced motion. Remaining Widgetbook work: deterministic save-error feedback and explicit theme specimen if addon review is not sufficient."
+          "status": "closed",
+          "nextAction": "Closed by Filters Widgetbook route/content states covering default, dirty edits, reset-restored content, loading, profile error, offline profile error, missing profile, save pending, save-error snackbar seeding, text scale, reduced motion, and explicit dark-theme specimens."
         },
         {
           "id": "DS-FILTERS-002",

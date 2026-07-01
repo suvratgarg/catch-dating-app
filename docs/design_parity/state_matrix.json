@@ -9484,7 +9484,10 @@
               "id": "save_error",
               "kind": "mutation",
               "status": "implemented",
-              "notes": "CatchMutationErrorListener surfaces save failures from FiltersController.saveFiltersMutation."
+              "notes": "CatchMutationErrorListener surfaces save failures from FiltersController.saveFiltersMutation; the route Widgetbook state seeds the real mutation listener for snackbar review.",
+              "previewIds": [
+                "FiltersScreen/Route states"
+              ]
             },
             {
               "id": "save_success_exit",
@@ -9519,8 +9522,8 @@
           "gaps": [
             {
               "id": "DP-FILTERS-001",
-              "status": "open",
-              "nextAction": "Widgetbook now covers route loading/error/offline/missing, default preferences, dirty edits, reset-restored content, save pending, text scale, and reduced motion. Remaining Widgetbook work: deterministic save-error feedback and explicit theme specimen if addon review is not sufficient."
+              "status": "closed",
+              "nextAction": "Closed by Filters Widgetbook route/content states covering default, dirty edits, reset-restored content, loading, profile error, offline profile error, missing profile, save pending, save-error snackbar seeding, text scale, reduced motion, and explicit dark-theme specimens."
             },
             {
               "id": "DP-FILTERS-002",
