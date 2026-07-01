@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.503
+version: 2.5.504
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.504
+
+- Promoted `GuestWhoIsGoing` as the public cataloged guest roster prompt used by
+  `EventDetailSocialSection`, with exact Widgetbook coverage. The
+  classification scanner's private widget review count drops by one without
+  changing signed-out event-detail social behavior.
 
 ### 2.5.503
 
@@ -5625,6 +5632,7 @@ Generated 2026-05-06.
 | `EventDescription` | `lib/events/presentation/widgets/event_detail_overview_section.dart:130` | Public description block used by `EventDetailOverviewSection` for the plan copy. Renders the local heading and body text with optional event-detail surface colors. |
 | `WhatToExpectSection` | `lib/events/presentation/widgets/event_detail_overview_section.dart:174` | Public expectation-summary block used by `EventDetailOverviewSection`. Maps an event into policy summary lines inside a tokenized surface without owning section ordering. |
 | `EventDetailSocialSection` | `lib/events/presentation/widgets/event_detail_social_section.dart:10` | Social context sections for the loaded event detail body: Who's going and Reviews, both composed with `CatchSection`. The roster supports a guest lock prompt and signed-in roster view; review writing requires an attended `EventParticipation` and an event end time that has passed. |
+| `GuestWhoIsGoing` | `lib/events/presentation/widgets/event_detail_social_section.dart:107` | Public signed-out roster prompt used by `EventDetailSocialSection`. Renders the optional local header and sign-in visibility copy with optional event-detail surface colors. |
 | `MapOverlayControls` | `lib/events/presentation/widgets/map_overlay_controls.dart:5` | Floating safe-area controls for chromeless map surfaces. Provides rounded back affordance plus optional trailing/below content for map actions such as create-event confirm/search. |
 | `EventDetailsStep` | `lib/hosts/presentation/event_management/widgets/event_details_step.dart:16` | First host create-event step. Renders event photos, activity type, optional custom format/structure, distance, pace, and description with handoff `SelectChip` choices and `CatchField` inputs. Activity type choices carry their own activity pigment; format and pace choices inherit the selected activity accent. |
 | `EventPolicyStep` | `lib/hosts/presentation/event_management/widgets/event_policy_step.dart:50` | Host create/edit event policy step for capacity, base price, admission preset, invite code, dynamic pricing, cancellation policy, eligibility bounds, and host payout copy. Uses handoff `SelectChip` selectors for admission/cancellation and `CatchField.toggle` for cohort caps and demand pricing. |

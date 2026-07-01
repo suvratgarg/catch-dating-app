@@ -81,7 +81,7 @@ class EventDetailSocialSection extends StatelessWidget {
                   surfaceStyle: surfaceStyle,
                   showHeader: false,
                 )
-              : _GuestWhoIsGoing(surfaceStyle: surfaceStyle, showHeader: false),
+              : GuestWhoIsGoing(surfaceStyle: surfaceStyle, showHeader: false),
         ),
         if (canShowMemberContext) ...[
           CatchSection.divided(
@@ -104,8 +104,12 @@ class EventDetailSocialSection extends StatelessWidget {
   }
 }
 
-class _GuestWhoIsGoing extends StatelessWidget {
-  const _GuestWhoIsGoing({this.surfaceStyle, this.showHeader = true});
+class GuestWhoIsGoing extends StatelessWidget {
+  const GuestWhoIsGoing({
+    super.key,
+    this.surfaceStyle,
+    this.showHeader = true,
+  });
 
   final EventDetailSurfaceStyle? surfaceStyle;
   final bool showHeader;

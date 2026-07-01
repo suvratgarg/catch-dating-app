@@ -2203,6 +2203,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'GuestWhoIsGoing',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Guest who is going',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailGuestWhoIsGoingState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventHypeAvatarStack',
             useCases: [
               _widgetbook.WidgetbookUseCase(

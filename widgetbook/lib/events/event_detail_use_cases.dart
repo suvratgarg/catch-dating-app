@@ -2129,6 +2129,18 @@ Widget requirementsRowState(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Guest who is going',
+  type: GuestWhoIsGoing,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailGuestWhoIsGoingState(BuildContext context) {
+  return const Padding(
+    padding: CatchInsets.contentDense,
+    child: GuestWhoIsGoing(),
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Hype avatars',
   type: EventHypeAvatarStack,
   path: '[Event Detail]/Sections',
