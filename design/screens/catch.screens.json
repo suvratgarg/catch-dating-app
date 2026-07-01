@@ -16198,16 +16198,16 @@
         {
           "id": "text_scale_2",
           "kind": "accessibility",
-          "status": "planned",
-          "source": "No text-scale 2.0 Calendar capture exists yet.",
-          "nextAction": "Add text-scale capture for header, stats, week/month grid, agenda rows, and empty/error states."
+          "status": "implemented",
+          "source": "Widgetbook CalendarScreen states include text-scale 2.0 review for header, stats, date controls, agenda rows, and state surfaces.",
+          "nextAction": "Add deterministic text-scale route capture for header, stats, week/month grid, agenda rows, and empty/error states."
         },
         {
           "id": "reduced_motion",
           "kind": "accessibility",
-          "status": "planned",
-          "source": "No reduced-motion Calendar capture exists yet; selected-day scroll animation uses CatchMotion.calendarScroll.",
-          "nextAction": "Add reduced-motion capture or disable animated scroll in deterministic fixtures."
+          "status": "implemented",
+          "source": "Widgetbook CalendarScreen states include reduced-motion review; selected-day scroll animation still uses CatchMotion.calendarScroll at runtime.",
+          "nextAction": "Add deterministic reduced-motion route capture or disable animated scroll in deterministic fixtures."
         }
       ],
       "composition": {
@@ -16341,8 +16341,8 @@
       "openGaps": [
         {
           "id": "DS-CALENDAR-001",
-          "status": "open",
-          "nextAction": "Add Widgetbook states for collapsed/expanded header, stats, agenda rows, loading, empty, provider error, club-name error, text scale, reduced motion, and theme variants."
+          "status": "closed",
+          "nextAction": "Closed by Calendar Widgetbook states covering collapsed/expanded header, stats, agenda rows, loading, empty, provider error, club-name loading/error, text scale, reduced motion, and dark theme variants under the canonical screen.calendar.home contract id."
         },
         {
           "id": "DS-CALENDAR-002",

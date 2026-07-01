@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-01T13:47:20.654Z",
+  "generatedAt": "2026-07-01T14:27:27.034Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
@@ -7,7 +7,7 @@
   "summary": {
     "useCases": 629,
     "components": 613,
-    "stateCards": 1345,
+    "stateCards": 1348,
     "reviewCandidates": 32,
     "oversizedUseCases": 41,
     "multiUseCaseComponents": 16
@@ -2389,6 +2389,92 @@
       ]
     },
     {
+      "component": "CalendarScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 11,
+      "paths": [
+        "[P3 utility surfaces]/Calendar"
+      ],
+      "labels": [
+        "auth loading",
+        "club names error",
+        "club names loading",
+        "dark theme",
+        "empty planned events",
+        "events error",
+        "events loading",
+        "joined saved cancelled",
+        "reduced motion",
+        "signed out empty",
+        "text scale 2.0"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "calendarScreenStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Screen states",
+          "functionName": "calendarScreenStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Calendar",
+          "stateCardCount": 11,
+          "stateCards": [
+            {
+              "label": "auth loading",
+              "normalizedLabel": "auth loading"
+            },
+            {
+              "label": "signed out empty",
+              "normalizedLabel": "signed out empty"
+            },
+            {
+              "label": "events loading",
+              "normalizedLabel": "events loading"
+            },
+            {
+              "label": "events error",
+              "normalizedLabel": "events error"
+            },
+            {
+              "label": "empty planned events",
+              "normalizedLabel": "empty planned events"
+            },
+            {
+              "label": "club names loading",
+              "normalizedLabel": "club names loading"
+            },
+            {
+              "label": "club names error",
+              "normalizedLabel": "club names error"
+            },
+            {
+              "label": "joined saved cancelled",
+              "normalizedLabel": "joined saved cancelled"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "dark theme",
+              "normalizedLabel": "dark theme"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventDetailScreen",
       "useCaseCount": 1,
       "stateCardCount": 11,
@@ -3314,77 +3400,6 @@
             {
               "label": "host hidden",
               "normalizedLabel": "host hidden"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CalendarScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 8,
-      "paths": [
-        "[P3 utility surfaces]/Calendar"
-      ],
-      "labels": [
-        "auth loading",
-        "club names error",
-        "club names loading",
-        "empty planned events",
-        "events error",
-        "events loading",
-        "joined saved cancelled",
-        "signed out empty"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "calendarScreenStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Screen states",
-          "functionName": "calendarScreenStates",
-          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "path": "[P3 utility surfaces]/Calendar",
-          "stateCardCount": 8,
-          "stateCards": [
-            {
-              "label": "auth loading",
-              "normalizedLabel": "auth loading"
-            },
-            {
-              "label": "signed out empty",
-              "normalizedLabel": "signed out empty"
-            },
-            {
-              "label": "events loading",
-              "normalizedLabel": "events loading"
-            },
-            {
-              "label": "events error",
-              "normalizedLabel": "events error"
-            },
-            {
-              "label": "empty planned events",
-              "normalizedLabel": "empty planned events"
-            },
-            {
-              "label": "club names loading",
-              "normalizedLabel": "club names loading"
-            },
-            {
-              "label": "club names error",
-              "normalizedLabel": "club names error"
-            },
-            {
-              "label": "joined saved cancelled",
-              "normalizedLabel": "joined saved cancelled"
             }
           ]
         }
@@ -5981,6 +5996,92 @@
       ]
     },
     {
+      "component": "CalendarScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 11,
+      "paths": [
+        "[P3 utility surfaces]/Calendar"
+      ],
+      "labels": [
+        "auth loading",
+        "club names error",
+        "club names loading",
+        "dark theme",
+        "empty planned events",
+        "events error",
+        "events loading",
+        "joined saved cancelled",
+        "reduced motion",
+        "signed out empty",
+        "text scale 2.0"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "calendarScreenStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Screen states",
+          "functionName": "calendarScreenStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Calendar",
+          "stateCardCount": 11,
+          "stateCards": [
+            {
+              "label": "auth loading",
+              "normalizedLabel": "auth loading"
+            },
+            {
+              "label": "signed out empty",
+              "normalizedLabel": "signed out empty"
+            },
+            {
+              "label": "events loading",
+              "normalizedLabel": "events loading"
+            },
+            {
+              "label": "events error",
+              "normalizedLabel": "events error"
+            },
+            {
+              "label": "empty planned events",
+              "normalizedLabel": "empty planned events"
+            },
+            {
+              "label": "club names loading",
+              "normalizedLabel": "club names loading"
+            },
+            {
+              "label": "club names error",
+              "normalizedLabel": "club names error"
+            },
+            {
+              "label": "joined saved cancelled",
+              "normalizedLabel": "joined saved cancelled"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "dark theme",
+              "normalizedLabel": "dark theme"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventDetailScreen",
       "useCaseCount": 1,
       "stateCardCount": 11,
@@ -6906,77 +7007,6 @@
             {
               "label": "host hidden",
               "normalizedLabel": "host hidden"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CalendarScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 8,
-      "paths": [
-        "[P3 utility surfaces]/Calendar"
-      ],
-      "labels": [
-        "auth loading",
-        "club names error",
-        "club names loading",
-        "empty planned events",
-        "events error",
-        "events loading",
-        "joined saved cancelled",
-        "signed out empty"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "calendarScreenStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Screen states",
-          "functionName": "calendarScreenStates",
-          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "path": "[P3 utility surfaces]/Calendar",
-          "stateCardCount": 8,
-          "stateCards": [
-            {
-              "label": "auth loading",
-              "normalizedLabel": "auth loading"
-            },
-            {
-              "label": "signed out empty",
-              "normalizedLabel": "signed out empty"
-            },
-            {
-              "label": "events loading",
-              "normalizedLabel": "events loading"
-            },
-            {
-              "label": "events error",
-              "normalizedLabel": "events error"
-            },
-            {
-              "label": "empty planned events",
-              "normalizedLabel": "empty planned events"
-            },
-            {
-              "label": "club names loading",
-              "normalizedLabel": "club names loading"
-            },
-            {
-              "label": "club names error",
-              "normalizedLabel": "club names error"
-            },
-            {
-              "label": "joined saved cancelled",
-              "normalizedLabel": "joined saved cancelled"
             }
           ]
         }

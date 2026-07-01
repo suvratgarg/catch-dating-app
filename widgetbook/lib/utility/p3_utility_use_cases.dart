@@ -13,6 +13,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -754,7 +755,7 @@ Widget updateRequiredScreenStates(BuildContext context) {
 Widget calendarScreenStates(BuildContext context) {
   return _UtilityCatalog(
     title: 'CalendarScreen',
-    contractId: 'screen.calendar',
+    contractId: 'screen.calendar.home',
     children: [
       _StateCard(
         label: 'auth loading',
@@ -831,6 +832,39 @@ Widget calendarScreenStates(BuildContext context) {
         child: _DeviceFrame(
           child: _CalendarScope(
             child: CalendarScreen(referenceNow: _calendarNow),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2.0',
+        child: _DeviceFrame(
+          child: _MediaOverride(
+            textScaler: const TextScaler.linear(2),
+            child: _CalendarScope(
+              child: CalendarScreen(referenceNow: _calendarNow),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reduced motion',
+        child: _DeviceFrame(
+          child: _MediaOverride(
+            disableAnimations: true,
+            child: _CalendarScope(
+              child: CalendarScreen(referenceNow: _calendarNow),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'dark theme',
+        child: Theme(
+          data: AppTheme.dark,
+          child: _DeviceFrame(
+            child: _CalendarScope(
+              child: CalendarScreen(referenceNow: _calendarNow),
+            ),
           ),
         ),
       ),
@@ -3268,6 +3302,30 @@ class _DeviceFrame extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _MediaOverride extends StatelessWidget {
+  const _MediaOverride({
+    required this.child,
+    this.textScaler,
+    this.disableAnimations = false,
+  });
+
+  final Widget child;
+  final TextScaler? textScaler;
+  final bool disableAnimations;
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    return MediaQuery(
+      data: media.copyWith(
+        textScaler: textScaler ?? media.textScaler,
+        disableAnimations: disableAnimations || media.disableAnimations,
+      ),
+      child: child,
     );
   }
 }

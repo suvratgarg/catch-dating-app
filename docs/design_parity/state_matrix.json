@@ -9214,21 +9214,21 @@
             {
               "id": "text_scale_2",
               "kind": "accessibility",
-              "status": "planned",
-              "notes": "No text-scale 2.0 Calendar capture exists yet."
+              "status": "implemented",
+              "notes": "Widgetbook CalendarScreen states include text-scale 2.0 review; deterministic route capture remains open."
             },
             {
               "id": "reduced_motion",
               "kind": "accessibility",
-              "status": "planned",
-              "notes": "No reduced-motion Calendar capture exists yet; selected-day scroll animation uses CatchMotion.calendarScroll."
+              "status": "implemented",
+              "notes": "Widgetbook CalendarScreen states include reduced-motion review; deterministic route capture remains open and selected-day scroll animation still uses CatchMotion.calendarScroll."
             }
           ],
           "gaps": [
             {
               "id": "DP-CALENDAR-001",
-              "status": "open",
-              "nextAction": "Add Widgetbook states for collapsed/expanded header, stats, agenda rows, loading, empty, provider error, club-name error, text scale, reduced motion, and theme variants."
+              "status": "closed",
+              "nextAction": "Closed by Calendar Widgetbook states covering collapsed/expanded header, stats, agenda rows, loading, empty, provider error, club-name loading/error, text scale, reduced motion, and dark theme variants under the canonical screen.calendar.home contract id."
             },
             {
               "id": "DP-CALENDAR-002",
