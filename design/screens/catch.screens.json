@@ -10493,7 +10493,7 @@
           "kind": "repo",
           "status": "available",
           "path": "test/hosts/host_create_event_screen_test.dart",
-          "notes": "Create event tests cover missing-basics validation, full wizard submit, event policy validation, map picker, custom activity, Event Success guide, create failure banner, draft save/delete/restore, unsaved-changes Save draft feedback, and success navigation."
+          "notes": "Create event tests cover initial club-extra route hydration, missing-basics validation, full wizard submit, event policy validation, map picker, custom activity, Event Success guide, create failure banner, draft save/delete/restore, unsaved-changes Save draft feedback, and success navigation."
         },
         {
           "id": "repo.host-create-event-state-tests",
@@ -10571,6 +10571,11 @@
           "id": "host_create_basics",
           "status": "captured",
           "notes": "Deterministic Host Create Event basics capture renders the first wizard step with seeded host event setup data."
+        },
+        {
+          "id": "host_create_initial_club_extra",
+          "status": "captured",
+          "notes": "Deterministic route-mounted capture renders Host Create Event from a supplied Club extra while the fetch provider stays loading."
         },
         {
           "id": "host_create_route_loading",
@@ -10752,11 +10757,17 @@
         {
           "id": "initial_club_extra",
           "kind": "populated",
-          "status": "implemented",
+          "status": "captured",
           "source": "HostCreateEventRouteScreen immediately renders CreateEventScreen when navigation supplies a Club extra.",
-          "nextAction": "Add route test/capture for extra-backed club hydration from Host Home and Host Clubs Add event actions.",
+          "tests": [
+            "test/hosts/host_create_event_screen_test.dart"
+          ],
+          "nextAction": "Captured by host_create_initial_club_extra with fetchClubProvider held loading; remaining work is source-route-specific assertions only if Host Home or Host Clubs route construction changes.",
           "previewIds": [
             "HostCreateEventRouteScreen/Route and wizard states"
+          ],
+          "captureIds": [
+            "host_create_initial_club_extra"
           ]
         },
         {

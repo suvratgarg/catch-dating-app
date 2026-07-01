@@ -683,6 +683,7 @@
       "captureIds": [
         "host_event_setup",
         "host_create_basics",
+        "host_create_initial_club_extra",
         "host_create_route_loading",
         "host_create_route_error",
         "host_create_route_offline",
@@ -719,7 +720,7 @@
         "host_create_photo_upload_offline",
         "host_create_success_manage"
       ],
-      "reason": "Host app create-event route now has deterministic captures for route loading/error/offline/not-found/unauthorized, basics, validation, custom activity, picked event photos, selected location, map-picker offline search, schedule validation, policy age validation, invite-only policy, cohort caps policy, dynamic-pricing enabled/disabled/validation policy, draft picker/restored/delete confirmation, unsaved-changes dialog, save-draft pending/error/offline, submit pending/error/offline, photo-upload offline, success, wizard location/schedule/policy/guide, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
+      "reason": "Host app create-event route now has deterministic captures for initial club-extra hydration, route loading/error/offline/not-found/unauthorized, basics, validation, custom activity, picked event photos, selected location, map-picker offline search, schedule validation, policy age validation, invite-only policy, cohort caps policy, dynamic-pricing enabled/disabled/validation policy, draft picker/restored/delete confirmation, unsaved-changes dialog, save-draft pending/error/offline, submit pending/error/offline, photo-upload offline, success, wizard location/schedule/policy/guide, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
     },
     {
       "routeId": "hostAppEventDetailScreen",

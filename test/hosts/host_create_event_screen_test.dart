@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -77,6 +78,35 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Event basics'), findsNothing);
+    });
+
+    testWidgets('route hydrates wizard from initial club extra', (
+      tester,
+    ) async {
+      final initialClub = buildClub(
+        id: 'club-extra',
+        name: 'Extra Hydration Club',
+      );
+
+      await pumpEventsTestApp(
+        tester,
+        HostCreateEventRouteScreen(
+          clubId: initialClub.id,
+          initialClub: initialClub,
+        ),
+        overrides: [
+          fetchClubProvider(
+            initialClub.id,
+          ).overrideWithValue(const AsyncLoading<Club?>()),
+        ],
+        signedInUid: 'host-1',
+      );
+      await _pumpTestAnimation(tester);
+
+      expect(find.text('Event basics'), findsWidgets);
+      expect(find.text('Extra Hydration Club'), findsOneWidget);
+      expect(find.text('Loading club'), findsNothing);
+      expect(find.text('Host access required'), findsNothing);
     });
 
     testWidgets(

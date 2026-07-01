@@ -9418,6 +9418,21 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'host_create_initial_club_extra',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(
+      uid:
+          _dashboardHostClub.ownerOrPrimaryHostUserId ??
+          HostOperationsFixtures.hostUid,
+      clubValue: const AsyncLoading<Club?>(),
+    ),
+    builder: (context) => HostCreateEventRouteScreen(
+      clubId: _dashboardHostClub.id,
+      initialClub: _dashboardHostClub,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'host_create_basics_validation',
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
