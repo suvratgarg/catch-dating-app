@@ -5,7 +5,9 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 enum CatchCrossPathsVariant { postcard, photo }
@@ -57,7 +59,8 @@ class CatchCrossPathsCard extends StatelessWidget {
     final activity = ActivityPalette.resolve(context, activityKind);
 
     if (variant == CatchCrossPathsVariant.photo) {
-      return CrossPathsSurface(borderColor: t.line,
+      return CrossPathsSurface(
+        borderColor: t.line,
         radius: CatchRadius.md,
         clip: true,
         child: IntrinsicHeight(
@@ -107,7 +110,8 @@ class CatchCrossPathsCard extends StatelessWidget {
                         ),
                       ],
                       const SizedBox(height: CatchSpacing.s3),
-                      CrossPathsCtaRow(cta: cta,
+                      CrossPathsCtaRow(
+                        cta: cta,
                         onJoin: onJoin,
                         onLike: onLike,
                       ),
@@ -122,7 +126,8 @@ class CatchCrossPathsCard extends StatelessWidget {
     }
 
     // Postcard variant.
-    return CrossPathsSurface(borderColor: t.line2,
+    return CrossPathsSurface(
+      borderColor: t.line2,
       radius: CatchSpacing.micro6,
       elevation: CatchSurfaceShadow.raised,
       child: Padding(
@@ -158,10 +163,7 @@ class CatchCrossPathsCard extends StatelessWidget {
                     ],
                     const Spacer(),
                     const SizedBox(height: CatchSpacing.micro14),
-                    CrossPathsCtaRow(cta: cta,
-                      onJoin: onJoin,
-                      onLike: onLike,
-                    ),
+                    CrossPathsCtaRow(cta: cta, onJoin: onJoin, onLike: onLike),
                   ],
                 ),
               ),
@@ -173,7 +175,8 @@ class CatchCrossPathsCard extends StatelessWidget {
               const SizedBox(width: CatchSpacing.micro14),
               SizedBox(
                 width: CatchLayout.crossPathsRailColumnWidth,
-                child: CrossPathsPolaroidRail(activity: activity,
+                child: CrossPathsPolaroidRail(
+                  activity: activity,
                   photoUrl: photoUrl,
                 ),
               ),
@@ -205,18 +208,14 @@ class CrossPathsSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final borderRadius = BorderRadius.circular(radius);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.surface,
-        borderRadius: borderRadius,
-        border: Border.all(color: borderColor),
-        boxShadow: elevation == CatchSurfaceShadow.raised
-            ? CatchElevation.raised
-            : CatchElevation.card,
-      ),
-      child: clip ? ClipRRect(borderRadius: borderRadius, child: child) : child,
+    return CatchSurface(
+      radius: radius,
+      borderColor: borderColor,
+      boxShadow: elevation == CatchSurfaceShadow.raised
+          ? CatchElevation.raised
+          : CatchElevation.card,
+      clipBehavior: clip ? Clip.antiAlias : Clip.none,
+      child: child,
     );
   }
 }
@@ -269,15 +268,13 @@ class CrossPathsPolaroidRail extends StatelessWidget {
           alignment: Alignment.centerRight,
           child: Transform.rotate(
             angle: CatchLayout.crossPathsPolaroidTilt,
-            child: Container(
+            child: CatchSurface(
               width: CatchLayout.crossPathsPolaroidWidth,
               height: CatchLayout.crossPathsPolaroidHeight,
               padding: const EdgeInsets.all(CatchSpacing.s1),
-              decoration: BoxDecoration(
-                color: t.surface,
-                border: Border.all(color: t.line2),
-                boxShadow: CatchElevation.card,
-              ),
+              radius: 0,
+              borderColor: t.line2,
+              boxShadow: CatchElevation.card,
               child: CrossPathsPortrait(activity: activity, photoUrl: photoUrl),
             ),
           ),
@@ -332,31 +329,16 @@ class CrossPathsCtaRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         CatchButton(label: cta, onPressed: onJoin, size: CatchButtonSize.sm),
         const SizedBox(width: CatchSpacing.s2),
-        Semantics(
-          button: true,
-          label: 'Like',
-          child: GestureDetector(
-            onTap: onLike,
-            child: Container(
-              width: CatchLayout.crossPathsHeartExtent,
-              height: CatchLayout.crossPathsHeartExtent,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: t.line2),
-              ),
-              child: Icon(
-                CatchIcons.favoriteOutlineRounded,
-                size: CatchIcon.sm,
-                color: t.ink,
-              ),
-            ),
-          ),
+        CatchIconButton.icon(
+          icon: CatchIcons.favoriteOutlineRounded,
+          onTap: onLike,
+          tooltip: 'Like',
+          size: CatchLayout.crossPathsHeartExtent,
         ),
       ],
     );
