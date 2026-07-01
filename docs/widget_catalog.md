@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.490
-updated: 2026-07-01
+version: 2.5.491
+updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.491
+
+- Cataloged `HostParticipationLifecycleBoard` as the provider-free Host Manage
+  participant roster board. Widgetbook already covers the exact public widget
+  states, so the new-entry inventory now treats it as documented coverage
+  instead of unresolved catalog debt.
 
 ### 2.5.490
 
@@ -5463,6 +5470,7 @@ Generated 2026-05-06.
 | `HostCreateEventRouteStateView` | `lib/hosts/presentation/event_management/host_create_event_screen.dart:39` | Provider-backed renderer for `HostCreateEventRouteState`. It switches loading/error/not-found/forbidden/ready branches into the loading shell, branded error scaffolds, or `CreateEventScreen`, while the route screen owns provider reads and retry invalidation. Extracted from the route screen so state rendering is cataloged and no widget-returning helper is needed. |
 | `HostEventEditState` | `lib/hosts/presentation/edit_hosted_event_screen.dart:113` | Route and display adapter for Host Event Edit. Resolves uid/club/event provider waves plus optional initial route event into loading, error, not-found, unauthorized, or ready states, and centralizes event editability plus schedule/policy lock predicates. Private-access loading, field validation, selected-location, and submit mutation states now have deterministic capture coverage; moving those callbacks plus close navigation into the adapter remains the next architecture target. |
 | `HostEventManageRouteScreen` | `lib/hosts/presentation/host_event_manage_screen.dart:49` | Route-facing host manage entry and defined `ARCH-SCREEN-001C` host workspace variant used from the canonical `/clubs/:clubId/events/:eventId/manage` route plus attendance and event-success aliases. Loads uid, event, and club by id, gates access to the club host, renders `HostRouteLoadingBody(showTabRail: true)` for blocking route loading, handles error/offline/not-found/unauthorized route states, and delegates the loaded state plus optional lifecycle section to `HostEventManageScreen`; the route contract keeps `hostAppAttendanceSheet` and `hostAppEventSuccessScreen` as aliases to `screen.host.event.manage`, not separate screen contracts. Widgetbook/captures cover route loading/error/offline/not-found, initial-event fallback, unauthorized, setup/private access, attendance loading/error/empty, attendee-profile loading/error, filtered roster empty, attendance mutation pending/error, full/waitlist apron, live, live unavailable, live Event Success plan loading/error/offline, live wingman requests, live assigned micro-pods, live assigned guided rotations, live check-in QR, live conversation cues, live revealed partner round, live host-edited override, report, report scorecard loading/error/offline, report export pending/error, private-access loading/error/offline/missing-code, private-link share pending/error, invite-link loading/error/offline/empty/disabled-row/long-label-source, invite-link mutation pending/error, edit/cancel/delete host action states, cancelled event, text-scale, reduced-motion, and light/dark states; remaining follow-up coverage is compact step-count semantics if product keeps them, modal Event Success override editor sheets if contractual, and reference-specific variants. |
+| `HostParticipationLifecycleBoard` | `lib/hosts/presentation/widgets/host_event_attendance_panel.dart:386` | Provider-free Host Manage participant roster board. Receives resolved attendance view model, participant-profile display map, setup/live/report mode, request-approval policy, mutation display state, search/filter inputs, and `HostParticipantLifecycleActions` from `HostEventParticipantsPanel` / `HostEventParticipantsList`; renders lifecycle-specific roster sections with `CatchRosterTiles`, `CatchRosterTable`, setup approval/decline/waitlist controls, live check-in controls, report export actions, and typed profile/action callbacks without watching providers or owning navigation. Widgetbook covers the exact public widget states through `HostParticipationLifecycleBoard/Catalog states`. |
 | `HostEventActionsSection` | `lib/hosts/presentation/host_event_manage_screen.dart:1372` | Provider-free compact Host Manage action section. Receives `HostPrivateLinkActionState`, typed private-link share callback, destructive-action display state, mutation errors, and edit/cancel/delete callbacks from `HostEventManageScreen`; renders edit/share/cancel/delete as flat tokenized action rows matching the Claude setup workspace instead of the former bulky action card. |
 | `_HostManageSectionPicker` | `lib/hosts/presentation/host_event_manage_screen.dart:532` | Setup / Guests / Live / Report mode picker for Host Event Manage. Reuses the shared pill-style `CatchSegmentedControl` in surface style, expands across the top-bar bottom slot, and calls back into the screen's local section state. |
 | `EventDetailScreen` | `lib/events/presentation/event_detail_screen.dart:40` | Route-facing event detail entry and `ARCH-SCREEN-001` reference screen. Watches `EventDetailViewModel`, records invite-link opens through `EventDetailController`, renders scaffolded loading/error/not-found states, preserves optional route-provided fallback event data plus source presentation mode/Hero tag, and owns the loaded `Scaffold`, bottom navigation, route-level mutation listeners, share/calendar/save callbacks, Event Success companion state, host club state, location/companion/club/message navigation, guest sign-in navigation, and retry invalidation before delegating embedded scroll content to `EventDetailBody`. Widgetbook exposes route-level Screen states for loading, not-found, fatal error, member, guest, host app, offline, text-scale, reduced-motion, ticket, and spotlight review. |
