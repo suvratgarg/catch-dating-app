@@ -99,7 +99,7 @@ void main() {
       await _pumpSavedEvents(
         tester,
         savedEvents: [past, future],
-        child: const SavedEventsScreen(),
+        child: SavedEventsScreen(referenceNow: now),
       );
       await tester.pump();
 

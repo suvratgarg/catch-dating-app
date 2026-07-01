@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.269
+version: 0.2.270
 updated: 2026-07-01
 owner: product_design_parity
 status: active
@@ -27,17 +27,17 @@ ledgers as the source of truth when counts differ:
 - Screen priority spread: 18 P1, 12 P2, and 5 P3 contracted screens.
 - Contracted screen states: 619.
 - Contracted screen sections: 241.
-- Screen registry migration gaps: 43 open, 15 blocked, and 81 closed. These are
+- Screen registry migration gaps: 41 open, 15 blocked, and 83 closed. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,110.
 - Open screen-contract validation gaps: 0.
 - Design parity matrix: 12 feature groups, 36 screens, 621 matrix states, and
-  59 open matrix gaps across screen-state, lint-candidate, and preview-plan
+  57 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
-- Matrix state status spread: 528 captured, 25 implemented, 6 planned, and
-  62 tested.
-- Capture coverage registry: 555 capture ids across 37 captured route entries,
+- Matrix state status spread: 534 captured, 22 implemented, 4 planned, and
+  61 tested.
+- Capture coverage registry: 563 capture ids across 37 captured route entries,
   5 alias route entries, 0 planned route entries, and 6 excluded route entries.
 - Component contracts: 56 reusable primitive/composite contracts with 349
   contract states.
@@ -689,7 +689,7 @@ from those ledgers rather than hand-editing counts.
 | P2 | `screen.host.profile` | 15 | 4 | 0 | Blocked: standalone Host Profile editor is called missing/at-risk by host manifests | `DS-HOST-PROFILE-001`, `DS-HOST-PROFILE-002`, `DS-HOST-PROFILE-003`, `DS-HOST-PROFILE-004` blocked | Widgetbook now covers route, form, field/status, missing, validation, pending, accessibility, and theme review; `HostProfileEditState` adapts route provider state and `HostProfileController` owns create/save mutations with tested snackbar failure proof plus deterministic create/save/offline captures. Host Profile save success feedback now uses the shared Catch snackbar helper. Remaining work is validation capture, any host-specific offline copy decision, stable reference export, and pixel comparison. |
 | P2 | `screen.host.settings` | 18 | 5 | 0 | Source found but exporter-blocked: `explorations/archived-templates/host-account/HostAccount.dc.html` | `DS-HOST-SETTINGS-001`, `DS-HOST-SETTINGS-002`, `DS-HOST-SETTINGS-003`, `DS-HOST-SETTINGS-004` | Widgetbook now covers route, profile summary, create-pending row, clubs section, tab rail, accessibility, and theme states; `HostSettingsState` adapts profile/club display state and `HostProfileController` owns profile create/save mutations with tested snackbar failure proof plus deterministic editor-sheet, mutation, sign-out, and offline captures. Host Settings create/save success feedback now uses the shared Catch snackbar helper. 2026-06-25 stable temp bundle, current runtime, CDP, and original-source Chrome attempts did not produce a valid PNG. Remaining work is source/runtime repair or alternate export path, payout/admin ownership, sign-out/account action policy, and pixel comparison. |
 | P2 | `screen.onboarding.flow` | 13 | 7 | 1 | `onboarding-handoff` | `DS-ONBOARDING-001`, `DS-ONBOARDING-002`, `DS-ONBOARDING-003`, `DS-ONBOARDING-004` | Photos upload-failure feedback now uses the shared Catch snackbar helper while preserving clear-before-show behavior. Export remaining onboarding steps, validation, upload, mutation, text-scale, and reduced-motion references. |
-| P2 | `screen.saved_events.list` | 9 | 4 | 0 | Blocked: no standalone Saved Events source | `DS-SAVED-EVENTS-001`, `DS-SAVED-EVENTS-002`, `DS-SAVED-EVENTS-003`, `DS-SAVED-EVENTS-004` blocked | Continue adapter/capture/Widgetbook work; reference export waits on canonical Saved Events source. |
+| P2 | `screen.saved_events.list` | 9 | 4 | 0 | Blocked: no standalone Saved Events source | `DS-SAVED-EVENTS-003`, `DS-SAVED-EVENTS-004` blocked | SavedEventsListState owns ordering, saved/past labels, statuses, today, and club-id lookup input. Widgetbook and deterministic captures cover populated rows, empty/deleted-doc fallback, loading, stream error, club-name loading/error, past-only, text-scale, and paired light/dark states; continue provider-free header/agenda/state extraction and reference export once a canonical Saved Events source exists. |
 | P2 | `screen.start.welcome` | 6 | 3 | 1 | None | `DS-START-001`, `DS-START-002`, `DS-START-003` | Add animated reel, reduced-motion, text-scale, theme, preview, and adapter coverage. |
 | P3 | `screen.event.location_map` | 11 | 4 | 0 | Blocked: no standalone full-screen map source; map primitives only | `DP-EVENT-MAP-003`, `DP-EVENT-MAP-004` blocked | Continue route-state adapter and map-mask planning; reference export waits on canonical map route source. |
 | P3 | `screen.notifications.list` | 13 | 4 | 1 | None | None | Use the complete Notifications state/capture/adapter set during pixel comparison and future visual polish. |
@@ -1266,10 +1266,11 @@ tests, captures, Widgetbook, and audit receipts.
   reel variants, phone/OTP flows, validation, resend cooldown, onboarding
   steps, photo gates, upload mutations, flow-entry modes, and design refs.
 - [ ] `TODO-P2-002` Calendar/Saved Events/Filters/Event Recap: Calendar,
-  Filters, and Event Recap now have Widgetbook/capture states for provider
-  waves, empty/error states, selection/draft state, mutation/partial lookup
-  failures, accessibility, and theme variants. Continue Saved Events route
-  capture expansion and any blocked reference exports.
+  Saved Events, Filters, and Event Recap now have Widgetbook/capture states for
+  provider waves, empty/error states, selection/draft state,
+  mutation/partial lookup failures, accessibility, and theme variants.
+  Continue Saved Events provider-free section extraction and blocked reference
+  exports.
 - [ ] `TODO-P2-003` Host create/edit club, edit event, host settings, and host
   profile: add Widgetbook/capture states for form validation, image
   replacement, unauthorized/missing resources, payouts/admin placeholders,
@@ -1593,14 +1594,13 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - DP-CALENDAR-001: Closed by Calendar Widgetbook states covering collapsed/expanded header, stats, agenda rows, loading, empty, provider error, club-name loading/error, text scale, reduced motion, and dark theme variants under the canonical `screen.calendar.home` contract id.
   - DP-CALENDAR-002: Closed by deterministic Calendar captures for loading, empty, provider error, club-name loading/error, expanded month, selected day, text scale, reduced motion, and paired light/dark output.
   - DP-CALENDAR-003: Closed by CalendarHomeState and CalendarAgendaSectionState owning event summary, selected date, header mode, club-id lookup input, agenda row display, and empty/loading/error section state while CalendarScreen retains provider waves, retry invalidation, scroll behavior, and route navigation.
-- [ ] `saved_events.list` (9 state follow-ups, 3 open gaps)
-  - planned: `text_scale_2`, `light_dark`
-  - implemented: `uid_missing`, `saved_events_loading`, `saved_events_error`, `club_names_loading_error`
-  - tested: `empty_saved_events`, `detail_navigation`
-  - captured: `populated_saved_events`
-  - DP-SAVED-EVENTS-001: Add Saved Events Widgetbook states for populated rows, empty, loading, stream error, club-name loading/error, past/saved row statuses, text scale, and theme variants.
-  - DP-SAVED-EVENTS-002: Add deterministic Saved Events captures for empty, loading, error, club-name loading/error, past-only, removed/deleted event, text scale, and light/dark.
-  - DP-SAVED-EVENTS-003: SavedEventsListState now covers ordering, saved/past labels, tile statuses, today, and club-id lookup input; remaining work is provider-free header/agenda/state section extraction plus captures.
+- [ ] `saved_events.list` (9 state follow-ups, 1 open gap, 1 blocked gap)
+  - implemented: `uid_missing`
+  - tested: `detail_navigation`
+  - captured: `saved_events_loading`, `saved_events_error`, `empty_saved_events`, `populated_saved_events`, `club_names_loading_error`, `text_scale_2`, `light_dark`
+  - DP-SAVED-EVENTS-001: Closed by Saved Events Widgetbook states for populated rows, empty, loading, stream error, club-name loading/error, past/saved row statuses, text scale, and dark theme variants.
+  - DP-SAVED-EVENTS-002: Closed by deterministic Saved Events captures for empty/deleted-doc fallback, loading, error, club-name loading/error, past-only, text scale, and paired light/dark output.
+  - DP-SAVED-EVENTS-003: SavedEventsListState now covers ordering, saved/past labels, tile statuses, today, and club-id lookup input; remaining work is provider-free header/agenda/state section extraction.
 - [x] `filters.preferences` (10 state follow-ups, 0 open gaps)
   - planned: None
   - implemented: None

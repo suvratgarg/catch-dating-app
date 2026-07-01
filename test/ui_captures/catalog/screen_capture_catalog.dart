@@ -1316,6 +1316,18 @@ final _dashboardSavedEvents = [
   _memberDiscoveryEvents[1],
   _memberDiscoveryEvents[2],
 ];
+final _savedEventsPastOnlyEvents = [
+  _dashboardRecommendedEvent.copyWith(
+    id: 'event-saved-past-pickleball',
+    startTime: DateTime(2026, 5, 24, 18),
+    endTime: DateTime(2026, 5, 24, 19, 30),
+  ),
+  _memberDiscoveryEvents[1].copyWith(
+    id: 'event-saved-past-dinner',
+    startTime: DateTime(2026, 5, 25, 20),
+    endTime: DateTime(2026, 5, 25, 22),
+  ),
+];
 final _dashboardAttendedEvents = [
   _captureFixtures.captureEvent(
     id: 'event-dashboard-attended',
@@ -1698,6 +1710,40 @@ List<T> _asyncDataList<T>(AsyncValue<List<T>> value) {
   return switch (value) {
     AsyncData<List<T>>(:final value) => value,
     _ => <T>[],
+  };
+}
+
+List<Object> _savedEventsProviderOverrides({
+  AsyncValue<String?> uid = const AsyncData<String?>(_captureViewerUid),
+  AsyncValue<List<Event>>? savedEvents,
+  AsyncValue<Map<String, String>>? clubNames,
+}) {
+  final effectiveSavedEvents =
+      savedEvents ?? AsyncData<List<Event>>(_dashboardSavedEvents);
+  final events = _asyncDataList(effectiveSavedEvents);
+  final clubNameQuery = ClubNameLookupQuery(
+    events.map((event) => event.clubId),
+  );
+
+  return <Object>[
+    uidProvider.overrideWithValue(uid),
+    watchSavedEventDetailsForUserProvider(
+      _captureViewerUid,
+    ).overrideWithValue(effectiveSavedEvents),
+    clubsRepositoryProvider.overrideWith((ref) => _captureClubsRepository),
+    if (events.isNotEmpty)
+      clubNameLookupProvider(clubNameQuery).overrideWithValue(
+        clubNames ??
+            AsyncData<Map<String, String>>(_clubNamesForEvents(events)),
+      ),
+  ];
+}
+
+Map<String, String> _clubNamesForEvents(List<Event> events) {
+  return <String, String>{
+    for (final event in events)
+      event.clubId:
+          _captureClubsRepository.clubsById[event.clubId]?.name ?? event.clubId,
   };
 }
 
@@ -7868,14 +7914,83 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'saved_events_list',
     routeIds: const <String>['savedEventsScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
-      watchSavedEventDetailsForUserProvider(
-        _captureViewerUid,
-      ).overrideWithValue(AsyncData(_dashboardSavedEvents)),
-      clubsRepositoryProvider.overrideWith((ref) => _captureClubsRepository),
-    ],
-    builder: (context) => const SavedEventsScreen(),
+    providerOverrides: _savedEventsProviderOverrides(),
+    builder: (context) => SavedEventsScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'saved_events_loading',
+    routeIds: const <String>['savedEventsScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _savedEventsProviderOverrides(
+      savedEvents: const AsyncLoading<List<Event>>(),
+    ),
+    builder: (context) => SavedEventsScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'saved_events_error',
+    routeIds: const <String>['savedEventsScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _savedEventsProviderOverrides(
+      savedEvents: AsyncError<List<Event>>(
+        StateError('Capture Saved Events stream failed'),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => SavedEventsScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'saved_events_empty',
+    routeIds: const <String>['savedEventsScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _savedEventsProviderOverrides(
+      savedEvents: const AsyncData<List<Event>>([]),
+    ),
+    builder: (context) => SavedEventsScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'saved_events_club_names_loading',
+    routeIds: const <String>['savedEventsScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _savedEventsProviderOverrides(
+      clubNames: const AsyncLoading<Map<String, String>>(),
+    ),
+    builder: (context) => SavedEventsScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'saved_events_club_names_error',
+    routeIds: const <String>['savedEventsScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _savedEventsProviderOverrides(
+      clubNames: AsyncError<Map<String, String>>(
+        StateError('Capture Saved Events club names failed'),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => SavedEventsScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'saved_events_past_only',
+    routeIds: const <String>['savedEventsScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _savedEventsProviderOverrides(
+      savedEvents: AsyncData<List<Event>>(_savedEventsPastOnlyEvents),
+    ),
+    builder: (context) => SavedEventsScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'saved_events_text_scale_2',
+    routeIds: const <String>['savedEventsScreen'],
+    device: CaptureDevice.reviewTall,
+    textScale: 2,
+    providerOverrides: _savedEventsProviderOverrides(),
+    builder: (context) => SavedEventsScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'saved_events_light_dark',
+    routeIds: const <String>['savedEventsScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _savedEventsProviderOverrides(),
+    builder: (context) => SavedEventsScreen(referenceNow: _captureNow),
   ),
   ScreenCaptureEntry(
     id: 'filters_preferences',

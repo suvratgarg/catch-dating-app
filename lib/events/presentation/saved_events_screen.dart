@@ -18,7 +18,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class SavedEventsScreen extends ConsumerWidget {
-  const SavedEventsScreen({super.key});
+  const SavedEventsScreen({super.key, this.referenceNow});
+
+  final DateTime? referenceNow;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -52,7 +54,7 @@ class SavedEventsScreen extends ConsumerWidget {
               );
             }
 
-            final now = DateTime.now();
+            final now = referenceNow ?? DateTime.now();
             final savedEventsState = SavedEventsListState.from(
               events,
               now: now,

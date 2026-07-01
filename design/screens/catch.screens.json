@@ -16500,6 +16500,46 @@
           "id": "saved_events_list",
           "status": "captured",
           "notes": "Saved events list fixture with deterministic club lookup."
+        },
+        {
+          "id": "saved_events_loading",
+          "status": "captured",
+          "notes": "Saved-event stream loading skeleton with route top bar and agenda placeholders."
+        },
+        {
+          "id": "saved_events_error",
+          "status": "captured",
+          "notes": "Saved-event stream error branch with event retry copy."
+        },
+        {
+          "id": "saved_events_empty",
+          "status": "captured",
+          "notes": "Empty saved-events state, including the deleted-doc fallback after missing event documents are omitted by the repository stream."
+        },
+        {
+          "id": "saved_events_club_names_loading",
+          "status": "captured",
+          "notes": "Agenda skeleton while club-name lookup resolves after saved events load."
+        },
+        {
+          "id": "saved_events_club_names_error",
+          "status": "captured",
+          "notes": "Club-name lookup error branch inside the saved-events agenda section."
+        },
+        {
+          "id": "saved_events_past_only",
+          "status": "captured",
+          "notes": "Saved-events list with only past rows and PAST tile treatment."
+        },
+        {
+          "id": "saved_events_text_scale_2",
+          "status": "captured",
+          "notes": "Text scale 2.0 route capture for top bar, header, agenda rows, and state surfaces."
+        },
+        {
+          "id": "saved_events_light_dark",
+          "status": "captured",
+          "notes": "Explicit populated baseline for paired light/dark output."
         }
       ],
       "states": [
@@ -16513,26 +16553,35 @@
         {
           "id": "saved_events_loading",
           "kind": "loading",
-          "status": "implemented",
+          "status": "captured",
           "source": "watchSavedEventDetailsForUserProvider loading renders the Saved Events agenda/date-rail skeleton through _SavedEventsLoading.",
-          "nextAction": "Add loading capture with top bar."
+          "captureIds": [
+            "saved_events_loading"
+          ],
+          "nextAction": "Compare loading skeleton hierarchy against a future Saved Events reference if design adds one."
         },
         {
           "id": "saved_events_error",
           "kind": "error",
-          "status": "implemented",
+          "status": "captured",
           "source": "Saved-event stream errors render CatchErrorState.fromError with AppErrorContext.event and retry invalidation.",
-          "nextAction": "Add saved-event stream error/offline captures."
+          "captureIds": [
+            "saved_events_error"
+          ],
+          "nextAction": "Compare error copy against a future Saved Events error reference if design adds one."
         },
         {
           "id": "empty_saved_events",
           "kind": "empty",
-          "status": "tested",
-          "source": "An empty saved-event list renders No saved events yet copy through _SavedEventsMessage.",
+          "status": "captured",
+          "source": "An empty saved-event list renders No saved events yet copy through _SavedEventsMessage; repository tests prove deleted/missing event docs are omitted before this empty branch.",
+          "captureIds": [
+            "saved_events_empty"
+          ],
           "tests": [
             "test/events/saved_events_screen_test.dart"
           ],
-          "nextAction": "Add deterministic empty-state capture."
+          "nextAction": "Compare empty copy against a future Saved Events reference if design adds one."
         },
         {
           "id": "populated_saved_events",
@@ -16540,7 +16589,9 @@
           "status": "captured",
           "source": "saved_events_list renders upcoming and past saved events using EventAgendaSliverList and SAVED/PAST status.",
           "captureIds": [
-            "saved_events_list"
+            "saved_events_list",
+            "saved_events_past_only",
+            "saved_events_light_dark"
           ],
           "tests": [
             "test/events/saved_events_screen_test.dart"
@@ -16550,9 +16601,13 @@
         {
           "id": "club_names_loading_error",
           "kind": "loading",
-          "status": "implemented",
+          "status": "captured",
           "source": "Saved event rows wait on clubNameLookupProvider and render loading/error before the agenda list when club names are unavailable.",
-          "nextAction": "Add club-name loading/error captures."
+          "captureIds": [
+            "saved_events_club_names_loading",
+            "saved_events_club_names_error"
+          ],
+          "nextAction": "Compare secondary lookup states against future references if design adds them."
         },
         {
           "id": "detail_navigation",
@@ -16567,16 +16622,22 @@
         {
           "id": "text_scale_2",
           "kind": "accessibility",
-          "status": "planned",
-          "source": "No text-scale 2.0 Saved Events capture exists yet.",
-          "nextAction": "Add text-scale capture for header, agenda rows, empty/error states, and top bar."
+          "status": "captured",
+          "source": "Saved Events text scale 2.0 capture covers top bar, header, agenda rows, and state surfaces.",
+          "captureIds": [
+            "saved_events_text_scale_2"
+          ],
+          "nextAction": "Compare text-scale layout against a future Saved Events accessibility reference if design adds one."
         },
         {
           "id": "light_dark",
           "kind": "theme",
-          "status": "planned",
-          "source": "No paired light/dark Saved Events captures exist yet.",
-          "nextAction": "Add paired theme captures once fixtures are deterministic."
+          "status": "captured",
+          "source": "Saved Events populated route capture is registered for paired light/dark output.",
+          "captureIds": [
+            "saved_events_light_dark"
+          ],
+          "nextAction": "Compare theme treatment against a future Saved Events reference if design adds one."
         }
       ],
       "composition": {
@@ -16686,18 +16747,18 @@
       "openGaps": [
         {
           "id": "DS-SAVED-EVENTS-001",
-          "status": "open",
-          "nextAction": "Add Saved Events Widgetbook states for populated rows, empty, loading, stream error, club-name loading/error, past/saved row statuses, text scale, and theme variants."
+          "status": "closed",
+          "nextAction": "Closed by Saved Events Widgetbook states for populated rows, empty, loading, stream error, club-name loading/error, past/saved row statuses, text scale, and dark theme variants."
         },
         {
           "id": "DS-SAVED-EVENTS-002",
-          "status": "open",
-          "nextAction": "Add deterministic Saved Events captures for empty, loading, error, club-name loading/error, past-only, removed/deleted event, text scale, and light/dark."
+          "status": "closed",
+          "nextAction": "Closed by deterministic Saved Events captures for empty/deleted-doc fallback, loading, error, club-name loading/error, past-only, text scale, and paired light/dark output."
         },
         {
           "id": "DS-SAVED-EVENTS-003",
           "status": "open",
-          "nextAction": "SavedEventsListState now covers ordering, saved/past labels, tile statuses, today, and club-id lookup input; remaining work is provider-free header/agenda/state section extraction plus captures."
+          "nextAction": "SavedEventsListState now covers ordering, saved/past labels, tile statuses, today, and club-id lookup input; remaining work is provider-free header/agenda/state section extraction."
         },
         {
           "id": "DS-SAVED-EVENTS-004",

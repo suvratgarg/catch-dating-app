@@ -5,6 +5,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -1230,42 +1231,144 @@ Widget eventCheckInCelebrationScreenState(BuildContext context) {
 )
 Widget savedEventsScreenStates(BuildContext context) {
   final savedEvents = _agendaEvents();
+  final pastOnlyEvents = [
+    _pastEvent,
+    _eventDetailEvent(
+      id: 'widgetbook-saved-past-dinner',
+      activityKind: ActivityKind.dinner,
+      startTime: _now.subtract(const Duration(days: 3, hours: 2)),
+    ),
+  ];
   return _CatalogScreen(
     title: 'SavedEventsScreen',
     catalogId: 'screen.events.saved',
     children: [
       _StateCard(
         label: 'empty signed out',
-        child: _DeviceFrame(
-          child: ProviderScope(
-            overrides: [
-              uidProvider.overrideWithValue(const AsyncData<String?>(null)),
-            ],
-            child: const SavedEventsScreen(),
-          ),
+        child: _SavedEventsRouteFrame(
+          uid: null,
+          savedEvents: const AsyncData<List<Event>>([]),
         ),
       ),
       _StateCard(
         label: 'saved list',
-        child: _DeviceFrame(
-          child: ProviderScope(
-            overrides: [
-              uidProvider.overrideWithValue(
-                const AsyncData<String?>(_viewerUid),
-              ),
-              watchSavedEventDetailsForUserProvider(
-                _viewerUid,
-              ).overrideWithValue(AsyncData<List<Event>>(savedEvents)),
-              clubNameLookupProvider(
-                ClubNameLookupQuery(savedEvents.map((event) => event.clubId)),
-              ).overrideWithValue(AsyncData({_clubId: _club.name})),
-            ],
-            child: const SavedEventsScreen(),
+        child: _SavedEventsRouteFrame(
+          savedEvents: AsyncData<List<Event>>(savedEvents),
+        ),
+      ),
+      _StateCard(
+        label: 'loading',
+        child: const _SavedEventsRouteFrame(
+          savedEvents: AsyncLoading<List<Event>>(),
+        ),
+      ),
+      _StateCard(
+        label: 'stream error',
+        child: _SavedEventsRouteFrame(
+          savedEvents: AsyncError<List<Event>>(
+            StateError('Saved events failed'),
+            StackTrace.empty,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty saved events',
+        child: const _SavedEventsRouteFrame(
+          savedEvents: AsyncData<List<Event>>([]),
+        ),
+      ),
+      _StateCard(
+        label: 'club names loading',
+        child: _SavedEventsRouteFrame(
+          savedEvents: AsyncData<List<Event>>(savedEvents),
+          clubNames: const AsyncLoading<Map<String, String>>(),
+        ),
+      ),
+      _StateCard(
+        label: 'club names error',
+        child: _SavedEventsRouteFrame(
+          savedEvents: AsyncData<List<Event>>(savedEvents),
+          clubNames: AsyncError<Map<String, String>>(
+            StateError('Club names failed'),
+            StackTrace.empty,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'past only',
+        child: _SavedEventsRouteFrame(
+          savedEvents: AsyncData<List<Event>>(pastOnlyEvents),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2',
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(2)),
+          child: _SavedEventsRouteFrame(
+            savedEvents: AsyncData<List<Event>>(savedEvents),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'dark theme',
+        child: Theme(
+          data: AppTheme.dark,
+          child: _SavedEventsRouteFrame(
+            savedEvents: AsyncData<List<Event>>(savedEvents),
           ),
         ),
       ),
     ],
   );
+}
+
+class _SavedEventsRouteFrame extends StatelessWidget {
+  const _SavedEventsRouteFrame({
+    this.uid = _viewerUid,
+    this.savedEvents,
+    this.clubNames,
+  });
+
+  final String? uid;
+  final AsyncValue<List<Event>>? savedEvents;
+  final AsyncValue<Map<String, String>>? clubNames;
+
+  @override
+  Widget build(BuildContext context) {
+    final effectiveSavedEvents =
+        savedEvents ?? AsyncData<List<Event>>(_agendaEvents());
+    final events = _asyncDataList(effectiveSavedEvents);
+    final query = ClubNameLookupQuery(events.map((event) => event.clubId));
+
+    return _DeviceFrame(
+      child: ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue(AsyncData<String?>(uid)),
+          if (uid != null)
+            watchSavedEventDetailsForUserProvider(
+              uid!,
+            ).overrideWithValue(effectiveSavedEvents),
+          if (events.isNotEmpty)
+            clubNameLookupProvider(query).overrideWithValue(
+              clubNames ??
+                  AsyncData<Map<String, String>>({
+                    for (final event in events) event.clubId: _club.name,
+                  }),
+            ),
+        ],
+        child: SavedEventsScreen(referenceNow: _now),
+      ),
+    );
+  }
+}
+
+List<T> _asyncDataList<T>(AsyncValue<List<T>> value) {
+  return switch (value) {
+    AsyncData<List<T>>(:final value) => value,
+    _ => <T>[],
+  };
 }
 
 @widgetbook.UseCase(
