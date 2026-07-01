@@ -7615,6 +7615,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'ProfileFieldRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Field row states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileFieldRowStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfileTabSkeletonSliverBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

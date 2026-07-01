@@ -24,6 +24,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
+import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
@@ -350,6 +351,37 @@ Widget profileTabContentStates(BuildContext context) {
             builder: (context, children) =>
                 ListView(padding: profileTabBodyPadding, children: children),
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Field row states',
+  type: ProfileFieldRow,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileFieldRowStates(BuildContext context) {
+  final editState = SelfProfileEditTabState.fromProfile(
+    user: _viewer,
+    uploadState: (loadingIndices: <int>{}, uploadError: null),
+  );
+  final rows = [
+    ...editState.aboutSectionRows.take(3),
+    ...editState.runningRows.take(2),
+    ...editState.lifestyleRows.take(1),
+  ];
+
+  return _ProfileCatalog(
+    title: 'ProfileFieldRow',
+    contractId: 'screen.profile.edit_tab.field_row',
+    children: [
+      _StateCard(
+        label: 'descriptor rows',
+        child: _SectionFrame(
+          height: CatchLayout.maxContentWidth,
+          child: _ProfileFieldRowCatalog(rows: rows),
         ),
       ),
     ],
@@ -930,6 +962,45 @@ Widget publicProfileReportReasonTileStates(BuildContext context) {
       ),
     ],
   );
+}
+
+class _ProfileFieldRowCatalog extends StatefulWidget {
+  const _ProfileFieldRowCatalog({required this.rows});
+
+  final List<SelfProfileFieldRowDescriptor> rows;
+
+  @override
+  State<_ProfileFieldRowCatalog> createState() =>
+      _ProfileFieldRowCatalogState();
+}
+
+class _ProfileFieldRowCatalogState extends State<_ProfileFieldRowCatalog> {
+  String? _expandedField;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (final row in widget.rows)
+          ProfileFieldRow(
+            descriptor: row,
+            isExpanded: (fieldId) => _expandedField == fieldId,
+            onToggle: (fieldId) {
+              setState(() {
+                _expandedField = _expandedField == fieldId ? null : fieldId;
+              });
+            },
+            onSaved: _collapse,
+            onCancel: _collapse,
+          ),
+      ],
+    );
+  }
+
+  void _collapse() {
+    if (_expandedField == null) return;
+    setState(() => _expandedField = null);
+  }
 }
 
 class _SelfProfileRouteScope extends StatelessWidget {

@@ -197,21 +197,48 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           profileInfoSection(
             context: context,
             title: 'About you',
-            children: _fieldRows(editState.aboutSectionRows),
+            children: [
+              for (final row in editState.aboutSectionRows)
+                ProfileFieldRow(
+                  descriptor: row,
+                  isExpanded: _isExpanded,
+                  onToggle: _toggleField,
+                  onSaved: _collapseField,
+                  onCancel: _collapseField,
+                ),
+            ],
             grouped: true,
             fullBleedRows: true,
           ),
           profileInfoSection(
             context: context,
             title: 'Running',
-            children: _fieldRows(editState.runningRows),
+            children: [
+              for (final row in editState.runningRows)
+                ProfileFieldRow(
+                  descriptor: row,
+                  isExpanded: _isExpanded,
+                  onToggle: _toggleField,
+                  onSaved: _collapseField,
+                  onCancel: _collapseField,
+                ),
+            ],
             grouped: true,
             fullBleedRows: true,
           ),
           profileInfoSection(
             context: context,
             title: 'Lifestyle',
-            children: _fieldRows(editState.lifestyleRows),
+            children: [
+              for (final row in editState.lifestyleRows)
+                ProfileFieldRow(
+                  descriptor: row,
+                  isExpanded: _isExpanded,
+                  onToggle: _toggleField,
+                  onSaved: _collapseField,
+                  onCancel: _collapseField,
+                ),
+            ],
             grouped: true,
             fullBleedRows: true,
           ),
@@ -220,13 +247,27 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
       gapH32,
     ]);
   }
+}
 
-  List<Widget> _fieldRows(Iterable<SelfProfileFieldRowDescriptor> rows) {
-    return [for (final row in rows) _fieldRow(row)];
-  }
+class ProfileFieldRow extends StatelessWidget {
+  const ProfileFieldRow({
+    super.key,
+    required this.descriptor,
+    required this.isExpanded,
+    required this.onToggle,
+    required this.onSaved,
+    required this.onCancel,
+  });
 
-  Widget _fieldRow(SelfProfileFieldRowDescriptor row) {
-    return row.map(
+  final SelfProfileFieldRowDescriptor descriptor;
+  final bool Function(String fieldId) isExpanded;
+  final ValueChanged<String> onToggle;
+  final VoidCallback onSaved;
+  final VoidCallback onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    return descriptor.map(
       readOnly: (descriptor) => CatchField.nav(
         icon: descriptor.icon,
         title: descriptor.label,
@@ -253,12 +294,12 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
         label: descriptor.label,
         value: descriptor.value,
         currentValue: descriptor.currentValue,
-        isExpanded: _isExpanded(descriptor.id),
+        isExpanded: isExpanded(descriptor.id),
         isAddAffordance: descriptor.isAddAffordance,
         patchForValue: descriptor.patchForValue,
-        onTap: () => _toggleField(descriptor.id),
-        onSaved: _collapseField,
-        onCancel: _collapseField,
+        onTap: () => onToggle(descriptor.id),
+        onSaved: onSaved,
+        onCancel: onCancel,
       ),
       singleChoice: <T extends Labelled>(descriptor) =>
           _ProfileSingleEnumEntry<T>(
@@ -269,10 +310,10 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
             fieldName: descriptor.fieldName,
             patchForValue: descriptor.patchForValue,
             placeholder: descriptor.placeholder,
-            isExpanded: _isExpanded(descriptor.fieldName),
-            onTap: () => _toggleField(descriptor.fieldName),
-            onSaved: _collapseField,
-            onCancel: _collapseField,
+            isExpanded: isExpanded(descriptor.fieldName),
+            onTap: () => onToggle(descriptor.fieldName),
+            onSaved: onSaved,
+            onCancel: onCancel,
           ),
       multiChoice: <T extends Labelled>(descriptor) =>
           _ProfileMultiEnumEntry<T>(
@@ -284,10 +325,10 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
             placeholder: descriptor.placeholder,
             patchForValues: descriptor.patchForValues,
             patchForLatestProfile: descriptor.patchForLatestProfile,
-            isExpanded: _isExpanded(descriptor.fieldName),
-            onTap: () => _toggleField(descriptor.fieldName),
-            onSaved: _collapseField,
-            onCancel: _collapseField,
+            isExpanded: isExpanded(descriptor.fieldName),
+            onTap: () => onToggle(descriptor.fieldName),
+            onSaved: onSaved,
+            onCancel: onCancel,
             isAddAffordanceWhenEmpty: descriptor.isAddAffordanceWhenEmpty,
           ),
       range: (descriptor) => ProfileInlineRangeEditor(
@@ -297,8 +338,8 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
         value: descriptor.value,
         currentMin: descriptor.currentMin,
         currentMax: descriptor.currentMax,
-        isExpanded: _isExpanded(descriptor.id),
-        onTap: () => _toggleField(descriptor.id),
+        isExpanded: isExpanded(descriptor.id),
+        onTap: () => onToggle(descriptor.id),
         sliderMin: descriptor.sliderMin,
         sliderMax: descriptor.sliderMax,
         divisions: descriptor.divisions,
@@ -307,8 +348,8 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
         patchForLatestProfile: descriptor.patchForLatestProfile,
         saveEndValue: descriptor.saveEndValue,
         savedCurrentMax: descriptor.savedCurrentMax,
-        onSaved: _collapseField,
-        onCancel: _collapseField,
+        onSaved: onSaved,
+        onCancel: onCancel,
       ),
     );
   }
