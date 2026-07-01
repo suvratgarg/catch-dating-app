@@ -83,7 +83,7 @@ Commands:
   rules [--status active] Print rules, optionally filtered by lifecycle status.
   next [--limit n] [--screen-limit n] [--code-only]
                           Print actionable screen gaps, then unstamped/follow-up files.
-                          --code-only skips reference-only/future-design gaps.
+                          --code-only skips reference-only/product-conditional gaps.
   stale --doc id --version x.y.z [--limit n]
                           Print files reviewed before a doc version.
   mark-pass --pass id --rules A,B --paths p1,p2 [--proof "..."] [--status clean]
@@ -327,7 +327,9 @@ List<_ScreenGap> _actionableScreenGaps({bool codeOnly = false}) {
       final nextAction = '${gap['nextAction'] ?? ''}';
       if (!_isActionableGap(status, nextAction)) continue;
       final actionKind = _gapActionKind(nextAction);
-      if (codeOnly && actionKind == 'reference-only') continue;
+      if (codeOnly && actionKind != 'engineering' && actionKind != 'mixed') {
+        continue;
+      }
       gaps.add(
         _ScreenGap(
           priority: priority,
@@ -357,6 +359,18 @@ bool _isActionableGap(String status, String nextAction) {
   if (status == 'closed') return false;
   if (_isBlockedStatus(status)) return false;
   final lowerAction = nextAction.toLowerCase();
+  if (_containsAny(lowerAction, const [
+    'if contractual',
+    'if product keeps',
+    'if product wants',
+    'if that surface keeps growing',
+    'owner/product',
+    'product decision',
+    'product-only',
+    'product review',
+  ])) {
+    return false;
+  }
   if (lowerAction.contains('owner-blocked')) return false;
   if (lowerAction.contains('blocked until')) return false;
   if (lowerAction.contains('blocked:')) return false;
@@ -365,8 +379,22 @@ bool _isActionableGap(String status, String nextAction) {
 
 String _gapActionKind(String nextAction) {
   final lowerAction = nextAction.toLowerCase();
+  final hasProductOnlySignal = _containsAny(lowerAction, const [
+    'if contractual',
+    'if product keeps',
+    'if product wants',
+    'if that surface keeps growing',
+    'product decision',
+    'product-only',
+    'product review',
+  ]);
+  if (hasProductOnlySignal) {
+    return 'product-only';
+  }
+
   final hasReferenceOnlySignal = _containsAny(lowerAction, const [
     'additional pixel-reference',
+    'additional dynamic host data once canonical exports exist',
     'continue only',
     'future variant',
     'if backend data can',
@@ -378,6 +406,8 @@ String _gapActionKind(String nextAction) {
     'missing reference',
     'pixel comparison',
     'pixel-reference',
+    'reference-specific variant',
+    'reference-specific variants',
     'references and masks',
     'references are',
     'reference masks',
