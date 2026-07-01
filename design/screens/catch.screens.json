@@ -12976,7 +12976,7 @@
           "id": "text_scale_2",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No text-scale 2.0 Host Manage capture exists yet.",
+          "source": "host_manage_text_scale_2 captures Host Manage top bar, section picker, stats, roster table, and setup cards at TextScaler 2.0.",
           "nextAction": "Add text-scale capture for top bar title, section picker, roster table, invite links, Event Success live/report, and host action buttons.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -12990,7 +12990,7 @@
           "id": "reduced_motion",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No reduced-motion Host Manage capture exists yet.",
+          "source": "host_manage_reduced_motion captures the Host Manage live workspace fixture with MediaQuery.disableAnimations enabled.",
           "nextAction": "Review section switching, Event Success live/reveal effects, QR/reveal motion, dialogs, and future report animations under reduced motion.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -13004,7 +13004,7 @@
           "id": "light_dark",
           "kind": "theme",
           "status": "captured",
-          "source": "No paired light/dark Host Manage capture exists yet.",
+          "source": "host_manage_light_dark emits paired light/dark artifacts for the Host Manage report workspace fixture.",
           "nextAction": "Add paired theme captures after host manage fixtures are stable.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
