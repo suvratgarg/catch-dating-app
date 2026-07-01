@@ -496,6 +496,107 @@ Widget explorePeekRailContentStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Map sheet lead states',
+  type: ExploreMapSheetLead,
+  path: '[Explore]/Sections',
+)
+Widget exploreMapSheetLeadStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreMapSheetLead',
+    catalogId: 'section.explore.map_route',
+    children: [
+      _StateCard(
+        label: 'collapsed summary',
+        child: const _SheetFrame(
+          child: SizedBox(
+            height: 104,
+            child: _ExploreScope(
+              child: _MapSheetLeadPreview(
+                leadMode: ExploreMapSheetLeadMode.collapsedSummary,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'selected event lead',
+        child: _SheetFrame(
+          child: SizedBox(
+            height: 236,
+            child: _ExploreScope(
+              child: _MapSheetLeadPreview(
+                leadMode: ExploreMapSheetLeadMode.selectedEvent,
+                selectedEventId: _feedItems[1].event.id,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'nearby rail lead',
+        child: const _SheetFrame(
+          child: SizedBox(
+            height: 236,
+            child: _ExploreScope(
+              child: _MapSheetLeadPreview(
+                leadMode: ExploreMapSheetLeadMode.nearbyRail,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'loading rail',
+        child: const _SheetFrame(
+          child: SizedBox(
+            height: 180,
+            child: _ExploreScope(
+              feed: AsyncLoading<ExploreFeedViewModel>(),
+              child: _MapSheetLeadPreview(
+                leadMode: ExploreMapSheetLeadMode.nearbyRail,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'error lead',
+        child: _SheetFrame(
+          child: SizedBox(
+            height: 150,
+            child: _ExploreScope(
+              feed: AsyncError<ExploreFeedViewModel>(
+                StateError('Widgetbook map lead failed'),
+                StackTrace.empty,
+              ),
+              child: const _MapSheetLeadPreview(
+                leadMode: ExploreMapSheetLeadMode.nearbyRail,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2.0',
+        child: const _MediaOverride(
+          textScaler: TextScaler.linear(2),
+          child: _SheetFrame(
+            child: SizedBox(
+              height: 140,
+              child: _ExploreScope(
+                child: _MapSheetLeadPreview(
+                  leadMode: ExploreMapSheetLeadMode.collapsedSummary,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Chrome states',
   type: ExploreBrowseHeaderContent,
   path: '[Explore]/Sections',
@@ -1008,6 +1109,30 @@ Widget exploreMapRouteStates(BuildContext context) {
       ),
     ],
   );
+}
+
+class _MapSheetLeadPreview extends ConsumerWidget {
+  const _MapSheetLeadPreview({required this.leadMode, this.selectedEventId});
+
+  final ExploreMapSheetLeadMode leadMode;
+  final String? selectedEventId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return CustomScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      slivers: buildExploreMapSheetLeadSlivers(
+        ref: ref,
+        selectedEventId: selectedEventId,
+        cameraCenter: null,
+        filters: ref.watch(exploreFiltersProvider),
+        scopeLabel: 'Mumbai',
+        leadMode: leadMode,
+        onEventTapped: (_) {},
+        onSeeAll: _noop,
+      ),
+    );
+  }
 }
 
 class _ExploreScope extends StatelessWidget {

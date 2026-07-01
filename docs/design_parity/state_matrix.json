@@ -1552,8 +1552,8 @@
             },
             {
               "id": "DP-EXPLORE-MAP-002",
-              "status": "open",
-              "nextAction": "Register map summary, selected event lead, and peek-rail states in Widgetbook."
+              "status": "closed",
+              "nextAction": "Closed by Widgetbook states for ExploreMapScreen route states, ExploreMapSheetLead collapsed/selected/nearby/loading/error/text-scale states, and ExplorePeekRailContent nearby/selected states."
             }
           ]
         }

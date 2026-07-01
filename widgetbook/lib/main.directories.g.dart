@@ -2618,6 +2618,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'ExploreMapSheetLead',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Map sheet lead states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreMapSheetLeadStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ExplorePeekRailContent',
             useCases: [
               _widgetbook.WidgetbookUseCase(

@@ -33,7 +33,7 @@ ledgers as the source of truth when counts differ:
 - Contracted section states: 1,110.
 - Open screen-contract validation gaps: 0.
 - Design parity matrix: 12 feature groups, 36 screens, 621 matrix states, and
-  55 open matrix gaps across screen-state, lint-candidate, and preview-plan
+  54 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
 - Matrix state status spread: 552 captured, 17 implemented, 1 planned, and
   51 tested.
@@ -41,8 +41,8 @@ ledgers as the source of truth when counts differ:
   5 alias route entries, 0 planned route entries, and 6 excluded route entries.
 - Component contracts: 56 reusable primitive/composite contracts with 349
   contract states.
-- Widgetbook registry: 723 generated component entries, 739 generated use-case
-  builders, 62 formal primitive contract previews, and 1,427 referenced
+- Widgetbook registry: 724 generated component entries, 739 generated use-case
+  builders, 62 formal primitive contract previews, and 1,429 referenced
   preview ids.
 - Design references: 38 exported references are registered across 26 screens in
   `design/reference_screens/manifest.json`; 9 contracted screens still have no
@@ -1405,9 +1405,9 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - DS-CLUB-DETAIL-003: Closed by provider-free `ClubHostSection`, `ClubHostRow`, `ClubContactSection`, and `ClubPhotoStrip` files plus direct Widgetbook states and widget catalog entries.
   - DP-CLUB-DETAIL-003: Closed by `club_detail_loading`, `club_detail_initial_loading`, and `club_detail_empty_schedule` captures plus the existing exported/masked Club Detail member reference.
   - DP-CLUB-DETAIL-004: Closed by advisory comparison of `club_detail_member` against the Claude Club Detail V2 member-default reference; divergence is concentrated in hero media/chrome, next-event/stat-strip treatment, and below-fold schedule/dock composition.
-- [ ] `explore.map` (5 state follow-ups, 1 open gaps)
+- [x] `explore.map` (5 state follow-ups, 0 open gaps)
   - captured: `pins_ready`, `selected_pin`, `large_pan_scope`, `map_loading`, `map_error`
-  - DP-EXPLORE-MAP-002: Register map summary, selected event lead, and peek-rail states in Widgetbook.
+  - DP-EXPLORE-MAP-002: Closed by Widgetbook states for route, collapsed summary, selected event lead, nearby rail, loading/error, and text-scale map-sheet lead coverage.
 - [ ] Feature-level drift/previews
   - DP-EXPLORE-LINT-001: Add or extend scanners so P1 routes cannot remain planned in screen_coverage.json after a screen contract exists.
   - DP-EXPLORE-PREVIEW-001: Create Widgetbook use cases for Explore browse chrome, filter rail/sheet, CoverStory, mixed feed cards, map pill, empty/error states, and map route adapters.

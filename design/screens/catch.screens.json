@@ -2216,9 +2216,11 @@
               "distance_ring"
             ],
             "previewIds": [
-              "ExploreMapScreen/Map route states"
+              "ExploreMapScreen/Map route states",
+              "ExploreMapSheetLead/Map sheet lead states",
+              "ExplorePeekRailContent/Peek rail states"
             ],
-            "migration": "ExploreCollapsedMapSummaryState owns collapsed sheet count/scope copy, ExplorePeekRailState owns nearby rail title/action labels, and ExploreMapEventTicketState owns selected/peek ticket copy. Deterministic map captures now cover ready, selected-pin, distance-ring, loading, and error states. Remaining work: define map dynamic-region masking, keep EventMapView as the map primitive, and move route chrome/provider-wave data into an adapter."
+            "migration": "ExploreCollapsedMapSummaryState owns collapsed sheet count/scope copy, ExplorePeekRailState owns nearby rail title/action labels, and ExploreMapEventTicketState owns selected/peek ticket copy. Widgetbook now covers route, collapsed sheet summary, selected event lead, nearby rail, loading/error, and text-scale lead states. Deterministic map captures cover ready, selected-pin, distance-ring, loading, and error states. Remaining work: define map dynamic-region masking, keep EventMapView as the map primitive, and move route chrome/provider-wave data into an adapter."
           },
           {
             "id": "section.explore.empty_error",
