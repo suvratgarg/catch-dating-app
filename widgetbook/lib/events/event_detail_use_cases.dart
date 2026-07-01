@@ -1771,6 +1771,71 @@ Widget eventDateMarkerStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Week marker states',
+  type: WeekMarker,
+  path: '[Events]/Calendar',
+)
+Widget eventWeekMarkerStates(BuildContext context) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      WeekMarker(
+        date: _event.startTime,
+        active: true,
+        hasEvent: true,
+        onTap: _noop,
+      ),
+      gapW12,
+      WeekMarker(
+        date: _event.startTime.add(const Duration(days: 1)),
+        active: false,
+        hasEvent: true,
+        onTap: _noop,
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Month marker states',
+  type: MonthMarker,
+  path: '[Events]/Calendar',
+)
+Widget eventMonthMarkerStates(BuildContext context) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      MonthMarker(
+        date: _event.startTime,
+        active: true,
+        today: true,
+        hasEvent: true,
+        enabled: true,
+        onTap: _noop,
+      ),
+      gapW12,
+      MonthMarker(
+        date: _event.startTime.add(const Duration(days: 1)),
+        active: false,
+        today: false,
+        hasEvent: true,
+        enabled: true,
+        onTap: _noop,
+      ),
+      gapW12,
+      MonthMarker(
+        date: _event.startTime.add(const Duration(days: 2)),
+        active: false,
+        today: false,
+        hasEvent: false,
+        enabled: false,
+        onTap: _noop,
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Visual atom clock',
   type: EventClockMark,
   path: '[Events]/Tiles',

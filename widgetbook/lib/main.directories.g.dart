@@ -2297,6 +2297,26 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'WeekMarker',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Week marker states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventWeekMarkerStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'MonthMarker',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Month marker states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventMonthMarkerStates,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(

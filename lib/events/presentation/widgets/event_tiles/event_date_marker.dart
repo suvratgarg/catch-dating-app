@@ -34,14 +34,14 @@ class EventDateMarker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (layout) {
-      EventDateMarkerLayout.weekStrip => _WeekMarker(
+      EventDateMarkerLayout.weekStrip => WeekMarker(
         date: date,
         active: active,
         hasEvent: hasEvent,
         onTap: onTap,
         label: label,
       ),
-      EventDateMarkerLayout.monthGrid => _MonthMarker(
+      EventDateMarkerLayout.monthGrid => MonthMarker(
         date: date,
         active: active,
         today: today,
@@ -53,8 +53,9 @@ class EventDateMarker extends StatelessWidget {
   }
 }
 
-class _WeekMarker extends StatelessWidget {
-  const _WeekMarker({
+class WeekMarker extends StatelessWidget {
+  const WeekMarker({
+    super.key,
     required this.date,
     required this.active,
     required this.hasEvent,
@@ -122,8 +123,9 @@ class _WeekMarker extends StatelessWidget {
   }
 }
 
-class _MonthMarker extends StatelessWidget {
-  const _MonthMarker({
+class MonthMarker extends StatelessWidget {
+  const MonthMarker({
+    super.key,
     required this.date,
     required this.active,
     required this.today,
