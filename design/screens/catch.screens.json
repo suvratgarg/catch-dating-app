@@ -15822,7 +15822,52 @@
         {
           "id": "onboarding_welcome",
           "status": "captured",
-          "notes": "Baseline onboarding welcome capture; deeper step and validation captures remain planned."
+          "notes": "Baseline onboarding welcome capture."
+        },
+        {
+          "id": "onboarding_name_dob",
+          "status": "captured",
+          "notes": "Signed-in route capture for the name/DOB step with verified phone state."
+        },
+        {
+          "id": "onboarding_gender_interest",
+          "status": "captured",
+          "notes": "Route capture for the gender/interest step seeded through OnboardingController."
+        },
+        {
+          "id": "onboarding_instagram",
+          "status": "captured",
+          "notes": "Route capture for the Instagram handle step seeded through OnboardingController."
+        },
+        {
+          "id": "onboarding_photos_gate",
+          "status": "captured",
+          "notes": "Profile-completion route capture for the empty photo gate."
+        },
+        {
+          "id": "onboarding_prompts_empty",
+          "status": "captured",
+          "notes": "Profile-completion route capture for empty prompt answers."
+        },
+        {
+          "id": "onboarding_running_prefs",
+          "status": "captured",
+          "notes": "Run-preferences-only route capture."
+        },
+        {
+          "id": "onboarding_saved_draft",
+          "status": "captured",
+          "notes": "Route capture for a resumed saved draft at the gender/interest step."
+        },
+        {
+          "id": "onboarding_name_dob_text_scale_2",
+          "status": "captured",
+          "notes": "Name/DOB route capture at text scale 2.0."
+        },
+        {
+          "id": "onboarding_gender_interest_reduced_motion",
+          "status": "captured",
+          "notes": "Gender/interest route capture with animations disabled."
         }
       ],
       "states": [
@@ -15837,62 +15882,82 @@
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Onboarding welcome now has a manifest-registered design reference and deterministic capture. Add canonical references/captures for deeper steps, validation, upload, mutation, text-scale, and reduced-motion states."
+          "nextAction": "Onboarding welcome now has a manifest-registered design reference and deterministic capture. Deeper deterministic captures exist for the primary step flow; remaining work is state-specific design references, validation, upload, mutation, and additional accessibility variants."
         },
         {
           "id": "name_dob_step",
           "kind": "populated",
-          "status": "tested",
+          "status": "captured",
           "source": "NameDobPage collects first name, last name, DOB, and verified phone state inside the shared step frame.",
+          "captureIds": [
+            "onboarding_name_dob",
+            "onboarding_name_dob_text_scale_2"
+          ],
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Add deterministic capture and Widgetbook state for default, prefilled, validation-error, and text-scale variants."
+          "nextAction": "Deterministic route captures cover default and text scale 2.0. Add validation-error and state-specific reference exports."
         },
         {
           "id": "gender_interest_step",
           "kind": "populated",
-          "status": "tested",
+          "status": "captured",
           "source": "GenderInterestPage collects identity and interest selections through OnboardingController.setGenderInterest and step navigation.",
+          "captureIds": [
+            "onboarding_gender_interest",
+            "onboarding_gender_interest_reduced_motion"
+          ],
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Add capture/preview states for no selection, partial selection, complete selection, and long option copy."
+          "nextAction": "Deterministic route captures cover default and reduced-motion samples. Add validation-error, partial/complete selection, long-option, and state-specific reference variants."
         },
         {
           "id": "instagram_step",
           "kind": "populated",
-          "status": "implemented",
+          "status": "captured",
           "source": "InstagramPage captures the optional verification handle as part of the onboarding profile draft.",
-          "nextAction": "Add Widgetbook/capture states for empty, filled, invalid handle, and skipped handle."
+          "captureIds": [
+            "onboarding_instagram"
+          ],
+          "nextAction": "Deterministic route capture covers the default empty handle state. Add filled, invalid-handle, skipped-handle, and state-specific reference variants."
         },
         {
           "id": "photos_photo_gate",
           "kind": "empty",
-          "status": "tested",
+          "status": "captured",
           "source": "PhotosPage enforces the required photo gate before profile completion, adapts copy for profileCompletionOnly mode, and routes upload-failure feedback through the shared Catch snackbar helper.",
+          "captureIds": [
+            "onboarding_photos_gate"
+          ],
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Add captures for empty photo gate, one photo, required count met, upload pending, and upload failure."
+          "nextAction": "Deterministic route capture covers the empty profile-completion gate. Add one-photo, count-met, upload-pending, upload-failure, and state-specific reference variants."
         },
         {
           "id": "prompts_step",
           "kind": "populated",
-          "status": "implemented",
+          "status": "captured",
           "source": "ProfilePromptsPage collects prompt answers and adapts copy for profileCompletionOnly mode.",
-          "nextAction": "Add captures/previews for empty prompts, partial prompts, complete prompts, validation errors, and long prompt answers."
+          "captureIds": [
+            "onboarding_prompts_empty"
+          ],
+          "nextAction": "Deterministic route capture covers empty prompts. Add partial, complete, validation-error, long-answer, and state-specific reference variants."
         },
         {
           "id": "running_prefs_step",
           "kind": "populated",
-          "status": "tested",
+          "status": "captured",
           "source": "RunningPrefsPage collects running preferences, adapts copy for profileCompletionOnly and runPreferencesOnly modes, and can be the route entry step.",
+          "captureIds": [
+            "onboarding_running_prefs"
+          ],
           "tests": [
             "test/onboarding/onboarding_controller_test.dart",
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Add captures for standard onboarding, profile-completion, and run-preferences-only entry modes."
+          "nextAction": "Deterministic route capture covers run-preferences-only entry. Add standard/profile-completion variants, mutation variants, and state-specific references."
         },
         {
           "id": "required_field_errors",
@@ -15907,13 +15972,16 @@
         {
           "id": "saved_draft",
           "kind": "populated",
-          "status": "tested",
+          "status": "captured",
           "source": "OnboardingController fetches and migrates OnboardingDraft records to resume the correct step and prefill profile draft data.",
+          "captureIds": [
+            "onboarding_saved_draft"
+          ],
           "tests": [
             "test/onboarding/onboarding_controller_test.dart",
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Add route capture or Widgetbook state for draft-resumed mid-flow onboarding."
+          "nextAction": "Deterministic route capture covers gender-interest draft resume. Add deeper draft-step/reference variants only where the resume UI diverges."
         },
         {
           "id": "save_profile_mutation",
@@ -15938,16 +16006,22 @@
         {
           "id": "text_scale_2",
           "kind": "accessibility",
-          "status": "planned",
-          "source": "No text-scale 2.0 Onboarding flow capture exists yet.",
-          "nextAction": "Add text-scale captures for every step, sticky footer, top bar, validation banners, photo grid, and prompt editors."
+          "status": "captured",
+          "source": "Name/DOB text-scale 2.0 capture covers route header, fields, and sticky footer.",
+          "captureIds": [
+            "onboarding_name_dob_text_scale_2"
+          ],
+          "nextAction": "Add step-specific text-scale variants where layout diverges."
         },
         {
           "id": "reduced_motion",
           "kind": "accessibility",
-          "status": "planned",
-          "source": "No reduced-motion Onboarding flow capture exists yet.",
-          "nextAction": "Review welcome animation, step changes, validation focus, photo upload progress, and completion transition under reduced motion."
+          "status": "captured",
+          "source": "Gender/interest reduced-motion capture covers the step frame with route animations disabled.",
+          "captureIds": [
+            "onboarding_gender_interest_reduced_motion"
+          ],
+          "nextAction": "Add welcome/photo-upload/completion reduced-motion variants where behavior diverges."
         }
       ],
       "composition": {
@@ -16140,17 +16214,17 @@
         {
           "id": "DS-ONBOARDING-001",
           "status": "open",
-          "nextAction": "Add Onboarding Widgetbook states for every step, entry mode, validation state, saved draft, photo gate, mutation pending/error, text scale, reduced motion, and theme variants."
+          "nextAction": "Expand Onboarding Widgetbook states beyond default route/step coverage for validation, disabled CTA, upload, mutation pending/error, text scale, reduced motion, and theme variants."
         },
         {
           "id": "DS-ONBOARDING-002",
           "status": "open",
-          "nextAction": "Add deterministic captures for every onboarding step, validation errors, photo upload/gate states, profile-completion-only entry, run-preferences-only entry, text scale, and reduced motion."
+          "nextAction": "Remaining deterministic capture work is validation errors, disabled CTA, photo count-met/upload pending/upload failure, mutation pending/error, and step-specific text-scale/reduced-motion variants where layout diverges."
         },
         {
           "id": "DS-ONBOARDING-003",
           "status": "open",
-          "nextAction": "Introduce OnboardingFlowState or equivalent adapter so entry mode, current step, progress, draft, validation, mutation state, and typed callbacks can be rendered without live controller side effects."
+          "nextAction": "Evaluate promoting the capture seeder into an OnboardingFlowState adapter so entry mode, current step, progress, draft, validation, mutation state, and typed callbacks can render without capture-only side effects."
         },
         {
           "id": "DS-ONBOARDING-004",

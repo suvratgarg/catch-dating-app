@@ -35,14 +35,14 @@ ledgers as the source of truth when counts differ:
 - Design parity matrix: 12 feature groups, 36 screens, 621 matrix states, and
   55 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
-- Matrix state status spread: 543 captured, 19 implemented, 3 planned, and
-  56 tested.
-- Capture coverage registry: 576 capture ids across 37 captured route entries,
+- Matrix state status spread: 552 captured, 17 implemented, 1 planned, and
+  51 tested.
+- Capture coverage registry: 585 capture ids across 37 captured route entries,
   5 alias route entries, 0 planned route entries, and 6 excluded route entries.
 - Component contracts: 56 reusable primitive/composite contracts with 349
   contract states.
-- Widgetbook registry: 723 generated component entries, 738 generated use-case
-  builders, 62 formal primitive contract previews, and 1,407 referenced
+- Widgetbook registry: 723 generated component entries, 739 generated use-case
+  builders, 62 formal primitive contract previews, and 1,427 referenced
   preview ids.
 - Design references: 38 exported references are registered across 26 screens in
   `design/reference_screens/manifest.json`; 9 contracted screens still have no
@@ -688,7 +688,7 @@ from those ledgers rather than hand-editing counts.
 | P2 | `screen.host.event.edit` | 21 | 6 | 1 | None | `DS-HOST-EVENT-EDIT-001`, `DS-HOST-EVENT-EDIT-002`, `DS-HOST-EVENT-EDIT-003` | Captures now cover validation, selected-location, and offline states; save success and missing-location feedback now use the shared Catch snackbar helper. Continue reference-specific variants and the fuller edit-state adapter. |
 | P2 | `screen.host.profile` | 15 | 4 | 0 | Blocked: standalone Host Profile editor is called missing/at-risk by host manifests | `DS-HOST-PROFILE-001`, `DS-HOST-PROFILE-002`, `DS-HOST-PROFILE-003`, `DS-HOST-PROFILE-004` blocked | Widgetbook now covers route, form, field/status, missing, validation, pending, accessibility, and theme review; `HostProfileEditState` adapts route provider state and `HostProfileController` owns create/save mutations with tested snackbar failure proof plus deterministic create/save/offline captures. Host Profile save success feedback now uses the shared Catch snackbar helper. Remaining work is validation capture, any host-specific offline copy decision, stable reference export, and pixel comparison. |
 | P2 | `screen.host.settings` | 18 | 5 | 0 | Source found but exporter-blocked: `explorations/archived-templates/host-account/HostAccount.dc.html` | `DS-HOST-SETTINGS-001`, `DS-HOST-SETTINGS-002`, `DS-HOST-SETTINGS-003`, `DS-HOST-SETTINGS-004` | Widgetbook now covers route, profile summary, create-pending row, clubs section, tab rail, accessibility, and theme states; `HostSettingsState` adapts profile/club display state and `HostProfileController` owns profile create/save mutations with tested snackbar failure proof plus deterministic editor-sheet, mutation, sign-out, and offline captures. Host Settings create/save success feedback now uses the shared Catch snackbar helper. 2026-06-25 stable temp bundle, current runtime, CDP, and original-source Chrome attempts did not produce a valid PNG. Remaining work is source/runtime repair or alternate export path, payout/admin ownership, sign-out/account action policy, and pixel comparison. |
-| P2 | `screen.onboarding.flow` | 13 | 7 | 1 | `onboarding-handoff` | `DS-ONBOARDING-001`, `DS-ONBOARDING-002`, `DS-ONBOARDING-003`, `DS-ONBOARDING-004` | Photos upload-failure feedback now uses the shared Catch snackbar helper while preserving clear-before-show behavior. Export remaining onboarding steps, validation, upload, mutation, text-scale, and reduced-motion references. |
+| P2 | `screen.onboarding.flow` | 13 | 7 | 1 | `onboarding-handoff` | `DS-ONBOARDING-001`, `DS-ONBOARDING-002`, `DS-ONBOARDING-003`, `DS-ONBOARDING-004` | Deterministic route captures now cover welcome, name/DOB, gender/interest, Instagram, photo gate, empty prompts, run-preferences entry, saved-draft resume, text scale, and reduced motion. Continue validation, disabled CTA, upload, mutation, and state-specific reference variants. |
 | P2 | `screen.saved_events.list` | 9 | 4 | 0 | Blocked: no standalone Saved Events source | `DS-SAVED-EVENTS-004` blocked | SavedEventsListState owns ordering, saved/past labels, statuses, today, and club-id lookup input, while SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage own provider-free UI sections. Widgetbook and deterministic captures cover populated rows, empty/deleted-doc fallback, loading, stream error, club-name loading/error, past-only, text-scale, and paired light/dark states; reference export waits on a canonical Saved Events source. |
 | P2 | `screen.start.welcome` | 6 | 3 | 1 | None | `DS-START-001` | Widgetbook and deterministic captures now cover animated reel, landed direct, CTA, reduced motion, text scale, and canonical fixed-dark theme treatment; continue state-specific reference exports and visual comparison. |
 | P3 | `screen.event.location_map` | 11 | 4 | 0 | Blocked: no standalone full-screen map source; map primitives only | `DP-EVENT-MAP-003`, `DP-EVENT-MAP-004` blocked | Continue route-state adapter and map-mask planning; reference export waits on canonical map route source. |
@@ -1369,11 +1369,12 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - captured: `phone_entry`, `otp_entry`, `send_code_mutation`, `verify_otp_mutation`, `text_scale_2`, `reduced_motion`
   - DP-AUTH-001: Auth phone-entry reference and masks are exported and registered. Widgetbook and deterministic captures now cover OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion. Add validation-error capture, country-picker variants, and state-specific references.
   - DP-AUTH-002: Verify auth fields and validation banners against component contracts before visual polish.
-- [ ] `onboarding.flow` (5 state follow-ups, 2 open gaps)
-  - planned: `text_scale_2`
-  - tested: `required_field_errors`, `saved_draft`, `photo_gate`, `shared_upload_feedback`
-  - captured: `welcome_entry`
-  - DP-ONBOARDING-001: Onboarding welcome reference and masks are exported and registered. Add captures/previews for each remaining onboarding step, including validation and disabled CTA states.
+- [ ] `onboarding.flow` (13 state follow-ups, 2 open gaps)
+  - planned: None
+  - implemented: None
+  - tested: `required_field_errors`, `save_profile_mutation`, `complete_mutation`
+  - captured: `welcome_entry`, `name_dob_step`, `gender_interest_step`, `instagram_step`, `photos_photo_gate`, `prompts_step`, `running_prefs_step`, `saved_draft`, `text_scale_2`, `reduced_motion`
+  - DP-ONBOARDING-001: Onboarding welcome reference and masks are exported and registered. Route captures now cover each primary step, saved draft, text scale, and reduced motion. Add validation-error and disabled-CTA captures/previews, photo upload/count variants, mutation pending/error variants, and state-specific references.
   - DP-ONBOARDING-002: Catalogue repeated step layouts and promote only genuinely shared patterns to component contracts.
 - [ ] Feature-level drift/previews
   - DP-LINT-002: Add an advisory rule/check that new shared primitives need a component contract and preview/story entry.

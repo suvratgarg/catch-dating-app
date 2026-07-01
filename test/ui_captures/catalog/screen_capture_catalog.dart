@@ -135,7 +135,11 @@ import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/match_celebration_dialog.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
+import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
+import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
@@ -183,6 +187,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
         AsyncValue,
         ConsumerState,
         ConsumerStatefulWidget;
+import 'package:flutter_test/flutter_test.dart' show Fake;
 import 'package:image_picker/image_picker.dart';
 
 import '../../clubs/clubs_test_helpers.dart' as club_test;
@@ -5975,6 +5980,143 @@ final _authProviderOverrides = <Object>[
   authInitialCountryDialCodeProvider.overrideWithValue('+91'),
 ];
 
+final _onboardingCaptureProfileNoPhotos = ProfileSurfaceFixtures.viewer
+    .copyWith(profileComplete: false, profilePhotos: const []);
+final _onboardingCaptureProfileNoPrompts = ProfileSurfaceFixtures.viewer
+    .copyWith(profileComplete: false, profilePrompts: const []);
+final _onboardingCaptureDraft = OnboardingDraft(
+  step: OnboardingStep.genderInterest.index,
+  draftVersion: 2,
+  firstName: ProfileSurfaceFixtures.viewer.firstName,
+  lastName: ProfileSurfaceFixtures.viewer.lastName,
+  dateOfBirth: ProfileSurfaceFixtures.viewer.dateOfBirth,
+  phoneNumber: '9876543210',
+  gender: ProfileSurfaceFixtures.viewer.gender,
+  interestedInGenders: ProfileSurfaceFixtures.viewer.interestedInGenders,
+  instagramHandle: ProfileSurfaceFixtures.viewer.instagramHandle,
+  profilePrompts: ProfileSurfaceFixtures.viewer.profilePrompts,
+);
+
+enum _OnboardingCaptureMode { routeDefault, genderInterest, instagram }
+
+class _OnboardingCapture extends StatelessWidget {
+  const _OnboardingCapture({
+    this.mode = _OnboardingCaptureMode.routeDefault,
+    this.profileCompletionOnly = false,
+    this.runPreferencesOnly = false,
+  });
+
+  final _OnboardingCaptureMode mode;
+  final bool profileCompletionOnly;
+  final bool runPreferencesOnly;
+
+  @override
+  Widget build(BuildContext context) {
+    return _OnboardingCaptureSeeder(
+      mode: mode,
+      child: OnboardingScreen(
+        profileCompletionOnly: profileCompletionOnly,
+        runPreferencesOnly: runPreferencesOnly,
+      ),
+    );
+  }
+}
+
+List<Object> _onboardingProviderOverrides({
+  String? uid = ProfileSurfaceFixtures.viewerUid,
+  UserProfile? profile,
+  OnboardingDraft? draft,
+  Set<int> uploadLoadingIndices = const <int>{},
+}) {
+  final effectiveProfile = uid == null ? null : profile;
+  return [
+    _captureAnalyticsOverride,
+    uidProvider.overrideWithValue(AsyncData<String?>(uid)),
+    watchUserProfileProvider.overrideWith(
+      (ref) => Stream<UserProfile?>.value(effectiveProfile),
+    ),
+    userProfileRepositoryProvider.overrideWithValue(
+      ProfileFixtureUserProfileRepository(profile: effectiveProfile),
+    ),
+    authRepositoryProvider.overrideWithValue(
+      _CaptureAuthRepository(
+        currentUser: uid == null
+            ? null
+            : _CaptureAuthUser(uid: uid, phoneNumber: '+919876543210'),
+      ),
+    ),
+    onboardingDraftRepositoryProvider.overrideWithValue(
+      _CaptureOnboardingDraftRepository(draft),
+    ),
+    photoUploadControllerProvider.overrideWithValue((
+      loadingIndices: uploadLoadingIndices,
+      uploadError: null,
+    )),
+  ];
+}
+
+class _OnboardingCaptureSeeder extends ConsumerStatefulWidget {
+  const _OnboardingCaptureSeeder({required this.mode, required this.child});
+
+  final _OnboardingCaptureMode mode;
+  final Widget child;
+
+  @override
+  ConsumerState<_OnboardingCaptureSeeder> createState() =>
+      _OnboardingCaptureSeederState();
+}
+
+class _OnboardingCaptureSeederState
+    extends ConsumerState<_OnboardingCaptureSeeder> {
+  var _seeded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _seed());
+    });
+  }
+
+  void _seed() {
+    if (!mounted || _seeded) return;
+    _seeded = true;
+    OnboardingController.saveProfileMutation.reset(ref);
+    OnboardingController.completeMutation.reset(ref);
+
+    final controller = ref.read(onboardingControllerProvider.notifier);
+    switch (widget.mode) {
+      case _OnboardingCaptureMode.routeDefault:
+        break;
+      case _OnboardingCaptureMode.genderInterest:
+        _seedBookingIdentity(controller);
+        controller.goToStep(OnboardingStep.genderInterest);
+        break;
+      case _OnboardingCaptureMode.instagram:
+        _seedBookingIdentity(controller);
+        controller.setGenderInterest(
+          gender: Gender.woman,
+          interestedInGenders: const [Gender.man],
+        );
+        controller.goToStep(OnboardingStep.instagram);
+        break;
+    }
+  }
+
+  void _seedBookingIdentity(OnboardingController controller) {
+    controller.setNameDob(
+      firstName: 'Neha',
+      lastName: 'Kapoor',
+      dateOfBirth: DateTime(1996, 4, 12),
+      phoneNumber: '9876543210',
+      countryCode: '+91',
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
 class _AuthCaptureSeeder extends ConsumerStatefulWidget {
   const _AuthCaptureSeeder({required this.mode, required this.child});
 
@@ -6090,13 +6232,13 @@ class _AuthCaptureSeederState extends ConsumerState<_AuthCaptureSeeder> {
 }
 
 class _CaptureAuthRepository implements AuthRepository {
-  const _CaptureAuthRepository();
+  const _CaptureAuthRepository({this.currentUser});
 
   @override
-  User? get currentUser => null;
+  final User? currentUser;
 
   @override
-  Stream<User?> authStateChanges() => Stream<User?>.value(null);
+  Stream<User?> authStateChanges() => Stream<User?>.value(currentUser);
 
   @override
   Future<void> verifyPhoneNumber({
@@ -6121,6 +6263,38 @@ class _CaptureAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() async {}
+}
+
+class _CaptureAuthUser extends Fake implements User {
+  _CaptureAuthUser({required this.uid, required this.phoneNumber});
+
+  @override
+  final String uid;
+
+  @override
+  final String? phoneNumber;
+}
+
+class _CaptureOnboardingDraftRepository implements OnboardingDraftRepository {
+  _CaptureOnboardingDraftRepository([this._draft]);
+
+  OnboardingDraft? _draft;
+
+  @override
+  Future<OnboardingDraft?> fetchDraft({required String uid}) async => _draft;
+
+  @override
+  Future<void> saveDraft({
+    required String uid,
+    required OnboardingDraft draft,
+  }) async {
+    _draft = draft;
+  }
+
+  @override
+  Future<void> deleteDraft({required String uid}) async {
+    _draft = null;
+  }
 }
 
 final screenCaptureCatalog = <ScreenCaptureEntry>[
@@ -6334,12 +6508,84 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'onboarding_welcome',
     routeIds: const <String>['onboardingScreen'],
     device: CaptureDevice.reviewPhone,
-    providerOverrides: [
-      _captureAnalyticsOverride,
-      uidProvider.overrideWithValue(const AsyncData(null)),
-      watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
-    ],
+    providerOverrides: _onboardingProviderOverrides(uid: null),
     builder: (context) => const OnboardingScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_name_dob',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(),
+    builder: (context) => const _OnboardingCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_gender_interest',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(),
+    builder: (context) =>
+        const _OnboardingCapture(mode: _OnboardingCaptureMode.genderInterest),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_instagram',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(),
+    builder: (context) =>
+        const _OnboardingCapture(mode: _OnboardingCaptureMode.instagram),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_photos_gate',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(
+      profile: _onboardingCaptureProfileNoPhotos,
+    ),
+    builder: (context) => const _OnboardingCapture(profileCompletionOnly: true),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_prompts_empty',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(
+      profile: _onboardingCaptureProfileNoPrompts,
+    ),
+    builder: (context) => const _OnboardingCapture(profileCompletionOnly: true),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_running_prefs',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(
+      profile: ProfileSurfaceFixtures.viewer,
+    ),
+    builder: (context) => const _OnboardingCapture(runPreferencesOnly: true),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_saved_draft',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(
+      draft: _onboardingCaptureDraft,
+    ),
+    builder: (context) => const _OnboardingCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_name_dob_text_scale_2',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    textScale: 2,
+    providerOverrides: _onboardingProviderOverrides(),
+    builder: (context) => const _OnboardingCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_gender_interest_reduced_motion',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    disableAnimations: true,
+    providerOverrides: _onboardingProviderOverrides(),
+    builder: (context) =>
+        const _OnboardingCapture(mode: _OnboardingCaptureMode.genderInterest),
   ),
   ScreenCaptureEntry(
     id: 'event_detail_member',
