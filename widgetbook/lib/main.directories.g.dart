@@ -3966,6 +3966,66 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'ProfileSurfaceFactsSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Profile facts skeleton states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profileSurfaceFactsSkeletonStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileSurfaceHeroSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Profile hero skeleton states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profileSurfaceHeroSkeletonStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileSurfacePhotoSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Profile photo skeleton states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profileSurfacePhotoSkeletonStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileSurfaceRule',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Profile surface rule states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profileSurfaceRuleStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileSurfaceRunningSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Profile running skeleton states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profileSurfaceRunningSkeletonStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileSurfaceSectionSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Profile section skeleton states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .profileSurfaceSectionSkeletonStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfileSurfaceSkeleton',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

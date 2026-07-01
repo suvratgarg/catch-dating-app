@@ -1039,6 +1039,127 @@ Widget profileSurfaceSkeletonStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Profile hero skeleton states',
+  type: ProfileSurfaceHeroSkeleton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSurfaceHeroSkeletonStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSurfaceHeroSkeleton',
+    contractId: 'screen.catches.profile.hero_skeleton',
+    children: [
+      _StateCard(
+        label: 'portrait hero',
+        child: _SectionFrame(height: 440, child: ProfileSurfaceHeroSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile section skeleton states',
+  type: ProfileSurfaceSectionSkeleton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSurfaceSectionSkeletonStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSurfaceSectionSkeleton',
+    contractId: 'screen.catches.profile.section_skeleton',
+    children: [
+      _StateCard(
+        label: 'prompt block',
+        child: _SectionFrame(
+          height: 210,
+          child: ProfileSurfaceSectionSkeleton(lines: 3),
+        ),
+      ),
+      _StateCard(
+        label: 'compact block',
+        child: _SectionFrame(
+          height: 180,
+          child: ProfileSurfaceSectionSkeleton(lines: 1),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile running skeleton states',
+  type: ProfileSurfaceRunningSkeleton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSurfaceRunningSkeletonStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSurfaceRunningSkeleton',
+    contractId: 'screen.catches.profile.running_skeleton',
+    children: [
+      _StateCard(
+        label: 'running rhythm',
+        child: _SectionFrame(
+          height: 220,
+          child: ProfileSurfaceRunningSkeleton(),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile photo skeleton states',
+  type: ProfileSurfacePhotoSkeleton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSurfacePhotoSkeletonStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSurfacePhotoSkeleton',
+    contractId: 'screen.catches.profile.photo_skeleton',
+    children: [
+      _StateCard(
+        label: 'portrait photo block',
+        child: _SectionFrame(height: 460, child: ProfileSurfacePhotoSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile facts skeleton states',
+  type: ProfileSurfaceFactsSkeleton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSurfaceFactsSkeletonStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSurfaceFactsSkeleton',
+    contractId: 'screen.catches.profile.facts_skeleton',
+    children: [
+      _StateCard(
+        label: 'fact rows',
+        child: _SectionFrame(height: 260, child: ProfileSurfaceFactsSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile surface rule states',
+  type: ProfileSurfaceRule,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSurfaceRuleStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSurfaceRule',
+    contractId: 'screen.catches.profile.surface_rule',
+    children: [
+      _StateCard(
+        label: 'section divider',
+        child: _SectionFrame(height: 72, child: ProfileSurfaceRule()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Review skeleton states',
   type: CatchesProfileReviewSkeleton,
   path: '[P1 product surfaces]/Catches/Sections',

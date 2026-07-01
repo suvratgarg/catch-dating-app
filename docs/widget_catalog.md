@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.519
+version: 2.5.520
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,12 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.520
+
+- Cataloged the `ProfileSurfaceSkeleton` leaf renderers directly: hero, generic
+  section, running block, photo block, facts rows, and section rule. This keeps
+  loading-state review possible below the full shared profile skeleton shell.
 
 ### 2.5.519
 
@@ -5355,6 +5361,12 @@ Generated 2026-05-06.
 | `ScrollableProfile` | `lib/swipes/presentation/widgets/scrollable_profile.dart:19` | Full-length scrollable profile body used inside `ProfileSurface`. Keeps the shared rendering path identical across Catches, Profile Preview, and Public Profile, renders the hero photo first, then contextual profile insights, profile prompts, one canonical `RUN PROFILE` running identity card, detail chips, inset photos, and lifestyle. Its internal vertical scroll view is non-primary, can accept an explicit controller and route-provided physics when embedded in a sliver route, and can report leading overscroll to a parent route for collapsible-header coordination. |
 | `ProfileSurface` | `lib/swipes/presentation/profile_surface.dart:18` | Shared cardless public profile renderer. Maps `ProfileCardContent` into the handoff-aligned `CatchProfileView`, passes optional viewer/event context for compatibility insights, renders passive compatibility and running-identity labels as `CatchBadge` metadata, applies the social-run activity pigment to the hero fallback and Running Rhythm block, and mode-gates reaction controls so Catches can show, disable, or mark section like/comment affordances pending while Preview/Public Profile remain passive. |
 | `ProfileSurfaceSkeleton` | `lib/swipes/presentation/profile_surface.dart:85` | Shared profile-surface loading skeleton for Public Profile, Profile Preview, and Catches deck loading. Mirrors `CatchProfileView` with a portrait hero placeholder, body gutter, section rules, running-stat cards, inset photo block, and fact rows while preserving optional scroll controller, physics, leading-overscroll callback, and bottom-padding hooks. |
+| `ProfileSurfaceHeroSkeleton` | `lib/swipes/presentation/profile_surface.dart:149` | Leaf hero loading block for `ProfileSurfaceSkeleton`. Preserves the profile hero 4:5 ratio, rounded lower corners, and bottom-aligned name/meta text placeholders. |
+| `ProfileSurfaceSectionSkeleton` | `lib/swipes/presentation/profile_surface.dart:191` | Generic profile body-section loading block with title, configurable text-line count, and three chip placeholders for prompt/detail-style profile sections. |
+| `ProfileSurfaceRunningSkeleton` | `lib/swipes/presentation/profile_surface.dart:225` | Running-rhythm loading block used by `ProfileSurfaceSkeleton`, including title, two stat-card placeholders, and a supporting text placeholder. |
+| `ProfileSurfacePhotoSkeleton` | `lib/swipes/presentation/profile_surface.dart:260` | Inset portrait photo loading block for the shared profile skeleton, preserving the same rounded 4:5 media geometry as loaded profile photos. |
+| `ProfileSurfaceFactsSkeleton` | `lib/swipes/presentation/profile_surface.dart:282` | Fact-row loading block for the shared profile skeleton, rendering a title placeholder and four icon/text skeleton rows. |
+| `ProfileSurfaceRule` | `lib/swipes/presentation/profile_surface.dart:314` | Profile skeleton section divider. Uses the current token line color and shared content-vertical padding so loading-state section rhythm matches loaded `CatchProfileView` sections. |
 | `CatchProfileView` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:24` | Flagship cardless profile surface over a pure `ProfileView` display model. Renders the dark editorial hero, activity-pigmented kicker, ordered body sections, optional section reaction controls for Catches, and leading-overscroll/bottom-padding hooks for Profile Preview/Public Profile embedding. |
 | `EventRecapViewModel` | `lib/swipes/presentation/event_recap_view_model.dart:11` | Recap data seam. Combines the event, current uid, and `eventParticipations` to derive checked-in count and the attendee IDs shown in the vibe grid without reading compatibility arrays. |
 

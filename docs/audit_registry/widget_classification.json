@@ -25,16 +25,16 @@
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 770,
+      "keep-public-cataloged": 776,
       "keep-widget-state": 101,
-      "review-catalog-coverage": 72
+      "review-catalog-coverage": 66
     },
     "byCatalogStatus": {
-      "cataloged": 699,
+      "cataloged": 705,
       "contracted": 121,
       "not-applicable": 101,
       "route-covered": 71,
-      "uncataloged": 72
+      "uncataloged": 66
     }
   },
   "widgets": [
@@ -22991,23 +22991,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.swipes.profile_surface_facts_skeleton",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ProfileSurfaceHeroSkeleton",
@@ -23018,23 +23014,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.swipes.profile_surface_hero_skeleton",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ProfileSurfacePhotoSkeleton",
@@ -23045,23 +23037,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.swipes.profile_surface_photo_skeleton",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ProfileSurfaceRule",
@@ -23072,23 +23060,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.swipes.profile_surface_rule",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ProfileSurfaceRunningSkeleton",
@@ -23099,23 +23083,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.swipes.profile_surface_running_skeleton",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ProfileSurfaceSectionSkeleton",
@@ -23126,23 +23106,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.swipes.profile_surface_section_skeleton",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ProfileSurfaceSkeleton",
