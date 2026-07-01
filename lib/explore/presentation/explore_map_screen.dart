@@ -62,6 +62,7 @@ class ExploreMapScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(CatchSpacing.s5),
                 child: CatchIconButton(
                   variant: CatchIconButtonVariant.float,
+                  tooltip: 'Back to Explore',
                   onTap: () {
                     catchSelectionHaptic();
                     if (context.canPop()) context.pop();

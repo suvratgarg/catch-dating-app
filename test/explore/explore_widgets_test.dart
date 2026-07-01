@@ -658,6 +658,33 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
+    testWidgets('CatchCoverStory labels tappable location chrome', (
+      tester,
+    ) async {
+      var tapped = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CatchCoverStory(
+              title: 'Tonight in Mumbai',
+              location: 'Mumbai',
+              onLocation: () => tapped = true,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byTooltip('Change location'), findsOneWidget);
+      expect(find.bySemanticsLabel('Change location, Mumbai'), findsOneWidget);
+
+      await tester.tap(find.text('MUMBAI'));
+      await tester.pump();
+
+      expect(tapped, isTrue);
+    });
+
     testWidgets('Explore club card and detail hero share media padding', (
       tester,
     ) async {

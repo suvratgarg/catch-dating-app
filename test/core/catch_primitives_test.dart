@@ -233,6 +233,7 @@ void main() {
             CatchIconButton.icon(
               key: const ValueKey('bordered-icon-button'),
               icon: CatchIcons.search,
+              tooltip: 'Search events',
               onTap: () => taps++,
             ),
             CatchIconButton.icon(
@@ -297,6 +298,7 @@ void main() {
     expect(floatDecoration.boxShadow, CatchElevation.iconButtonFloat);
     expect(plainDecoration.color, Colors.transparent);
     expect(plainDecoration.border, isNull);
+    expect(find.byTooltip('Search events'), findsOneWidget);
 
     await tester.tap(find.byIcon(CatchIcons.search));
     await tester.pump();

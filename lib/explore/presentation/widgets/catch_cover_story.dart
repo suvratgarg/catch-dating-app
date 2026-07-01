@@ -149,30 +149,46 @@ class CoverStoryChrome extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           if (story.location != null && story.location!.isNotEmpty)
-            GestureDetector(
-              onTap: story.onLocation,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    story.location!.toUpperCase(),
-                    style: CatchTextStyles.kicker(
-                      context,
+            Builder(
+              builder: (context) {
+                final location = story.location!;
+                final label = Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      location.toUpperCase(),
+                      style: CatchTextStyles.kicker(
+                        context,
+                        color: paper.withValues(
+                          alpha: CatchOpacity.coverStoryLocation,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: CatchSpacing.micro6),
+                    Icon(
+                      CatchIcons.expandMoreRounded,
+                      size: CatchIcon.xs,
                       color: paper.withValues(
                         alpha: CatchOpacity.coverStoryLocation,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: CatchSpacing.micro6),
-                  Icon(
-                    CatchIcons.expandMoreRounded,
-                    size: CatchIcon.xs,
-                    color: paper.withValues(
-                      alpha: CatchOpacity.coverStoryLocation,
+                  ],
+                );
+                final onLocation = story.onLocation;
+                if (onLocation == null) return label;
+                return Tooltip(
+                  message: 'Change location',
+                  excludeFromSemantics: true,
+                  child: Semantics(
+                    container: true,
+                    button: true,
+                    label: 'Change location, $location',
+                    child: ExcludeSemantics(
+                      child: GestureDetector(onTap: onLocation, child: label),
                     ),
                   ),
-                ],
-              ),
+                );
+              },
             )
           else
             const SizedBox.shrink(),

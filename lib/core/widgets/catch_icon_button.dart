@@ -32,6 +32,7 @@ class CatchIconButton extends StatelessWidget {
     this.background,
     this.size = defaultSize,
     this.borderRadius,
+    this.tooltip,
   });
 
   factory CatchIconButton.icon({
@@ -46,6 +47,7 @@ class CatchIconButton extends StatelessWidget {
     Color? background,
     double size = defaultSize,
     double? borderRadius,
+    String? tooltip,
   }) {
     return CatchIconButton(
       key: key,
@@ -58,6 +60,7 @@ class CatchIconButton extends StatelessWidget {
       background: background,
       size: size,
       borderRadius: borderRadius,
+      tooltip: tooltip,
       child: Icon(icon),
     );
   }
@@ -82,6 +85,9 @@ class CatchIconButton extends StatelessWidget {
   /// Override shape radius. Defaults to [CatchRadius.pill] (full circle).
   final double? borderRadius;
 
+  /// Accessible label and hover affordance for icon-only actions.
+  final String? tooltip;
+
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
@@ -101,7 +107,7 @@ class CatchIconButton extends StatelessWidget {
       fill: filled ? 1.0 : null,
     );
 
-    return Opacity(
+    final button = Opacity(
       opacity: disabled ? CatchOpacity.disabledControl : 1,
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -128,6 +134,9 @@ class CatchIconButton extends StatelessWidget {
         ),
       ),
     );
+    final message = tooltip;
+    if (message == null || message.isEmpty) return button;
+    return Tooltip(message: message, child: button);
   }
 }
 
