@@ -1,4 +1,6 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
@@ -100,6 +102,174 @@ Widget welcomePageStates(BuildContext context) {
           child: _MediaOverride(
             textScale: 2,
             child: WelcomePage(playIntro: false),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Welcome scene states',
+  type: WelcomeScene,
+  path: '[P1 product surfaces]/Onboarding/Pages',
+)
+Widget welcomeSceneStates(BuildContext context) {
+  return const _OnboardingCatalog(
+    title: 'WelcomeScene',
+    children: [
+      _StateCard(
+        label: 'spinning',
+        child: _DeviceFrame(
+          child: WelcomeScene(
+            viewportHeight: 760,
+            mediaPadding: EdgeInsets.only(top: 44, bottom: 34),
+            spinValue: 0.42,
+            landingValue: 0,
+            landed: false,
+            onContinue: _noop,
+            onExplore: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'landed',
+        child: _DeviceFrame(
+          child: WelcomeScene(
+            viewportHeight: 760,
+            mediaPadding: EdgeInsets.only(top: 44, bottom: 34),
+            spinValue: 1,
+            landingValue: 1,
+            landed: true,
+            onContinue: _noop,
+            onExplore: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Welcome reel band states',
+  type: ReelBand,
+  path: '[P1 product surfaces]/Onboarding/Pages',
+)
+Widget welcomeReelBandStates(BuildContext context) {
+  return _OnboardingCatalog(
+    title: 'ReelBand',
+    children: [
+      _StateCard(
+        label: 'spinning band',
+        child: ColoredBox(
+          color: CatchTokens.sunsetDark.bg,
+          child: const SizedBox(
+            height: 360,
+            child: ReelBand(spinValue: 0.5, landingValue: 0, landed: false),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'landed focus',
+        child: ColoredBox(
+          color: CatchTokens.sunsetDark.bg,
+          child: const SizedBox(
+            height: 360,
+            child: ReelBand(spinValue: 1, landingValue: 1, landed: true),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Welcome reel row states',
+  type: ReelRow,
+  path: '[P1 product surfaces]/Onboarding/Pages',
+)
+Widget welcomeReelRowStates(BuildContext context) {
+  return _OnboardingCatalog(
+    title: 'ReelRow',
+    children: [
+      _StateCard(
+        label: 'activity phrase',
+        child: ColoredBox(
+          color: CatchTokens.sunsetDark.bg,
+          child: const SizedBox(
+            height: 92,
+            child: ReelRow(
+              phrase: WelcomePhrase('the long table', ActivityKind.dinner),
+              phraseIndex: 2,
+              rowIndex: 2,
+              trackOffset: 0,
+              landingValue: 0,
+              landed: false,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'landing phrase',
+        child: ColoredBox(
+          color: CatchTokens.sunsetDark.bg,
+          child: const SizedBox(
+            height: 92,
+            child: ReelRow(
+              phrase: WelcomePhrase('someone real', ActivityKind.socialRun),
+              phraseIndex: 11,
+              rowIndex: 2,
+              trackOffset: 0,
+              landingValue: 1,
+              landed: true,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Welcome reveal states',
+  type: RevealEntrance,
+  path: '[P1 product surfaces]/Onboarding/Pages',
+)
+Widget welcomeRevealEntranceStates(BuildContext context) {
+  return _OnboardingCatalog(
+    title: 'RevealEntrance',
+    children: [
+      _StateCard(
+        label: 'settling',
+        child: ColoredBox(
+          color: CatchTokens.sunsetDark.bg,
+          child: const Padding(
+            padding: EdgeInsets.all(24),
+            child: RevealEntrance(
+              landingValue: 0.62,
+              order: 0,
+              child: Text(
+                'Show up to something you would do anyway.',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'visible',
+        child: ColoredBox(
+          color: CatchTokens.sunsetDark.bg,
+          child: const Padding(
+            padding: EdgeInsets.all(24),
+            child: RevealEntrance(
+              landingValue: 1,
+              order: 1,
+              child: Text(
+                'Continue with phone',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
           ),
         ),
       ),
@@ -344,3 +514,5 @@ class _MediaOverride extends StatelessWidget {
     );
   }
 }
+
+void _noop() {}

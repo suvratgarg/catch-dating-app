@@ -8599,6 +8599,39 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'ReelBand',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Welcome reel band states',
+                    builder:
+                        _widgetbook_workspace_onboarding_onboarding_use_cases
+                            .welcomeReelBandStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ReelRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Welcome reel row states',
+                    builder:
+                        _widgetbook_workspace_onboarding_onboarding_use_cases
+                            .welcomeReelRowStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'RevealEntrance',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Welcome reveal states',
+                    builder:
+                        _widgetbook_workspace_onboarding_onboarding_use_cases
+                            .welcomeRevealEntranceStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'RunningPrefsPage',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8617,6 +8650,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_onboarding_onboarding_use_cases
                             .welcomePageStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'WelcomeScene',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Welcome scene states',
+                    builder:
+                        _widgetbook_workspace_onboarding_onboarding_use_cases
+                            .welcomeSceneStates,
                   ),
                 ],
               ),
