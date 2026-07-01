@@ -2749,6 +2749,7 @@
             "swipe_event_in_progress",
             "swipe_event_did_not_attend",
             "swipe_event_window_closed",
+            "swipe_event_write_failure_snackbar",
             "swipe_event_text_scale_2",
             "swipe_event_reduced_motion",
             "swipe_event_comment_sheet_empty",
@@ -2862,13 +2863,16 @@
             {
               "id": "write_failure",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
               "tests": [
                 "test/swipes/swipe_screen_test.dart"
               ],
-              "notes": "SwipeScreen catches write failures, surfaces showCatchErrorSnackBar, and keeps the current profile.",
+              "notes": "SwipeScreen catches write failures, surfaces showCatchErrorSnackBar, and keeps the current profile. swipe_event_write_failure_snackbar captures the deck with the branded failure snackbar after a failing SwipeQueueNotifier write.",
               "previewIds": [
                 "SwipeScreen/Event deck route states"
+              ],
+              "captureIds": [
+                "swipe_event_write_failure_snackbar"
               ]
             },
             {

@@ -984,6 +984,50 @@ class _CatchesReactionCommentSheetCapture extends StatelessWidget {
   }
 }
 
+class _SwipeWriteFailureSnackBarCapture extends ConsumerStatefulWidget {
+  const _SwipeWriteFailureSnackBarCapture();
+
+  @override
+  ConsumerState<_SwipeWriteFailureSnackBarCapture> createState() =>
+      _SwipeWriteFailureSnackBarCaptureState();
+}
+
+class _SwipeWriteFailureSnackBarCaptureState
+    extends ConsumerState<_SwipeWriteFailureSnackBarCapture> {
+  bool _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _started) return;
+      _started = true;
+      unawaited(_runFailingSwipe());
+    });
+  }
+
+  Future<void> _runFailingSwipe() async {
+    try {
+      await ref
+          .read(swipeQueueProvider(_catchesOpenEvent.id).notifier)
+          .swipe(SwipeDirection.pass);
+    } catch (error) {
+      if (!mounted) return;
+      showCatchErrorSnackBar(
+        context,
+        error,
+        errorContext: AppErrorContext.swipes,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => SwipeScreen(
+    eventId: _catchesOpenEvent.id,
+    now: CatchesSurfaceFixtures.now,
+  );
+}
+
 const _catchesReactionTarget = ProfileReactionTarget(
   id: 'prompt-sunday-loop',
   type: SwipeReactionTargetType.profilePrompt,
@@ -1000,6 +1044,28 @@ class _CaptureNoopSwipeRepository implements SwipeRepository {
 
   @override
   Future<void> recordSwipe({required Swipe swipe}) async {}
+}
+
+class _CaptureThrowingSwipeRepository implements SwipeRepository {
+  const _CaptureThrowingSwipeRepository();
+
+  @override
+  Future<Set<String>> fetchSwipedUserIds({required String uid}) async =>
+      const <String>{};
+
+  @override
+  Future<void> recordSwipe({required Swipe swipe}) async {
+    throw const BackendOperationException(
+      code: 'capture-swipe-write-failed',
+      message: 'Unable to save that catch. Please try again.',
+      context: BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'record swipe',
+        resource: 'profile_decisions',
+      ),
+      retryable: true,
+    );
+  }
 }
 
 const _matchChatViewerUid = 'nyc_jordan_ellis_002';
@@ -11146,6 +11212,16 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       eventId: _catchesClosedEvent.id,
       now: CatchesSurfaceFixtures.now,
     ),
+  ),
+  ScreenCaptureEntry(
+    id: 'swipe_event_write_failure_snackbar',
+    routeIds: const <String>['swipeEventScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _swipeDeckProviderOverrides(
+      event: _catchesOpenEvent,
+      swipeRepository: const _CaptureThrowingSwipeRepository(),
+    ),
+    builder: (context) => const _SwipeWriteFailureSnackBarCapture(),
   ),
   ScreenCaptureEntry(
     id: 'swipe_event_text_scale_2',

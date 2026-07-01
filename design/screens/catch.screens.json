@@ -4701,6 +4701,11 @@
           "notes": "Catches event deck closed catch-window state."
         },
         {
+          "id": "swipe_event_write_failure_snackbar",
+          "status": "captured",
+          "notes": "Catches event deck write failure keeps the active profile visible and surfaces branded retry snackbar feedback."
+        },
+        {
           "id": "swipe_event_text_scale_2",
           "status": "captured",
           "notes": "Catches event deck text scale 2.0 review state."
@@ -4826,14 +4831,17 @@
         {
           "id": "write_failure",
           "kind": "mutation",
-          "status": "tested",
+          "status": "captured",
           "source": "_recordSwipe catches repository failures and shows showCatchErrorSnackBar with AppErrorContext.swipes while keeping the current profile.",
           "tests": [
             "test/swipes/swipe_screen_test.dart"
           ],
-          "nextAction": "Widget test coverage proves failure keeps the current profile and surfaces branded snackbar copy; add a route capture only if snackbar visuals need reference review.",
+          "nextAction": "Captured by swipe_event_write_failure_snackbar; remaining work is dedicated mutation references if design requires pixel comparison.",
           "previewIds": [
             "SwipeScreen/Event deck route states"
+          ],
+          "captureIds": [
+            "swipe_event_write_failure_snackbar"
           ]
         },
         {
