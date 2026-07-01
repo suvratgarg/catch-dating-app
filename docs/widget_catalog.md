@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.507
+version: 2.5.508
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.508
+
+- Promoted `OnboardingTopBar` as the public cataloged progress/header adapter
+  used by `OnboardingScreen`, with exact Widgetbook coverage. The classification
+  scanner's private widget review count drops by one without changing
+  onboarding flow ownership.
 
 ### 2.5.507
 
@@ -5417,6 +5424,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `OnboardingScreen` | `lib/onboarding/presentation/onboarding_screen.dart:17` | Multi-step onboarding shell registered as `screen.onboarding.flow`. Initializes the correct entry point for full, profile-completion-only, and run-preferences-only flows, owns back-step boundaries, renders the shared top bar, and delegates body composition to step pages pending an `OnboardingFlowState` adapter. |
+| `OnboardingTopBar` | `lib/onboarding/presentation/onboarding_screen.dart:143` | Public onboarding progress/header adapter used by `OnboardingScreen`. Converts `OnboardingStep` plus profile-completion/run-preference flow flags into `CatchStepHeader` copy and progress state while the route owns navigation. |
 | `NameDobPage` | `lib/onboarding/presentation/pages/name_dob_page.dart:13` | Handoff Name + DOB step: headline/subtitle, FIRST NAME / LAST NAME / DATE OF BIRTH / verified PHONE fields, date picker, private-last-name and birth-year helper copy, and sticky Continue footer through `CatchBottomDock`. |
 | `GenderInterestPage` | `lib/onboarding/presentation/pages/gender_interest_page.dart:13` | Handoff Gender step using uppercase section labels, `ChipField` selections, validation, stable semantic chip keys, and sticky Continue footer. |
 | `InstagramPage` | `lib/onboarding/presentation/pages/instagram_page.dart:10` | Handoff Instagram step with verification/privacy copy, HANDLE field, sticky Continue action, and secondary Skip for now action that advances without saving a handle. |

@@ -7633,6 +7633,16 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OnboardingTopBar',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Top bar',
+                builder: _widgetbook_workspace_onboarding_onboarding_use_cases
+                    .onboardingTopBarState,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookFolder(
             name: 'Pages',
             children: [

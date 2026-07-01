@@ -21138,30 +21138,27 @@
       "flags": []
     },
     {
-      "name": "_OnboardingTopBar",
+      "name": "OnboardingTopBar",
       "file": "lib/onboarding/presentation/onboarding_screen.dart",
       "classKind": "widget",
       "baseClass": "StatelessWidget",
-      "visibility": "private",
+      "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.onboarding_top_bar",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
       "asyncOwnership": "screen-owned",
       "layoutOwnership": "page-safe-area-sliver",
       "actionOwnership": "navigation-and-controller-calls",
-      "decision": "review-promote-or-inline",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
+      "flags": []
     },
     {
       "name": "OnboardingScreen",

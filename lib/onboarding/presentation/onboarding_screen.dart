@@ -100,7 +100,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 child: Column(
                   children: [
                     if (data.step.showsProgress) ...[
-                      _OnboardingTopBar(
+                      OnboardingTopBar(
                         step: data.step,
                         profileCompletionOnly: widget.profileCompletionOnly,
                         runPreferencesOnly: widget.runPreferencesOnly,
@@ -140,8 +140,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 }
 
-class _OnboardingTopBar extends StatelessWidget {
-  const _OnboardingTopBar({
+class OnboardingTopBar extends StatelessWidget {
+  const OnboardingTopBar({
+    super.key,
     required this.step,
     required this.profileCompletionOnly,
     required this.runPreferencesOnly,

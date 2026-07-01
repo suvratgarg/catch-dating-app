@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
@@ -42,6 +43,28 @@ Widget onboardingScreenRouteStates(BuildContext context) {
           child: _OnboardingScope(
             child: OnboardingScreen(runPreferencesOnly: true),
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Top bar',
+  type: OnboardingTopBar,
+  path: '[P1 product surfaces]/Onboarding',
+)
+Widget onboardingTopBarState(BuildContext context) {
+  return const _OnboardingCatalog(
+    title: 'OnboardingTopBar',
+    children: [
+      _StateCard(
+        label: 'profile completion photos',
+        child: OnboardingTopBar(
+          step: OnboardingStep.photos,
+          profileCompletionOnly: true,
+          runPreferencesOnly: false,
+          onBack: null,
         ),
       ),
     ],
