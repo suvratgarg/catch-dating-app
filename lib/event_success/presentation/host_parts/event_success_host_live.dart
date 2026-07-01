@@ -710,30 +710,23 @@ class LiveNowPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: foreground.withValues(alpha: CatchOpacity.photoScrimMedium),
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(
-          color: foreground.withValues(alpha: CatchOpacity.subtleBorder),
-        ),
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      padding: CatchInsets.compactLabelContent,
+      backgroundColor: foreground.withValues(
+        alpha: CatchOpacity.photoScrimMedium,
       ),
-      child: Padding(
-        padding: CatchInsets.compactLabelContent,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            DecoratedBox(
-              decoration: BoxDecoration(shape: BoxShape.circle, color: accent),
-              child: const SizedBox.square(dimension: CatchSpacing.micro6),
-            ),
-            gapW6,
-            Text(
-              'Live now'.toUpperCase(),
-              style: CatchTextStyles.badge(context, color: foreground),
-            ),
-          ],
-        ),
+      borderColor: foreground.withValues(alpha: CatchOpacity.subtleBorder),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CatchStatusDot(color: accent, size: CatchSpacing.micro6),
+          gapW6,
+          Text(
+            'Live now'.toUpperCase(),
+            style: CatchTextStyles.badge(context, color: foreground),
+          ),
+        ],
       ),
     );
   }
