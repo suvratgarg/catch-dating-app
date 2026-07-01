@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.509
+version: 2.5.510
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,14 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.510
+
+- Promoted `CatchFieldRow`, `CatchFieldTrailing`, and
+  `CatchSectionFocusSurface` as public members of the existing `catch.field` and
+  `catch.section` contracts, with exact Widgetbook contract previews. This
+  clears the remaining private widget review items without creating new
+  standalone primitive families.
 
 ### 2.5.509
 
@@ -4972,6 +4980,8 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `CatchField` | `lib/core/widgets/catch_field.dart:27` | Canonical flat field primitive for row, text-entry, navigation, toggle, expanded-control, add, validation, helper, clearable, and suffix-action states. Use the named constructors (`read`, `nav`, `toggle`, `input`, `select`, `expanding`, `add`) so call sites choose one field family explicitly; the shared implementation constructor is private. The field owns the stable anatomy of optional leading icon, label/value column, optional right value/action/chevron/toggle trailing slot, and field-owned helper/error text. `CatchField.nav` accepts `chevronOpen` for shared expanded-state right-chevron rotation; icon-only trailing slots stay pinned to the row edge, while `valueText` metadata keeps a bounded flexible lane on narrow widths. Rounded section, focus, and error container chrome belongs to `CatchSection`, not the field itself. Registered as formal component contract `catch.field`; Widgetbook contract states are the canonical review surface. |
+| `CatchFieldRow` | `lib/core/widgets/catch_field.dart:1844` | Public `catch.field` member for the shared field-row anatomy: optional leading slot, content slot, optional trailing slot, add-row padding, and row tap handling. Use through `CatchField` in product UI unless a primitive contract preview or a new field-family member needs the raw row shell. |
+| `CatchFieldTrailing` | `lib/core/widgets/catch_field.dart:1920` | Public `catch.field` trailing-slot member for bounded value text, fixed/rotating chevrons, toggles, clear actions, valid-state icons, and custom trailing content. Product call sites should prefer `CatchField` modes; this member exists so the field anatomy has exact contract coverage. |
 | `CatchButton` | `lib/core/widgets/catch_button.dart:13` | Canonical button. Supports `primary`, `secondary`, `ghost`, `danger`, and `light` variants; activity-accent primary fills via `accentColor`; `sm`, `md`, `lg` sizes; loading state with animated dots; hover/press feedback; optional leading icons; and `isInteractive: false` for button-looking labels inside an already tappable parent. Button height is fixed to the selected token size so full-width footer buttons do not expand in unconstrained bottom bars. Use `light` for solid-white pill CTAs so foreground/background colors stay paired across light and dark themes. |
 | `CatchActionMenu<T>` | `lib/core/widgets/catch_action_menu.dart:24` | Anchored overflow trigger for action menus. Opens the shared handoff `CatchMenu` panel from an `IconBtn`, supports icons, sublabels, selected rows, disabled rows, destructive rows, and typed selected values. |
 | `CatchField.select<T>` | `lib/core/widgets/catch_field.dart` | Canonical select-mode factory on `CatchField`. Supports token-driven flat trigger/menu composition, compact/md heights, optional prefix icons, disabled/error states, controlled value syncing, and validation messaging without a separate dropdown/select primitive. |
@@ -5066,6 +5076,7 @@ Generated 2026-05-06.
 | `CatchGradedImage` / `CatchGrade` | `lib/core/widgets/catch_graded_image.dart:21` | Non-destructive display-time photo grade. Applies the shared brightness-aware matte duotone through color filters at render time, leaving uploaded images untouched while keeping mixed UGC and generated activity art inside one editorial visual family. Split-tone colors are alpha-aware: multiply and screen tints are derived by lerping from each blend mode's no-op color so low-alpha token values do not wash light-mode photos to white in deterministic captures. |
 | `CatchNetworkImage` | `lib/core/widgets/catch_network_image.dart:19` | Canonical remote/bundled image primitive. Keeps the existing decode-size capped `Image.network` path for remote photos, renders `assets/` and `packages/` paths through `Image.asset` for deterministic fixture/capture use, and preserves caller-owned framing, fitting, semantics, loading, and branded fallback behavior. |
 | `CatchPageBody` / `CatchScreenBody` / `CatchSectionStack` / `CatchSectionList` / `CatchSection` / `CatchDetailSliverSectionList` | `lib/core/widgets/catch_section_layout.dart:9` | Semantic body and section composition primitives. `CatchScreenBody` maps the handoff scrolling body with `screenPx` gutter, `pt`/`pb` overrides, full-bleed gutter opt-out, and optional non-scroll mode; `CatchSectionStack` maps the handoff `SectionStack` gutter and defaults to no inserted section gap; `CatchSection` is the canonical information-grouping primitive with named constructors for divided hairline groups, contained rounded groups, and plain titled blocks, plus optional count/trailing content and optional lead activity accent; `CatchDetailSliverSectionList` provides sliver-native page gutters with the same section-owned rhythm by default. `CatchSection`, `CatchScreenBody`, and `CatchSectionStack` are registered as formal component contracts (`catch.section`, `catch.screen_body`, `catch.section_stack`); Widgetbook exposes contract states for section, scrolling/non-scroll body modes, and stack rhythm. |
+| `CatchSectionFocusSurface` | `lib/core/widgets/catch_section_layout.dart:509` | Public `catch.section` member for contained-section focus and error chrome. It wraps `CatchSurface.card`, watches descendant focus, and applies the section focus ring or danger border while `CatchSection.contained` remains the product-facing API. |
 | `EventActivityVisualSpec` / `EventActivityBackdrop` | `lib/core/widgets/event_activity_visuals.dart:17` | Mutable presentation schema for `ActivityKind` imagery. Centralizes activity label, icon, gradient palette, pattern, and browse-order choices so Explore cards, spotlight cards, thumbnails, browse tiles, and event detail headers do not fork color decisions. |
 | `EventHeroSurface` / `EventTicketPerforatedDivider` / `EventTicketShapeClipper` | `lib/core/widgets/event_ticket_surface.dart:11` | Shared event-ticket transition primitives. `EventHeroSurface` is the named full-card wrapper around the shared ticket Hero flight; the divider and clipper own horizontal perforation, ticket notch constants, and ticket shape geometry used by ticket cards, spotlight cards, date-rail cards, and ticket-mode event detail headers. |
 | `EventCapacityPresenter` | `lib/events/presentation/widgets/event_tiles/event_capacity_presenter.dart:4` | Shared event-capacity display helper. Owns signed-up/spots/progress values plus "going · left/full", activity summary, attendee-confirmed, and join-CTA availability copy so cards and CTAs do not fork booking language. |

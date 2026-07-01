@@ -1128,6 +1128,144 @@ Widget catchFieldContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchFieldRow,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldRowContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  final textStyle = CatchTextStyles.bodyLead(context, color: t.ink);
+
+  return _ContractScreen(
+    title: 'CatchFieldRow',
+    contractId: 'catch.field.row',
+    states: const [
+      'standard',
+      'with-leading',
+      'with-trailing',
+      'add',
+      'tappable',
+    ],
+    children: [
+      _StateCard(
+        label: 'standard',
+        child: _FieldWidth(
+          child: CatchFieldRow.standard(
+            content: Text('Plain row content', style: textStyle),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'with-leading',
+        child: _FieldWidth(
+          child: CatchFieldRow.standard(
+            leading: Icon(CatchIcons.hosted, color: t.ink2),
+            content: Text('Leading icon row', style: textStyle),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'with-trailing',
+        child: _FieldWidth(
+          child: CatchFieldRow.standard(
+            content: Text('Trailing value row', style: textStyle),
+            trailing: CatchFieldTrailing.valueText(text: 'Private'),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'add',
+        child: _FieldWidth(
+          child: CatchFieldRow.add(
+            leading: Icon(CatchIcons.add, color: t.primary),
+            content: Text(
+              'Add another time',
+              style: CatchTextStyles.fieldRowTitle(context, color: t.primary),
+            ),
+            onTap: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'tappable',
+        child: _FieldWidth(
+          child: CatchFieldRow.standard(
+            content: Text('Tap target row', style: textStyle),
+            trailing: CatchFieldTrailing.fixedChevron(),
+            onTap: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFieldTrailing,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldTrailingContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchFieldTrailing',
+    contractId: 'catch.field.trailing',
+    states: const [
+      'value-text',
+      'fixed-chevron',
+      'rotating-chevron',
+      'toggle',
+      'clear',
+      'valid',
+      'custom',
+    ],
+    children: [
+      _StateCard(
+        label: 'value-text',
+        child: CatchFieldTrailing.valueText(text: 'Private'),
+      ),
+      _StateCard(
+        label: 'fixed-chevron',
+        child: CatchFieldTrailing.fixedChevron(),
+      ),
+      _StateCard(
+        label: 'rotating-chevron',
+        child: _InlineWrap(
+          children: [
+            CatchFieldTrailing.rotatingChevron(open: false),
+            CatchFieldTrailing.rotatingChevron(open: true),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'toggle',
+        child: CatchFieldTrailing.toggle(
+          value: true,
+          onChanged: (_) {},
+          semanticLabel: 'Allow reminders',
+        ),
+      ),
+      _StateCard(
+        label: 'clear',
+        child: CatchFieldTrailing.clear(
+          tooltip: 'Clear field',
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(label: 'valid', child: CatchFieldTrailing.valid()),
+      _StateCard(
+        label: 'custom',
+        child: CatchFieldTrailing.custom(
+          color: t.primary,
+          child: const Text('Edit'),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchSection,
   path: '[Core primitives]/Sections',
 )
@@ -1329,6 +1467,54 @@ Widget catchSectionContractStates(BuildContext context) {
         child: CatchSection.plain(
           title: 'Inline note',
           child: Text('Plain sections keep title rhythm without a container.'),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchSectionFocusSurface,
+  path: '[Core primitives]/Sections',
+)
+Widget catchSectionFocusSurfaceContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchSectionFocusSurface',
+    contractId: 'catch.section.focus_surface',
+    states: const ['default', 'focused', 'error'],
+    children: [
+      _StateCard(
+        label: 'default',
+        child: _FieldWidth(
+          child: CatchSectionFocusSurface(
+            padding: CatchInsets.content,
+            focused: false,
+            hasError: false,
+            child: const Text('Contained section content'),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'focused',
+        child: _FieldWidth(
+          child: CatchSectionFocusSurface(
+            padding: CatchInsets.content,
+            focused: true,
+            hasError: false,
+            child: const Text('Focused contained section content'),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'error',
+        child: _FieldWidth(
+          child: CatchSectionFocusSurface(
+            padding: CatchInsets.content,
+            focused: false,
+            hasError: true,
+            child: const Text('Error contained section content'),
+          ),
         ),
       ),
     ],

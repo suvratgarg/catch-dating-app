@@ -1389,6 +1389,34 @@
               "large"
             ],
             "file": "lib/core/widgets/catch_form_field_label.dart"
+          },
+          {
+            "id": "catch.field.row",
+            "symbol": "CatchFieldRow",
+            "summary": "Public field-row anatomy member used by CatchField for leading, content, trailing, add, and tappable row states.",
+            "states": [
+              "standard",
+              "with-leading",
+              "with-trailing",
+              "add",
+              "tappable"
+            ],
+            "file": "lib/core/widgets/catch_field.dart"
+          },
+          {
+            "id": "catch.field.trailing",
+            "symbol": "CatchFieldTrailing",
+            "summary": "Public trailing-slot member used by CatchField for value text, chevrons, toggles, clear actions, validation, and custom trailing content.",
+            "states": [
+              "value-text",
+              "fixed-chevron",
+              "rotating-chevron",
+              "toggle",
+              "clear",
+              "valid",
+              "custom"
+            ],
+            "file": "lib/core/widgets/catch_field.dart"
           }
         ]
       },
@@ -1698,6 +1726,17 @@
               "accented",
               "truncated",
               "multi-line"
+            ]
+          },
+          {
+            "id": "catch.section.focus_surface",
+            "symbol": "CatchSectionFocusSurface",
+            "file": "lib/core/widgets/catch_section_layout.dart",
+            "summary": "Public contained-section focus and error chrome member used by CatchSection.contained.",
+            "states": [
+              "default",
+              "focused",
+              "error"
             ]
           },
           {

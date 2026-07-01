@@ -3407,31 +3407,27 @@
       "flags": []
     },
     {
-      "name": "_CatchFieldRow",
+      "name": "CatchFieldRow",
       "file": "lib/core/widgets/catch_field.dart",
       "classKind": "widget",
       "baseClass": "StatelessWidget",
-      "visibility": "private",
+      "visibility": "public",
       "role": "composition",
-      "canonicalFamily": "catch.catch_field_row",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
+      "canonicalFamily": "catch.field",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.field.row",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-inline",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract",
-        "private-widget-publicization-required"
-      ]
+      "flags": []
     },
     {
       "name": "_CatchFieldState",
@@ -3457,31 +3453,27 @@
       "flags": []
     },
     {
-      "name": "_CatchFieldTrailing",
+      "name": "CatchFieldTrailing",
       "file": "lib/core/widgets/catch_field.dart",
       "classKind": "widget",
       "baseClass": "StatelessWidget",
-      "visibility": "private",
+      "visibility": "public",
       "role": "composition",
-      "canonicalFamily": "catch.catch_field_trailing",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
+      "canonicalFamily": "catch.field",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.field.trailing",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-inline",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract",
-        "private-widget-publicization-required"
-      ]
+      "flags": []
     },
     {
       "name": "CatchField",
@@ -4279,37 +4271,33 @@
       "flags": []
     },
     {
-      "name": "_CatchSectionFocusSurface",
+      "name": "CatchSectionFocusSurface",
       "file": "lib/core/widgets/catch_section_layout.dart",
       "classKind": "widget",
       "baseClass": "StatefulWidget",
-      "visibility": "private",
+      "visibility": "public",
       "role": "composition",
-      "canonicalFamily": "catch.catch_section_focus_surface",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
+      "canonicalFamily": "catch.section",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.section.focus_surface",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-inline",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract",
-        "private-widget-publicization-required"
-      ]
+      "flags": []
     },
     {
       "name": "_CatchSectionFocusSurfaceState",
       "file": "lib/core/widgets/catch_section_layout.dart",
       "classKind": "widget-state",
-      "baseClass": "State<_CatchSectionFocusSurface>",
+      "baseClass": "State<CatchSectionFocusSurface>",
       "visibility": "private",
       "role": "widget-state",
       "canonicalFamily": "state.catch_section_focus_surface",
