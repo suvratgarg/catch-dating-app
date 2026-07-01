@@ -121,7 +121,7 @@
             {
               "id": "DP-START-001",
               "status": "open",
-              "nextAction": "Landed direct Start Welcome reference and masks are registered; export animated reel samples, reduced-motion, text-scale, and any alternate theme references before strict visual comparison."
+              "nextAction": "Landed direct Start Welcome reference and masks are registered, and deterministic captures cover animated reel, reduced motion, text scale, CTA, and canonical fixed-dark theme treatment. Export state-specific animated, reduced-motion, text-scale, or alternate-theme references only if strict visual comparison requires them."
             },
             {
               "id": "DP-START-002",
@@ -179,7 +179,7 @@
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "Auth phone entry now has a manifest-registered design reference and deterministic capture. Widgetbook previews cover OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion; add deterministic captures/references before promoting beyond captured."
+              "notes": "Auth phone entry now has a manifest-registered design reference and deterministic captures. Widgetbook and route captures cover OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, and reduced motion; add state-specific references before strict visual comparison."
             },
             {
               "id": "country_selector",
@@ -339,7 +339,7 @@
               "tests": [
                 "test/onboarding/onboarding_widgets_test.dart"
               ],
-              "notes": "Onboarding welcome now has a manifest-registered design reference and deterministic capture. Deeper deterministic captures exist for the primary step flow; remaining work is state-specific design references, validation, upload, mutation, and additional accessibility variants."
+              "notes": "Onboarding welcome now has a manifest-registered design reference and deterministic capture. Primary step, validation-error, photo gate/upload-pending, save/complete mutation, text-scale, and reduced-motion captures exist; remaining work is upload-failure transition coverage, prompt variants, Instagram variants, and state-specific references."
             },
             {
               "id": "name_dob_step",
@@ -347,12 +347,13 @@
               "status": "captured",
               "captureIds": [
                 "onboarding_name_dob",
+                "onboarding_name_dob_validation_error",
                 "onboarding_name_dob_text_scale_2"
               ],
               "tests": [
                 "test/onboarding/onboarding_widgets_test.dart"
               ],
-              "notes": "NameDobPage collects first name, last name, DOB, and verified phone state inside the shared step frame; deterministic route captures cover default and text scale 2.0. Add validation-error and state-specific reference exports."
+              "notes": "NameDobPage collects first name, last name, DOB, and verified phone state inside the shared step frame; deterministic route captures cover default, required-field validation, and text scale 2.0. Add state-specific reference exports."
             },
             {
               "id": "gender_interest_step",
@@ -360,12 +361,13 @@
               "status": "captured",
               "captureIds": [
                 "onboarding_gender_interest",
+                "onboarding_gender_interest_validation_error",
                 "onboarding_gender_interest_reduced_motion"
               ],
               "tests": [
                 "test/onboarding/onboarding_widgets_test.dart"
               ],
-              "notes": "GenderInterestPage collects identity and interest selections through OnboardingController.setGenderInterest and step navigation; deterministic route captures cover default and reduced-motion samples. Add validation-error, partial/complete selection, long-option, and state-specific reference variants."
+              "notes": "GenderInterestPage collects identity and interest selections through OnboardingController.setGenderInterest and step navigation; deterministic route captures cover default, required-selection validation, and reduced-motion samples. Add partial/complete selection, long-option, and state-specific reference variants."
             },
             {
               "id": "instagram_step",

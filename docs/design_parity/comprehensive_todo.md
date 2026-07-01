@@ -1361,7 +1361,7 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - implemented: None
   - tested: None
   - captured: `animated_reel`, `landed_direct`, `cta_navigation`, `reduced_motion`, `text_scale_2`, `light_dark`
-  - DP-START-001: Landed direct Start Welcome reference and masks are registered; export animated reel samples, reduced-motion, text-scale, and any alternate theme references before strict visual comparison.
+  - DP-START-001: Landed direct Start Welcome reference and masks are registered, and deterministic captures cover animated reel, reduced motion, text scale, CTA, and canonical fixed-dark theme treatment. Export state-specific animated, reduced-motion, text-scale, or alternate-theme references only if strict visual comparison requires them.
   - DP-START-002: Closed by Widgetbook states for animated reel, landed direct, reduced motion, text scale, CTA, and canonical fixed-dark theme treatment.
 - [ ] `auth.phone_entry` (8 state follow-ups, 1 open gap)
   - implemented: None

@@ -15336,7 +15336,7 @@
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Landed state now has a manifest-registered design reference and deterministic start_welcome capture. Add animated reel sampling, reduced-motion, text-scale, and any alternate theme references before strict visual gates."
+          "nextAction": "Landed state now has a manifest-registered design reference and deterministic start_welcome capture. Animated reel, reduced-motion, text-scale, CTA, and canonical fixed-dark captures are registered; export state-specific references only if strict visual comparison requires them."
         },
         {
           "id": "cta_navigation",
@@ -15666,7 +15666,7 @@
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "Auth phone entry now has a manifest-registered design reference and deterministic capture. Widgetbook previews cover OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion; add deterministic captures/references before promoting beyond captured."
+          "nextAction": "Auth phone entry now has a manifest-registered design reference and deterministic captures. Widgetbook and route captures cover OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, and reduced motion; add state-specific references before strict visual comparison."
         },
         {
           "id": "country_selector",
@@ -16117,7 +16117,7 @@
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Onboarding welcome now has a manifest-registered design reference and deterministic capture. Deeper deterministic captures exist for the primary step flow; remaining work is state-specific design references, validation, upload, mutation, and additional accessibility variants."
+          "nextAction": "Onboarding welcome now has a manifest-registered design reference and deterministic capture. Primary step, validation-error, photo gate/upload-pending, save/complete mutation, text-scale, and reduced-motion captures exist; remaining work is upload-failure transition coverage, prompt variants, Instagram variants, and state-specific references."
         },
         {
           "id": "name_dob_step",
